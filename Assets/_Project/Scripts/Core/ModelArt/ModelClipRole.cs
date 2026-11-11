@@ -245,5 +245,8 @@ namespace Game.Core
 
         /// <summary>A jetpack landing (the cue: touchdown, where the owner reaches the ground; the second moment: the thrust goes out), played once.</summary>
         JetLand = 80,
+
+        /// <summary>Stepping out of the landing capsule's hatch and down its ramp to the ground, in place (the owner moves the body along the ramp), played once.</summary>
+        CapsuleExit = 81,
     }
 }

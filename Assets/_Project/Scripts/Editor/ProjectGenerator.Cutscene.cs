@@ -48,10 +48,13 @@ namespace Game.Editor
 
         // Spencer's footfalls (seconds of the shot, from, to and the gap): out of the capsule and over to the crystals in the
         // landing shot (FieldSet: walks at 0.3-0.4 and 0.58-0.68 of 12 s), the run back to the gate (0-0.42 of 10 s).
-        private static readonly (float From, float To, float Gap) LandingWalkOut = (3.7f, 4.7f, 0.45f);
-        private static readonly (float From, float To, float Gap) LandingWalkOver = (7f, 8.1f, 0.45f);
+        private static readonly (float From, float To, float Gap) LandingWalkOut = (4.05f, 5.3f, 0.42f);
+        private static readonly (float From, float To, float Gap) LandingWalkOver = (7.05f, 7.6f, 0.45f);
         private static readonly (float From, float To, float Gap) GateRun = (0.5f, 4.1f, 0.32f);
         private const float HeroStepVolume = 0.3f;
+        // Round 39 (Remco: the brood must not leave until the gate line is read): the stand shot ends this soon after its dialogue,
+        // so the roar and the retreat (the handoff shot) follow the click at once.
+        private const float GateStandAfterRead = 0.6f;
 
         /// <summary>One shot as the generator writes it.</summary>
         private sealed class ShotSpec
@@ -301,7 +304,7 @@ namespace Game.Editor
                     },
                     // The retro jets fire over the last of the fall, the touchdown, the ramp, his boots on the ground, the beacon.
                     Cues = Join(
-                        new[] { Sound(1.4f, CutsceneSound.Thrusters, 0.6f), Sound(2.4f, CutsceneSound.Landing, 0.9f), Shake(2.4f, LandingKick), Sound(3.2f, CutsceneSound.BuildClank, 0.5f), Sound(8.6f, CutsceneSound.CoreIgnite, 0.45f) },
+                        new[] { Sound(1.4f, CutsceneSound.Thrusters, 0.6f), Sound(2.4f, CutsceneSound.Landing, 0.9f), Shake(2.4f, LandingKick), Sound(3.1f, CutsceneSound.Thrusters, 0.45f), Sound(3.2f, CutsceneSound.BuildClank, 0.5f), Sound(8.6f, CutsceneSound.CoreIgnite, 0.45f) },
                         Footfalls(LandingWalkOut, HeroStepVolume), Footfalls(LandingWalkOver, HeroStepVolume)),
                 },
                 new ShotSpec
@@ -422,7 +425,7 @@ namespace Game.Editor
                 new ShotSpec
                 {
                     // Back to the gate at a run, round behind its field to face the brood glaring across it, the blaster up.
-                    Set = CutsceneSet.Field, Action = CutsceneAction.GateStand, Timing = ShotTiming.AfterDialogue, Seconds = 2.5f, CameraSeconds = 10f,
+                    Set = CutsceneSet.Field, Action = CutsceneAction.GateStand, Timing = ShotTiming.AfterDialogue, Seconds = GateStandAfterRead, CameraSeconds = 10f,
                     Dialogue = gate, DialogueDelay = 6.5f,
                     Keys = new[]
                     {

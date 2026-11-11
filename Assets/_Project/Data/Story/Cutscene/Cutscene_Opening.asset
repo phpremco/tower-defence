@@ -209,37 +209,37 @@ MonoBehaviour:
       Sound: 0
       Clip: {fileID: 0}
       Strength: 0.25
+    - At: 3.1
+      Kind: 0
+      Sound: 18
+      Clip: {fileID: 0}
+      Strength: 0.45
     - At: 3.2
       Kind: 0
       Sound: 4
       Clip: {fileID: 0}
       Strength: 0.5
-    - At: 3.7
+    - At: 4.05
       Kind: 0
       Sound: 10
       Clip: {fileID: 0}
       Strength: 0.3
-    - At: 4.15
+    - At: 4.4700003
       Kind: 0
       Sound: 10
       Clip: {fileID: 0}
       Strength: 0.3
-    - At: 4.6
+    - At: 4.8900003
       Kind: 0
       Sound: 10
       Clip: {fileID: 0}
       Strength: 0.3
-    - At: 7
+    - At: 7.05
       Kind: 0
       Sound: 10
       Clip: {fileID: 0}
       Strength: 0.3
-    - At: 7.45
-      Kind: 0
-      Sound: 10
-      Clip: {fileID: 0}
-      Strength: 0.3
-    - At: 7.8999996
+    - At: 7.5
       Kind: 0
       Sound: 10
       Clip: {fileID: 0}
@@ -823,7 +823,7 @@ MonoBehaviour:
       Ease: 3
       Mode: 0
     Timing: 1
-    Seconds: 2.5
+    Seconds: 0.6
     CameraSeconds: 10
     Dialogue: {fileID: 11400000, guid: 97979f29e20e85e43991cc18b5f2fecf, type: 2}
     DialogueDelay: 6.5

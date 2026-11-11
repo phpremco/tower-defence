@@ -13,6 +13,8 @@ namespace Game.Levels
         private const float ScatterScaleMin = 0.7f;
         private const float ScatterScaleSpread = 0.6f;
         private const float ScatterJitter = 0.8f;
+        private const float SlopeFitCells = 0.5f;
+        private const float MaxVeinSlope = 0.45f;
         private const int ScatterReachCells = 6;
         private const float NestScatterMin = 0.7f;
         private const int NestScatterCount = 7;
@@ -158,18 +160,36 @@ namespace Game.Levels
 
                     float yaw = TerrainNoise.Hash(x, y, 14) * 360f;
                     spot.y = field.HeightAt(spot.x, spot.z);
+                    // Round 39: veins and scatter lie on the slope; flat on a bank a glowing vein stood out of it as a hard line.
+                    Quaternion lying = OnSlope(field, spot, yaw);
                     if (vein != null && roll < set.VeinChance)
                     {
-                        AddClear(instancer, clearance, vein, Matrix4x4.TRS(spot, Quaternion.Euler(0f, yaw, 0f), Vector3.one), low, false);
+                        // A vein is a flat slab: on a steep bank no tilt hides its edge, so it grows only where the ground is gentle.
+                        if (field.SlopeAt(spot.x, spot.z) > MaxVeinSlope)
+                        {
+                            continue;
+                        }
+
+                        AddClear(instancer, clearance, vein, Matrix4x4.TRS(spot, lying, Vector3.one), low, false);
                     }
                     else if (roll < set.VeinChance + set.ScatterChance)
                     {
                         EnvironmentMesh piece = set.Scatter[(int)(TerrainNoise.Hash(x, y, 15) * set.Scatter.Length) % set.Scatter.Length];
                         float scale = ScatterScaleMin + TerrainNoise.Hash(x, y, 16) * ScatterScaleSpread;
-                        AddClear(instancer, clearance, piece, Matrix4x4.TRS(spot, Quaternion.Euler(0f, yaw, 0f), Vector3.one * scale), low, false);
+                        AddClear(instancer, clearance, piece, Matrix4x4.TRS(spot, lying, Vector3.one * scale), low, false);
                     }
                 }
             }
+        }
+
+        // A turn about the vertical, then tipped onto the plane the ground makes round the spot (fitted over a cell's half).
+        private static Quaternion OnSlope(TerrainField field, Vector3 spot, float yaw)
+        {
+            float radius = field.CellSize * SlopeFitCells;
+            float dx = field.HeightAt(spot.x + radius, spot.z) - field.HeightAt(spot.x - radius, spot.z);
+            float dz = field.HeightAt(spot.x, spot.z + radius) - field.HeightAt(spot.x, spot.z - radius);
+            Vector3 normal = new Vector3(-dx, 2f * radius, -dz).normalized;
+            return Quaternion.FromToRotation(Vector3.up, normal) * Quaternion.Euler(0f, yaw, 0f);
         }
 
         // Shell fragments in a loose ring round every nest.

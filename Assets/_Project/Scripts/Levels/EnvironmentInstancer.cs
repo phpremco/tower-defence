@@ -60,6 +60,27 @@ namespace Game.Levels
         private Bounds _lastBounds;
         private readonly List<DecorFormation> _formations = new List<DecorFormation>();
         private readonly Plane[] _planes = new Plane[6];
+
+        // Round 39 (Remco: crystals stuck inside rocks): the brittle pieces (crystals, flora, small rocks) and the solid ones
+        // (boulders, spires, cliffs, terraces) as added, so a brittle piece buried in a solid one can be left out before the
+        // groups freeze. A brittle piece's attachment (its glow pool and light) goes with it.
+        private const float SolidMinHeight = 0.6f;
+        private const float BuriedCore = 0.85f;
+        private const float BuriedShare = 0.15f;
+        private const int LatticeAcross = 3;
+        private const int LatticeUp = 5;
+        private const float LatticeReach = 0.6f;
+        private readonly List<Brittle> _brittle = new List<Brittle>();
+        private readonly List<(Mesh Mesh, Matrix4x4 Matrix, Bounds Bounds)> _solids = new List<(Mesh, Matrix4x4, Bounds)>();
+
+        private sealed class Brittle
+        {
+            public Batch Batch;
+            public Matrix4x4 Matrix;
+            public Bounds Bounds;
+            public bool Formation;
+            public Transform Attachment;
+        }
         private readonly List<Material> _ownMaterials = new List<Material>();
 
         /// <summary>How many pieces were added, for tests and reports.</summary>
@@ -108,6 +129,11 @@ namespace Game.Levels
             _lastMatrix = matrix;
             Bounds bounds = Transform(model.Mesh.bounds, matrix);
             _lastBounds = bounds;
+            if (model.Contact != DecorContact.Breakable && bounds.size.y >= SolidMinHeight)
+            {
+                _solids.Add((model.Mesh, matrix, bounds));
+            }
+
             if (batch.HasBounds)
             {
                 batch.Bounds.Encapsulate(bounds);
@@ -142,6 +168,7 @@ namespace Game.Levels
             {
                 float reach = Mathf.Max(_lastBounds.extents.x, _lastBounds.extents.z);
                 _breakable.Add((_lastBatch, _lastMatrix, reach, model.Remains));
+                _brittle.Add(new Brittle { Batch = _lastBatch, Matrix = _lastMatrix, Bounds = _lastBounds, Formation = formation });
             }
 
             if (DecorLog != null && model != null && model.IsValid)
@@ -149,6 +176,108 @@ namespace Game.Levels
                 DecorLog.Add(Transform(model.Mesh.bounds, matrix * model.Node));
             }
         }
+
+        /// <summary>Ties an object (a glow pool, a light) to the brittle piece added last, so it goes when that piece is left out.</summary>
+        public void AttachToLast(Transform attachment)
+        {
+            if (_brittle.Count > 0 && _brittle[_brittle.Count - 1].Batch == _lastBatch && _brittle[_brittle.Count - 1].Matrix == _lastMatrix)
+            {
+                _brittle[_brittle.Count - 1].Attachment = attachment;
+            }
+        }
+
+        /// <summary>
+        /// Leaves out every brittle piece (crystal, plant, small rock) that stands buried in a solid one (boulder, spire, cliff,
+        /// terrace, silhouette): more than 15 % of a lattice through its middle inside the solid's core (its mesh bounds shrunk to 85 %, in the
+        /// solid's own frame). Formation pieces stay, the climb layer reads them. Call before <see cref="Finish"/>; returns how
+        /// many were left out. Bounds and point tests only, run once per level.
+        /// </summary>
+        public int LeaveOutBuriedBrittle()
+        {
+            var points = new Dictionary<Mesh, Vector3[]>();
+            int left = 0;
+            for (int i = _brittle.Count - 1; i >= 0; i--)
+            {
+                Brittle piece = _brittle[i];
+                if (piece.Formation || !IsBuried(piece, points))
+                {
+                    continue;
+                }
+
+                piece.Batch.Building.Remove(piece.Matrix);
+                _breakable.RemoveAll(entry => entry.Batch == piece.Batch && entry.Matrix == piece.Matrix);
+                if (piece.Attachment != null)
+                {
+                    DestroyImmediate(piece.Attachment.gameObject);
+                }
+
+                _brittle.RemoveAt(i);
+                left++;
+            }
+
+            return left;
+        }
+
+        private bool IsBuried(Brittle piece, Dictionary<Mesh, Vector3[]> points)
+        {
+            if (!points.TryGetValue(piece.Batch.Mesh, out Vector3[] samples))
+            {
+                samples = Samples(piece.Batch.Mesh);
+                points[piece.Batch.Mesh] = samples;
+            }
+
+            foreach ((Mesh mesh, Matrix4x4 matrix, Bounds bounds) in _solids)
+            {
+                if (!bounds.Intersects(piece.Bounds))
+                {
+                    continue;
+                }
+
+                Matrix4x4 into = matrix.inverse * piece.Matrix;
+                Bounds core = mesh.bounds;
+                core.extents *= BuriedCore;
+                int inside = 0;
+                foreach (Vector3 sample in samples)
+                {
+                    if (core.Contains(into.MultiplyPoint3x4(sample)))
+                    {
+                        inside++;
+                    }
+                }
+
+                if (inside > samples.Length * BuriedShare)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // A lattice of points through the middle of a mesh's bounds, standing in for its body: the imported meshes are not
+        // readable at run time (no Read/Write), so their vertices cannot be sampled.
+        private static Vector3[] Samples(Mesh mesh)
+        {
+            Bounds bounds = mesh.bounds;
+            var samples = new Vector3[LatticeAcross * LatticeUp * LatticeAcross];
+            int i = 0;
+            for (int x = 0; x < LatticeAcross; x++)
+            {
+                for (int y = 0; y < LatticeUp; y++)
+                {
+                    for (int z = 0; z < LatticeAcross; z++)
+                    {
+                        var share = new Vector3(Cell(x, LatticeAcross), Cell(y, LatticeUp), Cell(z, LatticeAcross));
+                        samples[i++] = bounds.center + Vector3.Scale(bounds.extents * LatticeReach, share);
+                    }
+                }
+            }
+
+            return samples;
+        }
+
+        // -1..1 across the lattice's cells, at their middles.
+        private static float Cell(int index, int count) => (index + 0.5f) / count * 2f - 1f;
 
         /// <summary>A copy of a material this level changes (a tinted glow); destroyed with the level.</summary>
         public Material Own(Material source)

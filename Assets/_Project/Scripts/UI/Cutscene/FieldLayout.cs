@@ -164,6 +164,20 @@ namespace Game.UI
             return new Vector3(position.x, height, position.z);
         }
 
+        /// <summary>
+        /// The drawn ground's height at a point, on the grid and off it: the landscape field the ground mesh is built from, so
+        /// it follows the banks, dips and rims the cells' own heights leave out. What rests on the ground samples this (round 39).
+        /// </summary>
+        public float SurfaceAt(float x, float z) => Border.HeightAt(x, z);
+
+        /// <summary>The drawn ground's slope at a point: its normal fitted over a cross of <paramref name="radius"/> metres.</summary>
+        public Vector3 SurfaceNormal(Vector3 at, float radius)
+        {
+            float dx = SurfaceAt(at.x + radius, at.z) - SurfaceAt(at.x - radius, at.z);
+            float dz = SurfaceAt(at.x, at.z + radius) - SurfaceAt(at.x, at.z - radius);
+            return new Vector3(-dx, 2f * radius, -dz).normalized;
+        }
+
         private TerrainField Border => _border ??= new TerrainField(Level, new RoadShape(Level));
 
         /// <summary>The point a distance along a polyline, clamped to its ends.</summary>

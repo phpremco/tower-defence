@@ -5738,3 +5738,152 @@ rendered off-screen). The Blender key-art agent's files (`ArtSource/Previews/Ste
 1. At the 44° camera, the new throat (rows of teeth deep in the gullet, the hot core) is mostly hidden. The petal teeth
    and the glowing lip are what you see. Is that enough, or should the Roar tip the head up towards the camera? That is a
    Blender clip change.
+
+## Round 39: Remco's notes on the opening cutscene (Spencer's exit, drones, the rig's base, crystals in rocks, the brood waits) (2026-11-11)
+
+Not committed (the curator commits). No balance data touched. Mercer/Spencer exports untouched (the Blender agent is making new
+clips). Save `progress.json` was **2eca347e** at the start of the round (not ae9223b8: Remco's own play of the cutscene changed it);
+copied aside, checked after every Play Mode run and restored by the played-run script; the dev backup untouched; Game view size
+unchanged (every still rendered off-screen).
+
+### 1. Spencer leaving the capsule (`FieldSet`, `CutsceneHeroRig`, `CutsceneMath`, `CutsceneCast`)
+
+Cause: he appeared at full height on the ground at the ramp's foot (0.3 of the shot), walked to a "look spot" 0.7 m further on, and
+then walked to the beacon stand, which lies 0.75 m in front of the beacon, i.e. **behind** the look spot (Exit socket 1.35 m, look
+spot 2.05 m, stand 1.98 m from the capsule). The walk's heading is its direction, so he snapped 180 degrees to walk backwards 7 cm,
+then snapped 180 degrees again to face the beacon. Every heading was set per beat, never carried over.
+
+Now:
+- **Staged exit:** the ramp comes down (unchanged clip) in a hiss of venting steam (new `HatchSteam`, rate-based so a seek shows it;
+  new cue: the separation hiss `Thrusters` at 3.1 s) with a warm light inside the hatch; Spencer shows in the doorway (at the ramp's
+  hinge bone, `Ramp`) in the thick of the steam, steps out and down the ramp to its foot (`Exit` socket) and a step on, with his walk
+  phased to the distance covered (a minimum stride on the short ramp, so it reads as steps). Footfalls moved to the new walk.
+- **One look, one turn:** at the ramp's foot he looks round (head and a little of the body, feet stepping as the body turns), walks on
+  to the beacon stand only if it lies ahead (more than 0.15 m), and turns to the beacon. All headings carry over from the beat before;
+  every turn is `CutsceneMath.EasedTurn` at 240 degrees per second on average (180 degrees in 0.75 s), eased in and out, with the walk
+  clip stepping at a short stride while the turn has a way to go (`TurnOnTheSpot`). The gate stand's turn behind the field is the
+  same eased turn now (was a Slerp with the idle).
+- **Data-driven exit clip:** new `ModelClipRole.CapsuleExit` (81), mapped from the Blender take `Capsule_Exit` in
+  `BlenderStoryCatalog.Roles`, and `CutsceneCast._capsuleExitClip` (default CapsuleExit). When Spencer's model has that clip, the
+  exit samples it over the walk-out (0.33-0.45 of the shot) while the path carries the body down the ramp
+  (`CutsceneHeroRig.PoseClip`/`ClipLength`); without it he walks. The clip should be authored in place (the code moves him); if
+  the Blender take carries its own travel, the import round sets that.
+
+### 2 and 3. Drones sinking (screenshot 19 and "the left back drone")
+
+Cause, two parts:
+- The drones' feet hang about 0.35 m (haulers) and 0.3 m (builders) below their pivot, but a parked drone stood at the cell height +
+  0.2 m, measured at its centre only: every parked hauler and landed builder sank 0.15-0.24 m (probe: 480-780 vertices below the
+  drawn ground each). The idle clip also bobbed them while parked.
+- **Seven of the eight haulers stood in one spot** (23.5, 3.3, 0.9) on the slope next to the rig, inside each other: the round-37
+  search (level with the base within 0.3 m) found room for one, and every other hauler took the same fallback point.
+
+Fix:
+- `CutsceneDrone.Feet()` measures the lowest points (within 3 cm of the lowest vertex) of the drone's meshes at the first frame of
+  its idle; `RestOn(spot, facing, ground)` samples the drawn ground (`FieldLayout.SurfaceAt`, the landscape field the ground mesh is
+  built from) under **every** foot and sets the drone so the highest one carries it. Haulers (facing the heap) and builders (facing
+  the base) settle this way; at rest they hold the idle's first frame (no bob).
+- The parking search wants locally level ground (8 samples round the drone's half span within 0.18 m), then a second pass allows
+  ground up to 1.5 m above or below the base, and the last resort lines drones up instead of stacking them (hauler search: 12 rings,
+  the full circle). The eight haulers now stand on eight spots round the base.
+- A hauler parked up on the border flew its lane through a ridge; in flight its feet keep 0.3 m above the drawn ground.
+- Probe after: every hauler and builder 0.000 m clearance (one builder -0.01) in every shot, 0 vertices sunk.
+
+### 4. Screenshot 20: "the bottom of elements"
+
+What it is (pixel probe + ray march):
+- **The hard horizontal band under the rig deck** is the drill's own mesh: the deck stands at the slope's height under its middle,
+  on a 45-degree bank (ground under its corners +0.81 to -0.94 m): its downhill side hovered up to 0.94 m with the deck's plinth edge
+  showing as a hard line, the uphill side buried.
+- **The pink horizontal lines** (one by the rock on the left, more round the rig) are flat glowing pieces on slopes seen edge-on: the
+  level's crystal glow pools (`PropScatterBuilder`, flat quads), a `CrystalVein` kit slab on a 41-degree bank (`EnvironmentKitBuilder`
+  scatter), and the drill's own deposit pool, bore and crack strips.
+- The "build pads" in the picture are the parked haulers (round discs = rotor rings), sinking (section 2).
+
+Fix:
+- `FieldDrill` builds a plain steel **footing** under the deck: from just under the deck, all round its edge (6 panels a side), down
+  to 0.2 m below the drawn ground at every point, so the deck stands on the slope. The deposit pool and the bore lie on the slope's
+  plane fitted at the rig; each crack strip tips from the bore to the ground under its far end.
+- Crystal glow pools lie on the ground's slope (fitted over their radius, 4 cm above it) in play and in the cutscene.
+- Kit veins and scatter lie on the slope; veins (flat slabs) no longer grow on banks steeper than 0.45.
+
+### 5. Crystals stuck in rocks (screenshot 21 and the pink crystal in screenshot 20)
+
+Probe (`r39_crystal_probe.cs`, every crystal's vertices against the convex hull of every rock, boulder, spire, cliff, terrace,
+silhouette, base module, the drill and the capsule): **174 of 417 crystals** had more than 8 % of their points inside something.
+- New `EnvironmentInstancer.LeaveOutBuriedBrittle()`, run once per level after the kit and the scatter are placed: a brittle piece
+  (crystal, plant, small rock) with more than 15 % of its points inside a solid piece's core (its mesh bounds at 85 %, in the solid's
+  own frame) is left out, with its glow pool and light (`AttachToLast`). Formation pieces (blocked cells, read by the climb layer) stay.
+- The cutscene's own vein crystals by the beacon take a spot clear of the level's rocks and crystals (`FieldSet.ClearOf`).
+- The meshes are not readable at run time, so the pass tests a 3 x 5 x 3 lattice through the middle 60 % of the piece's bounds
+  (a first version read vertices and logged 12 "Read/Write" errors per build; caught by the played run, fixed).
+- Probe after: **254 crystals drawn (was 417), 34 still touch a hull** by more than 8 %, mostly far wilderness against the
+  silhouettes and spires and a few formation crystals on blocked cells (kept on purpose). The pass is generous: 163 crystals went.
+- The pass runs in `LevelVisualBuilder.BuildLandscape`, so **play levels change too** (all continents), as do the slope fixes of
+  section 4 (glow pools, veins, scatter).
+
+### 6. The brood leaves only after the click (`FieldSwarm`, `FieldSet`, generator)
+
+Cause: the retreat was a fixed swarm-clock time (end of the stand shot's 10 s camera + 0.3 s). The swarm clock runs on while the
+gate dialogue is open, so a player who read slowly saw the brood roar and run during the dialogue, before clicking Next.
+- `FieldSwarm.SetRetreat`: the retreat is infinite (they hold: standing, glaring, snapping now and then) until the field set sets it,
+  which it does only in the handoff shot, from the moment the handoff began (the stand's real length carries over, so the clock
+  never jumps). The handoff only starts after the gate dialogue is closed (the sequencer's AfterDialogue rule).
+- While the player keeps the gate line open past the shot's camera move, the brood growls every 4.6 s.
+- The stand shot now ends 0.6 s after its dialogue (was 2.5 s), so the roar and the run follow the click at once.
+- Other beats checked: the landing, drill, shiver and radar shots pose from their clamped progress or hold steady states while
+  their dialogue is open; the orbit ship drifts on slowly (0.16 m/s) and the capsules keep cycling, nothing ends. Only the brood
+  was timed.
+
+### Stills (`ArtSource/Previews/QA/`, 1920x1080, rendered off-screen)
+
+| File | What |
+| --- | --- |
+| `r39_exit_compare_0p6.png` | landing at 0.6: before he walks back towards the camera (the first 180), after he stands at the ramp's foot facing on |
+| `r39_after_exit_1_doorway_steam.png` | in the doorway as the ramp comes down, venting steam |
+| `r39_after_exit_2_down_the_ramp.png` | stepping down the ramp |
+| `r39_after_exit_3_turned_to_beacon.png` | at the beacon as it goes up, never turned away |
+| `r39_drill_shot_haulers_compare.png` | the drill shot: before seven haulers stacked by the rig, the rig deck hovering; after the footing, haulers gone to the base |
+| `r39_core_shot_compare.png` | the core shot wide: pink edge-on vein line and hovering deck gone, haulers and builders on their feet |
+| `r39_rig_base_zoom_compare.png` | the rig's base magnified: the hard band over the slope, then the footing to the ground |
+| `r39_after_builders_landed.png` | the four builders landed round the base, standing on their legs |
+| `r39_after_brood_holds_dialogue_open_t24.png` | played run: the gate line held open 24 s into the stand shot (camera move ended at 10 s), the brood still there |
+| `r39_after_handoff_retreat.png` | the handoff after the confirm: the brood running back |
+
+Scratch iterations stayed in the scratchpad.
+
+### Tests and state
+
+- New `OpeningStagingTests` (5): an eased turn takes 0.6-0.9 s for 180 degrees, goes the short way and never jumps more than twice
+  the average rate in a frame; the cast names the exit clip and `Capsule_Exit` maps to it (the length is zero until the take
+  arrives); the handoff never starts while the gate dialogue stays open (sequencer over the real opening, 3600 s) and the swarm
+  holds without a retreat time and turns away only after one; a hauler on a turned slope touches it with its lowest foot and no
+  foot sinks; a crystal buried in a boulder is left out with its glow, one beside it stays.
+- **EditMode suite headless on clone w6 (`r34b_editmode_worker.sh 6 "Game\.Tests\..*"`): 766 tests, 714 passed, 52 skipped
+  (explicit probe and fit tests, the acceptance report), 0 failed.**
+- **Played run of the whole opening (`r39_play.sh`, real time, every line confirmed with Enter through the Input System, the gate
+  line held 16 s): the brood stood (7 creatures, retreat "held") until the confirm, retreated in the handoff, and the run handed
+  over to the first level with 0 errors and 0 warnings.** The first played run caught 12 errors from a vertex read in the buried
+  pass (fixed, see section 5). Note: the console filter in `n2_cut.sh` never matched the pipeline's multi-line JSON, so its
+  "=== CONSOLE" block is always empty; judge a run by `console_status` (as `r39_play.sh` does).
+- Recompile: 0 errors; the only warning is the existing CS0618 in `Tests/PlayMode/BalanceProbeTests.cs:601`.
+- Data regenerated with `ApplyCutsceneShots.cs`: `Cutscene_Opening` (hatch hiss at 3.1 s, footfalls 4.05-5.3 s and 7.05-7.6 s,
+  gate stand 0.6 s after its dialogue, was 2.5) and `CutsceneCast` (`_capsuleExitClip: 81`).
+- Save `progress.json` MD5 2eca347e at the end (as at the start); editor stopped.
+
+### Open points for Remco (round 39)
+
+1. The brood now waits for Next and growls every 4.6 s while the gate line stays open; the roar comes 0.9 s after the click.
+   Right pace?
+2. Spencer now walks straight from the ramp to the beacon: the landing camera sees him mostly from behind (before, the bug turned
+   him towards the lens). A camera key that swings round to his front, or the beacon placed to his side, would show his face.
+   He is also taller than the capsule's doorway (a model-scale matter for the Blender agent).
+3. The rig's footing is plain dark steel down to the slope: on that 45-degree bank it reads as a big wedge from the downhill side.
+   Better would be choosing flatter ground for the rig, or flattening the terrain under it; both change the level and play, so
+   they wait for a yes. The play rig (`ColonyRigView`) stands on the same slope without a footing.
+4. The buried-crystal pass removes 163 of 417 crystals on C1_01 and runs in every level, also in play: the wilderness is
+   thinner. If too sparse, the pass could move a crystal clear instead of leaving it out. Formation crystals on blocked cells stay
+   even when they touch a cliff (the climb layer reads them).
+5. The crystals that grow out of their own rock base (a formation by the landing) are one model and were left as they are.
+6. The orbit ship keeps drifting (0.16 m/s) while the orbit dialogue is open; after a minute it has moved about 10 m. Not a timer,
+   but noticeable after a very long read.

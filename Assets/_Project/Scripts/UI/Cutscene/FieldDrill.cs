@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Combat;
 using Game.Core;
 using Game.Levels;
@@ -16,6 +17,20 @@ namespace Game.UI
     public sealed class FieldDrill
     {
         private const float MaxDepth = 2.4f;
+        // Round 39: the deck's underside is found among the rig's vertices this close (metres) to its root; the footing sits
+        // this far in from the deck's edge, tucks this far up under it and reaches this far into the ground.
+        private const float DeckBand = 0.15f;
+        private const float FootingInset = 0.03f;
+        private const float FootingTuck = 0.04f;
+        private const float FootingSink = 0.2f;
+        private const int FootingSegments = 6;
+        private const float FootingSmoothness = 0.35f;
+        private const float FootingMetallic = 0.5f;
+        private static readonly Color FootingColour = new Color(0.13f, 0.14f, 0.17f);
+        // The glow decals lie on the slope's plane fitted over this radius, lifted this far off it.
+        private const float SlopeFitRadius = 1.6f;
+        private const float DecalLift = 0.06f;
+        private const float StripSlopeFitRadius = 0.5f;
         private const float SpinDegreesPerSecond = 540f;
         private const float SinkSpinDegreesPerSecond = 300f;
         private const float BitTop = 0.2f;
@@ -50,6 +65,8 @@ namespace Game.UI
         private readonly CutsceneAudio _audio;
         private readonly ArtModel _art;
         private readonly Transform _string;
+        private readonly Transform _groundPlane;
+        private readonly GameObject _footing;
 
         public FieldDrill(Transform parent, FieldLayout layout, CutsceneContext context, float contactSeconds)
         {
@@ -95,11 +112,19 @@ namespace Game.UI
             _bit.gameObject.AddComponent<MeshRenderer>().sharedMaterials = materials;
             _bitLength = parts.BitLength;
 
-            _deposit = GlowDecal.PlacePool(Root, _crackColour * DepositGlow, 2.4f);
+            // Round 39: the rig stands where the border climbs; its deck floated over the downhill side with a hard edge
+            // ("something weird at the bottom"), and its flat glow decals cut through the slope as bright lines. A footing
+            // now runs from under the deck down into the ground all round, and the decals lie on the slope's own plane.
+            _groundPlane = new GameObject("GroundPlane").transform;
+            _groundPlane.SetParent(Root, false);
+            _groundPlane.rotation = Quaternion.FromToRotation(Vector3.up, layout.SurfaceNormal(Root.position, SlopeFitRadius)) * Root.rotation;
+            _footing = BuildFooting(parent, layout);
+
+            _deposit = GlowDecal.PlacePool(_groundPlane, _crackColour * DepositGlow, 2.4f, DecalLift);
             _boreMaterial = Additive(CutsceneSprite.DrillCracks, _crackColour * CrackGlow);
             _crackMaterial = Additive(CutsceneSprite.CrackDrillA, _crackColour * CrackGlow);
             Material stripB = Additive(CutsceneSprite.CrackDrillB, _crackColour * CrackGlow);
-            _bore = Flat("Bore", Root, _boreMaterial, Vector3.up * 0.045f, 0f);
+            _bore = Flat("Bore", _groundPlane, _boreMaterial, Vector3.up * (DecalLift + 0.015f), 0f);
             // One cell of the 2 x 2 bore-hole sheet (README: tiling 0.5, an offset per cell).
             _boreMaterial.mainTextureScale = Vector2.one * 0.5f;
             _boreMaterial.mainTextureOffset = new Vector2(0.5f, 0f);
@@ -110,11 +135,12 @@ namespace Game.UI
             {
                 float yaw = i * (360f / Strips) + CutsceneMath.Hash(i, 3) * 25f;
                 var pivot = new GameObject($"Crack{i}").transform;
-                pivot.SetParent(Root, false);
-                pivot.localPosition = Vector3.up * 0.04f;
+                pivot.SetParent(_groundPlane, false);
+                pivot.localPosition = Vector3.up * (DecalLift + 0.01f);
                 pivot.localRotation = Quaternion.Euler(0f, yaw, 0f);
                 Transform strip = Flat("Strip", pivot, i % 2 == 0 ? _crackMaterial : stripB, new Vector3(0f, 0f, StripLength * 0.5f + 0.7f), 0f);
                 strip.localScale = new Vector3(StripWidth, StripLength, 1f);
+                FollowGround(pivot, strip, layout);
                 _strips[i] = pivot;
             }
 
@@ -147,6 +173,11 @@ namespace Game.UI
         public void Pose(float build, float depth, float crack, float time, bool loud)
         {
             Root.gameObject.SetActive(build > 0f);
+            if (_footing != null)
+            {
+                _footing.SetActive(build > 0f);
+            }
+
             if (build <= 0f)
             {
                 _audio.SetLoopVolume(_rumble, 0f);
@@ -200,6 +231,136 @@ namespace Game.UI
         }
 
         public void Silence() => _audio.SetLoopVolume(_rumble, 0f);
+
+        /// <summary>The footing under the deck (round 39), or null without a rig mesh; for probes and tests.</summary>
+        public GameObject Footing => _footing;
+
+        // A plain steel skirt round the deck's underside, from just under the deck down to a little below the drawn ground at
+        // every point of its edge, so the deck reads as standing on the slope instead of hovering over it.
+        private GameObject BuildFooting(Transform parent, FieldLayout layout)
+        {
+            List<Vector3> points = RigPoints();
+            Quaternion yaw = Root.rotation;
+            Quaternion unyaw = Quaternion.Inverse(yaw);
+            Vector3 origin = Root.position;
+            float under = float.PositiveInfinity;
+            var min = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+            var max = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+            foreach (Vector3 point in points)
+            {
+                float height = point.y - origin.y;
+                if (height < -DeckBand || height > DeckBand)
+                {
+                    continue;
+                }
+
+                Vector3 local = unyaw * (point - origin);
+                min = Vector2.Min(min, new Vector2(local.x, local.z));
+                max = Vector2.Max(max, new Vector2(local.x, local.z));
+                under = Mathf.Min(under, point.y);
+            }
+
+            if (float.IsInfinity(under))
+            {
+                return null;
+            }
+
+            min += Vector2.one * FootingInset;
+            max -= Vector2.one * FootingInset;
+            var corners = new[] { new Vector2(min.x, min.y), new Vector2(max.x, min.y), new Vector2(max.x, max.y), new Vector2(min.x, max.y) };
+            var vertices = new List<Vector3>();
+            var triangles = new List<int>();
+            Vector3 centre = origin + yaw * new Vector3((min.x + max.x) * 0.5f, 0f, (min.y + max.y) * 0.5f);
+            for (int side = 0; side < corners.Length; side++)
+            {
+                Vector2 a = corners[side];
+                Vector2 b = corners[(side + 1) % corners.Length];
+                for (int i = 0; i < FootingSegments; i++)
+                {
+                    Vector3 from = origin + yaw * ToXz(Vector2.Lerp(a, b, i / (float)FootingSegments));
+                    Vector3 to = origin + yaw * ToXz(Vector2.Lerp(a, b, (i + 1) / (float)FootingSegments));
+                    AddPanel(vertices, triangles, from, to, under + FootingTuck, layout, centre);
+                }
+            }
+
+            var mesh = new Mesh { name = "DrillFooting" };
+            mesh.SetVertices(vertices);
+            mesh.SetTriangles(triangles, 0);
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+            var go = new GameObject("DrillFooting");
+            go.transform.SetParent(parent, false);
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            go.AddComponent<MeshRenderer>().sharedMaterial = SurfaceMaterials.Create(FootingColour, 0f, FootingSmoothness, FootingMetallic);
+            return go;
+        }
+
+        // One panel of the footing between two points of the deck's edge, facing out from the deck's middle.
+        private static void AddPanel(List<Vector3> vertices, List<int> triangles, Vector3 from, Vector3 to, float top, FieldLayout layout, Vector3 centre)
+        {
+            float fromBottom = Mathf.Min(top, layout.SurfaceAt(from.x, from.z) - FootingSink);
+            float toBottom = Mathf.Min(top, layout.SurfaceAt(to.x, to.z) - FootingSink);
+            int start = vertices.Count;
+            vertices.Add(new Vector3(from.x, top, from.z));
+            vertices.Add(new Vector3(to.x, top, to.z));
+            vertices.Add(new Vector3(to.x, toBottom, to.z));
+            vertices.Add(new Vector3(from.x, fromBottom, from.z));
+            Vector3 outward = (from + to) * 0.5f - centre;
+            outward.y = 0f;
+            Vector3 face = Vector3.Cross(vertices[start + 1] - vertices[start], vertices[start + 2] - vertices[start]);
+            bool flip = Vector3.Dot(face, outward) < 0f;
+            triangles.AddRange(flip ? new[] { start, start + 2, start + 1, start, start + 3, start + 2 } : new[] { start, start + 1, start + 2, start, start + 2, start + 3 });
+        }
+
+        private static Vector3 ToXz(Vector2 point) => new Vector3(point.x, 0f, point.y);
+
+        // A crack runs a few metres out over ground that curves away from the slope's plane: its pivot tips so the strip
+        // runs from the bore to the drawn ground under its far end, rolled to the ground's slope halfway along.
+        private void FollowGround(Transform pivot, Transform strip, FieldLayout layout)
+        {
+            Vector3 a = strip.TransformPoint(new Vector3(0f, 0.5f, 0f));
+            Vector3 b = strip.TransformPoint(new Vector3(0f, -0.5f, 0f));
+            Vector3 far = (a - Root.position).sqrMagnitude > (b - Root.position).sqrMagnitude ? a : b;
+            Vector3 start = pivot.position;
+            Vector3 end = new Vector3(far.x, layout.SurfaceAt(far.x, far.z), far.z);
+            Vector3 middle = (start + end) * 0.5f;
+            Vector3 normal = layout.SurfaceNormal(middle, StripSlopeFitRadius);
+            Vector3 lift = normal * DecalLift;
+            pivot.rotation = Quaternion.LookRotation(end + lift - start, normal);
+        }
+
+        // The rig's vertices in the world as built (full size), from its imported mesh or the procedural one.
+        private List<Vector3> RigPoints()
+        {
+            var points = new List<Vector3>();
+            var baked = new Mesh();
+            foreach (Renderer renderer in _rig.GetComponentsInChildren<Renderer>(true))
+            {
+                Vector3[] vertices;
+                if (renderer is SkinnedMeshRenderer skinned)
+                {
+                    skinned.BakeMesh(baked, true);
+                    vertices = baked.vertices;
+                }
+                else if (renderer.TryGetComponent(out MeshFilter filter) && filter.sharedMesh != null)
+                {
+                    vertices = filter.sharedMesh.vertices;
+                }
+                else
+                {
+                    continue;
+                }
+
+                Matrix4x4 toWorld = renderer.transform.localToWorldMatrix;
+                foreach (Vector3 vertex in vertices)
+                {
+                    points.Add(toWorld.MultiplyPoint3x4(vertex));
+                }
+            }
+
+            Object.DestroyImmediate(baked);
+            return points;
+        }
 
         private static Material Additive(CutsceneSprite sprite, Color colour)
         {

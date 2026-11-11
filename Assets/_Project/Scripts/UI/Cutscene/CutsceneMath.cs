@@ -19,6 +19,21 @@ namespace Game.UI
             return 1f + t * t * ((BackOvershoot + 1f) * t + BackOvershoot);
         }
 
+        /// <summary>
+        /// The heading of someone turning from <paramref name="fromYaw"/> to <paramref name="toYaw"/> (degrees), <paramref name="since"/>
+        /// seconds after the turn began, the short way round at <paramref name="degreesPerSecond"/> on average, eased in and out,
+        /// so a turn of any size takes its natural time and never snaps (round 39).
+        /// </summary>
+        public static float EasedTurn(float fromYaw, float toYaw, float since, float degreesPerSecond)
+        {
+            float delta = Mathf.DeltaAngle(fromYaw, toYaw);
+            float seconds = TurnSeconds(delta, degreesPerSecond);
+            return fromYaw + delta * Smooth(seconds > 0f ? Mathf.Clamp01(since / seconds) : 1f);
+        }
+
+        /// <summary>How long a turn of <paramref name="degrees"/> takes at <paramref name="degreesPerSecond"/> on average.</summary>
+        public static float TurnSeconds(float degrees, float degreesPerSecond) => degreesPerSecond > 0f ? Mathf.Abs(degrees) / degreesPerSecond : 0f;
+
         /// <summary>A stable pseudo-random number in 0..1 for an index, so seeded scatter never changes between runs.</summary>
         public static float Hash(int index, int salt)
         {

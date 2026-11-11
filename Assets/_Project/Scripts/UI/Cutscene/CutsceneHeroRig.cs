@@ -291,6 +291,32 @@ namespace Game.UI
             }
         }
 
+        /// <summary>How long the imported figure's clip of <paramref name="role"/> runs; zero when it has none (or no imported figure).</summary>
+        public float ClipLength(ModelClipRole role) => _art != null && _artDefinition.Body.IndexOf(role) >= 0 ? _art.LengthOf(role) : 0f;
+
+        /// <summary>
+        /// Plays a one-off clip of the imported figure <paramref name="seconds"/> into it (held on its last frame) at a place and
+        /// heading; the caller moves the body. Check <see cref="ClipLength"/> first: without the clip nothing is posed.
+        /// </summary>
+        public void PoseClip(Vector3 position, float yawDegrees, ModelClipRole role, float seconds)
+        {
+            Root.SetPositionAndRotation(position, Quaternion.Euler(0f, yawDegrees, 0f));
+            if (_art == null)
+            {
+                return;
+            }
+
+            RestoreOverrides();
+            _art.Sample(role, seconds, loop: false);
+            if (_pistol != null && _drawn)
+            {
+                _drawn = false;
+                _pistol.SetParent(_holster, false);
+                _pistol.localPosition = Vector3.zero;
+                _pistol.localRotation = Quaternion.identity;
+            }
+        }
+
         private void RestoreOverrides()
         {
             for (int i = 0; i < _overridden.Length; i++)

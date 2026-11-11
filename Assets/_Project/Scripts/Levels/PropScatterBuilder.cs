@@ -60,6 +60,9 @@ namespace Game.Levels
         private const float SparkBrightness = 1.8f;
         private const float PoolRadius = 0.55f;
         private const float PoolBrightness = 0.3f;
+        // Round 39: a pool lies on the ground's own slope (fitted over its radius) this far above it; flat on a slope it cut
+        // through the ground and read as a hard bright line from the side.
+        private const float PoolLift = 0.04f;
 
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
@@ -325,7 +328,7 @@ namespace Game.Levels
                 {
                     bool second = (hash >> 6) % 2 == 0;
                     Color colour = materials[second ? PropFactory.SecondGlowSlot : PropFactory.FirstGlowSlot].GetColor("_BaseColor");
-                    GlowDecal.PlacePool(go.transform, colour * PoolBrightness, PoolRadius * scale);
+                    LayOnSlope(GlowDecal.PlacePool(go.transform, colour * PoolBrightness, PoolRadius * scale), x, z, PoolRadius * scale);
                     if (formation)
                     {
                         _lit.Add((go.transform, kind, scale, hash, colour));
@@ -363,11 +366,23 @@ namespace Game.Levels
                 var holder = new GameObject(kind.ToString()).transform;
                 holder.SetParent(_root, false);
                 holder.position = position;
-                GlowDecal.PlacePool(holder, decor.Glow * PoolBrightness, PoolRadius * scale);
+                _instancer.AttachToLast(holder);
+                LayOnSlope(GlowDecal.PlacePool(holder, decor.Glow * PoolBrightness, PoolRadius * scale), x, z, PoolRadius * scale);
                 if (formation)
                 {
                     _lit.Add((holder, kind, scale, hash, decor.Glow));
                 }
+            }
+
+            // Turns a flat pool onto the plane the ground makes under it and sets it just above that plane.
+            private void LayOnSlope(GameObject pool, float x, float z, float radius)
+            {
+                float dx = _field.HeightAt(x + radius, z) - _field.HeightAt(x - radius, z);
+                float dz = _field.HeightAt(x, z + radius) - _field.HeightAt(x, z - radius);
+                Vector3 normal = new Vector3(-dx, 2f * radius, -dz).normalized;
+                Transform transform = pool.transform;
+                transform.rotation = Quaternion.FromToRotation(Vector3.up, normal) * transform.rotation;
+                transform.position = new Vector3(x, _field.HeightAt(x, z), z) + normal * PoolLift;
             }
 
             // The far wilderness wears a darker, dimmer copy of each material, as the painter darkens the far ground.

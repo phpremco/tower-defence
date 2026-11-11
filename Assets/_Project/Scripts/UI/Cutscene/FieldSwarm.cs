@@ -109,8 +109,8 @@ namespace Game.UI
         private readonly Material _crackMaterial;
         private Creature _queen;
         private float _lastClock = -1f;
-        private readonly float _retreatAt;
-        private readonly float _closeAt;
+        private float _retreatAt = float.PositiveInfinity;
+        private float _closeAt = float.PositiveInfinity;
 
         /// <summary>One creature of the brood and its choreography: out of the ground, to its place, later a little closer.</summary>
         private sealed class Creature
@@ -152,11 +152,9 @@ namespace Game.UI
             public ImpactFlash Flash;
         }
 
-        /// <param name="retreatAt">Swarm clock of the last roar, after which the brood runs back into the ground.</param>
-        public FieldSwarm(Transform parent, FieldLayout layout, CutsceneContext context, float retreatAt)
+        public FieldSwarm(Transform parent, FieldLayout layout, CutsceneContext context)
         {
             _context = context;
-            _retreatAt = retreatAt;
             _layout = layout;
             Root = new GameObject("Swarm").transform;
             Root.SetParent(parent, false);
@@ -164,12 +162,51 @@ namespace Game.UI
             _ringMaterial = Additive(CutsceneSprite.ScreamRing, RingColour);
             BuildBurrows(context);
             BuildCreatures(context);
-            _closeAt = LastGone() + CloseDelay;
             Vector3 ringAt = _queen != null ? _queen.Stand : OnRoad(QueenStand);
             _ring = Decal("ScreamRing", _ringMaterial, ringAt + Vector3.up * 0.06f);
         }
 
         public Transform Root { get; }
+
+        /// <summary>
+        /// Swarm clock of the last roar, after which the brood runs back into the ground; infinite holds them where they
+        /// stand. Round 39 (Remco): they stay until the player has read the last line, so the field set sets it only once
+        /// the handoff shot has begun, never from a fixed time.
+        /// </summary>
+        public float RetreatClock => _retreatAt;
+
+        /// <summary>Holds the brood (infinite) or lets it roar and run back from this swarm clock on.</summary>
+        public void SetRetreat(float clock)
+        {
+            if (clock == _retreatAt)
+            {
+                return;
+            }
+
+            _retreatAt = clock;
+            foreach (Creature creature in _creatures)
+            {
+                creature.RetreatFrom = RetreatFrom(creature.Index);
+            }
+
+            _closeAt = float.IsPositiveInfinity(clock) ? clock : LastGone() + CloseDelay;
+        }
+
+        /// <summary>True while no creature has begun to turn away at this clock: the brood still stands and glares.</summary>
+        public bool Holding(float clock)
+        {
+            foreach (Creature creature in _creatures)
+            {
+                if (clock >= creature.RetreatFrom - RetreatTurnSeconds)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private float RetreatFrom(int index) => _retreatAt + RoarSeconds + CutsceneMath.Hash(index, 47) * RetreatStagger;
 
         // The moment the last of them is under the ground, when the burrows close behind them.
         private float LastGone()
@@ -624,7 +661,7 @@ namespace Game.UI
                 Advance = OnRoad(spot + Vector2.right * AdvanceDistance),
                 Pace = pace,
                 AdvanceFrom = advance,
-                RetreatFrom = _retreatAt + RoarSeconds + CutsceneMath.Hash(index, 47) * RetreatStagger,
+                RetreatFrom = RetreatFrom(index),
                 Hover = hover,
             };
             creature.Enemy = Spawn(definition, index);

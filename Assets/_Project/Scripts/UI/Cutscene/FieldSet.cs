@@ -45,13 +45,49 @@ namespace Game.UI
         private static readonly Color RetroCore = new Color(0.9f, 0.96f, 1f) * 6f;
         private static readonly Color RetroEdge = new Color(0.35f, 0.65f, 1f) * 2.2f;
         private const float SunSweepDegrees = 140f;
+
+        // Round 39 (Remco: "just poof he's out, then he turns 180 degrees, poof, then again poof 180 degrees"): a staged exit.
+        // The ramp comes down in a hiss of venting steam with a warm light inside, he shows in the doorway in the thick of
+        // the steam, steps out and down the ramp, looks round, walks on to the beacon spot and turns to it; every turn is
+        // eased at a person's pace, and he only turns towards what he looks at.
+        private const float HatchSteamFrom = 0.255f;
+        private const float HatchSteamTo = 0.37f;
+        private const float HatchSteamRate = 70f;
+        private const float HatchLightFrom = 0.27f;
+        private const float HatchLightTo = 0.33f;
+        private const float HatchLightIntensity = 2.2f;
+        private const float HatchLightRange = 3.5f;
+        private static readonly Vector3 HatchLightOffset = new Vector3(0f, 0.75f, -0.15f);
+        private static readonly Color HatchLightColour = new Color(1f, 0.9f, 0.75f);
+        private static readonly Color SteamColour = new Color(0.82f, 0.86f, 0.9f, 0.5f);
+        private const float AppearAt = 0.31f;
+        private const float ExitFrom = 0.33f;
+        private const float ExitTo = 0.45f;
+        private const float LookTo = 0.58f;
+        private const float WalkOverTo = 0.64f;
+        // He steps off the ramp's foot this far before he stops to look round; he starts this far out of the ramp's hinge.
+        private const float OffRampStep = 0.35f;
+        private const float ThresholdInset = 0.04f;
+        private const float MinWalk = 0.15f;
+        // About 180 degrees in 0.75 s; while turning on the spot his feet step (the walk at a short stride).
+        private const float TurnDegreesPerSecond = 240f;
+        private const float LookBodyDegrees = 25f;
+        private const float TurnStride = 0.55f;
+        private const float StrideFullAtDegrees = 30f;
+        private const float MetresPerHalfTurn = 0.9f;
+        // The ramp is short: he keeps at least this much of a stride on it, so it reads as steps, not a glide.
+        private const float StepOutStride = 0.35f;
+        private const string RampBone = "Ramp";
         // The brood's last roar this far into the handoff shot, before it runs back into the ground (the generator's cue matches).
-        private const float HandoffRoarSeconds = 0.3f;
+        public const float HandoffRoarSeconds = 0.3f;
+        // Round 39 (Remco: "the enemies shouldn't disappear until we clicked next"): while the gate dialogue stays open past
+        // the stand shot's own length the brood holds, snapping and growling now and then, until the player reads on.
+        private const float MenaceGap = 4.6f;
+        private const float MenaceGrowl = 0.45f;
         private const float EyesOpenAfter = 1f;
         private const float EyesFullyOpen = 60f;
         private const float EyesShutSeconds = 0.6f;
         private const float RunShare = 0.42f;
-        private const float TurnShare = 0.5f;
         private const float DrawFrom = 0.5f;
         private const float DrawTo = 0.6f;
         private const float LookAroundDegrees = 45f;
@@ -61,6 +97,11 @@ namespace Game.UI
         private const float PebbleJump = 0.05f;
         private const int VeinCrystals = 4;
         private const float VeinCrystalSize = 1.3f;
+        private const float VeinClearance = 0.3f;
+        private const float VeinDecorHeight = 0.4f;
+        private const int VeinRings = 4;
+        private const int VeinTurns = 8;
+        private const float VeinRingStep = 0.35f;
 
         // The drill shot: the rig rises over its first share, the string sinks between these shares of the shot.
         private const float DrillBuildTo = 0.15f;
@@ -99,6 +140,7 @@ namespace Game.UI
         private Quaternion _sunRest;
         private CutsceneAction _action;
         private float _lastProgress;
+        private float _lastTime;
 
         private Transform _capsule;
         private Transform _hatch;
@@ -112,8 +154,13 @@ namespace Game.UI
         private ParticleSystem _landingDust;
         private Vector3 _fallStart;
         private Vector3 _door;
-        private Vector3 _lookSpot;
+        private Vector3 _offRamp;
         private Vector3 _beaconStand;
+        private Vector3[] _exitPath = new Vector3[0];
+        private float _exitLength;
+        private float _landingSeconds;
+        private ParticleSystem _hatchSteam;
+        private Light _hatchLight;
 
         private BeaconModel _beacon;
         private CutsceneHeroRig _hero;
@@ -130,6 +177,10 @@ namespace Game.UI
         private float _swarmShotSeconds;
         private float _reactShotSeconds;
         private float _standShotSeconds;
+        // How long the stand shot ran (its own length on a seek, longer while the player kept its dialogue open), so the
+        // swarm clock runs on without a jump into the handoff.
+        private float _standHeld;
+        private int _menaceBeat;
 
         public VisualTheme Theme => _theme;
 
@@ -149,6 +200,7 @@ namespace Game.UI
             _swarmShotSeconds = cutscene.CameraLengthOf(CutsceneAction.SwarmPours);
             _reactShotSeconds = cutscene.CameraLengthOf(CutsceneAction.MercerReacts);
             _standShotSeconds = cutscene.CameraLengthOf(CutsceneAction.GateStand);
+            _landingSeconds = cutscene.CameraLengthOf(CutsceneAction.PathfinderLands);
 
             BuildCapsule(root);
             BuildVein(root);
@@ -160,8 +212,9 @@ namespace Game.UI
             float contact = (DrillSinkFrom + FieldDrill.ContactShareOfSink * (DrillSinkTo - DrillSinkFrom)) * cutscene.CameraLengthOf(CutsceneAction.DrillDown);
             _drill = new FieldDrill(root, _layout, context, contact);
             Vector3 heap = _layout.Ground(_drill.Pickup);
-            _drones = new FieldDrones(root, _base.PadTop, heap, context, _theme, _base.CrystalTop, () => _base.ParkingSpot(_layout, heap));
-            _swarm = new FieldSwarm(root, _layout, context, _swarmShotSeconds + _reactShotSeconds + _standShotSeconds + HandoffRoarSeconds);
+            _drones = new FieldDrones(root, _base.PadTop, heap, context, _theme, _base.CrystalTop, () => _base.ParkingSpot(_layout, heap), _layout.SurfaceAt);
+            _swarm = new FieldSwarm(root, _layout, context);
+            _standHeld = _standShotSeconds;
             if (context.Cast != null && context.Cast.Hero != null)
             {
                 _hero = new CutsceneHeroRig(root, context.Cast.Hero);
@@ -182,6 +235,13 @@ namespace Game.UI
             // The scheduled bursts (the drill biting, the ground breaking open) run on their own shot's particle clock.
             _drill.Enter(action == CutsceneAction.DrillDown);
             _swarm.Enter(action == CutsceneAction.SwarmPours);
+            _lastTime = 0f;
+            // Only the stand shot played into the handoff carries its real length over; any other way in is a seek.
+            if (action != CutsceneAction.Handoff)
+            {
+                _standHeld = _standShotSeconds;
+                _menaceBeat = 0;
+            }
         }
 
         public void Exit()
@@ -211,6 +271,7 @@ namespace Game.UI
             PoseShiver(time, progress);
             PoseEyes(time);
             _lastProgress = progress;
+            _lastTime = time;
         }
 
         // The actions' enum values are only appended; their story order is CutsceneActions.Order.
@@ -257,6 +318,10 @@ namespace Game.UI
             }
 
             _beacon.Pose(landing ? CutsceneMath.Span(progress, 0.7f, 0.8f) : 1f, time);
+            ParticleKit.SetRate(_hatchSteam, landing && progress >= HatchSteamFrom && progress < HatchSteamTo ? HatchSteamRate : 0f);
+            float lit = landing ? CutsceneMath.Smooth(CutsceneMath.Span(progress, HatchLightFrom, HatchLightTo)) : 1f;
+            _hatchLight.enabled = lit > 0f && !After(CutsceneAction.CoreIgnites);
+            _hatchLight.intensity = HatchLightIntensity * lit;
         }
 
         // Each pod's plume leans out from the capsule's axis and down; the fall itself buffets the lens, the burn more.
@@ -288,6 +353,24 @@ namespace Game.UI
             {
                 _retroPlumes[i] = new ExhaustPlume(root, $"Retro{i}", RetroCore, RetroEdge, 0.45f, _context.ParticleScale >= 1f);
             }
+        }
+
+        // The steam that vents as the ramp comes down and the light inside the hatch that spills out over it.
+        private void BuildHatch(Vector3 hinge)
+        {
+            Vector3 local = _capsule.InverseTransformPoint(hinge);
+            _hatchSteam = ParticleKit.Create(_capsule, "HatchSteam", local + new Vector3(0f, 0.35f, 0.1f), SteamColour, 0.8f, 1.6f, 0.25f, 0.6f, 0.3f, 0.9f, -0.03f, _context.Scaled(160), 0.3f);
+            ParticleKit.SetRate(_hatchSteam, 0f);
+            var go = new GameObject("HatchLight");
+            go.transform.SetParent(_capsule, false);
+            go.transform.localPosition = local + HatchLightOffset;
+            _hatchLight = go.AddComponent<Light>();
+            _hatchLight.type = LightType.Point;
+            _hatchLight.color = HatchLightColour;
+            _hatchLight.range = HatchLightRange;
+            _hatchLight.shadows = LightShadows.None;
+            _hatchLight.intensity = 0f;
+            _hatchLight.enabled = false;
         }
 
         // The legs unfold over the last of the fall (Land), then the ramp comes down (Open, which starts where Land ends).
@@ -383,16 +466,34 @@ namespace Game.UI
                     break;
                 case CutsceneAction.GateStand:
                     clock = _swarmShotSeconds + _reactShotSeconds + time;
+                    _standHeld = Mathf.Max(_standHeld, time);
+                    Menace(time);
                     break;
                 case CutsceneAction.Handoff:
-                    clock = _swarmShotSeconds + _reactShotSeconds + _standShotSeconds + time;
+                    clock = _swarmShotSeconds + _reactShotSeconds + _standHeld + time;
                     break;
                 default:
                     clock = 0f;
                     break;
             }
 
+            // The retreat starts from the handoff, which only begins once the gate dialogue is read; before it they hold.
+            _swarm.SetRetreat(At(CutsceneAction.Handoff) ? _swarmShotSeconds + _reactShotSeconds + _standHeld + HandoffRoarSeconds : float.PositiveInfinity);
             _swarm.Pose(clock, time);
+        }
+
+        // A growl from the brood every few seconds while the player keeps the stand's dialogue open past the shot's length.
+        private void Menace(float time)
+        {
+            int beat = Mathf.FloorToInt((time - _standShotSeconds) / MenaceGap);
+            if (beat <= _menaceBeat || time - _lastTime > MenaceGap)
+            {
+                _menaceBeat = Mathf.Max(_menaceBeat, beat);
+                return;
+            }
+
+            _menaceBeat = beat;
+            _context.Audio.Play(new CutsceneCue { Kind = CueKind.Sound, Sound = CutsceneSound.Growl, Strength = MenaceGrowl });
         }
 
         private void PoseHero(float time, float progress)
@@ -453,48 +554,110 @@ namespace Game.UI
                 return;
             }
 
-            Quaternion arrived = Quaternion.LookRotation(Flat(_layout.GuardPost - from));
-            Quaternion facing = Quaternion.Slerp(arrived, _layout.GateFacing, CutsceneMath.Smooth(CutsceneMath.Span(progress, RunShare, TurnShare)));
-            Stand(_layout.GuardPost, facing, 0f, CutsceneMath.Smooth(CutsceneMath.Span(progress, DrawFrom, DrawTo)), time);
+            // Round 39: round at a person's pace with his feet stepping, then the blaster comes up.
+            float arrived = Yaw(_layout.GuardPost - from);
+            float gate = _layout.GateFacing.eulerAngles.y;
+            float yaw = CutsceneMath.EasedTurn(arrived, gate, (progress - RunShare) * _standShotSeconds, TurnDegreesPerSecond);
+            float draw = CutsceneMath.Smooth(CutsceneMath.Span(progress, DrawFrom, DrawTo));
+            if (draw > 0f)
+            {
+                Stand(_layout.GuardPost, Quaternion.Euler(0f, yaw, 0f), 0f, draw, time);
+                return;
+            }
+
+            TurnOnTheSpot(_layout.GuardPost, yaw, Mathf.Abs(Mathf.DeltaAngle(yaw, gate)), Mathf.Abs(Mathf.DeltaAngle(arrived, yaw)), 0f, time);
         }
 
-        // Out of the hatch, a look around, over to the crystals and the beacon goes up.
+        // Round 39: in the doorway in the steam, out and down the ramp, a look round, on to the beacon spot and a turn to the
+        // beacon as it goes up. Nothing snaps: each beat starts on the heading the last one ended on.
         private void PoseHeroLanding(float time, float progress)
         {
-            _hero.Root.gameObject.SetActive(progress >= 0.3f);
-            if (progress < 0.3f)
+            _hero.Root.gameObject.SetActive(progress >= AppearAt);
+            if (progress < AppearAt)
             {
                 return;
             }
 
-            if (progress < 0.4f)
+            float seconds = progress * _landingSeconds;
+            float outward = Yaw(_offRamp - _door);
+            if (progress < ExitFrom)
             {
-                Walk(_door, _lookSpot, CutsceneMath.Span(progress, 0.3f, 0.4f), 0f, time);
+                Stand(_exitPath[0], Quaternion.Euler(0f, outward, 0f), 0f, 0f, time);
                 return;
             }
 
-            if (progress < 0.58f)
+            if (progress < ExitTo)
             {
-                float look = Mathf.Sin(CutsceneMath.Span(progress, 0.4f, 0.58f) * Mathf.PI * 2f) * LookAroundDegrees;
-                Stand(_lookSpot, Quaternion.LookRotation(Flat(_lookSpot - _door)), look, 0f, time);
+                StepOut(CutsceneMath.Span(progress, ExitFrom, ExitTo), outward, time);
                 return;
             }
 
-            if (progress < 0.68f)
+            if (progress < LookTo)
             {
-                Walk(_lookSpot, _beaconStand, CutsceneMath.Span(progress, 0.58f, 0.68f), 0f, time);
+                // A look round: the head sweeps, the body turns a little with it and back, the feet stepping as it turns.
+                float phase = CutsceneMath.Span(progress, ExitTo, LookTo) * Mathf.PI * 2f;
+                float look = Mathf.Sin(phase);
+                float rate = Mathf.Abs(Mathf.Cos(phase)) * LookBodyDegrees;
+                TurnOnTheSpot(_offRamp, outward + look * LookBodyDegrees, rate, Mathf.Abs(look) * LookBodyDegrees, look * (LookAroundDegrees - LookBodyDegrees), time);
                 return;
             }
 
-            Stand(_beaconStand, Quaternion.LookRotation(Flat(_layout.BeaconSpot - _beaconStand)), 0f, 0f, time);
+            bool walks = Vector3.Distance(_offRamp, _beaconStand) > MinWalk;
+            float over = walks ? Yaw(_beaconStand - _offRamp) : outward;
+            if (progress < WalkOverTo && walks)
+            {
+                float yaw = CutsceneMath.EasedTurn(outward, over, seconds - LookTo * _landingSeconds, TurnDegreesPerSecond);
+                Walk(_offRamp, _beaconStand, CutsceneMath.Span(progress, LookTo, WalkOverTo), 0f, time, yaw);
+                return;
+            }
+
+            Vector3 at = walks ? _beaconStand : _offRamp;
+            float from = walks ? over : outward;
+            float to = Yaw(_layout.BeaconSpot - at);
+            float since = seconds - (walks ? WalkOverTo : LookTo) * _landingSeconds;
+            float turned = CutsceneMath.EasedTurn(from, to, since, TurnDegreesPerSecond);
+            TurnOnTheSpot(at, turned, Mathf.Abs(Mathf.DeltaAngle(turned, to)), Mathf.Abs(Mathf.DeltaAngle(from, turned)), 0f, time);
         }
 
-        private void Walk(Vector3 from, Vector3 to, float share, float run, float time)
+        // Through the doorway and down the ramp to the ground: the cast's exit clip when the commander's model has one (the
+        // body carried along the ramp by the path), else his walk with the feet keeping to the distance covered.
+        private void StepOut(float share, float yaw, float time)
+        {
+            float walked = share * _exitLength;
+            Vector3 position = FieldLayout.PointAlong(_exitPath, walked);
+            ModelClipRole clip = _context.Cast.CapsuleExitClip;
+            float length = _hero.ClipLength(clip);
+            _hero.Root.gameObject.SetActive(true);
+            if (length > 0f)
+            {
+                _hero.PoseClip(position, yaw, clip, share * length);
+                return;
+            }
+
+            float stride = Mathf.Clamp01(Mathf.Min(walked, _exitLength - walked) * 3f + StepOutStride);
+            _hero.Pose(position, yaw, stride, 0f, walked * CutsceneHeroRig.GaitPerUnit, 0f, 0f, time);
+        }
+
+        // Turning where he stands: the feet step while the heading still has a way to go (a short stride that fades as the
+        // turn ends), at the gait the turned angle gives, so the steps keep pace with the turn.
+        private void TurnOnTheSpot(Vector3 position, float yaw, float remainingDegrees, float turnedDegrees, float headYaw, float time)
+        {
+            float stride = TurnStride * Mathf.Clamp01(remainingDegrees / StrideFullAtDegrees);
+            float gait = turnedDegrees / 180f * MetresPerHalfTurn * CutsceneHeroRig.GaitPerUnit;
+            _hero.Root.gameObject.SetActive(true);
+            _hero.Pose(position, yaw, stride, 0f, gait, headYaw, 0f, time);
+        }
+
+        private static float Yaw(Vector3 direction) => Quaternion.LookRotation(Flat(direction)).eulerAngles.y;
+
+        private void Walk(Vector3 from, Vector3 to, float share, float run, float time) => Walk(from, to, share, run, time, Yaw(to - from));
+
+        // The heading is passed in, so a walk can start by easing round from where he was facing.
+        private void Walk(Vector3 from, Vector3 to, float share, float run, float time, float yaw)
         {
             float distance = Vector3.Distance(from, to);
             Vector3 position = Vector3.Lerp(from, to, share);
             float stride = Mathf.Clamp01(Mathf.Min(share, 1f - share) * distance * 3f);
-            float yaw = Quaternion.LookRotation(Flat(to - from)).eulerAngles.y;
             _hero.Root.gameObject.SetActive(true);
             _hero.Pose(position, yaw, stride, run, share * distance * CutsceneHeroRig.GaitPerUnit, 0f, 0f, time);
         }
@@ -540,6 +703,7 @@ namespace Game.UI
             GameObject custom = _context.Cast != null ? _context.Cast.Capsule : null;
             ModelArtDefinition art = _context.Cast != null ? _context.Cast.CapsuleArt : null;
             Vector3 door = _layout.Landing + facing * parts.Door;
+            Vector3 hinge = _layout.Landing + facing * parts.HatchHinge;
             if (art != null)
             {
                 // The imported capsule lands on its own legs and lowers its own ramp; Mercer steps out at its Exit point.
@@ -549,6 +713,12 @@ namespace Game.UI
                 if (exit != null)
                 {
                     door = exit.position;
+                }
+
+                Transform ramp = _capsuleArt.Find(RampBone);
+                if (ramp != null)
+                {
+                    hinge = ramp.position;
                 }
             }
             else
@@ -570,8 +740,12 @@ namespace Game.UI
 
             Vector3 forward = facing * Vector3.forward;
             _door = _layout.Ground(door);
-            _lookSpot = _layout.Ground(_door + forward * 0.7f);
+            _offRamp = _layout.Ground(_door + forward * OffRampStep);
             _beaconStand = _layout.Ground(_layout.BeaconSpot - forward * 0.75f);
+            // From the doorway (the ramp's hinge, at the floor of the hatch) down the open ramp to its foot and a step on.
+            _exitPath = new[] { hinge + forward * ThresholdInset, _door, _offRamp };
+            _exitLength = FieldLayout.Length(_exitPath);
+            BuildHatch(hinge);
             Vector3 side = _layout.LandingFacing * Vector3.right;
             _fallStart = _layout.Landing + Vector3.up * FallHeight - (_layout.LandingFacing * Vector3.forward) * FallBack + side * FallSide;
 
@@ -594,11 +768,12 @@ namespace Game.UI
         private void BuildVein(Transform root)
         {
             bool low = _context.ParticleScale < 1f;
+            EnvironmentInstancer[] decor = root.GetComponentsInChildren<EnvironmentInstancer>(true);
             for (int i = 0; i < VeinCrystals; i++)
             {
                 float angle = CutsceneMath.Hash(i, 31) * Mathf.PI * 2f;
                 float distance = i == 0 ? 0f : 0.5f + CutsceneMath.Hash(i, 33) * 0.5f;
-                Vector3 position = _layout.Ground(_layout.Vein + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * distance);
+                Vector3 position = _layout.Ground(ClearOf(decor, _layout.Vein, angle, distance));
                 float size = i == 0 ? VeinCrystalSize : VeinCrystalSize * (0.45f + CutsceneMath.Hash(i, 37) * 0.3f);
                 Transform crystal = CutsceneProps.Decor(root, $"Vein{i}", _theme.Environment, PropKind.Crystal, i, size, low, false);
                 crystal.position = position;
@@ -613,6 +788,45 @@ namespace Game.UI
             light.intensity = 1.6f;
             light.range = 4f;
             light.shadows = LightShadows.None;
+        }
+
+        // Round 39 (crystals stuck in rocks): a vein crystal takes its hashed spot round the vein when no rock or crystal of
+        // the level stands there, else it turns round the vein and steps out until one is free.
+        private static Vector3 ClearOf(EnvironmentInstancer[] decor, Vector3 vein, float angle, float distance)
+        {
+            for (int ring = 0; ring < VeinRings; ring++)
+            {
+                for (int turn = 0; turn < VeinTurns; turn++)
+                {
+                    float a = angle + turn * Mathf.PI * 2f / VeinTurns;
+                    float d = distance + ring * VeinRingStep;
+                    Vector3 spot = vein + new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)) * d;
+                    if (IsClear(decor, spot))
+                    {
+                        return spot;
+                    }
+
+                    if (d <= 0f)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return vein + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * distance;
+        }
+
+        private static bool IsClear(EnvironmentInstancer[] decor, Vector3 spot)
+        {
+            foreach (EnvironmentInstancer instancer in decor)
+            {
+                if (!instancer.IsClear(spot, VeinClearance, VeinDecorHeight))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void BuildShiver(Transform root)

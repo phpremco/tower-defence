@@ -98,3 +98,4 @@ MonoBehaviour:
   _flyers:
   - {fileID: 11400000, guid: 2e64d27e5f86a5f44b833ee41cf3e795, type: 2}
   _flyerCount: 1
+  _capsuleExitClip: 81

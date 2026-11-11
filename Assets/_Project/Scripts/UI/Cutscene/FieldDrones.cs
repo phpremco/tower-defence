@@ -26,6 +26,7 @@ namespace Game.UI
         }
 
         private const float LoopSeconds = 9f;
+        private const float FlightClearance = 0.3f;
         private const float CruiseHeight = 2.6f;
         private const float HeightSpread = 0.9f;
         private const float LaneSpread = 2.6f;
@@ -75,12 +76,16 @@ namespace Game.UI
         private readonly float _crystalHang;
         private readonly CutsceneAudio _audio;
         private readonly AudioSource _fans;
+        private readonly Func<float, float, float> _ground;
+        private readonly List<float> _footDepths = new List<float>();
 
         /// <param name="park">Where the next hauler rests before it takes off (open ground beside the base, clear of the rest).</param>
-        public FieldDrones(Transform parent, Vector3 pad, Vector3 heap, CutsceneContext context, VisualTheme theme, float crystalHang, Func<Vector3> park)
+        /// <param name="ground">The drawn ground's height at (x, z): a parked hauler stands on it with every foot (round 39).</param>
+        public FieldDrones(Transform parent, Vector3 pad, Vector3 heap, CutsceneContext context, VisualTheme theme, float crystalHang, Func<Vector3> park, Func<float, float, float> ground)
         {
             _pad = pad;
             _heap = heap;
+            _ground = ground;
             _crystalHang = crystalHang;
             _audio = context.Audio;
             bool low = context.ParticleScale < 1f;
@@ -100,7 +105,9 @@ namespace Game.UI
                     _drones.Add(drone);
                     _holders.Add(holder);
                     // Round 37: eight haulers do not fit round the pad (they stood in each other and the storage tanks).
-                    _homes.Add(park());
+                    // Round 39: each stands on its skids, the ground sampled under every one of them.
+                    _homes.Add(drone.RestOn(park(), Parked, ground));
+                    _footDepths.Add(FootDepth(drone, holder));
                     Transform grip = drone.Socket(GripSocket);
                     // Every hauler brings Crysium home: the glowing crystal reads under it from any distance.
                     Transform chunk = CutsceneProps.Decor(grip != null ? grip : holder, $"Load{i}", environment, PropKind.Crystal, i, CarriedChunk, low, true);
@@ -111,6 +118,9 @@ namespace Game.UI
 
             _fans = context.Audio.CreateLoop("HaulerFans", CutsceneSound.DroneFans);
         }
+
+        // How a parked hauler stands: facing the heap from the pad, level.
+        private Quaternion Parked => Quaternion.LookRotation(Flat(_heap - _pad));
 
         public void Hide()
         {
@@ -128,8 +138,9 @@ namespace Game.UI
             for (int i = 0; i < _drones.Count; i++)
             {
                 _holders[i].gameObject.SetActive(true);
-                _holders[i].SetPositionAndRotation(_homes[i], Quaternion.LookRotation(Flat(_heap - _pad)));
-                _drones[i].Pose(ModelClipRole.Idle, time + i * 0.29f, 0f, false);
+                _holders[i].SetPositionAndRotation(_homes[i], Parked);
+                // At rest a hauler holds its idle's first frame: its feet were measured there.
+                _drones[i].Pose(ModelClipRole.Idle, 0f, 0f, false);
                 _chunks[i].gameObject.SetActive(false);
             }
 
@@ -254,8 +265,27 @@ namespace Game.UI
             float y = Mathf.Lerp(cruise, _heap.y + GrabHeight, atHeap);
             y = Mathf.Lerp(y, home.y + GrabHeight, atPad);
             var position = new Vector3(flat.x, y, flat.z);
-            // A drone that has not taken off yet sits on the pad.
-            return Vector3.Lerp(home, position, awake);
+            // A drone that has not taken off yet sits on the pad. Round 39: one parked up on the border flew its lane straight
+            // through a ridge; in the air its feet keep a little above the drawn ground under it.
+            Vector3 result = Vector3.Lerp(home, position, awake);
+            if (awake > 0f)
+            {
+                result.y = Mathf.Max(result.y, _ground(result.x, result.z) + _footDepths[index] + FlightClearance * awake);
+            }
+
+            return result;
+        }
+
+        // How far below its holder a drone's feet hang, in metres.
+        private static float FootDepth(CutsceneDrone drone, Transform holder)
+        {
+            float depth = 0f;
+            foreach (Vector3 foot in drone.Feet())
+            {
+                depth = Mathf.Max(depth, -foot.y * holder.localScale.y);
+            }
+
+            return depth;
         }
 
         // Heading from the way the drone moves along its own path (a step either side of the moment), so it always
@@ -271,7 +301,7 @@ namespace Game.UI
                 heading = Flat(_heap - _pad);
             }
 
-            Quaternion facing = Quaternion.LookRotation(heading);
+            Quaternion facing = flying ? Quaternion.LookRotation(heading) : Parked;
             float turn = Vector3.SignedAngle(Flat(incoming), Flat(outgoing), Vector3.up);
             float bank = Mathf.Clamp(turn * BankPerTurnDegree, -MaxBankDegrees, MaxBankDegrees);
             float speed = Flat(outgoing).magnitude / (HeadingProbe * LoopSeconds);
@@ -279,7 +309,7 @@ namespace Game.UI
             holder.SetPositionAndRotation(position, facing * Quaternion.Euler(pitch, 0f, -bank));
             // The flight cycle only while it travels; hovering to load it holds still in its work pose, so its own clip does not rock it.
             ModelClipRole role = !flying ? ModelClipRole.Idle : speed > HoverSpeed ? ModelClipRole.Move : ModelClipRole.Work;
-            _drones[index].Pose(role, time + index * 0.29f, flying ? time * RotorDegreesPerSecond + index * 37f : 0f, loaded);
+            _drones[index].Pose(role, flying ? time + index * 0.29f : 0f, flying ? time * RotorDegreesPerSecond + index * 37f : 0f, loaded);
             _chunks[index].gameObject.SetActive(loaded);
         }
 

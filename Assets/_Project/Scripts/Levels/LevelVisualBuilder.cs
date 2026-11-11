@@ -139,6 +139,8 @@ namespace Game.Levels
                 EnvironmentSet set = theme.Environment;
                 SetWind(set);
                 EnvironmentKitBuilder.Build(level, set, field, instancer, ModelQuality.IsLow);
+                // Round 39: no crystal, plant or small rock standing buried in a boulder, spire, cliff or terrace.
+                instancer.LeaveOutBuriedBrittle();
             }
 
             AmbientParticlesBuilder.Build(level, theme, parent, particleScale);

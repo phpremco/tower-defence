@@ -122,6 +122,8 @@ namespace Game.Editor
             { "Jet_Takeoff", ModelClipRole.JetTakeoff },
             { "Jet_Fly", ModelClipRole.JetFly },
             { "Jet_Land", ModelClipRole.JetLand },
+            // Round 39: Spencer out of the landing capsule (the Blender take arrives in a later round; the walk stands in).
+            { "Capsule_Exit", ModelClipRole.CapsuleExit },
         };
 
         /// <summary>Mercer's clips that play on the upper body (README round 6), with how much of the pose each takes.</summary>

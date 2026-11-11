@@ -70,7 +70,10 @@ namespace Game.UI
         private const float BuilderMaxPitch = 10f;
         private const float RotorDegreesPerSecond = 2400f;
         private const float ParkRing = 3.2f;
-        private const float ParkHeight = 0.2f;
+        // Round 39: a parking spot must be this level across a drone's span (the drawn ground, not the cells' heights);
+        // the drone then rests on the highest ground under its feet.
+        private const float ParkSlopeTolerance = 0.18f;
+        private const int ParkSlopeSamples = 8;
         // The search for open ground when a corner is taken: steps of the ring and of the turn either side of the corner.
         private const int ParkRings = 5;
         private const float ParkRingStep = 0.6f;
@@ -83,8 +86,9 @@ namespace Game.UI
         private const float ParkLevelTolerance = 0.3f;
         // The haulers are larger than the builders (rotor span about 1.6 m): wider spacing, a wider search.
         private const float HaulerParkSpacing = 2.1f;
-        private const int HaulerParkRings = 8;
-        private const int HaulerParkTurns = 25;
+        private const int HaulerParkRings = 12;
+        private const int HaulerParkTurns = 30;
+        private const float RelaxedLevelTolerance = 1.5f;
         private const float ParkDecorHeight = 0.25f;
         private const int Builders = 4;
 
@@ -110,6 +114,7 @@ namespace Game.UI
         private readonly Vector3 _baseCentre;
         private readonly IReadOnlyList<EnvironmentInstancer> _decor;
         private readonly List<Vector3> _parks = new List<Vector3>();
+        private readonly List<Vector3> _landings = new List<Vector3>();
         private Material _crystal;
         private Color _crystalLit;
         private Color _coreColour;
@@ -413,6 +418,7 @@ namespace Game.UI
 
                 Vector3 park = Park(layout, d);
                 Add(builder, time, time + ParkShare, at, park, UpArc * 0.5f, -1, -1);
+                _landings.Add(park);
             }
         }
 
@@ -445,12 +451,21 @@ namespace Game.UI
         // Where a drone lands when the base stands: round the command post, on the ground. Remco (playtest note 2): a corner
         // can hold a rock, so each drone tries its own corner first and then turns and steps out until it finds open, level
         // ground clear of every module, rock and crystal and of the drones that landed before it.
-        private Vector3 Park(FieldLayout layout, int drone) => Park(layout, (drone + 0.5f) / Builders * Mathf.PI * 2f, ParkRings, ParkTurns, ParkSpacing);
+        // Landed, a builder faces the base (PoseBuilder), so it settles on its feet turned that way.
+        private Vector3 Park(FieldLayout layout, int drone)
+        {
+            Vector3 spot = Park(layout, (drone + 0.5f) / Builders * Mathf.PI * 2f, ParkRings, ParkTurns, ParkSpacing);
+            return _builders[drone].Drone.RestOn(spot, Quaternion.LookRotation(Flat(_baseCentre - spot)), layout.SurfaceAt);
+        }
+
+        /// <summary>Where each builder set down at the end of the timelapse (its holder, standing on its feet), for probes and tests.</summary>
+        public IReadOnlyList<Vector3> Landings => _landings;
 
         /// <summary>
         /// Round 37: open, level ground round the command post for a hauler, on the side facing <paramref name="toward"/>
         /// first, clear of every module, rock and crystal and of every drone parked before it (the haulers no longer pile
         /// up on the pad, through each other and the storage tanks). The spot is kept, so the next one parks beside it.
+        /// Returned on the drawn ground; the hauler settles its own feet on it (<see cref="CutsceneDrone.RestOn"/>).
         /// </summary>
         public Vector3 ParkingSpot(FieldLayout layout, Vector3 toward)
         {
@@ -458,32 +473,43 @@ namespace Game.UI
             return Park(layout, Mathf.Atan2(way.z, way.x), HaulerParkRings, HaulerParkTurns, HaulerParkSpacing);
         }
 
+        // Round 39: the strict search (level with the base) found room for only one hauler; the other seven all took the same
+        // fallback spot on the slope and stood inside each other. A second pass allows ground higher or lower than the base
+        // (still locally level and clear), and the last resort lines the drones up instead of stacking them.
         private Vector3 Park(FieldLayout layout, float preferred, int rings, int turns, float spacing)
         {
-            for (int ring = 0; ring < rings; ring++)
+            for (int pass = 0; pass < 2; pass++)
             {
-                for (int turn = 0; turn < turns; turn++)
+                float tolerance = pass == 0 ? ParkLevelTolerance : RelaxedLevelTolerance;
+                for (int ring = 0; ring < rings; ring++)
                 {
-                    // 0, +1, -1, +2, -2 ... steps either side of the drone's own corner.
-                    int side = (turn + 1) / 2 * (turn % 2 == 0 ? -1 : 1);
-                    float angle = preferred + side * ParkTurnStep * Mathf.Deg2Rad;
-                    Vector3 spot = layout.Ground(_baseCentre + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * (ParkRing + ring * ParkRingStep));
-                    if (IsOpenGround(spot, spacing))
+                    for (int turn = 0; turn < turns; turn++)
                     {
-                        _parks.Add(spot);
-                        return spot + Vector3.up * ParkHeight;
+                        // 0, +1, -1, +2, -2 ... steps either side of the drone's own corner.
+                        int side = (turn + 1) / 2 * (turn % 2 == 0 ? -1 : 1);
+                        float angle = preferred + side * ParkTurnStep * Mathf.Deg2Rad;
+                        Vector3 spot = Surface(layout, _baseCentre + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * (ParkRing + ring * ParkRingStep));
+                        if (IsOpenGround(layout, spot, spacing, tolerance))
+                        {
+                            _parks.Add(spot);
+                            return spot;
+                        }
                     }
                 }
             }
 
-            Vector3 fallback = layout.Ground(_baseCentre + new Vector3(Mathf.Cos(preferred), 0f, Mathf.Sin(preferred)) * (ParkRing + rings * ParkRingStep));
+            float reach = ParkRing + rings * ParkRingStep;
+            float along = preferred + _parks.Count * spacing / reach;
+            Vector3 fallback = Surface(layout, _baseCentre + new Vector3(Mathf.Cos(along), 0f, Mathf.Sin(along)) * reach);
             _parks.Add(fallback);
-            return fallback + Vector3.up * ParkHeight;
+            return fallback;
         }
 
-        private bool IsOpenGround(Vector3 spot, float spacing)
+        private static Vector3 Surface(FieldLayout layout, Vector3 at) => new Vector3(at.x, layout.SurfaceAt(at.x, at.z), at.z);
+
+        private bool IsOpenGround(FieldLayout layout, Vector3 spot, float spacing, float levelTolerance)
         {
-            if (Mathf.Abs(spot.y - _baseCentre.y) > ParkLevelTolerance)
+            if (Mathf.Abs(spot.y - _baseCentre.y) > levelTolerance || !IsLevel(layout, spot, spacing * 0.5f))
             {
                 return false;
             }
@@ -516,6 +542,22 @@ namespace Game.UI
         }
 
         private static float FlatDistance(Vector3 a, Vector3 b) => new Vector2(a.x - b.x, a.z - b.z).magnitude;
+
+        // Whether the drawn ground round a spot (a ring of samples at the drone's half span) stays within the slope tolerance.
+        private static bool IsLevel(FieldLayout layout, Vector3 spot, float radius)
+        {
+            float low = spot.y;
+            float high = spot.y;
+            for (int i = 0; i < ParkSlopeSamples; i++)
+            {
+                float angle = i * Mathf.PI * 2f / ParkSlopeSamples;
+                float height = layout.SurfaceAt(spot.x + Mathf.Cos(angle) * radius, spot.z + Mathf.Sin(angle) * radius);
+                low = Mathf.Min(low, height);
+                high = Mathf.Max(high, height);
+            }
+
+            return high - low <= ParkSlopeTolerance;
+        }
 
         private static Vector3 Position(Builder builder, float progress)
         {
@@ -596,7 +638,7 @@ namespace Game.UI
             Vector3 bob = landed ? Vector3.zero : Vector3.up * (BuilderBob * Mathf.Sin(time * BuilderBobSpeed + index * 2.1f));
             drone.Holder.SetPositionAndRotation(position + bob, facing * Quaternion.Euler(pitch, 0f, -bank));
             ModelClipRole role = welding ? ModelClipRole.Work : landed ? ModelClipRole.Idle : ModelClipRole.Move;
-            drone.Pose(role, time + index * 0.37f, landed ? 0f : time * RotorDegreesPerSecond, false);
+            drone.Pose(role, landed ? 0f : time + index * 0.37f, landed ? 0f : time * RotorDegreesPerSecond, false);
             ParticleKit.SetRate(builder.Sparks, welding ? SparkRate : 0f);
             bool carrying = leg.Carry >= 0 && progress >= _modules[leg.Carry].Pick && progress < _modules[leg.Carry].Start;
             builder.Tether.enabled = carrying;
@@ -809,6 +851,8 @@ namespace Game.UI
                 tether.endColor = TetherColour * 0.6f;
                 tether.enabled = false;
                 _builders.Add(new Builder { Drone = drone, Sparks = sparks, Tether = tether });
+                // Its feet are measured while it is still active, before it waits hidden for the timelapse.
+                drone.Feet();
                 holder.gameObject.SetActive(false);
             }
         }

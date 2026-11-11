@@ -77,7 +77,13 @@ namespace Game.Levels
         [SerializeField] private EnemyDefinition[] _flyers = new EnemyDefinition[0];
         [SerializeField] [Min(0)] private int _flyerCount = 1;
 
+        [Tooltip("Which of the commander's clips plays as he steps out of the landing capsule and down its ramp; when his model has no such clip he walks out.")]
+        [SerializeField] private ModelClipRole _capsuleExitClip = ModelClipRole.CapsuleExit;
+
         public HeroDefinition Hero => _hero;
+
+        /// <summary>The commander's clip for stepping out of the capsule (round 39); the walk stands in while his model lacks it.</summary>
+        public ModelClipRole CapsuleExitClip => _capsuleExitClip;
         public DroneDefinition Hauler => _hauler;
         public DroneDefinition Builder => _builder;
         public EnemyDefinition[] Swarm => _swarm;
