@@ -98,10 +98,6 @@ namespace Game.UI
         // the drawn ground) they ring on metal.
         private const float StepVolume = 0.4f;
         private const float RampFootHeight = 0.12f;
-        // Round 39 (Remco: "the enemies shouldn't disappear until we clicked next"): while the gate dialogue stays open past
-        // the stand shot's own length the brood holds, snapping and growling now and then, until the player reads on.
-        private const float MenaceGap = 4.6f;
-        private const float MenaceGrowl = 0.45f;
         private const float EyesOpenAfter = 1f;
         private const float EyesFullyOpen = 60f;
         private const float EyesShutSeconds = 0.6f;
@@ -217,7 +213,6 @@ namespace Game.UI
         // How long the stand shot ran (its own length on a seek, longer while the player kept its dialogue open), so the
         // swarm clock runs on without a jump into the handoff.
         private float _standHeld;
-        private int _menaceBeat;
 
         public VisualTheme Theme => _theme;
 
@@ -279,7 +274,6 @@ namespace Game.UI
             if (action != CutsceneAction.Handoff)
             {
                 _standHeld = _standShotSeconds;
-                _menaceBeat = 0;
             }
         }
 
@@ -561,7 +555,6 @@ namespace Game.UI
                 case CutsceneAction.GateStand:
                     clock = _swarmShotSeconds + _reactShotSeconds + time;
                     _standHeld = Mathf.Max(_standHeld, time);
-                    Menace(time);
                     break;
                 case CutsceneAction.Handoff:
                     clock = _swarmShotSeconds + _reactShotSeconds + _standHeld + time;
@@ -578,20 +571,6 @@ namespace Game.UI
             {
                 _context.Tremble = Mathf.Max(_context.Tremble, _swarm.Tremble(clock));
             }
-        }
-
-        // A growl from the brood every few seconds while the player keeps the stand's dialogue open past the shot's length.
-        private void Menace(float time)
-        {
-            int beat = Mathf.FloorToInt((time - _standShotSeconds) / MenaceGap);
-            if (beat <= _menaceBeat || time - _lastTime > MenaceGap)
-            {
-                _menaceBeat = Mathf.Max(_menaceBeat, beat);
-                return;
-            }
-
-            _menaceBeat = beat;
-            _context.Audio.Play(new CutsceneCue { Kind = CueKind.Sound, Sound = CutsceneSound.Growl, Strength = MenaceGrowl });
         }
 
         private void PoseHero(float time, float progress)

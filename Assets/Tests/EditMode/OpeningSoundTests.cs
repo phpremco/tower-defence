@@ -35,10 +35,16 @@ namespace Game.Tests
             // the burrows sound their own closing (FieldSwarm), the builders their work (FieldBase).
             CutsceneSound.StepMetal, CutsceneSound.StepGravel, CutsceneSound.StepStone, CutsceneSound.QuakeLoop, CutsceneSound.BurrowClose,
             CutsceneSound.BuildHammer, CutsceneSound.BuildHammerLoop, CutsceneSound.BuildDrill, CutsceneSound.BuildDrillLoop,
+            // Round 45a (Remco: a screaming monster only when someone reacts to it): the distant wildlife calls are kept, uncued.
+            CutsceneSound.WildlifeCall,
         };
 
-        // Round 44: slots whose files are still being made; they stay silent (no fallback) until the files land.
-        private static readonly CutsceneSound[] PendingFiles = { CutsceneSound.BurrowClose };
+        // Round 45a: creature voices nobody in the opening reacts to; never cued.
+        private static readonly CutsceneSound[] UnansweredVoices = { CutsceneSound.WildlifeCall, CutsceneSound.Growl, CutsceneSound.Scream };
+
+        // The burrow-close files put their slam this long before their end (FieldSwarm.CloseSlamBeforeEnd).
+        private const float BurrowSlamBeforeEnd = 0.15f;
+        private const int BurrowCount = 3;
 
         private CutsceneDefinition _cutscene;
         private CutsceneSoundBank _bank;
@@ -96,12 +102,6 @@ namespace Game.Tests
         {
             foreach (CutsceneSoundSlot slot in _bank.Slots)
             {
-                if (System.Array.IndexOf(PendingFiles, slot.Sound) >= 0)
-                {
-                    Assert.AreEqual(CutsceneSound.None, slot.Fallback, $"{slot.Sound} waits for its files in silence, without a stand-in");
-                    continue;
-                }
-
                 Assert.IsFalse(slot.IsEmpty, $"{slot.Sound} has no file: run Tools/Generate/Opening Cutscene Sounds");
             }
         }
@@ -178,6 +178,43 @@ namespace Game.Tests
             for (int i = 0; i < 3; i++)
             {
                 Assert.IsTrue(HasLayer(_cutscene.Shots[i], CutsceneSound.OrbitBed), $"shot {i + 1} has no space bed");
+            }
+        }
+
+        [Test]
+        public void OnlyTheQueensRoars_AreHeard_AndSpencerAnswersBoth()
+        {
+            int roars = 0;
+            for (int i = 0; i < _cutscene.Shots.Count; i++)
+            {
+                CutsceneShot shot = _cutscene.Shots[i];
+                foreach (CutsceneCue cue in shot.Cues)
+                {
+                    Assert.AreEqual(-1, System.Array.IndexOf(UnansweredVoices, cue.Sound), $"shot {i + 1} cues {cue.Sound}, which nobody reacts to");
+                    if (cue.Sound == CutsceneSound.QueenRoar)
+                    {
+                        roars++;
+                        Assert.IsTrue(shot.Action == CutsceneAction.SwarmPours || shot.Action == CutsceneAction.Handoff, $"a roar in shot {i + 1} ({shot.Action}) that Spencer does not answer");
+                    }
+                }
+
+                foreach (CutsceneLayer layer in shot.Layers ?? new CutsceneLayer[0])
+                {
+                    Assert.AreEqual(-1, System.Array.IndexOf(UnansweredVoices, layer.Sound), $"shot {i + 1} holds {layer.Sound}, which nobody reacts to");
+                }
+            }
+
+            Assert.AreEqual(2, roars, "the Queen screams in the attack and roars in the handoff");
+        }
+
+        [Test]
+        public void TheBurrowCloseFiles_HaveRoomForTheirSlam()
+        {
+            CutsceneSoundSlot slot = _bank.Slots[_bank.IndexOf(CutsceneSound.BurrowClose)];
+            Assert.AreEqual(BurrowCount, slot.Clips.Count, "one closing file per burrow");
+            for (int i = 0; i < slot.Clips.Count; i++)
+            {
+                Assert.Greater(slot.Clips[i].length, BurrowSlamBeforeEnd, $"{slot.Clips[i].name} ends before its slam");
             }
         }
 

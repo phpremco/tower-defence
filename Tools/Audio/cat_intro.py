@@ -1106,33 +1106,35 @@ def build_drill_loop(v):
 
 # ================================================================== burrow closing
 BURROW_SETTLE = 0.15              # the close moment sits exactly this long before the end of the file
-BURROW_SWELLS = (1.1, 1.35, 1.6)
+BURROW_SWELLS = (2.45, 2.85, 3.25)
 
 
 @intro("Threat/threat_burrow_close", "Burrow closing (brood back underground)",
        "ground-tearing.mp3, footsteps-gravel.mp3, earth-rumble.mp3",
-       "a forward crumble (ground-tearing with a 4 ms attack and decay, gravel tails, low earth rumble) played in "
+       "a long forward crumble (ground-tearing with a fast attack and slow decay, ten gravel tails spread over the "
+       "whole length, low earth rumble) played in "
        "reverse so it swells and sucks back in; its climax is the CLOSE MOMENT at exactly length - 0.15 s "
-       "(01: 1.10 s, 02: 1.35 s, 03: 1.60 s); after it only a very soft soil settle (faint grains + low brush, "
+       "(01: 2.45 s, 02: 2.85 s, 03: 3.25 s); after it only a very soft soil settle (faint grains + low brush, "
        ">= 15 dB under the swell peak); no thump, no pop, no ring; not trimmed in mastering; mono",
        -18, variants=3, comp=False, exact=True)
 def burrow_close(v):
     dur = BURROW_SWELLS[v]
-    start, rum_at = ((1.0, 6.0), (3.6, 14.0), (5.2, 25.0))[v]
+    start, rum_at = ((0.3, 6.0), (2.4, 14.0), (4.2, 25.0))[v]
     n = n_of(dur)
     t = np.arange(n) / SR
     tear = src("ground-tearing", start, start + dur) * s.env_ad(t, 0.004, dur * 0.3)
     gravel = src("footsteps-gravel")
     debris = np.zeros(n)
     ons = onsets(gravel, min_gap=0.4)
-    for k in range(4):
+    for k in range(10):
         o = ons[(k + v) % len(ons)]
-        place(debris, fade(gravel[o:o + n_of(0.4)], 0.003, 0.1), 0.02 + 0.12 * k, 0.8 ** k)
+        at = 0.02 + dur * 0.85 * (k / 10) ** 1.4 + s.rng.uniform(0, 0.05)
+        place(debris, fade(gravel[o:o + n_of(0.4)], 0.003, 0.1), at, 0.85 ** k)
     rumble = lp(src("earth-rumble", rum_at, rum_at + dur), 160, 4) * s.env_ad(t, 0.025, dur * 0.4)
     # highpass so the abrupt close leaves no low-frequency step (it would ring on as a soft boom)
     crumble = hp(norm(tear) + 0.5 * norm(debris) + 0.6 * norm(rumble), 60, 2)
     crumble[:n_of(0.003)] *= np.linspace(0, 1, n_of(0.003))        # reversed: a 3 ms close, no click
-    rev = crumble[::-1] * np.exp((t - dur) / (0.2 * dur))          # monotonic swell: the climax is the close moment
+    rev = crumble[::-1] * np.exp((t - dur) / (0.28 * dur))          # monotonic swell: the climax is the close moment
     rev = fade(rev, 0.03, 0.0)
     out = np.concatenate([rev, np.zeros(n_of(BURROW_SETTLE))])
     m = n_of(BURROW_SETTLE)

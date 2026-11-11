@@ -362,11 +362,6 @@ MonoBehaviour:
       Sound: 55
       Clip: {fileID: 0}
       Strength: 0.4
-    - At: 10.6
-      Kind: 0
-      Sound: 65
-      Clip: {fileID: 0}
-      Strength: 0.35
     Layers:
     - Sound: 31
       From: 0
@@ -444,11 +439,6 @@ MonoBehaviour:
     Dialogue: {fileID: 0}
     DialogueDelay: 0
     Cues:
-    - At: 12
-      Kind: 0
-      Sound: 65
-      Clip: {fileID: 0}
-      Strength: 0.3
     - At: 16.6
       Kind: 0
       Sound: 51
@@ -959,21 +949,11 @@ MonoBehaviour:
       Sound: 19
       Clip: {fileID: 0}
       Strength: 0.45
-    - At: 5.2
-      Kind: 0
-      Sound: 13
-      Clip: {fileID: 0}
-      Strength: 0.6
     - At: 5.9
       Kind: 0
       Sound: 19
       Clip: {fileID: 0}
       Strength: 0.4
-    - At: 6.4
-      Kind: 0
-      Sound: 13
-      Clip: {fileID: 0}
-      Strength: 0.5
     - At: 7.8
       Kind: 0
       Sound: 61
@@ -1192,11 +1172,6 @@ MonoBehaviour:
       Sound: 61
       Clip: {fileID: 0}
       Strength: 1
-    - At: 0.8
-      Kind: 0
-      Sound: 13
-      Clip: {fileID: 0}
-      Strength: 0.7
     - At: 1
       Kind: 0
       Sound: 62

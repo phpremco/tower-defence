@@ -444,8 +444,11 @@ MonoBehaviour:
     Fallback: 0
   - Sound: 66
     Clips:
-      _clips: []
-      _gain: 1
+      _clips:
+      - {fileID: 8300000, guid: 3c9f2a2546944d14e85c9cd286b55092, type: 3}
+      - {fileID: 8300000, guid: d9eece2f3f9860a41be5fb91f1f8eda0, type: 3}
+      - {fileID: 8300000, guid: e7de2b6e3c4c1af4491b61a1bdd5de90, type: 3}
+      _gain: 0.5506674
       _pitch: 1
     Loop: 0
     Channel: 0

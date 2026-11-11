@@ -6252,3 +6252,25 @@ every 17 s for as long as ORA's three lines stayed open; only 3 releases had sou
    off on her and continues over him).
 4. The quake rumble levels per shot (`ShakeRumble`) are set without listening; please listen to the shiver shot.
 5. Burrow-close files: the slot is empty and silent until the curator copies them in; then run `Tools/Generate/Opening Cutscene Sounds`.
+
+## Round 45a: burrow-close files in, unanswered creature voices out (2026-11-12)
+
+Not committed. Focused step only: `Tools/Generate/Opening Cutscene Sounds`; afterwards only `CutsceneSounds_Opening.asset` (slot 66
+filled with `threat_burrow_close_01..03`, gain 0.55) and `Cutscene_Opening.asset` (5 cues removed) changed among the data.
+
+- **Burrow closes:** `FieldSwarm.SoundCloses` already starts burrow i's file at `closeTime_i - (clip.length - 0.15)` with the file's
+  real length, from the swarm clock (continuous across attack, reaction, stand and handoff). A start that falls before the handoff
+  begins needs no special case: the close time is infinite until the handoff sets the retreat, and from then a clock past the start
+  plays the file from the right offset (`CutsceneAudio.PlayFrom`). In the played run the starts fall 4.9-5.3 s into the handoff
+  anyway (closes at swarm clock 54.02/54.47/54.92, handoff from 46.7).
+- **Remco: "screaming monsters only in if someone reacts to them":** removed the distant wildlife calls (landing 10.6 s, base
+  timelapse 12 s), the brood's growls in the attack (5.2, 6.4 s) and the handoff (0.8 s), and the gate stand's menace growls
+  (`FieldSet.Menace`, every 4.6 s while the gate line was held). Kept: the Queen's scream (Spencer startles) and her handoff roar
+  (his aim jolts); heavy steps and the chitter (no voices). The `WildlifeCall` slot stays in the bank, uncued.
+- **Tests:** `OpeningSoundTests`: `WildlifeCall` listed as kept-but-uncued, the pending-slot exception for `BurrowClose` removed
+  (no slot may be empty now), new `OnlyTheQueensRoars_AreHeard_AndSpencerAnswersBoth` (no WildlifeCall/Growl/Scream cue or layer,
+  exactly two QueenRoar cues, in SwarmPours and Handoff) and `TheBurrowCloseFiles_HaveRoomForTheirSlam` (3 files, each longer than
+  0.15 s). EditMode suite on w6: **803 tests, 751 passed, 52 skipped, 0 failed**. Recompile: 0 errors, only the known CS0618.
+- **Played run** (`OUT=Logs/r45a HOLD=8 r43_play.sh`, plus `Tools/PlayTest/r45a_burrow_probe.cs` polled): all shots into the first
+  level, console 0 errors, 0 warnings. Probe at handoff t=5.82: all three burrow files playing, slams due at swarm clock
+  53.98/54.40/54.86 against closes 54.02/54.47/54.92 (within 0.06 s, the probe's frame lag). Save MD5 2eca347e before and after.

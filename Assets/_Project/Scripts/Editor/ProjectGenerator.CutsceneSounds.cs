@@ -105,9 +105,11 @@ namespace Game.Editor
             // Remco: the wind is fine but quite loud, so it sits well under the other beds (WindLevel).
             new IntroSlot(CutsceneSound.WindPlain, IntroEnvironment, "env_wind_plain_loop", true, CutsceneSoundChannel.Ambience),
             new IntroSlot(CutsceneSound.CaveDrips, IntroEnvironment, "env_cave_drips_loop", true, CutsceneSoundChannel.Ambience),
+            // Round 45a (Remco: a screaming monster only when someone reacts to it): not cued any more; kept for later use.
             new IntroSlot(CutsceneSound.WildlifeCall, IntroEnvironment, "env_wildlife_call", channel: CutsceneSoundChannel.Ambience),
             // Round 44: the burrows closing behind the brood (no fallback: the old "ploof" must not come back; the slot stays
-            // silent until the files land, each with its slam 0.15 s before its end, FieldSwarm) and the builders assembling the base.
+            // silent while it has no file; round 45a: _01..03 landed, each with its slam 0.15 s before its end, FieldSwarm) and the
+            // builders assembling the base.
             new IntroSlot(CutsceneSound.BurrowClose, IntroThreat, "threat_burrow_close"),
             new IntroSlot(CutsceneSound.BuildHammer, IntroColony, "colony_build_hammer"),
             new IntroSlot(CutsceneSound.BuildHammerLoop, IntroColony, "colony_build_hammer_loop", true),
@@ -280,7 +282,9 @@ namespace Game.Editor
         // The one-shots of each shot (sounds and the camera's kicks), in the shot's own seconds. Round 44: Spencer's footsteps
         // are not here any more (FieldSet plays them on his clips' footfalls), and no creature is heard that the shot does not
         // show: the cave has its eyes' wet opening and no growls, the reaction close-up keeps only the tail of the Queen's
-        // scream it cuts in on, the burrows' closing sounds from the burrows themselves (FieldSwarm).
+        // scream it cuts in on, the burrows' closing sounds from the burrows themselves (FieldSwarm). Round 45a (Remco: a
+        // screaming monster only when someone reacts to it): no distant wildlife calls and no growls; the Queen's two roars stay,
+        // Spencer startles at the first and his aim jolts at the second.
         private static CutsceneCue[] OpeningCues(int shot)
         {
             switch (shot)
@@ -295,11 +299,11 @@ namespace Game.Editor
                         Sound(RetroBursts[0], CutsceneSound.RetroBurst, 0.55f), Sound(RetroBursts[1], CutsceneSound.RetroBurst, 0.5f), Sound(RetroBursts[2], CutsceneSound.RetroBurst, 0.55f),
                         Sound(TouchdownSeconds, CutsceneSound.Touchdown, 0.9f), Shake(TouchdownSeconds, LandingKick),
                         Sound(HatchSteamSeconds, CutsceneSound.PressureRelease, 0.55f), Sound(HatchOpenSeconds, CutsceneSound.HatchOpen, 0.5f),
-                        Sound(8.7f, CutsceneSound.BeaconBeep, 0.45f), Sound(10.2f, CutsceneSound.BeaconBeep, 0.4f), Sound(10.6f, CutsceneSound.WildlifeCall, 0.35f),
+                        Sound(8.7f, CutsceneSound.BeaconBeep, 0.45f), Sound(10.2f, CutsceneSound.BeaconBeep, 0.4f),
                     };
                 case 5:
                     // As the flock settles beside the finished base, the landing spin-down takes over from the hum.
-                    return new[] { Sound(12f, CutsceneSound.WildlifeCall, 0.3f), Sound(BuildersLand, CutsceneSound.DroneLand, 0.45f) };
+                    return new[] { Sound(BuildersLand, CutsceneSound.DroneLand, 0.45f) };
                 case 6:
                     return new[] { Sound(0.3f, CutsceneSound.DrillStart, 0.5f), Sound(0.6f, CutsceneSound.BuildClank, 0.45f), Sound(DrillContactSeconds, CutsceneSound.Earthquake, 0.8f), Shake(DrillContactSeconds, DrillKick) };
                 case 7:
@@ -321,8 +325,8 @@ namespace Game.Editor
                     return new[]
                     {
                         Sound(BurstSeconds[0], CutsceneSound.GroundTear, 0.9f), Shake(BurstSeconds[0], BurstKick), Sound(BurstSeconds[1], CutsceneSound.GroundTear, 0.75f),
-                        Sound(BurstSeconds[2], CutsceneSound.GroundTear, 0.8f), Sound(4.6f, CutsceneSound.HeavySteps, 0.45f), Sound(5.2f, CutsceneSound.Growl, 0.6f),
-                        Sound(5.9f, CutsceneSound.HeavySteps, 0.4f), Sound(6.4f, CutsceneSound.Growl, 0.5f), Sound(QueenScreamSeconds, CutsceneSound.QueenRoar, 1f),
+                        Sound(BurstSeconds[2], CutsceneSound.GroundTear, 0.8f), Sound(4.6f, CutsceneSound.HeavySteps, 0.45f),
+                        Sound(5.9f, CutsceneSound.HeavySteps, 0.4f), Sound(QueenScreamSeconds, CutsceneSound.QueenRoar, 1f),
                     };
                 case 15:
                     // Round 43: no radio-call cue as Voss starts: the dialogue box's own squelch opens his line, the static holds under it.
@@ -330,7 +334,7 @@ namespace Game.Editor
                 case 16:
                     return new[]
                     {
-                        Sound(HandoffRoarSeconds, CutsceneSound.QueenRoar, 1f), Sound(0.8f, CutsceneSound.Growl, 0.7f), Sound(RetreatSeconds, CutsceneSound.SwarmRetreat, 0.7f),
+                        Sound(HandoffRoarSeconds, CutsceneSound.QueenRoar, 1f), Sound(RetreatSeconds, CutsceneSound.SwarmRetreat, 0.7f),
                         Sound(1.7f, CutsceneSound.HeavySteps, 0.6f), Sound(2.2f, CutsceneSound.HeavySteps, 0.55f), Sound(2.7f, CutsceneSound.HeavySteps, 0.5f),
                     };
                 default:
