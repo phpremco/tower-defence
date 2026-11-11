@@ -302,12 +302,14 @@ def ballistic(origin, velocity, t, gravity=9.0, floor=0.05):
 # UV repair and a mesh-asset build that uses it
 # ---------------------------------------------------------------------------------------------------------------
 
-def unwrap_dk(obj, builder, margin=0.004):
+def unwrap_dk(obj, builder, margin=0.004, island_scale=None):
     """uvlayout.unwrap for mirrored creatures (its helpers, the same seams and mirror split), plus one step: a seam
     island that is closed (a plate, petal, rock or eye that lies wholly on one side, so it has no seam and no mirror
     cut) is cut in two along the plane across its thinnest axis before the minimum-stretch unwrap. Closed islands fold
     under that unwrap, and uvlayout's smart-project fallback shreds them into hundreds of tiny islands whose margins
-    eat the atlas (the Gravemaw body packed at 0.0 to 0.3 coverage). Returns (stats, master faces to bake)."""
+    eat the atlas (the Gravemaw body packed at 0.0 to 0.3 coverage). Returns (stats, master faces to bake).
+    `island_scale(bm, island, face_pid)` (round 38, optional): a texel density factor per island, applied before the
+    pack (small hero detail such as teeth gets more of the atlas)."""
     import uvlayout as U
     C.activate(obj)
     bpy.context.scene.tool_settings.use_uv_select_sync = True
@@ -389,6 +391,16 @@ def unwrap_dk(obj, builder, margin=0.004):
     bm.faces.ensure_lookup_table()
     uv = bm.loops.layers.uv.active
     U._clamp_density(bm, uv, U._islands(bm, master))
+    if island_scale is not None:
+        for island in U._islands(bm, master):
+            s = island_scale(bm, island, face_pid)
+            if abs(s - 1.0) < 1e-3:
+                continue
+            loops = [lp for fi in island for lp in bm.faces[fi].loops]
+            cx = sum(lp[uv].uv.x for lp in loops) / len(loops)
+            cy = sum(lp[uv].uv.y for lp in loops) / len(loops)
+            for lp in loops:
+                lp[uv].uv = ((lp[uv].uv.x - cx) * s + cx, (lp[uv].uv.y - cy) * s + cy)
     bmesh.update_edit_mesh(obj.data)
     bpy.ops.uv.pack_islands(rotate=True, margin=margin)
     bm = bmesh.from_edit_mesh(obj.data)
@@ -412,8 +424,10 @@ def unwrap_dk(obj, builder, margin=0.004):
 
 def build_mesh_asset_dk(name, builder, voxel, target_tris, tex_size, ao_distance, extrusion, ray, emission_strength=2.5,
                         extra=None, specular=0.3, k=1.0, families=C.FAMILY_ORDER, low_size=None, out_dir=None,
-                        smooth_iterations=6, edge_gain=0.35):
-    """creature_kit2.build_mesh_asset_ex (mirrored creature) with unwrap_dk instead of uvlayout.unwrap."""
+                        smooth_iterations=6, edge_gain=0.35, prune=None, island_scale=None):
+    """creature_kit2.build_mesh_asset_ex (mirrored creature) with unwrap_dk instead of uvlayout.unwrap. Round 38
+    (optional): `prune(low)` deletes faces of the game mesh before the unwrap (surfaces that are always hidden inside
+    another mesh), `island_scale` goes to unwrap_dk."""
     import detailmaps
     parts_obj = builder.to_object(name + "_Parts")
     high_mesh = C.fuse(parts_obj, voxel, smooth_iterations)
@@ -435,7 +449,9 @@ def build_mesh_asset_dk(name, builder, voxel, target_tris, tex_size, ao_distance
     bpy.data.meshes.remove(smooth_copy)
     C.shade_smooth(low_mesh)
     low = C.link(bpy.data.objects.new(name, low_mesh))
-    uv_stats, bake_faces = unwrap_dk(low, builder)
+    if prune is not None:
+        prune(low)
+    uv_stats, bake_faces = unwrap_dk(low, builder, island_scale=island_scale)
     out_dir = out_dir or os.path.join(C.EXPORTS, name)
     textures = C.bake_maps(high, low, out_dir, name, tex_size, extrusion, ray, bake_faces=bake_faces, low_size=low_size)
     tiles = detailmaps.ensure()

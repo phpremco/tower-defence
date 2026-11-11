@@ -35,6 +35,7 @@ import creature_kit2 as K2  # noqa: E402
 import deep_kit as DK  # noqa: E402
 import gate_kit as GK  # noqa: E402
 import gravemaw_gate as GG  # noqa: E402
+import gravemaw_maw as GMW  # noqa: E402
 from boss_mech_kit import ease, pulse  # noqa: E402
 from common import G  # noqa: E402
 
@@ -542,6 +543,8 @@ def main():
     boss.add_foot_markers([lg for _, lg in limbs()])
     boss.add_bones([("Socket_Throw", BG.MAW_TIP, BG.MAW_TIP + (BG.MAW_TIP - BG.MAW_BASE).normalized() * 0.3, "Head")])
     sub_depth, bur_depth = key_all(boss)
+    # Round 38: the toothed maw (gravemaw_maw.py) is rebuilt and exported with the boss; the body loses its old plug.
+    maw = GMW.attach(boss)
     boss.export()
     gate = dict(GK.gate_facts(), clips=[c[0] for c in GATE_CLIPS], usage=GK.USAGE)
     boss.report({"climb_height_m": CLIMB_H, "liquid": "quicksand (its burrow shortcut) or any pool",
@@ -552,6 +555,7 @@ def main():
                              "beside the top-damage tower; Climb_* over rock edges; quicksand via Dive_Into_Liquid",
                  "gate": gate})
     refresh_emerge_report()
+    GMW.update_report(maw, {"body": C.tri_count(boss.mesh), "body_lod1": C.tri_count(boss.lod_mesh)})
     boss.save()
     if args.get("norender"):
         return

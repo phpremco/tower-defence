@@ -235,17 +235,25 @@ LAYOUT = dict(
     small_focus=(0.5, 0.55),
     main_focus=(0.5, 0.5), main_logo=(616, 92, 690),
     vcap_focus=(0.5, 0.5), vcap_top=0.05,
-    libcap_focus=(0.5, 0.5), libcap_top=0.06,
+    # Round 5: Spencer flies in from the right; the 600-wide crop of the vert master leans right so he stays whole.
+    libcap_focus=(0.58, 0.5), libcap_top=0.06,
     bg_focus=(0.5, 0.5),
     event_focus=(0.5, 0.5), event_logo=(400, 72, 480),
     evh_focus=(0.5, 0.5), evh_logo=(470, 118, 760),
-    hero_edges=(0.35, 0.55, 0.22), hero_logo_pool=((0.2, 0.7), (0.21, 0.27), 0.55),
+    # Round 5: the maw sits left of centre, so the logo pool is smaller and tucked into the corner (it must not
+    # darken the petals); the logo is set at about 23% of the hero width there (HERO_LOGO_SCALE).
+    hero_edges=(0.35, 0.55, 0.22), hero_logo_pool=((0.14, 0.75), (0.15, 0.22), 0.55),
 )
 
 
 # =============================================================================================================
 # Contact sheet
 # =============================================================================================================
+
+# The library logo over the hero as we set it in Steamworks (left bottom): 0.7 x 1280 = 896 px, about 23% of the hero
+# width, so it stays clear of the maw (round 5).
+HERO_LOGO_SCALE = 0.7
+
 
 def contact_sheet():
     files = [
@@ -284,7 +292,7 @@ def contact_sheet():
         if "library_logo" in name:
             hero = load(os.path.join(STEAM, "Steam_library_hero_3840x1240.png"))
             # Steam's "left bottom" logo placement, roughly as the client shows it.
-            lg = im.resize((int(im.width * 1.0), int(im.height * 1.0)), LANCZOS)
+            lg = im.resize((int(im.width * HERO_LOGO_SCALE), int(im.height * HERO_LOGO_SCALE)), LANCZOS)
             hero.alpha_composite(lg, (120, hero.height - lg.height - 40))
             im = hero
         im = im.resize((int(im.width * sc), int(im.height * sc)), LANCZOS)

@@ -32,6 +32,12 @@ or crystal spires, cliffs and ridges with dim crystals; one Shalebat and two Sky
 fewer sparks and stray bolts, the one big blast in the swarm at the gate; the gate's energy field switched on as
 GateView builds it (sheet + floor strip with the EnergyField texture, its light on the road) with hit ripples, arcs
 and sparks where the front of the swarm claws at it; shallow depth of field focused between Spencer and the boss.
+Round 5 (Remco: "make Spencer fly in from the right and shoot Gravemaw", and give it worm-like rows of teeth): the
+duel is staged across the frame at one depth from the std camera (STAGE). Gravemaw rears in its Roar with the new
+toothed maw (gravemaw_maw.py) wide open towards Spencer and the camera, its heat deep in the throat behind the teeth;
+Spencer flies in from the right in three-quarter front (visor and firing arm to the camera, Shoot frame 0 so the arm
+is out), leaning back as he brakes and banking towards the boss, jet flames trailing, bolts streaming into the throat
+and one burst on the maw's rim. The wide camera is aimed so the duel sits in the library hero's safe area.
 All game models are the real exports, posed from their own clips and baked to static meshes.
 
 The renders are text-free masters; steam_compose.py puts the logo on and cuts the final Steam sizes.
@@ -227,6 +233,14 @@ def place(posed, col, loc, rot_z=0.0, scale=1.0, tilt=(0.0, 0.0)):
         ob.matrix_world = T @ src.matrix_world
         obs.append(ob)
     return obs, {k: T @ m for k, m in posed.bones.items()}
+
+
+def place_at(posed, col, anchor_bones, want, rot_z=0.0, scale=1.0, tilt=(0.0, 0.0)):
+    """place(), moved so the mean of `anchor_bones` (e.g. Gravemaw's jaw roots = the throat) lands on `want`."""
+    T = (Euler((tilt[0], tilt[1], rot_z)).to_matrix().to_4x4() @ Matrix.Diagonal((scale, scale, scale, 1.0)))
+    pts = [(T @ posed.bones[b]).to_translation() for b in anchor_bones if b in posed.bones]
+    at = sum(pts, Vector()) / len(pts)
+    return place(posed, col, Vector(want) - at, rot_z, scale, tilt)
 
 
 def attach_pistol(col, socket, corr):
@@ -1045,8 +1059,12 @@ def boss_face(name, bones, col, scale):
     up = side.cross(fwd).normalized()
     if up.z < 0:
         up = -up
-    glow_ball(name + "Maw", mouth - fwd * 0.15 * scale, 0.3 * scale, col, V4.LAVA_MID, V4.LAVA_HOT, 10.0,
-              light_energy=4200.0 * scale, light_radius=0.3 * scale)
+    # Round 5: the maw is the hero detail (rows of teeth down a worm gullet, its own hot core). The heat sits deep in
+    # the throat, behind the teeth, so they stand dark-edged against it and catch it; nothing glows in front of them.
+    glow_ball(name + "Maw", mouth - fwd * 0.55 * scale, 0.07 * scale, col, V4.LAVA_MID, V4.LAVA_HOT, 8.0,
+              light_energy=0.0)
+    light(name + "Throat", mouth - fwd * 0.4 * scale, (1.0, 0.5, 0.35), 700.0 * scale, 0.08 * scale, col)
+    light(name + "Teeth", mouth + fwd * 0.6 * scale, (1.0, 0.85, 0.7), 450.0 * scale, 0.3 * scale, col)
     bm = bmesh.new()
     for k, (s, u, f, r) in enumerate([(0.42, 0.34, -0.1, 0.075), (-0.42, 0.34, -0.1, 0.075),
                                       (0.3, 0.46, -0.3, 0.05), (-0.3, 0.46, -0.3, 0.05)]):
@@ -1065,7 +1083,7 @@ def boss_face(name, bones, col, scale):
     col.objects.link(rim)
     rim.location = head - fwd * 2.5 * scale + up * 2.0 * scale + side * 1.0 * scale
     C.look_at(rim, head)
-    return mouth
+    return mouth, fwd
 
 
 def foreground(col, cam_loc, cam_tgt, rng):
@@ -1198,11 +1216,26 @@ def build_scene(draft=False):
         po = undulate(bake_pose("Skyray/Skyray.fbx", "Skyray", "Fly", f, emit=4.0), 0.14, 1.3, 0.1, phase=k * 1.7)
         place(po, col_units, p, rng.uniform(-0.3, 0.3), 2.4, (math.radians(26), rng.uniform(-0.3, 0.3)))
         targets[f"ray{k}"] = p
-    # Gravemaw, the region boss: rearing over the road behind the wave, close enough to read at thumbnail size.
-    gp = R(30.0, 15.0, -1.2)
-    gobs, gbones = place(bake_pose("Gravemaw/Gravemaw.fbx", "Gravemaw", "Gate_Mount", 80, emit=3.5), col_units, gp,
-                         math.radians(-68), 4.4)
-    maw = boss_face("Gravemaw", gbones, col_fx, 4.4)
+    # Round 5: the duel is staged across the frame at one depth. Gravemaw rears over the road left of centre in its
+    # Roar (maw wide open: rows of teeth down a glowing gullet), turned towards Spencer and the camera; Spencer flies
+    # in from the right at the same depth, in profile / three-quarter, firing into the throat.
+    view = (Vector(STAGE["target"]) - Vector(STAGE["camera"])).normalized()
+    view.z = 0
+    view.normalize()
+    right = Vector((view.y, -view.x, 0.0))
+    cam = Vector(STAGE["camera"])
+    maw_at = cam + view * STAGE["depth"] - right * STAGE["maw_left"]
+    maw_at.z = FLOOR + STAGE["maw_z"]
+    sp = maw_at + right * STAGE["spencer_right"] + view * STAGE["spencer_back"]
+    sp.z = FLOOR + STAGE["spencer_z"]
+    to_sp = (sp - maw_at)
+    to_sp.z = 0
+    face = to_sp.normalized() * STAGE["boss_turn"][0] - view * STAGE["boss_turn"][1]
+    jaws = ["Jaw_T", "Jaw_UL", "Jaw_UR", "Jaw_LL", "Jaw_LR"]
+    gobs, gbones = place_at(bake_pose("Gravemaw/Gravemaw.fbx", "Gravemaw", "Roar", STAGE["roar_frame"], emit=3.5),
+                            col_units, jaws, maw_at, yaw_to(Vector(), face), STAGE["boss_scale"],
+                            (math.radians(STAGE["boss_pitch"]), 0.0))
+    maw, maw_fwd = boss_face("Gravemaw", gbones, col_fx, STAGE["boss_scale"])
     # The clip carries the body forward off its root: light and aim at where the body really is.
     lo, hi = L2.world_bbox(gobs)
     C.log("gravemaw bbox", tuple(round(v, 1) for v in lo), tuple(round(v, 1) for v in hi))
@@ -1260,15 +1293,18 @@ def build_scene(draft=False):
         muzzles = [m.to_translation() for kk, m in sorted(bones.items()) if kk.startswith("Muzzle")]
         shots[f"{name}{k}"] = (muzzles, targets[tgt])
         light(f"{name}Lamp{k}", p + Vector((0.6, -1.2, 2.4)), COLONY_LAMP, 160.0, 0.6, col_lit)
-    sp = R(6.5, -6.6, 3.3)
     arms = ("Shoulder", "Arm", "Hand", "Weapon", "Fore", "Clav", "Finger", "Thumb", "Index")
-    po = bake_pose("Mercer/Mercer.fbx", "Mercer", "Jet_Fly", 10, emit=3.0, overlay=("Shoot", 4, arms))
-    # Round 4: he turns to the boss (back three-quarter, jetpack to the camera) so the pistol really fires into it.
-    _, sbones = place(po, col_units, sp, yaw_to(sp, maw) + math.radians(30), 2.0)
+    # Round 5: Shoot frame 0 is the shot itself (arm out, muzzle event); later frames drop the hand to the hip.
+    po = bake_pose("Mercer/Mercer.fbx", "Mercer", "Jet_Fly", 10, emit=3.0, overlay=("Shoot", 0, arms))
+    # Round 5: he flies in from the right, turned to the boss in profile / three-quarter front (visor and the firing
+    # arm to the camera, the jetpack and its flames trailing behind him), leaning into the dive and banking towards
+    # the maw. The +yaw keeps the Shoot arm (which points off his chest axis) on the throat.
+    _, sbones = place(po, col_units, sp, yaw_to(sp, maw) + math.radians(STAGE["spencer_yaw"]), STAGE["spencer_scale"],
+                      (math.radians(STAGE["spencer_lean"]), math.radians(STAGE["spencer_bank"])))
     pistol = attach_pistol(col_units, sbones["Weapon_R"], Matrix.Rotation(-math.pi / 2, 4, "X"))
     for side in ("Jet_L", "Jet_R"):
         if side in sbones:
-            jet_flame("Flame" + side, sbones[side], col_fx)
+            jet_flame("Flame" + side, sbones[side], col_fx, length=1.3)
     light("SpencerKey", sp + Vector((-1.5, -2.0, 1.5)), (0.75, 0.85, 1.0), 220.0, 0.5, col_lit)
     # Round 4: a warm key from high camera-left on the focal duel (Spencer, the boss's head, the gate in front), so
     # the eye lands there first; the edges keep only the cool sky and their own dim glows.
@@ -1345,14 +1381,22 @@ def build_scene(draft=False):
     hand = sbones["Weapon_R"].to_translation()
     pts = [o.matrix_world @ v.co for o in pistol for v in o.data.vertices]
     hand = max(pts, key=lambda q: (q - hand).length)
-    tgt = maw + Vector((0.0, -0.6, 0.9))
-    d = (tgt - hand).normalized()
-    tracers("SpencerBolts", hand + d * 0.4, tgt, col_fx, count=6, length=2.2, width=0.08, colour=LASER,
-            core=LASER_CORE, seed=16, spread=0.06, strength=14.0)
-    muzzle_flash("SpencerFlash", hand + d * 0.15, d, col_fx, colour=LASER, core=LASER_CORE, size=0.4, strength=7.0,
-                 energy=140.0, seed=17)
-    glow_ball("SpencerHit", tgt, 0.55, col_fx, LASER, LASER_CORE, 6.0, light_energy=1500.0, light_radius=0.4)
-    sparks("SpencerHitSparks", tgt, col_fx, rng, 24, 1.6, colour=(0.5, 0.8, 1.0), core=(0.85, 0.95, 1.0),
+    # Round 5: the bolts stream into the open throat; one burst hits the upper rim of the maw (on the side towards
+    # Spencer), so the flare and sparks sit beside the teeth instead of over them.
+    bs = STAGE["boss_scale"]
+    deep = maw - maw_fwd * 0.35 * bs
+    rim = maw + maw_fwd * 0.25 * bs + Vector((0, 0, 0.55 * bs)) + (sp - maw).normalized() * 0.5 * bs
+    d = (deep - hand).normalized()
+    tracers("SpencerBolts", hand + d * 0.4, deep, col_fx, count=5, length=2.2, width=0.08, colour=LASER,
+            core=LASER_CORE, seed=16, spread=0.05, strength=14.0)
+    dr = (rim - hand).normalized()
+    tracers("SpencerBoltsRim", hand + dr * 0.4, rim, col_fx, count=2, length=2.0, width=0.07, colour=LASER,
+            core=LASER_CORE, seed=18, spread=0.03, strength=12.0)
+    muzzle_flash("SpencerFlash", hand + d * 0.15, d, col_fx, colour=LASER, core=LASER_CORE, size=0.45, strength=7.0,
+                 energy=160.0, seed=17)
+    glow_ball("SpencerHitDeep", deep, 0.22, col_fx, LASER, LASER_CORE, 5.0, light_energy=900.0, light_radius=0.3)
+    glow_ball("SpencerHit", rim, 0.4, col_fx, LASER, LASER_CORE, 6.0, light_energy=1200.0, light_radius=0.4)
+    sparks("SpencerHitSparks", rim, col_fx, rng, 24, 1.6, colour=(0.5, 0.8, 1.0), core=(0.85, 0.95, 1.0),
            strength=8.0, size=0.025)
     # Battle smoke drifting over the road, catching the lava and fire light.
     for k, (y, off, r) in enumerate([(10.0, 3.0, 1.6), (21.0, 2.5, 2.2)]):
@@ -1373,7 +1417,9 @@ GRADE.update(bloom=0.35, fog=0.14)
 SHOTS = {
     # name: (resolution, location, target, lens, fstop)
     # Round 4: focus on Spencer with a wider aperture, so the near framing goes soft and the duel stays crisp.
-    "wide": ((3840, 1240), (-12.0, -17.0, 6.8), (4.0, 15.0, 3.6), 27.0, 0.4),
+    # Round 5: aimed right and up so the duel (the maw and Spencer flying in from the right) sits in Steam's centre
+    # 860x380 safe area of the library hero.
+    "wide": ((3840, 1240), (-12.0, -17.0, 6.8), (8.8, 12.7, 4.6), 27.0, 0.4),
     "std": ((2876, 1620), (-9.0, -10.0, 6.5), (3.5, 14.0, 4.2), 26.0, 0.6),
     "header": ((1840, 860), (-9.0, -10.0, 6.3), (3.5, 14.0, 5.4), 26.0, 0.6),
     "vert": ((1500, 1800), (-5.0, -10.0, 8.0), (4.0, 14.0, 4.2), 28.0, 0.6),
@@ -1381,6 +1427,14 @@ SHOTS = {
 
 
 FOCUS = {}   # build_scene fills "spencer": the point every shot focuses on
+
+# Round 5 staging of the duel, laid out from the std camera: the throat `depth` m along the view and `maw_left` m
+# left of it, `maw_z` above the floor; Spencer `spencer_right` m right of the throat and `spencer_back` m further,
+# at `spencer_z`. The boss faces a blend (weights) of "towards Spencer" and "towards the camera".
+STAGE = dict(camera=(-9.0, -10.0, 6.5), target=(3.5, 14.0, 4.2), depth=24.0, maw_left=1.0, maw_z=5.0,
+             spencer_right=6.5, spencer_back=-3.0, spencer_z=6.0, boss_turn=(0.45, 0.9), roar_frame=36,
+             boss_scale=4.4, boss_pitch=0.0, spencer_scale=3.3, spencer_yaw=62.0, spencer_lean=-28.0,
+             spencer_bank=20.0)
 
 
 def shot_camera(name, loc, target, lens, fstop):

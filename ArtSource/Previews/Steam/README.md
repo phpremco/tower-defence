@@ -1,6 +1,6 @@
 # Steam store and library images (Far Harvest: Deepwake)
 
-Made 2026-11-10, reworked 2026-11-11, from one key-art battle scene (`Tools/Blender/steam_keyart.py`, rounds 3-4: a densely dressed Landfall map
+Made 2026-11-10, reworked 2026-11-11, from one key-art battle scene (`Tools/Blender/steam_keyart.py`, rounds 3-5: a densely dressed Landfall map
 from the game's environment kit, the road with the gate across it, towers on build pads on the ground beside the road,
 a mixed C1 wave with flyers and Gravemaw rearing behind it, Spencer on his jetpack, on the approved CrysiumField logo
 environment), with the CrysiumField lockup composited on top
@@ -62,13 +62,40 @@ that the picture was busy; the gate showed no field; but it must stay brutal. Ch
   additive and see-through, lighting the road and the creatures; hit ripples, short arcs and sparks where Skitters
   strike it.
 
+## Round 5 (2026-11-11): Spencer flies in from the right, Gravemaw shows its teeth
+
+Remco: "Make Spencer fly in from the right and shoot Gravemaw. And upgrade both the in-game model and the posters to
+make Gravemaw have cool alien-like teeth in the mouth. Multiple rows like a worm with teeth. It looks quite basic when
+you see it so big." All round 4 qualities stay (one focal point, calm corridor, dim edges, gate field on, depth of
+field, edge falloff, logo-free library hero with the dark logo pool bottom-left).
+
+- **New Gravemaw maw** (the in-game export, `Tools/Blender/gravemaw_maw.py`): a worm gullet with five rows of hooked
+  teeth (two on every jaw petal, three rings down the throat). The teeth are bone-white at the tip and amber at the
+  root, and the throat runs down to a hot core. The candy-pink petal insides became dark, wet flesh.
+- **The maw is the hero detail:** Gravemaw rears in its Roar, mouth wide open towards Spencer and the camera. The heat
+  sits deep in the throat behind the teeth (no glow ball in front of them), so the rows read against it even at
+  capsule size.
+- **Spencer flies in from the right:**
+  - He is turned to the boss in three-quarter front, so his visor and firing arm face the camera.
+  - He leans back as he brakes and banks towards the maw, with the jet flames trailing.
+  - His bolts stream into the throat, and one burst flares on the maw's rim beside the teeth.
+  - He is a little larger than in round 4 and sits clear of the logo in every capsule.
+- **The duel is staged across the frame at one depth** (`STAGE` in `steam_keyart.py`): the boss is left of centre and
+  Spencer is right. The wide master is aimed at the library hero's 860x380 safe area. The safe area holds Spencer's
+  body, his bolts and the right half of the maw; his helmet and the left petals lie just outside it, because the two
+  are about 1,000 px apart.
+- **Slot tweaks:** the library capsule's crop leans right (focus 0.58), so Spencer's jetpack is not cut off. The hero's
+  logo pool is smaller and sits in the corner.
+
 ## Library hero and logo placement
 
 Steam keeps an 860x380 safe area in the centre of the hero uncropped at every client size; critical content belongs
 inside it. The logo is a separate asset whose position you pick in Steamworks' preview tool (left bottom, centred top,
 centred middle or centred bottom). The battle's focal point (Spencer firing into Gravemaw's face) sits round
-the centre; pick **left bottom** for the logo so it does not cover the action. The contact sheet shows that placement,
-over the darker pool the compose step leaves for it.
+the centre; pick **left bottom** for the logo so it does not cover the action. Round 5: the open maw sits just left of
+centre, so set the logo to about **23% of the hero width** (896 of 3840 px) in the preview tool. At full width it covers
+the lower petals. The contact sheet shows that size and placement, over the smaller dark pool the compose step leaves
+in the corner.
 
 ## Still needed from the game itself
 
