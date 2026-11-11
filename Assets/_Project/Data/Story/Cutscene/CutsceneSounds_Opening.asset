@@ -1,0 +1,463 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32858678e5b645644ac6a404d21719e6, type: 3}
+  m_Name: CutsceneSounds_Opening
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.CutsceneSoundBank
+  _slots:
+  - Sound: 21
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 36fc5cff562ce2448b6a8f64f94d0f2f, type: 3}
+      _gain: 1.1222938
+      _pitch: 1
+    Loop: 1
+    Channel: 1
+    Fallback: 0
+  - Sound: 22
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 70c0a8e5cc8462b4fa78e578a677cad8, type: 3}
+      _gain: 0.8260163
+      _pitch: 1
+    Loop: 1
+    Channel: 0
+    Fallback: 0
+  - Sound: 23
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: e857458ea86a7144db8e850261d4e47e, type: 3}
+      _gain: 0.6059543
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 24
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 08958c5d0bd6fae44987104b2a2c44ef, type: 3}
+      _gain: 0.43284786
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 25
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 5a5c9420119a1774f9562f93c2ff6157, type: 3}
+      _gain: 0.8464577
+      _pitch: 1
+    Loop: 1
+    Channel: 0
+    Fallback: 0
+  - Sound: 26
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 093fff1c616d1574794e3b242f2d4288, type: 3}
+      _gain: 0.7272675
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 18
+  - Sound: 27
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: e4839f527d035b344ac39f3c8a045aa1, type: 3}
+      _gain: 0.36142296
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 17
+  - Sound: 28
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 626a698ed9b7a9f4189415ebb654ef39, type: 3}
+      _gain: 0.42987776
+      _pitch: 1
+    Loop: 1
+    Channel: 0
+    Fallback: 0
+  - Sound: 29
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: eaf8f3ab5e3143e4d85767dcd47f945d, type: 3}
+      _gain: 0.31467772
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 30
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 2f3530d10471e324b96490ed30d4f878, type: 3}
+      _gain: 0.54702944
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 31
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: e6327cfc5c6736e429ae546d17cc2259, type: 3}
+      _gain: 0.8529489
+      _pitch: 1
+    Loop: 1
+    Channel: 0
+    Fallback: 0
+  - Sound: 32
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 8e0679d4b4973a34baffddf49ef7cb4c, type: 3}
+      _gain: 1.0328778
+      _pitch: 1
+    Loop: 1
+    Channel: 0
+    Fallback: 0
+  - Sound: 33
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: c3064845a20cd6149a2c0fde81bf59bf, type: 3}
+      _gain: 0.9961718
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 34
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 6347b8dc625ac2b41be30ada774f2e86, type: 3}
+      - {fileID: 8300000, guid: a10b7ebd8d1be5246953f8f1cc247642, type: 3}
+      - {fileID: 8300000, guid: 09f9659df030f0d47b16f98238641f3d, type: 3}
+      _gain: 0.5415387
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 18
+  - Sound: 35
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: b7c0a9802472b6942bdcd23a4740a7a8, type: 3}
+      _gain: 0.2467263
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 3
+  - Sound: 36
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 999a8cfa5d51f924f94ca53507068fed, type: 3}
+      _gain: 0.9324549
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 18
+  - Sound: 37
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 515ed4a005d57cd42b633d7ba8d1c927, type: 3}
+      _gain: 0.6155826
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 4
+  - Sound: 38
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 9aec4a4aa54032042be8926b65e64e5b, type: 3}
+      - {fileID: 8300000, guid: c6f0559858eb418488cfc0a5eae260ef, type: 3}
+      - {fileID: 8300000, guid: 2db140070aaf9b248bef3170893b0e09, type: 3}
+      - {fileID: 8300000, guid: 9bb27a3ec6bafe643803b089d1312b4c, type: 3}
+      _gain: 0.46804076
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 10
+  - Sound: 39
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 79ca63f14f642a24287f670e486c0520, type: 3}
+      - {fileID: 8300000, guid: f23c54d72d975374db218caea147fc8c, type: 3}
+      - {fileID: 8300000, guid: b2e19fbc30a65fe419bbfe28c87c7886, type: 3}
+      - {fileID: 8300000, guid: 22bacb93cf1cd634ebc93127543ac064, type: 3}
+      _gain: 0.5680909
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 10
+  - Sound: 40
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: a8f949734553a284fb096ac6a217aee9, type: 3}
+      - {fileID: 8300000, guid: a554e11c95af80f4cb323c687e66825f, type: 3}
+      - {fileID: 8300000, guid: 1917f00cafa403341bb10866da81cfe4, type: 3}
+      - {fileID: 8300000, guid: 0069c3a9106bef64c8f01599be33bbda, type: 3}
+      _gain: 0.45642495
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 10
+  - Sound: 41
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: aadbd934fe5207b47a0b3420c1e274f1, type: 3}
+      _gain: 1.2341988
+      _pitch: 1
+    Loop: 1
+    Channel: 0
+    Fallback: 0
+  - Sound: 42
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 33dc07edf91ca164a937b5ccca7665ab, type: 3}
+      _gain: 0.8522844
+      _pitch: 1
+    Loop: 1
+    Channel: 0
+    Fallback: 0
+  - Sound: 43
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: db164d308d47239498d8d95f867e79c0, type: 3}
+      _gain: 0.87254125
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 44
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 086e6eca306e31645a096c972c221021, type: 3}
+      _gain: 0.60220623
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 45
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 9a3fe2d788bffe049b211f16ddbdf9db, type: 3}
+      _gain: 0.6332432
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 46
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 7ea9b6a1802f1f546a9f714109e8e59a, type: 3}
+      _gain: 0.63576096
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 47
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 2c089c54d7792284ea7b7431945e86e1, type: 3}
+      _gain: 0.71228623
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 48
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 962d498e1335a914bab5914d505a283b, type: 3}
+      _gain: 0.48334557
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 49
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 595687ba6fe8ccc4bbae6d010ee49c53, type: 3}
+      _gain: 2.295825
+      _pitch: 1
+    Loop: 1
+    Channel: 0
+    Fallback: 0
+  - Sound: 50
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: b20ab42a470cbfc46850c152d27eb7a5, type: 3}
+      _gain: 1.7906001
+      _pitch: 1
+    Loop: 1
+    Channel: 0
+    Fallback: 6
+  - Sound: 51
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 05e6b1b4e65d4e343a8308b622b62526, type: 3}
+      _gain: 1.8607135
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 52
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: d177608ca8b6625449d7ca0ba5d1b5a5, type: 3}
+      _gain: 0.67957026
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 53
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: a91011828978af44aafe7eef5031f940, type: 3}
+      _gain: 1.0909677
+      _pitch: 1
+    Loop: 1
+    Channel: 0
+    Fallback: 2
+  - Sound: 54
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: c88e83923c3050b4f93f51080f151467, type: 3}
+      _gain: 1.4918026
+      _pitch: 1
+    Loop: 1
+    Channel: 1
+    Fallback: 0
+  - Sound: 16
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: ecc29be17c1b9474da5d1601f9d1c282, type: 3}
+      _gain: 0.54706484
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 55
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 7209d522c5db282448a056fca2a04243, type: 3}
+      _gain: 0.7628268
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 5
+  - Sound: 56
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 3ad04d5c9176007468d70e88f1ac0d91, type: 3}
+      _gain: 0.6172968
+      _pitch: 1
+    Loop: 1
+    Channel: 0
+    Fallback: 0
+  - Sound: 57
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 39d05411f30283c479f511d766fee4a2, type: 3}
+      _gain: 0.43819827
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 1
+  - Sound: 58
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: ae89c16cf1428784ca3089aa8659b0ef, type: 3}
+      - {fileID: 8300000, guid: 5c2f96bb22978aa4695e134c1691ed32, type: 3}
+      _gain: 0.29300785
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 14
+  - Sound: 59
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: e5b5c9e0dd3c23540a424298d1674fc5, type: 3}
+      - {fileID: 8300000, guid: c87b940a3e26dcd42a98227d017639f5, type: 3}
+      _gain: 0.90599084
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 60
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: b914e8874427ac245b2160b37fbf1f96, type: 3}
+      _gain: 1.984666
+      _pitch: 1
+    Loop: 1
+    Channel: 0
+    Fallback: 0
+  - Sound: 61
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: dfc6d544ab6191e46a2003445ec1b92b, type: 3}
+      _gain: 0.37344113
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 12
+  - Sound: 62
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: a477c34ec35cae04aa4b847f55f14018, type: 3}
+      _gain: 1.5139673
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 63
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 59ae651ea8fef1b418848d2995c88be5, type: 3}
+      _gain: 2.1096165
+      _pitch: 1
+    Loop: 1
+    Channel: 1
+    Fallback: 0
+  - Sound: 64
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 47be359acce955a4d9096ada25ee4d95, type: 3}
+      _gain: 3.2158368
+      _pitch: 1
+    Loop: 1
+    Channel: 1
+    Fallback: 0
+  - Sound: 65
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 861561be2c7bc53448544fb6fcf04048, type: 3}
+      - {fileID: 8300000, guid: c41dd71fa9dd2474199e92213b17f7fe, type: 3}
+      - {fileID: 8300000, guid: 2c0ece8dad55b5540a7e8ff1e0abe0bd, type: 3}
+      _gain: 1.4817047
+      _pitch: 1
+    Loop: 0
+    Channel: 1
+    Fallback: 0
+  _music:
+  - Mood: 2
+    Track:
+      _clips: []
+      _gain: 1
+      _pitch: 1
+    Volume: 0.5
+  - Mood: 3
+    Track:
+      _clips: []
+      _gain: 1
+      _pitch: 1
+    Volume: 0.42
+  - Mood: 4
+    Track:
+      _clips: []
+      _gain: 1
+      _pitch: 1
+    Volume: 0.55

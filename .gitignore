@@ -59,3 +59,7 @@ __pycache__/
 
 # Probe filter (local, optional): levels=, difficulties=, seeds=, step= lines narrow the explicit balance tests
 Tools/PlayTest/probe_arg.txt
+
+# Audio tool scratch: decoded sources and rendered candidates (approved files are copied into Assets)
+Tools/Audio/out/
+Tools/Audio/src_intro/

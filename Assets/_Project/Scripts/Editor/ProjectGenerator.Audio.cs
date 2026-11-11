@@ -240,12 +240,17 @@ namespace Game.Editor
         }
 
         // The clips in a folder whose name is the given name, or the name followed by a space or underscore and a number.
-        private static List<AudioClip> FindClips(string folder, string name)
+        // A slot that waits for a file on purpose asks not to be warned about it.
+        private static List<AudioClip> FindClips(string folder, string name, bool warnWhenMissing = true)
         {
             var clips = new List<AudioClip>();
             if (!AssetDatabase.IsValidFolder(folder))
             {
-                Debug.LogWarning($"Audio folder missing: {folder}");
+                if (warnWhenMissing)
+                {
+                    Debug.LogWarning($"Audio folder missing: {folder}");
+                }
+
                 return clips;
             }
 
@@ -265,7 +270,7 @@ namespace Game.Editor
             }
 
             clips.Sort((a, b) => string.CompareOrdinal(a.name, b.name));
-            if (clips.Count == 0)
+            if (clips.Count == 0 && warnWhenMissing)
             {
                 Debug.LogWarning($"No audio clips named {name} in {folder}.");
             }

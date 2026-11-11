@@ -40,7 +40,7 @@ namespace Game.UI
         [Tooltip("The bed under the menu music; without one the nest theme's procedural ambience plays.")]
         [SerializeField] private AudioClip _ambience;
         [Tooltip("Its level before the Ambience volume setting.")]
-        [SerializeField] [Range(0f, 1f)] private float _ambienceVolume = 0.4f;
+        [SerializeField] [Range(0f, 1f)] private float _ambienceVolume = 0.25f;
 
         public VisualTheme ForestTheme => _forestTheme;
         public VisualTheme LavaTheme => _lavaTheme;

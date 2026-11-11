@@ -95,7 +95,7 @@ namespace Game.UI
 
             _audio = new GameObject("CutsceneAudio").AddComponent<CutsceneAudio>();
             _audio.transform.SetParent(transform, false);
-            _audio.Initialize(library, mix, cutscene.Cast);
+            _audio.Initialize(library, mix, cutscene.Cast, cutscene.Sounds);
 
             _overlay = gameObject.AddComponent<CutsceneOverlay>();
             _overlay.Build(OnSkipPressed);
@@ -134,6 +134,7 @@ namespace Game.UI
             _setExposure?.Invoke(_exposure);
             SnapVolumes();
             SimulateParticles(_sequencer.LocalTime);
+            _audio.Snap();
             PoseCurrent(0f);
             _overlay.SetFade(0f);
         }
@@ -194,6 +195,7 @@ namespace Game.UI
             _context.Rumble = 0f;
             _context.Float = 0f;
             _current.Tick(time, progress);
+            _audio.PoseLayers(time, delta);
             _camera.Apply(CameraPath.Sample(_keys, progress), delta, _context.Rumble, _context.Float);
             PoseRig();
             _overlay.SetFade(ShotFade(shot, time));
@@ -248,6 +250,7 @@ namespace Game.UI
             _lighting = shot.Lighting;
             ClearView(set);
             _audio.SetMusic(shot.Music);
+            _audio.EnterShot(shot.Layers);
             _overlay.SetLetterbox(shot.Letterbox);
             _overlay.Radar.Show(shot.Overlay == CutsceneOverlayKind.Radar);
         }
@@ -456,7 +459,7 @@ namespace Game.UI
             _finishFade = _overlay.FadeAlpha;
             _overlay.SetTitle(null, 0f);
             _overlay.SetSkipArmed(0f);
-            _audio.SetMusic(CutsceneMusic.Silence);
+            _audio.FadeOut();
         }
 
         private void UpdateFinish(float delta)

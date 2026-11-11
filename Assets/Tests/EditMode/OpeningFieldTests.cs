@@ -43,16 +43,16 @@ namespace Game.Tests
         public void TheHandoff_RoarsAndRunsBack_BeforePlayStarts()
         {
             CutsceneShot handoff = Find(CutsceneAction.Handoff);
-            Assert.IsTrue(Has(handoff, CutsceneSound.Scream), "no last roar in the handoff");
+            Assert.IsTrue(Has(handoff, CutsceneSound.QueenRoar), "no last roar in the handoff");
             Assert.IsTrue(Has(handoff, CutsceneSound.HeavySteps), "no running steps in the handoff");
         }
 
         [Test]
         public void TheOrbitAndTheLanding_SoundTheirMachines()
         {
-            Assert.IsTrue(Has(Find(CutsceneAction.CapsulesFall), CutsceneSound.Thrusters), "the capsules leave the bay in silence");
-            Assert.IsTrue(Has(Find(CutsceneAction.CapsulesFall), CutsceneSound.RocketLaunch), "no booster in the orbit shot");
-            Assert.IsTrue(Has(Find(CutsceneAction.PathfinderLands), CutsceneSound.HeroStep), "Spencer walks out without a footstep");
+            Assert.IsTrue(Has(Find(CutsceneAction.CapsulesFall), CutsceneSound.ColdGasPuff), "the capsules leave the bay in silence");
+            Assert.IsTrue(Has(Find(CutsceneAction.CapsulesFall), CutsceneSound.BoosterIgnition), "no booster in the orbit shot");
+            Assert.IsTrue(Has(Find(CutsceneAction.PathfinderLands), CutsceneSound.StepMetal), "Spencer walks out without a footstep");
             Assert.Greater(AssetDatabase.LoadAssetAtPath<Game.Core.SfxLibrary>(SfxLibraryPath).DistantBlasts.Count, 0, "the approved distant blast is not in the sound library");
         }
 

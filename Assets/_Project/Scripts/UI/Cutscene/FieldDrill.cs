@@ -148,7 +148,7 @@ namespace Game.UI
             VfxSheet dust = burst != null ? (burst.DustSheet != null ? burst.DustSheet : burst.SmokeSheet) : null;
             _dust = CutsceneBursts.Stream(Root, "Dust", Vector3.up * 0.3f, dust, low, context.Scaled(160), new Vector2(0.8f, 1.6f), new Vector2(0.6f, 1.8f), -0.04f, DustColour, 1.3f);
             _contact = CutsceneBursts.Burst(Root, "ContactDust", Vector3.up * 0.2f, dust, low, context.Scaled(ContactDust), contactSeconds, new Vector2(1.4f, 2.6f), new Vector2(1.5f, 3.5f), -0.05f, DustColour, 1f, VfxParticles.Frames.OverLife);
-            _rumble = context.Audio.CreateLoop("DrillRumble", CutsceneSound.Rumble);
+            _rumble = context.Audio.CreateLoop("DrillRumble", CutsceneSound.DrillRun);
         }
 
         public Transform Root { get; }

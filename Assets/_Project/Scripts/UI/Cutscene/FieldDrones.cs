@@ -116,7 +116,7 @@ namespace Game.UI
                 }
             }
 
-            _fans = context.Audio.CreateLoop("HaulerFans", CutsceneSound.DroneFans);
+            _fans = context.Audio.CreateLoop("HaulerFans", CutsceneSound.DroneHum);
         }
 
         // How a parked hauler stands: facing the heap from the pad, level.

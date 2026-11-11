@@ -6007,3 +6007,70 @@ backup untouched; Game view size unchanged (every still rendered off-screen); th
 4. The reaction now starts with him looking aside (90 degrees off the brood) so the turn reads; in the shiver shots before it he
    faces the gate. A cut, not a pop, but visible on a careful watch.
 5. The Disbelief clip (round 35) no longer plays in the opening (the startle and draw replace it); it stays in the data.
+
+## Round 42: intro sounds (Remco's approved Approved/Intro set wired into the opening) (2026-11-11)
+
+Not committed (the curator commits). No balance data touched. Save `progress.json` MD5 2eca347e copied aside before every Play
+Mode run and restored after (unchanged); the dev backup untouched. Only the focused step `Tools/Generate/Opening Cutscene Sounds`
+was run (not the full generator); afterwards only `Cutscene_Opening.asset` and the new `CutsceneSounds_Opening.asset` changed.
+
+### 1. Data and code
+
+- **`CutsceneSoundBank`** (new ScriptableObject, `Data/Story/Cutscene/CutsceneSounds_Opening.asset`, on `CutsceneDefinition._sounds`):
+  one `CutsceneSoundSlot` per sound (variants as a `SoundSet` with the measured gain, loop flag, mix channel Effects/Ambience,
+  a fallback sound while empty) and one `CutsceneMusicSlot` per mood. A cutscene with a bank takes music only from it: the
+  Wonder/Tension/Attack tracks are empty, so **no music plays** (the shots keep their moods as the hook).
+- **`CutsceneSound`** gained 45 values (OrbitBed .. WildlifeCall), appended. All 61 approved files fill 46 slots; none is empty.
+- **`CutsceneLayer`** (new, `CutsceneShot.Layers`): a sound held over part of a shot (From/To/Volume/FadeIn/FadeOut), its level a
+  pure function of the shot clock. `CutsceneAudio` keeps one source per held sound: a layer the next shot lists again carries
+  on, any other glides out (1 s for the full range); a one-shot held as a layer (the re-entry wind rush) plays from its offset.
+- **Seeks** (`CutscenePlayer.Seek` -> `CutsceneAudio.Snap`): one-shots in flight stop, layers land on the new moment at once,
+  layers the new shot does not hold stop. **The end** (`FadeOut`) fades every source with the picture (0.9 s).
+- One-shots from the bank pick a random variant, never the last one (footsteps, retro bursts, ground tears, wildlife calls).
+- Set loops: the drill (`FieldDrill`) now plays `DrillRun`, the hauler fans (`FieldDrones`) `DroneHum`; they glide instead of
+  jumping on and off. Spencer's acting beats sound from `FieldSet` as the clock crosses them (played forward only): the helmet
+  gasp at the startle, the pistol draw at the draw clip, the charge whine at the draw clip's grab event.
+- Everything stays 2D, through the player's effects/ambience volumes. Generator: `ProjectGenerator.CutsceneSounds.cs` (bank,
+  per-shot cue and layer tables, the menu step; the full generator writes the same tables). `FindClips` can skip its warning.
+
+### 2. What plays where
+
+| Shot | Held layers | One-shots |
+| --- | --- | --- |
+| Earth, Survey | space drone bed | survey radar pings |
+| Orbit | bed, mothership hum, alarm (0.4-3.4 s), booster burn (2.9-15 s), plasma roar from 6 s | bay doors, per capsule: clamps + cold gas, ignition (+1.7 s), separation (+3.3 s); booster fading away after the first separation |
+| Landing | plasma roar + capsule rattle + wind rush until the touchdown, plain wind, calm helmet breathing once he appears | 3 retro bursts, touchdown, pressure release (hatch steam), hatch open, ramp step on metal then gravel steps, 2 beacon beeps, a wildlife call |
+| Base | wind, builder drone hum until they land | wildlife call, drone landing spin-down (16.6 s) |
+| Drill | wind; drill run loop (set) from the bit's contact | drill start-up (0.3 s, ends at running level), clank, contact quake |
+| Harvest, Core | wind; crystal hum from the ignition | harvest drones, core ignite |
+| Cave (2 shots) | cave drips (low), crystal hum, quake loop | quake swell; wet eyes opening (4), growls |
+| Shiver, Radar | wind, quake loop; calm breath in the shiver | quake swell; radar pings, base alert |
+| Swarm | wind, quake loop until the bursts, swarm chitter | 3 ground tears, heavy steps, growls, Queen roar (7.8 s) |
+| React | wind, chitter, calm breath -> fast breath from 0.9 s | growls, steps; gasp/draw/charge from his clips |
+| Gate | wind, chitter, fast breath during the run, calm from 7.5 s, radio static from Voss's line | alarm, stone steps on the run, panting at arrival, radio call open |
+| Handoff | wind; chitter, calm breath and static fade out | Queen roar, swarm retreat (1 s), running steps, burrows closing |
+
+The war drums of the old swarm shot are gone (they read as music). `capsule_gasp_dry` is in the bank but not cued.
+
+### 3. Checks
+
+- Compile: 0 errors, 0 warnings. EditMode suite on worker 6: 783 run, 731 passed, 0 failed,
+  52 skipped (the same skips as before; 773 before this round, +10 new). New `OpeningSoundTests` (every approved intro file in
+  the bank, no empty slot, no music track, every slot played, layers have slots, the wind well under the space bed, layer
+  envelope and validation); `OpeningFieldTests` updated to the new sounds.
+- Played run (`Tools/PlayTest/r42_play.sh`, a copy of r39_play.sh that also logs `r42_audio_probe.cs` every poll into
+  `Logs/r42/r42_audio.txt`; HOLD=8): 0 console errors/warnings, handed off into Level. The log shows the bed alone in the
+  prologue; bed + hum + burn + one-shots at orbit t=5.2, plasma roar from t=6; wind + calm breath on the landing; drill loop
+  at 0.65 while drilling; drips/hum/quake in the cave; chitter + fast breath at the gate run, static + calm breath during the
+  held gate line; only wind left at handoff t=7.5; **in the level no intro source plays** (only the level's own loops).
+- Seek probe (`r42_seek_probe.cs`, orbit -> cave -> gate -> orbit -> orbit): each seek leaves exactly that shot's layers, the
+  repeated seek gives the same 5 sources (no stacking), the set loops sit at 0 outside the field.
+
+### Open points for Remco (round 42)
+
+1. Footstep surfaces: ramp step metal, landing walk gravel, the run to the gate stone. Steps stay on the round-40 clip timings
+   (no foot events in his clips).
+2. Levels are set without listening (gains measured, then shares): please listen to the orbit (alarm, burn), the cave
+   drips and the radio static during a long gate read; all are one number each in `ProjectGenerator.CutsceneSounds`.
+3. The swarm shot's war drums were dropped as "music"; say if you want them back.
+4. The hauler fans now use the new drone hum with its measured gain: a little louder than the borrowed fan loop was.

@@ -229,12 +229,6 @@ def creak(dur, freqs=(520, 1340, 2650), rate=(28, 70), q=9.0):
     return norm(body) * env_points(t, [(0, 0), (dur * 0.15, 1), (dur * 0.7, 0.8), (dur, 0)])
 
 
-def metal_tick(f0=None):
-    f0 = f0 or s.rng.uniform(900, 3400)
-    return s.metal_ring(s.rng.uniform(0.04, 0.12), [f0, f0 * 2.31, f0 * 3.7],
-                        [s.rng.uniform(0.012, 0.04), 0.012, 0.006], [1, 0.4, 0.2], strike=0.0015)
-
-
 def booster_burn_raw(length=5.0):
     """Booster roar: the crackle recording plus a periodic synthetic roar and crackle (loop-ready)."""
     rec = src("rocket-booster-crackle", 0.3, 0.3 + length + 0.5)
@@ -482,18 +476,23 @@ def launch_burn(v):
 
 
 @intro("Launch/launch_stage_separation", "Stage separation (bang, metal, pyro bolts)",
-       "mechanical-clamp.mp3, Kenney impactMetal_001/003", "two pyro-bolt cracks (pressure pulse + click) + a small "
-       "metallic explosion + pitched-down metal impacts + the clamp clank + a big low structure ring; mono", -14)
+       "Kenney explosionCrunch_000, Kenney lowFrequency_explosion_001, mechanical-clamp.mp3",
+       "two sharp pyro-bolt cracks 45 ms apart (pressure pulse + 4 ms broadband burst), a short explosive crunch "
+       "and low thump, the clamp's mechanical release clank, a brief falling gas/debris whoosh; no tonal layers; mono",
+       -14)
 def launch_separation(v):
-    out = np.zeros(n_of(2.4))
-    for at, g in ((0.0, 1.0), (0.055, 0.8)):
-        bolt = s.mix(lp(s.friedlander(0.3, 0.0035), 5500), 0.6 * s.click(0.03, 1500, 9000, 0.003))
-        place(out, norm(bolt) * g, at)
-    place(out, s.explosion(size=0.35, distance=0.25, metal=0.8, debris_amt=0.6, dur=1.8) * 0.55, 0.01)
-    place(out, norm(s.pitch_shift(src("kenney_impactMetal_001"), 0.7)) * 0.5, 0.02)
-    place(out, norm(s.pitch_shift(src("kenney_impactMetal_003"), 0.85)) * 0.35, 0.12)
-    place(out, norm(fade(src("mechanical-clamp", 2.33, 2.95), 0.002, 0.2)) * 0.35, 0.04)
-    place(out, s.metal_ring(2.0, [173, 457, 1031, 1790], [0.7, 0.4, 0.2, 0.1], [1, 0.6, 0.35, 0.2]) * 0.22, 0.05)
+    out = np.zeros(n_of(1.8))
+    for at, g in ((0.0, 1.0), (0.045, 0.85)):
+        burst = s.white(n_of(0.004)) * np.exp(-np.arange(n_of(0.004)) / n_of(0.0012))
+        crack = s.mix(hp(s.friedlander(0.12, 0.0015), 250), 0.7 * burst)
+        place(out, norm(crack) * g, at)
+    place(out, norm(fade(src("kenney_explosionCrunch_000"), 0.002, 0.3)) * 0.75, 0.01)
+    low = lp(src("kenney_lowFrequency_explosion_001", 0.03, 1.0), 400)
+    place(out, norm(fade(low, 0.003, 0.4)) * 0.7, 0.0)
+    place(out, norm(fade(src("mechanical-clamp", 2.33, 2.95), 0.002, 0.2)) * 0.55, 0.07)
+    t = tax(0.6)
+    whoosh = s.sweep(s.pink(len(t)), "band", (2500, 350), width=1.2) * s.env_ad(t, 0.02, 0.18)
+    place(out, norm(whoosh) * 0.3, 0.05)
     return out
 
 
@@ -542,21 +541,19 @@ def reentry_plasma(v):
 
 
 @intro("Reentry/reentry_capsule_rattle_loop", "Capsule rattling and creaking under load",
-       "synthesis", "clusters of small metal ticks (modal) whose density breathes, three stick-slip creaks through "
-       "narrow resonances, low structural vibration; all wrap-placed; mono", -22, loop=True)
+       "metal-creaking.mp3", "a low 30-150 Hz hull vibration as the bed, with the recording's two creak phrases on top "
+       "(~7 dB lower than before relative to the bed) placed six times at pitches 0.78-1.06 with varied gains; "
+       "all creaks sit between 0.4 s and 9.8 s so the seam falls on the bed only; mono", -24, loop=True)
 def reentry_rattle(v):
-    L = 6.0
+    L = 10.0
     n = n_of(L)
     out = np.zeros(n)
-    dens = csmooth(n, 0.8, 0.1, 1.0)
-    for t0 in np.sort(s.rng.uniform(0, n, int(70 * L))):
-        if s.rng.uniform() < dens[int(t0)]:
-            place_wrap(out, metal_tick(), t0, s.rng.uniform(0.15, 0.6))
-    for at, d, base in ((0.4, 0.9, 1.0), (2.6, 1.2, 0.8), (4.5, 0.7, 1.25)):
-        cr = creak(d, freqs=(430 * base, 1120 * base, 2380 * base), rate=(22, 60))
-        place_wrap(out, cr, n_of(at), 0.5)
-    vib = cnoise(n, 35, 220, -1.0) * csmooth(n, 7, 0.3, 1.0)
-    return norm(out) + 0.35 * norm(vib)
+    phrases = [fade(src("metal-creaking", 0.25, 1.35), 0.08, 0.15), fade(src("metal-creaking", 1.45, 3.15), 0.08, 0.25)]
+    for k, (at, pitch, g) in enumerate(((0.4, 1.0, 1.0), (1.7, 0.82, 0.8), (3.9, 1.06, 0.7),
+                                        (5.1, 0.78, 0.9), (7.4, 0.94, 0.75), (7.8, 0.86, 0.85))):
+        place_wrap(out, s.pitch_shift(phrases[k % 2], pitch), n_of(at), g)
+    vib = cnoise(n, 30, 150, -1.0) * csmooth(n, 5, 0.4, 1.0)
+    return 0.6 * norm(out) + 0.16 * norm(vib)
 
 
 @intro("Reentry/reentry_wind_rush", "Wind rush as it falls",
@@ -629,22 +626,18 @@ def capsule_pressure(v):
     return out
 
 
-def latch(f0):
-    return norm(s.mix(s.click(0.03, 1500, 7000, 0.004),
-                      0.6 * s.metal_ring(0.25, [f0, f0 * 2.3, f0 * 3.8], [0.05, 0.03, 0.02], [1, 0.4, 0.2])))
-
-
 @intro("Capsule/capsule_hatch_open", "Hatch unlocking and swinging open",
-       "spaceship-door-opening.mp3, mechanical-clamp.mp3", "two latch clacks (click + small modal ring) and a "
-       "short clamp clank, then the door take, a soft stop thud at the end; mono", -18)
+       "mechanical-clamp.mp3, release-hiss.mp3, spaceship-door-opening.mp3",
+       "one event: a dull unlock thunk (clamp clank low-passed at 900 Hz + low thump), a short pressure hiss, "
+       "the door take ending on its own tail with a 0.1 s fade; mono", -18)
 def capsule_hatch(v):
-    door = fade(src("spaceship-door-opening", 0.08, 1.55), 0.005, 0.25)
-    out = np.zeros(n_of(2.3))
-    place(out, latch(1250), 0.0, 0.7)
-    place(out, latch(980), 0.15, 0.6)
-    place(out, norm(fade(src("mechanical-clamp", 2.36, 2.62), 0.002, 0.08)) * 0.35, 0.16)
-    place(out, norm(door), 0.38)
-    place(out, norm(s.thump(0.4, 150, 70, 20, 0.06, 0.4, 900)) * 0.4, 0.38 + 1.4)
+    out = np.zeros(n_of(1.95))
+    clank = lp(fade(src("mechanical-clamp", 2.33, 2.75), 0.002, 0.15), 900, 4)
+    place(out, norm(clank) * 0.7, 0.0)
+    place(out, norm(s.thump(0.35, 110, 55, 15, 0.08, 0.4, 500)) * 0.6, 0.0)
+    hiss = lp(fade(src("release-hiss", 0.04, 0.6), 0.01, 0.2), 7000)
+    place(out, norm(hiss) * 0.35, 0.1)
+    place(out, norm(fade(src("spaceship-door-opening", 0.08, 1.6), 0.005, 0.1)), 0.3)
     return out
 
 
@@ -749,64 +742,75 @@ def radio_static(v):
 DRONE_LOOP = 4.0
 
 
-def drone_hum(n, f_bp, spin=None):
-    """Builder drone rotor: blade-pass harmonics, motor whine and chopped airflow."""
-    t = np.arange(n) / SR
-    if spin is None:
-        ph = 2 * np.pi * f_bp * t
-    else:
-        ph = s.phase_of(spin)
-    rotor = sum(a * np.sin(k * ph) for k, a in ((1, 1.0), (2, 0.6), (3, 0.4), (4, 0.25), (5, 0.15), (7, 0.08)))
-    whine = 0.12 * np.sin(10 * ph) + 0.06 * np.sin(20 * ph)
-    chop = 0.5 + 0.5 * np.abs(np.sin(ph / 2)) ** 3
-    flow = cnoise(n, 300, 3500, -1.0) * chop
-    return norm(rotor) + 0.6 * norm(whine) * 0.5 + 0.35 * norm(flow)
+FAN_RATES = (151.0, 158.0, 164.0, 172.0)     # blade-pass rates of the four rotors (Hz), slightly detuned
+
+
+def fan(n, rates):
+    """Rotor airflow: broadband noise chopped at each rotor's blade-pass rate, a soft 1-3 kHz whir and only a
+    faint blade tone. rates: per rotor, a constant (Hz) or a per-sample array (spin-up/-down)."""
+    out = np.zeros(n)
+    for r in rates:
+        r = np.full(n, float(r)) if np.isscalar(r) else r
+        ph = s.phase_of(r)
+        chop = 0.55 + 0.45 * (0.5 + 0.5 * np.sin(ph)) ** 2
+        flow = cnoise(n, 150, 7000, -1.0) * chop
+        whir = cnoise(n, 1000, 3000, -0.5) * (0.7 + 0.3 * np.sin(2 * ph))
+        tone = 0.5 * np.sin(ph) + 0.25 * np.sin(2 * ph)
+        out += norm(flow) + 0.3 * norm(whir) + 0.08 * tone
+    return out
 
 
 @intro("Colony/colony_drone_hum_loop", "Builder drones (hum)", "synthesis",
-       "periodic rotor (blade-pass 118 Hz harmonics), motor whine and chopped airflow, slow wobble; mono",
-       -24, loop=True)
+       "fan sound: four rotors (blade-pass 151-172 Hz, snapped to the loop) each chopping broadband pink airflow, a "
+       "moderate 1-3 kHz whir, a faint blade tone, slow wobble; exactly periodic; mono", -24, loop=True)
 def colony_drone_hum(v):
     n = n_of(DRONE_LOOP)
-    f = snap(118.0, DRONE_LOOP)
-    return drone_hum(n, f) * csmooth(n, 1.0, 0.8, 1.0)
+    return fan(n, [snap(r, DRONE_LOOP) for r in FAN_RATES]) * csmooth(n, 1.0, 0.85, 1.0)
 
 
-@intro("Colony/colony_drone_land", "Builder drones (landing thump)", "synthesis",
-       "rotor spinning down 118 -> 60 Hz, servo whir, a metal-footed thump at 0.35 s and a few gravel grains; mono",
-       -18)
+DRONE_HUM_FILE = os.path.join(s.OUT, "intro", "Colony", "colony_drone_hum_loop.wav")
+
+
+@intro("Colony/colony_drone_land", "Builder drones (landing: hum slowing to a stop)",
+       "out/intro/Colony/colony_drone_hum_loop.wav (the approved hum, byte-identical)",
+       "the approved hum loop at full level for 0.6 s, then varispeed easing out from 1.0 to 0.25 over 2.8 s "
+       "(blade rate and pitch fall together) while the level eases to silence; nothing added; mono", -27, comp=False)
 def colony_drone_land(v):
-    dur = 1.4
-    n = n_of(dur)
-    t = np.arange(n) / SR
-    spin = 60 + 58 * np.exp(-t / 0.35)
-    hum = drone_hum(n, 0, spin) * np.exp(-t / 0.4)
-    servo = lp(s.osc(s.glide(t, 420, 180, 6), "saw"), 2200) * env_points(t, [(0, 0), (0.05, 0.4), (0.3, 0.3), (0.45, 0)])
-    out = 0.5 * norm(hum) + 0.25 * norm(servo)
-    place(out, norm(s.footstep(0.5, "metal")) * 0.9, 0.35)
-    tt = s.poisson_times(lambda x: 300 * np.exp(-x / 0.08), 0.4, 0.0)
-    place(out, norm(s.grains(n_of(0.4), tt, (0.001, 0.005), (1500, 7000), s.rng.uniform(0.3, 1, len(tt)))) * 0.25, 0.36)
-    return fade(out, 0.005, 0.1)
+    hum = np.tile(_read(DRONE_HUM_FILE, True), 4)
+    hold, ramp = 0.6, 2.8
+    n = n_of(hold + ramp)
+    u = np.clip((np.arange(n) / SR - hold) / ramp, 0, 1)
+    ease = 1 - (1 - u) ** 2                         # ease-out: the drop is quick at first, then settles
+    rate = 1.0 - 0.75 * ease
+    y = vread(hum, rate)[:n]
+    level = (1 - u[:len(y)]) ** 2
+    return fade(y * level, 0.005, 0.05)
 
 
 def drill_motor(n, f):
     return lp(s.osc(f, "saw"), 1500)
 
 
-@intro("Colony/colony_drill_start", "Drill starting up", "stone-drilling.mp3",
-       "synth motor spin-up (20 -> 95 Hz saw, filter opening), the bit engaging (thump) into 2.4 s of the drilling "
-       "take; ends at running level with a 0.3 s fade so the run loop can take over; mono", -18)
+@intro("Colony/colony_drill_start", "Drill starting up", "stone-drilling.mp3, mechanical-clamp.mp3",
+       "heavy motor/gearbox spin-up (25 -> 95 Hz harmonic motor at a fixed 1.2 kHz lowpass, gear-mesh whine "
+       "rising 300 -> 1140 Hz, grinding noise), three gear-engage clanks cut from the clamp, then the bit engaging "
+       "into the drilling take; ends at running level with a 0.3 s fade so the run loop can take over; mono", -18)
 def colony_drill_start(v):
     dur = 3.8
     n = n_of(dur)
     t = np.arange(n) / SR
-    f = 20 + 75 * (1 - np.exp(-t / 0.45))
-    motor = s.sweep(drill_motor(n, f), "low", s.curve_of(100, lambda u: 500 + 3500 * min(u * 3, 1)))
-    motor *= env_points(t, [(0, 0), (0.6, 0.7), (1.2, 1.0), (dur, 0.6)])
-    out = 0.5 * norm(motor)
+    f = 25 + 70 * (1 - np.exp(-t / 0.5))
+    motor = lp(s.osc(f, "saw"), 1200, 4)
+    mesh = np.sin(s.phase_of(f * 12)) * (0.8 + 0.2 * s.smooth_rand(n, 20))
+    grind = bp(s.pink(n), 200, 2000) * s.smooth_rand(n, 15, 0.5, 1.0)
+    run_up = env_points(t, [(0, 0), (0.15, 0.5), (1.2, 1.0), (1.5, 0.7), (dur, 0.45)])
+    out = (0.6 * norm(motor) + 0.12 * norm(mesh) + 0.2 * norm(grind)) * run_up
+    for at, a in ((0.22, 2.40), (0.62, 2.62), (1.0, 2.85)):
+        clank = lp(fade(src("mechanical-clamp", a, a + 0.12), 0.002, 0.06), 2500)
+        place(out, norm(clank) * 0.45, at)
     rec = src("stone-drilling", 1.0, 3.8)
-    place(out, norm(fade(rec, 0.12, 0.3)), 1.15, 1.0)
-    place(out, norm(s.thump(0.3, 160, 60, 20, 0.05, 0.7, 1500)) * 0.5, 1.15)
+    place(out, norm(fade(rec, 0.15, 0.3)), 1.3, 1.0)
+    place(out, norm(s.thump(0.3, 140, 55, 20, 0.05, 0.7, 1200)) * 0.5, 1.3)
     return fade(out, 0.005, 0.3)
 
 
@@ -940,18 +944,12 @@ def ground_tear(v):
 
 
 @intro("Threat/threat_eyes_open_wet", "Eyes opening in the dark (wet, organic)",
-       "Kenney slime_000 / slime_001", "sfxlib squelch + a slime fragment + sticky micro-clicks (lids peeling) "
-       "+ a soft lid 'thup', lowpassed 7 kHz; mono", -20, variants=2)
+       "Kenney slime_001", "only a slime_001 fragment (two different sections), 30 ms fade-in, lowpassed 7 kHz; "
+       "no squelch, no transient; mono", -20, variants=2)
 def eyes_open(v):
-    out = np.zeros(n_of(0.75))
-    place(out, norm(s.squelch_sound(0.5, 0.3 + 0.15 * v)) * 0.7, 0.02)
-    slime = src("kenney_slime_000") if v == 0 else src("kenney_slime_001", 1.2, 1.8)
-    place(out, norm(fade(s.pitch_shift(slime, (1.25, 1.1)[v]), 0.005, 0.1)) * 0.5, 0.0)
-    tt = s.poisson_times(lambda x_: 260 * np.exp(-x_ / 0.06), 0.25, 0.0)
-    place(out, norm(s.grains(n_of(0.3), tt, (0.0005, 0.003), (1500, 6000), s.rng.uniform(0.2, 1, len(tt)))) * 0.25, 0.0)
-    t = tax(0.12)
-    place(out, norm(lp(s.pink(len(t)), 500) * s.env_ad(t, 0.004, 0.03)) * 0.4, 0.18)
-    return fade(lp(out, 7000), 0.002, 0.12)
+    a = (1.2, 2.6)[v]
+    slime = s.pitch_shift(src("kenney_slime_001", a, a + 0.55), (1.15, 1.0)[v])
+    return fade(lp(slime, 7000), 0.03, 0.15)
 
 
 @intro("Threat/threat_swarm_chitter_loop", "Skitter swarm chittering (loop)",

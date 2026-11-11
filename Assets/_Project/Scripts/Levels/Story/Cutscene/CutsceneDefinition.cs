@@ -18,6 +18,8 @@ namespace Game.Levels
         [SerializeField] private DifficultyProfile _handoffDifficulty;
         [Tooltip("The camera's drift and how hard an impact cue may kick it; no shake may last.")]
         [SerializeField] private CutsceneCameraFeel _cameraFeel = CutsceneCameraFeel.Calm;
+        [Tooltip("The cutscene's own sounds and music; empty borrows everything from the game's sound library and level music.")]
+        [SerializeField] private CutsceneSoundBank _sounds;
 
         public string Id => name;
         public IReadOnlyList<CutsceneShot> Shots => _shots;
@@ -25,6 +27,7 @@ namespace Game.Levels
         public CutsceneHandoff Handoff => _handoff;
         public DifficultyProfile HandoffDifficulty => _handoffDifficulty;
         public CutsceneCameraFeel CameraFeel => _cameraFeel;
+        public CutsceneSoundBank Sounds => _sounds;
 
         /// <summary>The run time when every dialogue closes at once, as in auto-advance.</summary>
         public float AutoSeconds(int fromShot = 0, int toShot = int.MaxValue)
@@ -93,6 +96,11 @@ namespace Game.Levels
                 ValidateHandoff(errors, catalog);
             }
 
+            if (_sounds != null)
+            {
+                _sounds.Validate(errors);
+            }
+
             return errors.Count == before;
         }
 
@@ -153,6 +161,14 @@ namespace Game.Levels
                 {
                     errors.Add($"shot {number}: camera keys are not sorted by time.");
                     break;
+                }
+            }
+
+            if (shot.Layers != null)
+            {
+                foreach (CutsceneLayer layer in shot.Layers)
+                {
+                    layer.Validate(number, errors);
                 }
             }
 

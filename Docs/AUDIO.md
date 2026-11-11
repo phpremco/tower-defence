@@ -92,54 +92,60 @@ The opening cutscene now borrows level sounds (see STATUS round 36, section 6). 
 lands in `Approved/`; the curator then wires it into `Cutscene_Opening` by data.
 
 ### Music
-- [ ] Intro theme with its own arc: tense space calm, build-up during the drop and landing, threat when the brood
+- [ ] (open, by design: no intro music yet; the empty mood tracks in `CutsceneSounds_Opening` are the hook) Intro theme with its own arc: tense space calm, build-up during the drop and landing, threat when the brood
       appears, a short peak on "Defend the base". Ideally as stems or sections, so it can follow the shots.
 
 ### Orbit and mothership
-- [ ] Space ambience: a low, dark drone bed
-- [ ] Mothership engine hum (loop)
-- [ ] Cargo bay doors opening (hydraulics, metal)
-- [ ] Docking clamps releasing (clack, latch)
+- [x] Space ambience: a low, dark drone bed
+- [x] Mothership engine hum (loop)
+- [x] Cargo bay doors opening (hydraulics, metal)
+- [x] Docking clamps releasing (clack, latch)
 
 ### Launch
-- [ ] Cold-gas puff at release (short hiss)
-- [ ] Booster ignition (whump)
-- [ ] Booster burn (loop, rumbling roar)
-- [ ] Stage separation (bang, metal, pyro bolts)
-- [ ] Booster sound fading into the distance
+- [x] Cold-gas puff at release (short hiss)
+- [x] Booster ignition (whump)
+- [x] Booster burn (loop, rumbling roar)
+- [x] Stage separation (bang, metal, pyro bolts)
+- [x] Booster sound fading into the distance
 
 ### Re-entry and landing
-- [ ] Re-entry plasma roar
-- [ ] Capsule rattling and creaking under load
-- [ ] Wind rush as it falls
-- [ ] Retro rockets firing (short bursts)
-- [ ] Heavy touchdown thud, metal creak, dust and gravel settling
+- [x] Re-entry plasma roar
+- [x] Capsule rattling and creaking under load
+- [x] Wind rush as it falls
+- [x] Retro rockets firing (short bursts)
+- [x] Heavy touchdown thud, metal creak, dust and gravel settling
 
 ### Capsule and Spencer
-- [ ] Pressure release (long hiss)
-- [ ] Hatch unlocking and swinging open
-- [ ] Footsteps on metal, then on rock and gravel
-- [ ] Breathing inside the helmet (calm, then fast)
-- [ ] Gasp, frightened panting
-- [ ] Pistol drawn from the holster (leather, click)
-- [ ] Pistol charging or arming
-- [ ] Radio beep and static (Voss calling in)
+- [x] Pressure release (long hiss)
+- [x] Hatch unlocking and swinging open
+- [x] Footsteps on metal, then on rock and gravel
+- [x] Breathing inside the helmet (calm, then fast)
+- [x] Gasp, frightened panting
+- [x] Pistol drawn from the holster (leather, click)
+- [x] Pistol charging or arming
+- [x] Radio beep and static (Voss calling in)
 
 ### Colony
-- [ ] Builder drones (hum, landing thump)
-- [ ] Drill starting up and running (loop)
-- [ ] Crystal hum (loop)
-- [ ] Radar ping and beacon beep
+- [x] Builder drones (hum, landing thump)
+- [x] Drill starting up and running (loop)
+- [x] Crystal hum (loop)
+- [x] Radar ping and beacon beep
 
 ### Threat
-- [ ] Earthquake and deep ground rumble
-- [ ] Ground tearing open, burrows bursting
-- [ ] Eyes opening in the dark (wet, organic)
-- [ ] Skitter swarm chittering (loop)
-- [ ] Queen roar (big, alien)
-- [ ] Swarm retreating, chittering fading into the burrows
+- [x] Earthquake and deep ground rumble
+- [x] Ground tearing open, burrows bursting
+- [x] Eyes opening in the dark (wet, organic)
+- [x] Skitter swarm chittering (loop)
+- [x] Queen roar (big, alien)
+- [x] Swarm retreating, chittering fading into the burrows
 
 ### Environment
-- [ ] Wind over the plain (loop)
-- [ ] Drips in the cave
-- [ ] Distant alien wildlife calls
+- [x] Wind over the plain (loop)
+- [x] Drips in the cave
+- [x] Distant alien wildlife calls
+
+Round 42 (2026-11-11): all 61 approved files in `Approved/Intro/` are wired into `Cutscene_Opening` through the sound bank
+`Data/Story/Cutscene/CutsceneSounds_Opening.asset` (one slot per sound, filled by `Tools/Generate/Opening Cutscene Sounds`,
+re-runnable; a slot without a file plays its fallback or stays silent). No slot is empty. Music stays empty on purpose: the
+space drone bed carries the prologue until Remco picks a theme (put a clip in the bank's Wonder/Tension/Attack track).
+`capsule_gasp_dry` is in the bank as an alternative take but not cued (the helmet gasp plays). See STATUS "Round 42".

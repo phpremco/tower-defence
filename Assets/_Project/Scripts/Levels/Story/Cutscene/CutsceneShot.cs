@@ -30,6 +30,10 @@ namespace Game.Levels
         [Min(0f)] public float DialogueDelay;
 
         public CutsceneCue[] Cues;
+
+        /// <summary>Sounds held over part of the shot (beds, engines, breathing), faded by the shot clock.</summary>
+        public CutsceneLayer[] Layers;
+
         public CutsceneMusic Music;
 
         /// <summary>Seconds of fade from black at the start and to black at the end; zero cuts.</summary>

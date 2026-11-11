@@ -125,6 +125,13 @@ namespace Game.UI
         private const float HandoffLowerAt = 0.8f;
         private const float StowGap = 0.2f;
 
+        // Round 42: his acting beats sound as the clock crosses them (the gasp as he startles, the holster as he draws, the
+        // charge whine once the gun is in his hand), only when played forward: a seek or a jumped frame stays silent.
+        private const float BeatWindow = 0.25f;
+        private const float GaspVolume = 0.7f;
+        private const float DrawVolume = 0.6f;
+        private const float ChargeVolume = 0.45f;
+
         // The disbelief (without the acting clips): a look, a step back, then the Disbelief clip (hand to the chin guard, a slow head shake).
         private const float ReactStepFrom = 0.18f;
         private const float ReactStepTo = 0.46f;
@@ -580,6 +587,9 @@ namespace Game.UI
             float startleAt = ReactTurnAt + turnLength;
             float drawAt = startleAt + _hero.ClipLength(ModelClipRole.StartleBackstep);
             float aimAt = drawAt + _hero.ClipLength(ModelClipRole.DrawAimNervous);
+            Beat(startleAt, time, CutsceneSound.Gasp, GaspVolume);
+            Beat(drawAt, time, CutsceneSound.PistolDraw, DrawVolume);
+            Beat(drawAt + _hero.EventOf(ModelClipRole.DrawAimNervous), time, CutsceneSound.PistolCharge, ChargeVolume);
             if (time < ReactTurnAt)
             {
                 // The idle reaches its first frame as the turn begins, which is the turn clip's first frame turned back.
@@ -615,6 +625,14 @@ namespace Game.UI
             float held = time - aimAt;
             _hero.PoseClip(back, brood, ModelClipRole.AimHoldNervous, held, true, true);
             _hero.Face(ModelClipRole.AimHoldNervous, Mathf.Repeat(held, _hero.ClipLength(ModelClipRole.AimHoldNervous)));
+        }
+
+        private void Beat(float at, float time, CutsceneSound sound, float volume)
+        {
+            if (_lastTime < at && time >= at && time - _lastTime < BeatWindow)
+            {
+                _context.Audio.Play(new CutsceneCue { Kind = CueKind.Sound, Sound = sound, Strength = volume });
+            }
         }
 
         // As the brood turns to run he trusts it slowly: the nervous aim cross-fades into the lowered weapon played slow, the
