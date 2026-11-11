@@ -42,5 +42,19 @@ namespace Game.UI
             h ^= h >> 16;
             return (h & 0xFFFFFF) / (float)0x1000000;
         }
+
+        /// <summary>
+        /// A jolt that hits fast and dies slowly (round 44: a flinch): 0 before <paramref name="since"/> reaches zero, eased up to 1
+        /// over <paramref name="attack"/> seconds, then falling off with the time constant <paramref name="decay"/>.
+        /// </summary>
+        public static float Jolt(float since, float attack, float decay)
+        {
+            if (since <= 0f)
+            {
+                return 0f;
+            }
+
+            return since < attack ? Smooth(since / attack) : Mathf.Exp(-(since - attack) / Mathf.Max(decay, 0.0001f));
+        }
     }
 }

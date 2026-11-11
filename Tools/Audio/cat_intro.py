@@ -36,10 +36,11 @@ PEAK_CEILING = 10 ** (-1.05 / 20)      # one-shots: at or under -1 dBFS after 16
 INTRO = []                              # (path, checklist item, sources, processing, loop, lufs, fn, variants)
 
 
-def intro(path, item, sources, processing, lufs, loop=False, variants=1, comp=True):
+def intro(path, item, sources, processing, lufs, loop=False, variants=1, comp=True, exact=False):
+    """exact: no silence trimming in mastering, so event times inside the file stay where they were built."""
     def deco(fn):
         INTRO.append(dict(path=path, item=item, sources=sources, processing=processing, lufs=lufs,
-                          loop=loop, variants=variants, comp=comp, fn=fn))
+                          loop=loop, variants=variants, comp=comp, exact=exact, fn=fn))
         return fn
     return deco
 
@@ -1023,6 +1024,127 @@ def wildlife(v):
     return fade(stereo_verb(x, 4.0, 1.1, 3000, 400, 0.04, wet=1.0, dry=0.35), 0.003, 0.8)
 
 
+# ================================================================== base assembly (builder drones)
+_hits = None
+
+
+def hammer_hits():
+    """Single hammer strikes of metal-hammering.mp3: onsets louder than -12 dBFS, each cut to <= 0.24 s."""
+    global _hits
+    if _hits is None:
+        x = src("metal-hammering")
+        ons = onsets(x, rise_db=10, min_gap=0.15)
+        _hits = []
+        for k, o in enumerate(ons):
+            if 20 * np.log10(np.max(np.abs(x[o:o + 2000])) + 1e-12) < -12:
+                continue
+            end = min(o + n_of(0.24), ons[k + 1] - n_of(0.005) if k + 1 < len(ons) else len(x))
+            _hits.append(fade(x[max(0, o - n_of(0.003)):end], 0.002, 0.06))
+    return _hits
+
+
+HAMMER_GROUPS = (
+    ((0, 1.0, 1.0, 6),),                                                     # 01 single strike
+    ((0, 1.0, 0.95, 9), (0.22, 0.85, 0.95, 10)),                             # 02 double
+    ((0, 1.0, 1.03, 1), (0.21, 0.8, 1.03, 2), (0.41, 0.9, 1.03, 3)),         # 03 triple
+    ((0, 0.9, 0.97, 5), (0.22, 1.0, 1.0, 7), (0.47, 0.7, 0.94, 8), (0.6, 0.85, 1.02, 4), (0.95, 1.0, 0.98, 11)),
+)
+
+
+@intro("Colony/colony_build_hammer", "Base assembly: hammer hits", "metal-hammering.mp3",
+       "single strikes found by onset detection, re-sequenced into a single / double / triple / irregular 5-hit "
+       "group with small pitch changes (0.94-1.03), low-passed 9 kHz; mono", -18, variants=4)
+def build_hammer(v):
+    hits = hammer_hits()
+    group = HAMMER_GROUPS[v]
+    out = np.zeros(n_of(group[-1][0] + 0.35))
+    for at, g, pitch, k in group:
+        place(out, s.pitch_shift(hits[k % len(hits)], pitch), at, g)
+    return lp(out, 9000)
+
+
+@intro("Colony/colony_build_hammer_loop", "Base assembly: distant hammering (loop)", "metal-hammering.mp3",
+       "single strikes wrap-placed in irregular clusters of 1-4 (0.18-0.3 s apart, 0.4-1.1 s pauses) over 7 s, "
+       "pitch 0.85-1.05, varied gains, low-passed 3.5 kHz for distance, a small room tail applied around the loop; "
+       "mono", -24, loop=True)
+def build_hammer_loop(v):
+    hits = hammer_hits()
+    n = n_of(7.0)
+    out = np.zeros(n)
+    t = 0.1
+    while t < 6.9:
+        for j in range(int(s.rng.integers(1, 5))):
+            hit = s.pitch_shift(hits[int(s.rng.integers(len(hits)))], s.rng.uniform(0.85, 1.05))
+            place_wrap(out, hit, n_of(t), s.rng.uniform(0.4, 1.0))
+            t += s.rng.uniform(0.18, 0.3)
+        t += s.rng.uniform(0.4, 1.1)
+    out = circ(lambda y: lp(y, 3500), out)
+    ir = s.reverb_ir(0.6, 0.15, 4000, 1200, 0.015)
+    wet = fftconvolve(np.concatenate([out, out]), ir)[n:2 * n]
+    return norm(out) + 0.35 * norm(wet)
+
+
+@intro("Colony/colony_build_drill", "Base assembly: power-drill bursts", "drill.mp3",
+       "0.6 / 1.0 / 1.4 s of the drill take played through a speed curve: spin-up from 0.55x over 90 ms, "
+       "spin-down to 0.45x over the last 160 ms; mono", -20, variants=3)
+def build_drill(v):
+    start, dur = ((5.0, 0.6), (17.0, 1.0), (30.0, 1.4))[v]
+    x = src("drill", start, start + dur + 0.5)
+    n = n_of(dur)
+    t = np.arange(n) / SR
+    rate = np.minimum(0.55 + 0.45 * np.clip(t / 0.09, 0, 1), 1 - 0.55 * np.clip((t - (dur - 0.16)) / 0.16, 0, 1))
+    y = vread(x, rate)[:n]
+    level = np.clip((t[:len(y)] - 0) / 0.02, 0, 1) * (1 - 0.7 * np.clip((t[:len(y)] - (dur - 0.16)) / 0.16, 0, 1))
+    return fade(y * level, 0.003, 0.05)
+
+
+@intro("Colony/colony_build_drill_loop", "Base assembly: power drill running (loop)", "drill.mp3",
+       "6.5 s of the steady drill take (10-17 s), 0.5 s equal-power seam crossfade; mono", -22, loop=True)
+def build_drill_loop(v):
+    return loop_xfade(src("drill", 10.0, 17.0), 0.5)
+
+
+# ================================================================== burrow closing
+BURROW_SETTLE = 0.15              # the close moment sits exactly this long before the end of the file
+BURROW_SWELLS = (1.1, 1.35, 1.6)
+
+
+@intro("Threat/threat_burrow_close", "Burrow closing (brood back underground)",
+       "ground-tearing.mp3, footsteps-gravel.mp3, earth-rumble.mp3",
+       "a forward crumble (ground-tearing with a 4 ms attack and decay, gravel tails, low earth rumble) played in "
+       "reverse so it swells and sucks back in; its climax is the CLOSE MOMENT at exactly length - 0.15 s "
+       "(01: 1.10 s, 02: 1.35 s, 03: 1.60 s); after it only a very soft soil settle (faint grains + low brush, "
+       ">= 15 dB under the swell peak); no thump, no pop, no ring; not trimmed in mastering; mono",
+       -18, variants=3, comp=False, exact=True)
+def burrow_close(v):
+    dur = BURROW_SWELLS[v]
+    start, rum_at = ((1.0, 6.0), (3.6, 14.0), (5.2, 25.0))[v]
+    n = n_of(dur)
+    t = np.arange(n) / SR
+    tear = src("ground-tearing", start, start + dur) * s.env_ad(t, 0.004, dur * 0.3)
+    gravel = src("footsteps-gravel")
+    debris = np.zeros(n)
+    ons = onsets(gravel, min_gap=0.4)
+    for k in range(4):
+        o = ons[(k + v) % len(ons)]
+        place(debris, fade(gravel[o:o + n_of(0.4)], 0.003, 0.1), 0.02 + 0.12 * k, 0.8 ** k)
+    rumble = lp(src("earth-rumble", rum_at, rum_at + dur), 160, 4) * s.env_ad(t, 0.025, dur * 0.4)
+    # highpass so the abrupt close leaves no low-frequency step (it would ring on as a soft boom)
+    crumble = hp(norm(tear) + 0.5 * norm(debris) + 0.6 * norm(rumble), 60, 2)
+    crumble[:n_of(0.003)] *= np.linspace(0, 1, n_of(0.003))        # reversed: a 3 ms close, no click
+    rev = crumble[::-1] * np.exp((t - dur) / (0.2 * dur))          # monotonic swell: the climax is the close moment
+    rev = fade(rev, 0.03, 0.0)
+    out = np.concatenate([rev, np.zeros(n_of(BURROW_SETTLE))])
+    m = n_of(BURROW_SETTLE)
+    tt = s.poisson_times(lambda x_: 120 * np.exp(-x_ / 0.05), BURROW_SETTLE - 0.02, 0.0)
+    grains = s.grains(m, tt, (0.002, 0.008), (500, 2500), s.rng.uniform(0.3, 1, len(tt)))
+    brush = lp(s.pink(m), 700) * s.env_ad(np.arange(m) / SR, 0.004, 0.035)
+    settle = fade(lp(norm(grains) * 0.7 + norm(brush), 3000), 0.002, 0.04)
+    peak = np.max(np.abs(rev[-n_of(0.05):]))
+    out[n:] += norm(settle) * peak * 10 ** (-26 / 20)
+    return out
+
+
 # ================================================================== render, checks, manifest
 def write(path, y):
     full = os.path.join(s.OUT, "intro", path)
@@ -1033,7 +1155,10 @@ def write(path, y):
 
 def finish(entry, x):
     x = np.asarray(x, float)
-    y = s.master(x, lufs=entry["lufs"], comp=entry["comp"], loop=entry["loop"])
+    if entry.get("exact"):
+        y = s._master(x, entry["lufs"], entry["comp"], True)     # loop=True here only skips the trimming
+    else:
+        y = s.master(x, lufs=entry["lufs"], comp=entry["comp"], loop=entry["loop"])
     if not entry["loop"]:
         pk = np.max(np.abs(y))
         if pk > PEAK_CEILING:

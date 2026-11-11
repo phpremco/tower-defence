@@ -34,6 +34,12 @@ namespace Game.Levels
         /// <summary>Sounds held over part of the shot (beds, engines, breathing), faded by the shot clock.</summary>
         public CutsceneLayer[] Layers;
 
+        /// <summary>
+        /// Round 44 (Remco: "things shaking, but no rumbling noise"): how loud the quake rumble follows everything that shakes
+        /// in the shot (a camera kick, the set's rumble of the lens, the ground and props trembling), 0 for no rumble.
+        /// </summary>
+        [Range(0f, 1f)] public float ShakeRumble;
+
         public CutsceneMusic Music;
 
         /// <summary>Seconds of fade from black at the start and to black at the end; zero cuts.</summary>

@@ -23,5 +23,8 @@ namespace Game.Levels
 
         /// <summary>A close shot of the commander as the creatures gather: disbelief, a step back, a hand to the visor.</summary>
         MercerReacts = 14,
+
+        /// <summary>Round 44: the mothership flies into the picture, brakes on its forward thrusters and holds over the planet.</summary>
+        MothershipArrives = 15,
     }
 }

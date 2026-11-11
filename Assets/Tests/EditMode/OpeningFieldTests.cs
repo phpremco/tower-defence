@@ -52,7 +52,7 @@ namespace Game.Tests
         {
             Assert.IsTrue(Has(Find(CutsceneAction.CapsulesFall), CutsceneSound.ColdGasPuff), "the capsules leave the bay in silence");
             Assert.IsTrue(Has(Find(CutsceneAction.CapsulesFall), CutsceneSound.BoosterIgnition), "no booster in the orbit shot");
-            Assert.IsTrue(Has(Find(CutsceneAction.PathfinderLands), CutsceneSound.StepMetal), "Spencer walks out without a footstep");
+            Assert.IsTrue(Has(Find(CutsceneAction.PathfinderLands), CutsceneSound.RetroBurst), "the capsule lands without its retro jets");
             Assert.Greater(AssetDatabase.LoadAssetAtPath<Game.Core.SfxLibrary>(SfxLibraryPath).DistantBlasts.Count, 0, "the approved distant blast is not in the sound library");
         }
 

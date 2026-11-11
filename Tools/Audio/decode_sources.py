@@ -22,7 +22,7 @@ MP3 = [
     "ground-tearing", "hydraulic-door-opening", "long-hiss", "mechanical-clamp", "pistol-draw", "radio-static",
     "release-hiss", "rocket-booster-crackle", "space-rumble", "spaceship-alarm", "spaceship-door-opening",
     "spaceship-rumble", "spaceship-shuttle-firing", "stone-drilling", "wind-blowing", "male-breathing",
-    "gregorquendel-laser-charge-175727", "metal-creaking",
+    "gregorquendel-laser-charge-175727", "metal-creaking", "metal-hammering", "drill",
 ]
 KENNEY = ["impactMetal_000", "impactMetal_001", "impactMetal_002", "impactMetal_003", "slime_000", "slime_001",
           "lowFrequency_explosion_000", "doorOpen_000", "computerNoise_000",

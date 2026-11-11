@@ -31,7 +31,14 @@ namespace Game.Tests
         {
             CutsceneSound.DrillRun, CutsceneSound.DroneHum, CutsceneSound.Gasp, CutsceneSound.PistolDraw, CutsceneSound.PistolCharge, CutsceneSound.GaspDry,
             CutsceneSound.RadioOpen,
+            // Round 44: his footsteps follow his clips' footfalls (FieldSet), the quake rumble follows the shaking (CutscenePlayer),
+            // the burrows sound their own closing (FieldSwarm), the builders their work (FieldBase).
+            CutsceneSound.StepMetal, CutsceneSound.StepGravel, CutsceneSound.StepStone, CutsceneSound.QuakeLoop, CutsceneSound.BurrowClose,
+            CutsceneSound.BuildHammer, CutsceneSound.BuildHammerLoop, CutsceneSound.BuildDrill, CutsceneSound.BuildDrillLoop,
         };
+
+        // Round 44: slots whose files are still being made; they stay silent (no fallback) until the files land.
+        private static readonly CutsceneSound[] PendingFiles = { CutsceneSound.BurrowClose };
 
         private CutsceneDefinition _cutscene;
         private CutsceneSoundBank _bank;
@@ -89,6 +96,12 @@ namespace Game.Tests
         {
             foreach (CutsceneSoundSlot slot in _bank.Slots)
             {
+                if (System.Array.IndexOf(PendingFiles, slot.Sound) >= 0)
+                {
+                    Assert.AreEqual(CutsceneSound.None, slot.Fallback, $"{slot.Sound} waits for its files in silence, without a stand-in");
+                    continue;
+                }
+
                 Assert.IsFalse(slot.IsEmpty, $"{slot.Sound} has no file: run Tools/Generate/Opening Cutscene Sounds");
             }
         }

@@ -32,6 +32,8 @@ namespace Game.UI
         private const uint ParticleSeed = 6907u;
         // A cleared sight line stops this share of the way to the subject, so the ground at its feet stays dressed.
         private const float ClearShare = 0.8f;
+        // The shake rumble swells with a kick and dies with it: a quarter of a second for the whole range.
+        private const float ShakeRumbleSlewSeconds = 0.25f;
 
         private readonly Dictionary<CutsceneSet, ICutsceneSet> _sets = new Dictionary<CutsceneSet, ICutsceneSet>();
         private readonly Dictionary<CutsceneSet, GameObject> _roots = new Dictionary<CutsceneSet, GameObject>();
@@ -51,6 +53,7 @@ namespace Game.UI
         private DialogueView _dialogueView;
         private CutsceneCamera _camera;
         private CutsceneAudio _audio;
+        private AudioSource _shakeRumble;
         private ICutsceneSet _current;
         private CutsceneSet _currentSet;
         private float _finishFade = -1f;
@@ -96,6 +99,8 @@ namespace Game.UI
             _audio = new GameObject("CutsceneAudio").AddComponent<CutsceneAudio>();
             _audio.transform.SetParent(transform, false);
             _audio.Initialize(library, mix, cutscene.Cast, cutscene.Sounds);
+            // Round 44: the quake rumble under everything that shakes, at the level of the shake itself.
+            _shakeRumble = _audio.CreateLoop("ShakeRumble", CutsceneSound.QuakeLoop, ShakeRumbleSlewSeconds);
 
             _overlay = gameObject.AddComponent<CutsceneOverlay>();
             _overlay.Build(OnSkipPressed);
@@ -194,9 +199,11 @@ namespace Game.UI
             float progress = _sequencer.Progress;
             _context.Rumble = 0f;
             _context.Float = 0f;
+            _context.Tremble = 0f;
             _current.Tick(time, progress);
-            _audio.PoseLayers(time, delta);
             _camera.Apply(CameraPath.Sample(_keys, progress), delta, _context.Rumble, _context.Float);
+            _audio.SetLoopVolume(_shakeRumble, ShakeSound.Level(_camera.Kick, _context.Rumble, _context.Tremble, shot.ShakeRumble));
+            _audio.PoseLayers(time, delta);
             PoseRig();
             _overlay.SetFade(ShotFade(shot, time));
             _overlay.SetTitle(shot.TitleCard, TitleAlpha(shot, time));

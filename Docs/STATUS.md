@@ -6124,3 +6124,131 @@ Cutscene Sounds` were run; they changed the sound library (one reference), the f
    means it got only 4 blips. In a build the frames are steady; say if you hear it thin.
 2. Levels: opener 0.5, blips 0.3 of the effects volume (one number each in `DialogueSounds.asset`).
 3. A new conversation by the same speaker after the box closed opens with the squelch again (per box).
+
+## Round 44: Remco's notes on the opening (footsteps, retro jets, the startle, unseen voices, rumble under every shake, burrow and build sounds, one launch) (2026-11-11)
+
+Not committed (the curator commits). No balance data touched. Save `progress.json` MD5 2eca347e copied aside before every Play
+Mode run and restored after (unchanged); the dev backup untouched. Focused steps only: `r44_bake_footfalls.cs` (Spencer's clips),
+`ApplyCutsceneShots.cs` (opening shots, cast, bank). Afterwards only `Mercer.asset`, `CutsceneCast.asset`,
+`CutsceneSounds_Opening.asset` and `Cutscene_Opening.asset` changed among the data.
+
+### 1. Footsteps follow his feet (`Footfalls`, `HeroFootfallBaker`, `CutsceneHeroRig`, `FieldSet`)
+
+- New `ModelClip._footfallSeconds`, baked by `HeroFootfallBaker` (menu `Tools/Generate/Hero Footfalls`, also inside
+  `BlenderStoryBuilder.BuildHero`): every clip of Spencer's body is sampled at 60 fps on the imported model, `Foot_L`/`Foot_R` are
+  followed in the model's space (a travel cycle gets its distance per loop added back so a planted foot stands still) and
+  `Footfalls.Detect` (Core, pure) marks the frame a foot comes to rest (under 0.35 m/s) after travelling at least 8 cm.
+- Baked: Capsule_Exit 0.95 1.42 1.82 2.15 s (he stands at 2.2 s; the look round has none), Walk 0.02 0.57 (two per loop),
+  Run 0.05 0.32, Turn_Look_L/R 0.42 0.62 (the authored plant events are frames 12 and 18), Startle_Backstep 0.75 1.12 1.58;
+  Idle, Aim_Hold_Nervous, the draw, the lower: none.
+- The clock-timed footfall cues are gone from the data. The rig remembers which clip a pose sampled and at what (unwrapped) time;
+  `TookStep` is true only when the same clip's clock crossed a baked footfall since the last frame (played forward, never on a
+  seek or a cut). Surface: a foot more than 12 cm above the drawn ground in the landing is on the ramp (metal), the gate run is
+  stone, the rest gravel. Steps now sound in the exit, the walk to the beacon, the turns, the startle and the run; never while he
+  stands.
+
+### 2. The capsule's retro jets (`FieldSet`)
+
+The pods' plumes were 4 cm wide and 1.1 m long (invisible). Now 0.13 x 3.4 m at the capsule's scale (1.4), a steady burn over the
+last 45 % of the fall and a flare at each retro burst: the burst times are **read from the landing shot's own RetroBurst cues**, so
+flame and sound cannot drift apart. Near the ground the flame is cut short at the ground (no glow through the paving) and a new
+`RetroDust` emitter lifts dust under the capsule, stronger the lower it is (below 9 m). All off at the touchdown.
+
+### 3. Spencer reacts to the Queen's scream (`FieldSet`, `CutsceneHeroRig.Flinch`, `CutsceneCast`)
+
+- The attack shot now cuts to him 0.8 s into her scream (was 3.2 s after it): `SwarmPours` length = scream + 0.8 s.
+- The reaction shot opens on a startle: `CutsceneHeroRig.Flinch` jolts the torso back, ducks the head, jerks the right arm up and
+  gives 7 cm of ground (attack 0.07 s, decay 0.45 s, `CutsceneMath.Jolt`), with the new cast face `_flinchFace` (Surprise to 1 in
+  0.08 s, Fear rising to 0.85, a blink); then Turn_Look_L whips him round to her at 0.3 s (was 0.6 s, a calm look aside), the
+  startle back-step, the draw and the aim follow as before. The helmet breathing goes fast from 0.3 s.
+- In the handoff her last roar (0.3 s) jolts his nervous aim the same way; he lowers the gun from 1.6 s (was 0.8 s) so the jolt reads.
+
+### 4. No creature heard that the shot does not show
+
+Audit of every creature voice: the cave shots had the Queen's growls (Remco's "screeching") with only eyes in the dark: removed;
+the wet eye sounds now land on the lead pair, the second pair and the wave opening (1.08, 2.52, 3.78 s). The reaction close-up had
+two growls and heavy steps from the brood behind the lens: removed; only the tail of her scream (begun on her in the shot before)
+and the chitter fading out in 1.6 s remain. The handoff's "ploof" (`Emerge`) and the generic rumble cue are gone. Kept: growls,
+heavy steps and roars in the attack, gate and handoff shots (the brood is in the picture) and the gate's menace growls.
+Left as they were: two distant wildlife calls (landing, base timelapse), ambience without a visible animal (see doubts).
+
+### 5. A rumble under every shake (`ShakeSound`, `CutsceneShot.ShakeRumble`, `CutscenePlayer`)
+
+- New `CutsceneShot.ShakeRumble` (0..1, data) and `CutsceneContext.Tremble` (the set's ground/prop trembling). The player keeps one
+  `QuakeLoop` voice (0.25 s slew) whose level is `ShakeSound.Level` = the strongest of the camera kick (full at 0.25), the set's lens
+  rumble and the tremble, times the shot's `ShakeRumble`. So the rumble swells and dies with the shake itself.
+- Trembles reported: the shiver shots' jumping stones (the "ORA... what is this?" shot: 0.85, was a fixed quake layer at 0.4 that
+  Remco could not hear), the cave crystals (0.8 / 0.6), the burrows cracking open and folding shut (`FieldSwarm.Tremble`, 0.8 / 0.6),
+  plus the kicks (landing 0.6, drill 0.7) and the booster's lens rumble in the launch (0.35). The fixed QuakeLoop layers of the cave,
+  shiver, radar and attack shots are gone (the follower replaces them); the quake swells stay.
+
+### 6. Burrows closing (`FieldSwarm`, bank)
+
+Slot `BurrowClose` (66) -> `Intro/Threat/threat_burrow_close` (variants `_01..03`), **no fallback**, empty and silent until the files
+land. The burrows now shut one after another (0.45 s apart). Per the curator: each file's slam sits 0.15 s before its end, so
+`FieldSwarm` starts burrow i's file at `closeTime_i - (length - 0.15)`, where closeTime is the frame its opening clip has folded back
+to its first frame. From the swarm clock alone: a seek into the window starts the file at the right offset (`CutsceneAudio.PlayFrom`,
+a small pool of timed sources), a seek back re-arms it, a seek past it stays silent.
+
+### 7. Base assembly (`FieldBase`, bank)
+
+Slots `BuildHammer` (67, `colony_build_hammer_01..04`), `BuildHammerLoop` (68), `BuildDrill` (69, `_01..03`), `BuildDrillLoop` (70),
+filled from the approved files. While a builder welds a module: a drill burst at 12 % of the weld, hammer hits at 38, 60, 82 %
+(played forward only), the hammering loop (0.35) under any weld, the drill loop (0.3) under the first 45 % of a weld; both glide out
+when the timelapse ends or the field is left.
+
+### 8. One launch, after the mothership flies in (`OrbitSet`, `CapsuleDrop`, new action `MothershipArrives`)
+
+Cause of "launches more than once": `CapsuleDrop` released the cast's **9 capsules**, 1.15 s apart, and **looped** the whole drop
+every 17 s for as long as ORA's three lines stayed open; only 3 releases had sounds.
+- New shot `MothershipArrives` (Orbit set): the ship comes in nose first from beside the lens (55 m, eased out, power 2.5) and
+  settles where it used to drift; two forward thrusters at its nose (found from the hull's bounds) burn at full while it is fast and
+  die as it stops, the main engines cold while braking and idling after. The lens pans with it onto the launch's first frame. ORA's
+  three lines come only after it has settled (7.5 s).
+- `CapsulesFall` is now a fixed 9.5 s shot with **no text**: one capsule (`CutsceneCast._capsuleCount` 1), released once at 1.2 s, no
+  repeat (the drop's cycle is gone), one sequence of sounds: bay doors, clamps + cold gas, ignition (+1.7 s), separation and the
+  booster fading (+3.3 s), the burn layer only over that burn, the plasma roar from the re-entry.
+- The opening has 17 shots now; the sound tables were renumbered.
+
+### Stills (`ArtSource/Previews/QA/`, 1920x1080, rendered off-screen from seeks)
+
+| File | What |
+| --- | --- |
+| `r44_1_arrival_brake_plume_entering.png` | 1 s in: the ship still off the left edge, its braking plume reaching into the frame |
+| `r44_2_arrival_braking.png` | 2 s in: the ship in the frame, the forward thrusters braking |
+| `r44_3_arrival_settled.png` | settled over the planet, engines idling (ORA's lines come here) |
+| `r44_4_single_release.png`, `r44_5_single_booster_burn.png` | the one capsule under the bay, then its booster burning |
+| `r44_6/7_capsule_retro_plumes_*.png` | the retro plumes high and low in the fall |
+| `r44_8_retro_plumes_cut_by_ground_dust.png` | just before touchdown: flames cut at the ground, dust lifting |
+| `r44_9_react_to_scream_fear_face.png` | 0.2 s into the reaction: ducked, eyes wide, mouth open (Surprise/Fear) |
+| `r44_10_react_turn_to_queen.png` | 1.1 s: turned to her |
+| `r44_11_handoff_roar_flinch.png` | the handoff roar: his aim jolted (from behind) |
+| `r44_12_ora_what_is_this_shot.png` | the shiver shot (stones jumping; the rumble now follows them) |
+
+### Tests and state
+
+- New `OpeningRound44Tests` (10): footfall detection (a stride gives one step per landing, a weight shift none) and crossing (a
+  loop's seam); Spencer's baked clips (Capsule_Exit steps all before he stands, none in Idle and the aim hold, two per walk loop half
+  a cycle apart); no footstep cue by the clock; the fly-in precedes the launch, text only after the ship settles, none over the
+  launch, one capsule and each launch sound exactly once; the arrival brakes to a stop; every shot with a kick or a shaking set has
+  a `ShakeRumble`, and the rumble level follows the shake; no creature voice in the cave shots or the reaction close-up; the
+  reaction cuts in within 1.5 s of the scream; the burrow-close slot has no fallback and the ploof is gone, the build slots are filled.
+  `OpeningSoundTests` (pending slot BurrowClose allowed empty without a fallback; set-driven sounds listed) and `OpeningFieldTests`
+  updated.
+- **EditMode suite headless on clone w6 (`r34b_editmode_worker.sh 6 "Game\.Tests\..*"`): 801 tests, 749 passed, 52 skipped,
+  0 failed** (791 before, +10). Synced before the last tuning of plume and arrival constants (arrival ease 3 -> 2.5, brake and
+  retro plume sizes, the retro flame cut at the ground); those only change numbers the tests check with margin.
+- Recompile: 0 errors; the only warning is the existing CS0618 in `Tests/PlayMode/BalanceProbeTests.cs:601`.
+- **Played run of the whole opening (`r43_play.sh`, OUT=Logs/r44, HOLD=8): all 17 shots, the gate line held, the brood retreated
+  in the handoff and the run handed over to the first level; console 0 errors, 0 warnings.** Save MD5 2eca347e after every run.
+- Scripts: `Tools/PlayTest/r44_bake_footfalls.cs`; Docs/COMMANDS.md "Round 44".
+
+### Open points for Remco (round 44)
+
+1. One capsule launches (Spencer's, the story's "goes down first"). If you want a salvo of a few small ships, it is one number
+   (`_capsuleCount`) plus a release spacing that keeps them apart in the bay; say so.
+2. The two wildlife calls (landing, base timelapse) are creature voices without a visible animal; kept as distant ambience. Remove?
+3. The reaction shot now opens on his startle 0.8 s into the scream, so the attack shot is 2.4 s shorter (the Queen's scream is cut
+   off on her and continues over him).
+4. The quake rumble levels per shot (`ShakeRumble`) are set without listening; please listen to the shiver shot.
+5. Burrow-close files: the slot is empty and silent until the curator copies them in; then run `Tools/Generate/Opening Cutscene Sounds`.

@@ -442,6 +442,55 @@ MonoBehaviour:
     Loop: 0
     Channel: 1
     Fallback: 0
+  - Sound: 66
+    Clips:
+      _clips: []
+      _gain: 1
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 67
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 0eac1b005167ec14182d048da8da06b5, type: 3}
+      - {fileID: 8300000, guid: 91d20bd7a2a62ca4db61babea68a0c01, type: 3}
+      - {fileID: 8300000, guid: 278bb117756960240a940e11ffaa46ef, type: 3}
+      - {fileID: 8300000, guid: c996685ced291784b8c7a667fa362cbb, type: 3}
+      _gain: 0.618272
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 68
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: f9513a5e5f59fa14eb41fc5e7a48468b, type: 3}
+      _gain: 1.336099
+      _pitch: 1
+    Loop: 1
+    Channel: 0
+    Fallback: 0
+  - Sound: 69
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: 6411c21b7e9225a4d875793857cf885c, type: 3}
+      - {fileID: 8300000, guid: e762075ee2188be45b7ad5e71dca540c, type: 3}
+      - {fileID: 8300000, guid: e75de79d1f0a4374fabbac1de74d4928, type: 3}
+      _gain: 0.9760875
+      _pitch: 1
+    Loop: 0
+    Channel: 0
+    Fallback: 0
+  - Sound: 70
+    Clips:
+      _clips:
+      - {fileID: 8300000, guid: b2481dd34af24bf449e27f29e8c23364, type: 3}
+      _gain: 1.1689612
+      _pitch: 1
+    Loop: 1
+    Channel: 0
+    Fallback: 0
   _music:
   - Mood: 2
     Track:

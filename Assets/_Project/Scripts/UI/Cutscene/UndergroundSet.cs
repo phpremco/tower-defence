@@ -162,6 +162,9 @@ namespace Game.UI
                 ParticleKit.SetRate(_dust, DustRate * (0.3f + tremble));
             }
 
+            // Round 44: the quake rumble follows the crystals' shaking.
+            _context.Tremble = tremble;
+
             // The eyes only open in their own shot; before that every lid stays shut. They follow the camera.
             _eyes?.Pose(_action == CutsceneAction.EyesOpen ? time : -1f, _context.Camera.transform.position);
         }

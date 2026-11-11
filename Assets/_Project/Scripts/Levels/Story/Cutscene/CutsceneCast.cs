@@ -32,7 +32,8 @@ namespace Game.Levels
         [SerializeField] private VisualTheme _undergroundTheme;
 
         [Header("Counts (scaled down by the Low profile)")]
-        [SerializeField] [Min(1)] private int _capsuleCount = 9;
+        [Tooltip("Round 44 (Remco: the launch must happen once): how many capsules the mothership releases, in one launch.")]
+        [SerializeField] [Min(1)] private int _capsuleCount = 1;
         [SerializeField] [Min(1)] private int _eyePairs = 300;
         [SerializeField] [Min(1)] private int _droneCount = 8;
         [Tooltip("How many of the brood stand with the Queen; a few, never a horde (the set has places for six).")]
@@ -96,6 +97,17 @@ namespace Game.Levels
             new FaceCurve("Blink", new Vector2(2.75f, 0f), new Vector2(2.82f, 1f), new Vector2(2.92f, 0f)),
         };
 
+        [Tooltip("Round 44: his face as the Queen's scream hits him (seconds from the jolt): surprise first, then fear.")]
+        [SerializeField] private FaceCurve[] _flinchFace =
+        {
+            new FaceCurve("Surprise", new Vector2(0f, 0f), new Vector2(0.08f, 1f), new Vector2(0.6f, 0.35f), new Vector2(1.3f, 0f)),
+            new FaceCurve("Fear", new Vector2(0.05f, 0f), new Vector2(0.35f, 0.85f), new Vector2(1.6f, 0.45f)),
+            new FaceCurve("Blink", new Vector2(0f, 0f), new Vector2(0.05f, 1f), new Vector2(0.14f, 0f)),
+        };
+        [Tooltip("How fast the startle hits (seconds to its peak) and how slowly it lets go (its time constant).")]
+        [SerializeField] [Min(0.01f)] private float _flinchAttack = 0.07f;
+        [SerializeField] [Min(0.01f)] private float _flinchDecay = 0.45f;
+
         public HeroDefinition Hero => _hero;
 
         /// <summary>The landing capsule's scale on the ground (the orbit shot keeps its own).</summary>
@@ -104,6 +116,9 @@ namespace Game.Levels
         public float AimFadeSeconds => _aimFadeSeconds;
         public float LowerSpeed => _lowerSpeed;
         public FaceCurve[] LowerFace => _lowerFace ?? System.Array.Empty<FaceCurve>();
+        public FaceCurve[] FlinchFace => _flinchFace ?? System.Array.Empty<FaceCurve>();
+        public float FlinchAttack => _flinchAttack;
+        public float FlinchDecay => _flinchDecay;
 
         /// <summary>The commander's clip for stepping out of the capsule (round 39); the walk stands in while his model lacks it.</summary>
         public ModelClipRole CapsuleExitClip => _capsuleExitClip;

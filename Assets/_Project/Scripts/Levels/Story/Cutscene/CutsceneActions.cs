@@ -11,6 +11,7 @@ namespace Game.Levels
                     return CutsceneSet.Earth;
                 case CutsceneAction.ScanPlanet:
                     return CutsceneSet.Survey;
+                case CutsceneAction.MothershipArrives:
                 case CutsceneAction.CapsulesFall:
                     return CutsceneSet.Orbit;
                 case CutsceneAction.CrystalsTremble:
@@ -28,6 +29,8 @@ namespace Game.Levels
         {
             switch (action)
             {
+                case CutsceneAction.MothershipArrives:
+                    return (int)CutsceneAction.CapsulesFall;
                 case CutsceneAction.MercerReacts:
                     return (int)CutsceneAction.SwarmPours + 1;
                 case CutsceneAction.GateStand:

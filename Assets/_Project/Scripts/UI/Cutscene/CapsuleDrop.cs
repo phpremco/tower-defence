@@ -14,8 +14,8 @@ namespace Game.UI
     /// away from the hull and the bay where the next capsule appears. It burns with a hot plume and a trail of exhaust
     /// smoke, then blows off in a flash, a spray of sparks and its tumbling clamps. The capsule goes on alone into the
     /// air, where the heat shield glows, a sheath of plasma wraps it and a white-hot head with a layered burning trail
-    /// lights up the air round it, so each capsule ends as a falling star. The drop repeats for as long as the shot
-    /// holds. Every pose follows from time alone; trails and smoke are the path itself sampled back in time, never a
+    /// lights up the air round it, so each capsule ends as a falling star. Round 44 (Remco: "the launching should only launch
+    /// once"): the drop happens once; a capsule that has gone into the air stays gone. Every pose follows from time alone; trails and smoke are the path itself sampled back in time, never a
     /// history of frames.
     /// </summary>
     public sealed class CapsuleDrop
@@ -23,7 +23,6 @@ namespace Game.UI
         private const float FirstRelease = 1.2f;
         private const float ReleaseGap = 1.15f;
         private const float FallSeconds = 6.5f;
-        private const float CycleRest = 2.5f;
         // Round 36: a little larger than true scale against the ship, so the booster, its burn and the separation read from the orbit lens.
         private const float CapsuleScale = 0.85f;
         private const float AtmosphereDepth = 0.35f;
@@ -109,7 +108,6 @@ namespace Game.UI
         private readonly Vector3 _planetCentre;
         private readonly float _planetRadius;
         private readonly Transform _view;
-        private readonly float _cycle;
         private readonly float _smokeGap;
         private readonly int _steamPuffs;
         private readonly int _sparks;
@@ -131,8 +129,7 @@ namespace Game.UI
             _planetCentre = planetCentre;
             _planetRadius = planetRadius;
             _view = context.Camera.transform;
-            int count = context.Scaled(context.Cast != null ? context.Cast.CapsuleCount : 6);
-            _cycle = FirstRelease + count * ReleaseGap + FallSeconds + CycleRest;
+            int count = context.Scaled(context.Cast != null ? context.Cast.CapsuleCount : 1);
             bool low = context.ParticleScale < 1f;
             _smokeGap = low ? LowSmokeGap : SmokeGap;
             _steamPuffs = low ? LowSteamPuffs : SteamPuffs;
@@ -215,7 +212,7 @@ namespace Game.UI
                     continue;
                 }
 
-                float age = Mathf.Repeat(time - release + BayWarmUp, _cycle) - BayWarmUp;
+                float age = time - release;
                 float g = age < 0f ? 1f + age / BayWarmUp : Mathf.Exp(-age * BayFade);
                 glow = Mathf.Max(glow, g);
             }
@@ -226,7 +223,7 @@ namespace Game.UI
         private float Age(int index, float time)
         {
             float release = Release(index);
-            return time < release ? -1f : Mathf.Repeat(time - release, _cycle);
+            return time < release ? -1f : time - release;
         }
 
         private void PoseCapsule(int i, float time)
@@ -412,7 +409,21 @@ namespace Game.UI
 
         private float ScaleAt(float age) => Mathf.Lerp(StartScale, CapsuleScale, CutsceneMath.Smooth(Mathf.Clamp01(age / IgniteAge)));
 
-        private static float Release(int index) => FirstRelease + index * ReleaseGap + CutsceneMath.Hash(index, 61) * 0.4f;
+        /// <summary>When a capsule leaves the bay, in seconds of the launch shot (the generator's release cues match).</summary>
+        public static float Release(int index) => FirstRelease + index * ReleaseGap;
+
+        /// <summary>How long a capsule takes from the bay to the air, after which it is gone for good.</summary>
+        public static float Lifetime => FallSeconds;
+
+        /// <summary>How many capsules this launch releases.</summary>
+        public int Count => _capsules.Count;
+
+        /// <summary>True while a capsule is out of the bay and on its way down at this moment of the shot.</summary>
+        public bool InFlight(int index, float time)
+        {
+            float age = Age(index, time);
+            return age >= 0f && age < FallSeconds;
+        }
 
         // The stack's middle through the coast: moving with the ship, straight out of the bay and gathering speed.
         private Vector3 CoastCentre(float launched, float age) => _bayAt(launched + age) + _down * CoastDepth(age);

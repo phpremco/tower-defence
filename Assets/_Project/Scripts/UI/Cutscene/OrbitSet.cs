@@ -6,10 +6,11 @@ using UnityEngine;
 namespace Game.UI
 {
     /// <summary>
-    /// Arrival in orbit: S-69-CRYS fills the lower half of the picture as a wide curve of land, cloud and blue rim,
-    /// the mothership glides past above it with its habitat ring turning and its engines glowing, and landing
-    /// capsules drop from its bay one after another to burn down into the atmosphere. The cast's
-    /// <c>Mothership</c> prefab replaces the procedural ship when set. Posed from time alone.
+    /// Arrival in orbit: S-69-CRYS fills the lower half of the picture as a wide curve of land, cloud and blue rim. Round 44
+    /// (Remco: the ship should fly into the screen, stop, then launch once): in the arrival shot the mothership comes in from
+    /// beside the camera nose first, brakes on its forward thrusters and settles over the planet; in the launch shot it holds
+    /// there, its habitat ring turning and its engines idling, and releases the capsule once, which burns down into the
+    /// atmosphere. The cast's <c>Mothership</c> prefab replaces the procedural ship when set. Posed from time alone.
     /// </summary>
     public sealed class OrbitSet : ICutsceneSet
     {
@@ -46,8 +47,25 @@ namespace Game.UI
         // A running light's glow sits this share of its size out towards the camera, so the hull it is mounted on does not cut it in half.
         private const float RunningLightLift = 0.5f;
         private static readonly Vector3 PlanetCentre = new Vector3(0f, -75f, 70f);
+        // Where the ship settles and holds for the launch.
         private static readonly Vector3 ShipStart = new Vector3(-9f, 1f, 30f);
-        private static readonly Vector3 ShipVelocity = new Vector3(0.16f, -0.01f, 0.03f);
+
+        // Round 44: the arrival. It covers this distance along its own heading over this many seconds, braking all the way
+        // (eased out with this power), its forward thrusters burning hardest as it comes in and dying as it settles; the main
+        // engines are cold while it brakes and idle once it holds.
+        public const float ArrivalSeconds = 7f;
+        private const float ArrivalDistance = 55f;
+        private const float ArrivalEase = 2.5f;
+        private const float BrakeFadeIn = 0.4f;
+        private const int BrakeThrusters = 2;
+        private const float BrakeRadius = 0.55f;
+        private const float BrakeLength = 11f;
+        private const float BrakeIntensity = 1f;
+        // The thrusters burn at full throttle while the ship is still fast, then die with its speed.
+        private const float BrakeGain = 1.6f;
+        // The braking thrusters sit this share of the ship's half width out from its middle, at its nose.
+        private const float BrakeSpread = 0.35f;
+        private const float IdleThrottle = 0.3f;
         private static readonly Vector3 ShipFacing = new Vector3(0.8f, -0.05f, 0.6f);
         // The landing region lies on top of the curve, tipped a little towards the camera.
         private static readonly Vector3 SiteFacing = new Vector3(0f, 1f, -0.35f);
@@ -97,6 +115,9 @@ namespace Game.UI
         private Light _bayLight;
         private VisualTheme _theme;
         private CutsceneContext _context;
+        private CutsceneAction _action;
+        private ExhaustPlume[] _brakes = new ExhaustPlume[0];
+        private Vector3[] _brakeMouths = new Vector3[0];
         private PlanetBody _planet;
         private Transform _ship;
         private Transform _ring;
@@ -124,13 +145,20 @@ namespace Game.UI
             _capsules = new CapsuleDrop(root, context, _theme.BaseColor, BayAt, Quaternion.LookRotation(ShipFacing), PlanetCentre, PlanetRadius);
         }
 
-        public void Enter(CutsceneAction action) => SpaceKit.ApplyDarkness(_theme);
+        public void Enter(CutsceneAction action)
+        {
+            _action = action;
+            SpaceKit.ApplyDarkness(_theme);
+        }
 
         public void Tick(float time, float progress)
         {
-            _planet.Pose(time);
+            bool arriving = _action == CutsceneAction.MothershipArrives;
+            // The planet turns on one clock over both shots (the launch follows the arrival).
+            float clock = arriving ? time : ArrivalSeconds + time;
+            _planet.Pose(clock);
             _backdrop.Pose(_context.Camera.transform);
-            _ship.SetPositionAndRotation(ShipAt(time), Quaternion.LookRotation(ShipFacing));
+            _ship.SetPositionAndRotation(arriving ? ArrivingAt(time) : ShipStart, Quaternion.LookRotation(ShipFacing));
             _shipArt?.Sample(ModelClipRole.Idle, time, loop: true);
             if (_ring != null)
             {
@@ -140,22 +168,53 @@ namespace Game.UI
 
             Transform view = _context.Camera.transform;
             float pulse = 1f + EnginePulse * Mathf.Sin(time * 11f);
+            float brake = arriving ? Brake(time) : 0f;
+            // Cold while braking, warming to an idle as it settles; the old drift burn never comes back now that it holds.
+            float engines = IdleThrottle * (arriving ? CutsceneMath.Smooth(Mathf.Clamp01(1f - brake * 2f)) : 1f);
             Vector3 back = _ship.rotation * Vector3.back;
             for (int i = 0; i < _plumes.Length; i++)
             {
-                _plumes[i].Pose(_ship.TransformPoint(_nozzles[i]), back, PlumeRadius, PlumeLength, PlumeThrottle * pulse, time + i * 0.71f, view);
+                _plumes[i].Pose(_ship.TransformPoint(_nozzles[i]), back, PlumeRadius, PlumeLength, PlumeThrottle * engines * pulse, clock + i * 0.71f, view);
+            }
+
+            Vector3 ahead = _ship.rotation * Vector3.forward;
+            for (int i = 0; i < _brakes.Length; i++)
+            {
+                _brakes[i].Pose(_ship.TransformPoint(_brakeMouths[i]), ahead, BrakeRadius, BrakeLength, brake, clock + i * 0.53f, view);
             }
 
             if (_engineLight != null)
             {
-                _engineLight.intensity = EngineLight * (pulse + 0.06f * Mathf.Sin(time * 37f));
+                _engineLight.intensity = EngineLight * Mathf.Max(engines, brake) * (pulse + 0.06f * Mathf.Sin(time * 37f));
             }
 
-            _capsules.Pose(time);
-            PoseLights(time, view);
-            _depth.Pose(time, view);
-            _context.Rumble = _capsules.Rumble(time);
+            // Before the launch every capsule is still in the bay.
+            _capsules.Pose(arriving ? -1f : time);
+            PoseLights(clock, view);
+            _depth.Pose(clock, view);
+            _context.Rumble = arriving ? 0f : _capsules.Rumble(time);
             _context.Float = CameraFloat;
+        }
+
+        /// <summary>Where the ship is during the arrival: along its heading towards its holding point, braking all the way.</summary>
+        public static Vector3 ArrivingAt(float time)
+        {
+            float u = Mathf.Clamp01(time / ArrivalSeconds);
+            float left = Mathf.Pow(1f - u, ArrivalEase);
+            return ShipStart - ShipFacing.normalized * (ArrivalDistance * left);
+        }
+
+        /// <summary>The forward thrusters' throttle during the arrival: hardest as it comes in, gone as it settles.</summary>
+        public static float Brake(float time)
+        {
+            float u = Mathf.Clamp01(time / ArrivalSeconds);
+            if (u >= 1f)
+            {
+                return 0f;
+            }
+
+            // The deceleration of the ease-out, which falls off as (1 - u) to the power one less than the ease.
+            return Mathf.Clamp01(BrakeGain * Mathf.Pow(1f - u, ArrivalEase - 1f)) * CutsceneMath.Smooth(Mathf.Clamp01(time / BrakeFadeIn));
         }
 
         public void Exit()
@@ -217,9 +276,8 @@ namespace Game.UI
             renderer.receiveShadows = false;
         }
 
-        private static Vector3 ShipAt(float time) => ShipStart + ShipVelocity * time;
-
-        private Vector3 BayAt(float time) => ShipAt(time) + Quaternion.LookRotation(ShipFacing) * _bay;
+        // The ship holds still for the launch, so the bay does too.
+        private Vector3 BayAt(float time) => ShipStart + Quaternion.LookRotation(ShipFacing) * _bay;
 
         private void BuildShip(Transform root)
         {
@@ -271,6 +329,8 @@ namespace Game.UI
                 _plumes[i] = new ExhaustPlume(_ship.parent, $"Engine{i}", PlumeCore, PlumeEdge, PlumeIntensity, shimmer);
             }
 
+            BuildBrakes();
+
             var lightGo = new GameObject("EngineLight");
             lightGo.transform.SetParent(_ship, false);
             lightGo.transform.localPosition = nozzles[0] + Vector3.back * 1.2f;
@@ -280,6 +340,43 @@ namespace Game.UI
             _engineLight.intensity = EngineLight;
             _engineLight.range = EngineRange;
             _engineLight.shadows = LightShadows.None;
+        }
+
+        // The forward thrusters at the nose: found from the ship's own size (its front and width in its own space), so any hull
+        // the cast hands in gets them where its nose is.
+        private void BuildBrakes()
+        {
+            Renderer[] renderers = _ship.GetComponentsInChildren<Renderer>(true);
+            if (renderers.Length == 0)
+            {
+                return;
+            }
+
+            Vector3 min = Vector3.one * float.MaxValue;
+            Vector3 max = Vector3.one * float.MinValue;
+            foreach (Renderer renderer in renderers)
+            {
+                Bounds bounds = renderer.bounds;
+                for (int corner = 0; corner < 8; corner++)
+                {
+                    var point = new Vector3((corner & 1) == 0 ? bounds.min.x : bounds.max.x, (corner & 2) == 0 ? bounds.min.y : bounds.max.y, (corner & 4) == 0 ? bounds.min.z : bounds.max.z);
+                    Vector3 local = _ship.InverseTransformPoint(point);
+                    min = Vector3.Min(min, local);
+                    max = Vector3.Max(max, local);
+                }
+            }
+
+            Vector3 centre = (min + max) * 0.5f;
+            float spread = (max.x - min.x) * 0.5f * BrakeSpread;
+            bool shimmer = _context.ParticleScale >= 1f;
+            _brakes = new ExhaustPlume[BrakeThrusters];
+            _brakeMouths = new Vector3[BrakeThrusters];
+            for (int i = 0; i < BrakeThrusters; i++)
+            {
+                float side = BrakeThrusters > 1 ? Mathf.Lerp(-spread, spread, i / (float)(BrakeThrusters - 1)) : 0f;
+                _brakeMouths[i] = new Vector3(centre.x + side, centre.y, max.z);
+                _brakes[i] = new ExhaustPlume(_ship.parent, $"Brake{i}", PlumeCore, PlumeEdge, BrakeIntensity, shimmer);
+            }
         }
 
         private void BuildBayLight(Transform bay)

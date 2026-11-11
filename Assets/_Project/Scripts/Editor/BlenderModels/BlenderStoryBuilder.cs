@@ -166,6 +166,8 @@ namespace Game.Editor
             }
 
             WriteOwnMaterialParts(body, folder, report);
+            // Round 44: where his feet land in every clip, for the cutscene's footsteps.
+            HeroFootfallBaker.Bake(body);
             string weaponFolder = $"{folder}/{BlenderStoryCatalog.WeaponFolder}";
             (Material weaponHigh, Material weaponLow) = Materials(weaponFolder, BlenderStoryCatalog.WeaponMaps, HeroEmission);
             var art = BlenderArtBuilder.LoadOrCreate<HeroArtDefinition>($"{StoryArtFolder}/{asset}Art.asset");

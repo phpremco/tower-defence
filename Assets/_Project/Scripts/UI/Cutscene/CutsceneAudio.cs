@@ -14,6 +14,7 @@ namespace Game.UI
     public sealed class CutsceneAudio : MonoBehaviour
     {
         private const int OneShotVoices = 8;
+        private const int TimedVoices = 4;
         private const float MusicFadeSeconds = 1.6f;
         private const float WonderVolume = 0.5f;
         private const float TensionVolume = 0.42f;
@@ -33,6 +34,9 @@ namespace Game.UI
         private CutsceneCast _cast;
         private CutsceneSoundBank _bank;
         private int[] _lastVariant;
+        // Round 44: one-shots a set starts at a given point of their file (a burrow's close lands on the frame it shuts).
+        private AudioSource[] _timed;
+        private int _nextTimed;
         private AudioSource[] _voices;
         private int _nextVoice;
         private int _cursor;
@@ -64,6 +68,12 @@ namespace Game.UI
                 _voices[i] = NewSource($"Voice{i}", false);
             }
 
+            _timed = new AudioSource[TimedVoices];
+            for (int i = 0; i < _timed.Length; i++)
+            {
+                _timed[i] = NewSource($"Timed{i}", false);
+            }
+
             _musicA = NewSource("MusicA", true);
             _musicB = NewSource("MusicB", true);
         }
@@ -82,11 +92,52 @@ namespace Game.UI
             Play(clip, strength * gain, pitch, channel);
         }
 
+        /// <summary>
+        /// One recorded variant of a bank slot, chosen by <paramref name="index"/> (wrapped), with its gain; null while the slot
+        /// has no file (no fallback: a sound that must land on a frame is silent rather than borrowed).
+        /// </summary>
+        public AudioClip Variant(CutsceneSound sound, int index, out float gain)
+        {
+            gain = 1f;
+            int slot = _bank != null ? _bank.IndexOf(sound) : -1;
+            if (slot < 0 || _bank.Slots[slot].IsEmpty)
+            {
+                return null;
+            }
+
+            SoundSet set = _bank.Slots[slot].Clips;
+            gain = set.Gain;
+            return set[((index % set.Count) + set.Count) % set.Count];
+        }
+
+        /// <summary>
+        /// Plays a clip once from <paramref name="offset"/> seconds into it (a seek that lands inside it picks it up there), so a
+        /// moment inside the file meets a moment of the picture. Stopped by a seek like every one-shot.
+        /// </summary>
+        public void PlayFrom(AudioClip clip, float volume, float offset, CutsceneSoundChannel channel = CutsceneSoundChannel.Effects)
+        {
+            if (clip == null || _timed == null || offset < 0f || offset >= clip.length)
+            {
+                return;
+            }
+
+            AudioSource source = _timed[_nextTimed];
+            _nextTimed = (_nextTimed + 1) % _timed.Length;
+            source.Stop();
+            source.clip = clip;
+            source.time = offset;
+            source.volume = Mathf.Clamp01(volume * ChannelGain(channel) * _outro);
+            source.Play();
+        }
+
         /// <summary>Plays a clip once at a volume relative to the effects mix (a library gain may lift it above one).</summary>
         public void Play(AudioClip clip, float volume, float pitch = 1f) => Play(clip, volume, pitch, CutsceneSoundChannel.Effects);
 
-        /// <summary>A looping source a set drives itself (drill, drone fans); its volume is the set's share before the mix.</summary>
-        public AudioSource CreateLoop(string name, CutsceneSound sound)
+        /// <summary>
+        /// A looping source a set drives itself (drill, drone fans); its volume is the set's share before the mix. It glides to a
+        /// new share over <paramref name="slewSeconds"/> for the whole range (zero: the pace of the shots' layers).
+        /// </summary>
+        public AudioSource CreateLoop(string name, CutsceneSound sound, float slewSeconds = 0f)
         {
             AudioSource source = NewSource(name, true);
             source.clip = Resolve(sound, false, out float gain, out float pitch, out CutsceneSoundChannel channel, out bool fromBank);
@@ -98,7 +149,7 @@ namespace Game.UI
             }
 
             // A borrowed library loop keeps the level it was tuned at before the bank existed (its gain was never applied).
-            _held.Add(new CutsceneLayerVoice(sound, source, fromBank ? gain : 1f, channel, true, true));
+            _held.Add(new CutsceneLayerVoice(sound, source, fromBank ? gain : 1f, channel, true, true) { SlewSeconds = slewSeconds });
             return source;
         }
 
@@ -148,7 +199,8 @@ namespace Game.UI
             {
                 if (voice.DrivenBySet)
                 {
-                    voice.Level = _snap ? voice.Target : Mathf.MoveTowards(voice.Level, voice.Target, step);
+                    float pace = voice.SlewSeconds > 0f ? delta / voice.SlewSeconds : step;
+                    voice.Level = _snap ? voice.Target : Mathf.MoveTowards(voice.Level, voice.Target, pace);
                     ApplyVolume(voice);
                 }
                 else
@@ -172,6 +224,14 @@ namespace Game.UI
                 {
                     voice.Stop();
                     voice.volume = 1f;
+                }
+            }
+
+            if (_timed != null)
+            {
+                foreach (AudioSource timed in _timed)
+                {
+                    timed.Stop();
                 }
             }
 
@@ -250,10 +310,16 @@ namespace Game.UI
 
         private void FadeAll(float delta)
         {
+            float before = _outro;
             _outro = Mathf.MoveTowards(_outro, 0f, delta / OutroSeconds);
             foreach (AudioSource voice in _voices)
             {
                 voice.volume = _outro;
+            }
+
+            foreach (AudioSource timed in _timed)
+            {
+                timed.volume = before > 0f ? timed.volume * (_outro / before) : 0f;
             }
 
             foreach (CutsceneLayerVoice held in _held)

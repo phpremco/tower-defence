@@ -43,6 +43,7 @@ MonoBehaviour:
       Volume: 0.55
       FadeIn: 3
       FadeOut: 0
+    ShakeRumble: 0
     Music: 2
     FadeIn: 2
     FadeOut: 1
@@ -98,9 +99,68 @@ MonoBehaviour:
       Volume: 0.55
       FadeIn: 0
       FadeOut: 0
+    ShakeRumble: 0
     Music: 0
     FadeIn: 1
     FadeOut: 1
+    Letterbox: 1
+    Overlay: 0
+    TitleCard: 
+    Lighting:
+      Exposure: 0
+      KeyColour: {r: 0, g: 0, b: 0, a: 0}
+      KeyIntensity: 0
+      RimColour: {r: 0, g: 0, b: 0, a: 0}
+      RimIntensity: 0
+      FillColour: {r: 0, g: 0, b: 0, a: 0}
+      FillIntensity: 0
+      ClearView: 0
+  - Set: 2
+    Action: 15
+    Camera:
+    - At: 0
+      Anchor: 0
+      Position: {x: 0, y: 2, z: -6}
+      LookAt: {x: -16, y: -3, z: 32}
+      FieldOfView: 52
+      Ease: 3
+      Mode: 0
+    - At: 1
+      Anchor: 0
+      Position: {x: 0, y: 2, z: -6}
+      LookAt: {x: 0, y: -9, z: 40}
+      FieldOfView: 46
+      Ease: 3
+      Mode: 0
+    Timing: 1
+    Seconds: 0.5
+    CameraSeconds: 8
+    Dialogue: {fileID: 11400000, guid: 2fd1b104f6a7d5b48b784b1d3066dd92, type: 2}
+    DialogueDelay: 7.5
+    Cues: []
+    Layers:
+    - Sound: 21
+      From: 0
+      To: 0
+      Volume: 0.55
+      FadeIn: 0
+      FadeOut: 0
+    - Sound: 22
+      From: 1
+      To: 0
+      Volume: 0.45
+      FadeIn: 3
+      FadeOut: 0
+    - Sound: 28
+      From: 0.2
+      To: 7
+      Volume: 0.35
+      FadeIn: 0.4
+      FadeOut: 3.5
+    ShakeRumble: 0
+    Music: 0
+    FadeIn: 1
+    FadeOut: 0
     Letterbox: 1
     Overlay: 0
     TitleCard: 
@@ -130,11 +190,11 @@ MonoBehaviour:
       FieldOfView: 43
       Ease: 3
       Mode: 0
-    Timing: 1
-    Seconds: 4
-    CameraSeconds: 14
-    Dialogue: {fileID: 11400000, guid: 2fd1b104f6a7d5b48b784b1d3066dd92, type: 2}
-    DialogueDelay: 1.5
+    Timing: 0
+    Seconds: 9.5
+    CameraSeconds: 0
+    Dialogue: {fileID: 0}
+    DialogueDelay: 0
     Cues:
     - At: 0.1
       Kind: 0
@@ -150,37 +210,12 @@ MonoBehaviour:
       Kind: 0
       Sound: 26
       Clip: {fileID: 0}
-      Strength: 0.48000002
-    - At: 2.35
-      Kind: 0
-      Sound: 24
-      Clip: {fileID: 0}
       Strength: 0.5
-    - At: 2.35
-      Kind: 0
-      Sound: 26
-      Clip: {fileID: 0}
-      Strength: 0.4
     - At: 2.9
       Kind: 0
       Sound: 27
       Clip: {fileID: 0}
-      Strength: 0.70000005
-    - At: 3.5
-      Kind: 0
-      Sound: 24
-      Clip: {fileID: 0}
-      Strength: 0.45
-    - At: 3.5
-      Kind: 0
-      Sound: 26
-      Clip: {fileID: 0}
-      Strength: 0.35999998
-    - At: 4.05
-      Kind: 0
-      Sound: 27
-      Clip: {fileID: 0}
-      Strength: 0.6
+      Strength: 0.7
     - At: 4.5
       Kind: 0
       Sound: 29
@@ -191,21 +226,6 @@ MonoBehaviour:
       Sound: 30
       Clip: {fileID: 0}
       Strength: 0.55
-    - At: 5.2
-      Kind: 0
-      Sound: 27
-      Clip: {fileID: 0}
-      Strength: 0.55
-    - At: 5.6499996
-      Kind: 0
-      Sound: 29
-      Clip: {fileID: 0}
-      Strength: 0.5
-    - At: 6.8
-      Kind: 0
-      Sound: 29
-      Clip: {fileID: 0}
-      Strength: 0.45
     Layers:
     - Sound: 21
       From: 0
@@ -217,28 +237,29 @@ MonoBehaviour:
       From: 0
       To: 0
       Volume: 0.45
-      FadeIn: 1.5
+      FadeIn: 0
       FadeOut: 0
     - Sound: 25
-      From: 0.4
-      To: 3.4
+      From: 0.2
+      To: 1.8000001
       Volume: 0.22
       FadeIn: 0.3
-      FadeOut: 0.8
+      FadeOut: 0.5
     - Sound: 28
       From: 2.9
-      To: 15
+      To: 4.7
       Volume: 0.4
-      FadeIn: 0.2
-      FadeOut: 3
+      FadeIn: 0.15
+      FadeOut: 0.4
     - Sound: 31
-      From: 6
+      From: 5.5
       To: 0
       Volume: 0.3
-      FadeIn: 3
+      FadeIn: 2.5
       FadeOut: 0
+    ShakeRumble: 0.35
     Music: 0
-    FadeIn: 1
+    FadeIn: 0
     FadeOut: 1.5
     Letterbox: 1
     Overlay: 0
@@ -331,36 +352,6 @@ MonoBehaviour:
       Sound: 37
       Clip: {fileID: 0}
       Strength: 0.5
-    - At: 4.89
-      Kind: 0
-      Sound: 38
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 5.36
-      Kind: 0
-      Sound: 39
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 5.76
-      Kind: 0
-      Sound: 39
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 6.09
-      Kind: 0
-      Sound: 39
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 7.05
-      Kind: 0
-      Sound: 39
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 7.5
-      Kind: 0
-      Sound: 39
-      Clip: {fileID: 0}
-      Strength: 0.4
     - At: 8.7
       Kind: 0
       Sound: 55
@@ -407,6 +398,7 @@ MonoBehaviour:
       Volume: 0.35
       FadeIn: 1
       FadeOut: 0
+    ShakeRumble: 0.6
     Music: 0
     FadeIn: 1.5
     FadeOut: 0
@@ -475,6 +467,7 @@ MonoBehaviour:
       Volume: 0.3
       FadeIn: 1
       FadeOut: 0.5
+    ShakeRumble: 0
     Music: 0
     FadeIn: 0.6
     FadeOut: 0.6
@@ -540,6 +533,7 @@ MonoBehaviour:
       Volume: 0.12
       FadeIn: 0
       FadeOut: 0
+    ShakeRumble: 0.7
     Music: 0
     FadeIn: 0.4
     FadeOut: 0
@@ -590,6 +584,7 @@ MonoBehaviour:
       Volume: 0.12
       FadeIn: 0
       FadeOut: 0
+    ShakeRumble: 0
     Music: 0
     FadeIn: 0.4
     FadeOut: 0
@@ -646,6 +641,7 @@ MonoBehaviour:
       Volume: 0.25
       FadeIn: 1.5
       FadeOut: 0
+    ShakeRumble: 0
     Music: 0
     FadeIn: 0
     FadeOut: 1.2
@@ -702,12 +698,7 @@ MonoBehaviour:
       Volume: 0.5
       FadeIn: 1.5
       FadeOut: 0
-    - Sound: 56
-      From: 0.3
-      To: 0
-      Volume: 0.45
-      FadeIn: 2
-      FadeOut: 0
+    ShakeRumble: 0.8
     Music: 3
     FadeIn: 1.2
     FadeOut: 0
@@ -746,31 +737,21 @@ MonoBehaviour:
     Dialogue: {fileID: 0}
     DialogueDelay: 0
     Cues:
-    - At: 1.2
+    - At: 1.08
       Kind: 0
       Sound: 59
       Clip: {fileID: 0}
       Strength: 0.5
-    - At: 1.8
-      Kind: 0
-      Sound: 59
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 2.5
-      Kind: 0
-      Sound: 13
-      Clip: {fileID: 0}
-      Strength: 0.5
-    - At: 2.9
+    - At: 2.52
       Kind: 0
       Sound: 59
       Clip: {fileID: 0}
       Strength: 0.45
-    - At: 6
+    - At: 3.78
       Kind: 0
-      Sound: 13
+      Sound: 59
       Clip: {fileID: 0}
-      Strength: 0.8
+      Strength: 0.35
     Layers:
     - Sound: 64
       From: 0
@@ -784,12 +765,7 @@ MonoBehaviour:
       Volume: 0.4
       FadeIn: 0
       FadeOut: 0
-    - Sound: 56
-      From: 0
-      To: 0
-      Volume: 0.3
-      FadeIn: 0
-      FadeOut: 0
+    ShakeRumble: 0.6
     Music: 0
     FadeIn: 0
     FadeOut: 1.2
@@ -840,18 +816,13 @@ MonoBehaviour:
       Volume: 0.12
       FadeIn: 0
       FadeOut: 0
-    - Sound: 56
-      From: 0
-      To: 0
-      Volume: 0.4
-      FadeIn: 1
-      FadeOut: 0
     - Sound: 41
       From: 0
       To: 0
       Volume: 0.3
       FadeIn: 1
       FadeOut: 0
+    ShakeRumble: 0.85
     Music: 0
     FadeIn: 1
     FadeOut: 0
@@ -917,12 +888,7 @@ MonoBehaviour:
       Volume: 0.12
       FadeIn: 0
       FadeOut: 0
-    - Sound: 56
-      From: 0
-      To: 0
-      Volume: 0.3
-      FadeIn: 0
-      FadeOut: 0
+    ShakeRumble: 0.6
     Music: 0
     FadeIn: 0
     FadeOut: 0
@@ -963,7 +929,7 @@ MonoBehaviour:
       Ease: 3
       Mode: 0
     Timing: 0
-    Seconds: 11
+    Seconds: 8.6
     CameraSeconds: 0
     Dialogue: {fileID: 0}
     DialogueDelay: 0
@@ -1020,18 +986,13 @@ MonoBehaviour:
       Volume: 0.12
       FadeIn: 0
       FadeOut: 0
-    - Sound: 56
-      From: 0
-      To: 3.2
-      Volume: 0.45
-      FadeIn: 0
-      FadeOut: 1
     - Sound: 60
       From: 2.2
       To: 0
       Volume: 0.35
       FadeIn: 2
       FadeOut: 0
+    ShakeRumble: 0.8
     Music: 4
     FadeIn: 0.3
     FadeOut: 0
@@ -1069,22 +1030,7 @@ MonoBehaviour:
     CameraSeconds: 0
     Dialogue: {fileID: 0}
     DialogueDelay: 0
-    Cues:
-    - At: 0.6
-      Kind: 0
-      Sound: 13
-      Clip: {fileID: 0}
-      Strength: 0.7
-    - At: 1.8
-      Kind: 0
-      Sound: 19
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 3.7
-      Kind: 0
-      Sound: 13
-      Clip: {fileID: 0}
-      Strength: 0.85
+    Cues: []
     Layers:
     - Sound: 63
       From: 0
@@ -1094,22 +1040,23 @@ MonoBehaviour:
       FadeOut: 0
     - Sound: 60
       From: 0
-      To: 0
+      To: 1.6
       Volume: 0.25
       FadeIn: 0
-      FadeOut: 0
+      FadeOut: 1.4
     - Sound: 41
       From: 0
-      To: 1.2
+      To: 0.6
       Volume: 0.35
       FadeIn: 0
-      FadeOut: 0.5
+      FadeOut: 0.3
     - Sound: 42
-      From: 0.9
+      From: 0.3
       To: 0
       Volume: 0.45
-      FadeIn: 0.6
+      FadeIn: 0.4
       FadeOut: 0
+    ShakeRumble: 0.5
     Music: 0
     FadeIn: 0
     FadeOut: 0
@@ -1160,66 +1107,6 @@ MonoBehaviour:
       Sound: 9
       Clip: {fileID: 0}
       Strength: 0.5
-    - At: 0.5
-      Kind: 0
-      Sound: 40
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 0.82
-      Kind: 0
-      Sound: 40
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 1.14
-      Kind: 0
-      Sound: 40
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 1.46
-      Kind: 0
-      Sound: 40
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 1.78
-      Kind: 0
-      Sound: 40
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 2.1
-      Kind: 0
-      Sound: 40
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 2.4199998
-      Kind: 0
-      Sound: 40
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 2.7399998
-      Kind: 0
-      Sound: 40
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 3.0599997
-      Kind: 0
-      Sound: 40
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 3.3799996
-      Kind: 0
-      Sound: 40
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 3.6999996
-      Kind: 0
-      Sound: 40
-      Clip: {fileID: 0}
-      Strength: 0.4
-    - At: 4.0199995
-      Kind: 0
-      Sound: 40
-      Clip: {fileID: 0}
-      Strength: 0.4
     - At: 4.3
       Kind: 0
       Sound: 43
@@ -1241,7 +1128,7 @@ MonoBehaviour:
       From: 0
       To: 0
       Volume: 0.25
-      FadeIn: 0
+      FadeIn: 1
       FadeOut: 0
     - Sound: 42
       From: 0
@@ -1261,6 +1148,7 @@ MonoBehaviour:
       Volume: 0.15
       FadeIn: 0.3
       FadeOut: 0
+    ShakeRumble: 0
     Music: 0
     FadeIn: 0
     FadeOut: 0
@@ -1329,16 +1217,6 @@ MonoBehaviour:
       Sound: 19
       Clip: {fileID: 0}
       Strength: 0.5
-    - At: 3.5
-      Kind: 0
-      Sound: 14
-      Clip: {fileID: 0}
-      Strength: 0.65
-    - At: 4.8
-      Kind: 0
-      Sound: 2
-      Clip: {fileID: 0}
-      Strength: 0.5
     Layers:
     - Sound: 63
       From: 0
@@ -1364,6 +1242,7 @@ MonoBehaviour:
       Volume: 0.15
       FadeIn: 0
       FadeOut: 1
+    ShakeRumble: 0.6
     Music: 0
     FadeIn: 0
     FadeOut: 1.4

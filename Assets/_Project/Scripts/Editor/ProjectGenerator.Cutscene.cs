@@ -37,8 +37,16 @@ namespace Game.Editor
         private const int BroodWalkers = 5;
         private const int BroodFlyers = 1;
 
-        // When the capsules leave the mothership's bay in the orbit shot (CapsuleDrop: the first at 1.2 s, then 1.15 s apart).
-        private static readonly float[] CapsuleRelease = { 1.2f, 2.35f, 3.5f };
+        // Round 44 (Remco: "the launching should only launch once"): the mothership releases one capsule, Spencer's, once
+        // (CapsuleDrop.Release gives the moment).
+        private const int OrbitCapsules = 1;
+        // The arrival shot: the ship's fly-in, then ORA's lines over it holding still; the launch shot after it has no text.
+        private const float ArrivalReadDelay = 0.5f;
+        private const float ArrivalCameraTail = 1f;
+        private const float LaunchSeconds = 9.5f;
+        // Round 44 (Remco: "the queen is screaming, but he doesn't react to it"): the attack shot cuts to Spencer this long into
+        // her scream, so his startle answers it on screen.
+        private const float ScreamCut = 0.8f;
         // Seconds after its release that a capsule's booster lights, once it has coasted clear of the hull (CapsuleDrop.IgniteAge).
         private const float CapsuleIgnition = 1.7f;
         // The NTI livery on the mothership's cargo frame (Tools/Blender/build_hull_livery.py), read crisp at a glancing angle.
@@ -46,12 +54,6 @@ namespace Game.Editor
         private const int HullLiveryAniso = 8;
         private const int HullLiverySize = 2048;
 
-        // Spencer's footfalls (seconds of the shot): round 40, his boots in the Capsule_Exit clip (it starts at 0.33 of the 12 s
-        // landing shot: the right boot on the ramp at 0.93 s, the left on the ground at 1.4 s, then both into his stance at 1.8 s
-        // and 2.13 s), the walk over to the beacon (0.58-0.64 of 12 s) and the run back to the gate (0-0.42 of 10 s).
-        private static readonly float[] LandingExitSteps = { 4.89f, 5.36f, 5.76f, 6.09f };
-        private static readonly (float From, float To, float Gap) LandingWalkOver = (7.05f, 7.6f, 0.45f);
-        private static readonly (float From, float To, float Gap) GateRun = (0.5f, 4.1f, 0.32f);
         // Round 39 (Remco: the brood must not leave until the gate line is read): the stand shot ends this soon after its dialogue,
         // so the roar and the retreat (the handoff shot) follow the click at once.
         private const float GateStandAfterRead = 0.6f;
@@ -75,6 +77,7 @@ namespace Game.Editor
             public CameraKey[] Keys;
             public CutsceneCue[] Cues = new CutsceneCue[0];
             public CutsceneLayer[] Layers = new CutsceneLayer[0];
+            public float ShakeRumble;
         }
 
         private static void GenerateCutscene(GeneratorContext context)
@@ -152,6 +155,7 @@ namespace Game.Editor
             }
 
             so.FindProperty("_flyerCount").intValue = BroodFlyers;
+            so.FindProperty("_capsuleCount").intValue = OrbitCapsules;
             so.FindProperty("_swarmCount").intValue = BroodWalkers;
             so.FindProperty("_earthTheme").objectReferenceValue = CreateEarthTheme();
             so.FindProperty("_undergroundTheme").objectReferenceValue = CreateUndergroundTheme();
@@ -284,10 +288,18 @@ namespace Game.Editor
                 },
                 new ShotSpec
                 {
-                    Set = CutsceneSet.Orbit, Action = CutsceneAction.CapsulesFall, Timing = ShotTiming.AfterDialogue, Seconds = 4f, CameraSeconds = 14f,
-                    Dialogue = orbit, DialogueDelay = 1.5f, FadeIn = 1f, FadeOut = 1.5f,
-                    // Round 36: the lens pushes in a little and tips down into the drop over the shot, so the boosters, their smoke and
-                    // the separations read at the bay instead of as specks.
+                    // Round 44 (Remco: "the space ship itself flies into the screen, stops, then launches"): the mothership comes in
+                    // from beside the lens, brakes on its forward thrusters and holds; ORA speaks over it holding still, and the lens
+                    // pans with it onto the launch shot's first frame.
+                    Set = CutsceneSet.Orbit, Action = CutsceneAction.MothershipArrives, Timing = ShotTiming.AfterDialogue, Seconds = ArrivalReadDelay,
+                    CameraSeconds = Game.UI.OrbitSet.ArrivalSeconds + ArrivalCameraTail, Dialogue = orbit, DialogueDelay = Game.UI.OrbitSet.ArrivalSeconds + ArrivalReadDelay, FadeIn = 1f,
+                    Keys = new[] { Key(0f, CameraAnchor.World, new Vector3(0f, 2f, -6f), new Vector3(-16f, -3f, 32f), 52f), Key(1f, CameraAnchor.World, new Vector3(0f, 2f, -6f), new Vector3(0f, -9f, 40f), 46f) },
+                },
+                new ShotSpec
+                {
+                    // The launch, once and without text: the capsule leaves the bay, burns, separates and falls into the air.
+                    // Round 36: the lens pushes in a little and tips down into the drop over the shot.
+                    Set = CutsceneSet.Orbit, Action = CutsceneAction.CapsulesFall, Seconds = LaunchSeconds, FadeOut = 1.5f,
                     Keys = new[] { Key(0f, CameraAnchor.World, new Vector3(0f, 2f, -6f), new Vector3(0f, -9f, 40f), 46f), Key(1f, CameraAnchor.World, new Vector3(1f, 1.2f, -0.5f), new Vector3(-0.5f, -9.4f, 40f), 43f) },
                 },
                 new ShotSpec
@@ -382,7 +394,7 @@ namespace Game.Editor
                 },
                 new ShotSpec
                 {
-                    Set = CutsceneSet.Field, Action = CutsceneAction.SwarmPours, Seconds = 11f, Music = CutsceneMusic.Attack, FadeIn = 0.3f,
+                    Set = CutsceneSet.Field, Action = CutsceneAction.SwarmPours, Seconds = QueenScreamSeconds + ScreamCut, Music = CutsceneMusic.Attack, FadeIn = 0.3f,
                     Keys = new[]
                     {
                         // Low on the road, down it from the entrance: wide on the bursts, then a slow push in on the Queen as she
@@ -436,6 +448,7 @@ namespace Game.Editor
             {
                 shots[i].Cues = OpeningCues(i);
                 shots[i].Layers = OpeningLayers(i);
+                shots[i].ShakeRumble = OpeningShakeRumble(i);
             }
 
             return shots;
@@ -487,6 +500,7 @@ namespace Game.Editor
                 WriteKeys(shot.FindPropertyRelative("Camera"), spec.Keys);
                 WriteCues(shot.FindPropertyRelative("Cues"), spec.Cues);
                 WriteLayers(shot.FindPropertyRelative("Layers"), spec.Layers);
+                shot.FindPropertyRelative("ShakeRumble").floatValue = spec.ShakeRumble;
             }
         }
 

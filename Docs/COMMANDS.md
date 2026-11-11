@@ -923,3 +923,9 @@ console and `Logs/probe_trace.txt`.
 - **Capsule fit probe (edit mode, preview scene):** `echo "<scale> <frame step> [last frame]" > Tools/PlayTest/r40_fit_arg.txt`, then `unity command eval_file --file Tools/PlayTest/r40_fit_probe.cs`; every triangle edge of Spencer's baked body, face and visor that crosses the capsule hull outside the doorway is a hit, and soles more than 3 cm under the open ramp are counted; writes `Tools/PlayTest/r40_fit_probe.txt`.
 - **Gravemaw roar probe (edit mode):** `unity command eval_file --file Tools/PlayTest/r40_roar_probe.cs`: Roar/Surface_Throw/Move lengths and moments, the Roar's last frame against the crawl's first, the head's pitch through the roar.
 - **Staging geometry of the opening:** `probe:r40_layout.cs` inside `n2_cut.sh` lists the shots and prints the capsule, exit root, beacon, dig site, the Queen's spot and the guard post in their anchors' frames.
+
+### Round 44 (2026-11-11)
+
+- **Spencer's footfalls:** `Tools/Generate/Hero Footfalls` (or `unity command eval_file --file Tools/PlayTest/r44_bake_footfalls.cs`, which also lists them) samples every clip of his body on the imported model and writes `ModelClip._footfallSeconds` into `Data/Art/Story/Mercer.asset`. The hero build (`BlenderStoryBuilder.BuildHero`, so also `ApplySpencerActing.cs`) runs it too; rerun it after any new clip.
+- **Opening shots and sounds:** `ApplyCutsceneShots.cs` (round 35) writes the arrival and launch shots, the cast's capsule count and flinch face, the cues, layers and `ShakeRumble` per shot and the bank; `Tools/Generate/Opening Cutscene Sounds` rewrites only the bank and the shots' sound (fill the burrow-close slot this way once `Approved/Intro/Threat/threat_burrow_close_0N.wav` land).
+- **Shot indices changed:** the opening has 17 shots now (2 arrival, 3 launch, 4 landing, ... 11 "ORA... what is this?", 14 reaction, 16 handoff); seek stills with `n2_cut.sh` accordingly.

@@ -44,6 +44,9 @@ namespace Game.Core
         [Tooltip("How hard the body presses a structure under it, one value per frame at 30 fps (a gate crossing's gate_burden).")]
         [SerializeField] private float[] _burden = System.Array.Empty<float>();
 
+        [Tooltip("Seconds into the clip where a foot plants, in order, baked from the foot bones (Tools/Generate/Hero Footfalls); empty when no foot lands.")]
+        [SerializeField] private float[] _footfallSeconds = System.Array.Empty<float>();
+
         private const float FramesPerSecond = 30f;
 
         public ModelClipRole Role => _role;
@@ -69,6 +72,9 @@ namespace Game.Core
 
         /// <summary>Seconds into the clip of each heavy push, in order (empty for most clips).</summary>
         public float[] MomentSeconds => _momentSeconds ?? System.Array.Empty<float>();
+
+        /// <summary>Seconds into the clip where a foot plants (baked from the foot bones), in order; empty when no foot lands.</summary>
+        public float[] FootfallSeconds => _footfallSeconds ?? System.Array.Empty<float>();
 
         /// <summary>True when the clip says frame by frame how hard it presses the structure under it.</summary>
         public bool HasBurden => _burden != null && _burden.Length > 0;

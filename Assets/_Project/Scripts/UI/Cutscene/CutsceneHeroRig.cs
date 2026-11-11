@@ -64,6 +64,14 @@ namespace Game.UI
         // Where in each blink gap the blink falls is hashed from the gap's number with this salt.
         private const int BlinkSalt = 211;
 
+        // Round 44 (Remco: "the queen is screaming, but he doesn't react to it"): a startle on top of any pose: the torso jerks
+        // back, the head ducks, the right arm (and the gun in it) jerks up, and he gives a little ground.
+        private const float FlinchLeanDegrees = 11f;
+        private const float FlinchDuckDegrees = 14f;
+        private const float FlinchArmDegrees = 12f;
+        private const float FlinchStep = 0.07f;
+        private static readonly string[] FootBones = { "Foot_L", "Foot_R" };
+
         private readonly Transform _figure;
         private readonly Transform _torso;
         private readonly Transform _head;
@@ -98,6 +106,17 @@ namespace Game.UI
         private readonly Vector3[] _fadePositions = new Vector3[0];
         private readonly Quaternion[] _fadeRotations = new Quaternion[0];
         private bool _drawn;
+        private readonly Transform[] _feet = new Transform[0];
+
+        // Round 44: the clip this pose sampled (the one that carries the feet) and the one the last step check saw, so a
+        // footstep sounds only when the clip's clock crosses one of its baked footfalls.
+        private ModelClipRole _sampledRole;
+        private float _sampledSeconds;
+        private bool _sampledLoop;
+        private bool _sampled;
+        private ModelClipRole _checkedRole;
+        private float _checkedSeconds;
+        private bool _checked;
 
         public CutsceneHeroRig(Transform parent, HeroDefinition hero)
         {
@@ -124,6 +143,7 @@ namespace Game.UI
                 }
 
                 _face = new FaceRig(_art.Renderers, hero.Art.FaceShapes());
+                _feet = FindFeet(_art);
                 _nodes = _art.Root.GetComponentsInChildren<Transform>(true);
                 _fadePositions = new Vector3[_nodes.Length];
                 _fadeRotations = new Quaternion[_nodes.Length];
@@ -327,6 +347,7 @@ namespace Game.UI
 
             RestoreOverrides();
             _art.Sample(role, seconds, loop);
+            Sampled(role, seconds, loop);
             HoldPistol(pistolInHand);
         }
 
@@ -352,6 +373,16 @@ namespace Game.UI
 
             _art.Sample(to, toSeconds, toLoop);
             float weight = Mathf.Clamp01(share);
+            // The feet follow the clip that weighs most.
+            if (weight >= 0.5f)
+            {
+                Sampled(to, toSeconds, toLoop);
+            }
+            else
+            {
+                Sampled(from, fromSeconds, fromLoop);
+            }
+
             for (int i = 0; i < _nodes.Length; i++)
             {
                 _nodes[i].localPosition = Vector3.Lerp(_fadePositions[i], _nodes[i].localPosition, weight);
@@ -374,6 +405,7 @@ namespace Game.UI
 
             RestoreOverrides();
             _art.Sample(cycle, cycleSeconds, loop: true);
+            Sampled(cycle, cycleSeconds, true);
             _art.Sample(top, topSeconds, loop: false);
             HoldPistol(pistolInHand);
         }
@@ -391,6 +423,67 @@ namespace Game.UI
             RestoreOverrides();
             SampleCycle(stride, run, gait, time);
             HoldPistol(pistolInHand);
+        }
+
+        /// <summary>
+        /// True when a foot planted since the last call: the clip this pose sampled is the one the last call saw and its clock
+        /// crossed one of the clip's baked footfalls (<see cref="ModelClip.FootfallSeconds"/>). <paramref name="played"/> false (a
+        /// seek, a cut, a jumped frame) only remembers the moment.
+        /// </summary>
+        public bool TookStep(bool played)
+        {
+            bool crossed = played && _sampled && _checked && _sampledRole == _checkedRole
+                && Footfalls.Crossed(FootfallsOf(_sampledRole), ClipLength(_sampledRole), _sampledLoop, _checkedSeconds, _sampledSeconds);
+            _checked = _sampled;
+            _checkedRole = _sampledRole;
+            _checkedSeconds = _sampledSeconds;
+            _sampled = false;
+            return crossed;
+        }
+
+        /// <summary>The baked footfalls of one of the commander's clips (seconds into it); empty without the clip or a step.</summary>
+        public float[] FootfallsOf(ModelClipRole role)
+        {
+            int index = _art != null ? _artDefinition.Body.IndexOf(role) : -1;
+            return index >= 0 ? _artDefinition.Body.Clips[index].FootfallSeconds : System.Array.Empty<float>();
+        }
+
+        /// <summary>The lower of his two feet in the world (where a step lands), or his root without the imported figure.</summary>
+        public Vector3 LowestFoot
+        {
+            get
+            {
+                Vector3 lowest = Root.position;
+                bool found = false;
+                foreach (Transform foot in _feet)
+                {
+                    if (foot != null && (!found || foot.position.y < lowest.y))
+                    {
+                        lowest = foot.position;
+                        found = true;
+                    }
+                }
+
+                return lowest;
+            }
+        }
+
+        /// <summary>
+        /// A startle on top of the pose just made (<paramref name="amount"/> 0..1): the torso jerks back, the head ducks, the right
+        /// arm with the gun jerks up and he gives a little ground. Call after the pose; the next pose undoes it.
+        /// </summary>
+        public void Flinch(float amount)
+        {
+            if (_art == null || amount <= 0f)
+            {
+                return;
+            }
+
+            Vector3 right = Root.rotation * Vector3.right;
+            Turn(_spine, right, -FlinchLeanDegrees * amount);
+            Turn(_neck, right, FlinchDuckDegrees * amount);
+            Turn(_upperArm, right, -FlinchArmDegrees * amount);
+            Root.position -= Root.rotation * Vector3.forward * (FlinchStep * amount);
         }
 
         /// <summary>The moment in a clip where its cue falls (the draw's grab, the stow's release), or zero.</summary>
@@ -453,6 +546,25 @@ namespace Game.UI
             _pistol.localRotation = Quaternion.identity;
         }
 
+        private void Sampled(ModelClipRole role, float seconds, bool loop)
+        {
+            _sampledRole = role;
+            _sampledSeconds = seconds;
+            _sampledLoop = loop;
+            _sampled = true;
+        }
+
+        private static Transform[] FindFeet(ArtModel art)
+        {
+            var feet = new Transform[FootBones.Length];
+            for (int i = 0; i < FootBones.Length; i++)
+            {
+                feet[i] = art.Find(FootBones[i]);
+            }
+
+            return feet;
+        }
+
         private void RestoreOverrides()
         {
             for (int i = 0; i < _overridden.Length; i++)
@@ -509,6 +621,7 @@ namespace Game.UI
             if (stride <= 0f)
             {
                 _art.Sample(ModelClipRole.Idle, time, loop: true);
+                Sampled(ModelClipRole.Idle, time, true);
                 return;
             }
 
@@ -517,6 +630,7 @@ namespace Game.UI
             float distance = gait / GaitPerUnit;
             float phase = clip.DistancePerLoop > 0f ? distance / clip.DistancePerLoop * clip.Length : time;
             _art.Sample(cycle, phase, loop: true);
+            Sampled(cycle, phase, true);
         }
 
         private static void HideParts(ArtModel model, string[] parts)

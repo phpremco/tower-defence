@@ -81,6 +81,14 @@ namespace Game.UI
         private const float SinkDepth = 1.6f;
         private const float CloseDelay = 0.2f;
         private const float CloseSpeed = 1.6f;
+        // Round 44: the burrows shut one after another, this far apart, each with its own closing sound. The curator's files
+        // put the slam this long before their end, so a file starts where its slam lands on the frame the burrow shuts.
+        private const float CloseStagger = 0.45f;
+        private const float CloseSlamBeforeEnd = 0.15f;
+        private const float BurrowCloseVolume = 0.8f;
+        // The ground trembles as a burrow cracks open and dies down after its burst; it shakes again as the slabs fold shut.
+        private const float BurstTrembleDecay = 0.8f;
+        private const float ClosingTremble = 0.6f;
         private static readonly Color CrackColour = new Color(1f, 0.32f, 0.12f);
         private static readonly Color RingColour = new Color(1f, 0.35f, 0.2f);
         private static readonly Color FlashColour = new Color(1f, 0.45f, 0.18f);
@@ -150,6 +158,8 @@ namespace Game.UI
             public ParticleSystem Dust;
             public ParticleSystem Debris;
             public ImpactFlash Flash;
+            public int Index;
+            public bool CloseSounded;
         }
 
         public FieldSwarm(Transform parent, FieldLayout layout, CutsceneContext context)
@@ -223,6 +233,78 @@ namespace Game.UI
             return last;
         }
 
+        /// <summary>
+        /// How hard the ground round the burrows trembles at a swarm clock, 0..1: rising as the cracks spread, dying down after
+        /// the burst, and again while the slabs fold shut behind the brood.
+        /// </summary>
+        public float Tremble(float clock)
+        {
+            float tremble = 0f;
+            foreach (Burrow burrow in _burrows)
+            {
+                float since = clock - burrow.Open;
+                if (since > 0f)
+                {
+                    float shake = since < BurstAt ? CutsceneMath.Span(since, 0f, BurstAt) : Mathf.Exp(-(since - BurstAt) / BurstTrembleDecay);
+                    tremble = Mathf.Max(tremble, shake);
+                }
+
+                float shut = CloseStartOf(burrow);
+                if (clock > shut && clock < CloseTimeOf(burrow))
+                {
+                    tremble = Mathf.Max(tremble, ClosingTremble);
+                }
+            }
+
+            return tremble;
+        }
+
+        /// <summary>The swarm clock at which a burrow has folded fully shut (infinite while the brood holds), for its sound and tests.</summary>
+        public float CloseTimeOf(int burrow) => burrow >= 0 && burrow < _burrows.Count ? CloseTimeOf(_burrows[burrow]) : float.PositiveInfinity;
+
+        public int BurrowCount => _burrows.Count;
+
+        // Each burrow folds its opening clip backwards from its own start; it is shut when the clip is back at its first frame.
+        private float CloseStartOf(Burrow burrow) => _closeAt + burrow.Index * CloseStagger;
+
+        private float CloseTimeOf(Burrow burrow) => CloseStartOf(burrow) + burrow.Model.LengthOf(ModelClipRole.Open) / CloseSpeed;
+
+        // Round 44 (Remco: the slam "must be 100% well timed"): each burrow's file starts so the slam inside it lands on the frame
+        // that burrow shuts. From the clock alone: a seek into the window picks the file up where it would be, a seek back
+        // before it arms it again, a seek past its end stays silent.
+        private void SoundCloses(float clock, bool played)
+        {
+            foreach (Burrow burrow in _burrows)
+            {
+                // A jump stopped every one-shot in flight: a burrow whose slam is still to come picks its file up again.
+                if (!played)
+                {
+                    burrow.CloseSounded = false;
+                }
+
+                AudioClip clip = _context.Audio.Variant(CutsceneSound.BurrowClose, burrow.Index, out float gain);
+                float shut = CloseTimeOf(burrow);
+                if (clip == null || float.IsInfinity(shut))
+                {
+                    burrow.CloseSounded = false;
+                    continue;
+                }
+
+                float start = shut - (clip.length - CloseSlamBeforeEnd);
+                if (clock < start)
+                {
+                    burrow.CloseSounded = false;
+                    continue;
+                }
+
+                if (!burrow.CloseSounded)
+                {
+                    burrow.CloseSounded = true;
+                    _context.Audio.PlayFrom(clip, BurrowCloseVolume * gain, clock - start);
+                }
+            }
+        }
+
         /// <summary>The shot of the attack begins: its burst effects start their clock; in any other shot they rest.</summary>
         public void Enter(bool bursting)
         {
@@ -267,6 +349,7 @@ namespace Game.UI
             }
 
             PoseQueen(clock, played);
+            SoundCloses(clock, played);
             _lastClock = clock;
         }
 
@@ -291,7 +374,7 @@ namespace Game.UI
 
             float glow = CutsceneMath.Span(since, 0f, GlowRampSeconds);
             // Once the last of them has dived in, the opening runs backwards: the slabs fold shut and the glow dies.
-            float closing = (clock - _closeAt) * CloseSpeed;
+            float closing = (clock - CloseStartOf(burrow)) * CloseSpeed;
             if (closing > 0f)
             {
                 float openLength = model.LengthOf(ModelClipRole.Open);
@@ -540,7 +623,7 @@ namespace Game.UI
                 root.SetParent(Root, false);
                 // README round 23: yaw 0 keeps the burrow's camouflage in line with the ground texture.
                 root.position = position;
-                var burrow = new Burrow { Root = root, Open = FirstOpen + i * OpenGap };
+                var burrow = new Burrow { Root = root, Open = FirstOpen + i * OpenGap, Index = i };
                 if (art != null)
                 {
                     burrow.Model = ArtModel.CreateSampled(root, art.Model, ownMaterial: true);

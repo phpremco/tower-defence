@@ -49,6 +49,12 @@ namespace Game.UI
         /// </summary>
         public float Rumble { get; set; }
 
+        /// <summary>
+        /// Round 44: how hard the ground and the props tremble this frame, 0..1 (pebbles jumping, crystals shaking, burrows
+        /// cracking); written like <see cref="Rumble"/>. The quake rumble follows it, so nothing shakes in silence.
+        /// </summary>
+        public float Tremble { get; set; }
+
         /// <summary>A slow handheld float of the camera in degrees for this frame (zero holds it on its mount); written like <see cref="Rumble"/>.</summary>
         public float Float { get; set; }
 

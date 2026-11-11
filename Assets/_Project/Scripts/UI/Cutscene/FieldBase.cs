@@ -106,11 +106,23 @@ namespace Game.UI
         private static readonly Color SparkColour = new Color(1f, 0.85f, 0.45f);
         private static readonly CutsceneCue Clank = new CutsceneCue { Kind = CueKind.Sound, Sound = CutsceneSound.BuildClank, Strength = 0.6f };
 
+        // Round 44: the builders' work as they weld a module (shares of its weld): a drill burst as they bolt it down, then hammer
+        // hits; a quiet hammering loop under any weld, the drill loop under its first part.
+        private static readonly float[] DrillShares = { 0.12f };
+        private static readonly float[] HammerShares = { 0.38f, 0.6f, 0.82f };
+        private const float DrillLoopShare = 0.45f;
+        private const float HammerLoopLevel = 0.35f;
+        private const float DrillLoopLevel = 0.3f;
+        private static readonly CutsceneCue DrillBurst = new CutsceneCue { Kind = CueKind.Sound, Sound = CutsceneSound.BuildDrill, Strength = 0.45f };
+        private static readonly CutsceneCue HammerHit = new CutsceneCue { Kind = CueKind.Sound, Sound = CutsceneSound.BuildHammer, Strength = 0.5f };
+
         private readonly List<Module> _modules = new List<Module>();
         private readonly List<Builder> _builders = new List<Builder>();
         private readonly List<Material> _gateFields = new List<Material>();
         private readonly List<CrystalPart> _crystalParts = new List<CrystalPart>();
         private readonly CutsceneAudio _audio;
+        private readonly AudioSource _hammerLoop;
+        private readonly AudioSource _drillLoop;
         private readonly Vector3 _baseCentre;
         private readonly IReadOnlyList<EnvironmentInstancer> _decor;
         private readonly List<Vector3> _parks = new List<Vector3>();
@@ -187,6 +199,8 @@ namespace Game.UI
             VisualTheme theme = level.Theme;
             Color glow = theme.BaseColor;
             _audio = context.Audio;
+            _hammerLoop = context.Audio.CreateLoop("BuildHammerLoop", CutsceneSound.BuildHammerLoop);
+            _drillLoop = context.Audio.CreateLoop("BuildDrillLoop", CutsceneSound.BuildDrillLoop);
             _baseCentre = layout.Base;
             _coreColour = Color.Lerp(theme.AccentColor, Color.white, 0.1f);
             PadTop = layout.Pad + Vector3.up * PadHeight;
@@ -219,17 +233,36 @@ namespace Game.UI
         /// <summary>Timelapse share of the whole base, 0 nothing built, 1 complete; the builders fly while it runs.</summary>
         public void PoseUnfold(float progress, float time, bool visible)
         {
+            bool played = progress >= _lastUnfold && progress - _lastUnfold < UnfoldShare;
+            bool welding = false;
+            bool drilling = false;
             for (int i = 0; i < _modules.Count; i++)
             {
                 PoseModule(_modules[i], progress);
                 // A clank and a puff of dust as a module touches down; only when played forward, never on a seek.
                 Module module = _modules[i];
-                if (_lastUnfold < module.Start && progress >= module.Start && progress - _lastUnfold < UnfoldShare)
+                if (played && _lastUnfold < module.Start && progress >= module.Start)
                 {
                     module.Dust.Emit(DustBurst);
                     _audio.Play(Clank);
                 }
+
+                float weld = (progress - module.Start) / Weld;
+                if (visible && progress < 1f && weld >= 0f && weld < 1f)
+                {
+                    welding = true;
+                    drilling |= weld < DrillLoopShare;
+                }
+
+                if (played)
+                {
+                    SoundWork(module, DrillShares, DrillBurst, progress);
+                    SoundWork(module, HammerShares, HammerHit, progress);
+                }
             }
+
+            _audio.SetLoopVolume(_hammerLoop, welding ? HammerLoopLevel : 0f);
+            _audio.SetLoopVolume(_drillLoop, drilling ? DrillLoopLevel : 0f);
 
             _lastUnfold = progress;
             Turn(_dishes, _dishRests, time * _dishDegreesPerSecond);
@@ -237,6 +270,45 @@ namespace Game.UI
             for (int i = 0; i < _builders.Count; i++)
             {
                 PoseBuilder(_builders[i], i, progress, time, visible);
+            }
+        }
+
+        /// <summary>Round 44: the timelapse is over or the field is left: the building loops fade out.</summary>
+        public void Silence()
+        {
+            _audio.SetLoopVolume(_hammerLoop, 0f);
+            _audio.SetLoopVolume(_drillLoop, 0f);
+        }
+
+        /// <summary>When the builders' work sounds at a module (shares of the timelapse), for tests: drill bursts, then hammer hits.</summary>
+        public IReadOnlyList<float> WorkMoments(int module)
+        {
+            var moments = new List<float>();
+            foreach (float share in DrillShares)
+            {
+                moments.Add(_modules[module].Start + share * Weld);
+            }
+
+            foreach (float share in HammerShares)
+            {
+                moments.Add(_modules[module].Start + share * Weld);
+            }
+
+            return moments;
+        }
+
+        public int ModuleCount => _modules.Count;
+
+        // A work sound as the timelapse crosses its moment inside the module's weld.
+        private void SoundWork(Module module, float[] shares, CutsceneCue cue, float progress)
+        {
+            foreach (float share in shares)
+            {
+                float at = module.Start + share * Weld;
+                if (_lastUnfold < at && progress >= at)
+                {
+                    _audio.Play(cue);
+                }
             }
         }
 

@@ -32,6 +32,9 @@ namespace Game.UI
         /// <summary>A set's own loop: its level comes from the set, never from a shot's layers.</summary>
         public bool DrivenBySet { get; }
 
+        /// <summary>Seconds for the whole range of a level change; zero uses the audio's own pace (round 44: the shake rumble follows faster).</summary>
+        public float SlewSeconds { get; set; }
+
         /// <summary>The level now and the level the shot clock asks for.</summary>
         public float Level { get; set; }
         public float Target { get; set; }

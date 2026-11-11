@@ -72,5 +72,13 @@ namespace Game.Levels
         WindPlain = 63,
         CaveDrips = 64,
         WildlifeCall = 65,
+
+        // Round 44: the burrows closing behind the brood and the builders assembling the base (files being made; a slot
+        // without a file stays silent).
+        BurrowClose = 66,
+        BuildHammer = 67,
+        BuildHammerLoop = 68,
+        BuildDrill = 69,
+        BuildDrillLoop = 70,
     }
 }

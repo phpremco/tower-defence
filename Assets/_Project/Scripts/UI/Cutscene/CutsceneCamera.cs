@@ -35,6 +35,9 @@ namespace Game.UI
 
         public Camera Camera => _camera;
 
+        /// <summary>The impact kick still running, 0 when the camera is calm (it dies out in well under a second).</summary>
+        public float Kick => _shake;
+
         /// <summary>Kicks the camera; one is the hardest the data allows. A stronger kick replaces a weaker one still running.</summary>
         public void Shake(float strength)
         {

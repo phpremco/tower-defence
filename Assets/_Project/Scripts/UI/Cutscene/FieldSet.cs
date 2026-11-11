@@ -37,9 +37,19 @@ namespace Game.UI
         // The retro jets' plumes over the last of the fall (round 36): small hot cones from the four pods, and the buffeting they give the lens.
         private const float RetroFrom = 0.55f;
         private const float RetroFull = 0.62f;
-        private const float RetroRadius = 0.04f;
-        private const float RetroLength = 1.1f;
-        private const float RetroSplay = 0.35f;
+        // Round 44 (Remco: "the ship seems to have no booster that is allowing him to land"): the pods' plumes are sized to the
+        // capsule (they were 4 cm wide), burn steadily over the last of the fall and flare with every retro burst the shot sounds
+        // (the burst cues of the landing shot are read, so sound and flame stay in step), and blow the dust up near the ground.
+        private const float RetroRadius = 0.13f;
+        private const float RetroLength = 3.4f;
+        private const float RetroSplay = 0.3f;
+        private const float RetroIntensity = 0.85f;
+        private const float RetroSustain = 0.5f;
+        private const float RetroPulse = 0.5f;
+        private const float RetroPulseDecay = 0.28f;
+        private const float RetroDustHeight = 9f;
+        private const float RetroDustRate = 140f;
+        private const float RetroGroundGap = 0.3f;
         private const float FallRumble = 0.3f;
         private const float RetroRumble = 0.45f;
         private const string CapsuleJet = "Jet";
@@ -81,6 +91,13 @@ namespace Game.UI
         private const string RampBone = "Ramp";
         // The brood's last roar this far into the handoff shot, before it runs back into the ground (the generator's cue matches).
         public const float HandoffRoarSeconds = 0.3f;
+        // Round 44 (Remco: "the queen is screaming, but he doesn't react to it"): the reaction shot cuts in on her scream, so he
+        // jolts at once and then whips round to it; behind the gate her last roar jolts his aim.
+        private const float ReactFlinchAt = 0.05f;
+        // Footsteps (round 44): their sound follows the baked footfalls of the clip he plays; on the ramp (a foot this far above
+        // the drawn ground) they ring on metal.
+        private const float StepVolume = 0.4f;
+        private const float RampFootHeight = 0.12f;
         // Round 39 (Remco: "the enemies shouldn't disappear until we clicked next"): while the gate dialogue stays open past
         // the stand shot's own length the brood holds, snapping and growling now and then, until the player reads on.
         private const float MenaceGap = 4.6f;
@@ -121,8 +138,8 @@ namespace Game.UI
         // acting clips he looks aside, turns to the brood at the first growl, startles back with his hand to the gun, draws into a
         // nervous two-handed aim and holds it (also through the stand behind the gate, until the gate line is read); as they
         // retreat he lowers it slowly and stows it. The clips follow each other end to start, so nothing pops between beats.
-        private const float ReactTurnAt = 0.6f;
-        private const float HandoffLowerAt = 0.8f;
+        private const float ReactTurnAt = 0.3f;
+        private const float HandoffLowerAt = 1.6f;
         private const float StowGap = 0.2f;
 
         // Round 42: his acting beats sound as the clock crosses them (the gasp as he startles, the holster as he draws, the
@@ -168,6 +185,8 @@ namespace Game.UI
         private ExhaustPlume[] _retroPlumes = new ExhaustPlume[0];
         private Transform[] _jets = new Transform[0];
         private ParticleSystem _landingDust;
+        private ParticleSystem _retroDust;
+        private float[] _retroBursts = new float[0];
         private Vector3 _fallStart;
         private Vector3 _door;
         private Vector3 _exitRoot;
@@ -219,6 +238,7 @@ namespace Game.UI
             _reactShotSeconds = cutscene.CameraLengthOf(CutsceneAction.MercerReacts);
             _standShotSeconds = cutscene.CameraLengthOf(CutsceneAction.GateStand);
             _landingSeconds = cutscene.CameraLengthOf(CutsceneAction.PathfinderLands);
+            _retroBursts = RetroBurstsOf(cutscene);
 
             BuildCapsule(root);
             BuildVein(root);
@@ -254,6 +274,7 @@ namespace Game.UI
             _drill.Enter(action == CutsceneAction.DrillDown);
             _swarm.Enter(action == CutsceneAction.SwarmPours);
             _lastTime = 0f;
+            _hero?.TookStep(false);
             // Only the stand shot played into the handoff carries its real length over; any other way in is a seek.
             if (action != CutsceneAction.Handoff)
             {
@@ -265,6 +286,7 @@ namespace Game.UI
         public void Exit()
         {
             _drill.Silence();
+            _base.Silence();
             _drones.Hide();
         }
 
@@ -286,6 +308,7 @@ namespace Game.UI
             PoseDrones(time, progress);
             PoseSwarm(time);
             PoseHero(time, progress);
+            PlayFootfall(time);
             PoseShiver(time, progress);
             PoseEyes(time);
             _lastProgress = progress;
@@ -319,7 +342,10 @@ namespace Game.UI
 
             ParticleKit.SetRate(_sparks, falling && fall < 0.9f ? SparkRate : 0f);
             ParticleKit.SetRate(_retro, falling && fall > 0.55f ? RetroRate : 0f);
-            PoseRetroPlumes(time, falling ? CutsceneMath.Smooth(CutsceneMath.Span(fall, RetroFrom, RetroFull)) : 0f, falling);
+            float throttle = falling ? RetroThrottle(fall, progress * _landingSeconds) : 0f;
+            PoseRetroPlumes(time, throttle, falling);
+            float altitude = _capsule.position.y - _layout.Landing.y;
+            ParticleKit.SetRate(_retroDust, RetroDustRate * throttle * (1f - Mathf.Clamp01(altitude / RetroDustHeight)));
             if (landing && _lastProgress < FallShare && progress >= FallShare && progress - _lastProgress < FallShare)
             {
                 _landingDust.Emit(LandingDust);
@@ -342,6 +368,53 @@ namespace Game.UI
             _hatchLight.intensity = HatchLightIntensity * lit;
         }
 
+        // A steady burn that builds over the last of the fall, with a flare at each retro burst the shot sounds.
+        private float RetroThrottle(float fall, float seconds)
+        {
+            float burn = CutsceneMath.Smooth(CutsceneMath.Span(fall, RetroFrom, RetroFull));
+            if (burn <= 0f)
+            {
+                return 0f;
+            }
+
+            float pulse = 0f;
+            foreach (float burst in _retroBursts)
+            {
+                float since = seconds - burst;
+                if (since >= 0f)
+                {
+                    pulse = Mathf.Max(pulse, Mathf.Exp(-since / RetroPulseDecay));
+                }
+            }
+
+            return Mathf.Clamp01(burn * RetroSustain + RetroPulse * pulse);
+        }
+
+        // The retro burst cues of the landing shot (its own seconds), so the flames flare where the sound fires.
+        private static float[] RetroBurstsOf(CutsceneDefinition cutscene)
+        {
+            var bursts = new List<float>();
+            foreach (CutsceneShot shot in cutscene.Shots)
+            {
+                if (shot.Action != CutsceneAction.PathfinderLands || shot.Cues == null)
+                {
+                    continue;
+                }
+
+                foreach (CutsceneCue cue in shot.Cues)
+                {
+                    if (cue.Kind == CueKind.Sound && cue.Sound == CutsceneSound.RetroBurst)
+                    {
+                        bursts.Add(cue.At);
+                    }
+                }
+
+                break;
+            }
+
+            return bursts.ToArray();
+        }
+
         // Each pod's plume leans out from the capsule's axis and down; the fall itself buffets the lens, the burn more.
         private void PoseRetroPlumes(float time, float throttle, bool falling)
         {
@@ -353,7 +426,10 @@ namespace Game.UI
                 Vector3 outward = mouth - axis;
                 outward.y = 0f;
                 Vector3 direction = Vector3.down + (outward.sqrMagnitude > 1e-4f ? outward.normalized * RetroSplay : Vector3.zero);
-                _retroPlumes[i].Pose(mouth, direction, RetroRadius, RetroLength, throttle, time + i * 0.37f, view);
+                // Near the ground the flame is cut short by it instead of running into it.
+                float scale = _capsule.localScale.x;
+                float clearance = Mathf.Max(RetroGroundGap, mouth.y - _layout.SurfaceAt(mouth.x, mouth.z));
+                _retroPlumes[i].Pose(mouth, direction, RetroRadius * scale, Mathf.Min(RetroLength * scale, clearance), throttle, time + i * 0.37f, view);
             }
 
             if (falling)
@@ -369,7 +445,7 @@ namespace Game.UI
             _retroPlumes = new ExhaustPlume[count];
             for (int i = 0; i < count; i++)
             {
-                _retroPlumes[i] = new ExhaustPlume(root, $"Retro{i}", RetroCore, RetroEdge, 0.45f, _context.ParticleScale >= 1f);
+                _retroPlumes[i] = new ExhaustPlume(root, $"Retro{i}", RetroCore, RetroEdge, RetroIntensity, _context.ParticleScale >= 1f);
             }
         }
 
@@ -498,6 +574,10 @@ namespace Game.UI
             // The retreat starts from the handoff, which only begins once the gate dialogue is read; before it they hold.
             _swarm.SetRetreat(At(CutsceneAction.Handoff) ? _swarmShotSeconds + _reactShotSeconds + _standHeld + HandoffRoarSeconds : float.PositiveInfinity);
             _swarm.Pose(clock, time);
+            if (AtOrAfter(CutsceneAction.SwarmPours))
+            {
+                _context.Tremble = Mathf.Max(_context.Tremble, _swarm.Tremble(clock));
+            }
         }
 
         // A growl from the brood every few seconds while the player keeps the stand's dialogue open past the shot's length.
@@ -536,12 +616,14 @@ namespace Game.UI
                     break;
                 case CutsceneAction.MercerReacts:
                     PoseReaction(time, progress);
+                    Jolt(time - ReactFlinchAt);
                     break;
                 case CutsceneAction.GateStand:
                     PoseHeroRun(time, progress);
                     break;
                 case CutsceneAction.Handoff:
                     PoseHeroHandoff(time);
+                    Jolt(time - HandoffRoarSeconds);
                     break;
                 default:
                     // The base goes up around the landing site; the commander watches it from the beacon.
@@ -551,6 +633,46 @@ namespace Game.UI
 
             // After the body: a sampled clip writes its own zero face curves, so the face goes on last (with the blinks).
             _hero.ApplyFace(time);
+        }
+
+        // The Queen's scream hits him: a startle on top of whatever he is doing, surprise and then fear in the face.
+        private void Jolt(float since)
+        {
+            CutsceneCast cast = _context.Cast;
+            float amount = CutsceneMath.Jolt(since, cast.FlinchAttack, cast.FlinchDecay);
+            _hero.Flinch(amount);
+            if (since >= 0f)
+            {
+                _hero.Face(cast.FlinchFace, since);
+            }
+        }
+
+        // Footsteps follow his feet: a step sounds when the clip he plays crosses one of its baked footfalls, only when played forward.
+        private void PlayFootfall(float time)
+        {
+            if (_hero == null)
+            {
+                return;
+            }
+
+            bool played = time >= _lastTime && time - _lastTime < BeatWindow;
+            if (_hero.TookStep(played))
+            {
+                _context.Audio.Play(new CutsceneCue { Kind = CueKind.Sound, Sound = StepSurface(), Strength = StepVolume });
+            }
+        }
+
+        // The ramp rings on metal, the run to the gate is on the road's stone, everything else is the plain's gravel.
+        private CutsceneSound StepSurface()
+        {
+            if (At(CutsceneAction.GateStand))
+            {
+                return CutsceneSound.StepStone;
+            }
+
+            Vector3 foot = _hero.LowestFoot;
+            bool onRamp = At(CutsceneAction.PathfinderLands) && foot.y > _layout.SurfaceAt(foot.x, foot.z) + RampFootHeight;
+            return onRamp ? CutsceneSound.StepMetal : CutsceneSound.StepGravel;
         }
 
         // Round 40: the acting pass is there when the commander's model carries its clips; without them the older staging plays.
@@ -884,6 +1006,11 @@ namespace Game.UI
             bool shivering = At(CutsceneAction.GroundShivers);
             float strength = shivering ? CutsceneMath.Span(progress, 0.05f, 0.4f) : 0f;
             ParticleKit.SetRate(_shiverDust, ShiverDustRate * strength);
+            if (shivering)
+            {
+                // Round 44: the quake rumble follows the jumping stones.
+                _context.Tremble = strength;
+            }
             for (int i = 0; i < _pebbles.Count; i++)
             {
                 _pebbles[i].gameObject.SetActive(shivering || After(CutsceneAction.GroundShivers));
@@ -975,6 +1102,9 @@ namespace Game.UI
             _retro = ParticleKit.Create(_capsule, "Retro", Vector3.up * 0.2f, new Color(0.6f, 0.85f, 1f) * 2.5f, 0.15f, 0.35f, 0.12f, 0.3f, 3f, 6f, 1.5f, _context.Scaled(200), 0.15f);
             BuildRetroPlumes(root);
             _landingDust = ParticleKit.Create(root, "LandingDust", _layout.Landing + Vector3.up * 0.2f, DustColour, 1.2f, 2.6f, 0.5f, 1.2f, 1.5f, 4.5f, -0.03f, _context.Scaled(200), 1f);
+            // The jets' blast lifting the dust off the landing ground before the touchdown.
+            _retroDust = ParticleKit.Create(root, "RetroDust", _layout.Landing + Vector3.up * 0.15f, DustColour, 0.9f, 1.8f, 0.4f, 1f, 2f, 5f, -0.02f, _context.Scaled(220), 1.4f);
+            ParticleKit.SetRate(_retroDust, 0f);
         }
 
         // The crystal vein the beacon is planted by: the level's own Blender crystals, one big and a few small round it.
