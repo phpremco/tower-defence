@@ -83,6 +83,8 @@ namespace Game.Editor
             new GeneratorStep("Colony rig", _ => ColonyRigBuilder.Apply()),
             new GeneratorStep("Render pipeline", _ => ConfigureRenderPipeline()),
             new GeneratorStep("Sound library", _ => CreateSfxLibrary()),
+            // Round 43: the dialogue box opener and typing blips, after the library that carries them and the speakers.
+            new GeneratorStep("Dialogue sounds", _ => GenerateDialogueSounds()),
             new GeneratorStep("Effect library", _ => CreateVfxLibrary()),
             // Markers, bars, projectiles, debris and particles (README round 25b), handed to the effect library.
             new GeneratorStep("Marker art", _ => BlenderMarkerBuilder.Apply(BlenderMarkerBuilder.SyncAndBuild())),

@@ -21,6 +21,9 @@ namespace Game.Levels
         [Tooltip("The imported (Blender) bust; empty keeps the procedural one. The hero's bust comes from his own art.")]
         [SerializeField] private PortraitArtDefinition _portraitArt;
 
+        [Tooltip("The soft blips while this speaker's text types out, one variant at random per blip; empty uses the default set of the dialogue sounds.")]
+        [SerializeField] private SoundSet _typingBlips = new SoundSet();
+
         public string Id => name;
         public string DisplayName => _displayName;
         public Color RoleColour => _roleColour;
@@ -28,6 +31,7 @@ namespace Game.Levels
         public PortraitModel Portrait => _portrait;
         public Sprite PortraitOverride => _portraitOverride;
         public PortraitArtDefinition PortraitArt => _portraitArt;
+        public SoundSet TypingBlips => _typingBlips;
 
         public bool IsValid(out string error)
         {

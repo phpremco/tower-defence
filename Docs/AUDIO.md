@@ -86,6 +86,22 @@ visible pool. They are background, never the loudest thing in a level.
 
 Element bats use the attack of their element: Fire, Water, Wood = moss, Sand, Ice = frost, Bog = forest.
 
+## Dialogue box (round 43)
+
+Remco's approved files in `Approved/Dialogue/`, wired by `Tools/Generate/Dialogue Sounds` (also a step of the full generator):
+
+- **Opener:** `open_static_squelch.wav` (walkie-talkie static) when a speaker starts talking: the first line in a fresh box
+  and each change of speaker inside it. Lines of the same speaker that follow on in the box get none. **No close sound.**
+- **Typing blips:** one soft blip per 2 revealed letters or digits (spaces, punctuation and redacted bars are silent), a random
+  variant of the speaker's own set (`Typing/<voice>_01..06.wav`, on `SpeakerDefinition._typingBlips`: Mercer = spencer, Voss,
+  Ora, Nti, Pioneer1), never the same twice in a row; a speaker without a set uses ORA's (the default set). At most one blip
+  per frame, none when a confirm jumps the line to its end, none while paused (a paused dialogue does not reveal).
+- Data: `Data/Audio/DialogueSounds.asset` (opener, volumes, letters per blip, default set), referenced by the sound library.
+  Logic: `TypingCadence` (pure, tested); playback: `DialogueVoice`, used by `DialogueView` (cutscene, level briefings, Voss's
+  scans and tips, the story viewer) and `BossAnswerBox` (boss intro answers). 2D, through the effects volume.
+- The opening's gate shot no longer cues `capsule_radio_call_open` as Voss starts: the box's opener does that; the radio static
+  loop still holds under his line.
+
 ## Wanted: opening cutscene music and sounds (Remco's search list, 2026-11-11)
 
 The opening cutscene now borrows level sounds (see STATUS round 36, section 6). Tick an item off when an approved file

@@ -94,6 +94,7 @@ namespace Game.UI
         private readonly List<RawImage> _bars = new List<RawImage>();
 
         private DialoguePlayer _player;
+        private DialogueVoice _voice;
         private PortraitProvider _portraits;
 
         private GameObject _root;
@@ -173,6 +174,7 @@ namespace Game.UI
         {
             _player = player;
             _portraits = portraits;
+            _voice = new DialogueVoice(gameObject);
             Build(safeRoot);
             _root.SetActive(false);
             if (Services.TryGet(out _input))
@@ -262,6 +264,7 @@ namespace Game.UI
             _seed = StableHash(line.Id);
             _ghost.gameObject.SetActive(_glitch > 0f);
             SetText(line);
+            _voice.ShowLine(line);
             _complete = false;
             _lastGlitchTick = -1;
         }
@@ -273,17 +276,20 @@ namespace Game.UI
             _complete = complete;
             _meshDirty = true;
             LayoutBars(visibleCharacters);
+            _voice.Reveal(visibleCharacters, complete);
         }
 
         public void Close()
         {
             _open = false;
+            _voice.Closed();
         }
 
         /// <summary>Closes the box at once, without the fade (a cutscene seek wants the frame of that moment).</summary>
         public void HideNow()
         {
             _open = false;
+            _voice?.Closed();
             if (_root == null || !_root.activeSelf)
             {
                 return;

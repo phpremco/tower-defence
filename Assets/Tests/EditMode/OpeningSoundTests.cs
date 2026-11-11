@@ -25,10 +25,12 @@ namespace Game.Tests
         };
 
         // Sounds that play without a cue or layer of their own: the sets' loops (drill, drone fans) and Spencer's acting beats
-        // (FieldSet), plus the dry gasp, an alternative take kept for an ear check.
+        // (FieldSet), plus two takes kept for an ear check: the dry gasp, and the radio call (the dialogue box's opener
+        // plays when Voss starts, round 43).
         private static readonly CutsceneSound[] PlayedElsewhere =
         {
             CutsceneSound.DrillRun, CutsceneSound.DroneHum, CutsceneSound.Gasp, CutsceneSound.PistolDraw, CutsceneSound.PistolCharge, CutsceneSound.GaspDry,
+            CutsceneSound.RadioOpen,
         };
 
         private CutsceneDefinition _cutscene;

@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 016a6325c709f0540bcf6e3680212fd5, type: 3}
+  m_Name: DialogueSounds
+  m_EditorClassIdentifier: Game.Core::Game.Core.DialogueSounds
+  _opener:
+    _clips:
+    - {fileID: 8300000, guid: 39ff8be523a12af46a62344132f3f952, type: 3}
+    _gain: 1.0672592
+    _pitch: 1
+  _openerVolume: 0.5
+  _blipEveryLetters: 2
+  _blipVolume: 0.3
+  _defaultBlips:
+    _clips:
+    - {fileID: 8300000, guid: 1255d093e42e86746baca486ea87f482, type: 3}
+    - {fileID: 8300000, guid: ae85216b3252f544b9a79ef6d6a2c714, type: 3}
+    - {fileID: 8300000, guid: ad6ed12d84431de4da4d6766eaf397e3, type: 3}
+    - {fileID: 8300000, guid: 2f55211a35da6b54ea20146156119473, type: 3}
+    - {fileID: 8300000, guid: aa14217a9f007184bb59e373aadbe594, type: 3}
+    - {fileID: 8300000, guid: fb6b199e99c5eb84f992d0e0269bfa45, type: 3}
+    _gain: 1
+    _pitch: 1

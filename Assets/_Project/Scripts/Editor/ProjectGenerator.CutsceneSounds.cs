@@ -85,6 +85,7 @@ namespace Game.Editor
             new IntroSlot(CutsceneSound.GaspDry, IntroCapsule, "capsule_gasp_dry"),
             new IntroSlot(CutsceneSound.PistolDraw, IntroCapsule, "capsule_pistol_draw"),
             new IntroSlot(CutsceneSound.PistolCharge, IntroCapsule, "capsule_pistol_charge"),
+            // Round 43: not cued any more (the dialogue box's opener plays when Voss starts); kept for an ear check against it.
             new IntroSlot(CutsceneSound.RadioOpen, IntroCapsule, "capsule_radio_call_open"),
             new IntroSlot(CutsceneSound.RadioStatic, IntroCapsule, "capsule_radio_static_loop", true),
             new IntroSlot(CutsceneSound.DroneHum, IntroColony, "colony_drone_hum_loop", true, fallback: CutsceneSound.DroneFans),
@@ -293,7 +294,8 @@ namespace Game.Editor
                     return new[] { Sound(0.6f, CutsceneSound.Growl, 0.7f), Sound(1.8f, CutsceneSound.HeavySteps, 0.4f), Sound(3.7f, CutsceneSound.Growl, 0.85f) };
                 case 14:
                     return Join(
-                        new[] { Sound(0.4f, CutsceneSound.BossAlarm, 0.5f), Sound(GateArrival, CutsceneSound.Panting, 0.55f), Sound(5.4f, CutsceneSound.BuildClank, 0.35f), Sound(RadioSeconds, CutsceneSound.RadioOpen, 0.55f) },
+                        // Round 43: no radio-call cue as Voss starts: the dialogue box's own squelch opens his line, the static holds under it.
+                        new[] { Sound(0.4f, CutsceneSound.BossAlarm, 0.5f), Sound(GateArrival, CutsceneSound.Panting, 0.55f), Sound(5.4f, CutsceneSound.BuildClank, 0.35f) },
                         Footfalls(GateRun, CutsceneSound.StepStone, IntroStepVolume));
                 case 15:
                     return new[]

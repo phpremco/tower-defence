@@ -92,6 +92,10 @@ namespace Game.Core
 
         [SerializeField] private CreatureVoice[] _voices = new CreatureVoice[0];
 
+        [Header("Dialogue")]
+        [Tooltip("The dialogue box's opener, typing cadence and default blips (the speakers carry their own blips).")]
+        [SerializeField] private DialogueSounds _dialogue;
+
         public SoundSet PulseShots => _pulseShots;
         public SoundSet HeavyShots => _heavyShots;
         public SoundSet RocketLaunches => _rocketLaunches;
@@ -151,6 +155,7 @@ namespace Game.Core
         public SoundSet GameMusic => _gameMusic;
         public SoundSet BossMusic => _bossMusic;
         public CreatureVoice[] Voices => _voices;
+        public DialogueSounds Dialogue => _dialogue;
 
         /// <summary>Every set with its label, for the sound board and the content tests.</summary>
         public (string Label, SoundSet Set)[] Sets() => new[]

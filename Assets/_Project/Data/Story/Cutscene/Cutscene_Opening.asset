@@ -1230,11 +1230,6 @@ MonoBehaviour:
       Sound: 4
       Clip: {fileID: 0}
       Strength: 0.35
-    - At: 6.3
-      Kind: 0
-      Sound: 48
-      Clip: {fileID: 0}
-      Strength: 0.55
     Layers:
     - Sound: 63
       From: 0

@@ -6074,3 +6074,53 @@ The war drums of the old swarm shot are gone (they read as music). `capsule_gasp
    drips and the radio static during a long gate read; all are one number each in `ProjectGenerator.CutsceneSounds`.
 3. The swarm shot's war drums were dropped as "music"; say if you want them back.
 4. The hauler fans now use the new drone hum with its measured gain: a little louder than the borrowed fan loop was.
+
+## Round 43: dialogue box sounds (opener and typing blips) (2026-11-11)
+
+Not committed (the curator commits). No balance data touched. Save `progress.json` MD5 2eca347e copied aside before the Play
+Mode run and restored after (unchanged). Only the focused steps `Tools/Generate/Dialogue Sounds` and `Tools/Generate/Opening
+Cutscene Sounds` were run; they changed the sound library (one reference), the five speakers (their blips), the opening
+(one cue) and created `Data/Audio/DialogueSounds.asset`.
+
+### 1. What sounds
+
+- **Opener** (`Approved/Dialogue/open_static_squelch.wav`) when a speaker starts talking: the first line in a fresh box and each
+  change of speaker inside it (lines of the same speaker that follow on get none; a new conversation after the box closed
+  opens again). **No close sound.**
+- **Typing blips**: one per 2 revealed letters or digits (spaces, punctuation and redacted bars are silent), a random variant
+  of the speaker's six (`Typing/<voice>_01..06.wav`), never the same twice in a row. Mercer = spencer, Voss, Ora, Nti,
+  Pioneer1; a speaker without a set types with ORA's (the default set). At most one blip per frame (a slow frame never
+  bursts); when a confirm jumps the line to its end the blips stop; a paused level does not tick its dialogue, so it is silent.
+- Everywhere a dialogue box draws: `DialogueView` (cutscene, level briefings, Voss's scans and tips, the story viewer) and
+  `BossAnswerBox` (boss intro answers). 2D, through the effects volume.
+- **The opening's double opener**: the gate shot's `capsule_radio_call_open` cue is removed; the box's squelch opens Voss's line
+  and the round-42 radio static loop still holds under it (one mechanism for every speaker). The file stays in the bank, uncued.
+
+### 2. Data and code
+
+- `DialogueSounds` (new ScriptableObject, Game.Core, `Data/Audio/DialogueSounds.asset`): opener, opener and blip volumes,
+  letters per blip (2), default blips; referenced by `SfxLibrary._dialogue`. `SpeakerDefinition._typingBlips` (new SoundSet).
+- `TypingCadence` (new, pure): opener per speaker turn, blip cadence, jump detection (finishing more than 3 characters at once
+  is a confirm), no-repeat variant pick. `DialogueVoice` (new, UI): picks the clips and plays them; the presenters call it.
+- Generator: `ProjectGenerator.DialogueSounds.cs` (menu step, also in the full generator's step list after the sound library).
+  The blips are 42 ms, shorter than the loudness window, so their sets keep gain 1 (peak-normalised on import).
+
+### 3. Checks
+
+- Compile: 0 errors, 0 new warnings. EditMode suite on worker 6: 791 run, 739 passed, 0 failed, 52
+  skipped (783 before, +8 new). New `DialogueSoundTests` (8: the opener and
+  cadence in the library, six blips of the right voice per speaker, no close sound, a blip on every second letter with
+  punctuation silent, one blip per slow frame, no blips on a jump to the end, redacted text silent, the opener per speaker
+  turn and after a close, no variant twice in a row).
+- Played run (`Tools/PlayTest/r43_play.sh`, r42_play.sh with `r43_dialogue_probe.cs` logged to `Logs/r43/r43_dialogue.txt`;
+  HOLD=8): 0 console errors/warnings, handed off into Level. The survey's first line counted blips 14 at 29/179 characters
+  and 75 when complete (about one per two letters); the count holds still between lines and shots; a confirm mid-line
+  (`r43_skip_probe.cs`) jumped a 136-character line to its end with blips 4 -> 4. Openers: 9 over the run (one per
+  conversation, plus one when ORA answers Voss at the gate). In the level the HUD's box and the boss answer box carry a voice.
+
+### Open points for Remco (round 43)
+
+1. The very first line of the prologue types while the Earth set is still settling (slow editor frames): one blip per frame
+   means it got only 4 blips. In a build the frames are steady; say if you hear it thin.
+2. Levels: opener 0.5, blips 0.3 of the effects volume (one number each in `DialogueSounds.asset`).
+3. A new conversation by the same speaker after the box closed opens with the squelch again (per box).

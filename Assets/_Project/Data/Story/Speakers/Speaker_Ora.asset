@@ -18,3 +18,13 @@ MonoBehaviour:
   _portrait: 2
   _portraitOverride: {fileID: 0}
   _portraitArt: {fileID: 11400000, guid: f62c0833c21cc7a42a31bac8e9806139, type: 2}
+  _typingBlips:
+    _clips:
+    - {fileID: 8300000, guid: 1255d093e42e86746baca486ea87f482, type: 3}
+    - {fileID: 8300000, guid: ae85216b3252f544b9a79ef6d6a2c714, type: 3}
+    - {fileID: 8300000, guid: ad6ed12d84431de4da4d6766eaf397e3, type: 3}
+    - {fileID: 8300000, guid: 2f55211a35da6b54ea20146156119473, type: 3}
+    - {fileID: 8300000, guid: aa14217a9f007184bb59e373aadbe594, type: 3}
+    - {fileID: 8300000, guid: fb6b199e99c5eb84f992d0e0269bfa45, type: 3}
+    _gain: 1
+    _pitch: 1

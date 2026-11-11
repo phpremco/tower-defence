@@ -45,6 +45,7 @@ namespace Game.UI
         private string _line = string.Empty;
         private float _fade;
         private bool _open;
+        private DialogueVoice _voice;
 
         /// <summary>The panel, for the HUD keep-out.</summary>
         public RectTransform Box => _box;
@@ -58,6 +59,7 @@ namespace Game.UI
         public void Initialize(RectTransform safe, PortraitProvider portraits)
         {
             _portraits = portraits;
+            _voice = new DialogueVoice(gameObject);
             Image backing = UiKit.CreatePanel(safe, "BossAnswerBox", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), Vector2.zero, Vector2.zero, Backing);
             _box = backing.rectTransform;
             _box.pivot = new Vector2(1f, 0.5f);
@@ -132,6 +134,7 @@ namespace Game.UI
             ShownText = string.Empty;
             _body.text = string.Empty;
             _speaker = line.Speaker;
+            _voice.ShowLine(line);
             _name.text = _speaker != null ? _speaker.DisplayName.ToUpperInvariant() : string.Empty;
             _name.color = _speaker != null ? _speaker.RoleColour : BodyColour;
             _portrait.enabled = false;
@@ -147,9 +150,14 @@ namespace Game.UI
             int count = complete ? _line.Length : Mathf.Clamp(visibleCharacters, 0, _line.Length);
             ShownText = _line.Substring(0, count);
             _body.text = ShownText;
+            _voice.Reveal(visibleCharacters, complete);
         }
 
-        public void Close() => _open = false;
+        public void Close()
+        {
+            _open = false;
+            _voice.Closed();
+        }
 
         private void ShowPortrait(SpeakerDefinition asked, Sprite sprite)
         {

@@ -375,3 +375,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b02e62e959e506a40bfe8e7e9734d240, type: 2}
   - {fileID: 11400000, guid: e1fa9347db39ec54eadf816db43f45df, type: 2}
   - {fileID: 11400000, guid: 7a2601f2a9a57244b8f7a019e6f50dc7, type: 2}
+  _dialogue: {fileID: 11400000, guid: 3815bb18cf70dc9409e13ba640cb3c6e, type: 2}
