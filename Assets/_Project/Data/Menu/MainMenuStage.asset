@@ -31,3 +31,5 @@ MonoBehaviour:
   _sandCreature: {fileID: 11400000, guid: ed78d440f1881144aa1c35803fed47d1, type: 2}
   _iceCreature: {fileID: 11400000, guid: d016b85df1257e24da94a7be007f9705, type: 2}
   _bogCreature: {fileID: 11400000, guid: 01ec75bdb064a0a408e6262867c50365, type: 2}
+  _ambience: {fileID: 8300000, guid: 498aba0b4bb99dc4e9d8d18d495939db, type: 3}
+  _ambienceVolume: 0.4

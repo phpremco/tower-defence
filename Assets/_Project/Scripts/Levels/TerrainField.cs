@@ -44,6 +44,8 @@ namespace Game.Levels
         private const float OuterBumpHeight = 0.1f;
         private const float OuterBumpStartCells = 0.5f;
         private const float OuterBumpEndCells = 2.5f;
+        // The colony rig's levelled pad fades out over this much of the field's edge, so it never lifts a playing cell.
+        private const float RigPadEdgeFadeCells = 0.5f;
 
         private static readonly Vector2Int[] Sides = { Vector2Int.right, Vector2Int.up, Vector2Int.left, Vector2Int.down };
 
@@ -87,6 +89,7 @@ namespace Game.Levels
             Pools = LiquidShape.ForLevel(level);
             FillMasks(level);
             FillHeights(road);
+            LevelColonyRigPad(level);
             FillSlopes();
         }
 
@@ -349,6 +352,69 @@ namespace Game.Levels
                     _height[i] = h * (1f - mask);
                 }
             }
+        }
+
+        // Round 41: the colony rig stands just outside the field, where the rim starts to climb, so its deck hung over the
+        // downhill side. The ground under its footprint is cut down to the footprint's lowest point and
+        // blends back into the hills round it (a filled mesa stood on a cliff wall; a notch dug into the rim reads as
+        // ground the colony cleared); the road and the playing field are left as they are.
+        private void LevelColonyRigPad(LevelDefinition level)
+        {
+            ColonyRigDefinition rig = level.Theme != null && level.Theme.Environment != null ? level.Theme.Environment.ColonyRig : null;
+            if (rig == null || rig.Drill == null)
+            {
+                return;
+            }
+
+            var clearance = new StructureClearance(level);
+            if (!clearance.HasColonyRig)
+            {
+                return;
+            }
+
+            Vector3 centre = clearance.ColonyRigPosition;
+            float flat = rig.FootprintRadius;
+            float outer = flat + rig.GroundBlend;
+            int minX = Mathf.Max(0, Mathf.FloorToInt((centre.x - outer - MinX) / Step));
+            int maxX = Mathf.Min(Nx - 1, Mathf.CeilToInt((centre.x + outer - MinX) / Step));
+            int minZ = Mathf.Max(0, Mathf.FloorToInt((centre.z - outer - MinZ) / Step));
+            int maxZ = Mathf.Min(Nz - 1, Mathf.CeilToInt((centre.z + outer - MinZ) / Step));
+
+            float padHeight = float.PositiveInfinity;
+            for (int iz = minZ; iz <= maxZ; iz++)
+            {
+                for (int ix = minX; ix <= maxX; ix++)
+                {
+                    if (DistanceTo(centre, ix, iz) <= flat)
+                    {
+                        padHeight = Mathf.Min(padHeight, _height[Index(ix, iz)]);
+                    }
+                }
+            }
+
+            if (float.IsPositiveInfinity(padHeight))
+            {
+                return;
+            }
+
+            for (int iz = minZ; iz <= maxZ; iz++)
+            {
+                for (int ix = minX; ix <= maxX; ix++)
+                {
+                    int i = Index(ix, iz);
+                    float weight = 1f - TerrainNoise.SmoothStep(flat, outer, DistanceTo(centre, ix, iz));
+                    weight *= TerrainNoise.SmoothStep(0f, RigPadEdgeFadeCells, OutsideAt(WorldX(ix), WorldZ(iz)));
+                    weight *= 1f - _roadMask[i];
+                    _height[i] = Mathf.Lerp(_height[i], padHeight, weight);
+                }
+            }
+        }
+
+        private float DistanceTo(Vector3 centre, int ix, int iz)
+        {
+            float dx = WorldX(ix) - centre.x;
+            float dz = WorldZ(iz) - centre.z;
+            return Mathf.Sqrt(dx * dx + dz * dz);
         }
 
         private void FillSlopes()

@@ -23,6 +23,8 @@ namespace Game.Levels
         [SerializeField] [Min(0.5f)] private float _height = 3.4f;
         [Tooltip("Space kept between the rig's footprint and the field's edge cells.")]
         [SerializeField] [Min(0f)] private float _fieldGap = 0.6f;
+        [Tooltip("The ground under the footprint is levelled; this far past it, in world units, it blends back into the landscape.")]
+        [SerializeField] [Min(0f)] private float _groundBlend = 3.5f;
 
         [Header("Haulers")]
         [SerializeField] private ModelArtDefinition _hauler;
@@ -40,6 +42,7 @@ namespace Game.Levels
         public float FootprintRadius => _footprintRadius;
         public float Height => _height;
         public float FieldGap => _fieldGap;
+        public float GroundBlend => _groundBlend;
         public ModelArtDefinition Hauler => _hauler;
         public int Haulers => _hauler != null ? _haulers : 0;
         public float HaulerScale => _haulerScale;

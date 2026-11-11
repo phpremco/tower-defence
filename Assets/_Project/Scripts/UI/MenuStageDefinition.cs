@@ -36,6 +36,12 @@ namespace Game.UI
         [SerializeField] private EnemyDefinition _iceCreature;
         [SerializeField] private EnemyDefinition _bogCreature;
 
+        [Header("Sound")]
+        [Tooltip("The bed under the menu music; without one the nest theme's procedural ambience plays.")]
+        [SerializeField] private AudioClip _ambience;
+        [Tooltip("Its level before the Ambience volume setting.")]
+        [SerializeField] [Range(0f, 1f)] private float _ambienceVolume = 0.4f;
+
         public VisualTheme ForestTheme => _forestTheme;
         public VisualTheme LavaTheme => _lavaTheme;
         public VisualTheme RuinsTheme => _ruinsTheme;
@@ -70,6 +76,8 @@ namespace Game.UI
         public EnemyDefinition SandCreature => _sandCreature;
         public EnemyDefinition IceCreature => _iceCreature;
         public EnemyDefinition BogCreature => _bogCreature;
+        public AudioClip Ambience => _ambience;
+        public float AmbienceVolume => _ambienceVolume;
 
         /// <summary>True when every theme is set; the creatures may be left out and are then simply not shown.</summary>
         public bool IsComplete => _forestTheme != null && _lavaTheme != null && _ruinsTheme != null && _nestTheme != null;

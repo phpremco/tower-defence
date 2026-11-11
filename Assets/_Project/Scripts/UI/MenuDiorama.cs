@@ -66,6 +66,7 @@ namespace Game.UI
 
         private AudioMix _mix;
         private AudioSource _ambience;
+        private float _ambienceVolume;
         private readonly List<Material> _pulsing = new List<Material>();
         private readonly List<Material> _owned = new List<Material>();
         private MenuTerrain _terrain;
@@ -134,7 +135,7 @@ namespace Game.UI
             }
 
             BuildCreatures(stage, art);
-            BuildAmbience(stage.NestTheme);
+            BuildAmbience(stage);
             gameObject.AddComponent<EmissionPulse>().Initialize(_pulsing.ToArray(), GlowPulseDepth, GlowPulseSpeed);
         }
 
@@ -542,9 +543,11 @@ namespace Game.UI
             system.Play();
         }
 
-        private void BuildAmbience(VisualTheme nest)
+        // Round 41: the procedural wind read as a loud sea; a recorded bed from the stage's data replaces it when set.
+        private void BuildAmbience(MenuStageDefinition stage)
         {
-            AudioClip bed = ProceduralSfx.Ambience(nest.Ambience);
+            AudioClip bed = stage.Ambience != null ? stage.Ambience : ProceduralSfx.Ambience(stage.NestTheme.Ambience);
+            _ambienceVolume = stage.Ambience != null ? stage.AmbienceVolume : AmbienceVolume;
             if (bed == null || _mix == null)
             {
                 return;
@@ -564,7 +567,7 @@ namespace Game.UI
         {
             if (_ambience != null)
             {
-                _ambience.volume = AmbienceVolume * _mix.AmbienceGain;
+                _ambience.volume = _ambienceVolume * _mix.AmbienceGain;
             }
         }
     }

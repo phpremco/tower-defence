@@ -589,6 +589,7 @@ namespace Game.Editor
         }
 
         private const string MenuStageAssetPath = DataRoot + "/Menu/MainMenuStage.asset";
+        private const string MenuAmbiencePath = "Assets/_Project/Audio/Approved/Environment/wind_plain_loop.wav";
 
         // The menu scene shows the themes of the world levels and a handful of its creatures.
         private static void CreateMenuStage(LevelDefinition[] worldLevels, Bestiary bestiary)
@@ -616,6 +617,7 @@ namespace Game.Editor
             so.FindProperty("_sandCreature").objectReferenceValue = bestiary.Dustbat;
             so.FindProperty("_iceCreature").objectReferenceValue = bestiary.Frostbat;
             so.FindProperty("_bogCreature").objectReferenceValue = bestiary.Mirebat;
+            so.FindProperty("_ambience").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(MenuAmbiencePath);
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
