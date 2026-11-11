@@ -85,3 +85,61 @@ visible pool. They are background, never the loudest thing in a level.
 | Boss pulse, fission, brood | `_pulse` and `_spawn` of the boss voice (`enemy_power_pulse`, species screech for brood); generated bursts are fallbacks only |
 
 Element bats use the attack of their element: Fire, Water, Wood = moss, Sand, Ice = frost, Bog = forest.
+
+## Wanted: opening cutscene music and sounds (Remco's search list, 2026-11-11)
+
+The opening cutscene now borrows level sounds (see STATUS round 36, section 6). Tick an item off when an approved file
+lands in `Approved/`; the curator then wires it into `Cutscene_Opening` by data.
+
+### Music
+- [ ] Intro theme with its own arc: tense space calm, build-up during the drop and landing, threat when the brood
+      appears, a short peak on "Defend the base". Ideally as stems or sections, so it can follow the shots.
+
+### Orbit and mothership
+- [ ] Space ambience: a low, dark drone bed
+- [ ] Mothership engine hum (loop)
+- [ ] Cargo bay doors opening (hydraulics, metal)
+- [ ] Docking clamps releasing (clack, latch)
+
+### Launch
+- [ ] Cold-gas puff at release (short hiss)
+- [ ] Booster ignition (whump)
+- [ ] Booster burn (loop, rumbling roar)
+- [ ] Stage separation (bang, metal, pyro bolts)
+- [ ] Booster sound fading into the distance
+
+### Re-entry and landing
+- [ ] Re-entry plasma roar
+- [ ] Capsule rattling and creaking under load
+- [ ] Wind rush as it falls
+- [ ] Retro rockets firing (short bursts)
+- [ ] Heavy touchdown thud, metal creak, dust and gravel settling
+
+### Capsule and Spencer
+- [ ] Pressure release (long hiss)
+- [ ] Hatch unlocking and swinging open
+- [ ] Footsteps on metal, then on rock and gravel
+- [ ] Breathing inside the helmet (calm, then fast)
+- [ ] Gasp, frightened panting
+- [ ] Pistol drawn from the holster (leather, click)
+- [ ] Pistol charging or arming
+- [ ] Radio beep and static (Voss calling in)
+
+### Colony
+- [ ] Builder drones (hum, landing thump)
+- [ ] Drill starting up and running (loop)
+- [ ] Crystal hum (loop)
+- [ ] Radar ping and beacon beep
+
+### Threat
+- [ ] Earthquake and deep ground rumble
+- [ ] Ground tearing open, burrows bursting
+- [ ] Eyes opening in the dark (wet, organic)
+- [ ] Skitter swarm chittering (loop)
+- [ ] Queen roar (big, alien)
+- [ ] Swarm retreating, chittering fading into the burrows
+
+### Environment
+- [ ] Wind over the plain (loop)
+- [ ] Drips in the cave
+- [ ] Distant alien wildlife calls
