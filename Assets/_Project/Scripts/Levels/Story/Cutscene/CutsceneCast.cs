@@ -80,7 +80,30 @@ namespace Game.Levels
         [Tooltip("Which of the commander's clips plays as he steps out of the landing capsule and down its ramp; when his model has no such clip he walks out.")]
         [SerializeField] private ModelClipRole _capsuleExitClip = ModelClipRole.CapsuleExit;
 
+        [Header("Spencer's acting (round 40)")]
+        [Tooltip("The landing capsule's scale on the ground: its doorway must take Spencer crouched with his pack. The Capsule_Exit clip is keyed for this scale (Tools/Blender/build_mercer_acting.py CAPSULE_SCALE).")]
+        [SerializeField] [Min(1f)] private float _landedCapsuleScale = 1.4f;
+        [Tooltip("Seconds of the cross-fade from the nervous aim into the lowered weapon as the brood retreats.")]
+        [SerializeField] [Min(0f)] private float _aimFadeSeconds = 0.4f;
+        [Tooltip("How fast the Lower_Weapon clip plays as the brood retreats (below 1: he lowers slowly, not trusting it).")]
+        [SerializeField] [Range(0.1f, 1f)] private float _lowerSpeed = 0.6f;
+        [Tooltip("His face as he lowers the weapon (seconds from the start of the lower): the fear drains, the resolve sets in, one breath out.")]
+        [SerializeField] private FaceCurve[] _lowerFace =
+        {
+            new FaceCurve("Fear", new Vector2(0f, 0.6f), new Vector2(1f, 0f)),
+            new FaceCurve("Determined", new Vector2(0f, 0.3f), new Vector2(1.5f, 0.8f)),
+            new FaceCurve("Breath", new Vector2(1.9f, 0f), new Vector2(2.2f, 0.5f), new Vector2(2.7f, 0f)),
+            new FaceCurve("Blink", new Vector2(2.75f, 0f), new Vector2(2.82f, 1f), new Vector2(2.92f, 0f)),
+        };
+
         public HeroDefinition Hero => _hero;
+
+        /// <summary>The landing capsule's scale on the ground (the orbit shot keeps its own).</summary>
+        public float LandedCapsuleScale => _landedCapsuleScale;
+
+        public float AimFadeSeconds => _aimFadeSeconds;
+        public float LowerSpeed => _lowerSpeed;
+        public FaceCurve[] LowerFace => _lowerFace ?? System.Array.Empty<FaceCurve>();
 
         /// <summary>The commander's clip for stepping out of the capsule (round 39); the walk stands in while his model lacks it.</summary>
         public ModelClipRole CapsuleExitClip => _capsuleExitClip;
@@ -136,6 +159,14 @@ namespace Game.Levels
             if (_swarm == null || _swarm.Length == 0)
             {
                 Debug.LogWarning($"Cutscene cast '{name}' has no swarm creatures.", this);
+            }
+
+            foreach (FaceCurve curve in LowerFace)
+            {
+                if (!curve.IsValid())
+                {
+                    Debug.LogWarning($"Cutscene cast '{name}': the lowering face track '{curve.Shape}' needs a shape name, keys in time order and weights in 0..1.", this);
+                }
             }
         }
     }

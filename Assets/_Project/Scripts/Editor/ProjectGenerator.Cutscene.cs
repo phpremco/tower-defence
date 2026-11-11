@@ -46,9 +46,10 @@ namespace Game.Editor
         private const int HullLiveryAniso = 8;
         private const int HullLiverySize = 2048;
 
-        // Spencer's footfalls (seconds of the shot, from, to and the gap): out of the capsule and over to the crystals in the
-        // landing shot (FieldSet: walks at 0.3-0.4 and 0.58-0.68 of 12 s), the run back to the gate (0-0.42 of 10 s).
-        private static readonly (float From, float To, float Gap) LandingWalkOut = (4.05f, 5.3f, 0.42f);
+        // Spencer's footfalls (seconds of the shot): round 40, his boots in the Capsule_Exit clip (it starts at 0.33 of the 12 s
+        // landing shot: the right boot on the ramp at 0.93 s, the left on the ground at 1.4 s, then both into his stance at 1.8 s
+        // and 2.13 s), the walk over to the beacon (0.58-0.64 of 12 s) and the run back to the gate (0-0.42 of 10 s).
+        private static readonly float[] LandingExitSteps = { 4.89f, 5.36f, 5.76f, 6.09f };
         private static readonly (float From, float To, float Gap) LandingWalkOver = (7.05f, 7.6f, 0.45f);
         private static readonly (float From, float To, float Gap) GateRun = (0.5f, 4.1f, 0.32f);
         private const float HeroStepVolume = 0.3f;
@@ -295,17 +296,22 @@ namespace Game.Editor
                 {
                     Set = CutsceneSet.Field, Action = CutsceneAction.PathfinderLands, Timing = ShotTiming.AfterDialogue, Seconds = 2.5f, CameraSeconds = 12f,
                     Dialogue = landing, DialogueDelay = 8.5f, FadeIn = 1.5f,
+                    // Round 40 (round 39 open point 2: the lens saw his back): after the touchdown the lens swings round in front of
+                    // the hatch, to his left, so his face reads through the visor as he climbs out, comes down the ramp and looks
+                    // round, and stays on that side as he walks over and the beacon goes up in front of him. (The capsule faces the
+                    // beacon, about 82 degrees to the right of the landing's facing; it sits back by what it grew, its door step 1.35 m out.)
                     Keys = new[]
                     {
                         Key(0f, CameraAnchor.Landing, new Vector3(-3f, 0.8f, 4.5f), new Vector3(2.5f, 12f, -6f), 55f),
                         Key(0.2f, CameraAnchor.Landing, new Vector3(-2.6f, 1.1f, 4.2f), new Vector3(0.3f, 0.9f, 0f), 46f),
-                        Key(0.5f, CameraAnchor.Landing, new Vector3(-1.2f, 1.3f, 3.6f), new Vector3(1f, 1f, 0.4f), 42f),
-                        Key(1f, CameraAnchor.Landing, new Vector3(0.2f, 1.35f, 3f), new Vector3(2.3f, 0.9f, 0.3f), 38f),
+                        Key(0.34f, CameraAnchor.Landing, new Vector3(3.7f, 1.25f, 2.2f), new Vector3(0.75f, 1.05f, 0.12f), 38f),
+                        Key(0.55f, CameraAnchor.Landing, new Vector3(4f, 1.2f, 2f), new Vector3(1.3f, 0.95f, 0.2f), 38f),
+                        Key(1f, CameraAnchor.Landing, new Vector3(4.5f, 1.45f, 2.4f), new Vector3(2.1f, 0.9f, 0.3f), 40f),
                     },
                     // The retro jets fire over the last of the fall, the touchdown, the ramp, his boots on the ground, the beacon.
                     Cues = Join(
                         new[] { Sound(1.4f, CutsceneSound.Thrusters, 0.6f), Sound(2.4f, CutsceneSound.Landing, 0.9f), Shake(2.4f, LandingKick), Sound(3.1f, CutsceneSound.Thrusters, 0.45f), Sound(3.2f, CutsceneSound.BuildClank, 0.5f), Sound(8.6f, CutsceneSound.CoreIgnite, 0.45f) },
-                        Footfalls(LandingWalkOut, HeroStepVolume), Footfalls(LandingWalkOver, HeroStepVolume)),
+                        Footfalls(LandingExitSteps, HeroStepVolume), Footfalls(LandingWalkOver, HeroStepVolume)),
                 },
                 new ShotSpec
                 {
@@ -417,10 +423,12 @@ namespace Game.Editor
                     {
                         // Docs/CUTSCENES_CONTINENTS.md section 8: between him and the creatures, about 27 degrees to his right at
                         // eye height, so the visor faces the lens; it follows his steps back with a slight push in.
+                        // Round 40: he looks aside, turns to them at the growl, startles 0.5 m back (the hand to the gun), then draws
+                        // as the Queen roars; the lens follows the shorter step back.
                         Key(0f, CameraAnchor.Commander, new Vector3(1.2f, 1.4f, 2.3f), new Vector3(0f, 1.3f, 0f), 32f),
-                        Key(1f, CameraAnchor.Commander, new Vector3(1f, 1.4f, 0.9f), new Vector3(0f, 1.3f, -1.1f), 30f),
+                        Key(1f, CameraAnchor.Commander, new Vector3(1.15f, 1.4f, 1.4f), new Vector3(0.1f, 1.25f, -0.5f), 30f),
                     },
-                    Cues = new[] { Sound(0.6f, CutsceneSound.Growl, 0.7f), Sound(1.8f, CutsceneSound.HeavySteps, 0.4f), Sound(3.2f, CutsceneSound.Growl, 0.6f) },
+                    Cues = new[] { Sound(0.6f, CutsceneSound.Growl, 0.7f), Sound(1.8f, CutsceneSound.HeavySteps, 0.4f), Sound(3.7f, CutsceneSound.Growl, 0.85f) },
                 },
                 new ShotSpec
                 {
@@ -462,6 +470,17 @@ namespace Game.Editor
         private static CutsceneCue Sound(float at, CutsceneSound sound, float strength) => new CutsceneCue { At = at, Kind = CueKind.Sound, Sound = sound, Strength = strength };
 
         private static CutsceneCue Shake(float at, float strength) => new CutsceneCue { At = at, Kind = CueKind.Shake, Strength = strength };
+
+        private static CutsceneCue[] Footfalls(float[] steps, float strength)
+        {
+            var cues = new CutsceneCue[steps.Length];
+            for (int i = 0; i < steps.Length; i++)
+            {
+                cues[i] = Sound(steps[i], CutsceneSound.HeroStep, strength);
+            }
+
+            return cues;
+        }
 
         private static CutsceneCue[] Footfalls((float From, float To, float Gap) walk, float strength)
         {

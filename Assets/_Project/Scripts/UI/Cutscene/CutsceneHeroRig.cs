@@ -61,6 +61,9 @@ namespace Game.UI
         private const float ReactForearmDegrees = 105f;
         private const float ReactHeadTiltDegrees = 9f;
 
+        // Where in each blink gap the blink falls is hashed from the gap's number with this salt.
+        private const int BlinkSalt = 211;
+
         private readonly Transform _figure;
         private readonly Transform _torso;
         private readonly Transform _head;
@@ -89,6 +92,11 @@ namespace Game.UI
         private readonly Transform _forearm;
         private readonly Transform[] _overridden = new Transform[0];
         private readonly Quaternion[] _overriddenRest = new Quaternion[0];
+        // Round 40: the face shapes driven after every sampled pose, and every node of the model for a cross-fade between two clips.
+        private readonly FaceRig _face;
+        private readonly Transform[] _nodes = new Transform[0];
+        private readonly Vector3[] _fadePositions = new Vector3[0];
+        private readonly Quaternion[] _fadeRotations = new Quaternion[0];
         private bool _drawn;
 
         public CutsceneHeroRig(Transform parent, HeroDefinition hero)
@@ -114,6 +122,11 @@ namespace Game.UI
                 {
                     _overriddenRest[i] = _overridden[i] != null ? _overridden[i].localRotation : Quaternion.identity;
                 }
+
+                _face = new FaceRig(_art.Renderers, hero.Art.FaceShapes());
+                _nodes = _art.Root.GetComponentsInChildren<Transform>(true);
+                _fadePositions = new Vector3[_nodes.Length];
+                _fadeRotations = new Quaternion[_nodes.Length];
 
                 if (hero.Art.Pistol != null && _holster != null)
                 {
@@ -298,7 +311,13 @@ namespace Game.UI
         /// Plays a one-off clip of the imported figure <paramref name="seconds"/> into it (held on its last frame) at a place and
         /// heading; the caller moves the body. Check <see cref="ClipLength"/> first: without the clip nothing is posed.
         /// </summary>
-        public void PoseClip(Vector3 position, float yawDegrees, ModelClipRole role, float seconds)
+        public void PoseClip(Vector3 position, float yawDegrees, ModelClipRole role, float seconds) => PoseClip(position, yawDegrees, role, seconds, false, false);
+
+        /// <summary>
+        /// Plays a clip of the imported figure <paramref name="seconds"/> into it (wrapped when <paramref name="loop"/>, else held on
+        /// its last frame), with the pistol in the hand or the holster. Without the clip nothing is posed.
+        /// </summary>
+        public void PoseClip(Vector3 position, float yawDegrees, ModelClipRole role, float seconds, bool loop, bool pistolInHand)
         {
             Root.SetPositionAndRotation(position, Quaternion.Euler(0f, yawDegrees, 0f));
             if (_art == null)
@@ -307,14 +326,131 @@ namespace Game.UI
             }
 
             RestoreOverrides();
-            _art.Sample(role, seconds, loop: false);
-            if (_pistol != null && _drawn)
+            _art.Sample(role, seconds, loop);
+            HoldPistol(pistolInHand);
+        }
+
+        /// <summary>
+        /// A cross-fade between two clips (round 40: the nervous aim into the slow lower): <paramref name="share"/> 0 is the first
+        /// clip at its moment, 1 the second; every node of the model is blended between the two sampled poses.
+        /// </summary>
+        public void PoseBlend(Vector3 position, float yawDegrees, ModelClipRole from, float fromSeconds, bool fromLoop, ModelClipRole to, float toSeconds, bool toLoop, float share, bool pistolInHand)
+        {
+            Root.SetPositionAndRotation(position, Quaternion.Euler(0f, yawDegrees, 0f));
+            if (_art == null)
             {
-                _drawn = false;
-                _pistol.SetParent(_holster, false);
-                _pistol.localPosition = Vector3.zero;
-                _pistol.localRotation = Quaternion.identity;
+                return;
             }
+
+            RestoreOverrides();
+            _art.Sample(from, fromSeconds, fromLoop);
+            for (int i = 0; i < _nodes.Length; i++)
+            {
+                _fadePositions[i] = _nodes[i].localPosition;
+                _fadeRotations[i] = _nodes[i].localRotation;
+            }
+
+            _art.Sample(to, toSeconds, toLoop);
+            float weight = Mathf.Clamp01(share);
+            for (int i = 0; i < _nodes.Length; i++)
+            {
+                _nodes[i].localPosition = Vector3.Lerp(_fadePositions[i], _nodes[i].localPosition, weight);
+                _nodes[i].localRotation = Quaternion.Slerp(_fadeRotations[i], _nodes[i].localRotation, weight);
+            }
+
+            HoldPistol(pistolInHand);
+        }
+
+        /// <summary>
+        /// A clip that moves the upper body only (the stow) over a cycle that carries the legs: the cycle first, the clip on top.
+        /// </summary>
+        public void PoseLayered(Vector3 position, float yawDegrees, ModelClipRole cycle, float cycleSeconds, ModelClipRole top, float topSeconds, bool pistolInHand)
+        {
+            Root.SetPositionAndRotation(position, Quaternion.Euler(0f, yawDegrees, 0f));
+            if (_art == null)
+            {
+                return;
+            }
+
+            RestoreOverrides();
+            _art.Sample(cycle, cycleSeconds, loop: true);
+            _art.Sample(top, topSeconds, loop: false);
+            HoldPistol(pistolInHand);
+        }
+
+        /// <summary>The walk or the run at the gait's phase (as <see cref="Pose"/> moving), with the pistol held in the hand or holstered.</summary>
+        public void Travel(Vector3 position, float yawDegrees, float stride, float run, float gait, float time, bool pistolInHand)
+        {
+            Root.SetPositionAndRotation(position, Quaternion.Euler(0f, yawDegrees, 0f));
+            if (_art == null)
+            {
+                Pose(position, yawDegrees, stride, run, gait, 0f, 0f, time);
+                return;
+            }
+
+            RestoreOverrides();
+            SampleCycle(stride, run, gait, time);
+            HoldPistol(pistolInHand);
+        }
+
+        /// <summary>The moment in a clip where its cue falls (the draw's grab, the stow's release), or zero.</summary>
+        public float EventOf(ModelClipRole role)
+        {
+            int index = _art != null ? _artDefinition.Body.IndexOf(role) : -1;
+            return index >= 0 ? _artDefinition.Body.Clips[index].EventSeconds : 0f;
+        }
+
+        /// <summary>The acting data of one of the commander's clips (its root offset at the first frame, its face), or null.</summary>
+        public HeroActingClip Acting(ModelClipRole role) => _art != null ? _artDefinition.ActingFor(role) : null;
+
+        /// <summary>Adds a clip's face tracks at a moment of it (scaled by <paramref name="share"/> for a cross-fade); applied by <see cref="ApplyFace"/>.</summary>
+        public void Face(ModelClipRole role, float seconds, float share = 1f)
+        {
+            HeroActingClip acting = Acting(role);
+            if (acting != null)
+            {
+                _face.Add(acting.Face, seconds, share);
+            }
+        }
+
+        /// <summary>Adds face tracks the cutscene owns (a beat no clip carries) at a moment of them.</summary>
+        public void Face(FaceCurve[] curves, float seconds, float share = 1f) => _face?.Add(curves, seconds, share);
+
+        /// <summary>
+        /// Writes the face after the body was sampled (a clip writes its own zero shape curves over it): the tracks added for
+        /// this pose, plus a blink now and then from the shot clock alone (the art's blink rhythm), so a seek shows the same face.
+        /// </summary>
+        public void ApplyFace(float time)
+        {
+            if (_face == null || !_face.HasFace)
+            {
+                return;
+            }
+
+            float gap = (_artDefinition.BlinkEvery.x + _artDefinition.BlinkEvery.y) * 0.5f;
+            int beat = Mathf.FloorToInt(time / gap);
+            float start = beat * gap + CutsceneMath.Hash(beat, BlinkSalt) * (gap - _artDefinition.BlinkSeconds);
+            float into = (time - start) / _artDefinition.BlinkSeconds;
+            if (into >= 0f && into <= 1f)
+            {
+                _face.AtLeast(_artDefinition.BlinkShape, Mathf.Sin(into * Mathf.PI));
+            }
+
+            _face.Apply();
+        }
+
+        // The pistol rides the hand while drawn and the holster otherwise, at its grip (identity in the socket).
+        private void HoldPistol(bool inHand)
+        {
+            if (_pistol == null || _drawn == inHand)
+            {
+                return;
+            }
+
+            _drawn = inHand;
+            _pistol.SetParent(inHand ? _hand : _holster, false);
+            _pistol.localPosition = Vector3.zero;
+            _pistol.localRotation = Quaternion.identity;
         }
 
         private void RestoreOverrides()
@@ -348,17 +484,9 @@ namespace Game.UI
             {
                 _art.Sample(ModelClipRole.Shoot, _art.LengthOf(ModelClipRole.Shoot), loop: false);
             }
-            else if (stride <= 0f)
-            {
-                _art.Sample(ModelClipRole.Idle, time, loop: true);
-            }
             else
             {
-                ModelClipRole cycle = run >= RunAbove ? ModelClipRole.Move : ModelClipRole.Walk;
-                ModelClip clip = _artDefinition.Body.Clips[Mathf.Max(0, _artDefinition.Body.IndexOf(cycle))];
-                float distance = gait / GaitPerUnit;
-                float phase = clip.DistancePerLoop > 0f ? distance / clip.DistancePerLoop * clip.Length : time;
-                _art.Sample(cycle, phase, loop: true);
+                SampleCycle(stride, run, gait, time);
             }
 
             if (_neck != null && Mathf.Abs(headYaw) > 0.01f)
@@ -373,6 +501,22 @@ namespace Game.UI
                 _pistol.localPosition = Vector3.zero;
                 _pistol.localRotation = Quaternion.identity;
             }
+        }
+
+        // Standing: the idle at the shot time; moving: the walk or the run at the phase the distance walked gives.
+        private void SampleCycle(float stride, float run, float gait, float time)
+        {
+            if (stride <= 0f)
+            {
+                _art.Sample(ModelClipRole.Idle, time, loop: true);
+                return;
+            }
+
+            ModelClipRole cycle = run >= RunAbove ? ModelClipRole.Move : ModelClipRole.Walk;
+            ModelClip clip = _artDefinition.Body.Clips[Mathf.Max(0, _artDefinition.Body.IndexOf(cycle))];
+            float distance = gait / GaitPerUnit;
+            float phase = clip.DistancePerLoop > 0f ? distance / clip.DistancePerLoop * clip.Length : time;
+            _art.Sample(cycle, phase, loop: true);
         }
 
         private static void HideParts(ArtModel model, string[] parts)

@@ -168,6 +168,9 @@ namespace Game.UI
 
         public Transform Root { get; }
 
+        /// <summary>Where the Queen stands at the head of her brood (what the commander turns to face).</summary>
+        public Vector3 QueenSpot => _queen != null ? _queen.Stand : OnRoad(QueenStand);
+
         /// <summary>
         /// Swarm clock of the last roar, after which the brood runs back into the ground; infinite holds them where they
         /// stand. Round 39 (Remco): they stay until the player has read the last line, so the field set sets it only once

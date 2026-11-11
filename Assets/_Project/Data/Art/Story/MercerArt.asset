@@ -28,13 +28,182 @@ MonoBehaviour:
   - Spine2
   _packBone: Spine2
   _muzzle: {x: 0, y: 0.062, z: 0.192}
+  _pistolScale: 1.35
+  _pistolStripStart: {x: 0, y: 0.07, z: -0.02}
+  _pistolStripWidth: 0.14
+  _pistolStripGlow: 3
   _walkBelow: 1.5
   _jetSockets:
   - Jet_L
   - Jet_R
   _thrustColor: {r: 0.55, g: 0.85, b: 1, a: 1}
   _thrustLength: 0.55
+  _thrustWidth: 0.8
+  _thrustGlow: 2
+  _thrustCoreColor: {r: 0.9, g: 0.97, b: 1, a: 1}
+  _thrustCoreLength: 0.6
+  _thrustCoreWidth: 0.4
+  _thrustCoreGlow: 4
+  _heatGlowColor: {r: 0.35, g: 0.7, b: 1, a: 1}
+  _heatGlowSize: 0.7
+  _heatGlowStrength: 1.5
+  _heatLightIntensity: 3
+  _heatLightRange: 3
   _blinkShape: Blink
   _blinkSeconds: 0.15
   _blinkEvery: {x: 3, y: 6}
+  _acting:
+  - _role: 81
+    _startBack: 0
+    _startTurn: -0
+    _face:
+    - _shape: Blink
+      _keys:
+      - {x: 1.933, y: 0}
+      - {x: 2, y: 1}
+      - {x: 2.1, y: 0}
+    - _shape: Breath
+      _keys:
+      - {x: 0, y: 0.5}
+      - {x: 0.2, y: 0.8}
+      - {x: 0.467, y: 0.2}
+      - {x: 0.8, y: 0.65}
+      - {x: 1.133, y: 0.15}
+      - {x: 1.467, y: 0.55}
+      - {x: 1.933, y: 0}
+    - _shape: Determined
+      _keys:
+      - {x: 0.467, y: 0}
+      - {x: 0.733, y: 0.35}
+      - {x: 1.333, y: 0.35}
+      - {x: 1.867, y: 0}
+    - _shape: LookL
+      _keys:
+      - {x: 2.233, y: 0}
+      - {x: 2.367, y: 1}
+      - {x: 2.5, y: 0.9}
+      - {x: 2.6, y: 0}
+    - _shape: LookR
+      _keys:
+      - {x: 2.567, y: 0}
+      - {x: 2.667, y: 1}
+      - {x: 2.833, y: 0.9}
+      - {x: 2.967, y: 0}
+  - _role: 82
+    _startBack: 0.5
+    _startTurn: -0
+    _face:
+    - _shape: Breath
+      _keys:
+      - {x: 0.033, y: 0}
+      - {x: 0.1, y: 0.2}
+      - {x: 0.267, y: 0.9}
+      - {x: 0.4, y: 0.4}
+      - {x: 0.6, y: 0.7}
+      - {x: 0.8, y: 0.35}
+      - {x: 1, y: 0.65}
+      - {x: 1.2, y: 0.3}
+      - {x: 1.6, y: 0.45}
+      - {x: 2, y: 0.25}
+      - {x: 2.5, y: 0.35}
+    - _shape: Fear
+      _keys:
+      - {x: 0.067, y: 0}
+      - {x: 0.267, y: 0.85}
+      - {x: 0.667, y: 1}
+      - {x: 2.5, y: 0.9}
+    - _shape: LookL
+      _keys:
+      - {x: 1.367, y: 0}
+      - {x: 1.467, y: 0.5}
+      - {x: 1.633, y: 0}
+    - _shape: LookR
+      _keys:
+      - {x: 1.633, y: 0}
+      - {x: 1.733, y: 0.45}
+      - {x: 1.933, y: 0}
+    - _shape: Surprise
+      _keys:
+      - {x: 0, y: 0}
+      - {x: 0.1, y: 1}
+      - {x: 0.267, y: 0.35}
+      - {x: 0.433, y: 0}
+  - _role: 83
+    _startBack: 0
+    _startTurn: -0
+    _face:
+    - _shape: Breath
+      _keys:
+      - {x: 0, y: 0.35}
+      - {x: 0.333, y: 0.55}
+      - {x: 0.8, y: 0.3}
+      - {x: 1.5, y: 0.25}
+    - _shape: Determined
+      _keys:
+      - {x: 0.467, y: 0}
+      - {x: 1.5, y: 0.25}
+    - _shape: Fear
+      _keys:
+      - {x: 0, y: 0.9}
+      - {x: 0.8, y: 0.75}
+      - {x: 1.5, y: 0.65}
+  - _role: 84
+    _startBack: 0
+    _startTurn: -0
+    _face:
+    - _shape: Blink
+      _keys:
+      - {x: 1.733, y: 0}
+      - {x: 1.8, y: 1}
+      - {x: 1.9, y: 0}
+    - _shape: Breath
+      _keys:
+      - {x: 0, y: 0.25}
+      - {x: 0.267, y: 0.5}
+      - {x: 0.667, y: 0.25}
+      - {x: 1.267, y: 0.5}
+      - {x: 1.667, y: 0.25}
+      - {x: 2.267, y: 0.5}
+      - {x: 2.667, y: 0.25}
+      - {x: 3, y: 0.25}
+    - _shape: Determined
+      _keys:
+      - {x: 0, y: 0.25}
+      - {x: 1.5, y: 0.35}
+      - {x: 3, y: 0.25}
+    - _shape: Fear
+      _keys:
+      - {x: 0, y: 0.65}
+      - {x: 1.5, y: 0.55}
+      - {x: 3, y: 0.65}
+  - _role: 85
+    _startBack: 0
+    _startTurn: -90
+    _face:
+    - _shape: Blink
+      _keys:
+      - {x: 0.1, y: 0}
+      - {x: 0.167, y: 1}
+      - {x: 0.233, y: 0}
+    - _shape: LookL
+      _keys:
+      - {x: 0, y: 0}
+      - {x: 0.1, y: 1}
+      - {x: 0.467, y: 0.6}
+      - {x: 0.8, y: 0}
+  - _role: 86
+    _startBack: 0
+    _startTurn: 90
+    _face:
+    - _shape: Blink
+      _keys:
+      - {x: 0.1, y: 0}
+      - {x: 0.167, y: 1}
+      - {x: 0.233, y: 0}
+    - _shape: LookR
+      _keys:
+      - {x: 0, y: 0}
+      - {x: 0.1, y: 1}
+      - {x: 0.467, y: 0.6}
+      - {x: 0.8, y: 0}
   _bust: {fileID: 11400000, guid: e17b6f97f4f6ec144a4bc061530f216b, type: 2}

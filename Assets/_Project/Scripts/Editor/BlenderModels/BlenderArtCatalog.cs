@@ -44,6 +44,8 @@ namespace Game.Editor
             "Startled_Hold",
             // Spencer pass 4: the jetpack flight, in place; the NTI flag's cloth.
             "Jet_Fly", "Wave",
+            // Spencer's acting pass (round 40): the nervous aim held while the brood glares.
+            "Aim_Hold_Nervous_Loop",
         };
 
         // A shard's burst out of the giant and its flight back into it (README round 28).

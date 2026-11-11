@@ -248,5 +248,20 @@ namespace Game.Core
 
         /// <summary>Stepping out of the landing capsule's hatch and down its ramp to the ground, in place (the owner moves the body along the ramp), played once.</summary>
         CapsuleExit = 81,
+
+        /// <summary>The startle at the brood: a flinch and three uneven steps back, the hand to the holstered pistol's grip, played once (the owner moves the root back by the clip's travel at its first frame).</summary>
+        StartleBackstep = 82,
+
+        /// <summary>A nervous draw into a close two-handed aim (the cue: the grab, where the pistol goes to the hand), played once.</summary>
+        DrawAimNervous = 83,
+
+        /// <summary>The nervous two-handed aim held: breaths, weight shifts, a trembling muzzle. Loops.</summary>
+        AimHoldNervous = 84,
+
+        /// <summary>A look and a quarter turn to the owner's left, head first, then the feet (the owner turns the root by the turn at its first frame), played once.</summary>
+        TurnLookLeft = 85,
+
+        /// <summary>A look and a quarter turn to the owner's right (see <see cref="TurnLookLeft"/>), played once.</summary>
+        TurnLookRight = 86,
     }
 }

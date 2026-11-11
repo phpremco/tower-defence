@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Game.Core;
+using Game.Hero;
 using Game.Levels;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -116,7 +117,15 @@ namespace Game.UI
         private const float IgniteTo = 0.8f;
         private const float CarriedCrystalGlow = 0.8f;
 
-        // The disbelief: a look, a step back, then the Disbelief clip (hand to the chin guard, a slow head shake).
+        // Round 40 (Remco: "no facial change when he sees the enemies ... the backing up is so static, it looks fake"): with the
+        // acting clips he looks aside, turns to the brood at the first growl, startles back with his hand to the gun, draws into a
+        // nervous two-handed aim and holds it (also through the stand behind the gate, until the gate line is read); as they
+        // retreat he lowers it slowly and stows it. The clips follow each other end to start, so nothing pops between beats.
+        private const float ReactTurnAt = 0.6f;
+        private const float HandoffLowerAt = 0.8f;
+        private const float StowGap = 0.2f;
+
+        // The disbelief (without the acting clips): a look, a step back, then the Disbelief clip (hand to the chin guard, a slow head shake).
         private const float ReactStepFrom = 0.18f;
         private const float ReactStepTo = 0.46f;
         private const float ReactStepBack = 1.1f;
@@ -154,6 +163,8 @@ namespace Game.UI
         private ParticleSystem _landingDust;
         private Vector3 _fallStart;
         private Vector3 _door;
+        private Vector3 _exitRoot;
+        private Vector3 _capsuleSpot;
         private Vector3 _offRamp;
         private Vector3 _beaconStand;
         private Vector3[] _exitPath = new Vector3[0];
@@ -286,7 +297,7 @@ namespace Game.UI
             bool landing = At(CutsceneAction.PathfinderLands);
             float fall = landing ? CutsceneMath.Span(progress, 0f, FallShare) : 1f;
             float eased = 1f - Mathf.Pow(1f - fall, 2.2f);
-            _capsule.position = Vector3.Lerp(_fallStart, _layout.Landing, eased);
+            _capsule.position = Vector3.Lerp(_fallStart, _capsuleSpot, eased);
             float heat = landing ? (fall < 1f ? 1f : 1f - CutsceneMath.Span(progress, FallShare, CoolShare)) : 0f;
             _shield.SetColor("_EmissionColor", HotColour * (HotEmission * heat * heat));
 
@@ -503,8 +514,9 @@ namespace Game.UI
                 return;
             }
 
-            // The close shots of the commander get a soft cool key from the front, so his face reads against the night.
-            _heroLight.enabled = At(CutsceneAction.GroundShivers) || At(CutsceneAction.MercerReacts) || At(CutsceneAction.GateStand);
+            // The close shots of the commander get a soft cool key from the front, so his face reads against the night (round 40:
+            // also as he climbs out of the capsule).
+            _heroLight.enabled = At(CutsceneAction.GroundShivers) || At(CutsceneAction.MercerReacts) || At(CutsceneAction.GateStand) || (At(CutsceneAction.PathfinderLands) && progress >= AppearAt);
             switch (_action)
             {
                 case CutsceneAction.PathfinderLands:
@@ -522,18 +534,142 @@ namespace Game.UI
                     PoseHeroRun(time, progress);
                     break;
                 case CutsceneAction.Handoff:
-                    Stand(_layout.GuardPost, _layout.GateFacing, 0f, 1f, time);
+                    PoseHeroHandoff(time);
                     break;
                 default:
                     // The base goes up around the landing site; the commander watches it from the beacon.
                     Stand(_beaconStand, Quaternion.LookRotation(Flat(_layout.Base - _beaconStand)), Mathf.Sin(time * 0.5f) * 15f, 0f, time);
                     break;
             }
+
+            // After the body: a sampled clip writes its own zero face curves, so the face goes on last (with the blinks).
+            _hero.ApplyFace(time);
+        }
+
+        // Round 40: the acting pass is there when the commander's model carries its clips; without them the older staging plays.
+        private bool Acts => _hero.ClipLength(ModelClipRole.StartleBackstep) > 0f && _hero.ClipLength(ModelClipRole.DrawAimNervous) > 0f
+            && _hero.ClipLength(ModelClipRole.AimHoldNervous) > 0f && _hero.ClipLength(ModelClipRole.TurnLookLeft) > 0f;
+
+        // Where the Queen stands, seen from the dig site: what he turns to, startles from and backs away from.
+        private float BroodYaw => Yaw(_swarm.QueenSpot - _layout.DigSite);
+
+        // Where the startle left him: its travel back from the dig site, away from the Queen.
+        private Vector3 StartleEnd
+        {
+            get
+            {
+                HeroActingClip startle = _hero.Acting(ModelClipRole.StartleBackstep);
+                float back = startle != null ? startle.StartBack : 0f;
+                return _layout.Ground(_layout.DigSite - Quaternion.Euler(0f, BroodYaw, 0f) * Vector3.forward * back);
+            }
+        }
+
+        // The shot clock at which the nervous aim began in the stand behind the gate (its loop runs on into the handoff).
+        private float AimFromSeconds => DrawFrom * _standShotSeconds;
+
+        // He looks aside at the ground he came to dig; at the first growl he turns to the brood (the turn clip, the root turned by
+        // its own turn at the first frame), startles back from them with the hand going to the gun, draws into a nervous aim
+        // as the Queen roars, and holds it. Each clip starts where the last one ended.
+        private void PoseActingReaction(float time)
+        {
+            _hero.Root.gameObject.SetActive(true);
+            float brood = BroodYaw;
+            HeroActingClip turnActing = _hero.Acting(ModelClipRole.TurnLookLeft);
+            float turn = turnActing != null ? turnActing.StartTurn : 0f;
+            float turnLength = _hero.ClipLength(ModelClipRole.TurnLookLeft);
+            float startleAt = ReactTurnAt + turnLength;
+            float drawAt = startleAt + _hero.ClipLength(ModelClipRole.StartleBackstep);
+            float aimAt = drawAt + _hero.ClipLength(ModelClipRole.DrawAimNervous);
+            if (time < ReactTurnAt)
+            {
+                // The idle reaches its first frame as the turn begins, which is the turn clip's first frame turned back.
+                _hero.PoseClip(_layout.DigSite, brood - turn, ModelClipRole.Idle, time - ReactTurnAt, true, false);
+                return;
+            }
+
+            if (time < startleAt)
+            {
+                float into = time - ReactTurnAt;
+                _hero.PoseClip(_layout.DigSite, brood, ModelClipRole.TurnLookLeft, into, false, false);
+                _hero.Face(ModelClipRole.TurnLookLeft, into);
+                return;
+            }
+
+            Vector3 back = StartleEnd;
+            if (time < drawAt)
+            {
+                float into = time - startleAt;
+                _hero.PoseClip(back, brood, ModelClipRole.StartleBackstep, into, false, false);
+                _hero.Face(ModelClipRole.StartleBackstep, into);
+                return;
+            }
+
+            if (time < aimAt)
+            {
+                float into = time - drawAt;
+                _hero.PoseClip(back, brood, ModelClipRole.DrawAimNervous, into, false, into >= _hero.EventOf(ModelClipRole.DrawAimNervous));
+                _hero.Face(ModelClipRole.DrawAimNervous, into);
+                return;
+            }
+
+            float held = time - aimAt;
+            _hero.PoseClip(back, brood, ModelClipRole.AimHoldNervous, held, true, true);
+            _hero.Face(ModelClipRole.AimHoldNervous, Mathf.Repeat(held, _hero.ClipLength(ModelClipRole.AimHoldNervous)));
+        }
+
+        // As the brood turns to run he trusts it slowly: the nervous aim cross-fades into the lowered weapon played slow, the
+        // fear drains and the resolve sets in; then he stows the pistol.
+        private void PoseHeroHandoff(float time)
+        {
+            if (!Acts)
+            {
+                Stand(_layout.GuardPost, _layout.GateFacing, 0f, 1f, time);
+                return;
+            }
+
+            _hero.Root.gameObject.SetActive(true);
+            CutsceneCast cast = _context.Cast;
+            float yaw = _layout.GateFacing.eulerAngles.y;
+            float aim = _standHeld - AimFromSeconds + time;
+            float aimLength = _hero.ClipLength(ModelClipRole.AimHoldNervous);
+            float lowered = (time - HandoffLowerAt) * cast.LowerSpeed;
+            float lowerEnd = HandoffLowerAt + _hero.ClipLength(ModelClipRole.LowerWeapon) / cast.LowerSpeed;
+            float stowAt = lowerEnd + StowGap;
+            if (time < HandoffLowerAt)
+            {
+                _hero.PoseClip(_layout.GuardPost, yaw, ModelClipRole.AimHoldNervous, aim, true, true);
+                _hero.Face(ModelClipRole.AimHoldNervous, Mathf.Repeat(aim, aimLength));
+                return;
+            }
+
+            float share = cast.AimFadeSeconds > 0f ? CutsceneMath.Smooth(CutsceneMath.Span(time, HandoffLowerAt, HandoffLowerAt + cast.AimFadeSeconds)) : 1f;
+            _hero.Face(ModelClipRole.AimHoldNervous, Mathf.Repeat(aim, aimLength), 1f - share);
+            _hero.Face(cast.LowerFace, time - HandoffLowerAt, share);
+            if (share < 1f)
+            {
+                _hero.PoseBlend(_layout.GuardPost, yaw, ModelClipRole.AimHoldNervous, aim, true, ModelClipRole.LowerWeapon, lowered, false, share, true);
+                return;
+            }
+
+            if (time < stowAt || _hero.ClipLength(ModelClipRole.StowPistol) <= 0f)
+            {
+                _hero.PoseClip(_layout.GuardPost, yaw, ModelClipRole.LowerWeapon, lowered, false, true);
+                return;
+            }
+
+            float stow = time - stowAt;
+            _hero.PoseLayered(_layout.GuardPost, yaw, ModelClipRole.Idle, stow, ModelClipRole.StowPistol, stow, stow < _hero.EventOf(ModelClipRole.StowPistol));
         }
 
         // He cannot believe it: still facing them, he backs away from the gate, the hand comes up to the visor.
         private void PoseReaction(float time, float progress)
         {
+            if (Acts)
+            {
+                PoseActingReaction(time);
+                return;
+            }
+
             _hero.Root.gameObject.SetActive(true);
             float step = CutsceneMath.Smooth(CutsceneMath.Span(progress, ReactStepFrom, ReactStepTo)) * ReactStepBack;
             bool stepping = progress > ReactStepFrom && progress < ReactStepTo;
@@ -543,14 +679,23 @@ namespace Game.UI
         }
 
         // Where the reaction left him (a step back from the dig site), back to the gate at a run, round to face the
-        // entrance behind its field and the blaster comes up.
+        // entrance behind its field and the blaster comes up. Round 40 (acting): he runs with the pistol he drew in his hand,
+        // with the nervous aim's face, and at the post the aim comes up into the nervous hold, which loops for as long as the
+        // player keeps the gate line open (the brood holds too).
         private void PoseHeroRun(float time, float progress)
         {
             _hero.Root.gameObject.SetActive(true);
-            Vector3 from = _layout.Ground(_layout.DigSite - _layout.DigFacing * Vector3.forward * ReactStepBack);
+            bool acts = Acts;
+            Vector3 from = acts ? StartleEnd : _layout.Ground(_layout.DigSite - _layout.DigFacing * Vector3.forward * ReactStepBack);
+            float aimLength = acts ? _hero.ClipLength(ModelClipRole.AimHoldNervous) : 0f;
+            if (acts)
+            {
+                _hero.Face(ModelClipRole.AimHoldNervous, Mathf.Repeat(time, aimLength));
+            }
+
             if (progress < RunShare)
             {
-                Walk(from, _layout.GuardPost, CutsceneMath.Span(progress, 0f, RunShare), 1f, time);
+                Walk(from, _layout.GuardPost, CutsceneMath.Span(progress, 0f, RunShare), 1f, time, Yaw(_layout.GuardPost - from), acts);
                 return;
             }
 
@@ -558,18 +703,35 @@ namespace Game.UI
             float arrived = Yaw(_layout.GuardPost - from);
             float gate = _layout.GateFacing.eulerAngles.y;
             float yaw = CutsceneMath.EasedTurn(arrived, gate, (progress - RunShare) * _standShotSeconds, TurnDegreesPerSecond);
-            float draw = CutsceneMath.Smooth(CutsceneMath.Span(progress, DrawFrom, DrawTo));
+            if (acts && time >= AimFromSeconds)
+            {
+                float aim = time - AimFromSeconds;
+                float fade = _context.Cast.AimFadeSeconds;
+                float share = fade > 0f ? CutsceneMath.Smooth(Mathf.Clamp01(aim / fade)) : 1f;
+                if (share < 1f)
+                {
+                    _hero.PoseBlend(_layout.GuardPost, yaw, ModelClipRole.Idle, time, true, ModelClipRole.AimHoldNervous, aim, true, share, true);
+                    return;
+                }
+
+                _hero.PoseClip(_layout.GuardPost, yaw, ModelClipRole.AimHoldNervous, aim, true, true);
+                return;
+            }
+
+            float draw = acts ? 0f : CutsceneMath.Smooth(CutsceneMath.Span(progress, DrawFrom, DrawTo));
             if (draw > 0f)
             {
                 Stand(_layout.GuardPost, Quaternion.Euler(0f, yaw, 0f), 0f, draw, time);
                 return;
             }
 
-            TurnOnTheSpot(_layout.GuardPost, yaw, Mathf.Abs(Mathf.DeltaAngle(yaw, gate)), Mathf.Abs(Mathf.DeltaAngle(arrived, yaw)), 0f, time);
+            TurnOnTheSpot(_layout.GuardPost, yaw, Mathf.Abs(Mathf.DeltaAngle(yaw, gate)), Mathf.Abs(Mathf.DeltaAngle(arrived, yaw)), 0f, time, acts);
         }
 
         // Round 39: in the doorway in the steam, out and down the ramp, a look round, on to the beacon spot and a turn to the
-        // beacon as it goes up. Nothing snaps: each beat starts on the heading the last one ended on.
+        // beacon as it goes up. Nothing snaps: each beat starts on the heading the last one ended on. Round 40: with the
+        // Capsule_Exit clip he climbs out crouched through the doorway and down the ramp (a breath, a look left and right are
+        // in the clip and its face), its root on the capsule's Exit socket.
         private void PoseHeroLanding(float time, float progress)
         {
             _hero.Root.gameObject.SetActive(progress >= AppearAt);
@@ -580,19 +742,36 @@ namespace Game.UI
 
             float seconds = progress * _landingSeconds;
             float outward = Yaw(_offRamp - _door);
-            if (progress < ExitFrom)
+            ModelClipRole exitClip = _context.Cast.CapsuleExitClip;
+            float exitLength = _hero.ClipLength(exitClip);
+            Vector3 start = _offRamp;
+            float lookTo = LookTo;
+            if (exitLength > 0f)
+            {
+                float into = Mathf.Max(0f, seconds - ExitFrom * _landingSeconds);
+                lookTo = ExitFrom + exitLength / _landingSeconds;
+                if (progress < lookTo)
+                {
+                    _hero.PoseClip(_exitRoot, outward, exitClip, into, false, false);
+                    _hero.Face(exitClip, into);
+                    return;
+                }
+
+                // The clip ends in the idle's first frame on its root: the idle runs on from there.
+                start = _exitRoot;
+                time = seconds - lookTo * _landingSeconds;
+            }
+            else if (progress < ExitFrom)
             {
                 Stand(_exitPath[0], Quaternion.Euler(0f, outward, 0f), 0f, 0f, time);
                 return;
             }
-
-            if (progress < ExitTo)
+            else if (progress < ExitTo)
             {
                 StepOut(CutsceneMath.Span(progress, ExitFrom, ExitTo), outward, time);
                 return;
             }
-
-            if (progress < LookTo)
+            else if (progress < LookTo)
             {
                 // A look round: the head sweeps, the body turns a little with it and back, the feet stepping as it turns.
                 float phase = CutsceneMath.Span(progress, ExitTo, LookTo) * Mathf.PI * 2f;
@@ -602,63 +781,66 @@ namespace Game.UI
                 return;
             }
 
-            bool walks = Vector3.Distance(_offRamp, _beaconStand) > MinWalk;
-            float over = walks ? Yaw(_beaconStand - _offRamp) : outward;
-            if (progress < WalkOverTo && walks)
+            bool walks = Vector3.Distance(Flat(start), Flat(_beaconStand)) > MinWalk && Vector3.Dot(_beaconStand - start, Quaternion.Euler(0f, outward, 0f) * Vector3.forward) > MinWalk;
+            float over = walks ? Yaw(_beaconStand - start) : outward;
+            float walkTo = Mathf.Max(WalkOverTo, lookTo + (WalkOverTo - LookTo));
+            if (progress < walkTo && walks)
             {
-                float yaw = CutsceneMath.EasedTurn(outward, over, seconds - LookTo * _landingSeconds, TurnDegreesPerSecond);
-                Walk(_offRamp, _beaconStand, CutsceneMath.Span(progress, LookTo, WalkOverTo), 0f, time, yaw);
+                float yaw = CutsceneMath.EasedTurn(outward, over, seconds - lookTo * _landingSeconds, TurnDegreesPerSecond);
+                Walk(start, _beaconStand, CutsceneMath.Span(progress, lookTo, walkTo), 0f, time, yaw, false);
                 return;
             }
 
-            Vector3 at = walks ? _beaconStand : _offRamp;
+            Vector3 at = walks ? _beaconStand : start;
             float from = walks ? over : outward;
             float to = Yaw(_layout.BeaconSpot - at);
-            float since = seconds - (walks ? WalkOverTo : LookTo) * _landingSeconds;
+            float since = seconds - (walks ? walkTo : lookTo) * _landingSeconds;
             float turned = CutsceneMath.EasedTurn(from, to, since, TurnDegreesPerSecond);
-            TurnOnTheSpot(at, turned, Mathf.Abs(Mathf.DeltaAngle(turned, to)), Mathf.Abs(Mathf.DeltaAngle(from, turned)), 0f, time);
+            TurnOnTheSpot(at, turned, Mathf.Abs(Mathf.DeltaAngle(turned, to)), Mathf.Abs(Mathf.DeltaAngle(from, turned)), 0f, time, false);
         }
 
-        // Through the doorway and down the ramp to the ground: the cast's exit clip when the commander's model has one (the
-        // body carried along the ramp by the path), else his walk with the feet keeping to the distance covered.
+        // Without the exit clip: through the doorway and down the ramp to the ground with his walk, the feet keeping to the
+        // distance covered.
         private void StepOut(float share, float yaw, float time)
         {
             float walked = share * _exitLength;
             Vector3 position = FieldLayout.PointAlong(_exitPath, walked);
-            ModelClipRole clip = _context.Cast.CapsuleExitClip;
-            float length = _hero.ClipLength(clip);
             _hero.Root.gameObject.SetActive(true);
-            if (length > 0f)
-            {
-                _hero.PoseClip(position, yaw, clip, share * length);
-                return;
-            }
-
             float stride = Mathf.Clamp01(Mathf.Min(walked, _exitLength - walked) * 3f + StepOutStride);
             _hero.Pose(position, yaw, stride, 0f, walked * CutsceneHeroRig.GaitPerUnit, 0f, 0f, time);
         }
 
         // Turning where he stands: the feet step while the heading still has a way to go (a short stride that fades as the
         // turn ends), at the gait the turned angle gives, so the steps keep pace with the turn.
-        private void TurnOnTheSpot(Vector3 position, float yaw, float remainingDegrees, float turnedDegrees, float headYaw, float time)
+        private void TurnOnTheSpot(Vector3 position, float yaw, float remainingDegrees, float turnedDegrees, float headYaw, float time, bool pistolInHand = false)
         {
             float stride = TurnStride * Mathf.Clamp01(remainingDegrees / StrideFullAtDegrees);
             float gait = turnedDegrees / 180f * MetresPerHalfTurn * CutsceneHeroRig.GaitPerUnit;
             _hero.Root.gameObject.SetActive(true);
+            if (pistolInHand)
+            {
+                _hero.Travel(position, yaw, stride, 0f, gait, time, true);
+                return;
+            }
+
             _hero.Pose(position, yaw, stride, 0f, gait, headYaw, 0f, time);
         }
 
         private static float Yaw(Vector3 direction) => Quaternion.LookRotation(Flat(direction)).eulerAngles.y;
 
-        private void Walk(Vector3 from, Vector3 to, float share, float run, float time) => Walk(from, to, share, run, time, Yaw(to - from));
-
-        // The heading is passed in, so a walk can start by easing round from where he was facing.
-        private void Walk(Vector3 from, Vector3 to, float share, float run, float time, float yaw)
+        // The heading is passed in, so a walk can start by easing round from where he was facing; a drawn pistol stays in the hand.
+        private void Walk(Vector3 from, Vector3 to, float share, float run, float time, float yaw, bool pistolInHand)
         {
             float distance = Vector3.Distance(from, to);
             Vector3 position = Vector3.Lerp(from, to, share);
             float stride = Mathf.Clamp01(Mathf.Min(share, 1f - share) * distance * 3f);
             _hero.Root.gameObject.SetActive(true);
+            if (pistolInHand)
+            {
+                _hero.Travel(position, yaw, stride, run, share * distance * CutsceneHeroRig.GaitPerUnit, time, true);
+                return;
+            }
+
             _hero.Pose(position, yaw, stride, run, share * distance * CutsceneHeroRig.GaitPerUnit, 0f, 0f, time);
         }
 
@@ -700,10 +882,12 @@ namespace Game.UI
             _capsule.SetParent(root, false);
             Quaternion facing = Quaternion.LookRotation(Flat(_layout.BeaconSpot - _layout.Landing));
             _capsule.SetPositionAndRotation(_layout.Landing, facing);
+            // Round 40: on the ground the capsule is shown at the cast's scale, so Spencer fits its doorway (the orbit keeps its own).
+            _capsule.localScale = Vector3.one * (_context.Cast != null ? _context.Cast.LandedCapsuleScale : 1f);
             GameObject custom = _context.Cast != null ? _context.Cast.Capsule : null;
             ModelArtDefinition art = _context.Cast != null ? _context.Cast.CapsuleArt : null;
-            Vector3 door = _layout.Landing + facing * parts.Door;
-            Vector3 hinge = _layout.Landing + facing * parts.HatchHinge;
+            Vector3 door = _capsule.TransformPoint(parts.Door);
+            Vector3 hinge = _capsule.TransformPoint(parts.HatchHinge);
             if (art != null)
             {
                 // The imported capsule lands on its own legs and lowers its own ramp; Mercer steps out at its Exit point.
@@ -739,6 +923,17 @@ namespace Game.UI
             }
 
             Vector3 forward = facing * Vector3.forward;
+            // The larger capsule sits back by what it grew, so its door step stays where the scale-1 capsule had it: the walk to
+            // the beacon and the clearance round the landing keep their round-39 distances.
+            Vector3 outward = door - _layout.Landing;
+            outward.y = 0f;
+            Vector3 grown = outward * (1f - 1f / _capsule.localScale.x);
+            _capsule.position -= grown;
+            door -= grown;
+            hinge -= grown;
+            _capsuleSpot = _capsule.position;
+            // The exit clip's root: the Exit socket on the capsule's own footing, where the clip's sill height was keyed from.
+            _exitRoot = door;
             _door = _layout.Ground(door);
             _offRamp = _layout.Ground(_door + forward * OffRampStep);
             _beaconStand = _layout.Ground(_layout.BeaconSpot - forward * 0.75f);

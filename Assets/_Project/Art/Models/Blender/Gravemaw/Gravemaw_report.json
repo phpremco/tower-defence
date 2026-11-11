@@ -1082,5 +1082,85 @@
     "lod1_tris_total": 11240,
     "unity": "extra part 'Maw' (BlenderArtEntry.ExtraParts): object Gravemaw_Maw / Gravemaw_Maw_LOD1, maps Gravemaw_Maw_*.png and Low/Gravemaw_Maw_*.png",
     "note": "round 38: worm gullet with five rows of hooked teeth; the body lost the round-14 plug and crystal teeth; bones, clips and events unchanged"
+  },
+  "roar_rear": {
+    "note": "round 39: Roar is a rear (front curls up, head 58 degrees, maw open skyward ~57 degrees at the 44-degree camera, shudder and petal quiver, heavy drop); Surface_Throw tips the Head up to +32 degrees over frames 14-34; same bones, clip names, frame counts and event frames",
+    "changed_clips": [
+      "Roar",
+      "Surface_Throw"
+    ],
+    "roar": {
+      "frames": 66,
+      "event_frames_unchanged": true,
+      "beats": {
+        "anticipation": [
+          0,
+          13
+        ],
+        "rise": [
+          7,
+          23
+        ],
+        "peak_spread": 22,
+        "hold_shudder": [
+          23,
+          49
+        ],
+        "drop": [
+          49,
+          59
+        ],
+        "impact": 59,
+        "rest": 66,
+        "jaws_start_opening": 12
+      },
+      "maw_pitch_deg_before": [
+        -30.9,
+        -9.5
+      ],
+      "maw_pitch_deg_after": [
+        -18.9,
+        60.7
+      ],
+      "lowest_point_m": -0.077,
+      "rest_lowest_point_m": -0.076
+    },
+    "surface_throw": {
+      "head_tip_deg": 32.0,
+      "frames": [
+        14,
+        24,
+        34
+      ],
+      "keys_changed": {
+        "Surface_Throw": 19,
+        "Surface_Throw_LOD": 19
+      },
+      "body_path_jaws_debris_unchanged": true,
+      "maw_pitch_deg_before": 24.9,
+      "maw_pitch_deg_after": 42.7
+    },
+    "untouched": "every other clip (Gate_*, Climb_*, Crawl, Idle, Hit, Death, Dive, Emerge, Burrow_*, Dive_Into_Liquid, Submerged_Loop, Surface_Burst)",
+    "exported_clips": [
+      "Crawl",
+      "Idle",
+      "Hit",
+      "Death",
+      "Roar",
+      "Dive",
+      "Emerge",
+      "Climb_Up",
+      "Climb_Down",
+      "Climb_Loop",
+      "Submerged_Loop",
+      "Burrow_Travel",
+      "Dive_Into_Liquid",
+      "Surface_Burst",
+      "Burrow_Down",
+      "Surface_Throw",
+      "Gate_Mount",
+      "Gate_Straddle_Loop",
+      "Gate_Dismount"
+    ]
   }
 }

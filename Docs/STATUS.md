@@ -5887,3 +5887,123 @@ Scratch iterations stayed in the scratchpad.
 5. The crystals that grow out of their own rock base (a formation by the landing) are one model and were left as they are.
 6. The orbit ship keeps drifting (0.16 m/s) while the orbit dialogue is open; after a minute it has moved about 10 m. Not a timer,
    but noticeable after a very long read.
+
+## Round 40: Spencer's acting in the opening, the capsule that fits him, Gravemaw's rearing roar (2026-11-11)
+
+Not committed (the curator commits). No balance data touched. Save `progress.json` MD5 **2eca347e** at the start, copied aside
+before every Play Mode run and checked after each (never changed; the played-run and Gravemaw scripts also restore it); the dev
+backup untouched; Game view size unchanged (every still rendered off-screen); the play camera untouched.
+
+### A. Spencer's acting pass imported and staged
+
+- **Files:** the staged export (`Mercer.fbx`, `Mercer_report.json`; the maps, Low set and weapons were byte-identical) moved into
+  `ArtSource/Exports/Mercer/`, the staged blend over `ArtSource/Blend/Mercer.blend`, the face-unit capture to
+  `ArtSource/Blend/SpencerFace_units.npz`; `ArtSource/Exports/_staging/` deleted. (Both were then rebuilt for the capsule fit, B.)
+- **Import** (`Tools/PlayTest/Scripts/ApplySpencerActing.cs`, the generator's own `BuildHero` path): new roles
+  `StartleBackstep` 82, `DrawAimNervous` 83, `AimHoldNervous` 84 (loops), `TurnLookLeft` 85, `TurnLookRight` 86, mapped in
+  `BlenderStoryCatalog.Roles` next to `Capsule_Exit` -> `CapsuleExit` (81, round 39's slot); the draw's `grab` (0.1 s) is its
+  moment. Both face meshes (`Mercer_Face`, `Mercer_Face_Far`) carry Blink, Fear, Surprise, Determined, Breath, LookL, LookR.
+  Existing clips, moments and sockets unchanged; the model's measured `_height` went 1.624 -> 1.577 (bind pose of the new FBX;
+  nothing of the hero reads it).
+- **Face from data, driven in code:** the report's `acting` section becomes `HeroArtDefinition._acting` (`HeroActingClip`: role,
+  root back-step and turn at the first frame, `FaceCurve[]` tracks; Blender's turn sign flipped to Unity yaw). `FaceRig` (Core)
+  writes the summed weights to every face mesh **after** the sampled clip (which writes its own zero shape curves), so nothing is
+  stripped on import. The cutscene rig blinks on the shot clock (the art's blink rhythm, hashed), so a seek shows the same face.
+- **Staging (`FieldSet`, `CutsceneHeroRig`; all from the shot clock, each clip starts where the last ended, no cross-fade at the
+  turn and startle starts):**
+  1. Landing: in the doorway in the steam he holds Capsule_Exit's first frame, then plays it (3 s: duck, step down the ramp,
+     straighten, look left and right) with its Breath/Determined/Look face; the idle runs on from its first frame; he walks the
+     0.63 m to the beacon stand and eases round to the beacon.
+  2. Reaction shot: he looks aside (90 degrees off the Queen); at the growl (0.6 s) Turn_Look_L turns him to her (root turned at
+     frame 0), LookL and a blink in the face.
+  3. Startle_Backstep (root 0.5 m back at frame 0): Surprise, then Fear ramping to 1, gasping, eyes darting, the right hand to the
+     holstered grip.
+  4. Draw_Aim_Nervous as the Queen roars (growl moved 3.2 -> 3.7 s; the pistol goes to the hand at the grab), then
+     Aim_Hold_Nervous_Loop. In the gate stand he runs back with the pistol in hand (the hold's face), eases round at the post and
+     cross-fades (0.4 s) into the nervous hold, which loops for as long as the gate line stays open (the brood holds too, round 39).
+  5. Handoff: at 0.8 s the hold cross-fades (0.4 s) into Lower_Weapon played at 0.6x (3.9 s), Fear draining and Determined rising
+     to 0.8 (`CutsceneCast._lowerFace`, `_lowerSpeed`, `_aimFadeSeconds`), then Stow_Pistol over the idle.
+  6. Blink runs throughout. Without the acting clips the round-39 staging plays unchanged.
+- **Camera (round 39 open point 2):** the landing shot's keys after the touchdown swing round in front of the hatch, so his face
+  reads as he climbs out, comes down the ramp and looks round, and stay on that side for the walk and the beacon. The reaction
+  shot's end key follows the shorter (0.5 m) step back. The hero key light is also on from the moment he appears in the doorway.
+- Footfalls follow the clip (4.89, 5.36, 5.76, 6.09 s) plus the walk over (7.05-7.6 s).
+- **Normal hero play unaffected:** `HeroArtView` untouched; the new clips are only read by the cutscene rig.
+
+### B. The capsule fit
+
+- At scale 1 the doorway is 0.4 x 0.74 m. Probe (`r40_fit_probe.cs`: every body/face/visor edge that crosses the hull outside the
+  doorway; the hull from the export's own lathe profile): **1053 crossings over frames 0-24** (head and back through the front face
+  and shoulder above the door).
+- Fix: the landed capsule is shown at **1.4** (`CutsceneCast._landedCapsuleScale`; doorway 0.56 x 1.04 m, sill 0.64 m) and sits
+  back by what it grew, so its door step stays 1.35 m out (the walk to the beacon and the clearance keep their round-39 distances).
+  The orbit shot keeps its own scale. `build_mercer_acting.py` got `CAPSULE_SCALE = 1.4`: HATCH_UP, HATCH_BACK, RAMP_RUN, the door
+  post x, the grip heights and the clip's path down the ramp scale with it (at 1 every value is the original), plus a `--src`
+  argument (the pass-4 blend; the repo blend now carries the acting pass). Rebuilt and re-exported; only Capsule_Exit's keys and the
+  report's hatch block changed (`capsule_scale: 1.4`).
+- **Probe after: 3 crossings in 1 frame (f30 of 90)**: the trailing boot's sole 2-3 cm under the sill line as it leaves the
+  threshold (at the hinge, not visible). Single sole-edge vertices sit up to about 4 cm under the open ramp's mid-plane
+  (frames 28-56). Nothing through the hull at the top, back or flanks.
+
+### C. Gravemaw's rearing roar
+
+- Synced with `ApplyGravemawMaw.cs`: both FBX files and the report; `Data/Art/Gravemaw.asset` **byte-identical** (clips, event
+  seconds, moments, offsets, sockets, gate burden). Roar 2.2 s, event 0.4 s; Surface_Throw cue 0.467, moment 1.0, anchor 1.0,
+  end offset 4.312, as before.
+- `r40_roar_probe.cs`: the head's up axis goes from -9 to +61 degrees (frames 22-49, held) and back to -9 at frame 66; the Roar's
+  last frame against the crawl's first: largest bone turn 19 degrees (a leg in its stride), largest move 2 cm, so it blends into
+  Crawl as before.
+- In play (`r38_gravemaw_shots.sh`, 0 errors, 0 warnings in both runs): at its natural heading after surfacing it faces the base,
+  sideways to the 44-degree camera: petals and lip teeth read, the throat does not. Turned to the camera (`FACE=1`, diagnostic)
+  the reared maw now shows the throat from the play camera: petal teeth, the tooth ring and the hot core (round 38's weak point is
+  fixed for any roar that faces the lens; a dark rock spire stood partly in front in that still).
+- **`GravemawArenaTests` 1/1 passed** (main editor, async).
+
+### Stills (`ArtSource/Previews/QA/`, 1920x1080, rendered off-screen)
+
+| File | What |
+| --- | --- |
+| `r40_1_exit_doorway_steam.png` | crouched in the doorway in the steam, hands on the door posts |
+| `r40_2_exit_climbing_out.png` | ducking out through the doorway (no clipping) |
+| `r40_3_exit_down_the_ramp_breath.png` | stepping down the ramp, face to the lens, a breath |
+| `r40_4_exit_look_round.png` | at the ramp's foot, the look round |
+| `r40_5_beacon_up.png` | at the beacon as it goes up |
+| `r40_6_turn_to_brood.png` | Turn_Look_L to the brood |
+| `r40_7_startle_fear.png` | the startle, Fear on the face, arms out |
+| `r40_8_startle_hand_to_gun.png` | backing away, the hand at the grip |
+| `r40_9_nervous_aim.png` | the nervous two-handed aim |
+| `r40_10_gate_hold.png` | the hold behind the gate, the brood glaring |
+| `r40_11_handoff_lowering.png` | the handoff camera as he lowers (it is already pulling out: he is out of frame) |
+| `r40_face_exit_breath.png`, `r40_face_startle_fear.png`, `r40_face_aim.png` | the face through the visor from each shot's own camera, magnified |
+| `r40_face_lower_determined_diagnostic.png` | a diagnostic camera in front of him 2.6 s into the handoff: brows down, Determined |
+| `r40_gravemaw_roar_play.png` | the play camera mid-roar, turned to the lens (diagnostic heading): throat, tooth ring, core |
+| `r40_gravemaw_roar_play_natural_heading.png`, `r40_gravemaw_roar_throat_crop.png` | the natural heading; a crop of the throat |
+
+### Tests and state
+
+- New `SpencerActingTests` (6): face curves ease and hold; the six acting clips arrive by role with root offsets and face tracks
+  (the hold loops, startle 0.5 m, turns -90/+90, a grab moment); both faces carry all seven shapes; the face is written after the
+  sampled clip and blinks on the shot clock; the landed capsule scale equals the report's `capsule_scale` and the ramp hinge meets
+  its sill height; the slow lower ends without fear and resolved.
+- **EditMode suite headless on clone w6 (`r34b_editmode_worker.sh 6 "Game\.Tests\..*"`): 772 tests, 720 passed, 52 skipped,
+  0 failed.** The hero tests (HeroTests, HeroFlightTests, HeroPerkTests, HeroAbilityTests, StoryArtTests) are EditMode and passed.
+- PlayMode (main editor, async): `GravemawArenaTests` 1/1, `CutsceneSmokeTests` 3/3.
+- **Played run of the opening (`r39_play.sh`, gate line held 16 s): the brood held (7 creatures, retreat "held") until the
+  confirm, retreated in the handoff, handed over to the first level; console 0 errors, 0 warnings.**
+- Recompile 0 errors, 0 warnings. Data regenerated with `ApplyCutsceneShots.cs` (cast: capsule scale, aim fade, lower speed and
+  face; opening: landing keys, footfalls, reaction key and growl). Arg-file churn reverted. Save MD5 2eca347e at the end; editor stopped.
+- Scripts: `Tools/PlayTest/Scripts/ApplySpencerActing.cs`, `r40_fit_probe.cs` (+ `r40_fit_probe.txt`), `r40_roar_probe.cs`,
+  `r40_layout.cs`; Docs/COMMANDS.md "Round 40".
+
+### Open points for Remco (round 40)
+
+1. The landed capsule is now 1.4x the orbit's (about 2.2 m tall, 1.8 m wide) so Spencer fits the door. From orbit it is a speck,
+   so the difference does not read; if the landed pod looks too big, the alternative is a wider, taller doorway in the model.
+2. In the handoff he faces the gate with his back to the lens and the camera pulls out to the play rig, so the slow lower and the
+   Determined face are hardly seen (checked with a diagnostic camera). A key that holds on his face for the first 3 s of the
+   handoff would show it; not done, since it changes the pull-out into play.
+3. Gravemaw shows its throat only when its roar faces the camera; its own roar after surfacing faces the base (sideways).
+   Turning it towards the camera before it roars would be a behaviour change; not done.
+4. The reaction now starts with him looking aside (90 degrees off the brood) so the turn reads; in the shiver shots before it he
+   faces the gate. A cut, not a pop, but visible on a careful watch.
+5. The Disbelief clip (round 35) no longer plays in the opening (the startle and draw replace it); it stays in the data.

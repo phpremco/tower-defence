@@ -175,6 +175,7 @@ namespace Game.Editor
             so.FindProperty("_swordHilt").objectReferenceValue = Weapon(weaponFolder, BlenderStoryCatalog.SwordHilt, weaponHigh, weaponLow);
             so.FindProperty("_swordBlade").objectReferenceValue = Weapon(weaponFolder, BlenderStoryCatalog.SwordBlade, weaponHigh, weaponLow);
             WriteStrings(so.FindProperty("_hiddenParts"), BlenderStoryCatalog.HiddenWeaponParts);
+            WriteActing(so.FindProperty("_acting"), report);
             BlenderReport weapons = BlenderReport.Load($"{weaponFolder}/{BlenderStoryCatalog.WeaponMaps}_report.json");
             List<float> muzzle = weapons.Numbers("muzzle");
             if (muzzle.Count == 3)
@@ -438,6 +439,64 @@ namespace Game.Editor
             }
 
             return clips;
+        }
+
+        // Spencer's acting pass (round 40): per acting clip of the report, the root's move and turn at its first frame and the
+        // face tracks the FBX leaves out. The report's turn is Blender's (counter-clockwise from above: to his left), so the
+        // Unity yaw is its negative. Sorted by role, so a re-run writes the same array.
+        private static void WriteActing(SerializedProperty array, BlenderReport report)
+        {
+            Dictionary<string, object> clips = BlenderJson.Object(BlenderJson.Field(BlenderJson.Object(BlenderJson.Field(report.Root(), "acting")), "clips"));
+            var acting = new List<HeroActingClip>();
+            if (clips != null)
+            {
+                foreach (KeyValuePair<string, object> take in clips)
+                {
+                    if (!BlenderStoryCatalog.Roles.TryGetValue(take.Key, out ModelClipRole role))
+                    {
+                        continue;
+                    }
+
+                    Dictionary<string, object> entry = BlenderJson.Object(take.Value);
+                    float back = BlenderJson.Number(BlenderJson.Field(entry, "travel_m"));
+                    float turn = -BlenderJson.Number(BlenderJson.Field(entry, "rotation_deg"));
+                    acting.Add(new HeroActingClip(role, back, turn, FaceCurves(BlenderJson.Object(BlenderJson.Field(entry, "face")))));
+                }
+            }
+
+            acting.Sort((a, b) => a.Role.CompareTo(b.Role));
+            array.arraySize = acting.Count;
+            for (int i = 0; i < acting.Count; i++)
+            {
+                array.GetArrayElementAtIndex(i).boxedValue = acting[i];
+            }
+        }
+
+        private static FaceCurve[] FaceCurves(Dictionary<string, object> face)
+        {
+            var curves = new List<FaceCurve>();
+            if (face == null)
+            {
+                return curves.ToArray();
+            }
+
+            foreach (KeyValuePair<string, object> shape in face)
+            {
+                var keys = new List<Vector2>();
+                foreach (object key in BlenderJson.Array(shape.Value))
+                {
+                    List<object> pair = BlenderJson.Array(key);
+                    if (pair.Count == 2)
+                    {
+                        keys.Add(new Vector2(BlenderJson.Number(pair[0]), BlenderJson.Number(pair[1])));
+                    }
+                }
+
+                curves.Add(new FaceCurve(shape.Key, keys.ToArray()));
+            }
+
+            curves.Sort((a, b) => string.CompareOrdinal(a.Shape, b.Shape));
+            return curves.ToArray();
         }
 
         private static void WriteStrings(SerializedProperty array, string[] values)

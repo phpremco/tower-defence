@@ -99,3 +99,25 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2e64d27e5f86a5f44b833ee41cf3e795, type: 2}
   _flyerCount: 1
   _capsuleExitClip: 81
+  _landedCapsuleScale: 1.4
+  _aimFadeSeconds: 0.4
+  _lowerSpeed: 0.6
+  _lowerFace:
+  - _shape: Fear
+    _keys:
+    - {x: 0, y: 0.6}
+    - {x: 1, y: 0}
+  - _shape: Determined
+    _keys:
+    - {x: 0, y: 0.3}
+    - {x: 1.5, y: 0.8}
+  - _shape: Breath
+    _keys:
+    - {x: 1.9, y: 0}
+    - {x: 2.2, y: 0.5}
+    - {x: 2.7, y: 0}
+  - _shape: Blink
+    _keys:
+    - {x: 2.75, y: 0}
+    - {x: 2.82, y: 1}
+    - {x: 2.92, y: 0}

@@ -76,6 +76,8 @@ namespace Game.Hero
         [SerializeField] [Min(0.05f)] private float _blinkSeconds = 0.15f;
         [Tooltip("Seconds between two blinks: a random pick between x and y.")]
         [SerializeField] private Vector2 _blinkEvery = new Vector2(3f, 6f);
+        [Tooltip("The acting clips' root offsets and face tracks (the Blender report's acting section), one per clip role.")]
+        [SerializeField] private HeroActingClip[] _acting = System.Array.Empty<HeroActingClip>();
 
         [Header("Portrait")]
         [SerializeField] private PortraitArtDefinition _bust;
@@ -115,6 +117,38 @@ namespace Game.Hero
         public Vector2 BlinkEvery => _blinkEvery;
         public PortraitArtDefinition Bust => _bust;
 
+        /// <summary>The acting data of a clip role (its root offset at the first frame and its face tracks), or null.</summary>
+        public HeroActingClip ActingFor(ModelClipRole role)
+        {
+            foreach (HeroActingClip clip in _acting ?? System.Array.Empty<HeroActingClip>())
+            {
+                if (clip != null && clip.Role == role)
+                {
+                    return clip;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>Every face shape the acting clips drive, with the blink shape (for a <see cref="FaceRig"/>).</summary>
+        public string[] FaceShapes()
+        {
+            var shapes = new System.Collections.Generic.List<string> { _blinkShape };
+            foreach (HeroActingClip clip in _acting ?? System.Array.Empty<HeroActingClip>())
+            {
+                foreach (FaceCurve curve in clip.Face)
+                {
+                    if (!shapes.Contains(curve.Shape))
+                    {
+                        shapes.Add(curve.Shape);
+                    }
+                }
+            }
+
+            return shapes.ToArray();
+        }
+
         private void OnValidate()
         {
             if (_body == null)
@@ -129,6 +163,17 @@ namespace Game.Hero
             if (_blinkEvery.y < _blinkEvery.x || _blinkEvery.x <= _blinkSeconds)
             {
                 Debug.LogWarning($"HeroArtDefinition '{name}' blinks between {_blinkEvery.x} and {_blinkEvery.y} s: the range must run upwards and exceed the blink itself.", this);
+            }
+
+            foreach (HeroActingClip clip in _acting ?? System.Array.Empty<HeroActingClip>())
+            {
+                foreach (FaceCurve curve in clip.Face)
+                {
+                    if (!curve.IsValid())
+                    {
+                        Debug.LogWarning($"HeroArtDefinition '{name}': the {clip.Role} face track '{curve.Shape}' needs a shape name, keys in time order and weights in 0..1.", this);
+                    }
+                }
             }
         }
     }

@@ -122,8 +122,13 @@ namespace Game.Editor
             { "Jet_Takeoff", ModelClipRole.JetTakeoff },
             { "Jet_Fly", ModelClipRole.JetFly },
             { "Jet_Land", ModelClipRole.JetLand },
-            // Round 39: Spencer out of the landing capsule (the Blender take arrives in a later round; the walk stands in).
+            // Round 39/40: Spencer's acting pass for the opening (out of the capsule, the startle, the nervous aim, the turns).
             { "Capsule_Exit", ModelClipRole.CapsuleExit },
+            { "Startle_Backstep", ModelClipRole.StartleBackstep },
+            { "Draw_Aim_Nervous", ModelClipRole.DrawAimNervous },
+            { "Aim_Hold_Nervous_Loop", ModelClipRole.AimHoldNervous },
+            { "Turn_Look_L", ModelClipRole.TurnLookLeft },
+            { "Turn_Look_R", ModelClipRole.TurnLookRight },
         };
 
         /// <summary>Mercer's clips that play on the upper body (README round 6), with how much of the pose each takes.</summary>
@@ -162,6 +167,8 @@ namespace Game.Editor
             { "Stow_Blade", "release" },
             { "Jet_Takeoff", "liftoff" },
             { "Jet_Land", "touchdown" },
+            // Round 40: the nervous draw's grab, where the pistol goes from the holster to the hand.
+            { "Draw_Aim_Nervous", "grab" },
         };
 
         /// <summary>The report key of a Mercer clip's second moment (a frame number), by take: the blade and the jets.</summary>
