@@ -38,7 +38,13 @@ toothed maw (gravemaw_maw.py) wide open towards Spencer and the camera, its heat
 Spencer flies in from the right in three-quarter front (visor and firing arm to the camera, Shoot frame 0 so the arm
 is out), leaning back as he brakes and banking towards the boss, jet flames trailing, bolts streaming into the throat
 and one burst on the maw's rim. The wide camera is aimed so the duel sits in the library hero's safe area.
-All game models are the real exports, posed from their own clips and baked to static meshes.
+Round 6 (Remco: Spencer hangs stiff "like a plank thrown into the air"; he wants him in action): Spencer is posed bone
+by bone in a jetpack dive (flight_poser): torso near horizontal along the flight line with his head leading, the
+pistol arm thrust straight at the throat with the barrel on the bolt line, the off arm out with the elbow bent back,
+the legs trailing bent at the knees, his head up. He is rolled towards the camera so the visor (now see-through) and
+face read. Fiery jet plumes (white-blue core, blue-to-orange body, soft halo, heat shimmer, exhaust smoke) and faint
+speed streaks trail behind him. Nothing else in the scene changed.
+All game models are the real exports, posed from their own clips (Spencer by hand) and baked to static meshes.
 
 The renders are text-free masters; steam_compose.py puts the logo on and cuts the final Steam sizes.
 
@@ -57,7 +63,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bmesh  # noqa: E402
 import bpy  # noqa: E402
 import numpy as np  # noqa: E402
-from mathutils import Euler, Matrix, Vector, noise as mnoise  # noqa: E402
+from mathutils import Euler, Matrix, Quaternion, Vector, noise as mnoise  # noqa: E402
 
 import common as C  # noqa: E402
 import logo_v4 as V4  # noqa: E402  (patches logo_v3 with the v4 lava, haze and embers)
@@ -115,6 +121,11 @@ def tex_mat(prefix, emit):
                 img = nt.nodes.new("ShaderNodeTexImage")
                 img.image = bpy.data.images.load(maps[k], check_existing=True)
                 nt.links.new(img.outputs["Color"], bsdf.inputs[sock])
+                if k == "albedo":
+                    # Round 6: the visor's albedo alpha is its opacity (0.12 in the middle, denser at the rim, as the
+                    # game draws it), so the face shows through instead of a black disc.
+                    img.image.alpha_mode = "STRAIGHT"
+                    nt.links.new(img.outputs["Alpha"], bsdf.inputs["Alpha"])
         bsdf.inputs["Emission Strength"].default_value = emit
     _MATS[key] = mat
     return mat
@@ -133,11 +144,11 @@ _POSE_CACHE = {}
 
 
 def bake_pose(rel, folder_prefix, clip=None, frame=0, keep=None, drop=("LOD1", "Damage", "Wreck"), aim=None,
-              emit=2.0, stars=3, overlay=None):
+              emit=2.0, stars=3, overlay=None, poser=None):
     """Imports an FBX, plays `clip` at `frame` (or aims Yaw/Pitch with `aim`=(yaw_deg, pitch_deg)), evaluates the
     armature and keeps the deformed meshes as static copies. Materials map slot `<X>_Mat` -> textures `<X>_*.png`
-    in the export folder."""
-    key = (rel, clip, frame, aim, stars, overlay)
+    in the export folder. `poser(arm)` poses bones by hand on top of the clip (with the clip's action detached)."""
+    key = (rel, clip, frame, aim, stars, overlay, poser)
     if key in _POSE_CACHE:
         return _POSE_CACHE[key]
     before_obs = set(bpy.data.objects)
@@ -175,6 +186,13 @@ def bake_pose(rel, folder_prefix, clip=None, frame=0, keep=None, drop=("LOD1", "
                 pb.matrix_basis = over.get(pb.name, base[pb.name])
         if aim is not None:
             pose_tower(arm, aim[0], aim[1], stars)
+        if poser is not None:
+            base = {pb.name: pb.matrix_basis.copy() for pb in arm.pose.bones}
+            arm.animation_data.action = None
+            for pb in arm.pose.bones:
+                pb.matrix_basis = base[pb.name]
+            bpy.context.view_layer.update()
+            poser(arm)
         bpy.context.view_layer.update()
     dg = bpy.context.evaluated_depsgraph_get()
     objs = []
@@ -206,7 +224,6 @@ def pose_tower(arm, yaw_deg, pitch_deg, stars):
     to_arm = arm.matrix_world.to_3x3().inverted()
     for pb in arm.pose.bones:
         pb.rotation_mode = "QUATERNION"
-    from mathutils import Quaternion
 
     def axis(bone, world_axis):
         rest = arm.data.bones[bone].matrix_local.to_3x3()
@@ -226,6 +243,11 @@ def place(posed, col, loc, rot_z=0.0, scale=1.0, tilt=(0.0, 0.0)):
     """Linked copies of a baked pose at loc; returns (objects, bone matrices in the scene)."""
     T = (Matrix.Translation(loc) @ Euler((tilt[0], tilt[1], rot_z)).to_matrix().to_4x4()
          @ Matrix.Diagonal((scale, scale, scale, 1.0)))
+    return place_matrix(posed, col, T)
+
+
+def place_matrix(posed, col, T):
+    """place() with a full placement matrix (Spencer's flight attitude is built from basis vectors)."""
     obs = []
     for src in posed.objs:
         ob = bpy.data.objects.new(src.name + "_i", src.data)
@@ -523,17 +545,298 @@ def flak_burst(name, p, col, scale=1.0, seed=0, smoke_only=False):
            size=0.014)
 
 
-def jet_flame(name, m, col, length=0.5):
-    """Jetpack exhaust along the socket's Y axis (the report's exhaust direction)."""
-    p = m.to_translation()
-    d = (m.to_3x3() @ Vector((0, 1, 0))).normalized()
+# ---- Round 6: Spencer in action (a flight pose posed per bone, fiery jet plumes, speed streaks) -------------------
+
+def _update():
+    bpy.context.view_layer.update()
+
+
+def rotate_bone(arm, name, rot):
+    """Turns a pose bone about its head by `rot` (3x3, armature space); its children follow."""
+    pb = arm.pose.bones[name]
+    m = pb.matrix.copy()
+    pb.matrix = Matrix.Translation(m.to_translation()) @ (rot @ m.to_3x3()).to_4x4()
+    _update()
+
+
+def aim_bone(arm, name, direction, amount=1.0):
+    """Swings a bone (shortest arc) so it points along `direction` (armature space); `amount` < 1 goes part way."""
+    y = arm.pose.bones[name].matrix.col[1].xyz.normalized()
+    q = y.rotation_difference(Vector(direction).normalized())
+    if amount < 1.0:
+        q = Quaternion().slerp(q, amount)
+    rotate_bone(arm, name, q.to_matrix())
+
+
+def bone_axis(arm, name, rest_dir):
+    """Where a direction fixed to the bone at rest (armature space, e.g. the face's -Y) points in the current pose."""
+    rest = arm.data.bones[name].matrix_local.to_3x3()
+    return (arm.pose.bones[name].matrix.to_3x3() @ (rest.inverted() @ Vector(rest_dir))).normalized()
+
+
+# The flight pose in Spencer's body frame (+Z head, -Y chest, +X his left): directions the bones point along. Round 6
+# (Remco: he hung "like a plank thrown into the air"): a jetpack dive with the pistol arm thrust at the boss, the off
+# arm swept back for balance, the legs trailing bent at the knees and a little apart, the chest arched, the head up.
+FLIGHT_POSE = dict(
+    arch=((-8.0, "Spine1"), (-12.0, "Spine2")),            # degrees about X: the chest lifts towards the flight line
+    off_arm=((0.90, -0.10, -0.40), (0.30, -0.20, -0.90)),  # UpperArm_L, Forearm_L: out to the side, elbow bent back
+    leg_l=((0.20, -0.42, -0.88), (0.16, 0.70, -0.70)),     # Thigh_L, Shin_L: the leading knee bent hard
+    leg_r=((-0.16, -0.10, -0.98), (-0.10, 0.40, -0.91)),   # Thigh_R, Shin_R: the trailing leg longer
+    toes=0.45,                                             # how far the feet point past the shin line
+    head_look=0.85,                                        # share of the turn from the face to the look point
+    head_cam=0.4,                                          # the look point leans this far from the target to the
+                                                           # camera, so the visor reads in three-quarter
+    head_max=75.0,                                         # the neck and head turn no further than this (degrees)
+)
+
+
+GRIP_BONES = ("Hand", "Weapon", "Finger", "Thumb")
+
+
+def flight_attitude(sp, target, cam, elev, roll, yaw):
+    """World rotation of Spencer's body frame: head along the flight line (towards `target`, raised `elev` degrees,
+    turned `yaw` degrees towards the camera), chest rolled `roll` degrees from straight down towards the camera."""
+    up = Vector((0, 0, 1))
+    fh = Vector(target) - Vector(sp)
+    fh.z = 0
+    fh.normalize()
+    to_cam = Vector(cam) - Vector(sp)
+    to_cam.z = 0
+    side = (to_cam - fh * to_cam.dot(fh)).normalized()
+    fh = fh * math.cos(math.radians(yaw)) + side * math.sin(math.radians(yaw))
+    axis = (fh * math.cos(math.radians(elev)) + up * math.sin(math.radians(elev))).normalized()
+    chest = -up * math.cos(math.radians(roll)) + to_cam.normalized() * math.sin(math.radians(roll))
+    chest = (chest - axis * chest.dot(axis)).normalized()
+    y = -chest
+    x = y.cross(axis)
+    return Matrix((x, y, axis)).transposed(), axis
+
+
+def flight_poser(T, target, cam):
+    """A poser for bake_pose: FLIGHT_POSE, the pistol arm straight at `target` (world), the pistol's barrel (Weapon_R
+    +Z, see attach_pistol) on the same line with its top up, and the head turned to look at the target."""
+    R = T.to_3x3().normalized()
+    Rinv = R.inverted()
+    up_l = (Rinv @ Vector((0, 0, 1))).normalized()
+
+    def to_target(arm, bone):
+        p = T @ arm.pose.bones[bone].head
+        return (Rinv @ (Vector(target) - p)).normalized()
+
+    def poser(arm):
+        # Start from the rest pose (the clip leans the hips and swings the limbs); only the hands keep their clip
+        # pose (the grip on the pistol, the fist).
+        for pb in arm.pose.bones:
+            pb.rotation_mode = "QUATERNION"
+            if not any(k in pb.name for k in GRIP_BONES):
+                pb.matrix_basis = Matrix()
+        _update()
+        for deg, bone in FLIGHT_POSE["arch"]:
+            rotate_bone(arm, bone, Matrix.Rotation(math.radians(deg), 3, "X"))
+        aim_bone(arm, "Clavicle_R", to_target(arm, "UpperArm_R"), 0.25)
+        d = to_target(arm, "UpperArm_R")
+        for bone in ("UpperArm_R", "Forearm_R"):
+            aim_bone(arm, bone, d)
+        # The pistol's barrel onto the line to the target, then rolled so its top faces up.
+        d = to_target(arm, "Weapon_R")
+        barrel = arm.pose.bones["Weapon_R"].matrix.col[2].xyz.normalized()
+        rotate_bone(arm, "Hand_R", barrel.rotation_difference(d).to_matrix())
+        top = arm.pose.bones["Weapon_R"].matrix.col[1].xyz
+        top = (top - d * top.dot(d)).normalized()
+        want = (up_l - d * up_l.dot(d)).normalized()
+        sign = 1.0 if top.cross(want).dot(d) > 0 else -1.0
+        rotate_bone(arm, "Hand_R", Matrix.Rotation(sign * top.angle(want), 3, d))
+        upper, fore = FLIGHT_POSE["off_arm"]
+        aim_bone(arm, "UpperArm_L", upper)
+        aim_bone(arm, "Forearm_L", fore)
+        aim_bone(arm, "Hand_L", fore)
+        for side, (thigh, shin) in (("L", FLIGHT_POSE["leg_l"]), ("R", FLIGHT_POSE["leg_r"])):
+            aim_bone(arm, "Thigh_" + side, thigh)
+            aim_bone(arm, "Shin_" + side, shin)
+            toes = (Vector(shin).normalized() + Vector((0, -FLIGHT_POSE["toes"], 0))).normalized()
+            aim_bone(arm, "Foot_" + side, toes)
+            aim_bone(arm, "Toe_" + side, toes)
+        # Head up: the face (-Y at rest) turns towards the target, 40% in the neck and 60% in the head.
+        face = bone_axis(arm, "Head", (0, -1, 0))
+        to_cam = (Rinv @ (Vector(cam) - T @ arm.pose.bones["Head"].head)).normalized()
+        want = to_target(arm, "Head").lerp(to_cam, FLIGHT_POSE["head_cam"]).normalized()
+        ax = face.cross(want)
+        if ax.length > 1e-6:
+            ang = min(face.angle(want) * FLIGHT_POSE["head_look"], math.radians(FLIGHT_POSE["head_max"]))
+            ax.normalize()
+            rotate_bone(arm, "Neck", Matrix.Rotation(ang * 0.4, 3, ax))
+            rotate_bone(arm, "Head", Matrix.Rotation(ang * 0.6, 3, ax))
+    return poser
+
+
+def t_bmesh():
     bm = bmesh.new()
-    tube(bm, p, p + d * length, 0.075, 0.0, sides=16)
-    fx_obj(name, bm, emit_only(name + "M", JET, 1.6, JET, power=1.6), col)
-    bm = bmesh.new()
-    tube(bm, p + d * 0.02, p + d * length * 0.4, 0.03, 0.0, sides=12)
-    fx_obj(name + "Core", bm, emit_only(name + "CoreM", JET, 2.5, JET_CORE, power=1.0), col)
-    light(name + "L", p + d * 0.3, JET, 90.0, 0.1, col)
+    return bm, bm.verts.layers.float.new("T")
+
+
+def profile_tube(bm, t_layer, a, b, radii, sides=16, wobble=0.0, seed=0):
+    """A closed tube from a to b whose radius follows `radii` (one per ring); every vertex stores its share of the
+    length in the `T` attribute (0 at a, 1 at b), which the plume and streak materials fade along."""
+    a, b = Vector(a), Vector(b)
+    d = b - a
+    rot = d.normalized().to_track_quat("Z", "Y").to_matrix()
+    rings = []
+    n = len(radii)
+    for i, r in enumerate(radii):
+        t = i / (n - 1)
+        ring = []
+        for k in range(sides):
+            ang = 2 * math.pi * k / sides
+            w = 1.0 + wobble * mnoise.noise(Vector((math.cos(ang) * 1.5, math.sin(ang) * 1.5, t * 4.0 + seed)))
+            v = bm.verts.new(a + d * t + rot @ Vector((math.cos(ang) * r * w, math.sin(ang) * r * w, 0.0)))
+            v[t_layer] = t
+            ring.append(v)
+        rings.append(ring)
+    for ra, rb in zip(rings[:-1], rings[1:]):
+        for k in range(sides):
+            bm.faces.new((ra[k], ra[(k + 1) % sides], rb[(k + 1) % sides], rb[k]))
+    for ring, t in ((rings[0], 0.0), (rings[-1], 1.0)):
+        if radii[0 if t == 0.0 else -1] <= 0.0:
+            continue
+        c = bm.verts.new(a + d * t)
+        c[t_layer] = t
+        for k in range(sides):
+            bm.faces.new((ring[k], ring[(k + 1) % sides], c) if t else (ring[(k + 1) % sides], ring[k], c))
+
+
+def _t_attr(nt):
+    return L2.o(L2.N(nt, "ShaderNodeAttribute", attribute_name="T", attribute_type="GEOMETRY"), "Factor")
+
+
+def _additive(nt, out, em):
+    add = L2.N(nt, "ShaderNodeAddShader")
+    nt.links.new(L2.o(em), add.inputs[0])
+    nt.links.new(L2.o(L2.N(nt, "ShaderNodeBsdfTransparent")), add.inputs[1])
+    nt.links.new(add.outputs[0], out.inputs["Surface"])
+
+
+def mat_plume(name, strength, stops, power=1.4, fade=1.3, flicker=0.35):
+    """Additive jet fire: colour runs along the plume's T (0 nozzle .. 1 tip) through `stops` [(t, colour)], bright
+    where the surface faces the camera, soft at the silhouette, broken by streaming noise, fading out to the tip."""
+    mat, nt, out = L2.new_mat(name)
+    t = _t_attr(nt)
+    lw = L2.N(nt, "ShaderNodeLayerWeight", {"Blend": 0.5})
+    facing = L2.M(nt, "POWER", L2.M(nt, "SUBTRACT", 1.0, L2.o(lw, "Facing")), power)
+    pos = L2.o(L2.N(nt, "ShaderNodeNewGeometry"), "Position")
+    n = L2.o(L2.noise(nt, pos, 3.5, 5.0, 0.6, dist=0.6), "Factor")
+    tn = L2.M(nt, "ADD", t, L2.M(nt, "MULTIPLY", L2.M(nt, "SUBTRACT", n, 0.5), flicker), clamp=True)
+    ramp = L2.N(nt, "ShaderNodeValToRGB")
+    els = ramp.color_ramp.elements
+    els[0].position, els[0].color = stops[0][0], (*stops[0][1], 1)
+    els[1].position, els[1].color = stops[-1][0], (*stops[-1][1], 1)
+    for pos_t, colour in stops[1:-1]:
+        e = els.new(pos_t)
+        e.color = (*colour, 1)
+    nt.links.new(tn, ramp.inputs[0])
+    body = L2.M(nt, "POWER", L2.M(nt, "SUBTRACT", 1.0, tn, clamp=True), fade)
+    breakup = L2.MR(nt, n, 0.3, 0.7, 1.0 - flicker, 1.0)
+    s = L2.M(nt, "MULTIPLY", L2.M(nt, "MULTIPLY", L2.M(nt, "MULTIPLY", facing, body), breakup), strength)
+    _additive(nt, out, L2.N(nt, "ShaderNodeEmission", {"Color": ramp.outputs["Color"], "Strength": s}))
+    return mat
+
+
+def mat_shimmer(name):
+    """Heat haze round the exhaust: a near-air refraction with streaming noise bumps, fading out at the silhouette
+    and towards the tip, so the background wobbles behind the flames."""
+    mat, nt, out = L2.new_mat(name)
+    t = _t_attr(nt)
+    pos = L2.o(L2.N(nt, "ShaderNodeNewGeometry"), "Position")
+    n = L2.o(L2.noise(nt, pos, 9.0, 4.0, 0.6, dist=1.0), "Factor")
+    bmp = L2.N(nt, "ShaderNodeBump", {"Strength": 0.9, "Distance": 0.05, "Height": n})
+    ref = L2.N(nt, "ShaderNodeBsdfRefraction", {"IOR": 1.035, "Roughness": 0.0})
+    nt.links.new(L2.o(bmp, "Normal"), ref.inputs["Normal"])
+    lw = L2.N(nt, "ShaderNodeLayerWeight", {"Blend": 0.5})
+    facing = L2.M(nt, "SUBTRACT", 1.0, L2.o(lw, "Facing"))
+    k = L2.M(nt, "MULTIPLY", facing, L2.M(nt, "SUBTRACT", 1.0, t, clamp=True))
+    mix = L2.N(nt, "ShaderNodeMixShader")
+    nt.links.new(k, mix.inputs[0])
+    nt.links.new(L2.o(L2.N(nt, "ShaderNodeBsdfTransparent")), mix.inputs[1])
+    nt.links.new(L2.o(ref), mix.inputs[2])
+    nt.links.new(mix.outputs[0], out.inputs["Surface"])
+    return mat
+
+
+def mat_streak(name, colour, strength):
+    """A speed streak: a faint cool line, brightest just behind the body and fading to nothing behind him."""
+    mat, nt, out = L2.new_mat(name)
+    t = _t_attr(nt)
+    lw = L2.N(nt, "ShaderNodeLayerWeight", {"Blend": 0.5})
+    facing = L2.M(nt, "POWER", L2.M(nt, "SUBTRACT", 1.0, L2.o(lw, "Facing")), 1.5)
+    fade = L2.M(nt, "MULTIPLY", L2.M(nt, "POWER", L2.M(nt, "SUBTRACT", 1.0, t, clamp=True), 2.2),
+                L2.MR(nt, t, 0.0, 0.08, 0.0, 1.0))
+    s = L2.M(nt, "MULTIPLY", L2.M(nt, "MULTIPLY", facing, fade), strength)
+    _additive(nt, out, L2.N(nt, "ShaderNodeEmission", {"Color": colour, "Strength": s}))
+    return mat
+
+
+# Plume colour stops along the length: white-blue at the nozzle, blue, then orange fire to a dark tip.
+PLUME_CORE = [(0.0, (0.9, 0.96, 1.0)), (0.35, (0.55, 0.8, 1.0)), (1.0, (0.2, 0.5, 1.0))]
+PLUME_BODY = [(0.0, (0.75, 0.9, 1.0)), (0.18, (0.25, 0.55, 1.0)), (0.5, (0.9, 0.42, 0.12)), (0.8, (1.0, 0.3, 0.05)),
+              (1.0, (0.25, 0.05, 0.01))]
+PLUME_HALO = [(0.0, (0.3, 0.55, 1.0)), (0.35, (1.0, 0.45, 0.12)), (1.0, (0.5, 0.12, 0.02))]
+
+
+def jet_plume(name, nozzle, direction, col, length, radius, seed=0):
+    """Round 6: a fiery jet plume instead of a thin pale spike: a hot white-blue core out of the nozzle, a swelling
+    blue-to-orange body broken by streaming noise, a wide soft orange halo, heat shimmer round it, lamps, and a few
+    puffs of exhaust smoke drifting off the tip."""
+    p = Vector(nozzle)
+    d = Vector(direction).normalized()
+    L = length
+    bm, tl = t_bmesh()
+    profile_tube(bm, tl, p, p + d * L * 0.42, [radius * f for f in (0.75, 0.95, 0.8, 0.55, 0.3, 0.0)], 16)
+    fx_obj(name + "Core", bm, mat_plume(name + "CoreM", 5.0, PLUME_CORE, power=0.8, fade=0.8, flicker=0.15), col)
+    bm, tl = t_bmesh()
+    profile_tube(bm, tl, p - d * 0.03 * L, p + d * L,
+                 [radius * f for f in (1.0, 1.6, 1.9, 1.9, 1.7, 1.4, 1.0, 0.6, 0.0)], 20, wobble=0.18, seed=seed)
+    fx_obj(name + "Body", bm, mat_plume(name + "BodyM", 2.6, PLUME_BODY, power=1.3, fade=1.2, flicker=0.35), col)
+    bm, tl = t_bmesh()
+    profile_tube(bm, tl, p - d * 0.05 * L, p + d * L * 1.15,
+                 [radius * f for f in (1.6, 2.8, 3.3, 3.4, 3.1, 2.6, 1.8, 0.0)], 20, wobble=0.25, seed=seed + 3)
+    fx_obj(name + "Halo", bm, mat_plume(name + "HaloM", 0.9, PLUME_HALO, power=2.4, fade=1.6, flicker=0.4), col)
+    bm, tl = t_bmesh()
+    profile_tube(bm, tl, p + d * 0.1 * L, p + d * L * 1.5,
+                 [radius * f for f in (2.0, 3.6, 4.2, 4.4, 4.2, 3.6, 0.0)], 16, wobble=0.2, seed=seed + 7)
+    fx_obj(name + "Shimmer", bm, mat_shimmer(name + "ShimmerM"), col)
+    for lamp in (light(name + "L", p + d * L * 0.3, (0.45, 0.65, 1.0), 220.0, radius * 1.5, col),
+                 light(name + "L2", p + d * L * 0.75, FIRE, 160.0, radius * 2.0, col)):
+        # Seen through the shimmer's refraction a lamp would show as a hard ball.
+        lamp.visible_transmission = False
+        lamp.visible_glossy = False
+    rng = random.Random(seed)
+    for k in range(3):
+        q = p + d * L * (1.25 + 0.45 * k) + Vector((rng.gauss(0, 0.15), rng.gauss(0, 0.15), 0.12 * k)) * L
+        smoke(f"{name}Smoke{k}", q, radius * (3.0 + 1.6 * k), col, colour=(0.12, 0.12, 0.14), density=1.4 - 0.35 * k)
+
+
+def speed_streaks(name, objs, direction, col, rng, count=12, length=(2.0, 4.5), strength=0.9):
+    """Faint speed lines peeling off Spencer's outline and trailing behind him: per angular bin round the flight
+    axis, the vertex furthest from it is where the air tears off."""
+    d = Vector(direction).normalized()
+    pts = [o.matrix_world @ v.co for o in objs for v in o.data.vertices]
+    centre = sum(pts, Vector()) / len(pts)
+    side = d.orthogonal().normalized()
+    up = d.cross(side)
+    bins = {}
+    for q in pts:
+        r = q - centre
+        r -= d * r.dot(d)
+        b = int((math.atan2(r.dot(up), r.dot(side)) + math.pi) / (2 * math.pi) * count) % count
+        if b not in bins or r.length > bins[b][0]:
+            bins[b] = (r.length, q)
+    bm, tl = t_bmesh()
+    for _, (r, q) in sorted(bins.items()):
+        # Lifted just off the outline, so no line runs through the body behind it.
+        out = q - centre
+        out = (out - d * out.dot(d)).normalized()
+        a = q + out * (0.08 * r + 0.12)
+        profile_tube(bm, tl, a, a - d * rng.uniform(*length), [0.008, 0.011, 0.008, 0.0], 6)
+    fx_obj(name, bm, mat_streak(name + "M", (0.6, 0.82, 1.0), strength), col)
 
 
 # =============================================================================================================
@@ -1128,6 +1431,84 @@ def light_shafts(col):
         C.look_at(ob, Vector((tx, ty, FLOOR)))
 
 
+# ---- Spencer -------------------------------------------------------------------------------------------------
+
+HIPS_Z = 0.9    # Mercer's Hips bone height at rest: the pivot his flight attitude turns about
+
+
+def spencer_flight(col_units, col_fx, col_lit, sp, target):
+    """Round 6 (Remco: he hung stiff and upright "like a plank thrown into the air"; he wants him in action): Spencer
+    dives in from the right along a near-horizontal flight line, head first towards the maw, chest rolled towards the
+    camera so visor and face read in three-quarter; per-bone flight pose (flight_poser) with the pistol arm thrust
+    straight at `target`; fiery plumes, exhaust smoke and speed streaks trail behind him. Returns the placed meshes,
+    the bone matrices and the pistol."""
+    R, axis = flight_attitude(sp, target, STAGE["camera"], STAGE["spencer_elev"], STAGE["spencer_roll"],
+                              STAGE["spencer_yaw"])
+    s = STAGE["spencer_scale"]
+    centre = Vector(sp) + Vector((0, 0, STAGE["spencer_lift"]))
+    T = (Matrix.Translation(centre) @ R.to_4x4() @ Matrix.Diagonal((s, s, s, 1.0))
+         @ Matrix.Translation((0, 0, -HIPS_Z)))
+    # Jet_Fly for the body, Shoot frame 0 for the grip on the pistol; flight_poser sets every limb on top.
+    po = bake_pose("Mercer/Mercer.fbx", "Mercer", "Jet_Fly", 10, emit=3.0, overlay=("Shoot", 0, GRIP_BONES),
+                   poser=flight_poser(T, target, STAGE["camera"]))
+    obs, bones = place_matrix(po, col_units, T)
+    pistol = attach_pistol(col_units, bones["Weapon_R"], Matrix.Rotation(-math.pi / 2, 4, "X"))
+    for k, side in enumerate(("Jet_L", "Jet_R")):
+        m = bones[side]
+        # Back along the flight line and a little off his back, so the fire clears the trailing legs; most of the
+        # part running into the screen is taken out, so the plumes read at length instead of end-on.
+        d = (R @ Vector((0, 0.45, 0)) - axis * 0.9).normalized()
+        ray = (m.to_translation() - Vector(STAGE["camera"])).normalized()
+        d = (d - ray * d.dot(ray) * 0.75).normalized()
+        jet_plume("Flame" + side, m.to_translation(), d, col_fx, STAGE["jet_length"] * s / 3.3,
+                  STAGE["jet_radius"] * s / 3.3, seed=31 + k)
+    speed_streaks("SpencerStreaks", obs, axis, col_fx, random.Random(61))
+    light("SpencerKey", centre + Vector((-1.5, -2.5, 2.0)), (0.75, 0.85, 1.0), 320.0, 0.5, col_lit)
+    # A soft cool fill on the face only (light-linked), as a helmet HUD would cast it, so the face behind the
+    # see-through visor reads instead of a dark hole.
+    head = bones["Head"]
+    face_at = head.to_translation() + head.to_3x3() @ Vector((0, 0.1, 0))
+    rx = bpy.data.collections.new("SpencerFaceRx")
+    for o in obs:
+        if "Face" in o.name:
+            rx.objects.link(o)
+    to_cam = (Vector(STAGE["camera"]) - face_at).normalized()
+    ld = bpy.data.lights.new("SpencerFace", "POINT")
+    ld.energy = 25.0
+    ld.color = (0.75, 0.88, 1.0)
+    ld.shadow_soft_size = 0.2
+    fl = bpy.data.objects.new("SpencerFace", ld)
+    col_lit.objects.link(fl)
+    fl.location = face_at + to_cam * 0.9 * s / 3.3
+    fl.light_linking.receiver_collection = rx
+    return obs, bones, pistol
+
+
+def spencer_bolts(col_fx, pistol, sbones, sp, maw, maw_fwd, rng):
+    """Spencer's pistol bolts from the muzzle into the open throat; one burst hits the upper rim of the maw (on the
+    side towards Spencer), so the flare and sparks sit beside the teeth instead of over them (round 5). Round 6: the
+    muzzle flash is larger, as the pistol now points down the bolt line."""
+    hand = sbones["Weapon_R"].to_translation()
+    pts = [o.matrix_world @ v.co for o in pistol for v in o.data.vertices]
+    hand = max(pts, key=lambda q: (q - hand).length)
+    bs = STAGE["boss_scale"]
+    deep = maw - maw_fwd * 0.35 * bs
+    rim = maw + maw_fwd * 0.25 * bs + Vector((0, 0, 0.55 * bs)) + (sp - maw).normalized() * 0.5 * bs
+    d = (deep - hand).normalized()
+    tracers("SpencerBolts", hand + d * 0.4, deep, col_fx, count=5, length=2.2, width=0.08, colour=LASER,
+            core=LASER_CORE, seed=16, spread=0.05, strength=14.0)
+    dr = (rim - hand).normalized()
+    tracers("SpencerBoltsRim", hand + dr * 0.4, rim, col_fx, count=2, length=2.0, width=0.07, colour=LASER,
+            core=LASER_CORE, seed=18, spread=0.03, strength=12.0)
+    muzzle_flash("SpencerFlash", hand + d * 0.1, d, col_fx, colour=LASER, core=LASER_CORE, size=0.6, strength=8.0,
+                 energy=260.0, seed=17)
+    glow_ball("SpencerHitDeep", deep, 0.22, col_fx, LASER, LASER_CORE, 5.0, light_energy=900.0, light_radius=0.3)
+    glow_ball("SpencerHit", rim, 0.4, col_fx, LASER, LASER_CORE, 6.0, light_energy=1200.0, light_radius=0.4)
+    sparks("SpencerHitSparks", rim, col_fx, rng, 24, 1.6, colour=(0.5, 0.8, 1.0), core=(0.85, 0.95, 1.0),
+           strength=8.0, size=0.025)
+
+
+
 def build_scene(draft=False):
     C.reset_scene()
     col_env, col_lit = L2.coll("Env"), L2.coll("Lights")
@@ -1293,19 +1674,10 @@ def build_scene(draft=False):
         muzzles = [m.to_translation() for kk, m in sorted(bones.items()) if kk.startswith("Muzzle")]
         shots[f"{name}{k}"] = (muzzles, targets[tgt])
         light(f"{name}Lamp{k}", p + Vector((0.6, -1.2, 2.4)), COLONY_LAMP, 160.0, 0.6, col_lit)
-    arms = ("Shoulder", "Arm", "Hand", "Weapon", "Fore", "Clav", "Finger", "Thumb", "Index")
-    # Round 5: Shoot frame 0 is the shot itself (arm out, muzzle event); later frames drop the hand to the hip.
-    po = bake_pose("Mercer/Mercer.fbx", "Mercer", "Jet_Fly", 10, emit=3.0, overlay=("Shoot", 0, arms))
-    # Round 5: he flies in from the right, turned to the boss in profile / three-quarter front (visor and the firing
-    # arm to the camera, the jetpack and its flames trailing behind him), leaning into the dive and banking towards
-    # the maw. The +yaw keeps the Shoot arm (which points off his chest axis) on the throat.
-    _, sbones = place(po, col_units, sp, yaw_to(sp, maw) + math.radians(STAGE["spencer_yaw"]), STAGE["spencer_scale"],
-                      (math.radians(STAGE["spencer_lean"]), math.radians(STAGE["spencer_bank"])))
-    pistol = attach_pistol(col_units, sbones["Weapon_R"], Matrix.Rotation(-math.pi / 2, 4, "X"))
-    for side in ("Jet_L", "Jet_R"):
-        if side in sbones:
-            jet_flame("Flame" + side, sbones[side], col_fx, length=1.3)
-    light("SpencerKey", sp + Vector((-1.5, -2.0, 1.5)), (0.75, 0.85, 1.0), 220.0, 0.5, col_lit)
+    # Round 6: Spencer in action, posed per bone in a jetpack dive at the maw (see spencer_flight).
+    bs = STAGE["boss_scale"]
+    fly = sp + view * STAGE["spencer_depth"] + right * STAGE["spencer_slide"]
+    _, sbones, pistol = spencer_flight(col_units, col_fx, col_lit, fly, maw - maw_fwd * 0.35 * bs)
     # Round 4: a warm key from high camera-left on the focal duel (Spencer, the boss's head, the gate in front), so
     # the eye lands there first; the edges keep only the cool sky and their own dim glows.
     FOCUS["spencer"] = sp.lerp(maw, 0.35)
@@ -1377,27 +1749,7 @@ def build_scene(draft=False):
     sparks("RailSparks", t, col_fx, rng, 24, 1.2, colour=(1.0, 0.72, 0.4), core=(1.0, 0.88, 0.6), strength=9.0,
            size=0.014)
     glow_ball("RailHit", t, 0.3, col_fx, RAIL, (0.8, 0.9, 1.0), 5.0, light_energy=300.0)
-    # Spencer's pistol bolts into the boss's face (round 4: the focal duel), with a hit flare on the head.
-    hand = sbones["Weapon_R"].to_translation()
-    pts = [o.matrix_world @ v.co for o in pistol for v in o.data.vertices]
-    hand = max(pts, key=lambda q: (q - hand).length)
-    # Round 5: the bolts stream into the open throat; one burst hits the upper rim of the maw (on the side towards
-    # Spencer), so the flare and sparks sit beside the teeth instead of over them.
-    bs = STAGE["boss_scale"]
-    deep = maw - maw_fwd * 0.35 * bs
-    rim = maw + maw_fwd * 0.25 * bs + Vector((0, 0, 0.55 * bs)) + (sp - maw).normalized() * 0.5 * bs
-    d = (deep - hand).normalized()
-    tracers("SpencerBolts", hand + d * 0.4, deep, col_fx, count=5, length=2.2, width=0.08, colour=LASER,
-            core=LASER_CORE, seed=16, spread=0.05, strength=14.0)
-    dr = (rim - hand).normalized()
-    tracers("SpencerBoltsRim", hand + dr * 0.4, rim, col_fx, count=2, length=2.0, width=0.07, colour=LASER,
-            core=LASER_CORE, seed=18, spread=0.03, strength=12.0)
-    muzzle_flash("SpencerFlash", hand + d * 0.15, d, col_fx, colour=LASER, core=LASER_CORE, size=0.45, strength=7.0,
-                 energy=160.0, seed=17)
-    glow_ball("SpencerHitDeep", deep, 0.22, col_fx, LASER, LASER_CORE, 5.0, light_energy=900.0, light_radius=0.3)
-    glow_ball("SpencerHit", rim, 0.4, col_fx, LASER, LASER_CORE, 6.0, light_energy=1200.0, light_radius=0.4)
-    sparks("SpencerHitSparks", rim, col_fx, rng, 24, 1.6, colour=(0.5, 0.8, 1.0), core=(0.85, 0.95, 1.0),
-           strength=8.0, size=0.025)
+    spencer_bolts(col_fx, pistol, sbones, sp, maw, maw_fwd, rng)
     # Battle smoke drifting over the road, catching the lava and fire light.
     for k, (y, off, r) in enumerate([(10.0, 3.0, 1.6), (21.0, 2.5, 2.2)]):
         smoke(f"BattleSmoke{k}", R(y, off, 1.6), r, col_fx, colour=(0.16, 0.15, 0.16), density=0.8)
@@ -1433,8 +1785,14 @@ FOCUS = {}   # build_scene fills "spencer": the point every shot focuses on
 # at `spencer_z`. The boss faces a blend (weights) of "towards Spencer" and "towards the camera".
 STAGE = dict(camera=(-9.0, -10.0, 6.5), target=(3.5, 14.0, 4.2), depth=24.0, maw_left=1.0, maw_z=5.0,
              spencer_right=6.5, spencer_back=-3.0, spencer_z=6.0, boss_turn=(0.45, 0.9), roar_frame=36,
-             boss_scale=4.4, boss_pitch=0.0, spencer_scale=3.3, spencer_yaw=62.0, spencer_lean=-28.0,
-             spencer_bank=20.0)
+             boss_scale=4.4, boss_pitch=0.0, spencer_scale=4.0,
+             # Round 6 flight attitude (flight_attitude): head `elev` degrees above the horizontal flight line, chest
+             # rolled `roll` degrees from straight down towards the camera, heading turned `yaw` degrees towards it.
+             # His hips sit `lift` m above the round 5 anchor, `depth` m further along the view and `slide` m to the
+             # right (the anchor itself stays, as the boss turns to it). Jet plumes `jet_length` m long and
+             # `jet_radius` m wide at spencer_scale 3.3, scaled with him.
+             spencer_elev=22.0, spencer_roll=60.0, spencer_yaw=35.0, spencer_lift=2.2, spencer_depth=0.5,
+             spencer_slide=1.0, jet_length=4.0, jet_radius=0.15)
 
 
 def shot_camera(name, loc, target, lens, fstop):

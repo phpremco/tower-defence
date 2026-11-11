@@ -1,6 +1,6 @@
 # Steam store and library images (Far Harvest: Deepwake)
 
-Made 2026-11-10, reworked 2026-11-11, from one key-art battle scene (`Tools/Blender/steam_keyart.py`, rounds 3-5: a densely dressed Landfall map
+Made 2026-11-10, reworked 2026-11-11, from one key-art battle scene (`Tools/Blender/steam_keyart.py`, rounds 3-6: a densely dressed Landfall map
 from the game's environment kit, the road with the gate across it, towers on build pads on the ground beside the road,
 a mixed C1 wave with flyers and Gravemaw rearing behind it, Spencer on his jetpack, on the approved CrysiumField logo
 environment), with the CrysiumField lockup composited on top
@@ -86,6 +86,40 @@ field, edge falloff, logo-free library hero with the dark logo pool bottom-left)
   are about 1,000 px apart.
 - **Slot tweaks:** the library capsule's crop leans right (focus 0.58), so Spencer's jetpack is not cut off. The hero's
   logo pool is smaller and sits in the corner.
+
+## Round 6 (2026-11-11): Spencer in action
+
+Remco on round 5: the picture is great, but Spencer "hangs like a plank thrown into the air", stiff and upright.
+He wants him in action: flying in from the right towards Gravemaw, pistol thrust forward, shooting the boss. Only
+Spencer and his effects changed; the rest of the scene is round 5 unchanged.
+
+- **A flight pose set bone by bone** (`flight_poser`, `FLIGHT_POSE` in `steam_keyart.py`), not a frame from a clip:
+  - The torso is pitched forward into a jetpack dive along the flight line, head first towards the maw (22 degrees
+    above horizontal), with the chest arched.
+  - The pistol arm is straight and aimed at the throat. The pistol sits in the Weapon_R socket, its barrel on the
+    bolt line and its top facing up.
+  - The off arm is held out to the side with the elbow bent back, for balance.
+  - The legs trail behind, bent at the knees and a little apart: the leading knee is bent hard, the trailing leg is
+    longer, and the toes are pointed.
+  - The head is up and looks at the target, turned partly towards the camera.
+  - Only the hands keep a clip pose (the grip on the pistol, from Shoot frame 0).
+- **Attitude:** his chest is rolled towards the camera and his heading is turned partly towards it
+  (`flight_attitude`), so the visor and face read in three-quarter.
+- **Visor:** the visor now uses its albedo alpha as opacity, as the game does. The face shows through it instead of
+  a black disc, and a small light-linked fill lights the face.
+- **Size and position:** he is larger (scale 4.0, was 3.3) and placed further right and higher. The anchor the boss
+  turns to is unchanged, so Gravemaw is exactly as in round 5.
+- **Jet fire:** the thin pale spikes became fiery plumes (`jet_plume`):
+  - a hot white-blue core;
+  - a body that runs from blue to orange, broken by streaming noise;
+  - a soft orange halo and heat shimmer (a near-air refraction that wobbles the background);
+  - a few puffs of exhaust smoke off the tips.
+  The plumes trail behind him to the right and clear his legs.
+- **Speed and fire:** faint speed streaks peel off his outline and trail behind him (`speed_streaks`), and the
+  muzzle flash at the pistol is larger. The bolts still run from the muzzle into the throat.
+- **Library hero:** the safe area holds his pistol arm, the muzzle, the bolts and the front of his torso. His helmet,
+  the jetpack and the plumes lie just above and to the right of it, because the wide camera is unchanged. The
+  capsules keep him clear of the logo; only the small capsule, where the title fills the frame, overlaps him.
 
 ## Library hero and logo placement
 
