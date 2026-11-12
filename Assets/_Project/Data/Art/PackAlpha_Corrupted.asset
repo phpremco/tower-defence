@@ -18,7 +18,15 @@ MonoBehaviour:
   _lowMaterial: {fileID: 2100000, guid: eaa0b3211b02cf0468a46ccbbb9f6b90, type: 2}
   _secondMaterial: {fileID: 0}
   _lowSecondMaterial: {fileID: 0}
-  _parts: []
+  _parts:
+  - _object: PackAlpha_Face
+    _material: {fileID: 2100000, guid: bfde9bb10558bd7409bf909cdd4cc3b8, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 780cdb4b7605a814a9c83ea9bdbd7d2e, type: 2}
+    _castShadows: 1
+  - _object: PackAlpha_Claws
+    _material: {fileID: 2100000, guid: bc312482f45ab70409795f2f0277b06e, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: b250c850205fce744b50ecdc65f880e0, type: 2}
+    _castShadows: 1
   _scale: 0.6
   _yaw: 180
   _bodyCentrePivot: 0
@@ -47,6 +55,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 2
     _clip: {fileID: 5274815659567452501, guid: 705cb420d667da748b07ea913bc1e8c9, type: 3}
     _farClip: {fileID: -3250079979077519468, guid: 4f563c6812e043c4f82861f1e9bdb2b0, type: 3}
@@ -61,6 +70,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 3
     _clip: {fileID: -2506640964733693346, guid: 705cb420d667da748b07ea913bc1e8c9, type: 3}
     _farClip: {fileID: -2033268628022997829, guid: 4f563c6812e043c4f82861f1e9bdb2b0, type: 3}
@@ -75,6 +85,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 5
     _clip: {fileID: -1800909752393752960, guid: 705cb420d667da748b07ea913bc1e8c9, type: 3}
     _farClip: {fileID: 3900978093694393396, guid: 4f563c6812e043c4f82861f1e9bdb2b0, type: 3}
@@ -89,6 +100,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 0
     _clip: {fileID: -156107219395913071, guid: 705cb420d667da748b07ea913bc1e8c9, type: 3}
     _farClip: {fileID: 4758098549382853820, guid: 4f563c6812e043c4f82861f1e9bdb2b0, type: 3}
@@ -103,3 +115,4 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []

@@ -14,6 +14,11 @@ namespace Game.Editor
     {
         private static readonly Regex DetailPattern = new Regex("\"(\\w+)\"\\s*:\\s*\\{\\s*\"map\"\\s*:\\s*\"([^\"]+)\"\\s*,\\s*\"tiling\"\\s*:\\s*([0-9.]+)\\s*,\\s*\"mask\"\\s*:\\s*\"([AB])\"");
 
+        // A close-up detail pass's block in the report (round45_detail, r45_detail, r46_detail ...): the exports name it
+        // with the round, spelt out or short.
+        private static readonly Regex DetailPassKey = new Regex("^(?:round|r)[0-9]+_detail$");
+        private static readonly Regex DetailPassStart = new Regex("\"(?:round|r)[0-9]+_detail\"\\s*:");
+
         private readonly string _json;
 
         private BlenderReport(string json) => _json = json ?? string.Empty;
@@ -37,15 +42,61 @@ namespace Game.Editor
 
         public static BlenderReport Load(string path) => new BlenderReport(File.Exists(path) ? File.ReadAllText(path) : string.Empty);
 
+        /// <summary>The model's own detail families (body first, then a second slot's), without the detail pass's parts.</summary>
         public List<Detail> Details()
         {
             var details = new List<Detail>(2);
-            foreach (Match match in DetailPattern.Matches(_json))
+            foreach (Match match in DetailPattern.Matches(ModelJson()))
             {
                 details.Add(new Detail(match.Groups[1].Value, match.Groups[2].Value, float.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture), match.Groups[4].Value[0]));
             }
 
             return details;
+        }
+
+        /// <summary>
+        /// The detail families of one extra part from a close-up detail pass (<c>&lt;pass&gt;.parts.&lt;Part&gt;.detail</c>),
+        /// each at the part's own tiling; none when the pass does not list them.
+        /// </summary>
+        public List<Detail> PartDetails(string part)
+        {
+            var details = new List<Detail>(2);
+            Dictionary<string, object> root = Root() ?? new Dictionary<string, object>();
+            foreach (KeyValuePair<string, object> pass in root)
+            {
+                if (!DetailPassKey.IsMatch(pass.Key))
+                {
+                    continue;
+                }
+
+                Dictionary<string, object> parts = BlenderJson.Object(BlenderJson.Field(BlenderJson.Object(pass.Value), "parts"));
+                Dictionary<string, object> families = BlenderJson.Object(BlenderJson.Field(BlenderJson.Object(BlenderJson.Field(parts, part)), "detail"));
+                if (families == null)
+                {
+                    continue;
+                }
+
+                foreach (KeyValuePair<string, object> family in families)
+                {
+                    Dictionary<string, object> entry = BlenderJson.Object(family.Value);
+                    string mask = BlenderJson.Text(BlenderJson.Field(entry, "mask"));
+                    string map = BlenderJson.Text(BlenderJson.Field(entry, "map"));
+                    if (!string.IsNullOrEmpty(mask) && !string.IsNullOrEmpty(map))
+                    {
+                        details.Add(new Detail(family.Key, map, BlenderJson.Number(BlenderJson.Field(entry, "tiling"), 1f), mask[0]));
+                    }
+                }
+            }
+
+            return details;
+        }
+
+        // A detail pass appends its parts' own detail blocks after the model's; the body and second slot read only what
+        // comes before it, or the parts' tilings would overwrite theirs.
+        private string ModelJson()
+        {
+            Match pass = DetailPassStart.Match(_json);
+            return pass.Success ? _json.Substring(0, pass.Index) : _json;
         }
 
         /// <summary>The strings of the array under a key (the gate's loose panel bones), or none.</summary>

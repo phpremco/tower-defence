@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Game.Editor
 {
     /// <summary>
@@ -96,11 +98,21 @@ namespace Game.Editor
         public bool Colony { get; set; }
 
         /// <summary>
-        /// Ice on an alien (the Frost Warden's armour and glaives): the second slot and the extra parts get a darker, colder
+        /// Ice on an alien (the Frost Warden's armour and glaives): the second slot and the ice parts get a darker, colder
         /// tint over their albedo, a bright cold rim and a glow from the cracks, so they read as clear ice with lit edges at
         /// play size instead of flat painted plastic. Null keeps the row's own look.
         /// </summary>
         public IceLook Ice { get; set; }
+
+        /// <summary>The extra parts that are ice and take <see cref="Ice"/> (the Frost Warden's armour, not its eyes or teeth).</summary>
+        public string[] IceParts { get; set; } = new string[0];
+
+        /// <summary>
+        /// Factor on the extra parts' albedo and glow colour. A baked skin has no maps for the parts (they keep the export's
+        /// own), so a skinned row leans them towards its palette with these instead.
+        /// </summary>
+        public Color PartTint { get; set; } = Color.white;
+        public Color PartGlowTint { get; set; } = Color.white;
 
         /// <summary>The same row wearing a baked skin of the same mesh (a corrupted variant), under its own id.</summary>
         public BlenderArtEntry WithSkin(string id, string skin)
@@ -116,6 +128,9 @@ namespace Game.Editor
                 Bleeds = Bleeds,
                 Clips = Clips,
                 SecondMaterial = SecondMaterial,
+                ExtraParts = ExtraParts,
+                Ice = Ice,
+                IceParts = IceParts,
                 ShedBonesKey = ShedBonesKey,
                 Emission = Emission,
                 Smoothness = Smoothness,

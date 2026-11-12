@@ -1,4 +1,5 @@
 using Game.Core;
+using Game.Editor;
 using Game.Enemies;
 using NUnit.Framework;
 using UnityEditor;
@@ -307,32 +308,129 @@ namespace Game.Tests
         }
 
         // Round 38: the worm gullet and its teeth are an object of their own with maps of their own; without the part
-        // the throat would wear the body's skin, in the near and the far LOD alike.
+        // the throat would wear the body's skin, in the near and the far LOD alike. Round 45 gave sixteen bosses faces,
+        // eyes, teeth and claws the same way, so every catalog row's extra parts are checked: built in the row's order,
+        // each wearing its own material (the export's own part maps, 512 ones on Low) in both profiles, and owning a
+        // renderer in the near model and in the far one where there is one.
         [Test]
-        public void Gravemaw_Maw_WearsItsOwnMaterial_InBothLodsAndProfiles()
+        public void EveryBossExtraPart_WearsItsOwnMaterial_InBothLodsAndProfiles()
         {
-            var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/Gravemaw.asset");
-            Assert.AreEqual(1, art.Parts.Length, "the maw is Gravemaw's one extra part");
-            ModelPart maw = art.Parts[0];
-            Assert.AreEqual("Gravemaw_Maw", maw.Object);
-            foreach (bool low in new[] { false, true })
+            int checkedParts = 0;
+            foreach (BlenderArtEntry entry in BlenderArtCatalog.Creatures)
             {
-                Material material = maw.MaterialFor(low);
-                Assert.IsNotNull(material, $"no maw material (low {low})");
-                Assert.AreNotSame(art.MaterialFor(low), material, $"the maw wears the body material (low {low})");
-                Assert.AreEqual("Gravemaw_Maw_Albedo", material.GetTexture("_BaseMap").name, $"the maw's albedo (low {low})");
+                if (entry.ExtraParts.Length == 0)
+                {
+                    continue;
+                }
+
+                var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{entry.Id}.asset");
+                Assert.IsNotNull(art, $"{entry.Id}: no art definition");
+                Assert.AreEqual(entry.ExtraParts.Length, art.Parts.Length, $"{entry.Id}: parts built");
+                for (int i = 0; i < entry.ExtraParts.Length; i++)
+                {
+                    AssertPartDressed(entry, art, art.Parts[i], $"{entry.Asset}_{entry.ExtraParts[i]}");
+                    checkedParts++;
+                }
             }
 
-            Assert.AreNotSame(maw.MaterialFor(false), maw.MaterialFor(true), "no Low maw material");
+            Assert.GreaterOrEqual(checkedParts, 40, "the round-45 parts are missing from the catalog");
+        }
+
+        // Round 45: what a boss wears in play (CreatureModel), near and far LOD, High and Low: each part's renderers wear
+        // that part's copy, never the body's; the Sealed One's phase looks swap the body and seal glow maps but leave the
+        // parts' own maps alone (their strength follows the phase, which is fine for eyes in a breaking seal).
+        [Test]
+        public void EveryBossExtraPart_IsDressedInPlay_AndKeepsItsMapsThroughPhaseLooks()
+        {
+            foreach (BlenderArtEntry entry in BlenderArtCatalog.Creatures)
+            {
+                if (entry.ExtraParts.Length == 0)
+                {
+                    continue;
+                }
+
+                var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{entry.Id}.asset");
+                foreach (bool low in new[] { false, true })
+                {
+                    var owner = new GameObject("Owner");
+                    CreatureModel model = CreatureModel.Create(owner.transform, art, 1f, low);
+                    try
+                    {
+                        AssertPartsWorn(art, model, $"{entry.Id} (low {low})");
+                        foreach (ModelEmissionSet set in art.EmissionSets)
+                        {
+                            model.SetEmissionSet(set, low);
+                            AssertPartsWorn(art, model, $"{entry.Id} {set.Name} (low {low})");
+                            Assert.AreSame(set.BodyFor(low), model.Materials[0].GetTexture("_EmissionMap"), $"{entry.Id} {set.Name}: the body kept its glow");
+                        }
+                    }
+                    finally
+                    {
+                        model.Player.Dispose();
+                        foreach (Material material in model.Materials)
+                        {
+                            Object.DestroyImmediate(material);
+                        }
+
+                        Object.DestroyImmediate(owner);
+                    }
+                }
+            }
+        }
+
+        private static void AssertPartsWorn(ModelArtDefinition art, CreatureModel model, string label)
+        {
+            int slots = art.HasSecondMaterial ? 2 : 1;
+            foreach (Renderer renderer in model.Renderers)
+            {
+                for (int i = 0; i < art.Parts.Length; i++)
+                {
+                    if (!art.Parts[i].Owns(renderer.name))
+                    {
+                        continue;
+                    }
+
+                    Material worn = model.Materials[slots + i];
+                    Assert.AreSame(worn, renderer.sharedMaterial, $"{label}: {renderer.name} wears {renderer.sharedMaterial.name}");
+                    Texture own = art.Parts[i].MaterialFor(false).GetTexture("_EmissionMap");
+                    Texture now = worn.GetTexture("_EmissionMap");
+                    Assert.AreEqual(own != null ? own.name : null, now != null ? now.name : null, $"{label}: {renderer.name} glow map");
+                }
+            }
+        }
+
+        private static void AssertPartDressed(BlenderArtEntry entry, ModelArtDefinition art, ModelPart part, string objectName)
+        {
+            Assert.AreEqual(objectName, part.Object, $"{entry.Id}: part order");
+            Assert.IsTrue(part.CastShadows, $"{objectName} casts no shadow");
+            foreach (bool low in new[] { false, true })
+            {
+                Material material = part.MaterialFor(low);
+                Assert.IsNotNull(material, $"{objectName}: no material (low {low})");
+                Assert.AreNotSame(art.MaterialFor(low), material, $"{objectName} wears the body material (low {low})");
+                Texture albedo = material.GetTexture("_BaseMap");
+                Assert.IsNotNull(albedo, $"{objectName}: no albedo (low {low})");
+                Assert.AreEqual($"{objectName}_Albedo", albedo.name, $"{objectName}: albedo (low {low})");
+                string path = AssetDatabase.GetAssetPath(albedo);
+                Assert.AreEqual(low, path.Contains("/Low/"), $"{objectName}: albedo {path} (low {low})");
+                Assert.IsTrue(material.IsKeywordEnabled("_MASKMAP"), $"{objectName}: the material ignores the mask (low {low})");
+            }
+
+            Assert.AreNotSame(part.MaterialFor(false), part.MaterialFor(true), $"{objectName}: no Low material");
             foreach (GameObject model in new[] { art.Model, art.Lod1 })
             {
+                if (model == null)
+                {
+                    continue;
+                }
+
                 bool owned = false;
                 foreach (Renderer renderer in model.GetComponentsInChildren<Renderer>(true))
                 {
-                    owned |= maw.Owns(renderer.name);
+                    owned |= part.Owns(renderer.name);
                 }
 
-                Assert.IsTrue(owned, $"{model.name} has no maw renderer");
+                Assert.IsTrue(owned, $"{model.name} has no {objectName} renderer");
             }
         }
 

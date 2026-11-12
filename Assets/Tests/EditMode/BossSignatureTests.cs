@@ -255,7 +255,8 @@ namespace Game.Tests
             Assert.GreaterOrEqual(cinder.Art.IndexOf(ModelClipRole.HuntMove), 0);
             Assert.AreEqual(BossSignature.GateBreaker, warden.Boss.Signature);
             Assert.AreEqual(BossArrival.Pool, warden.Boss.Arrival);
-            Assert.AreEqual(1, warden.Art.Parts.Length, "the ice armour is a part of its own");
+            // Round 45 added its eyes, teeth and claws as parts after the armour; the armour stays a part of its own.
+            Assert.GreaterOrEqual(warden.Art.Parts.Length, 1, "the ice armour is a part of its own");
             Assert.AreEqual(warden.Boss.GateBreaker.ArmourPart, warden.Art.Parts[0].Object);
             foreach (ModelClipRole role in new[] { ModelClipRole.FreezeGate, ModelClipRole.ShatterThrough, ModelClipRole.ArmourBreak })
             {

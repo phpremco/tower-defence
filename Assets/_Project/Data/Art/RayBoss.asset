@@ -18,7 +18,15 @@ MonoBehaviour:
   _lowMaterial: {fileID: 2100000, guid: c2d7cb5ab41190742874a1883010a9c0, type: 2}
   _secondMaterial: {fileID: 0}
   _lowSecondMaterial: {fileID: 0}
-  _parts: []
+  _parts:
+  - _object: StormMatriarch_Face
+    _material: {fileID: 2100000, guid: fb8d2b1f2b8d2bd4e971a37c9a3f9537, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 45c29fb4000384649885c31d228adae4, type: 2}
+    _castShadows: 1
+  - _object: StormMatriarch_Claws
+    _material: {fileID: 2100000, guid: b40a896938d3c0a46a468c0845ab820b, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 41d9e7fca4d1f6e4eb30e4bf47b3643a, type: 2}
+    _castShadows: 1
   _scale: 0.514
   _yaw: 180
   _bodyCentrePivot: 1
@@ -47,6 +55,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 2
     _clip: {fileID: 1723744316781822598, guid: 38e2062b209fead43b5f112f724174bc, type: 3}
     _farClip: {fileID: 4746760148844695710, guid: 3273a9b04e811a243b82aca9de5d4d78, type: 3}
@@ -61,6 +70,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 3
     _clip: {fileID: 3880577021068054073, guid: 38e2062b209fead43b5f112f724174bc, type: 3}
     _farClip: {fileID: 1268658514236717505, guid: 3273a9b04e811a243b82aca9de5d4d78, type: 3}
@@ -75,6 +85,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 1
     _clip: {fileID: 119843423913696501, guid: 38e2062b209fead43b5f112f724174bc, type: 3}
     _farClip: {fileID: 9221621931223404297, guid: 3273a9b04e811a243b82aca9de5d4d78, type: 3}
@@ -89,3 +100,4 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []

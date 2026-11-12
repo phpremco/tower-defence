@@ -18,11 +18,23 @@ MonoBehaviour:
   _lowMaterial: {fileID: 2100000, guid: a8e96015fb9b36d4dbfea476365f2a6a, type: 2}
   _secondMaterial: {fileID: 0}
   _lowSecondMaterial: {fileID: 0}
-  _parts: []
+  _parts:
+  - _object: CrystalWarlord_Eyes
+    _material: {fileID: 2100000, guid: bfc013cc453cc3d4abe159472a8c697f, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 4e92e04fb91d21b4c86eef58f2267706, type: 2}
+    _castShadows: 1
+  - _object: CrystalWarlord_Teeth
+    _material: {fileID: 2100000, guid: fb5b31f016587f94d8af59cd9a86c973, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: c001745a2690f2545bdc217c55a409cc, type: 2}
+    _castShadows: 1
+  - _object: CrystalWarlord_Claws
+    _material: {fileID: 2100000, guid: 710aa0d3914aeba44b2e5dcb40a04817, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: ded73150d2dd4c34caff5c6d8a1d1f30, type: 2}
+    _castShadows: 1
   _scale: 0.6
   _yaw: 180
   _bodyCentrePivot: 0
-  _height: 2.2315586
+  _height: 2.2315583
   _lodScreenHeight: 0.09
   _upperBodyBone: 
   _displayExposure: 1
@@ -47,6 +59,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 2
     _clip: {fileID: -784439207766446663, guid: 008a16c6de310a4468ac329ac9661c2f, type: 3}
     _farClip: {fileID: 4886686109983829636, guid: 242484e573237394a841445bef5eef9e, type: 3}
@@ -61,6 +74,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 5
     _clip: {fileID: 3226757959840107863, guid: 008a16c6de310a4468ac329ac9661c2f, type: 3}
     _farClip: {fileID: 8552729217099582922, guid: 242484e573237394a841445bef5eef9e, type: 3}
@@ -75,6 +89,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 1
     _clip: {fileID: -6005979021698734642, guid: 008a16c6de310a4468ac329ac9661c2f, type: 3}
     _farClip: {fileID: -5611682274450360862, guid: 242484e573237394a841445bef5eef9e, type: 3}
@@ -89,6 +104,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 0
     _clip: {fileID: 1797152913640439970, guid: 008a16c6de310a4468ac329ac9661c2f, type: 3}
     _farClip: {fileID: -8458502256850512035, guid: 242484e573237394a841445bef5eef9e, type: 3}
@@ -103,6 +119,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 11
     _clip: {fileID: -8922195781750373586, guid: 008a16c6de310a4468ac329ac9661c2f, type: 3}
     _farClip: {fileID: 428391929901703738, guid: 242484e573237394a841445bef5eef9e, type: 3}
@@ -117,3 +134,4 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []

@@ -48,5 +48,60 @@
     "fbx": "StormMatriarch_LOD1.fbx",
     "tris": 6000,
     "bones": 16
+  },
+  "r45_detail": {
+    "parts": {
+      "Face": {
+        "object": "StormMatriarch_Face",
+        "material": "StormMatriarch_Face_Mat",
+        "maps": "StormMatriarch_Face_*.png (1024, Low 512)",
+        "tris": 1736,
+        "lod1_object": "StormMatriarch_Face_LOD1",
+        "lod1_tris": 560,
+        "source_tris": 57868,
+        "uv": {
+          "islands": 44,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 868,
+          "uv_coverage": 0.701,
+          "world_per_uv": 0.3192604727924988
+        },
+        "symmetry_error": 0.008784
+      },
+      "Claws": {
+        "object": "StormMatriarch_Claws",
+        "material": "StormMatriarch_Claws_Mat",
+        "maps": "StormMatriarch_Claws_*.png (1024, Low 512)",
+        "tris": 451,
+        "lod1_object": "StormMatriarch_Claws_LOD1",
+        "lod1_tris": 319,
+        "source_tris": 20172,
+        "uv": {
+          "islands": 14,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 124,
+          "uv_coverage": 0.605,
+          "world_per_uv": 0.22786150365871816
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 13446,
+    "extra_tris": 2187,
+    "extra_share": 0.163,
+    "body_lod1_tris": 6000,
+    "extra_lod1_tris": 879,
+    "extra_lod1_share": 0.146,
+    "clips": [
+      "Death",
+      "Fly",
+      "Hit",
+      "Idle",
+      "Release"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects StormMatriarch_<Part> (+ _LOD1 in StormMatriarch_LOD1.fbx), maps StormMatriarch_<Part>_*.png (+ Low/)",
+    "note": "round 45: wet eyes on the eye pits, pincer saw teeth, mouth teeth, pincer and trident points; bones, clips and events unchanged"
   }
 }

@@ -116,5 +116,46 @@
       "Head"
     ],
     "note": "tail end planted; the chain stretches toward the target (length L, width L^-0.65, height L^-0.35); old clips hold the chain at scale 1"
-  }
+  },
+  "r45_detail": {
+    "parts": {
+      "Face": {
+        "object": "SlimeMonarch_Face",
+        "material": "SlimeMonarch_Face_Mat",
+        "maps": "SlimeMonarch_Face_*.png (1024, Low 512)",
+        "tris": 2464,
+        "lod1_object": "SlimeMonarch_Face_LOD1",
+        "lod1_tris": 848,
+        "source_tris": 134364,
+        "uv": {
+          "islands": 34,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 1232,
+          "uv_coverage": 0.698,
+          "world_per_uv": 0.4232515782398588
+        },
+        "symmetry_error": 0.00649
+      }
+    },
+    "body_tris": 13000,
+    "extra_tris": 2464,
+    "extra_share": 0.19,
+    "body_lod1_tris": 5999,
+    "extra_lod1_tris": 848,
+    "extra_lod1_share": 0.141,
+    "clips": [
+      "Crawl",
+      "Death",
+      "Flood",
+      "Hit",
+      "Idle",
+      "Spawn",
+      "Strike"
+    ],
+    "unity": "ExtraParts { \"Face\" }: objects SlimeMonarch_<Part> (+ _LOD1 in SlimeMonarch_LOD1.fbx), maps SlimeMonarch_<Part>_*.png (+ Low/)",
+    "note": "round 45: stalk eyes and a toothed maw (no claws on a slug); bones, clips and events unchanged",
+    "body_maps": "stalk bulbs' glow lowered in SlimeMonarch_Emission (0 texels this run)"
+  },
+  "r45_body_maps_edited": true
 }

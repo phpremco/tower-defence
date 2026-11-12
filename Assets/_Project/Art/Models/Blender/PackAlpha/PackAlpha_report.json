@@ -45,5 +45,60 @@
     "fbx": "PackAlpha_LOD1.fbx",
     "tris": 5997,
     "bones": 18
+  },
+  "r45_detail": {
+    "parts": {
+      "Face": {
+        "object": "PackAlpha_Face",
+        "material": "PackAlpha_Face_Mat",
+        "maps": "PackAlpha_Face_*.png (1024, Low 512)",
+        "tris": 1794,
+        "lod1_object": "PackAlpha_Face_LOD1",
+        "lod1_tris": 560,
+        "source_tris": 67512,
+        "uv": {
+          "islands": 35,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 897,
+          "uv_coverage": 0.688,
+          "world_per_uv": 0.2994093695065811
+        },
+        "symmetry_error": 0.007647
+      },
+      "Claws": {
+        "object": "PackAlpha_Claws",
+        "material": "PackAlpha_Claws_Mat",
+        "maps": "PackAlpha_Claws_*.png (1024, Low 512)",
+        "tris": 924,
+        "lod1_object": "PackAlpha_Claws_LOD1",
+        "lod1_tris": 318,
+        "source_tris": 30864,
+        "uv": {
+          "islands": 6,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 462,
+          "uv_coverage": 0.504,
+          "world_per_uv": 0.2332319710040275
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 14018,
+    "extra_tris": 2718,
+    "extra_share": 0.194,
+    "body_lod1_tris": 5997,
+    "extra_lod1_tris": 878,
+    "extra_lod1_share": 0.146,
+    "clips": [
+      "Death",
+      "Hit",
+      "Howl",
+      "Idle",
+      "Run"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects PackAlpha_<Part> (+ _LOD1 in PackAlpha_LOD1.fbx), maps PackAlpha_<Part>_*.png (+ Low/)",
+    "note": "round 45: brow eyes, shear saw teeth, throat tooth ring, toe talons; bones, clips and events unchanged"
   }
 }

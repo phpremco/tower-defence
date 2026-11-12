@@ -18,11 +18,19 @@ MonoBehaviour:
   _lowMaterial: {fileID: 2100000, guid: 83e6abe6e879b65468d1b3f6a117ffac, type: 2}
   _secondMaterial: {fileID: 0}
   _lowSecondMaterial: {fileID: 0}
-  _parts: []
+  _parts:
+  - _object: Queen_Face
+    _material: {fileID: 2100000, guid: 393eb89a9dc884d42a4f5f0f45e68bda, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 763cd62ee1b661b4eb137039d3e31e4e, type: 2}
+    _castShadows: 1
+  - _object: Queen_Claws
+    _material: {fileID: 2100000, guid: 88b55b73ccdde904bb437d859095a421, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 2b922b7e9a88e7248ae8ae77153cc5c1, type: 2}
+    _castShadows: 1
   _scale: 0.33
   _yaw: 180
   _bodyCentrePivot: 0
-  _height: 2.7822018
+  _height: 2.7822013
   _lodScreenHeight: 0.09
   _upperBodyBone: 
   _displayExposure: 1
@@ -47,6 +55,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 0
     _clip: {fileID: 5967120885717480002, guid: 1051a2d91c32ba740871de3c68a8bf2a, type: 3}
     _farClip: {fileID: 0}
@@ -61,6 +70,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 1
     _clip: {fileID: 6620091901489730491, guid: 1051a2d91c32ba740871de3c68a8bf2a, type: 3}
     _farClip: {fileID: 0}
@@ -75,3 +85,4 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []

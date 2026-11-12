@@ -23,6 +23,18 @@ MonoBehaviour:
     _material: {fileID: 2100000, guid: 1f076b41fa6edb5489e06fbd6bf080e0, type: 2}
     _lowMaterial: {fileID: 2100000, guid: 4965b44cfc0f9e841b16fbc94d307757, type: 2}
     _castShadows: 1
+  - _object: FrostWarden_Eyes
+    _material: {fileID: 2100000, guid: aeb4a21ff0fb97e409d0eb09a032a6f1, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 5be9628a522afa54aa46acc0576005fa, type: 2}
+    _castShadows: 1
+  - _object: FrostWarden_Teeth
+    _material: {fileID: 2100000, guid: 17a4b68c99deb1841a96568eb68c78ee, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: c08bb786360657d4da1bf33529de1cfe, type: 2}
+    _castShadows: 1
+  - _object: FrostWarden_Claws
+    _material: {fileID: 2100000, guid: 8b702bb5e0ae6b1439cd7bda09cd9903, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 58c7f6ca1a04cc54997fe39560dcef2f, type: 2}
+    _castShadows: 1
   _scale: 1
   _yaw: 180
   _bodyCentrePivot: 0
@@ -51,6 +63,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 34
     _clip: {fileID: -2971820401918303889, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
     _farClip: {fileID: -3763797354134519866, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
@@ -65,6 +78,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 5
     _clip: {fileID: 4961660912500997643, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
     _farClip: {fileID: 3710124484863425322, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
@@ -79,6 +93,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 2
     _clip: {fileID: -7399125238499090329, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
     _farClip: {fileID: 4848951509763466190, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
@@ -93,6 +108,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 1
     _clip: {fileID: 8763182178761906159, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
     _farClip: {fileID: 7543349188887885114, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
@@ -107,6 +123,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 0
     _clip: {fileID: 8775537390293457106, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
     _farClip: {fileID: -1730726430257384968, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
@@ -121,6 +138,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 35
     _clip: {fileID: -439235100912695975, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
     _farClip: {fileID: -3722724420971355327, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
@@ -135,6 +153,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 41
     _clip: {fileID: 518961838750867320, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
     _farClip: {fileID: 8587148139231670071, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
@@ -149,6 +168,7 @@ MonoBehaviour:
     _anchorForward: 2.4
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 46
     _clip: {fileID: -4458794755822956775, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
     _farClip: {fileID: -8513245093861154149, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
@@ -163,6 +183,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 42
     _clip: {fileID: 4017707863875457587, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
     _farClip: {fileID: 1349138090293453248, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
@@ -177,6 +198,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 45
     _clip: {fileID: 2765718450884429984, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
     _farClip: {fileID: 3265702829290199805, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
@@ -191,6 +213,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 53
     _clip: {fileID: -5860860446509688480, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
     _farClip: {fileID: 9116687505963100175, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
@@ -205,6 +228,7 @@ MonoBehaviour:
     _anchorForward: 4.3
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 55
     _clip: {fileID: 175821603843020806, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
     _farClip: {fileID: -937744732779735233, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
@@ -219,6 +243,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 43
     _clip: {fileID: -9047077721563891063, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
     _farClip: {fileID: -1042744041745409202, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
@@ -233,6 +258,7 @@ MonoBehaviour:
     _anchorForward: 2.4
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 54
     _clip: {fileID: -280387078422039867, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
     _farClip: {fileID: -4874364901147866896, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
@@ -247,6 +273,7 @@ MonoBehaviour:
     _anchorForward: 4.3
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 44
     _clip: {fileID: -3100113682174470658, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
     _farClip: {fileID: -2805543598781308157, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
@@ -261,3 +288,4 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []

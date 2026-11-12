@@ -330,5 +330,150 @@
     },
     "superseded": "PhaseBreak1/PhaseBreak2 (round 16) are not used by the split design; keep them for a damage stagger or drop them",
     "mechanic": "Splitting: Split at 66%, three shards (runner, flyer, crawler) on three routes, Rejoin at 33% where they are"
+  },
+  "round45_detail": {
+    "parts": {
+      "body_cut_tris": {
+        "Shattered": 0,
+        "Shattered_LOD1": 0
+      },
+      "Eyes": {
+        "object": "Shattered_Eyes",
+        "material": "Shattered_Eyes_Mat",
+        "maps": "Shattered_Eyes_*.png (1024, Low 512)",
+        "tris": 1194,
+        "source_tris": 128084,
+        "uv": {
+          "islands": 10,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 597,
+          "uv_coverage": 0.677,
+          "world_per_uv": 0.798900860089194
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 11.1,
+            "mask": "B"
+          },
+          "membrane": {
+            "map": "Detail_Membrane_Normal.png",
+            "tiling": 8.3,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "membrane"
+        ],
+        "bones": [
+          "Head"
+        ],
+        "note": "compound overcharge eyes (three pairs)",
+        "lod1_object": "Shattered_Eyes_LOD1",
+        "lod1_tris": 340
+      },
+      "Teeth": {
+        "object": "Shattered_Teeth",
+        "material": "Shattered_Teeth_Mat",
+        "maps": "Shattered_Teeth_*.png (1024, Low 512)",
+        "tris": 1100,
+        "source_tris": 40216,
+        "uv": {
+          "islands": 8,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 550,
+          "uv_coverage": 0.51,
+          "world_per_uv": 0.462078451142013
+        },
+        "detail": {
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 5.5,
+            "mask": "B"
+          },
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 6.4,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "crystal",
+          "chitin"
+        ],
+        "bones": [
+          "Head",
+          "Jaw"
+        ],
+        "note": "crystal fangs on the head rim + jaw",
+        "lod1_object": "Shattered_Teeth_LOD1",
+        "lod1_tris": 340
+      },
+      "Claws": {
+        "object": "Shattered_Claws",
+        "material": "Shattered_Claws_Mat",
+        "maps": "Shattered_Claws_*.png (1024, Low 512)",
+        "tris": 1724,
+        "source_tris": 98416,
+        "uv": {
+          "islands": 17,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 11,
+          "mirrored_faces": 796,
+          "uv_coverage": 0.112,
+          "world_per_uv": 2.322966460828572
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 32.3,
+            "mask": "B"
+          },
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 27.7,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "crystal"
+        ],
+        "bones": [
+          "Arm_L1_Lower",
+          "Arm_R1_Lower",
+          "Leg_L1_Lower",
+          "Leg_R1_Lower"
+        ],
+        "note": "fist talons + hind-foot talons",
+        "lod1_object": "Shattered_Claws_LOD1",
+        "lod1_tris": 560
+      }
+    },
+    "tris_before": {
+      "lod0": 24025,
+      "lod1": 9499
+    },
+    "tris_after": {
+      "lod0": 28023,
+      "lod1": 10731
+    },
+    "increase": {
+      "lod0": 0.166,
+      "lod1": 0.13
+    },
+    "extra_objects": [
+      "Shattered_Eyes",
+      "Shattered_Teeth",
+      "Shattered_Claws",
+      "Shattered_Eyes_LOD1",
+      "Shattered_Teeth_LOD1",
+      "Shattered_Claws_LOD1"
+    ],
+    "unity": "extra parts (BlenderArtEntry.ExtraParts): 'Eyes' -> Shattered_Eyes / Shattered_Eyes_LOD1, maps Shattered_Eyes_*.png (+ Low/), 'Teeth' -> Shattered_Teeth / Shattered_Teeth_LOD1, maps Shattered_Teeth_*.png (+ Low/), 'Claws' -> Shattered_Claws / Shattered_Claws_LOD1, maps Shattered_Claws_*.png (+ Low/)",
+    "note": "round 45: detail parts (eyes, teeth, claws); bones, clips and events unchanged"
   }
 }

@@ -49,5 +49,144 @@
     "fbx": "CrystalWarlord_LOD1.fbx",
     "tris": 6000,
     "bones": 16
+  },
+  "round45_detail": {
+    "parts": {
+      "Eyes": {
+        "object": "CrystalWarlord_Eyes",
+        "material": "CrystalWarlord_Eyes_Mat",
+        "maps": "CrystalWarlord_Eyes_*.png (1024, Low 512)",
+        "tris": 796,
+        "source_tris": 60096,
+        "uv": {
+          "islands": 6,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 398,
+          "uv_coverage": 0.706,
+          "world_per_uv": 0.23636997618493885
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 3.3,
+            "mask": "B"
+          },
+          "membrane": {
+            "map": "Detail_Membrane_Normal.png",
+            "tiling": 2.5,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "membrane"
+        ],
+        "bones": [
+          "Head"
+        ],
+        "note": "three amber slit eyes a side under the visor",
+        "lod1_object": "CrystalWarlord_Eyes_LOD1",
+        "lod1_tris": 248
+      },
+      "Teeth": {
+        "object": "CrystalWarlord_Teeth",
+        "material": "CrystalWarlord_Teeth_Mat",
+        "maps": "CrystalWarlord_Teeth_*.png (1024, Low 512)",
+        "tris": 704,
+        "source_tris": 34984,
+        "uv": {
+          "islands": 6,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 352,
+          "uv_coverage": 0.529,
+          "world_per_uv": 0.21176521570359538
+        },
+        "detail": {
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 2.5,
+            "mask": "B"
+          },
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 2.9,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "crystal",
+          "chitin"
+        ],
+        "bones": [
+          "Head",
+          "Jaw"
+        ],
+        "note": "Crysium fangs on snout and jaw",
+        "lod1_object": "CrystalWarlord_Teeth_LOD1",
+        "lod1_tris": 248
+      },
+      "Claws": {
+        "object": "CrystalWarlord_Claws",
+        "material": "CrystalWarlord_Claws_Mat",
+        "maps": "CrystalWarlord_Claws_*.png (1024, Low 512)",
+        "tris": 876,
+        "source_tris": 86048,
+        "uv": {
+          "islands": 4,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 438,
+          "uv_coverage": 0.465,
+          "world_per_uv": 0.4326761881202715
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 6.0,
+            "mask": "B"
+          },
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 5.2,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "crystal"
+        ],
+        "bones": [
+          "Leg_L_Foot",
+          "Leg_R_Foot"
+        ],
+        "note": "toe talons + heel spurs",
+        "lod1_object": "CrystalWarlord_Claws_LOD1",
+        "lod1_tris": 340
+      }
+    },
+    "tris_before": {
+      "lod0": 14000,
+      "lod1": 6000
+    },
+    "tris_after": {
+      "lod0": 16376,
+      "lod1": 6836
+    },
+    "increase": {
+      "lod0": 0.17,
+      "lod1": 0.139
+    },
+    "extra_objects": [
+      "CrystalWarlord_Eyes",
+      "CrystalWarlord_Teeth",
+      "CrystalWarlord_Claws",
+      "CrystalWarlord_Eyes_LOD1",
+      "CrystalWarlord_Teeth_LOD1",
+      "CrystalWarlord_Claws_LOD1"
+    ],
+    "unity": "extra parts (BlenderArtEntry.ExtraParts): 'Eyes' -> CrystalWarlord_Eyes / CrystalWarlord_Eyes_LOD1, maps CrystalWarlord_Eyes_*.png (+ Low/), 'Teeth' -> CrystalWarlord_Teeth / CrystalWarlord_Teeth_LOD1, maps CrystalWarlord_Teeth_*.png (+ Low/), 'Claws' -> CrystalWarlord_Claws / CrystalWarlord_Claws_LOD1, maps CrystalWarlord_Claws_*.png (+ Low/)",
+    "note": "round 45: detail parts (eyes, teeth, claws); bones, clips and events unchanged"
   }
 }

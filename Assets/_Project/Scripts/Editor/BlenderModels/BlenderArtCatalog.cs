@@ -20,6 +20,16 @@ namespace Game.Editor
         public const string CorruptedSkin = "Corrupted";
         public const string CorruptedSuffix = "_Corrupted";
 
+        // A corrupted row's extra parts keep the export's own maps (the baked skins have none for them): their albedo and
+        // glow lean towards the skins' violet (the corrupted bakes average about 0.2/0.1/0.3 albedo and 0.3/0.15/0.45 glow).
+        private static readonly Color CorruptedPartTint = new Color(0.72f, 0.6f, 0.95f);
+        private static readonly Color CorruptedPartGlow = new Color(0.8f, 0.45f, 1f);
+
+        // Round 45 (boss close-up detail pass): the boss-family faces and claws, and the continent bosses' eyes, teeth and
+        // claws, each an object of its own with its own maps (report key round45_detail or r45_detail).
+        private static readonly string[] FaceClaws = { "Face", "Claws" };
+        private static readonly string[] EyesTeethClaws = { "Eyes", "Teeth", "Claws" };
+
         // Exports with a baked corrupted skin under Skins/Corrupted (ArtSource README round 15, Corrupted_skins_report.json).
         private static readonly HashSet<string> CorruptedSkins = new HashSet<string>
         {
@@ -167,6 +177,7 @@ namespace Game.Editor
                 new BlenderArtEntry("Bat_Frost", "Bat", "Frost") { BodyCentrePivot = true, Clips = bat },
                 new BlenderArtEntry("Queen", "Queen")
                 {
+                    ExtraParts = FaceClaws,
                     // Round 2 grew her far past the old queen (2.8 high in model units): at the boss factor she covered a
                     // quarter of the screen, so she gets her own (imp1_d_1).
                     Scale = 0.33f,
@@ -175,22 +186,26 @@ namespace Game.Editor
                 },
                 new BlenderArtEntry("BroodMother", "BroodMother")
                 {
+                    ExtraParts = FaceClaws,
                     Scale = BossFactor,
                     Clips = new[] { new BlenderClipSpec("Spawn", ModelClipRole.Power, 40, "Spawn", "Vent") },
                 },
                 new BlenderArtEntry("PackAlpha", "PackAlpha")
                 {
+                    ExtraParts = FaceClaws,
                     Scale = BossFactor,
                     Clips = new[] { new BlenderClipSpec("Howl", ModelClipRole.Power, 22, "Rally") },
                 },
                 new BlenderArtEntry("CoreWisp", "CoreWisp")
                 {
+                    ExtraParts = new[] { "Eyes", "Barbs", "Claws" },
                     Scale = BossFactor,
                     Bleeds = false,
                     Clips = new[] { new BlenderClipSpec("Pulse", ModelClipRole.Power, 14, "Pulse") },
                 },
                 new BlenderArtEntry("AcidEmpress", "AcidEmpress")
                 {
+                    ExtraParts = FaceClaws,
                     Scale = BossFactor,
                     Clips = new[]
                     {
@@ -200,6 +215,7 @@ namespace Game.Editor
                 },
                 new BlenderArtEntry("CrystalWarlord", "CrystalWarlord")
                 {
+                    ExtraParts = EyesTeethClaws,
                     Scale = BossFactor,
                     Clips = new[]
                     {
@@ -209,6 +225,7 @@ namespace Game.Editor
                 },
                 new BlenderArtEntry("SlimeMonarch", "SlimeMonarch")
                 {
+                    ExtraParts = new[] { "Face" },
                     Scale = BossFactor,
                     Clips = new[]
                     {
@@ -220,6 +237,7 @@ namespace Game.Editor
                 },
                 new BlenderArtEntry("RollerKing", "RollerKing")
                 {
+                    ExtraParts = FaceClaws,
                     Scale = BossFactor,
                     Clips = new[] { new BlenderClipSpec("Quake", ModelClipRole.Power, 16, "Pulse") },
                 },
@@ -227,6 +245,7 @@ namespace Game.Editor
                 // 0.7 keeps the model at the size it was built for (0.84). Its tail lens throws her element storm.
                 new BlenderArtEntry("BatBoss", "SkySovereign")
                 {
+                    ExtraParts = FaceClaws,
                     Scale = 0.7f,
                     BodyCentrePivot = true,
                     Clips = new[]
@@ -239,6 +258,7 @@ namespace Game.Editor
                 // 0.514 keeps the model at its built size (0.72). Its tail laser has no clip of its own; the beam is VFX.
                 new BlenderArtEntry("RayBoss", "StormMatriarch")
                 {
+                    ExtraParts = FaceClaws,
                     Scale = 0.514f,
                     BodyCentrePivot = true,
                 },
@@ -273,8 +293,9 @@ namespace Game.Editor
                     Scale = TitanFactor,
                     SecondMaterial = "Crystal",
                     // Round 38: the worm gullet with its rows of teeth is an object of its own (Gravemaw_Maw and _LOD1)
-                    // with its own maps, so the throat does not wear the body's skin.
-                    ExtraParts = new[] { "Maw" },
+                    // with its own maps, so the throat does not wear the body's skin. Round 45 adds the sensor crown's
+                    // eyes and the talons and spurs.
+                    ExtraParts = new[] { "Maw", "Eyes", "Claws" },
                     Clips = new[]
                     {
                         new BlenderClipSpec("Roar", ModelClipRole.Roar, 12),
@@ -298,6 +319,7 @@ namespace Game.Editor
                 },
                 new BlenderArtEntry("CinderMatriarch", "CinderMatriarch")
                 {
+                    ExtraParts = EyesTeethClaws,
                     Scale = TitanFactor,
                     SecondMaterial = "Crystal",
                     Embers = true,
@@ -342,7 +364,8 @@ namespace Game.Editor
                     // kept); the cold rim and a faint glow (emission x 2, README round 30) stay.
                     Ice = new IceLook { FlatColour = false, Tint = Color.white, Glow = Color.white, GlowStrength = 2f },
                     // Round 28: the ice armour is an object of its own with its own maps (FrostWarden_IceArmour_*).
-                    ExtraParts = new[] { "IceArmour" },
+                    ExtraParts = new[] { "IceArmour", "Eyes", "Teeth", "Claws" },
+                    IceParts = new[] { "IceArmour" },
                     Clips = new[]
                     {
                         new BlenderClipSpec("FreezePulse", ModelClipRole.Power, 30, "Pulse"),
@@ -361,6 +384,7 @@ namespace Game.Editor
                 },
                 new BlenderArtEntry("Rotbloom", "Rotbloom")
                 {
+                    ExtraParts = EyesTeethClaws,
                     Scale = TitanFactor,
                     SecondMaterial = "Bloom",
                     Clips = new[]
@@ -393,6 +417,7 @@ namespace Game.Editor
                 new BlenderArtEntry("RotbloomRoots", "RotbloomRoots") { Scale = TitanFactor },
                 new BlenderArtEntry("Shattered", "Shattered")
                 {
+                    ExtraParts = EyesTeethClaws,
                     Scale = TitanFactor,
                     SecondMaterial = "Crystal",
                     // The crystals burst at frame 46 and are gone by 54: the glow dies with them.
@@ -420,6 +445,7 @@ namespace Game.Editor
                 new BlenderArtEntry("ShardCrawler", "ShardCrawler") { Scale = TitanFactor, Clips = Shard },
                 new BlenderArtEntry("SealedOne", "SealedOne")
                 {
+                    ExtraParts = EyesTeethClaws,
                     Scale = TitanFactor,
                     SecondMaterial = "Seal",
                     // Round 28: its glow per phase and the white release, swapped at the Release clip's white frame.
@@ -460,7 +486,10 @@ namespace Game.Editor
                 BlenderArtEntry row = rows[i];
                 if (row.Skin == null && row.SecondMaterial == null && CorruptedSkins.Contains(row.Asset))
                 {
-                    rows.Add(row.WithSkin(row.Id + CorruptedSuffix, CorruptedSkin));
+                    BlenderArtEntry corrupted = row.WithSkin(row.Id + CorruptedSuffix, CorruptedSkin);
+                    corrupted.PartTint = CorruptedPartTint;
+                    corrupted.PartGlowTint = CorruptedPartGlow;
+                    rows.Add(corrupted);
                 }
             }
         }

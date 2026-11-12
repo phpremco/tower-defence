@@ -198,16 +198,31 @@ namespace Game.Editor
                 entry.Ice?.Apply(lowSecond);
             }
 
-            // Extra parts (an ice armour) wear their own maps with the second slot's detail families.
+            // Extra parts (an ice armour, eyes, teeth, claws) wear their own maps: the detail families the round-45 pass
+            // lists for the part, else the second slot's. A baked skin has no maps for them, so they keep the export's own
+            // and take the row's tint instead.
             var parts = new List<ModelPart>(entry.ExtraParts.Length);
             foreach (string part in entry.ExtraParts)
             {
-                string prefix = $"{entry.MapPrefix}_{part}";
-                List<BlenderReport.Detail> partDetails = DetailsOfPart(details, 1);
-                Material partHigh = BuildMaterial(entry, prefix, partDetails, maps, $"{entry.Id}_{part}", false);
-                Material partLow = BuildMaterial(entry, prefix, partDetails, $"{maps}/{BlenderSync.LowFolder}", $"{entry.Id}_{part}_Low", true);
-                entry.Ice?.Apply(partHigh);
-                entry.Ice?.Apply(partLow);
+                string prefix = $"{entry.Asset}_{part}";
+                List<BlenderReport.Detail> partDetails = report.PartDetails(part);
+                if (partDetails.Count == 0)
+                {
+                    partDetails = DetailsOfPart(details, 1);
+                }
+
+                Material partHigh = BuildMaterial(entry, prefix, partDetails, folder, $"{entry.Id}_{part}", false);
+                Material partLow = BuildMaterial(entry, prefix, partDetails, $"{folder}/{BlenderSync.LowFolder}", $"{entry.Id}_{part}_Low", true);
+                foreach (Material material in new[] { partHigh, partLow })
+                {
+                    if (System.Array.IndexOf(entry.IceParts, part) >= 0)
+                    {
+                        entry.Ice?.Apply(material);
+                    }
+
+                    TintPart(material, entry);
+                }
+
                 parts.Add(new ModelPart($"{entry.Asset}_{part}", partHigh, partLow));
             }
 
@@ -497,6 +512,17 @@ namespace Game.Editor
             SetDetails(material, details, entry, low);
             EditorUtility.SetDirty(material);
             return material;
+        }
+
+        private static void TintPart(Material material, BlenderArtEntry entry)
+        {
+            if (entry.PartTint == Color.white && entry.PartGlowTint == Color.white)
+            {
+                return;
+            }
+
+            material.SetColor("_BaseColor", material.GetColor("_BaseColor") * entry.PartTint);
+            material.SetColor("_EmissionColor", material.GetColor("_EmissionColor") * entry.PartGlowTint);
         }
 
         // The mask's B channel says where the first family's detail normal goes, A the second; Low keeps only the first.

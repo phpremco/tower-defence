@@ -18,7 +18,19 @@ MonoBehaviour:
   _lowMaterial: {fileID: 2100000, guid: 5598a66cea8bde14cb2abf9eb1995eff, type: 2}
   _secondMaterial: {fileID: 2100000, guid: a326432fa6c05704f9be3a7f2d325a5e, type: 2}
   _lowSecondMaterial: {fileID: 2100000, guid: d89587e9168e7064f9ad726542c266e3, type: 2}
-  _parts: []
+  _parts:
+  - _object: Rotbloom_Eyes
+    _material: {fileID: 2100000, guid: 1619455b3f4454f4cbeb74f1f69349fe, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 54c6a565fee967b4c9eb11fe0c545ed5, type: 2}
+    _castShadows: 1
+  - _object: Rotbloom_Teeth
+    _material: {fileID: 2100000, guid: a1b1be41056fd0a43821266a3bd74b0f, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 3e57087aa97db3d47ad523929ac76433, type: 2}
+    _castShadows: 1
+  - _object: Rotbloom_Claws
+    _material: {fileID: 2100000, guid: fd9e0b475bfc6b94e9123d0c29d13a2b, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 06240325ace630d45bb650cccd34bb3f, type: 2}
+    _castShadows: 1
   _scale: 1
   _yaw: 180
   _bodyCentrePivot: 0
@@ -47,6 +59,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 0
     _clip: {fileID: -7982505021680881530, guid: a33e6705369e94f44a6eee362e871011, type: 3}
     _farClip: {fileID: 456191623114596097, guid: b69a67efc79af8a44a06c8b2a7cc6dbe, type: 3}
@@ -61,6 +74,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 3
     _clip: {fileID: 8615489210495274691, guid: a33e6705369e94f44a6eee362e871011, type: 3}
     _farClip: {fileID: -5785152643933079556, guid: b69a67efc79af8a44a06c8b2a7cc6dbe, type: 3}
@@ -75,6 +89,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 2
     _clip: {fileID: -1721837455892767638, guid: a33e6705369e94f44a6eee362e871011, type: 3}
     _farClip: {fileID: -2356411384503425367, guid: b69a67efc79af8a44a06c8b2a7cc6dbe, type: 3}
@@ -89,6 +104,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 1
     _clip: {fileID: -5364217175095792471, guid: a33e6705369e94f44a6eee362e871011, type: 3}
     _farClip: {fileID: -7998077805867467691, guid: b69a67efc79af8a44a06c8b2a7cc6dbe, type: 3}
@@ -103,6 +119,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 5
     _clip: {fileID: 6889513572818201465, guid: a33e6705369e94f44a6eee362e871011, type: 3}
     _farClip: {fileID: 9193869021000864701, guid: b69a67efc79af8a44a06c8b2a7cc6dbe, type: 3}
@@ -117,6 +134,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 44
     _clip: {fileID: -7242951995408554331, guid: a33e6705369e94f44a6eee362e871011, type: 3}
     _farClip: {fileID: -5413953480639285232, guid: b69a67efc79af8a44a06c8b2a7cc6dbe, type: 3}
@@ -131,6 +149,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 33
     _clip: {fileID: 3589491330485710489, guid: a33e6705369e94f44a6eee362e871011, type: 3}
     _farClip: {fileID: -3609413182659532093, guid: b69a67efc79af8a44a06c8b2a7cc6dbe, type: 3}
@@ -145,6 +164,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 58
     _clip: {fileID: -8901710003314240403, guid: a33e6705369e94f44a6eee362e871011, type: 3}
     _farClip: {fileID: -2736544963984933562, guid: b69a67efc79af8a44a06c8b2a7cc6dbe, type: 3}
@@ -159,6 +179,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 59
     _clip: {fileID: -6304874923206136003, guid: a33e6705369e94f44a6eee362e871011, type: 3}
     _farClip: {fileID: -1309523799246856491, guid: b69a67efc79af8a44a06c8b2a7cc6dbe, type: 3}
@@ -173,6 +194,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 46
     _clip: {fileID: 5384722697667564293, guid: a33e6705369e94f44a6eee362e871011, type: 3}
     _farClip: {fileID: 2213817332529297089, guid: b69a67efc79af8a44a06c8b2a7cc6dbe, type: 3}
@@ -187,6 +209,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 45
     _clip: {fileID: -3014510587833470051, guid: a33e6705369e94f44a6eee362e871011, type: 3}
     _farClip: {fileID: 1347970989965584598, guid: b69a67efc79af8a44a06c8b2a7cc6dbe, type: 3}
@@ -201,6 +224,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 43
     _clip: {fileID: -4925937840979620695, guid: a33e6705369e94f44a6eee362e871011, type: 3}
     _farClip: {fileID: 3994047012157485286, guid: b69a67efc79af8a44a06c8b2a7cc6dbe, type: 3}
@@ -215,6 +239,7 @@ MonoBehaviour:
     _anchorForward: 1.6
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 42
     _clip: {fileID: -6898415773943413433, guid: a33e6705369e94f44a6eee362e871011, type: 3}
     _farClip: {fileID: -7227515556848358245, guid: b69a67efc79af8a44a06c8b2a7cc6dbe, type: 3}
@@ -229,6 +254,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 57
     _clip: {fileID: 8098795945028285194, guid: a33e6705369e94f44a6eee362e871011, type: 3}
     _farClip: {fileID: -369904356501892355, guid: b69a67efc79af8a44a06c8b2a7cc6dbe, type: 3}
@@ -243,6 +269,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 41
     _clip: {fileID: -3635229351336171216, guid: a33e6705369e94f44a6eee362e871011, type: 3}
     _farClip: {fileID: 4778308667086578833, guid: b69a67efc79af8a44a06c8b2a7cc6dbe, type: 3}
@@ -257,3 +284,4 @@ MonoBehaviour:
     _anchorForward: 1.6
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []

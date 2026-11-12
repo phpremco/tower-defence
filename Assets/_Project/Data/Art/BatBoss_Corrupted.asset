@@ -18,7 +18,15 @@ MonoBehaviour:
   _lowMaterial: {fileID: 2100000, guid: 853cf42194af96f4f98260a95f0a44cf, type: 2}
   _secondMaterial: {fileID: 0}
   _lowSecondMaterial: {fileID: 0}
-  _parts: []
+  _parts:
+  - _object: SkySovereign_Face
+    _material: {fileID: 2100000, guid: 2fd83b1dcbcf5ff44ad02ae331e28f7d, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: e3dea294e3dbb6e4ead127beacaad664, type: 2}
+    _castShadows: 1
+  - _object: SkySovereign_Claws
+    _material: {fileID: 2100000, guid: c5a403e46a5c3924d8518026e973eda6, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: ae7588a6b43efdb47b5117d60a487677, type: 2}
+    _castShadows: 1
   _scale: 0.7
   _yaw: 180
   _bodyCentrePivot: 1
@@ -47,6 +55,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 1
     _clip: {fileID: -4085197043133261971, guid: 3d29d61e46b3b1149813cfc0ef947391, type: 3}
     _farClip: {fileID: -3860357504389810779, guid: 8061ad71b21086e4290748858763b5f1, type: 3}
@@ -61,6 +70,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 2
     _clip: {fileID: -2403234564741649208, guid: 3d29d61e46b3b1149813cfc0ef947391, type: 3}
     _farClip: {fileID: 6390996354452940028, guid: 8061ad71b21086e4290748858763b5f1, type: 3}
@@ -75,6 +85,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 0
     _clip: {fileID: 4474009988131577337, guid: 3d29d61e46b3b1149813cfc0ef947391, type: 3}
     _farClip: {fileID: -8801139183825548988, guid: 8061ad71b21086e4290748858763b5f1, type: 3}
@@ -89,6 +100,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 5
     _clip: {fileID: -7342085077158882582, guid: 3d29d61e46b3b1149813cfc0ef947391, type: 3}
     _farClip: {fileID: 5079571957271334374, guid: 8061ad71b21086e4290748858763b5f1, type: 3}
@@ -103,3 +115,4 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []

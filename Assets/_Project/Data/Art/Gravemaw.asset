@@ -23,6 +23,14 @@ MonoBehaviour:
     _material: {fileID: 2100000, guid: 00b07249598d7944b90d2f92ed8489d8, type: 2}
     _lowMaterial: {fileID: 2100000, guid: 7f9aee488af926e4fb5d38e1c3610c41, type: 2}
     _castShadows: 1
+  - _object: Gravemaw_Eyes
+    _material: {fileID: 2100000, guid: ff598b2e8ca272e4f8ae6efb84b47e2a, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: bc0500b6b1d331f419833fe9201f98fa, type: 2}
+    _castShadows: 1
+  - _object: Gravemaw_Claws
+    _material: {fileID: 2100000, guid: 46a329fc010d18d4badef7d53e89bbd2, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: dc39c02c179fb3347a966ffcec90eb2e, type: 2}
+    _castShadows: 1
   _scale: 1
   _yaw: 180
   _bodyCentrePivot: 0
@@ -51,6 +59,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 3
     _clip: {fileID: 2215436944728006707, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: 7756851967789318436, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -65,6 +74,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 30
     _clip: {fileID: -6282986219945304355, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: 7253844863377599155, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -79,6 +89,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 31
     _clip: {fileID: -3810119233213161667, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: -6495378496372525997, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -93,6 +104,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 2
     _clip: {fileID: -3099845778532138703, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: -8122783248091641428, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -107,6 +119,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 1
     _clip: {fileID: -5641691647197513272, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: -5679139904454786891, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -121,6 +134,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 33
     _clip: {fileID: 6665308742224719874, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: -3192806629872065264, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -135,6 +149,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 48
     _clip: {fileID: -1032477371199450664, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: -989563930711860087, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -149,6 +164,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 47
     _clip: {fileID: -1146774162590279671, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: 8395009992883252748, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -163,6 +179,7 @@ MonoBehaviour:
     _anchorForward: 2.95
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 41
     _clip: {fileID: -7018485856672097095, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: -1946604050337124738, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -177,6 +194,7 @@ MonoBehaviour:
     _anchorForward: 3.2
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 49
     _clip: {fileID: 1568301684929528022, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: -2976333996737675165, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -191,6 +209,7 @@ MonoBehaviour:
     _anchorForward: 1
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 42
     _clip: {fileID: 3075002066273936259, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: 160384708513673250, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -205,6 +224,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 46
     _clip: {fileID: -5272215725492338635, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: -7322980882625939862, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -219,6 +239,7 @@ MonoBehaviour:
     _anchorForward: 3.4
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 44
     _clip: {fileID: 4358572351763517641, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: 6264943153885437954, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -233,6 +254,7 @@ MonoBehaviour:
     _anchorForward: 3.2
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 45
     _clip: {fileID: 1559952706516876181, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: -778241031568870381, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -247,6 +269,7 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 43
     _clip: {fileID: -1954360669191746207, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: -6671146712970356549, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -261,6 +284,7 @@ MonoBehaviour:
     _anchorForward: 3.2
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
   - _role: 65
     _clip: {fileID: 8235229121971994856, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: 4563319841087513085, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -445,6 +469,7 @@ MonoBehaviour:
     - 0.221
     - 0.212
     - 0.208
+    _footfallSeconds: []
   - _role: 66
     _clip: {fileID: 9180603691884475213, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: -8383523084219420884, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -558,6 +583,7 @@ MonoBehaviour:
     - 0.208
     - 0.208
     - 0.208
+    _footfallSeconds: []
   - _role: 67
     _clip: {fileID: 6666833507864175190, guid: 5bfeda831ee932948947b12a9fccfca2, type: 3}
     _farClip: {fileID: -5287415425966772626, guid: aa2e8edd942ab994b9446583e42ddea2, type: 3}
@@ -724,3 +750,4 @@ MonoBehaviour:
     - 0
     - 0
     - 0
+    _footfallSeconds: []

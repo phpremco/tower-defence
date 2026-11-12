@@ -52,5 +52,63 @@
     "fbx": "RollerKing_LOD1.fbx",
     "tris": 5997,
     "bones": 14
+  },
+  "r45_detail": {
+    "parts": {
+      "Face": {
+        "object": "RollerKing_Face",
+        "material": "RollerKing_Face_Mat",
+        "maps": "RollerKing_Face_*.png (1024, Low 512)",
+        "tris": 1676,
+        "lod1_object": "RollerKing_Face_LOD1",
+        "lod1_tris": 560,
+        "source_tris": 58552,
+        "uv": {
+          "islands": 35,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 838,
+          "uv_coverage": 0.66,
+          "world_per_uv": 0.28266403940635393
+        },
+        "symmetry_error": 0.007379
+      },
+      "Claws": {
+        "object": "RollerKing_Claws",
+        "material": "RollerKing_Claws_Mat",
+        "maps": "RollerKing_Claws_*.png (1024, Low 512)",
+        "tris": 966,
+        "lod1_object": "RollerKing_Claws_LOD1",
+        "lod1_tris": 318,
+        "source_tris": 98720,
+        "uv": {
+          "islands": 7,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 469,
+          "uv_coverage": 0.714,
+          "world_per_uv": 0.3569763077823724
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 13835,
+    "extra_tris": 2642,
+    "extra_share": 0.191,
+    "body_lod1_tris": 5997,
+    "extra_lod1_tris": 878,
+    "extra_lod1_share": 0.146,
+    "clips": [
+      "Curl",
+      "Death",
+      "Hit",
+      "Idle",
+      "Quake",
+      "Roll",
+      "Uncurl",
+      "Walk"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects RollerKing_<Part> (+ _LOD1 in RollerKing_LOD1.fbx), maps RollerKing_<Part>_*.png (+ Low/)",
+    "note": "round 45: pit eyes, mandible saw teeth, throat tooth arc, digging claws; bones, clips and events unchanged"
   }
 }

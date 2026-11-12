@@ -274,5 +274,150 @@
     },
     "foot_markers": "IK_Arm_L/R at the knuckle contacts, IK_Leg_L/R at the hind toes (deform flag on, no weights)",
     "mechanic": "Gate Breaker: Freeze_Gate (breath), Climb_Up onto the frozen gate (it sags), Shatter_Through (fists smash down through it); ice armour soaks damage until Armour_Break (below 40% or a Lava Ball)"
+  },
+  "round45_detail": {
+    "parts": {
+      "body_cut_tris": {
+        "FrostWarden": 140,
+        "FrostWarden_LOD1": 60
+      },
+      "Eyes": {
+        "object": "FrostWarden_Eyes",
+        "material": "FrostWarden_Eyes_Mat",
+        "maps": "FrostWarden_Eyes_*.png (1024, Low 512)",
+        "tris": 1196,
+        "source_tris": 155784,
+        "uv": {
+          "islands": 8,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 598,
+          "uv_coverage": 0.561,
+          "world_per_uv": 0.9742346059083755
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 13.5,
+            "mask": "B"
+          },
+          "membrane": {
+            "map": "Detail_Membrane_Normal.png",
+            "tiling": 10.1,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "membrane"
+        ],
+        "bones": [
+          "Head"
+        ],
+        "note": "three amber cross-pupil eyes + side pair",
+        "lod1_object": "FrostWarden_Eyes_LOD1",
+        "lod1_tris": 338
+      },
+      "Teeth": {
+        "object": "FrostWarden_Teeth",
+        "material": "FrostWarden_Teeth_Mat",
+        "maps": "FrostWarden_Teeth_*.png (1024, Low 512)",
+        "tris": 1100,
+        "source_tris": 49572,
+        "uv": {
+          "islands": 5,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 550,
+          "uv_coverage": 0.516,
+          "world_per_uv": 0.5125597020575678
+        },
+        "detail": {
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 6.1,
+            "mask": "B"
+          },
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 7.1,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "crystal",
+          "chitin"
+        ],
+        "bones": [
+          "Head",
+          "Jaw"
+        ],
+        "note": "ice fangs in the maw",
+        "lod1_object": "FrostWarden_Teeth_LOD1",
+        "lod1_tris": 340
+      },
+      "Claws": {
+        "object": "FrostWarden_Claws",
+        "material": "FrostWarden_Claws_Mat",
+        "maps": "FrostWarden_Claws_*.png (1024, Low 512)",
+        "tris": 1752,
+        "source_tris": 138096,
+        "uv": {
+          "islands": 13,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 839,
+          "uv_coverage": 0.466,
+          "world_per_uv": 1.3404038462039563
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 18.6,
+            "mask": "B"
+          },
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 16.0,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "crystal"
+        ],
+        "bones": [
+          "Arm_L_Fist",
+          "Arm_R_Fist",
+          "Leg_L_Foot",
+          "Leg_R_Foot"
+        ],
+        "note": "fist talons + toe talons",
+        "lod1_object": "FrostWarden_Claws_LOD1",
+        "lod1_tris": 560
+      }
+    },
+    "tris_before": {
+      "lod0": 27783,
+      "lod1": 11200
+    },
+    "tris_after": {
+      "lod0": 31691,
+      "lod1": 12378
+    },
+    "increase": {
+      "lod0": 0.146,
+      "lod1": 0.111
+    },
+    "extra_objects": [
+      "FrostWarden_Eyes",
+      "FrostWarden_Teeth",
+      "FrostWarden_Claws",
+      "FrostWarden_Eyes_LOD1",
+      "FrostWarden_Teeth_LOD1",
+      "FrostWarden_Claws_LOD1"
+    ],
+    "unity": "extra parts (BlenderArtEntry.ExtraParts): 'Eyes' -> FrostWarden_Eyes / FrostWarden_Eyes_LOD1, maps FrostWarden_Eyes_*.png (+ Low/), 'Teeth' -> FrostWarden_Teeth / FrostWarden_Teeth_LOD1, maps FrostWarden_Teeth_*.png (+ Low/), 'Claws' -> FrostWarden_Claws / FrostWarden_Claws_LOD1, maps FrostWarden_Claws_*.png (+ Low/)",
+    "note": "round 45: detail parts (eyes, teeth, claws); bones, clips and events unchanged"
   }
 }

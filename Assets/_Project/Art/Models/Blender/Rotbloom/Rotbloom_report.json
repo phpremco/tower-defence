@@ -241,5 +241,158 @@
       "RotbloomRoots": "../RotbloomRoots/RotbloomRoots.fbx"
     },
     "mechanic": "Overgrowth: Spore_Volley at up to 3 pads every 12 s (RotSporePod, then RotOvergrowth on the pad); phases Rooted_Idle -> Uproot -> Crawl; RotbloomRoots announce it"
+  },
+  "round45_detail": {
+    "parts": {
+      "body_cut_tris": {
+        "Rotbloom": 0,
+        "Rotbloom_LOD1": 0
+      },
+      "Eyes": {
+        "object": "Rotbloom_Eyes",
+        "material": "Rotbloom_Eyes_Mat",
+        "maps": "Rotbloom_Eyes_*.png (1024, Low 512)",
+        "tris": 1200,
+        "source_tris": 100144,
+        "uv": {
+          "islands": 10,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 600,
+          "uv_coverage": 0.626,
+          "world_per_uv": 0.7288938713384759
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 10.1,
+            "mask": "B"
+          },
+          "membrane": {
+            "map": "Detail_Membrane_Normal.png",
+            "tiling": 7.6,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "membrane"
+        ],
+        "bones": [
+          "Head"
+        ],
+        "note": "amber ringed eyes over the old dots + a spider cluster of three",
+        "lod1_object": "Rotbloom_Eyes_LOD1",
+        "lod1_tris": 340
+      },
+      "Teeth": {
+        "object": "Rotbloom_Teeth",
+        "material": "Rotbloom_Teeth_Mat",
+        "maps": "Rotbloom_Teeth_*.png (1024, Low 512)",
+        "tris": 1058,
+        "source_tris": 66540,
+        "uv": {
+          "islands": 9,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 529,
+          "uv_coverage": 0.639,
+          "world_per_uv": 0.5277765596592582
+        },
+        "detail": {
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 6.3,
+            "mask": "B"
+          },
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 7.3,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "crystal",
+          "chitin"
+        ],
+        "bones": [
+          "Head",
+          "Jaw"
+        ],
+        "note": "thorn teeth over the lime maw + on the shovel jaw",
+        "lod1_object": "Rotbloom_Teeth_LOD1",
+        "lod1_tris": 340
+      },
+      "Claws": {
+        "object": "Rotbloom_Claws",
+        "material": "Rotbloom_Claws_Mat",
+        "maps": "Rotbloom_Claws_*.png (1024, Low 512)",
+        "tris": 1700,
+        "source_tris": 94844,
+        "uv": {
+          "islands": 15,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 826,
+          "uv_coverage": 0.594,
+          "world_per_uv": 0.9594695017772584
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 13.3,
+            "mask": "B"
+          },
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 11.4,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "crystal"
+        ],
+        "bones": [
+          "Leg_L1_Lower",
+          "Leg_L1_Upper",
+          "Leg_L2_Lower",
+          "Leg_L2_Upper",
+          "Leg_L3_Lower",
+          "Leg_L3_Upper",
+          "Leg_R1_Lower",
+          "Leg_R1_Upper",
+          "Leg_R2_Lower",
+          "Leg_R2_Upper",
+          "Leg_R3_Lower",
+          "Leg_R3_Upper"
+        ],
+        "note": "root talons + knee spurs",
+        "lod1_object": "Rotbloom_Claws_LOD1",
+        "lod1_tris": 558
+      }
+    },
+    "tris_before": {
+      "lod0": 23968,
+      "lod1": 9498
+    },
+    "tris_after": {
+      "lod0": 27850,
+      "lod1": 10690
+    },
+    "increase": {
+      "lod0": 0.162,
+      "lod1": 0.126
+    },
+    "extra_objects": [
+      "Rotbloom_Eyes",
+      "Rotbloom_Teeth",
+      "Rotbloom_Claws",
+      "Rotbloom_Eyes_LOD1",
+      "Rotbloom_Teeth_LOD1",
+      "Rotbloom_Claws_LOD1"
+    ],
+    "unity": "extra parts (BlenderArtEntry.ExtraParts): 'Eyes' -> Rotbloom_Eyes / Rotbloom_Eyes_LOD1, maps Rotbloom_Eyes_*.png (+ Low/), 'Teeth' -> Rotbloom_Teeth / Rotbloom_Teeth_LOD1, maps Rotbloom_Teeth_*.png (+ Low/), 'Claws' -> Rotbloom_Claws / Rotbloom_Claws_LOD1, maps Rotbloom_Claws_*.png (+ Low/)",
+    "note": "round 45: detail parts (eyes, teeth, claws); bones, clips and events unchanged"
   }
 }

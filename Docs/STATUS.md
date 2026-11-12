@@ -6274,3 +6274,64 @@ filled with `threat_burrow_close_01..03`, gain 0.55) and `Cutscene_Opening.asset
 - **Played run** (`OUT=Logs/r45a HOLD=8 r43_play.sh`, plus `Tools/PlayTest/r45a_burrow_probe.cs` polled): all shots into the first
   level, console 0 errors, 0 warnings. Probe at handoff t=5.82: all three burrow files playing, slams due at swarm clock
   53.98/54.40/54.86 against closes 54.02/54.47/54.92 (within 0.06 s, the probe's frame lag). Save MD5 2eca347e before and after.
+
+## Round 45: boss close-up detail (2026-11-12)
+
+Not committed (the curator commits). No balance data touched. Save `progress.json` was **2eca347e** at the start; copied aside before
+each Play Mode run and back to 2eca347e after every run (one run's script ended early because I edited it while it ran; the save was
+restored by hand from the copy and verified). Only the sixteen boss exports were synced: the small species a Blender agent is
+exporting (round 46, `Skitter`, `Cragback`, ...) are untouched in `Assets`.
+
+### 1. Import (`Tools/PlayTest/Scripts/ApplyBossDetail45.cs`, `BlenderArtBuilder.RebuildOnly` for the 16 exports' rows)
+
+- `BlenderArtCatalog` `ExtraParts`: Face + Claws on Queen, BroodMother, AcidEmpress, PackAlpha, RollerKing, BatBoss (export
+  SkySovereign), RayBoss (export StormMatriarch); Face on SlimeMonarch; Eyes + Teeth + Claws on CinderMatriarch, FrostWarden (after
+  its IceArmour), Rotbloom, Shattered, SealedOne, CrystalWarlord; Eyes + Barbs + Claws on CoreWisp; Gravemaw Maw + Eyes + Claws.
+  26 rows rebuilt (the 16 plus the ten corrupted skins of the same exports); 16 enemies point at them as before.
+- Every part has `<Id>_<Part>.mat` and `_Low.mat` (1024 maps, Low 512) and a renderer in the near model and the far one (Queen has
+  no LOD1 at all). Imported tris match the reports (e.g. Gravemaw eyes 1002/300, claws 1634/518; Queen face 1828, claws 900).
+- `Data/Art/*.asset`: only `_parts` (plus the empty `_footfallSeconds` the round-44 field serialises) and `_height` (parts add up
+  to 1 cm to the health bar height). Body materials, Gravemaw's maw material and every other creature byte-identical.
+- Builder fixes: (a) `BlenderReport.Details()` stops at the report's detail-pass block (`round45_detail`, `r45_detail`, any
+  `(round|r)N_detail`), otherwise the parts' detail families overwrote the body's tiling on one-material bosses (CoreWisp);
+  (b) parts take their own detail families from that block (`BlenderReport.PartDetails`), else the second slot's as before;
+  (c) the Frost Warden's ice look now goes only on `IceParts` (`IceArmour`), not on its new eyes, teeth and claws;
+  (d) `WithSkin` keeps `ExtraParts` (and the ice), so a corrupted row dresses the parts instead of stretching its body skin over them.
+
+### 2. Eyes
+
+Mask G gives the corneas ~0.95 smoothness (`_Smoothness` 1 x mask); emission stays the row's 2.5 x the eye maps (p99 0.5-0.85).
+In game lighting (UnitLit rim, bloom, 44 degree camera) no eye blows out: they read as small lit amber/green/teal discs with a wet
+highlight (Frost Warden's cross pupils, Brood Mother's green cluster, Acid Empress's pink-crossed lenses). No per-part tuning added.
+The Core Wisp's great eye is the brightest (white with a dark iris in its white-blue body) but keeps its pupil.
+
+### 3. Corrupted skins
+
+The baked `Skins/Corrupted` maps cover the body only. The parts keep the export's own maps, tinted towards the skins' violet in data:
+`BlenderArtCatalog.CorruptedPartTint` (0.72, 0.6, 0.95) on albedo and `CorruptedPartGlow` (0.8, 0.45, 1) on the glow colour
+(`BlenderArtEntry.PartTint`/`PartGlowTint`). No enemy wears a corrupted row yet, so this was not shot in game.
+
+### 4. Sealed One phase looks
+
+`CreatureModel.SetEmissionSet` swaps maps on the body and seal slots only (index < 2); the parts keep their own maps and follow the
+phase strength (eyes brighten with the breaking seal, x1.73 at Release). Checked by the new play-dressing test.
+
+### 5. Tests and checks
+
+- `CreatureArtTests.EveryBossExtraPart_WearsItsOwnMaterial_InBothLodsAndProfiles` (replaces the Gravemaw maw test; every catalog row
+  with parts: order, own albedo `<Asset>_<Part>_Albedo`, Low from `Low/`, mask on, own Low material, a renderer in each LOD) and
+  `EveryBossExtraPart_IsDressedInPlay_AndKeepsItsMapsThroughPhaseLooks` (`CreatureModel.Create`, High and Low, every emission set).
+  `BossSignatureTests` now asks for the ice armour as the Warden's first part (it has four parts now).
+- EditMode suite on w6: **804 tests, 752 passed, 52 skipped, 0 failed** (was 803; one test replaced, one added). Recompile: 0 errors, 0 warnings.
+- Stills, 1920x1080, play camera close-up, boss turned to the camera (`Tools/PlayTest/r45_boss_shots.sh`, level C1_01, no waves):
+  `ArtSource/Previews/QA/r45_ingame_<Enemy>.png` for HiveQueen, BroodMother, AcidEmpress, PackAlpha, RollerKing (posed in Idle,
+  it rolls curled), StormMatriarch, SkySovereign, SlimeMonarch, CrystalWarlord, CoreWisp, CinderMatriarch, FrostWarden, Rotbloom,
+  Shattered, SealedOne, Gravemaw (surfacing at the base, maw open). Every run: console 0 errors, 0 warnings. No floating parts seen.
+- Played Gravemaw arena (`r38_gravemaw_shots.sh`, Level_C1_03): surfaced, roared, burrowed on; renderer probe shows
+  `Gravemaw_Eyes`/`_Claws` (and `_Far`) wearing their own materials next to the maw; 0 errors, 0 warnings
+  (`r45_ingame_Gravemaw_arena_play.png`).
+
+### Open points for Remco (round 45)
+
+1. Corrupted bosses: the parts are tinted, not re-baked. If a corrupted boss is ever placed, a Blender bake of the part maps under
+   `Skins/Corrupted` would match the veins exactly.
