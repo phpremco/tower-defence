@@ -18,14 +18,19 @@ MonoBehaviour:
   _lowMaterial: {fileID: 2100000, guid: 512ce39bba80a544296f7228b02de37e, type: 2}
   _secondMaterial: {fileID: 0}
   _lowSecondMaterial: {fileID: 0}
-  _parts: []
+  _parts:
+  - _object: Oozer_Face
+    _material: {fileID: 2100000, guid: d6a38d89500417e4d8b80773df5db377, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 323373ddf24365b4e86aec6883c83399, type: 2}
+    _castShadows: 1
   _scale: 1.4
   _yaw: 180
   _bodyCentrePivot: 0
-  _height: 0.41520438
+  _height: 0.43084016
   _lodScreenHeight: 0.05
   _upperBodyBone: 
   _displayExposure: 1
+  _turnSeconds: 0.08
   _deathFade: {x: 0.33333334, y: 1.1333334}
   _embers: 0
   _bleeds: 1
@@ -47,6 +52,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 1
     _clip: {fileID: -6148924515794417400, guid: d010ccefc089d104582614f91a3aaaac, type: 3}
     _farClip: {fileID: 6175440915191861988, guid: 527a0452366bc7349beb71e74b4eaa9a, type: 3}
@@ -61,6 +68,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 3
     _clip: {fileID: -5095280362322062006, guid: d010ccefc089d104582614f91a3aaaac, type: 3}
     _farClip: {fileID: 3027378268019281107, guid: 527a0452366bc7349beb71e74b4eaa9a, type: 3}
@@ -75,6 +84,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 2
     _clip: {fileID: 6564874496359381834, guid: d010ccefc089d104582614f91a3aaaac, type: 3}
     _farClip: {fileID: 3367643055422819071, guid: 527a0452366bc7349beb71e74b4eaa9a, type: 3}
@@ -89,6 +100,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 4
     _clip: {fileID: 2591852338210381113, guid: d010ccefc089d104582614f91a3aaaac, type: 3}
     _farClip: {fileID: 1211845267273694987, guid: 527a0452366bc7349beb71e74b4eaa9a, type: 3}
@@ -103,3 +116,5 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0

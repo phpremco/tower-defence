@@ -91,5 +91,62 @@
       "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
+  },
+  "r46_body_maps_edited": true,
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Cragback_Face",
+        "material": "Cragback_Face_Mat",
+        "maps": "Cragback_Face_*.png (1024, Low 512)",
+        "tris": 364,
+        "lod1_object": "Cragback_Face_LOD1",
+        "lod1_tris": 84,
+        "source_tris": 34200,
+        "uv": {
+          "islands": 19,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 6,
+          "mirrored_faces": 182,
+          "uv_coverage": 0.635,
+          "world_per_uv": 0.22481219867810412
+        },
+        "symmetry_error": 0.00902
+      },
+      "Claws": {
+        "object": "Cragback_Claws",
+        "material": "Cragback_Claws_Mat",
+        "maps": "Cragback_Claws_*.png (1024, Low 512)",
+        "tris": 216,
+        "lod1_object": "Cragback_Claws_LOD1",
+        "lod1_tris": 84,
+        "source_tris": 20976,
+        "uv": {
+          "islands": 5,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 108,
+          "uv_coverage": 0.541,
+          "world_per_uv": 0.18290205562960543
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 3933,
+    "extra_tris": 580,
+    "extra_share": 0.147,
+    "body_lod1_tris": 1698,
+    "extra_lod1_tris": 168,
+    "extra_lod1_share": 0.099,
+    "clips": [
+      "Death",
+      "Hit",
+      "Idle",
+      "Strike",
+      "Walk"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Cragback_<Part> (+ _LOD1 in Cragback_LOD1.fbx), maps Cragback_<Part>_*.png (+ Low/)",
+    "body_maps": "round-4 bead eyes' glow removed from Cragback_Albedo/Emission (0 texels this run)",
+    "note": "round 46: three wet amber eyes under stone lids, basalt fangs, obsidian talons; bones, clips and events unchanged"
   }
 }

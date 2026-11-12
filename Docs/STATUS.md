@@ -6420,3 +6420,48 @@ noise (editor, uncapped ~100 fps). Cutscene slip of the directed creatures 15.9%
 3. Fire Larva travel rate needs 6.9 at base speed (distance per loop 0.20 looks too short in its art data); it slides a little.
 4. The hero's upper-body layer still restarts a shot without a fade (the kick is meant to snap); props (sword, pistol) are
    swung by code and were left out of the totals.
+
+## Round 46 import: small-enemy close-up detail (2026-11-12)
+
+Not committed (the curator commits). No balance data, no round-47 animation code, no ArtSource sources or Tools/Blender touched; no
+generator run. Save `progress.json` **2eca347e** copied aside before each Play Mode run and verified 2eca347e after each.
+
+### 1. Import (`Tools/PlayTest/Scripts/ApplySmallDetail46.cs`, `BlenderArtBuilder.RebuildOnly` for the 17 exports' rows)
+
+- Part names checked against each export's `r46_detail` block (`"unity": "ExtraParts {...}"`) and the FBX renderers, not just the brief.
+- `BlenderArtCatalog` `ExtraParts`: Face + Claws (`FaceClaws`) on Skitter, Roller, Cragback, Prowler, Skyray, Shalebat, Wisp, Stinger,
+  Bulwark, Bat, Bat_Moss, Bat_Dust, Bat_Tide, Bat_Frost, Shardback, Knitback, Slagstrider, Siftjaw, Surgefin; Face only (`FaceOnly`)
+  on Oozer and Mireleech (slugs, no limbs). There is no `Bat_Mire` row: the Mirebat wears `Bat_Moss` (no bog skin is baked), so it
+  gets the moss part glow.
+- Element bats: their baked skins cover the body only, so the export's element-neutral parts take a glow tint per row:
+  `PartGlowTint` Moss (0.75, 1, 0.6), Dust (1, 0.95, 0.8); Tide and Frost glow warm like the ember bat (`Skins_warm_report.json`),
+  so they keep the parts' own colour. Corrupted rows use the existing `CorruptedPartTint`/`CorruptedPartGlow`.
+- 38 rows rebuilt (21 rows + 17 corrupted skins of the same exports); 18 enemies point at them as before. 144 new part materials
+  (`<Id>_<Part>.mat` + `_Low.mat`). Every part has a renderer in the near and the far model with the body's bone set (e.g. Skitter
+  Face 319/85 tris, Claws 168/76; Oozer Face 543/160; Mireleech Face 553/124), matching the reports.
+- Re-baked body maps synced (Cragback, Skyray, Shalebat, Stinger, Oozer, Shardback, Siftjaw, Surgefin): `<Species>_Albedo/_Emission.png`
+  and Low/. Knitback is flagged `r46_body_maps_edited` but its report says 0 texels changed this run and its maps are byte-identical. Body materials themselves unchanged (they reference the same textures).
+- `Data/Art/*.asset`: `_parts`, the serialised round-47 defaults (`_turnSeconds` 0.08, `_footfallSeconds`, `_blendSeconds`), Oozer
+  `_height` +1.6 cm (its face stalks), float noise on two heights. Knitback, Siftjaw, Slagstrider, Surgefin list their clips in a new
+  order (the re-exported FBX's take order); the set of role/clip/far clip/distance/event entries is identical.
+- No builder change was needed: the r46 reports have no per-part detail block, so parts use the second-slot detail families as before.
+
+### 2. Tests and checks
+
+- `CreatureArtTests.EverySmallEnemyExtraPart_IsInTheCatalog_AndWornByTheEnemy` (18 enemies: their art row lists exactly Face+Claws or
+  Face, the enemy wears that row, each part dressed in its own maps High/Low with a near and far renderer; plus the four art-only
+  rows Knitback/Slagstrider/Siftjaw/Surgefin) and `ElementBatParts_TakeTheirSkinsGlow`. The round-45 `EveryBossExtraPart_*` tests
+  iterate every catalog row with parts, so they now cover these 38 rows too.
+- EditMode suite on w6: **821 tests, 769 passed, 52 skipped, 0 failed** (was 819; +2). Recompile: 0 errors, 0 warnings.
+- Stills, 1920x1080, play camera close-up, enemy turned to the camera (`r45_boss_shots.sh`, Level_C1_01, no waves, after 90 walking
+  frames): `ArtSource/Previews/QA/r46_ingame_<Enemy>.png` and `_side` for Skitter (half height 0.45), Prowler, Cragback, Roller (posed
+  Idle, uncurled), Stinger, Oozer, Mireleech, Bulwark, Skyray, Shalebat, Wisp, Shardback, Emberbat, Mossbat, Dustbat, Tidebat, Frostbat.
+  Seen: eyes and mouthparts sit on the heads (Cragback amber eye and lit tooth row, Stinger pink eye row over green mandibles, Bulwark
+  orange eye ring, Oozer yellow stalk eyes, Mireleech yellow eyes, bats' lit eyes and teeth under the brow, green-tinted on the moss
+  bat, pale gold on the dust bat), claws on the feet and arm tips; nothing floating, no pink (missing-shader) material, no part
+  glowing brighter than the body's own glow lines. Both runs: console 0 errors, 0 warnings.
+
+### Open points (round 46 import)
+
+1. The Wisp's face is small inside its glowing rings; it reads only up close.
+2. A Mirebat-specific glow (0.85, 1, 0.6 was suggested) needs a `Bat_Mire` skin first; today it shares the moss row.

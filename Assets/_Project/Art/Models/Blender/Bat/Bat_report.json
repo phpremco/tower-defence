@@ -97,5 +97,61 @@
       "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
+  },
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Bat_Face",
+        "material": "Bat_Face_Mat",
+        "maps": "Bat_Face_*.png (1024, Low 512)",
+        "tris": 318,
+        "lod1_object": "Bat_Face_LOD1",
+        "lod1_tris": 84,
+        "source_tris": 23056,
+        "uv": {
+          "islands": 11,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 159,
+          "uv_coverage": 0.517,
+          "world_per_uv": 0.11769763620518718
+        },
+        "symmetry_error": 0.002303
+      },
+      "Claws": {
+        "object": "Bat_Claws",
+        "material": "Bat_Claws_Mat",
+        "maps": "Bat_Claws_*.png (1024, Low 512)",
+        "tris": 200,
+        "lod1_object": "Bat_Claws_LOD1",
+        "lod1_tris": 78,
+        "source_tris": 13384,
+        "uv": {
+          "islands": 11,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 68,
+          "uv_coverage": 0.536,
+          "world_per_uv": 0.09423274557077718
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 3896,
+    "extra_tris": 518,
+    "extra_share": 0.133,
+    "body_lod1_tris": 1698,
+    "extra_lod1_tris": 162,
+    "extra_lod1_share": 0.095,
+    "clips": [
+      "Death",
+      "Fly",
+      "Glide",
+      "Hit",
+      "Strike"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Bat_<Part> (+ _LOD1 in Bat_LOD1.fbx), maps Bat_<Part>_*.png (+ Low/)",
+    "body_maps": "unchanged",
+    "note": "round 46: element-neutral wet eyes under brow folds, needle teeth, keratin talons and hooks (skins tint them); bones, clips and events unchanged"
   }
 }

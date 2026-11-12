@@ -83,5 +83,62 @@
       "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
+  },
+  "r46_body_maps_edited": true,
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Shalebat_Face",
+        "material": "Shalebat_Face_Mat",
+        "maps": "Shalebat_Face_*.png (1024, Low 512)",
+        "tris": 348,
+        "lod1_object": "Shalebat_Face_LOD1",
+        "lod1_tris": 84,
+        "source_tris": 20904,
+        "uv": {
+          "islands": 11,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 12,
+          "mirrored_faces": 174,
+          "uv_coverage": 0.53,
+          "world_per_uv": 0.12525587951705536
+        },
+        "symmetry_error": 0.003326
+      },
+      "Claws": {
+        "object": "Shalebat_Claws",
+        "material": "Shalebat_Claws_Mat",
+        "maps": "Shalebat_Claws_*.png (1024, Low 512)",
+        "tris": 192,
+        "lod1_object": "Shalebat_Claws_LOD1",
+        "lod1_tris": 76,
+        "source_tris": 11144,
+        "uv": {
+          "islands": 5,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 87,
+          "uv_coverage": 0.635,
+          "world_per_uv": 0.08370064381241313
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 3908,
+    "extra_tris": 540,
+    "extra_share": 0.138,
+    "body_lod1_tris": 1700,
+    "extra_lod1_tris": 160,
+    "extra_lod1_share": 0.094,
+    "clips": [
+      "Death",
+      "Fly",
+      "Glide",
+      "Hit",
+      "Strike"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Shalebat_<Part> (+ _LOD1 in Shalebat_LOD1.fbx), maps Shalebat_<Part>_*.png (+ Low/)",
+    "body_maps": "round-5 bead eyes' glow removed from Shalebat_Albedo/Emission (0 texels this run)",
+    "note": "round 46: six wet amber eyes under shale lids, stone fangs, belly and blade-tip hooks; bones, clips and events unchanged"
   }
 }

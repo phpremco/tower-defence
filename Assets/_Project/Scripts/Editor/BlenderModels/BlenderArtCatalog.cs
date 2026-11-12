@@ -30,6 +30,15 @@ namespace Game.Editor
         private static readonly string[] FaceClaws = { "Face", "Claws" };
         private static readonly string[] EyesTeethClaws = { "Eyes", "Teeth", "Claws" };
 
+        // Round 46 (small-enemy close-up detail pass, report key r46_detail): wet eyes and mouthparts as one Face object,
+        // claws, talons and spurs as one Claws object. The slugs (Oozer, Mireleech) have no limbs, so only a face.
+        private static readonly string[] FaceOnly = { "Face" };
+
+        // The element bats' baked skins cover the body only; the export's element-neutral parts lean towards each skin's glow.
+        // Tide and Frost glow warm like the ember bat (Skins_warm_report.json), so their parts keep the export's own colour.
+        private static readonly Color MossBatPartGlow = new Color(0.75f, 1f, 0.6f);
+        private static readonly Color DustBatPartGlow = new Color(1f, 0.95f, 0.8f);
+
         // Exports with a baked corrupted skin under Skins/Corrupted (ArtSource README round 15, Corrupted_skins_report.json).
         private static readonly HashSet<string> CorruptedSkins = new HashSet<string>
         {
@@ -149,32 +158,34 @@ namespace Game.Editor
             {
                 // Look numbers below come from play-size screenshots (imp1_*): the small and the dark-red species read too dark
                 // against the night ground, so their albedo is lifted and their glow pushed.
-                new BlenderArtEntry("Skitter", "Skitter") { MoveDistance = 0.36f, Brightness = 1.6f, Emission = 3.5f, Rim = 0.9f, Clips = new[] { strike } },
-                new BlenderArtEntry("Roller", "Roller") { Clips = new[] { strike } },
-                new BlenderArtEntry("Cragback", "Cragback") { DeathFadeFrom = 8, DeathFadeTo = 40, Clips = new[] { strike } },
-                new BlenderArtEntry("Prowler", "Prowler") { Brightness = 1.45f, Emission = 3.5f, Rim = 0.9f, Clips = new[] { strike } },
+                new BlenderArtEntry("Skitter", "Skitter") { ExtraParts = FaceClaws, MoveDistance = 0.36f, Brightness = 1.6f, Emission = 3.5f, Rim = 0.9f, Clips = new[] { strike } },
+                new BlenderArtEntry("Roller", "Roller") { ExtraParts = FaceClaws, Clips = new[] { strike } },
+                new BlenderArtEntry("Cragback", "Cragback") { ExtraParts = FaceClaws, DeathFadeFrom = 8, DeathFadeTo = 40, Clips = new[] { strike } },
+                new BlenderArtEntry("Prowler", "Prowler") { ExtraParts = FaceClaws, Brightness = 1.45f, Emission = 3.5f, Rim = 0.9f, Clips = new[] { strike } },
                 new BlenderArtEntry("Skyray", "Skyray")
                 {
+                    ExtraParts = FaceClaws,
                     Emission = 3.2f,
                     BodyCentrePivot = true,
                     Clips = new[] { new BlenderClipSpec("Dive", ModelClipRole.Attack, 10) },
                 },
-                new BlenderArtEntry("Shalebat", "Shalebat") { BodyCentrePivot = true, Clips = bat },
+                new BlenderArtEntry("Shalebat", "Shalebat") { ExtraParts = FaceClaws, BodyCentrePivot = true, Clips = bat },
                 // Round 36: the wisp strikes floating or settled, whichever stance it is in.
                 new BlenderArtEntry("Wisp", "Wisp")
                 {
+                    ExtraParts = FaceClaws,
                     Bleeds = false,
                     Clips = new[] { new BlenderClipSpec("Strike_Float", ModelClipRole.Attack, 10), new BlenderClipSpec("Strike_Ground", ModelClipRole.GroundedAttack, 10) },
                 },
-                new BlenderArtEntry("Stinger", "Stinger") { Clips = new[] { new BlenderClipSpec("Strike", ModelClipRole.Attack, 10) } },
-                new BlenderArtEntry("Bulwark", "Bulwark") { Clips = new[] { new BlenderClipSpec("Block", ModelClipRole.Block, 7), strike } },
+                new BlenderArtEntry("Stinger", "Stinger") { ExtraParts = FaceClaws, Clips = new[] { new BlenderClipSpec("Strike", ModelClipRole.Attack, 10) } },
+                new BlenderArtEntry("Bulwark", "Bulwark") { ExtraParts = FaceClaws, Clips = new[] { new BlenderClipSpec("Block", ModelClipRole.Block, 7), strike } },
                 // Round 31: the slug strike stretches the body itself (impact frame 10).
-                new BlenderArtEntry("Oozer", "Oozer") { Clips = new[] { new BlenderClipSpec("Strike", ModelClipRole.Attack, 10) } },
-                new BlenderArtEntry("Bat", "Bat") { BodyCentrePivot = true, Clips = bat },
-                new BlenderArtEntry("Bat_Moss", "Bat", "Moss") { BodyCentrePivot = true, Clips = bat },
-                new BlenderArtEntry("Bat_Dust", "Bat", "Dust") { BodyCentrePivot = true, Clips = bat },
-                new BlenderArtEntry("Bat_Tide", "Bat", "Tide") { BodyCentrePivot = true, Clips = bat },
-                new BlenderArtEntry("Bat_Frost", "Bat", "Frost") { BodyCentrePivot = true, Clips = bat },
+                new BlenderArtEntry("Oozer", "Oozer") { ExtraParts = FaceOnly, Clips = new[] { new BlenderClipSpec("Strike", ModelClipRole.Attack, 10) } },
+                new BlenderArtEntry("Bat", "Bat") { ExtraParts = FaceClaws, BodyCentrePivot = true, Clips = bat },
+                new BlenderArtEntry("Bat_Moss", "Bat", "Moss") { ExtraParts = FaceClaws, PartGlowTint = MossBatPartGlow, BodyCentrePivot = true, Clips = bat },
+                new BlenderArtEntry("Bat_Dust", "Bat", "Dust") { ExtraParts = FaceClaws, PartGlowTint = DustBatPartGlow, BodyCentrePivot = true, Clips = bat },
+                new BlenderArtEntry("Bat_Tide", "Bat", "Tide") { ExtraParts = FaceClaws, BodyCentrePivot = true, Clips = bat },
+                new BlenderArtEntry("Bat_Frost", "Bat", "Frost") { ExtraParts = FaceClaws, BodyCentrePivot = true, Clips = bat },
                 new BlenderArtEntry("Queen", "Queen")
                 {
                     ExtraParts = FaceClaws,
@@ -268,22 +279,24 @@ namespace Game.Editor
                 // The amber sockets glowed through the ice at 2.5 (cre_close): lower, so the cold prisms lead.
                 new BlenderArtEntry("Shardback", "Shardback")
                 {
+                    ExtraParts = FaceClaws,
                     Emission = 2f,
                     ShedBonesKey = "shard_bones_in_shed_order",
                     Clips = new[] { new BlenderClipSpec("Shatter", ModelClipRole.Shatter, 3), strike },
                 },
-                new BlenderArtEntry("Mireleech", "Mireleech") { Clips = new[] { new BlenderClipSpec("Latch", ModelClipRole.Attack, 13) } },
+                new BlenderArtEntry("Mireleech", "Mireleech") { ExtraParts = FaceOnly, Clips = new[] { new BlenderClipSpec("Latch", ModelClipRole.Attack, 13) } },
 
                 // Art ready for species without game data yet ("art klaar, wacht op data"): an EnemyDefinition that points
                 // at one of these wears it with no further code. Their special moments are recorded as clips for later views.
-                new BlenderArtEntry("Knitback", "Knitback") { Clips = new[] { new BlenderClipSpec("Regrow", ModelClipRole.Power, 24, "Regrow", "Pod_1") } },
+                new BlenderArtEntry("Knitback", "Knitback") { ExtraParts = FaceClaws, Clips = new[] { new BlenderClipSpec("Regrow", ModelClipRole.Power, 24, "Regrow", "Pod_1") } },
                 // Burning trail and heat vents: it sheds embers, and its vents glow harder (README: emission 3.0).
-                new BlenderArtEntry("Slagstrider", "Slagstrider") { Embers = true, Emission = 3f },
+                new BlenderArtEntry("Slagstrider", "Slagstrider") { ExtraParts = FaceClaws, Embers = true, Emission = 3f },
                 new BlenderArtEntry("Siftjaw", "Siftjaw")
                 {
+                    ExtraParts = FaceClaws,
                     Clips = new[] { new BlenderClipSpec("Burrow", ModelClipRole.Burrow, 24), new BlenderClipSpec("Emerge", ModelClipRole.Emerge, 8) },
                 },
-                new BlenderArtEntry("Surgefin", "Surgefin") { Clips = new[] { new BlenderClipSpec("Emerge", ModelClipRole.Emerge, 10) } },
+                new BlenderArtEntry("Surgefin", "Surgefin") { ExtraParts = FaceClaws, Clips = new[] { new BlenderClipSpec("Emerge", ModelClipRole.Emerge, 10) } },
                 new BlenderArtEntry("FireLarva", "FireLarva") { Embers = true },
 
                 // Round 14 and 16 continent bosses: two materials (body and crystals, ice, bloom or seal), built at their

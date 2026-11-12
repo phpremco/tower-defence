@@ -102,5 +102,43 @@
       "Seg_6",
       "Head"
     ]
+  },
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Mireleech_Face",
+        "material": "Mireleech_Face_Mat",
+        "maps": "Mireleech_Face_*.png (1024, Low 512)",
+        "tris": 553,
+        "lod1_object": "Mireleech_Face_LOD1",
+        "lod1_tris": 124,
+        "source_tris": 23144,
+        "uv": {
+          "islands": 25,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 46,
+          "mirrored_faces": 274,
+          "uv_coverage": 0.699,
+          "world_per_uv": 0.12296349149756929
+        },
+        "symmetry_error": 0.002814
+      }
+    },
+    "body_tris": 3906,
+    "extra_tris": 553,
+    "extra_share": 0.142,
+    "body_lod1_tris": 1700,
+    "extra_lod1_tris": 124,
+    "extra_lod1_share": 0.073,
+    "clips": [
+      "Crawl",
+      "Death",
+      "Hit",
+      "Idle",
+      "Latch"
+    ],
+    "unity": "ExtraParts { \"Face\" }: objects Mireleech_<Part> (+ _LOD1 in Mireleech_LOD1.fbx), maps Mireleech_<Part>_*.png (+ Low/)",
+    "body_maps": "unchanged",
+    "note": "round 46: wet eyespots, petal teeth, gullet tooth ring (no limbs: no Claws part); bones, clips and events unchanged"
   }
 }

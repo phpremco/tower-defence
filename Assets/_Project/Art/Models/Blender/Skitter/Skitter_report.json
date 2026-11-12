@@ -130,5 +130,61 @@
       "slip_share": 0.409
     },
     "note": "planted feet move back at the clip's ground speed (zero world speed); per-step timing, duty, lift and landing jitter; the report's walk_distance_per_loop replaces the catalog MoveDistance"
+  },
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Skitter_Face",
+        "material": "Skitter_Face_Mat",
+        "maps": "Skitter_Face_*.png (1024, Low 512)",
+        "tris": 319,
+        "lod1_object": "Skitter_Face_LOD1",
+        "lod1_tris": 85,
+        "source_tris": 28588,
+        "uv": {
+          "islands": 16,
+          "closed_islands_cut": 2,
+          "folded_fallback_faces": 30,
+          "mirrored_faces": 159,
+          "uv_coverage": 0.735,
+          "world_per_uv": 0.1214498921624136
+        },
+        "symmetry_error": 0.002814
+      },
+      "Claws": {
+        "object": "Skitter_Claws",
+        "material": "Skitter_Claws_Mat",
+        "maps": "Skitter_Claws_*.png (1024, Low 512)",
+        "tris": 168,
+        "lod1_object": "Skitter_Claws_LOD1",
+        "lod1_tris": 76,
+        "source_tris": 21232,
+        "uv": {
+          "islands": 9,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 14,
+          "mirrored_faces": 84,
+          "uv_coverage": 0.575,
+          "world_per_uv": 0.1117207950589818
+        },
+        "symmetry_error": 0.001207
+      }
+    },
+    "body_tris": 3799,
+    "extra_tris": 487,
+    "extra_share": 0.128,
+    "body_lod1_tris": 1700,
+    "extra_lod1_tris": 161,
+    "extra_lod1_share": 0.095,
+    "clips": [
+      "Death",
+      "Hit",
+      "Idle",
+      "Strike",
+      "Walk"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Skitter_<Part> (+ _LOD1 in Skitter_LOD1.fbx), maps Skitter_<Part>_*.png (+ Low/)",
+    "body_maps": "unchanged",
+    "note": "round 46: wet eyes under the crest, jaw teeth, blade saws and tips, talon feet; bones, clips and events unchanged"
   }
 }

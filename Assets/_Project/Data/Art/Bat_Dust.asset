@@ -18,7 +18,15 @@ MonoBehaviour:
   _lowMaterial: {fileID: 2100000, guid: a68b787ca7b87c44b98abec7d58deb7a, type: 2}
   _secondMaterial: {fileID: 0}
   _lowSecondMaterial: {fileID: 0}
-  _parts: []
+  _parts:
+  - _object: Bat_Face
+    _material: {fileID: 2100000, guid: 042416ffaf1134c439b4afabb6925fdd, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 3e8f1ef4b5fcc2b4bb7df37fae11f300, type: 2}
+    _castShadows: 1
+  - _object: Bat_Claws
+    _material: {fileID: 2100000, guid: 8ac37484c3953c64a89d36788308ade6, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 3517e42de4950c84b9f64475ec1863cd, type: 2}
+    _castShadows: 1
   _scale: 1.4
   _yaw: 180
   _bodyCentrePivot: 1
@@ -26,6 +34,7 @@ MonoBehaviour:
   _lodScreenHeight: 0.05
   _upperBodyBone: 
   _displayExposure: 1
+  _turnSeconds: 0.08
   _deathFade: {x: 0.3, y: 1.0200001}
   _embers: 0
   _bleeds: 1
@@ -47,6 +56,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 0
     _clip: {fileID: -3516113549866372073, guid: 5ab478592a0e38946ae99a944a4039dc, type: 3}
     _farClip: {fileID: -342393380074297546, guid: 56ef729441a8a084fb18ccad803790f4, type: 3}
@@ -61,6 +72,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 1
     _clip: {fileID: -5546259543306957655, guid: 5ab478592a0e38946ae99a944a4039dc, type: 3}
     _farClip: {fileID: -7893095288666696438, guid: 56ef729441a8a084fb18ccad803790f4, type: 3}
@@ -75,6 +88,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 2
     _clip: {fileID: 2536552948462655966, guid: 5ab478592a0e38946ae99a944a4039dc, type: 3}
     _farClip: {fileID: -991649837934718461, guid: 56ef729441a8a084fb18ccad803790f4, type: 3}
@@ -89,6 +104,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 4
     _clip: {fileID: 8910933526612131937, guid: 5ab478592a0e38946ae99a944a4039dc, type: 3}
     _farClip: {fileID: 2934233364665459684, guid: 56ef729441a8a084fb18ccad803790f4, type: 3}
@@ -103,3 +120,5 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0

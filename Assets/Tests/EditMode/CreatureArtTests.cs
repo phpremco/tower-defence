@@ -378,6 +378,91 @@ namespace Game.Tests
             }
         }
 
+        // Round 46: the small species got close-up faces (eyes, mouthparts) and claws the same way the bosses did; the
+        // slugs have no limbs, so a face only. Checked per enemy as it is placed: the art it wears lists the parts and
+        // every part is dressed in its own maps, near and far, High and Low.
+        private static readonly string[] SmallFaceClawsEnemies =
+        {
+            "Skitter", "Cragback", "Skyray", "Roller", "Prowler", "Shalebat", "Wisp", "Stinger", "Bulwark", "Shardback",
+            "Emberbat", "Mossbat", "Dustbat", "Tidebat", "Frostbat", "Mirebat",
+        };
+
+        private static readonly string[] SmallFaceOnlyEnemies = { "Oozer", "Mireleech" };
+
+        // Species with art but no enemy data yet: their rows carry the parts too.
+        private static readonly string[] SmallFaceClawsRowsWithoutEnemy = { "Knitback", "Slagstrider", "Siftjaw", "Surgefin" };
+
+        [Test]
+        public void EverySmallEnemyExtraPart_IsInTheCatalog_AndWornByTheEnemy()
+        {
+            foreach (string enemy in SmallFaceClawsEnemies)
+            {
+                AssertSmallEnemyParts(enemy, new[] { "Face", "Claws" });
+            }
+
+            foreach (string enemy in SmallFaceOnlyEnemies)
+            {
+                AssertSmallEnemyParts(enemy, new[] { "Face" });
+            }
+
+            foreach (string id in SmallFaceClawsRowsWithoutEnemy)
+            {
+                AssertSmallRowParts(id, new[] { "Face", "Claws" });
+            }
+        }
+
+        // Round 46: the element bats' skins cover the body only, so the shared parts take the skin's glow: Moss and Dust
+        // lean green and pale, the warm Tide and Frost keep the ember bat's own.
+        [Test]
+        public void ElementBatParts_TakeTheirSkinsGlow()
+        {
+            Color ember = PartGlow("Bat");
+            Assert.AreNotEqual(ember, PartGlow("Bat_Moss"), "the moss bat's parts glow like the ember bat's");
+            Assert.AreNotEqual(ember, PartGlow("Bat_Dust"), "the dust bat's parts glow like the ember bat's");
+            Assert.AreEqual(ember, PartGlow("Bat_Tide"), "the tide bat's parts should keep the warm glow");
+            Assert.AreEqual(ember, PartGlow("Bat_Frost"), "the frost bat's parts should keep the warm glow");
+        }
+
+        private static Color PartGlow(string id)
+        {
+            var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}.asset");
+            Assert.IsNotNull(art, $"{id}: no art definition");
+            return art.Parts[0].MaterialFor(false).GetColor("_EmissionColor");
+        }
+
+        private static void AssertSmallEnemyParts(string enemyName, string[] parts)
+        {
+            var enemy = AssetDatabase.LoadAssetAtPath<EnemyDefinition>($"{EnemyFolder}/{enemyName}.asset");
+            Assert.IsNotNull(enemy, $"{enemyName}: no enemy definition");
+            Assert.IsTrue(BlenderArtCatalog.EnemyArt.TryGetValue(enemyName, out string id), $"{enemyName}: no art row");
+            Assert.IsNotNull(enemy.Art, $"{enemyName}: wears no art");
+            Assert.AreEqual(id, enemy.Art.name, $"{enemyName}: wears the wrong art");
+            AssertSmallRowParts(id, parts);
+        }
+
+        private static void AssertSmallRowParts(string id, string[] parts)
+        {
+            BlenderArtEntry entry = null;
+            foreach (BlenderArtEntry row in BlenderArtCatalog.Creatures)
+            {
+                if (row.Id == id)
+                {
+                    entry = row;
+                }
+            }
+
+            Assert.IsNotNull(entry, $"{id}: no catalog row");
+            CollectionAssert.AreEqual(parts, entry.ExtraParts, $"{id}: catalog parts");
+            var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}.asset");
+            Assert.IsNotNull(art, $"{id}: no art definition");
+            Assert.AreEqual(parts.Length, art.Parts.Length, $"{id}: parts built");
+            for (int i = 0; i < parts.Length; i++)
+            {
+                AssertPartDressed(entry, art, art.Parts[i], $"{entry.Asset}_{parts[i]}");
+                Assert.IsNotNull(art.Lod1, $"{id}: no far model");
+            }
+        }
+
         private static void AssertPartsWorn(ModelArtDefinition art, CreatureModel model, string label)
         {
             int slots = art.HasSecondMaterial ? 2 : 1;
