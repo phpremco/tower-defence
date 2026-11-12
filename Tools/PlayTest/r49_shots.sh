@@ -6,7 +6,8 @@
 # light. A fourth field "death" then kills the creature and renders the corpse a moment after the death and later (vents
 # fading), with r49_vent_probe.cs reporting the vent emitters before, during and after. Copies the save aside first,
 # restores and verifies it at the end.
-# Usage: [STEPS=n] [LIGHT=f] r49_shots.sh <output dir> <prefix> <level index> <Enemy[:half height[:ClipRole[:death]]]> ...
+# PROBE=<file.cs> (optional) runs one more eval probe from Tools/PlayTest per creature, after the zoom and pose.
+# Usage: [STEPS=n] [LIGHT=f] [PROBE=f] r49_shots.sh <output dir> <prefix> <level index> <Enemy[:half height[:ClipRole[:death]]]> ...
 set -u
 cd "$(dirname "$0")/../.." || exit 1
 out=$1; prefix=$2; level=$3; shift 3
@@ -38,6 +39,7 @@ for spec in "$@"; do
   echo "  $(run r45_zoom.cs)"; step 2
   if [ -n "$pose" ]; then echo "$name $pose" > Tools/PlayTest/r45_pose.txt; echo "  $(run r45_pose.cs)"; step 1; fi
   echo "  vents: $(run r49_vent_probe.cs)"
+  if [ -n "${PROBE:-}" ]; then echo "  probe: $(run "$PROBE")"; fi
   echo "$name 0" > Tools/PlayTest/r45_face.txt; still "$name" "$light"; still "${name}_game" 1
   echo "$name 35" > Tools/PlayTest/r45_face.txt; still "${name}_side" "$light"
   if [ -n "$pose" ]; then echo "$name off" > Tools/PlayTest/r45_pose.txt; run r45_pose.cs >/dev/null; fi

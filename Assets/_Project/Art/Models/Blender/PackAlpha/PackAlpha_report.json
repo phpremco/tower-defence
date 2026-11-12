@@ -1,8 +1,8 @@
 {
   "asset": "PackAlpha",
   "base_species": "Prowler",
-  "game_tris": 14018,
-  "source_tris": 697328,
+  "game_tris": 14184,
+  "source_tris": 632864,
   "bones": 24,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -13,21 +13,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 290,
-    "folded_fallback_faces": 411,
-    "mirrored_faces": 6140,
-    "uv_coverage": 0.464,
-    "world_per_uv": 2.4827015043937073
+    "islands": 331,
+    "folded_fallback_faces": 794,
+    "mirrored_faces": 6685,
+    "uv_coverage": 0.235,
+    "world_per_uv": 3.1875790681445855
   },
   "detail": {
-    "chitin": {
-      "map": "Detail_Chitin_Normal.png",
-      "tiling": 29.6,
-      "mask": "B"
-    },
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 22.2,
+      "tiling": 28.5,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 37.9,
       "mask": "A"
     }
   },
@@ -39,11 +39,11 @@
     "Howl": 54
   },
   "howl_peak_frame": 22,
-  "run_distance_per_loop": 1.907,
+  "run_distance_per_loop": 2.2,
   "unity_scale": 0.78,
   "lod1": {
     "fbx": "PackAlpha_LOD1.fbx",
-    "tris": 5997,
+    "tris": 5999,
     "bones": 18
   },
   "r45_detail": {
@@ -52,44 +52,44 @@
         "object": "PackAlpha_Face",
         "material": "PackAlpha_Face_Mat",
         "maps": "PackAlpha_Face_*.png (1024, Low 512)",
-        "tris": 1794,
+        "tris": 1798,
         "lod1_object": "PackAlpha_Face_LOD1",
-        "lod1_tris": 560,
-        "source_tris": 67512,
+        "lod1_tris": 558,
+        "source_tris": 54660,
         "uv": {
-          "islands": 35,
+          "islands": 32,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 897,
-          "uv_coverage": 0.688,
-          "world_per_uv": 0.2994093695065811
+          "mirrored_faces": 893,
+          "uv_coverage": 0.687,
+          "world_per_uv": 0.2711100314592884
         },
-        "symmetry_error": 0.007647
+        "symmetry_error": 0.008021
       },
       "Claws": {
         "object": "PackAlpha_Claws",
         "material": "PackAlpha_Claws_Mat",
         "maps": "PackAlpha_Claws_*.png (1024, Low 512)",
-        "tris": 924,
+        "tris": 908,
         "lod1_object": "PackAlpha_Claws_LOD1",
         "lod1_tris": 318,
-        "source_tris": 30864,
+        "source_tris": 32392,
         "uv": {
-          "islands": 6,
+          "islands": 10,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 462,
-          "uv_coverage": 0.504,
-          "world_per_uv": 0.2332319710040275
+          "mirrored_faces": 444,
+          "uv_coverage": 0.555,
+          "world_per_uv": 0.22470730601164535
         },
         "symmetry_error": 0.0
       }
     },
-    "body_tris": 14018,
-    "extra_tris": 2718,
-    "extra_share": 0.194,
-    "body_lod1_tris": 5997,
-    "extra_lod1_tris": 878,
+    "body_tris": 14184,
+    "extra_tris": 2706,
+    "extra_share": 0.191,
+    "body_lod1_tris": 5999,
+    "extra_lod1_tris": 876,
     "extra_lod1_share": 0.146,
     "clips": [
       "Death",
@@ -99,6 +99,6 @@
       "Run"
     ],
     "unity": "ExtraParts { \"Face\", \"Claws\" }: objects PackAlpha_<Part> (+ _LOD1 in PackAlpha_LOD1.fbx), maps PackAlpha_<Part>_*.png (+ Low/)",
-    "note": "round 45: brow eyes, shear saw teeth, throat tooth ring, toe talons; bones, clips and events unchanged"
+    "note": "round 49A: three brow eyes per side, upper canines and teeth, split-jaw fangs, paw talons (round 45 parts re-fitted to the alien-wolf body)"
   }
 }

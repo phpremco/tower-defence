@@ -1,11 +1,11 @@
 {
   "asset": "CinderMatriarch",
-  "game_tris": 23051,
+  "game_tris": 23136,
   "tris_per_material": [
-    17995,
-    5056
+    17990,
+    5146
   ],
-  "source_tris": 854196,
+  "source_tris": 943092,
   "bones": 30,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -21,44 +21,44 @@
   ],
   "uv": {
     "CinderMatriarch": {
-      "islands": 97,
+      "islands": 139,
       "closed_islands_cut": 0,
       "folded_fallback_faces": 0,
-      "mirrored_faces": 8742,
-      "uv_coverage": 0.683,
-      "world_per_uv": 5.235021975831656
+      "mirrored_faces": 8626,
+      "uv_coverage": 0.662,
+      "world_per_uv": 5.515600294188816
     },
     "CinderMatriarch_Crystal": {
-      "islands": 95,
-      "closed_islands_cut": 1,
-      "folded_fallback_faces": 481,
-      "mirrored_faces": 1902,
-      "uv_coverage": 0.701,
-      "world_per_uv": 1.2905660013474254
+      "islands": 110,
+      "closed_islands_cut": 0,
+      "folded_fallback_faces": 355,
+      "mirrored_faces": 1886,
+      "uv_coverage": 0.685,
+      "world_per_uv": 1.571378889183599
     }
   },
   "detail": {
     "CinderMatriarch": {
       "rock": {
         "map": "Detail_Rock_Normal.png",
-        "tiling": 10.9,
+        "tiling": 11.5,
         "mask": "B"
       },
       "membrane": {
         "map": "Detail_Membrane_Normal.png",
-        "tiling": 16.4,
+        "tiling": 17.2,
         "mask": "A"
       }
     },
     "CinderMatriarch_Crystal": {
       "crystal": {
         "map": "Detail_Crystal_Normal.png",
-        "tiling": 7.7,
+        "tiling": 9.4,
         "mask": "B"
       },
       "rock": {
         "map": "Detail_Rock_Normal.png",
-        "tiling": 4.5,
+        "tiling": 5.5,
         "mask": "A"
       }
     }
@@ -85,8 +85,8 @@
   },
   "size_m": [
     4.655,
-    5.782,
-    3.024
+    5.929,
+    3.025
   ],
   "unity_scale": 1.0,
   "scale_keyed_bones": [
@@ -96,7 +96,7 @@
   ],
   "lod1": {
     "fbx": "CinderMatriarch_LOD1.fbx",
-    "tris": 8997,
+    "tris": 9000,
     "bones": 25
   },
   "walk_distance_per_loop": 1.288,
@@ -116,6 +116,152 @@
   "minion": {
     "fbx": "../FireLarva/FireLarva.fbx",
     "unity_scale": 0.6
+  },
+  "round45_detail": {
+    "parts": {
+      "Eyes": {
+        "object": "CinderMatriarch_Eyes",
+        "material": "CinderMatriarch_Eyes_Mat",
+        "maps": "CinderMatriarch_Eyes_*.png (1024, Low 512)",
+        "tris": 1300,
+        "source_tris": 213704,
+        "uv": {
+          "islands": 9,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 650,
+          "uv_coverage": 0.698,
+          "world_per_uv": 0.7824186768604325
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 10.9,
+            "mask": "B"
+          },
+          "membrane": {
+            "map": "Detail_Membrane_Normal.png",
+            "tiling": 8.2,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "membrane"
+        ],
+        "bones": [
+          "Head"
+        ],
+        "note": "three wet ember eyes per side",
+        "lod1_object": "CinderMatriarch_Eyes_LOD1",
+        "lod1_tris": 360
+      },
+      "Teeth": {
+        "object": "CinderMatriarch_Teeth",
+        "material": "CinderMatriarch_Teeth_Mat",
+        "maps": "CinderMatriarch_Teeth_*.png (1024, Low 512)",
+        "tris": 1486,
+        "source_tris": 162932,
+        "uv": {
+          "islands": 18,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 739,
+          "uv_coverage": 0.611,
+          "world_per_uv": 0.6295532200471395
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 8.7,
+            "mask": "B"
+          },
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 7.5,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "crystal"
+        ],
+        "bones": [
+          "Head",
+          "Mand_LL",
+          "Mand_LR",
+          "Mand_UL",
+          "Mand_UR"
+        ],
+        "note": "mandible serrations + mouth ring",
+        "lod1_object": "CinderMatriarch_Teeth_LOD1",
+        "lod1_tris": 460
+      },
+      "Claws": {
+        "object": "CinderMatriarch_Claws",
+        "material": "CinderMatriarch_Claws_Mat",
+        "maps": "CinderMatriarch_Claws_*.png (1024, Low 512)",
+        "tris": 1519,
+        "source_tris": 198696,
+        "uv": {
+          "islands": 15,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 723,
+          "uv_coverage": 0.645,
+          "world_per_uv": 1.013024471105106
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 14.1,
+            "mask": "B"
+          },
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 12.1,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "crystal"
+        ],
+        "bones": [
+          "Leg_L1_Lower",
+          "Leg_L2_Lower",
+          "Leg_R1_Lower",
+          "Leg_R2_Lower",
+          "Scythe_L_Blade",
+          "Scythe_R_Blade"
+        ],
+        "note": "foot talons + scythe hooks",
+        "lod1_object": "CinderMatriarch_Claws_LOD1",
+        "lod1_tris": 497
+      }
+    },
+    "tris_before": {
+      "lod0": 23136,
+      "lod1": 9000
+    },
+    "tris_after": {
+      "lod0": 27441,
+      "lod1": 10317
+    },
+    "increase": {
+      "lod0": 0.186,
+      "lod1": 0.146
+    },
+    "extra_objects": [
+      "CinderMatriarch_Eyes",
+      "CinderMatriarch_Teeth",
+      "CinderMatriarch_Claws",
+      "CinderMatriarch_Eyes_LOD1",
+      "CinderMatriarch_Teeth_LOD1",
+      "CinderMatriarch_Claws_LOD1"
+    ],
+    "unity": "extra parts (BlenderArtEntry.ExtraParts): 'Eyes' -> CinderMatriarch_Eyes / CinderMatriarch_Eyes_LOD1, maps CinderMatriarch_Eyes_*.png (+ Low/), 'Teeth' -> CinderMatriarch_Teeth / CinderMatriarch_Teeth_LOD1, maps CinderMatriarch_Teeth_*.png (+ Low/), 'Claws' -> CinderMatriarch_Claws / CinderMatriarch_Claws_LOD1, maps CinderMatriarch_Claws_*.png (+ Low/)",
+    "note": "round 45: detail parts (eyes, teeth, claws); bones, clips and events unchanged"
   },
   "round28": {
     "clips": {
@@ -636,7 +782,14 @@
       "IK_Leg_R1",
       "IK_Leg_R2"
     ],
-    "extra_objects": [],
+    "extra_objects": [
+      "CinderMatriarch_Eyes",
+      "CinderMatriarch_Teeth",
+      "CinderMatriarch_Claws",
+      "CinderMatriarch_Eyes_LOD1",
+      "CinderMatriarch_Teeth_LOD1",
+      "CinderMatriarch_Claws_LOD1"
+    ],
     "climb_height_m": 1.5,
     "liquid": "lava",
     "submerged_depth_m": 3.344,
@@ -670,335 +823,7 @@
         "Gate_Straddle_Loop",
         "Gate_Dismount"
       ],
-      "usage": "Gate_Mount from the road (gate centre gate_forward_m ahead of the pivot), then move the transform onto the gate centre (end offset, on the ground) and loop Gate_Straddle_Loop while it weighs the gate down, then Gate_Dismount over the far side and move the transform by its end offset. Drive the gate's burden from each clip's gate_burden (one value per frame, TowerDisplacementView units) and hit the gate at its weight_frames (impact_frame = the first). Climb_Up/Loop/Down stay for rocks.",
-      "check": {
-        "Gate_Mount": {
-          "mesh_into_gate": [
-            0.012,
-            128,
-            [
-              -0.05,
-              3.66,
-              1.15
-            ]
-          ],
-          "feet": {
-            "IK_Leg_L1": {
-              "gap": [
-                0.0,
-                null
-              ],
-              "sink": [
-                0.0,
-                null
-              ]
-            },
-            "IK_Leg_L2": {
-              "gap": [
-                0.0,
-                null
-              ],
-              "sink": [
-                0.0,
-                null
-              ]
-            },
-            "IK_Leg_R1": {
-              "gap": [
-                0.0,
-                null
-              ],
-              "sink": [
-                0.0,
-                null
-              ]
-            },
-            "IK_Leg_R2": {
-              "gap": [
-                0.0,
-                null
-              ],
-              "sink": [
-                0.0,
-                null
-              ]
-            }
-          },
-          "gate_inside_mesh": [
-            0.0
-          ]
-        },
-        "Gate_Straddle_Loop": {
-          "mesh_into_gate": [
-            0.02,
-            24,
-            [
-              -0.28,
-              0.1,
-              1.16
-            ]
-          ],
-          "feet": {
-            "IK_Leg_L1": {
-              "gap": [
-                0.0,
-                null
-              ],
-              "sink": [
-                0.0,
-                null
-              ]
-            },
-            "IK_Leg_L2": {
-              "gap": [
-                0.0,
-                null
-              ],
-              "sink": [
-                0.0,
-                null
-              ]
-            },
-            "IK_Leg_R1": {
-              "gap": [
-                0.0,
-                null
-              ],
-              "sink": [
-                0.0,
-                null
-              ]
-            },
-            "IK_Leg_R2": {
-              "gap": [
-                0.0,
-                null
-              ],
-              "sink": [
-                0.0,
-                null
-              ]
-            }
-          },
-          "gate_inside_mesh": [
-            0.036,
-            24,
-            [
-              -0.22,
-              0.13,
-              1.18
-            ]
-          ]
-        },
-        "Gate_Dismount": {
-          "mesh_into_gate": [
-            0.02,
-            60,
-            [
-              0.27,
-              0.01,
-              1.36
-            ]
-          ],
-          "feet": {
-            "IK_Leg_L1": {
-              "gap": [
-                0.0,
-                null
-              ],
-              "sink": [
-                0.0,
-                null
-              ]
-            },
-            "IK_Leg_L2": {
-              "gap": [
-                0.0,
-                null
-              ],
-              "sink": [
-                0.0,
-                null
-              ]
-            },
-            "IK_Leg_R1": {
-              "gap": [
-                0.0,
-                null
-              ],
-              "sink": [
-                0.0,
-                null
-              ]
-            },
-            "IK_Leg_R2": {
-              "gap": [
-                0.0,
-                null
-              ],
-              "sink": [
-                0.0,
-                null
-              ]
-            }
-          },
-          "gate_inside_mesh": [
-            0.018,
-            56,
-            [
-              0.23,
-              -0.13,
-              1.38
-            ]
-          ]
-        }
-      }
+      "usage": "Gate_Mount from the road (gate centre gate_forward_m ahead of the pivot), then move the transform onto the gate centre (end offset, on the ground) and loop Gate_Straddle_Loop while it weighs the gate down, then Gate_Dismount over the far side and move the transform by its end offset. Drive the gate's burden from each clip's gate_burden (one value per frame, TowerDisplacementView units) and hit the gate at its weight_frames (impact_frame = the first). Climb_Up/Loop/Down stay for rocks."
     }
-  },
-  "round45_detail": {
-    "parts": {
-      "Eyes": {
-        "object": "CinderMatriarch_Eyes",
-        "material": "CinderMatriarch_Eyes_Mat",
-        "maps": "CinderMatriarch_Eyes_*.png (1024, Low 512)",
-        "tris": 1300,
-        "source_tris": 145856,
-        "uv": {
-          "islands": 21,
-          "closed_islands_cut": 0,
-          "folded_fallback_faces": 0,
-          "mirrored_faces": 650,
-          "uv_coverage": 0.553,
-          "world_per_uv": 0.7273759269474557
-        },
-        "detail": {
-          "chitin": {
-            "map": "Detail_Chitin_Normal.png",
-            "tiling": 10.1,
-            "mask": "B"
-          },
-          "membrane": {
-            "map": "Detail_Membrane_Normal.png",
-            "tiling": 7.6,
-            "mask": "A"
-          }
-        },
-        "families": [
-          "chitin",
-          "membrane"
-        ],
-        "bones": [
-          "Head"
-        ],
-        "note": "three wet ember eyes per side",
-        "lod1_object": "CinderMatriarch_Eyes_LOD1",
-        "lod1_tris": 360
-      },
-      "Teeth": {
-        "object": "CinderMatriarch_Teeth",
-        "material": "CinderMatriarch_Teeth_Mat",
-        "maps": "CinderMatriarch_Teeth_*.png (1024, Low 512)",
-        "tris": 1486,
-        "source_tris": 121584,
-        "uv": {
-          "islands": 22,
-          "closed_islands_cut": 0,
-          "folded_fallback_faces": 0,
-          "mirrored_faces": 743,
-          "uv_coverage": 0.596,
-          "world_per_uv": 0.5397830686114489
-        },
-        "detail": {
-          "chitin": {
-            "map": "Detail_Chitin_Normal.png",
-            "tiling": 7.5,
-            "mask": "B"
-          },
-          "crystal": {
-            "map": "Detail_Crystal_Normal.png",
-            "tiling": 6.4,
-            "mask": "A"
-          }
-        },
-        "families": [
-          "chitin",
-          "crystal"
-        ],
-        "bones": [
-          "Head",
-          "Mand_LL",
-          "Mand_LR",
-          "Mand_UL",
-          "Mand_UR"
-        ],
-        "note": "mandible serrations + mouth ring",
-        "lod1_object": "CinderMatriarch_Teeth_LOD1",
-        "lod1_tris": 458
-      },
-      "Claws": {
-        "object": "CinderMatriarch_Claws",
-        "material": "CinderMatriarch_Claws_Mat",
-        "maps": "CinderMatriarch_Claws_*.png (1024, Low 512)",
-        "tris": 1519,
-        "source_tris": 198696,
-        "uv": {
-          "islands": 15,
-          "closed_islands_cut": 0,
-          "folded_fallback_faces": 0,
-          "mirrored_faces": 723,
-          "uv_coverage": 0.645,
-          "world_per_uv": 1.013024471105106
-        },
-        "detail": {
-          "chitin": {
-            "map": "Detail_Chitin_Normal.png",
-            "tiling": 14.1,
-            "mask": "B"
-          },
-          "crystal": {
-            "map": "Detail_Crystal_Normal.png",
-            "tiling": 12.1,
-            "mask": "A"
-          }
-        },
-        "families": [
-          "chitin",
-          "crystal"
-        ],
-        "bones": [
-          "Leg_L1_Lower",
-          "Leg_L2_Lower",
-          "Leg_R1_Lower",
-          "Leg_R2_Lower",
-          "Scythe_L_Blade",
-          "Scythe_R_Blade"
-        ],
-        "note": "foot talons + scythe hooks",
-        "lod1_object": "CinderMatriarch_Claws_LOD1",
-        "lod1_tris": 497
-      }
-    },
-    "tris_before": {
-      "lod0": 23051,
-      "lod1": 8997
-    },
-    "tris_after": {
-      "lod0": 27356,
-      "lod1": 10312
-    },
-    "increase": {
-      "lod0": 0.187,
-      "lod1": 0.146
-    },
-    "extra_objects": [
-      "CinderMatriarch_Eyes",
-      "CinderMatriarch_Teeth",
-      "CinderMatriarch_Claws",
-      "CinderMatriarch_Eyes_LOD1",
-      "CinderMatriarch_Teeth_LOD1",
-      "CinderMatriarch_Claws_LOD1"
-    ],
-    "unity": "extra parts (BlenderArtEntry.ExtraParts): 'Eyes' -> CinderMatriarch_Eyes / CinderMatriarch_Eyes_LOD1, maps CinderMatriarch_Eyes_*.png (+ Low/), 'Teeth' -> CinderMatriarch_Teeth / CinderMatriarch_Teeth_LOD1, maps CinderMatriarch_Teeth_*.png (+ Low/), 'Claws' -> CinderMatriarch_Claws / CinderMatriarch_Claws_LOD1, maps CinderMatriarch_Claws_*.png (+ Low/)",
-    "note": "round 45: detail parts (eyes, teeth, claws); bones, clips and events unchanged"
   }
 }

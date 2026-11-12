@@ -30,7 +30,7 @@ MonoBehaviour:
   _scale: 1.4
   _yaw: 180
   _bodyCentrePivot: 0
-  _height: 0.68475145
+  _height: 0.70212984
   _lodScreenHeight: 0.05
   _upperBodyBone: 
   _displayExposure: 1
@@ -39,6 +39,7 @@ MonoBehaviour:
   _embers: 0
   _bleeds: 1
   _shedBones: []
+  _vents: {fileID: 0}
   _emissionSets: []
   _deathEmissionSet: 
   _clips:
@@ -77,7 +78,7 @@ MonoBehaviour:
   - _role: 0
     _clip: {fileID: 6592528590920233474, guid: 30de3988202c5114795b1952da49ccd5, type: 3}
     _farClip: {fileID: -2550469459367179360, guid: f2e2242df70a91c48bcab3f4e10730b2, type: 3}
-    _distancePerLoop: 1.19
+    _distancePerLoop: 1.429
     _eventSeconds: 0
     _trigger: 
     _socket: 
@@ -95,22 +96,6 @@ MonoBehaviour:
     _farClip: {fileID: -2595395572997673190, guid: f2e2242df70a91c48bcab3f4e10730b2, type: 3}
     _distancePerLoop: 0
     _eventSeconds: 0
-    _trigger: 
-    _socket: 
-    _weight: 1
-    _upperBody: 0
-    _endOffset: {x: 0, y: 0}
-    _cueSeconds: 0
-    _anchorForward: 0
-    _momentSeconds: []
-    _burden: []
-    _footfallSeconds: []
-    _blendSeconds: 0
-  - _role: 4
-    _clip: {fileID: 7436267400557355581, guid: 30de3988202c5114795b1952da49ccd5, type: 3}
-    _farClip: {fileID: -8028701033784164413, guid: f2e2242df70a91c48bcab3f4e10730b2, type: 3}
-    _distancePerLoop: 0
-    _eventSeconds: 0.33333334
     _trigger: 
     _socket: 
     _weight: 1

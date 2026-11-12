@@ -486,6 +486,40 @@ namespace Game.Tests
             }
         }
 
+        // Round 49 (approved set 3, the 49E second pass): the wolves, the rays, the Slime Monarch and the Knitback are in with
+        // their corrupted skins (the Cinder Matriarch has none). The Slime Monarch's young still leave from the Sac spouts and
+        // its acid vat carries the new Slosh bone; the Pack Alpha's howl collar still hangs on the Mane bones; the rays have
+        // their new Jaw in the near rig (the far rig is too coarse for it).
+        private static readonly string[] Redesign49Set3CorruptedRows = { "Prowler", "PackAlpha", "Skyray", "RayBoss", "SlimeMonarch", "Knitback" };
+        private static readonly (string Id, string Socket, bool InFarRig)[] Redesign49Set3Sockets =
+        {
+            ("SlimeMonarch", "Sac_L", true), ("SlimeMonarch", "Sac_R", true), ("SlimeMonarch", "Slosh", true),
+            ("PackAlpha", "Mane_L", true), ("PackAlpha", "Mane_R", true), ("Skyray", "Jaw", false), ("RayBoss", "Jaw", false),
+        };
+
+        [Test]
+        public void Redesign49Set3Rows_ShareTheNewModel_AndKeepTheirSockets()
+        {
+            foreach (string id in Redesign49Set3CorruptedRows)
+            {
+                AssertCorruptedRowSharesModel(id);
+            }
+
+            foreach ((string id, string socket, bool inFarRig) in Redesign49Set3Sockets)
+            {
+                var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}.asset");
+                Assert.IsTrue(HasNode(art.Model.transform, socket), $"{id}: no {socket} socket");
+                if (inFarRig)
+                {
+                    Assert.IsTrue(HasNode(art.Lod1.transform, socket), $"{id}: no {socket} socket in the far rig");
+                }
+            }
+
+            var monarch = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/SlimeMonarch.asset");
+            int spawn = monarch.IndexOf(ModelClipRole.Power, "Sac_L");
+            Assert.GreaterOrEqual(spawn, 0, "SlimeMonarch: no spawn clip on the Sac_L spout");
+        }
+
         private static void AssertCorruptedRowSharesModel(string id)
         {
             var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}.asset");

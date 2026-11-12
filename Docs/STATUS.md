@@ -7168,3 +7168,73 @@ Queen's crown crystals on the head. No floating parts, no pink materials. Consol
 3. Impact parts without a sheet (for example the boss pulse's sparks) stay invisible as before; give them a sheet in their
    `ImpactVfxDefinition` if they should show.
 4. Low maps of the unmirrored Brood Mother and Queen go soft at the deepest zoom (section 1).
+
+## Round 49 import (set 3): the 49E wolves, rays, Slime Monarch, Cinder Matriarch and Knitback in the game (2026-11-12)
+
+Not committed. Only the 49E rows Remco approved: Prowler, PackAlpha, Skyray, RayBoss (export StormMatriarch, worn by the Sky
+Sovereign), SlimeMonarch, CinderMatriarch and Knitback, plus the corrupted rows of all of them except the Cinder Matriarch. Not
+synced: Bulwark, CrystalWarlord, Shattered, SealedOne, Shardback (round 49F, still in Blender). No generator run, nothing under
+`ArtSource/` exports or `Tools/Blender/` touched. Save `progress.json` **2eca347e** copied aside before both Play Mode runs and
+verified after each.
+
+### 1. Import (`Tools/PlayTest/Scripts/ApplyRedesign49Set3.cs`, `BlenderArtBuilder.RebuildOnly`)
+
+- 13 rows rebuilt (7 + 6 corrupted), worn by 6 enemies (Prowler, PackAlpha, Skyray, SkySovereign, SlimeMonarch,
+  CinderMatriarch); Knitback is art-only like the Slagstrider. Seven exports synced; 32 materials changed (detail scales from the
+  new reports; the wolves' two detail families swapped to membrane, chitin as the 49E table says). `ApplyRedesign49Set3.Report`
+  prints the same description without rebuilding (used for the before state).
+- Renderers match the 49E table: Prowler 3519/1697 (Face 314/86, Claws 156/76), PackAlpha 14184/5999 (Face 1798/558, Claws
+  908/318), Skyray 3873/1699 with 23/12 bones, StormMatriarch 13391/5997 with 27/16 bones (Face 2150/558, Claws 344/128),
+  SlimeMonarch 13000/6000 with **14/12 bones (Slosh in both rigs)**, CinderMatriarch 23136/9000, Knitback 3912/1700.
+- Sockets: SlimeMonarch `Sac_L` (-0.207, 0.532, 0.235) / `Sac_R` (0.192, 0.532, 0.213) unchanged in both rigs, the Spawn clip
+  still on `Sac_L`; `Slosh` (0, 0.664, 0.356). PackAlpha `Mane_L/R` moved with the neck (y 0.800 -> 1.015, z -0.511 -> -0.544),
+  both rigs. The rays' new `Jaw` is in the near rig only (Skyray (0, -0.034, -0.360), ray boss (0, -0.063, -0.703)). The ray
+  boss's tail laser has no socket in Unity (beam from `BossAbilities.LaserOrigin`, the body position plus the beam height), so
+  nothing to move; `Tail_5` sits further back since 49A (Skyray z 1.12 -> 1.28, boss 2.516 -> 2.590). The wolves' moved rest
+  bones arrived (Prowler Pelvis y 0.345 -> 0.485, PackAlpha Pelvis 0.569 -> 0.800).
+- `Data/Art/*.asset`: `_height` re-measured by the builder: Prowler 0.685 -> 0.702, PackAlpha 1.338 -> 1.332, Knitback 0.709 ->
+  0.796, RayBoss 0.336 -> 0.335, SlimeMonarch/Skyray/CinderMatriarch unchanged (0.937/0.140/3.067). Move distances from the
+  reports: Prowler 1.19 -> **1.429**, PackAlpha 1.907 -> **2.2**, Knitback 0.194 -> 0.25. Plus default-valued round-47/49 fields.
+- Gait (`r47_gait_table.cs`, speed / (distance x scale) x clip length): Prowler Run 0.64 (0.32 chilled, 1.03 hasted), PackAlpha
+  Run 0.51 (0.25 / 0.81), SlimeMonarch 1.11, CinderMatriarch Walk 0.72. All inside `CreatureClips`' 0.15-6 clamp at base,
+  chilled and hasted speed, so the clip plays at its exact authored ground speed and the feet plant.
+
+### 2. Regression found: the Prowler and the Slime Monarch lost their Strike clip
+
+The 49A/49E exports no longer contain the round-36 `Strike` (Prowler, `build_attacks36.py`) and round-31 `Strike` (Slime
+Monarch, impact frame 13): the 49E table lists only the base clips, and the round-48 reports had `Strike`. The builder skips a
+catalog clip the FBX lacks, so both rows (and their corrupted rows) have no Attack clip now and `EnemyView` falls back to the
+procedural attack pose for them again. Fix on the Blender side: re-run the attack pass on the new rigs
+(`build_attacks36.py --only Prowler` and the slug strike for the Slime Monarch), then re-run this import. Not fixed here (no
+`Tools/Blender/` or export edits).
+
+### 3. Stills (`r49_shots.sh`, Level_C1_01, no waves, 1920x1080, inspection light x1.8)
+
+`ArtSource/Previews/QA/r49_ingame_<Name>.png`, `_side` and `_game` for Prowler, PackAlpha, Skyray, SkySovereign, SlimeMonarch and
+CinderMatriarch; moving stills `r49_ingame_Prowler_move(_side).png` (posed at 30 % of Run, mid-stride) and
+`r49_ingame_Skyray_move(_side).png` (30 % of Dive). `r49_shots.sh` takes an optional `PROBE=<file.cs>` run per creature;
+`r49s3_bar_probe.cs` reports the health bar against the top of the drawn body.
+Seen: the Prowler is a gaunt dark-rust wolf with a low head, glowing eyes and a ragged spiky tail, long legs mid-stride with
+the paws on the ground; the Pack Alpha is charcoal with the black spike crest and glowing seams, clearly bigger. The rays show the
+new head with its darker mouth crescent and tusks; from the play camera the slit is a thin line (the Dive pose does not show the
+open jaw from above, as 49E expected). The Slime Monarch's glowing acid vat with its hoops reads from above, spouts at the sacs,
+stalk eyes, slime foot. The Cinder Matriarch's hood shards sit on the hood. No floating parts, no pink.
+Health bars (probe, bar minus body top): Prowler +0.24, PackAlpha +0.25, SlimeMonarch +0.25, CinderMatriarch +0.25, Skyray +0.10
+above the drawn body. **Sky Sovereign: the bar is 0.74 below the top of its drawn bounds** (the up-curled tail and wings) and was
+not visible in the stills; its height did not change in this import (0.336 -> 0.335), so this is older than set 3. Console
+0 errors, 0 warnings on both runs.
+
+### 4. Tests
+
+- `CreatureArtTests.Redesign49Set3Rows_ShareTheNewModel_AndKeepTheirSockets`: six corrupted rows share model, far model, parts
+  and height; `Sac_L`, `Sac_R`, `Slosh`, `Mane_L`, `Mane_R` in both rigs, `Jaw` in the rays' near rigs; the Slime Monarch's spawn
+  clip still sits on `Sac_L`.
+- EditMode suite on w6: **832 tests, 780 passed, 52 skipped, 0 failed** (was 831; +1). Recompile: 0 errors, 0 warnings.
+
+### Open points (round 49 import, set 3)
+
+1. Prowler and Slime Monarch Strike clips are missing from the new exports (section 2): Blender re-run needed.
+2. Sky Sovereign health bar sits inside its body silhouette (section 3); a bar height from the body's flight pose (or a per-art
+   bar margin) would fix it.
+3. The cycle-rate readout in `r49s3_bar_probe.cs` reads 1.00 while time is frozen for the stills; the gait numbers above come
+   from the data (`r47_gait_table.cs`).

@@ -2,9 +2,9 @@
   "asset": "StormMatriarch",
   "base_species": "Skyray",
   "palette": "cool",
-  "game_tris": 13446,
-  "source_tris": 777884,
-  "bones": 26,
+  "game_tris": 13391,
+  "source_tris": 829768,
+  "bones": 27,
   "texture_size": 1024,
   "low_texture_size": 512,
   "maps": [
@@ -14,21 +14,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 316,
-    "folded_fallback_faces": 669,
-    "mirrored_faces": 5106,
-    "uv_coverage": 0.541,
-    "world_per_uv": 3.2435017459712783
+    "islands": 338,
+    "folded_fallback_faces": 313,
+    "mirrored_faces": 4843,
+    "uv_coverage": 0.542,
+    "world_per_uv": 3.3793778043254785
   },
   "detail": {
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 21.3,
+      "tiling": 22.2,
       "mask": "B"
     },
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 28.5,
+      "tiling": 29.6,
       "mask": "A"
     }
   },
@@ -46,7 +46,7 @@
   "unity_scale": 0.72,
   "lod1": {
     "fbx": "StormMatriarch_LOD1.fbx",
-    "tris": 6000,
+    "tris": 5997,
     "bones": 16
   },
   "r45_detail": {
@@ -55,45 +55,45 @@
         "object": "StormMatriarch_Face",
         "material": "StormMatriarch_Face_Mat",
         "maps": "StormMatriarch_Face_*.png (1024, Low 512)",
-        "tris": 1736,
+        "tris": 2150,
         "lod1_object": "StormMatriarch_Face_LOD1",
-        "lod1_tris": 560,
-        "source_tris": 57868,
+        "lod1_tris": 558,
+        "source_tris": 58232,
         "uv": {
-          "islands": 44,
+          "islands": 47,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 868,
-          "uv_coverage": 0.701,
-          "world_per_uv": 0.3192604727924988
+          "mirrored_faces": 1075,
+          "uv_coverage": 0.654,
+          "world_per_uv": 0.33383691114901515
         },
-        "symmetry_error": 0.008784
+        "symmetry_error": 0.016915
       },
       "Claws": {
         "object": "StormMatriarch_Claws",
         "material": "StormMatriarch_Claws_Mat",
         "maps": "StormMatriarch_Claws_*.png (1024, Low 512)",
-        "tris": 451,
+        "tris": 344,
         "lod1_object": "StormMatriarch_Claws_LOD1",
-        "lod1_tris": 319,
-        "source_tris": 20172,
+        "lod1_tris": 128,
+        "source_tris": 19568,
         "uv": {
-          "islands": 14,
+          "islands": 12,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 124,
-          "uv_coverage": 0.605,
-          "world_per_uv": 0.22786150365871816
+          "mirrored_faces": 113,
+          "uv_coverage": 0.664,
+          "world_per_uv": 0.2080107329071336
         },
-        "symmetry_error": 0.0
+        "symmetry_error": 0.00568
       }
     },
-    "body_tris": 13446,
-    "extra_tris": 2187,
-    "extra_share": 0.163,
-    "body_lod1_tris": 6000,
-    "extra_lod1_tris": 879,
-    "extra_lod1_share": 0.146,
+    "body_tris": 13391,
+    "extra_tris": 2494,
+    "extra_share": 0.186,
+    "body_lod1_tris": 5997,
+    "extra_lod1_tris": 686,
+    "extra_lod1_share": 0.114,
     "clips": [
       "Death",
       "Fly",
@@ -102,6 +102,6 @@
       "Release"
     ],
     "unity": "ExtraParts { \"Face\", \"Claws\" }: objects StormMatriarch_<Part> (+ _LOD1 in StormMatriarch_LOD1.fbx), maps StormMatriarch_<Part>_*.png (+ Low/)",
-    "note": "round 45: wet eyes on the eye pits, pincer saw teeth, mouth teeth, pincer and trident points; bones, clips and events unchanged"
+    "note": "round 49A: wet eyes on the head, mouth teeth on both lips (Jaw bone new), fin-tip talons, spade barbs"
   }
 }
