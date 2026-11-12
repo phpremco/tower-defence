@@ -1,0 +1,52 @@
+{
+ "base": "2e4fc688",
+ "results": [
+  {
+   "creature": "SealedOne",
+   "ok": true,
+   "issues": [],
+   "notes": [
+    "fbx: new bones ['Jaw']",
+    "lod: new bones ['Jaw']"
+   ],
+   "clips_before": {
+    "Adapt": 64,
+    "Climb_Down": 132,
+    "Climb_Loop": 100,
+    "Climb_Up": 132,
+    "Death": 150,
+    "Dive_Into_Liquid": 90,
+    "Hit": 18,
+    "Idle": 120,
+    "OnBase_Loop": 96,
+    "Release": 170,
+    "Rise": 150,
+    "Rise_OntoBase": 130,
+    "Roar": 72,
+    "Submerged_Loop": 96,
+    "Summon": 90,
+    "Surface_Burst": 100,
+    "Walk": 80
+   },
+   "clips_after": {
+    "Adapt": 64,
+    "Climb_Down": 132,
+    "Climb_Loop": 100,
+    "Climb_Up": 132,
+    "Death": 150,
+    "Dive_Into_Liquid": 90,
+    "Hit": 18,
+    "Idle": 120,
+    "OnBase_Loop": 96,
+    "Release": 170,
+    "Rise": 150,
+    "Rise_OntoBase": 130,
+    "Roar": 72,
+    "Submerged_Loop": 96,
+    "Summon": 90,
+    "Surface_Burst": 100,
+    "Walk": 80
+   }
+  }
+ ]
+}

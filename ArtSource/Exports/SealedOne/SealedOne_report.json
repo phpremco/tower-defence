@@ -1,11 +1,11 @@
 {
   "asset": "SealedOne",
-  "game_tris": 34515,
+  "game_tris": 34487,
   "tris_per_material": [
-    25515,
-    9000
+    25501,
+    8986
   ],
-  "source_tris": 2528376,
+  "source_tris": 3005548,
   "bones": 33,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -21,44 +21,44 @@
   ],
   "uv": {
     "SealedOne": {
-      "islands": 141,
-      "closed_islands_cut": 0,
-      "folded_fallback_faces": 166,
-      "mirrored_faces": 12476,
-      "uv_coverage": 0.608,
-      "world_per_uv": 8.986877098307486
+      "islands": 188,
+      "closed_islands_cut": 2,
+      "folded_fallback_faces": 0,
+      "mirrored_faces": 12506,
+      "uv_coverage": 0.568,
+      "world_per_uv": 10.230357252153944
     },
     "SealedOne_Seal": {
-      "islands": 70,
+      "islands": 102,
       "closed_islands_cut": 3,
-      "folded_fallback_faces": 278,
-      "mirrored_faces": 4303,
-      "uv_coverage": 0.707,
-      "world_per_uv": 5.5263042506186775
+      "folded_fallback_faces": 79,
+      "mirrored_faces": 4270,
+      "uv_coverage": 0.65,
+      "world_per_uv": 6.5376824015562125
     }
   },
   "detail": {
     "SealedOne": {
       "rock": {
         "map": "Detail_Rock_Normal.png",
-        "tiling": 16.6,
+        "tiling": 18.9,
         "mask": "B"
       },
       "membrane": {
         "map": "Detail_Membrane_Normal.png",
-        "tiling": 25.0,
+        "tiling": 28.4,
         "mask": "A"
       }
     },
     "SealedOne_Seal": {
       "rock": {
         "map": "Detail_Rock_Normal.png",
-        "tiling": 17.1,
+        "tiling": 20.2,
         "mask": "B"
       },
       "crystal": {
         "map": "Detail_Crystal_Normal.png",
-        "tiling": 29.2,
+        "tiling": 34.6,
         "mask": "A"
       }
     }
@@ -83,9 +83,9 @@
     "Release": 170
   },
   "size_m": [
-    6.893,
-    6.901,
-    7.199
+    6.894,
+    7.152,
+    7.766
   ],
   "unity_scale": 1.0,
   "scale_keyed_bones": [
@@ -95,7 +95,7 @@
   ],
   "lod1": {
     "fbx": "SealedOne_LOD1.fbx",
-    "tris": 13997,
+    "tris": 13999,
     "bones": 30
   },
   "pivot": "ground at the centre of the seal; the body extends ~0.7 below the ground (hidden by terrain)",
@@ -108,7 +108,7 @@
   },
   "summon": {
     "peak_frame": 44,
-    "socket": "Head (the violet column between the face plates)"
+    "socket": "Head (the maw's throat lies 0.4 m forward and 0.55 m up of the Head bone's head at rest)"
   },
   "death": {
     "seal_shut_frame": 128,
@@ -120,31 +120,41 @@
     0.7,
     0.28
   ],
+  "round52": {
+    "maw": "three petals Plate_R / Plate_L / Jaw hinge on the funnel lip and open outwards with `plates` (rest opening 4 deg)",
+    "throat_centre_m": [
+      0.0,
+      -0.82,
+      3.95
+    ],
+    "halo": "Ring_1..3 on hubs round an axle behind the hood (bone heads at the hubs)",
+    "upper_arms": "UArm_* keyed, deform nothing (no geometry)"
+  },
   "round45_detail": {
     "parts": {
       "Eyes": {
         "object": "SealedOne_Eyes",
         "material": "SealedOne_Eyes_Mat",
         "maps": "SealedOne_Eyes_*.png (1024, Low 512)",
-        "tris": 1702,
-        "source_tris": 378052,
+        "tris": 900,
+        "source_tris": 87264,
         "uv": {
-          "islands": 14,
+          "islands": 10,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 851,
-          "uv_coverage": 0.625,
-          "world_per_uv": 1.421600127951914
+          "mirrored_faces": 450,
+          "uv_coverage": 0.587,
+          "world_per_uv": 0.7088549665416036
         },
         "detail": {
           "chitin": {
             "map": "Detail_Chitin_Normal.png",
-            "tiling": 19.7,
+            "tiling": 9.8,
             "mask": "B"
           },
           "membrane": {
             "map": "Detail_Membrane_Normal.png",
-            "tiling": 14.8,
+            "tiling": 7.4,
             "mask": "A"
           }
         },
@@ -153,75 +163,75 @@
           "membrane"
         ],
         "bones": [
-          "Head",
-          "Plate_L",
-          "Plate_R"
+          "Head"
         ],
-        "note": "round 49C: two pairs of socketed plate eyes under brows + the seam eye",
+        "note": "round 52: three pairs of socketed brow eyes over the maw",
         "lod1_object": "SealedOne_Eyes_LOD1",
-        "lod1_tris": 456
+        "lod1_tris": 300
       },
       "Teeth": {
         "object": "SealedOne_Teeth",
         "material": "SealedOne_Teeth_Mat",
         "maps": "SealedOne_Teeth_*.png (1024, Low 512)",
-        "tris": 1506,
-        "source_tris": 135840,
+        "tris": 2418,
+        "source_tris": 300148,
         "uv": {
-          "islands": 9,
+          "islands": 25,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 753,
-          "uv_coverage": 0.546,
-          "world_per_uv": 0.8418932295694609
+          "mirrored_faces": 1208,
+          "uv_coverage": 0.66,
+          "world_per_uv": 1.0849496325208994
         },
         "detail": {
-          "crystal": {
-            "map": "Detail_Crystal_Normal.png",
-            "tiling": 10.0,
-            "mask": "B"
-          },
           "chitin": {
             "map": "Detail_Chitin_Normal.png",
-            "tiling": 11.7,
+            "tiling": 15.1,
+            "mask": "B"
+          },
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 12.9,
             "mask": "A"
           }
         },
         "families": [
-          "crystal",
-          "chitin"
+          "chitin",
+          "crystal"
         ],
         "bones": [
           "Head",
-          "Jaw"
+          "Jaw",
+          "Plate_L",
+          "Plate_R"
         ],
-        "note": "round 49F: two interlocking fang rows rooted in the maw's gums",
+        "note": "round 52: petal-edge rows (Plate_R/L, Jaw) and two throat rings (Head)",
         "lod1_object": "SealedOne_Teeth_LOD1",
-        "lod1_tris": 420
+        "lod1_tris": 698
       },
       "Claws": {
         "object": "SealedOne_Claws",
         "material": "SealedOne_Claws_Mat",
         "maps": "SealedOne_Claws_*.png (1024, Low 512)",
-        "tris": 1724,
-        "source_tris": 114432,
+        "tris": 1545,
+        "source_tris": 147328,
         "uv": {
-          "islands": 25,
+          "islands": 19,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 15,
+          "folded_fallback_faces": 0,
           "mirrored_faces": 670,
-          "uv_coverage": 0.564,
-          "world_per_uv": 1.1610747361761138
+          "uv_coverage": 0.69,
+          "world_per_uv": 1.144400900379589
         },
         "detail": {
           "chitin": {
             "map": "Detail_Chitin_Normal.png",
-            "tiling": 16.1,
+            "tiling": 15.9,
             "mask": "B"
           },
           "crystal": {
             "map": "Detail_Crystal_Normal.png",
-            "tiling": 13.8,
+            "tiling": 13.6,
             "mask": "A"
           }
         },
@@ -237,20 +247,20 @@
         ],
         "note": "fingertip talons + elbow spurs",
         "lod1_object": "SealedOne_Claws_LOD1",
-        "lod1_tris": 560
+        "lod1_tris": 497
       }
     },
     "tris_before": {
-      "lod0": 34515,
-      "lod1": 13997
+      "lod0": 34487,
+      "lod1": 13999
     },
     "tris_after": {
-      "lod0": 39447,
-      "lod1": 15433
+      "lod0": 39350,
+      "lod1": 15494
     },
     "increase": {
-      "lod0": 0.143,
-      "lod1": 0.103
+      "lod0": 0.141,
+      "lod1": 0.107
     },
     "extra_objects": [
       "SealedOne_Eyes",
@@ -310,18 +320,18 @@
         "note": "in place under the surface; only the violet glow shows",
         "frames": 96,
         "loop": true,
-        "depth_m": 6.001,
+        "depth_m": 6.687,
         "mesh_top_m": -0.2
       },
       "Dive_Into_Liquid": {
         "end_offset_forward_m": 2.0,
-        "depth_m": 6.001,
+        "depth_m": 6.687,
         "note": "ends in Submerged_Loop frame 0 moved end_offset forward",
         "frames": 90,
         "loop": false
       },
       "Surface_Burst": {
-        "start_depth_m": 6.001,
+        "start_depth_m": 6.687,
         "end_offset_forward_m": 2.4,
         "hands_slam_frame": 24,
         "note": "start under the exit point; at the end move the transform by end_offset_forward",
@@ -381,7 +391,7 @@
     ],
     "climb_height_m": 2.0,
     "liquid": "void pool (any liquid)",
-    "submerged_depth_m": 6.001,
+    "submerged_depth_m": 6.687,
     "hand_markers": "IK_LArm_L / IK_LArm_R at the lower hands' rest contacts",
     "seal_stones": "Seal_1..7 and Rubble (the heaved ground ring, moved off Root in round 28): scale 1 in Rise only (the entrance out of the seal); scale 0 in every other clip (round 29: keyed explicitly in all clips)",
     "phase_looks": {

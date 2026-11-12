@@ -3309,3 +3309,27 @@ interlocking rows of ivory fangs rooted in the gums, a near-black palate and ton
 gullet. It stands a little open at rest (a dark slot crossed by fangs) and opens with the face plates (roar, summon,
 rise, hit: 0.9 x the plate angle); it never closes past rest, and every fang stops short of the other gum. The skull
 dips 16 degrees instead of 24 so the face meets the play camera. The fangs that hung off the plates' edges are gone.
+
+# Round 52: the Sealed One, the opening seal (concept B, 2026-11-12)
+
+Remco picked concept B of round 49G and asked for "much more epic, as long as it's clear that there is a head". Two
+earlier builds failed by stacking parts until nobody could tell head from body. The rules for this one were: one head,
+one mouth, nothing passing through either, and value contrast first.
+
+- **Head**: a near-black hood of sealed stone.
+  - It is one shell of revolution round the maw axis. The outside is the hood and the inside is the face funnel, so
+    there is no step between a dome and a ring.
+  - A crest and two cowl folds keep it from reading as a ball.
+  - A gold seal collar rings the face and three pairs of small violet eyes sit on the brow. Together they say "front
+    of the head" from any angle.
+- **Mouth**: the face is the mouth.
+  - Three bone-white petals (the brightest value on the creature) meet in a snout and open outwards about hinges on
+    the funnel lip.
+  - They use the old face-plate bones, so the existing clips drive the maw.
+  - Inside are rooted ivory teeth along the petal edges, two inner rings of teeth in the funnel and a violet gullet.
+  - The seal glyph is on each petal's inner face. It is hidden when the maw is shut and lit gold when it opens: the
+    seal is literally what opens.
+- **Halo**: behind the head only. Broken flat seal rings sit on hubs round an axle out of the back of the hood, so they
+  turn and flare while staying attached, and they never cross the face.
+- **Framing**: massive planted arms with shackles and broken chains (it was bound), stone mantles, and the seal stones
+  round the fissure. The thin praying arms are gone: in front of the maw they were the clutter that hid the face.

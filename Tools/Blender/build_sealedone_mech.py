@@ -69,7 +69,11 @@ def pose(sink=0.0, travel=0.0, hidden=False, **kw):
 def split_rubble(boss):
     """The heaved rubble ring round the fissure was skinned to Root (it never moved in round 16). Its vertices move
     to their own bone `Rubble` (child of Root, at the pivot) so the clips that leave the seal can hide it with the
-    seal stones."""
+    seal stones. Round 52: only the rubble islands (islands led by Root) move; every other vertex that picked up a
+    little Root weight from skinning (the waist tendrils blend towards Body's parent) loses it and is renormalised,
+    otherwise those vertices were dragged to the collapsed Rubble bone under the ground (violet slivers from the
+    waist to the pivot in OnBase_Loop and Release)."""
+    import check_floating_parts as F
     boss.add_bones([("Rubble", Vector((0, 0, 0)), Vector((0, 0, 0.4)), "Root")], scale=True)
     for mesh in (boss.mesh, boss.lod_mesh):
         if mesh is None:
@@ -78,15 +82,31 @@ def split_rubble(boss):
         rub = mesh.vertex_groups.get("Rubble") or mesh.vertex_groups.new(name="Rubble")
         if root is None:
             continue
-        moved = []
+        names = {g.index: g.name for g in mesh.vertex_groups}
+        rubble = set()
+        for isl in F.islands(mesh.data):
+            if (F.dominant_bone(mesh, isl) or "") == "Root":
+                rubble.update(int(i) for i in isl)
+        moved, cleaned = 0, 0
         for v in mesh.data.vertices:
-            for g in v.groups:
-                if g.group == root.index and g.weight > 0:
-                    moved.append((v.index, g.weight))
-        for i, w in moved:
-            rub.add([i], w, "REPLACE")
-        root.remove([i for i, _ in moved])
-        C.log(mesh.name, "rubble vertices moved", len(moved))
+            ws = {names[g.group]: g.weight for g in v.groups if g.weight > 0}
+            if "Root" not in ws:
+                continue
+            if v.index in rubble:
+                rub.add([v.index], ws["Root"], "REPLACE")
+                root.remove([v.index])
+                moved += 1
+                continue
+            rest = {n: w for n, w in ws.items() if n != "Root"}
+            tot = sum(rest.values())
+            root.remove([v.index])
+            if tot <= 1e-6:
+                mesh.vertex_groups["Body"].add([v.index], 1.0, "REPLACE")
+            else:
+                for n, w in rest.items():
+                    mesh.vertex_groups[n].add([v.index], w / tot, "REPLACE")
+            cleaned += 1
+        C.log(mesh.name, "rubble vertices moved", moved, "stray Root weights removed", cleaned)
 
 
 def rest_hand(side):
@@ -240,7 +260,8 @@ def dive(depth, travel=2.0):
 
 def burst(depth, travel=2.4):
     """From the depth: the hands burst out first (frame 14) and slam onto the bank ahead (24), the torso is hauled
-    up and out with a roar, the rings unfold; ends standing `travel` ahead."""
+    up and out with a roar (round 52: the maw opens wide on the violet throat), the rings unfold; ends standing
+    `travel` ahead."""
     frames = 100
 
     def fn(poser):
@@ -250,7 +271,7 @@ def burst(depth, travel=2.4):
             x = travel * ease(20, 86, f)
             roar_ = pulse(f, 60, 74, 96)
             sp = pose(sink=z, travel=x, hidden=True, lean=R(14) * pulse(f, 20, 50, 80) - R(10) * roar_,
-                      head=R(14) * (1 - up) - R(16) * roar_, plates=R(34) * roar_, rings=0.45 + 0.55 * ease(50, 80, f),
+                      head=R(14) * (1 - up) - R(16) * roar_, plates=R(46) * roar_, rings=0.45 + 0.55 * ease(50, 80, f),
                       spin=(f * 0.04, -f * 0.04, f * 0.03), uarm_up=R(20) * roar_)
             car = carried_hands(poser, sp, tuck=0.6)
             slam = {s: rest_hand(s) + at(0, travel, 0) for s in ("L", "R")}
