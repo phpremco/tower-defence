@@ -1,0 +1,67 @@
+{
+ "base": "2e4fc688",
+ "results": [
+  {
+   "creature": "Bat",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Death": 36,
+    "Fly": 13,
+    "Glide": 48,
+    "Hit": 12,
+    "Strike": 24
+   },
+   "clips_after": {
+    "Death": 36,
+    "Fly": 13,
+    "Glide": 48,
+    "Hit": 12,
+    "Strike": 24
+   }
+  },
+  {
+   "creature": "Skyray",
+   "ok": true,
+   "issues": [],
+   "notes": [
+    "fbx: new bones ['Jaw']"
+   ],
+   "clips_before": {
+    "Death": 40,
+    "Dive": 24,
+    "Fly": 42,
+    "Hit": 12,
+    "Idle": 60
+   },
+   "clips_after": {
+    "Death": 40,
+    "Dive": 24,
+    "Fly": 42,
+    "Hit": 12,
+    "Idle": 60
+   }
+  },
+  {
+   "creature": "Shalebat",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Death": 36,
+    "Fly": 16,
+    "Glide": 48,
+    "Hit": 12,
+    "Strike": 24
+   },
+   "clips_after": {
+    "Death": 36,
+    "Fly": 16,
+    "Glide": 48,
+    "Hit": 12,
+    "Strike": 24
+   }
+  }
+ ]
+}

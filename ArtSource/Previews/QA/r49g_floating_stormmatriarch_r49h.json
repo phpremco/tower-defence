@@ -1,0 +1,143 @@
+{
+ "creature": "StormMatriarch",
+ "threshold_model_units": 0.005,
+ "unity_scale": 0.72,
+ "step": 2,
+ "burst_clips": [],
+ "exempt_bones": [],
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\StormMatriarch\\StormMatriarch.fbx",
+   "body": "StormMatriarch",
+   "poses": 128,
+   "islands": {
+    "StormMatriarch": 35,
+    "StormMatriarch_Claws": 34,
+    "StormMatriarch_Face": 31
+   },
+   "floating": [
+    {
+     "object": "StormMatriarch_Claws",
+     "island": 15,
+     "verts": 28,
+     "gap": 0.05171,
+     "bone": "Fin_L_A3",
+     "poses_floating": 82,
+     "clips": {
+      "Death": 0.0516,
+      "Fly": 0.0517,
+      "Hit": 0.0499,
+      "Idle": 0.0494
+     },
+     "pose": "Fly@33",
+     "size": 0.1155,
+     "centre": [
+      -1.905,
+      0.6176,
+      -0.2094
+     ]
+    },
+    {
+     "object": "StormMatriarch_Claws",
+     "island": 33,
+     "verts": 30,
+     "gap": 0.05171,
+     "bone": "Fin_R_A3",
+     "poses_floating": 82,
+     "clips": {
+      "Death": 0.0516,
+      "Fly": 0.0517,
+      "Hit": 0.0499,
+      "Idle": 0.0494
+     },
+     "pose": "Fly@33",
+     "size": 0.1182,
+     "centre": [
+      1.9039,
+      0.6177,
+      -0.2101
+     ]
+    },
+    {
+     "object": "StormMatriarch_Claws",
+     "island": 20,
+     "verts": 11,
+     "gap": 0.00797,
+     "bone": "Tail_5",
+     "poses_floating": 128,
+     "clips": {
+      "rest": 0.0068,
+      "Death": 0.0068,
+      "Fly": 0.0071,
+      "Hit": 0.0069,
+      "Idle": 0.008,
+      "Release": 0.0071
+     },
+     "pose": "Idle@47",
+     "size": 0.0491,
+     "centre": [
+      0.1243,
+      3.3613,
+      0.0606
+     ]
+    },
+    {
+     "object": "StormMatriarch_Claws",
+     "island": 3,
+     "verts": 11,
+     "gap": 0.00758,
+     "bone": "Tail_5",
+     "poses_floating": 121,
+     "clips": {
+      "rest": 0.0066,
+      "Death": 0.0076,
+      "Fly": 0.0069,
+      "Hit": 0.007,
+      "Idle": 0.0075,
+      "Release": 0.0066
+     },
+     "pose": "Death@25",
+     "size": 0.0476,
+     "centre": [
+      -0.0041,
+      3.0466,
+      0.6302
+     ]
+    },
+    {
+     "object": "StormMatriarch_Claws",
+     "island": 12,
+     "verts": 34,
+     "gap": 0.00569,
+     "bone": "Fin_L_A3",
+     "poses_floating": 5,
+     "clips": {
+      "Fly": 0.0057
+     },
+     "pose": "Fly@33",
+     "size": 0.1526,
+     "centre": [
+      -1.9048,
+      0.4879,
+      -0.2181
+     ]
+    }
+   ],
+   "burst_only": [],
+   "exempted": []
+  },
+  "LOD1": {
+   "file": "ArtSource\\Exports\\StormMatriarch\\StormMatriarch_LOD1.fbx",
+   "body": "StormMatriarch_LOD1",
+   "poses": 128,
+   "islands": {
+    "StormMatriarch_Claws_LOD1": 2,
+    "StormMatriarch_Face_LOD1": 9,
+    "StormMatriarch_LOD1": 35
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": []
+  }
+ }
+}

@@ -1,0 +1,36 @@
+{
+ "creature": "Shalebat",
+ "threshold_model_units": 0.005,
+ "unity_scale": 1.0,
+ "step": 1,
+ "burst_clips": [],
+ "exempt_bones": [],
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\Shalebat\\Shalebat.fbx",
+   "body": "Shalebat",
+   "poses": 142,
+   "islands": {
+    "Shalebat": 8,
+    "Shalebat_Claws": 16,
+    "Shalebat_Face": 14
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": []
+  },
+  "LOD1": {
+   "file": "ArtSource\\Exports\\Shalebat\\Shalebat_LOD1.fbx",
+   "body": "Shalebat_LOD1",
+   "poses": 142,
+   "islands": {
+    "Shalebat_Claws_LOD1": 4,
+    "Shalebat_Face_LOD1": 2,
+    "Shalebat_LOD1": 8
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": []
+  }
+ }
+}

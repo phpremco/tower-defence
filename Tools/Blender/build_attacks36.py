@@ -26,6 +26,17 @@ The Mireleech's mouth reaches by stretching its front segments (slug squash and 
 height L^-0.35), so its chain bones now carry scale keys and every old clip holds them at scale 1. The Shardback's
 shard bones keep their constant scale-1 keys in the new clip (Unity hides shed shards by scale).
 
+Round 49I (Remco: "when the bats are attacking they should still be flying, they seem to stop flying as they
+attack"): Unity keeps the Fly cycle running under a flyer's strike, but the strike plays at full weight, so its own
+wing keys won (the bat flicked the wings once and held them down, the Skyray swept its fins down and held them).
+The species with a `wing_beat` entry (Bat, Skyray) now take every wing bone straight from Fly, time-warped so the
+clip holds a whole number of beats: it leaves Fly frame 0 at Fly's own rate, runs a little faster through the
+middle and lands on Fly frame 0 again at Fly's rate (`wing_phase`), so both seams with the Fly cycle match in pose
+and in speed. The strike is authored on the Body, Head, Jaw and Tail only, blended from the beating Fly pose
+instead of a still frame; the only wing addition is a short eased extra push on the downbeat that carries the
+strike (`*_downbeat`), never a hold. Round 49I follow-up: the Shalebat too, and these three use `Beat(release=5)`
+so the launch out of the coil has no frame-6 snap.
+
 Opens ArtSource/Blend/<Name>.blend (made by the species' build script; run that first), keys the full and the LOD1
 rig through the builder's own pose functions, exports <Name>.fbx and <Name>_LOD1.fbx with every clip, merges a
 `round36` block into the report and saves the .blend. Idempotent: the clip is re-keyed on every run.
@@ -90,25 +101,44 @@ class Beat:
     then a damped spring back (one small overshoot below zero) that has settled by the end.
     coil(f): 0..1 while the body gathers (only before the impact), contact(f): a short pulse around the impact."""
 
-    def __init__(self, frames=24, impact=10, coil_end=5, hold=2, coil=0.25, power=2.2, decay=0.3, freq=0.48):
+    def __init__(self, frames=24, impact=10, coil_end=5, hold=2, coil=0.25, power=2.2, decay=0.3, freq=0.48, blend_in=3,
+                 release=0):
         self.frames, self.impact, self.coil_end, self.hold = frames, impact, coil_end, hold
         self.coil_amt, self.power, self.decay, self.freq = coil, power, decay, freq
+        # Round 49D: frames to blend in from the standing pose (an attack that already starts from rest, like the
+        # Bulwark's eased wind-up, blends in faster so the two ramps do not multiply into a jerk).
+        self.blend_in = blend_in
+        # Round 49I: `release` > 0 smooths the launch out of the coil. The default lunge leaves the coil at full
+        # speed (the coil eases to a stop, the next frame moves at the curve's top speed) and the coil terms, which
+        # weigh about five times as much per unit of reach as the lunge terms, collapse in that one frame: a snap on
+        # frame 6 (the flyers' tails). With a release the lunge eases in and out (smootherstep, as fast in the middle)
+        # and the coil lets go over `release` frames of its own.
+        self.release = release
 
     def r(self, f):
         if f <= self.coil_end:
             return -self.coil_amt * sstep(0, self.coil_end, f)
+        if self.release and f <= self.impact:
+            return -self.coil_amt + (1 + self.coil_amt) * smoother(self.coil_end, self.impact, f)
         if f <= self.impact:
             u = (f - self.coil_end) / (self.impact - self.coil_end)
             return -self.coil_amt + (1 + self.coil_amt) * (1 - (1 - u) ** self.power)
         if f <= self.impact + self.hold:
             return 1.0
         g = f - self.impact - self.hold
+        if self.release:
+            # The spring leaves the held contact from rest instead of at full speed (slope 0 at g = 0, then g - 1.5).
+            g = g * g / (g + 1.5)
         return math.exp(-self.decay * g) * math.cos(self.freq * g) * (1 - sstep(self.frames - 5, self.frames - 1, f))
 
     def ext(self, f):
         return max(0.0, self.r(f))
 
     def coil(self, f):
+        if self.release:
+            if f <= self.coil_end:
+                return sstep(0, self.coil_end, f)
+            return 1.0 - smoother(self.coil_end, self.coil_end + self.release, f)
         return max(0.0, -self.r(f)) / self.coil_amt if f < self.impact else 0.0
 
     def back(self, f):
@@ -124,7 +154,7 @@ class Beat:
 
     def envelope(self, f):
         """Blend weight from the standing pose into the attack and back: 0 on the first and last frame."""
-        return sstep(0, 3, f) * (1 - sstep(self.frames - 4, self.frames, f))
+        return sstep(0, self.blend_in, f) * (1 - sstep(self.frames - 4, self.frames, f))
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -238,21 +268,45 @@ def cragback_strike(m, poser, bt):
 
 def bulwark_strike(m, poser, bt):
     """An overhead chop: the spine twists away and leans back as the sword arm cocks high behind the head, then the
-    torso unwinds and leans in, the blade comes down through the target and holds there, the shield tucks in."""
-    def spec(f):
-        r, c, k = bt.r(f), bt.coil(f), bt.contact(f)
+    torso unwinds and leans in, the blade comes down through the target and holds there, the shield tucks in.
+
+    Round 49D (Remco: "the animation smoother"): the chop was 115 degrees of arm in four frames (61 degrees in one
+    frame). The cock now peaks lower (70 degrees) at frame 5.5 and the blade falls over the four and a half frames to
+    the impact on a smootherstep, the reach uses a gentler power curve (Bulwark beat), and the blade follows through
+    past the target after the impact (the body and the tail carry on with it) before the spring settles it."""
+    top = 5.5
+
+    def authored(f):
+        r = bt.r(f)
         e = max(0.0, r)
-        # Round 18: the coil collapses from 1 to 0 in the frame after coil_end, which dropped the cocked sword arm
-        # 108 degrees in one frame (neighbours ~20). The blade now falls from the cock to the target over the frames
-        # up to the impact: still a fast chop, without the one-frame pop.
-        cock = c if f <= bt.coil_end else 1 - sstep(bt.coil_end, bt.impact, f)
-        specs = m.body_specs(offset=Vector((0, -0.04 * r, m.CROUCH - 0.03 * e - 0.01 * c)), lean=d(6) + d(10) * r,
-                             twist=-d(20) * c + d(14) * e, neck=-d(3) - d(4) * c + d(3) * e, head=d(4) * e,
-                             jaw=d(14) * c, tail=(d(8) * e, 1.0 + 2.0 * r, -d(4) + d(10) * e),
-                             sword=(d(5) + d(115) * cock + d(22) * e, d(6) + d(18) * cock, d(10) + d(70) * cock - d(4) * e),
-                             shield=(d(10) + d(20) * c + d(8) * e, d(4) + d(10) * c, d(15) + d(20) * c))
+        cock = sstep(0, top, f) if f <= top else 1 - smoother(top, bt.impact, f)
+        follow = pulse(f, bt.impact - 1, bt.impact + 2.5, bt.impact + 9)
+        # Round 49F (Remco: "neck, head and tail very static"): the head leads the blow. It keeps its eyes on the
+        # target while the chest winds away (counter-turn), then drops into the chop a frame and a half before the
+        # blade; the tail swings out against the twist. The chains (follow_through.py) add the lag and overshoot.
+        lead = max(0.0, bt.r(f + 1.5))
+        specs = m.body_specs(offset=Vector((0, -0.04 * r - 0.012 * follow, m.CROUCH - 0.03 * e - 0.01 * cock)),
+                             lean=d(6) + d(10) * r + d(4) * follow, twist=-d(14) * cock + d(12) * e + d(5) * follow,
+                             neck=-d(3) - d(6) * cock + d(6) * lead, head=-d(4) * cock + d(11) * lead,
+                             head_yaw=d(11) * cock - d(6) * lead, head_roll=-d(4) * cock + d(5) * lead,
+                             jaw=d(14) * cock,
+                             tail=(-d(10) * cock + d(12) * e + d(6) * follow, 1.0 + 2.0 * r, -d(4) + d(12) * e),
+                             sword=(d(5) + d(70) * cock + d(18) * e + d(14) * follow, d(6) + d(12) * cock,
+                                    d(10) + d(34) * cock - d(4) * e - d(6) * follow),
+                             shield=(d(10) + d(20) * cock + d(8) * e, d(4) + d(10) * cock, d(15) + d(20) * cock))
         return poser.solve(m.place_legs(poser, specs, {key: lg.foot for key, lg in m.legs().items()}))
+
+    poses = m.FT.follow_frames(poser, [authored(f) for f in range(bt.frames + 1)], m.CHAINS)
+
+    def spec(f):
+        return poses[min(int(round(f)), bt.frames)]
     return spec
+
+
+def smoother(a, b, x):
+    """Smootherstep: zero speed and zero acceleration at both ends."""
+    t = min(1.0, max(0.0, (x - a) / (b - a)))
+    return t * t * t * (t * (6 * t - 15) + 10)
 
 
 def shardback_strike(m, poser, bt):
@@ -395,6 +449,40 @@ def wisp_strike(m, poser, bt, grounded):
 
 
 # ---------------------------------------------------------------------------------------------------------------
+# Round 49I: the wing beat inside a flyer's strike
+# ---------------------------------------------------------------------------------------------------------------
+
+def wing_phase(f, frames, fly_frames, beats):
+    """Fly phase (in beats) at clip frame f: Fly's own rate at both ends, `beats` whole beats over the clip.
+    The extra (or missing) part of a beat is spread with a smootherstep, whose slope is zero at both ends."""
+    return f / fly_frames + (beats - frames / fly_frames) * smoother(0, frames, f)
+
+
+def bat_downbeat(m, specs, f, bt):
+    """The downstroke that ends at the impact pushes a little deeper (Arm 12 degrees, Hand 6 at the bottom, eased
+    in and out over ten frames): power for the spit, the beat carries on through it."""
+    p = pulse(f, bt.impact - 6, bt.impact - 1, bt.impact + 4)
+    for side, sx in m.SIDES:
+        flap = Vector((0, -sx, 0))
+        specs[f"Arm_{side}"]["rot"].append((flap, -d(12) * p))
+        specs[f"Hand_{side}"]["rot"].append((flap, -d(6) * p))
+    return specs
+
+
+def skyray_downbeat(m, specs, f, bt):
+    """The downstroke through the impact pushes a little deeper (root 8 degrees, middle 5, eased over eleven
+    frames, the bottom just after the tail lands)."""
+    p = pulse(f, bt.impact - 3, bt.impact + 3, bt.impact + 8)
+    for side, sx in m.SIDES:
+        flap = Vector((0, -sx, 0))
+        for chain in m.CHAINS:
+            names = m.fin_chain(side, sx, chain)[0]
+            specs[names[0]]["rot"].append((flap, -d(8) * p))
+            specs[names[1]]["rot"].append((flap, -d(5) * p))
+    return specs
+
+
+# ---------------------------------------------------------------------------------------------------------------
 # The species
 # ---------------------------------------------------------------------------------------------------------------
 
@@ -409,18 +497,22 @@ SPECIES = {
                    old="Bite"),
     "Cragback": dict(script="build_cragback.py", clip="Strike", base="Idle", body="Body", beat=dict(coil=0.3, coil_end=6),
                      attack=cragback_strike, old="Slam"),
-    "Bulwark": dict(script="build_bulwark.py", clip="Strike", base="Idle", body="Pelvis", beat=dict(coil=0.3, coil_end=6),
+    "Bulwark": dict(script="build_bulwark.py", clip="Strike", base="Idle", body="Pelvis",
+                    beat=dict(coil=0.3, coil_end=5, power=1.5, blend_in=1),
                     attack=bulwark_strike, old="Slash"),
     "Shardback": dict(script="build_shardback.py", clip="Strike", base="Idle", body="Body", beat={},
                       attack=shardback_strike, old="Sting", hold_scale="shard_bones_in_shed_order"),
-    "Shalebat": dict(script="build_shalebat.py", clip="Strike", base="Glide", body="Body", beat={}, flyer=True,
-                     attack=lambda m, p, b: bat_strike(m, p, b, d(10)), old="Bolt"),
-    "Bat": dict(script="build_bat.py", clip="Strike", base="Glide", body="Body", beat={}, flyer=True,
-                attack=lambda m, p, b: bat_strike(m, p, b, d(8)), old="Bolt"),
+    "Shalebat": dict(script="build_shalebat.py", clip="Strike", base="Glide", body="Body", beat=dict(release=5),
+                     flyer=True, attack=lambda m, p, b: bat_strike(m, p, b, d(10)), old="Bolt",
+                     wing_beat=dict(prefixes=("Arm_", "Hand_", "Finger_"), beats=2, downbeat=bat_downbeat)),
+    "Bat": dict(script="build_bat.py", clip="Strike", base="Glide", body="Body", beat=dict(release=5), flyer=True,
+                attack=lambda m, p, b: bat_strike(m, p, b, d(8)), old="Bolt",
+                wing_beat=dict(prefixes=("Arm_", "Hand_", "Finger_"), beats=2, downbeat=bat_downbeat)),
     "Stinger": dict(script="build_stinger.py", clip="Strike", base="Idle", body="Body", beat=dict(coil_end=5),
                     attack=stinger_strike, old=None),
-    "Skyray": dict(script="build_skyray.py", clip="Dive", base="Idle", body="Body", beat={}, flyer=True,
-                   attack=skyray_dive, old=None),
+    "Skyray": dict(script="build_skyray.py", clip="Dive", base="Idle", body="Body", beat=dict(release=5), flyer=True,
+                   attack=skyray_dive, old=None,
+                   wing_beat=dict(prefixes=("Fin_",), beats=1, downbeat=skyray_downbeat)),
     "Mireleech": dict(script="build_mireleech.py", clip="Latch", base="Idle", body="Seg_1",
                       beat=dict(frames=36, impact=13, coil_end=7, coil=0.2), attack=mireleech_latch, old=None,
                       stretch=True),
@@ -477,14 +569,52 @@ class Species:
     def spec_fn(self):
         """The keyed spec: the attack blended from and back to the base clip's frame 0, as absolute bone matrices."""
         bt = self.beat
+        attack = self.cfg["attack"](self.mod, self.poser, bt)
+        if self.cfg.get("wing_beat"):
+            return self.wing_spec_fn(attack)
         _, base_spec, _ = self.mod.CLIPS[self.cfg["base"]](self.poser)
         base = self.poser.solve(base_spec(0.0, 0))
-        attack = self.cfg["attack"](self.mod, self.poser, bt)
 
         def spec(t, f):
             pose = blend_poses(self.poser, base, attack(f), bt.envelope(f))
             return {n: {"abs": m} for n, m in pose.items()}
         return spec
+
+    def wing_spec_fn(self, attack):
+        """Round 49I: the wings beat Fly (time-warped, plus the downbeat push); every other bone is the attack blended
+        from and back to the beating Fly pose."""
+        bt, wb, poser = self.beat, self.cfg["wing_beat"], self.poser
+        fly_frames, fly_spec, _ = self.mod.CLIPS["Fly"](poser)
+
+        def spec(t, f):
+            phase = wing_phase(f, bt.frames, fly_frames, wb["beats"])
+            fly_t = phase - math.floor(phase + 1e-9)
+            fly = poser.solve(fly_spec(fly_t, f))
+            wings = poser.solve(wb["downbeat"](self.mod, fly_spec(fly_t, f), f, bt))
+            body = blend_poses(poser, fly, attack(f), bt.envelope(f))
+            out = {}
+            for name in poser.order:
+                src = wings if name.startswith(wb["prefixes"]) else body
+                out[name] = poser.inherited(name, out) @ basis(poser, src, name)
+            return {n: {"abs": m} for n, m in out.items()}
+        return spec
+
+    def wing_facts(self):
+        bt, wb = self.beat, self.cfg["wing_beat"]
+        fly_frames = self.mod.CLIPS["Fly"](self.poser)[0]
+        lod_names = {b.name for b in self.lod_arm.data.bones}
+        bones = [n for n in self.poser.order if n.startswith(wb["prefixes"])]
+
+        def ph(f):
+            return wing_phase(f, bt.frames, fly_frames, wb["beats"])
+        fastest = max(ph(f + 1) - ph(f) for f in range(bt.frames))
+        return {"source": "Fly, time-warped (round 49I)", "wing_bones": bones,
+                "wing_bones_lod1": [n for n in bones if n in lod_names], "beats_in_clip": wb["beats"],
+                "fly_cycle_frames": fly_frames, "beat_seconds_at_seams": round(fly_frames / 30, 3),
+                "beat_seconds_fastest": round(1 / (30 * fastest), 3), "fly_phase_at_impact": round(ph(bt.impact), 3),
+                "seams": "first and last frame = Fly frame 0, at Fly's speed",
+                "strike_bones": "every other bone (Body, Head, Jaw, Tail)",
+                "downbeat_push": " ".join(wb["downbeat"].__doc__.split())}
 
     def key(self):
         clip = self.cfg["clip"]
@@ -566,7 +696,8 @@ class Species:
                           "bottom": round(min(p.z for p in pts), 3)}
         out = {clip: {"frames": bt.frames, "loop": False, "impact_frame": bt.impact,
                       "anticipation_frames": [0, bt.coil_end], "contact_frames": [bt.impact, bt.impact + bt.hold],
-                      "settled_by_frame": bt.frames - 1, "starts_and_ends_on": f"{self.cfg['base']} frame 0",
+                      "settled_by_frame": bt.frames - 1,
+                      "starts_and_ends_on": "Fly frame 0" if self.cfg.get("wing_beat") else f"{self.cfg['base']} frame 0",
                       "body_bone": body,
                       "body_travel_at_impact": {"forward": round(-at_impact.y, 3), "up": round(at_impact.z, 3)},
                       "body_travel_max": round(max(v.length for v in travel), 3),
@@ -580,6 +711,8 @@ class Species:
             out[clip]["unity"] = f"new clip: catalog row BlenderClipSpec(\"{clip}\", ModelClipRole.Attack, {bt.impact})"
         if self.cfg.get("stretch"):
             out["chain_scale_bones"] = list(self.mod.CHAIN)
+        if self.cfg.get("wing_beat"):
+            out[clip]["wing_beat"] = self.wing_facts()
         return out
 
 

@@ -1,0 +1,468 @@
+{
+ "base": "2e4fc688",
+ "results": [
+  {
+   "creature": "Oozer",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Crawl": 40,
+    "Death": 40,
+    "Hit": 12,
+    "Idle": 72,
+    "Strike": 24
+   },
+   "clips_after": {
+    "Crawl": 40,
+    "Death": 40,
+    "Hit": 12,
+    "Idle": 72,
+    "Strike": 24
+   }
+  },
+  {
+   "creature": "Cragback",
+   "ok": true,
+   "issues": [],
+   "notes": [
+    "fbx: new bones ['Smoke_1', 'Smoke_2', 'Smoke_3']",
+    "lod: new bones ['Smoke_1', 'Smoke_2', 'Smoke_3']"
+   ],
+   "clips_before": {
+    "Death": 40,
+    "Hit": 14,
+    "Idle": 72,
+    "Strike": 24,
+    "Walk": 32
+   },
+   "clips_after": {
+    "Death": 40,
+    "Hit": 14,
+    "Idle": 72,
+    "Strike": 24,
+    "Walk": 32
+   }
+  },
+  {
+   "creature": "Slagstrider",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Death": 42,
+    "Hit": 12,
+    "Idle": 72,
+    "Walk": 36
+   },
+   "clips_after": {
+    "Death": 42,
+    "Hit": 12,
+    "Idle": 72,
+    "Walk": 36
+   }
+  },
+  {
+   "creature": "Siftjaw",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Burrow": 36,
+    "Death": 40,
+    "Emerge": 36,
+    "Hit": 12,
+    "Idle": 60,
+    "Walk": 24
+   },
+   "clips_after": {
+    "Burrow": 36,
+    "Death": 40,
+    "Emerge": 36,
+    "Hit": 12,
+    "Idle": 60,
+    "Walk": 24
+   }
+  },
+  {
+   "creature": "Surgefin",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Death": 40,
+    "Emerge": 48,
+    "Hit": 12,
+    "Idle": 72,
+    "Swim": 24,
+    "Walk": 28
+   },
+   "clips_after": {
+    "Death": 40,
+    "Emerge": 48,
+    "Hit": 12,
+    "Idle": 72,
+    "Swim": 24,
+    "Walk": 28
+   }
+  },
+  {
+   "creature": "Prowler",
+   "ok": false,
+   "issues": [
+    "fbx: clip Strike (24) missing",
+    "lod: clip Strike (24) missing",
+    "report: round36.Strike.frames = 24 missing",
+    "report: round36.Strike.impact_frame = 10 missing",
+    "report: round36.Strike.settled_by_frame = 23 missing"
+   ],
+   "notes": [],
+   "clips_before": {
+    "Death": 36,
+    "Hit": 12,
+    "Idle": 60,
+    "Pounce": 26,
+    "Run": 16,
+    "Strike": 24
+   },
+   "clips_after": {
+    "Death": 36,
+    "Hit": 12,
+    "Idle": 60,
+    "Pounce": 26,
+    "Run": 16
+   }
+  },
+  {
+   "creature": "PackAlpha",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Death": 40,
+    "Hit": 14,
+    "Howl": 54,
+    "Idle": 72,
+    "Run": 20
+   },
+   "clips_after": {
+    "Death": 40,
+    "Hit": 14,
+    "Howl": 54,
+    "Idle": 72,
+    "Run": 20
+   }
+  },
+  {
+   "creature": "Skyray",
+   "ok": false,
+   "issues": [
+    "report: round36.Dive.frames = 24 missing",
+    "report: round36.Dive.impact_frame = 10 missing",
+    "report: round36.Dive.settled_by_frame = 23 missing"
+   ],
+   "notes": [
+    "fbx: new bones ['Jaw']"
+   ],
+   "clips_before": {
+    "Death": 40,
+    "Dive": 24,
+    "Fly": 42,
+    "Hit": 12,
+    "Idle": 60
+   },
+   "clips_after": {
+    "Death": 40,
+    "Dive": 24,
+    "Fly": 42,
+    "Hit": 12,
+    "Idle": 60
+   }
+  },
+  {
+   "creature": "StormMatriarch",
+   "ok": true,
+   "issues": [],
+   "notes": [
+    "fbx: new bones ['Jaw']"
+   ],
+   "clips_before": {
+    "Death": 48,
+    "Fly": 56,
+    "Hit": 14,
+    "Idle": 72,
+    "Release": 54
+   },
+   "clips_after": {
+    "Death": 48,
+    "Fly": 56,
+    "Hit": 14,
+    "Idle": 72,
+    "Release": 54
+   }
+  },
+  {
+   "creature": "SlimeMonarch",
+   "ok": false,
+   "issues": [
+    "fbx: clip Strike (30) missing",
+    "lod: clip Strike (30) missing",
+    "report: round31.Flood.frames = 44 missing",
+    "report: round31.Flood.slam_frame = 24 missing",
+    "report: round31.Strike.frames = 30 missing",
+    "report: round31.Strike.impact_frame = 13 missing",
+    "report: round31.chain_scale_bones = ['Body_1', 'Body_2', 'Body_3', 'Head'] missing",
+    "report: scale_keyed_bones ['Body_1', 'Body_2', 'Body_3', 'Head', 'Sac_L', 'Sac_R', 'Stalk_L1', 'Stalk_L2', 'Stalk_L3', 'Stalk_R1', 'Stalk_R2', 'Stalk_R3'] -> ['Sac_L', 'Sac_R', 'Slosh', 'Stalk_L1', 'Stalk_L2', 'Stalk_L3', 'Stalk_R1', 'Stalk_R2', 'Stalk_R3']"
+   ],
+   "notes": [
+    "fbx: new bones ['Slosh']",
+    "lod: new bones ['Slosh']"
+   ],
+   "clips_before": {
+    "Crawl": 40,
+    "Death": 40,
+    "Flood": 44,
+    "Hit": 12,
+    "Idle": 72,
+    "Spawn": 48,
+    "Strike": 30
+   },
+   "clips_after": {
+    "Crawl": 40,
+    "Death": 40,
+    "Flood": 44,
+    "Hit": 12,
+    "Idle": 72,
+    "Spawn": 48
+   }
+  },
+  {
+   "creature": "CinderMatriarch",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Climb_Down": 186,
+    "Climb_Loop": 81,
+    "Climb_Up": 186,
+    "Death": 72,
+    "Dive_Into_Liquid": 66,
+    "Gate_Dismount": 140,
+    "Gate_Mount": 150,
+    "Gate_Straddle_Loop": 96,
+    "Hit": 16,
+    "Hunt_Stride": 50,
+    "Idle": 90,
+    "Lay_Eggs": 96,
+    "Roar": 70,
+    "Smash": 64,
+    "Spawn": 64,
+    "Submerged_Loop": 80,
+    "Surface_Burst": 64,
+    "Walk": 56
+   },
+   "clips_after": {
+    "Climb_Down": 186,
+    "Climb_Loop": 81,
+    "Climb_Up": 186,
+    "Death": 72,
+    "Dive_Into_Liquid": 66,
+    "Gate_Dismount": 140,
+    "Gate_Mount": 150,
+    "Gate_Straddle_Loop": 96,
+    "Hit": 16,
+    "Hunt_Stride": 50,
+    "Idle": 90,
+    "Lay_Eggs": 96,
+    "Roar": 70,
+    "Smash": 64,
+    "Spawn": 64,
+    "Submerged_Loop": 80,
+    "Surface_Burst": 64,
+    "Walk": 56
+   }
+  },
+  {
+   "creature": "Knitback",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Death": 44,
+    "Hit": 14,
+    "Idle": 72,
+    "Regrow": 48,
+    "Walk": 40
+   },
+   "clips_after": {
+    "Death": 44,
+    "Hit": 14,
+    "Idle": 72,
+    "Regrow": 48,
+    "Walk": 40
+   }
+  },
+  {
+   "creature": "Bat",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Death": 36,
+    "Fly": 13,
+    "Glide": 48,
+    "Hit": 12,
+    "Strike": 24
+   },
+   "clips_after": {
+    "Death": 36,
+    "Fly": 13,
+    "Glide": 48,
+    "Hit": 12,
+    "Strike": 24
+   }
+  },
+  {
+   "creature": "SkySovereign",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Death": 36,
+    "Fly": 13,
+    "Glide": 48,
+    "Hit": 12,
+    "Laser": 72
+   },
+   "clips_after": {
+    "Death": 36,
+    "Fly": 13,
+    "Glide": 48,
+    "Hit": 12,
+    "Laser": 72
+   }
+  },
+  {
+   "creature": "Stinger",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Death": 40,
+    "Hit": 12,
+    "Idle": 60,
+    "Strike": 24,
+    "Walk": 28
+   },
+   "clips_after": {
+    "Death": 40,
+    "Hit": 12,
+    "Idle": 60,
+    "Strike": 24,
+    "Walk": 28
+   }
+  },
+  {
+   "creature": "AcidEmpress",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Death": 40,
+    "Hit": 12,
+    "Idle": 60,
+    "Spray": 48,
+    "Strike": 24,
+    "Walk": 28
+   },
+   "clips_after": {
+    "Death": 40,
+    "Hit": 12,
+    "Idle": 60,
+    "Spray": 48,
+    "Strike": 24,
+    "Walk": 28
+   }
+  },
+  {
+   "creature": "FrostWarden",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Armour_Break": 56,
+    "Climb_Down": 210,
+    "Climb_Loop": 93,
+    "Climb_Up": 210,
+    "Death": 84,
+    "Dive_Into_Liquid": 70,
+    "Enrage": 48,
+    "Freeze_Gate": 64,
+    "FreezePulse": 64,
+    "Hit": 16,
+    "Idle": 120,
+    "Shatter_Through": 100,
+    "Submerged_Loop": 96,
+    "Surface_Burst": 64,
+    "Walk": 64,
+    "WalkEnraged": 40
+   },
+   "clips_after": {
+    "Armour_Break": 56,
+    "Climb_Down": 210,
+    "Climb_Loop": 93,
+    "Climb_Up": 210,
+    "Death": 84,
+    "Dive_Into_Liquid": 70,
+    "Enrage": 48,
+    "Freeze_Gate": 64,
+    "FreezePulse": 64,
+    "Hit": 16,
+    "Idle": 120,
+    "Shatter_Through": 100,
+    "Submerged_Loop": 96,
+    "Surface_Burst": 64,
+    "Walk": 64,
+    "WalkEnraged": 40
+   }
+  },
+  {
+   "creature": "BroodMother",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Death": 48,
+    "Hit": 14,
+    "Idle": 80,
+    "Spawn": 60,
+    "Walk": 48
+   },
+   "clips_after": {
+    "Death": 48,
+    "Hit": 14,
+    "Idle": 80,
+    "Spawn": 60,
+    "Walk": 48
+   }
+  },
+  {
+   "creature": "Queen",
+   "ok": true,
+   "issues": [],
+   "notes": [
+    "lod: no base file"
+   ],
+   "clips_before": {
+    "Idle": 80,
+    "Scream": 50,
+    "Walk": 40
+   },
+   "clips_after": {
+    "Idle": 80,
+    "Scream": 50,
+    "Walk": 40
+   }
+  }
+ ]
+}

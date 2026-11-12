@@ -2,8 +2,8 @@
 
 Two extra skinned parts (detail_kit / detail_kit_small), exported in Bulwark.fbx and Bulwark_LOD1.fbx:
 - Bulwark_Face (Bulwark_Face_Mat): two wet amber eyes per side at the front of the amber eye slits, deep under the
-  bony visor (its rim is the brow; olive lid folds below), and a row of hooked teeth up from the lower jaw's lip and
-  down from the upper lip, so the dropped jaw shows a mouthful of fangs round the glowing throat.
+  bony visor (its rim is the brow; olive lid folds below), and (round 49G) two interlocking rows of matte ivory teeth
+  rooted in the gums of the body's mouth (mouth49g.py).
 - Bulwark_Claws (Bulwark_Claws_Mat): bone-coloured keratin talons capping the three hooked toes of each foot
   (dark roots, pale points with a faint lime glow).
 No bone, clip or event changes; the actions are exported again as they are. build_crystalwarlord.py reuses
@@ -35,8 +35,6 @@ SIDES = (("L", -1), ("R", 1))
 EYE = D.Eye(lens=(0.03, 0.016, 0.004), iris=(1.0, 0.72, 0.22), rim=(0.3, 0.12, 0.02), pupil=(0.006, 0.002, 0.0),
             glow=(1.0, 0.65, 0.2), vein=(0.3, 0.12, 0.03))
 LID_DARK, LID_SKIN, LID_WET = (0.035, 0.045, 0.02), (0.25, 0.33, 0.13), (0.12, 0.1, 0.03)
-FANG = D.Keratin(root=(0.2, 0.22, 0.08), body=(0.82, 0.78, 0.62), tip=(0.97, 0.95, 0.85), glow=(0.62, 1.0, 0.22),
-                 stain=(0.25, 0.3, 0.06))
 TALON = D.Keratin(root=(0.05, 0.06, 0.03), body=(0.3, 0.3, 0.2), tip=(0.95, 0.92, 0.78), glow=(0.62, 1.0, 0.22),
                   stain=(0.1, 0.12, 0.04))
 
@@ -60,19 +58,14 @@ def face_parts(c):
             S.organic_eye(b, S.flip(p - n * r * 0.2, sx), S.flip(n, sx), r, eyes[k], lid, up=Vector((0, 0, 1)),
                           bone="Head", lod=k == 0, brow=(1.2, 0.5, 0.5), lower=(1.15, 0.42, 0.45), brow_lift=0.45,
                           segments=(20, 10), lid_segments=(14, 7))
-    fang = [D.tooth_style(FANG, glow=0.35, seed=s) for s in range(2)]
-    # Lower teeth on the jaw's lip (bone Jaw) pointing up, upper teeth under the head pointing down; mirrored.
-    for rows, up, bone, d, hook in ((((0.02, 0.03), (0.04, 0.026)), 0.852, "Jaw", G(0, 1.0, 0.2), G(0, 0.3, -0.5)),
-                                    (((0.025, 0.032), (0.045, 0.026)), 0.868, "Head", G(0, -1.0, 0.2), G(0, -0.3, -0.5))):
-        for k, (x, ln) in enumerate(rows):
-            hit = c.hit(G(x, up, 0.9), Vector((0, 1, 0)))
-            if hit is None:
-                C.log("tooth skipped", bone, x)
-                continue
-            p, n = hit
-            for sx in (1, -1):
-                D.add_tooth(b, S.flip(p, sx) + Vector((0, 0.01, 0)), S.flip(d.normalized(), sx), 0.0065, ln, fang[k],
-                            hook=hook, hook_amount=0.25, bone=bone, lod=False, name="Fang")
+    # Round 49G (Remco: "those teeth are strange with the new mouth"): no more fangs stuck on the front of the snout.
+    # Two interlocking rows of matte ivory teeth rooted in the gums of build_bulwark's mouth (mouth49g.add_teeth):
+    # upper on Head, lower on Jaw, each stopping short of the other gum with the jaw at rest.
+    import build_bulwark as BW
+    import mouth49g as MO
+    placed = MO.add_teeth(b, BW.MOUTH, 1.0, MO.ivory_style(5), lambda part, bone, p: D._tag(part, p, bone, False),
+                          name="Fang")
+    C.log("bulwark teeth", placed)
     return b
 
 
@@ -103,7 +96,7 @@ def build(c, blockout_only=False):
     if blockout_only:
         return {"Face": face, "Claws": claws}
     lod0, lod1 = S.budget(c)
-    specs = {"Face": (face, int(lod0 * 0.6), int(lod1 * 0.52), {"Eye": 2.2, "Fang": 1.3}),
+    specs = {"Face": (face, int(lod0 * 0.6), int(lod1 * 0.52), {"Eye": 2.2, "Fang": 1.8}),
              "Claws": (claws, int(lod0 * 0.36), int(lod1 * 0.45), {"Talon": 1.2})}
     return S.build_all(c, specs, VOXEL, "round 46: wet amber eyes under the visor, jaw fangs, toe talons; bones, "
                                         "clips and events unchanged")

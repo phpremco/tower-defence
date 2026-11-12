@@ -17,12 +17,15 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
+import numpy as np  # noqa: E402
 from mathutils import Matrix, Vector  # noqa: E402
 
 import chitin as H  # noqa: E402
 import common as C  # noqa: E402
 import creature_kit2 as K2  # noqa: E402
 import creature_kit3 as K3  # noqa: E402
+import crystal_growth as G49  # noqa: E402
+import uvlayout  # noqa: E402
 from common import G  # noqa: E402
 
 NAME = "Shardback"
@@ -85,13 +88,6 @@ def clusters():
     return out
 
 
-def hex_profile(t):
-    """A blunt hexagonal column that ends in a short point (not a needle)."""
-    if t < 0.72:
-        return 1.0 - 0.12 * t
-    return max(0.0, (1.0 - t) / 0.28) ** 0.9 * 0.91
-
-
 def pitch(deg):
     return Matrix.Rotation(math.radians(deg), 3, "X")
 
@@ -105,56 +101,231 @@ def legs():
     return K3.limbs(LEG_TABLE)
 
 
+# Round 49D (Remco: "those circles are too perfect, it doesn't look scary enough"): the back is a faceted carapace
+# with a saw-toothed rim, every socket a torn crater with jagged chitin lips (no ring collars), the clusters
+# irregular crystal growth (crystal_growth.py), the front a serrated pronotum with forward hooks and a crystal ram
+# horn over longer, hooked mandibles. Seeds fix every random choice, so a rebuild is identical.
+CLUSTER_SIZE = {"Shard_1": 0.27, "Shard_2": 0.27, "Shard_3": 0.25, "Shard_4": 0.4, "Shard_5": 0.3, "Shard_6": 0.28}
+CLUSTER_COUNT = {"Shard_1": 4, "Shard_2": 5, "Shard_3": 4, "Shard_4": 6, "Shard_5": 4, "Shard_6": 5}
+SPREAD = 0.2
+# The crater floor's centre sits SOCKET_SINK under the carapace line (round 49F).
+SOCKET_SINK = 0.016
+# Round 49G: the cluster's base sits CLUSTER_SEAT under the carapace line (inside the crater floor) and every shard
+# starts CLUSTER_SINK deeper still (crystal_growth.growth_cluster sink): no gap under any shard, from any side.
+CLUSTER_SEAT = 0.004
+CLUSTER_SINK = 0.024
+CLUSTER_PARTS = ("Prism", "PrismFragment", "PrismRoot")
+MANDIBLE = [(0.095, 0.16, 0.42), (0.115, 0.152, 0.5), (0.085, 0.14, 0.575), (0.03, 0.146, 0.615)]
+
+
+def mandible_points(sx):
+    return [K3.gp(p, sx) for p in MANDIBLE]
+
+
+def cluster_footprint(name):
+    return SPREAD * CLUSTER_SIZE[name] + 0.03
+
+
+def elytra_deform():
+    """Faceted (a hewn polyhedron, not an egg), with an uneven saw-toothed rim raked backwards."""
+    facets = C.chiselled(26, 15, depth=0.07)
+    saw = G49.serrated_outline(15, 21, depth=0.24)
+
+    def deform(v):
+        u = facets(v)
+        a = math.atan2(u.y, u.x)
+        rim = max(0.0, 1.0 - abs(u.z) * 1.7)
+        k = 1.0 + (saw(a) - 1.0) * rim
+        # Only the rim moves outwards; the top stays at or under the ellipsoid, so the shard clusters keep their gap.
+        return Vector((u.x * k, u.y * k, u.z))
+    return deform
+
+
+def plate_deform(teeth, seed, depth):
+    """A plate with a jagged front edge (local -y is forward) and facets."""
+    facets = C.chiselled(18, seed, depth=0.08)
+    saw = G49.serrated_outline(teeth, seed + 2, depth=depth)
+
+    def deform(v):
+        u = facets(v)
+        a = math.atan2(u.y, u.x)
+        front = C.smoothstep(-0.2, 0.6, -u.y)
+        rim = max(0.0, 1.0 - abs(u.z) * 1.5)
+        k = 1.0 + (saw(a) - 1.0) * rim * (0.35 + 0.65 * front)
+        return Vector((u.x * k, u.y * k, u.z))
+    return deform
+
+
+def torn_socket(seed):
+    """A crater floor with a ragged outline (no disc)."""
+    saw = G49.serrated_outline(7, seed, depth=0.4, jitter=0.9)
+
+    def deform(v):
+        k = saw(math.atan2(v.y, v.x))
+        return Vector((v.x * k, v.y * k, v.z))
+    return deform
+
+
+def shell_parts(b, k=K):
+    """The closed volumes every spike grows out of: underside, carapace, pronotum, head and brow plate."""
+    b.ellipsoid("Under", G(0, 0.2, -0.03), (0.22, 0.34, 0.1), bone="Body",
+                style=H.glow_flesh(PAL, k, glow=0.55, flank=(0.6, 0.95), folds=10.0), segments=(40, 20))
+    b.ellipsoid("Elytra", G(*ELY_C), ELY_R, bone="Body", segments=(120, 48), deform=elytra_deform(),
+                style=K2.armour_plate(PAL, k, rim_glow=0.7, chevron=0.0, lip=0.5, cells=18, seed=3))
+    b.ellipsoid("Pronotum", G(0, 0.3, 0.22), (0.24, 0.13, 0.09), pitch(-10), bone="Body", segments=(96, 32),
+                deform=plate_deform(11, 41, 0.34),
+                style=K2.armour_plate(PAL, k, rim_glow=0.8, chevron=0.9, chevron_angle=1.1, lip=0.8, cells=10, seed=5))
+    b.ellipsoid("Head", G(0, 0.2, 0.36), (0.14, 0.1, 0.08), bone="Head", style=H.band_plates(PAL, k, 2, height=0.002),
+                segments=(48, 24), deform=C.chiselled(14, 23, depth=0.12))
+    b.ellipsoid("Brow", G(0, 0.265, 0.39), (0.2, 0.09, 0.045), pitch(-14), bone="Head", segments=(64, 20),
+                deform=plate_deform(9, 47, 0.25),
+                style=K2.armour_plate(PAL, k, rim_glow=0.4, chevron=0.0, lip=1.0, cells=8, seed=7))
+
+
+class Shell:
+    """Round 49G (Remco: "you can see the spikes floating!!"). The 49F spikes were placed from the ideal ellipsoid
+    (surface()), but the built carapace has a saw-toothed rim that recedes between its teeth and facets up to 7 % deep:
+    rim spikes and flank frost started in the air beside a receding tooth or under the rim and only touched the shell
+    through a thin remesh bridge (one island, so no island check could see it), and from the side they read as hovering
+    thorns. Now every spike is placed on the shell as built: a ray finds where its line breaks out of the volume, the
+    spike starts ROOT_DEPTH inside, and a lumpy chitin mound (crystal_growth.lumpy_root) swells round its foot, so it
+    visibly grows out of the plate. `rooted` lists every spike's depth for the report."""
+
+    ROOT_DEPTH = 0.022
+
+    def __init__(self):
+        tmp = C.PartBuilder()
+        shell_parts(tmp)
+        self.tree = tmp.bvh()
+        self._keep = tmp
+        self.rooted = []
+
+    def exit(self, inner, d):
+        """The point and outward normal where a line from `inner` along `d` leaves the shell (the outermost hit)."""
+        d = Vector(d).normalized()
+        loc, nrm, _, _ = self.tree.ray_cast(Vector(inner) + d * 0.5, -d, 1.0)
+        if loc is None:
+            return None, None
+        return loc, (nrm if nrm.dot(d) > 0 else -nrm)
+
+    def spike(self, b, kind, inner, d, radius, length, style, bone, mound_style, seed, shard=None, bend=None,
+              mound=2.3):
+        """A spike leaving the shell along `d` from a point `inner` inside it: `length` shows outside, ROOT_DEPTH
+        (or 2.5 x radius) is buried, a mound of `mound` x radius rings the foot. `shard` (kwargs) builds a
+        fractured crystal shard, else a tapered chitin hook."""
+        d = Vector(d).normalized()
+        p, n = self.exit(inner, d)
+        if p is None:
+            C.log("spike skipped (no shell)", kind, tuple(round(v, 3) for v in inner))
+            return None
+        depth = max(self.ROOT_DEPTH, 2.5 * radius)
+        start = p - d * depth
+        if shard is not None:
+            G49.fractured_shard(b, kind, start, d, radius, length + depth, seed, bone=bone, chain=[bone], style=style,
+                                bend=bend, **shard)
+        else:
+            bend = bend if bend is not None else Vector()
+            b.tube(kind, [start, p + d * length * 0.5 + bend * 0.4, p + d * length + bend],
+                   [radius * 1.1, radius * 0.65, 0.001], sides=8, chain=[bone], style=style)
+        G49.lumpy_root(b, kind + "Root", p - n * radius * 0.45, n, radius * mound, radius * 1.05, seed + 3,
+                       bone=bone, style=mound_style, lobes=5, segments=(20, 10))
+        b.parts[-1].chain = [bone]
+        self.rooted.append((kind, round(depth, 4), round(float(n.dot(d)), 2)))
+        return p
+
+
 def build_parts(b=None):
     b = b or C.PartBuilder()
     k = K
-    b.ellipsoid("Under", G(0, 0.2, -0.03), (0.22, 0.34, 0.1), bone="Body",
-                style=H.glow_flesh(PAL, k, glow=0.55, flank=(0.6, 0.95), folds=10.0), segments=(40, 20))
-    b.ellipsoid("Elytra", G(*ELY_C), ELY_R, bone="Body", segments=(48, 24),
-                style=K2.armour_plate(PAL, k, rim_glow=0.7, chevron=0.0, lip=0.5, cells=18, seed=3))
-    b.ellipsoid("Pronotum", G(0, 0.3, 0.22), (0.23, 0.13, 0.085), pitch(-8), bone="Body", segments=(40, 16),
-                style=K2.armour_plate(PAL, k, rim_glow=0.8, chevron=0.9, chevron_angle=1.1, lip=0.8, cells=10, seed=5))
-    # The plough head: brow plate, horn, mandibles round an amber throat, four eyes.
-    b.ellipsoid("Head", G(0, 0.2, 0.36), (0.14, 0.1, 0.08), bone="Head", style=H.band_plates(PAL, k, 2, height=0.002),
-                segments=(32, 16))
-    b.ellipsoid("Brow", G(0, 0.265, 0.39), (0.2, 0.09, 0.04), pitch(-14), bone="Head", segments=(36, 14),
-                style=K2.armour_plate(PAL, k, rim_glow=0.4, chevron=0.0, lip=1.0, cells=8, seed=7))
-    b.tube("Horn", [G(0, 0.29, 0.41), G(0, 0.35, 0.47), G(0, 0.41, 0.47)], [0.034, 0.022, 0.003], sides=10,
-           chain=["Head"], style=K3.ice_prism(k, warm_glow=0.6, seed=9))
+    rng = np.random.default_rng(49)
+    shell = Shell()
+    b.shell = shell
+
+    def ice(seed, warm=0.85):
+        return G49.uneven_glow(K3.ice_prism(k, warm_glow=warm, seed=seed), seed, 0.35, 1.25)
+    spike = H.hook(PAL, k, glow=0.5, glow_from=0.8)
+    mound = K2.armour_plate(PAL, k, rim_glow=0.0, chevron=0.0, lip=0.6, seed=37)
+    shell_parts(b, k)
+    # Hooks raked forward off the pronotum's front edge, uneven (the left inner one is the longest).
+    for i, (x, ln, rake) in enumerate(((-0.16, 0.08, 0.5), (-0.06, 0.11, 0.25), (0.05, 0.085, 0.3), (0.15, 0.065, 0.55))):
+        d = G(x * rake * 1.4, -0.01, ln).normalized()
+        shell.spike(b, "FrontHook", G(x, 0.31, 0.24), d, 0.015, ln, spike, "Body", mound, 900 + i,
+                    bend=G(0, 0.02, 0))
+    # Serrated chitin spikes round the rear carapace rim, raked back, of uneven length (a saw outline from above).
+    # Round 49G: each grows out of the rim plate as built (Shell.spike), not from a point under the ideal ellipsoid.
+    for i in range(14):
+        a = math.radians(-160 + i * 23 + rng.uniform(-6, 6))
+        x, f = math.cos(a) * ELY_R[0] * 0.8, ELY_C[2] + math.sin(a) * ELY_R[1] * 0.8
+        if f > 0.12:
+            continue
+        h, n = surface(x, f)
+        out = G(math.cos(a), 0.12, math.sin(a) - 0.6).normalized()
+        ln = rng.uniform(0.05, 0.1)
+        shell.spike(b, "RimSpike", G(x, h - 0.03, f), out, 0.013, ln, spike, "Body", mound, 920 + i,
+                    bend=G(0, -0.006, -0.012))
+    # The plough head: jagged brow plate, a crystal ram horn, hooked mandibles round an amber throat, four eyes.
+    shell.spike(b, "Horn", G(0.01, 0.25, 0.37), G(0.05, 0.75, 0.75), 0.032, 0.15, ice(9, 0.6), "Head", mound, 101,
+                shard=dict(sides=5, flat=0.7, tip="point"), bend=G(-0.01, -0.03, 0.05), mound=1.8)
+    for sx, ln in ((-1, 0.07), (1, 0.05)):
+        shell.spike(b, "BrowHorn", G(0.08 * sx, 0.27, 0.39), G(0.05 * sx, 0.0, ln + 0.02), 0.013, ln, spike, "Head",
+                    mound, 940 + (sx > 0), bend=G(0.01 * sx, 0.012, 0))
     b.ellipsoid("Throat", G(0, 0.165, 0.45), (0.045, 0.025, 0.03), bone="Head", style=H.inner_glow(PAL, 1.0), segments=(16, 8))
     for side, sx in SIDES:
-        b.tube("Mandible", [K3.gp((0.095, 0.16, 0.42), sx), K3.gp((0.09, 0.15, 0.5), sx), K3.gp((0.03, 0.14, 0.56), sx)],
-               [0.03, 0.022, 0.004], sides=10, chain=[f"Jaw_{side}"], style=H.blade(PAL, k, glow=0.9, teeth=3), flatten=0.55)
+        b.tube("Mandible", mandible_points(sx), [0.032, 0.026, 0.016, 0.003], sides=10, chain=[f"Jaw_{side}"],
+               style=H.blade(PAL, k, glow=0.9, teeth=4), flatten=0.5)
+        # A back-hooked barb on the outer edge of each mandible.
+        root = K3.gp((0.118, 0.152, 0.52), sx)
+        b.tube("JawBarb", [root, root + K3.gp((0.025, 0.004, -0.004), sx), root + K3.gp((0.03, -0.002, -0.03), sx)],
+               [0.009, 0.006, 0.001], sides=8, chain=[f"Jaw_{side}"], style=spike)
         for p, r in (((0.08, 0.232, 0.447), 0.017), ((0.125, 0.222, 0.42), 0.013)):
             b.ellipsoid("Eye", K3.gp(p, sx), (r, r, r * 0.9), bone="Head", style=H.eye(PAL, k, 0.95), segments=(12, 6))
-        # Fixed frost crust along the flank edge: the outline stays spiky when the clusters are gone.
+        # Fixed frost crust along the flank edge, irregular (the outline stays spiky when the clusters are gone).
+        # Round 49G: the frost used to start under the rim and poke out sideways below it (Remco's "pale-blue spikes
+        # floating off the lower rear flank"); it now breaks out of the rim's upper outer face, raked out and up.
         for i in range(7):
-            f = 0.17 - i * 0.075
-            h, n = surface(0.24, f)
-            base = K3.gp((0.235, h - 0.035, f), sx)
-            d = K3.gp((1.0, 0.45 + 0.2 * (i % 2), -0.35), sx).normalized()
-            b.shard("Frost", base, d, 0.017 + 0.004 * (i % 3), 0.07 + 0.02 * ((i + 1) % 3), sides=6, flute=0.2,
-                    twist=0.5 * sx, profile=hex_profile, bone="Body", chain=["Body"],
-                    style=K3.ice_prism(k, warm_glow=0.45, seed=20 + i))
-    # Sockets and ice clusters (own islands: the prisms float a hair above the socket so the remesh keeps them apart).
-    for name, sx, (x, f), prisms in clusters():
+            f = 0.17 - i * 0.075 + rng.uniform(-0.02, 0.02)
+            h, n = surface(0.2, f)
+            d = K3.gp((1.0, 0.55 + rng.uniform(0, 0.5), -0.25 - rng.uniform(0, 0.35)), sx).normalized()
+            r_, ln_ = rng.uniform(0.013, 0.02), rng.uniform(0.04, 0.085)
+            shell.spike(b, "Frost", K3.gp((0.19, h - 0.035, f), sx), d, r_, ln_, ice(20 + i, 0.45), "Body", mound,
+                        int(rng.integers(0, 1 << 30)), shard={}, mound=2.0)
+    # Sockets, torn lips and ice clusters. A cluster is its own island on its own bone: its shards and root sit a gap
+    # above the socket floor, so the remesh keeps them apart and Unity can scale the bone to 0.
+    # Round 49F (Remco: "I see spikes that are not attached to the body"): no hovering fragments; the cluster sits down
+    # in its crater (the gap to the floor is a few remesh voxels, below the lips) on a wider root mound; the crater
+    # floor is sunk to the carapace line and the lips are rooted deeper, so from the side the gap is hidden. Each
+    # cluster must stay its own island (check_floating_49f.py --allow Shard_ lists any island that mixes bones).
+    lip = K2.armour_plate(PAL, k, rim_glow=0.0, chevron=0.0, lip=0.6, seed=33)
+    for ci, (name, sx, (x, f), _prisms) in enumerate(clusters()):
         h, n = surface(x, f)
         centre = G(x, h, f)
-        foot = max(math.hypot(dx, df) + r * 1.15 for (dx, df), _, r, _, _ in prisms)
-        b.ellipsoid("Socket", centre - n * 0.008, (foot * 0.85, foot * 0.85, 0.022), n.to_track_quat("Z", "Y").to_matrix(),
-                    bone="Body", style=K3.socket_floor(PAL, k, glow=0.55, seed=31), segments=(24, 10))
-        # A low lip of chitin round the socket, clear of the prism footprint (a gap of a few voxels keeps the
-        # cluster its own island).
-        b.ring("Collar", centre - n * 0.002, n, foot + 0.022, 0.009, arcs=3, sides=6, chain=["Body"],
-               style=K2.armour_plate(PAL, k, rim_glow=0.0, chevron=0.0, lip=0.6, seed=33), ref=Vector((1, 0, 0)))
-        for (dx, df), lean, r, length, twist in prisms:
-            px, pf = x + dx * sx, f + df
-            # Measured from the socket's own (tilted) plane, so no prism base dips into the socket disc.
-            flat = G(px, h, pf)
-            base = flat - n * (flat - centre).dot(n) + n * 0.04
-            d = K3.gp(lean, sx).normalized()
-            b.shard("Prism", base, d, r, length, sides=6, flute=0.12, twist=twist * sx, profile=hex_profile, rings=12,
-                    bone=name, chain=[name], style=K3.ice_prism(k, seed=40 + int(1000 * abs(px + pf))))
+        foot = cluster_footprint(name)
+        frame = n.to_track_quat("Z", "Y").to_matrix()
+        b.ellipsoid("Socket", centre - n * SOCKET_SINK, (foot * 0.85, foot * 0.72, 0.022), frame, bone="Body",
+                    style=K3.socket_floor(PAL, k, glow=0.55, seed=31), segments=(40, 12), deform=torn_socket(60 + ci))
+        # Jagged lips: broken chitin shards round the crater, leaning out, uneven in size and spacing.
+        a_ = n.orthogonal().normalized()
+        b_ = n.cross(a_)
+        lips = int(rng.integers(5, 8))
+        # Round 49G: the lips are broken chitin plates bursting up out of a raised crater rim (a ring of mounds round
+        # the crater, Shell.spike), no longer thorns standing on the flat carapace.
+        for j in range(lips):
+            az = 2 * math.pi * (j + rng.uniform(-0.3, 0.3)) / lips
+            out = a_ * math.cos(az) + b_ * math.sin(az)
+            inner = centre + out * (foot + 0.012 + rng.uniform(0, 0.01)) - n * 0.03
+            d = (out * rng.uniform(0.55, 0.75) + n * rng.uniform(0.6, 0.8)).normalized()
+            shell.spike(b, "Lip", inner, d, rng.uniform(0.011, 0.016), rng.uniform(0.022, 0.04), lip, "Body", mound,
+                        int(rng.integers(0, 1 << 30)), shard=dict(flat=0.45, tip="point", chips=1), mound=2.6)
+        # Round 49G: the cluster grows out of its crater: its root mound and every shard start inside the crater
+        # floor (CLUSTER_SINK), so nothing stands over it. It stays its own island on its own bone because the
+        # clusters are remeshed apart from the body (separate_cluster_fuse) and skinned to their bone only
+        # (cluster_weights), so Unity still sheds a cluster by scaling its bone to 0.
+        G49.growth_cluster(b, centre - n * CLUSTER_SEAT, n, CLUSTER_SIZE[name], 700 + ci * 13, bone=name,
+                           chain=[name], style=ice(40 + ci), count=CLUSTER_COUNT[name],
+                           spread=SPREAD * (0.7 if CLUSTER_SIZE[name] > 0.35 else 1.0),
+                           lean=(0.15, 0.6), sideways=K3.gp((0.5 if x else 0.0, 0.0, -0.35), sx), floating=0,
+                           spiral=1, bent=1, radius_ratio=0.14, fragment_gap=0.3, name="Prism",
+                           root=(ice(80 + ci, 1.0), foot * 0.62, 0.016), sink=CLUSTER_SINK)
     for (side, i), lg in legs().items():
         hip, knee, foot = lg.rest_points
         sx = -1 if side == "L" else 1
@@ -165,8 +336,14 @@ def build_parts(b=None):
         tip = foot + (foot - knee).normalized() * 0.012
         b.tube("LegLower", [knee, knee.lerp(foot, 0.45) + K3.gp((0.014, 0.012, 0), sx), tip], [0.036, 0.026, 0.004],
                sides=10, chain=[lg.names[1]], style=H.leg(LEGP, k, "Tibia"))
-        b.shard("Spur", knee + Vector((0, 0, 0.01)), K3.gp((0.35, 1.0, -0.2), sx), 0.013, 0.06, sides=6, flute=0.2,
-                profile=hex_profile, bone=lg.names[0], chain=[lg.names[0]], style=K3.ice_prism(k, warm_glow=0.4, seed=60 + i))
+        # Round 49G: the knee spur points out and back from the outside of the knee (it pointed up into the gap
+        # under the carapace rim and read as a crystal hovering beside the flank), on a mound of knee chitin.
+        sd = K3.gp((1.0, 0.5, -0.35 - 0.1 * i), sx).normalized()
+        G49.fractured_shard(b, "Spur", knee + sd * 0.012, sd, 0.012, 0.06 + 0.01 * ((i * 7 + (sx > 0)) % 3),
+                            60 + i * 2 + (sx > 0), bone=lg.names[0], chain=[lg.names[0]], style=ice(60 + i, 0.4))
+        G49.lumpy_root(b, "SpurRoot", knee + sd * 0.03, sd, 0.022, 0.013, 70 + i * 2 + (sx > 0), bone=lg.names[0],
+                       style=H.band_plates(LEGP, k, 1, height=0.0), lobes=5, segments=(20, 10))
+        b.parts[-1].chain = [lg.names[0]]
     return b
 
 
@@ -296,7 +473,8 @@ def shatter_spec(poser):
 
 CLIPS = {"Walk": walk_spec, "Idle": idle_spec, "Hit": hit_spec, "Death": death_spec, "Shatter": shatter_spec}
 CLIP_SCALES = None  # every clip keys the shard scale (1 outside Shatter)
-RIGID = {"Elytra", "Pronotum", "Brow", "Prism", "Collar", "Socket"}
+RIGID = {"Elytra", "Pronotum", "Brow", "Prism", "PrismFragment", "PrismRoot", "Lip", "Socket", "LipRoot", "FrostRoot",
+         "RimSpikeRoot", "FrontHookRoot"}
 # LOD1: jaws fold into the head, each leg is one bone; the shard bones stay. 15 bones.
 LOD_DROP = {"Jaw_L": "Head", "Jaw_R": "Head", **{f"Leg_{s}{i}_Lower": f"Leg_{s}{i}_Upper" for s, _ in SIDES for i in (1, 2, 3)}}
 LOD_AIMS = {f"Leg_{s}{i}_Upper": (f"Leg_{s}{i}_Upper", f"Leg_{s}{i}_Lower") for s, _ in SIDES for i in (1, 2, 3)}
@@ -325,8 +503,110 @@ def bpy_scene_update():
     bpy.context.view_layer.update()
 
 
+def drop_specks_after_bake():
+    """Round 49F: every game mesh built in this process loses its islands of fewer than 12 vertices right after its
+    bake (the remesh leaves single triangles where a needle tip is thinner than a voxel; they hover as specks off the
+    spikes). The shard clusters (50+ vertices) are untouched; the UVs and maps stay as baked."""
+    import build_bulwark as BW
+    plain = C.build_mesh_asset
+
+    def build_mesh_asset(*a, **kw):
+        asset = plain(*a, **kw)
+        asset.specks_dropped = BW.drop_specks(asset.low, min_verts=12)
+        return asset
+    C.build_mesh_asset = build_mesh_asset
+
+
+def separate_cluster_fuse(builder):
+    """Round 49G: the shard clusters now grow out of the crater floor (their roots inside it), so one voxel remesh
+    would weld them to the body and Unity could no longer shed a cluster by scaling its bone. In this process the
+    remesh of this builder's parts runs twice, once for the body and once for the clusters (CLUSTER_PARTS), and the
+    two surfaces are joined: each cluster is a closed island of its own that passes into the floor."""
+    import bmesh
+    import bpy
+    plain = C.fuse
+
+    def part_mesh(obj, keep):
+        o2 = C.link(bpy.data.objects.new(obj.name + "_split", obj.data.copy()))
+        bm = bmesh.new()
+        bm.from_mesh(o2.data)
+        bm.faces.ensure_lookup_table()
+        bmesh.ops.delete(bm, geom=[bm.faces[i] for i in np.nonzero(~keep)[0]], context="FACES")
+        bm.to_mesh(o2.data)
+        bm.free()
+        return o2
+
+    def fuse(obj, voxel, smooth_iterations=6):
+        if len(obj.data.polygons) != len(builder.face_pid):
+            return plain(obj, voxel, smooth_iterations)
+        cluster = np.array([builder.parts[p].name in CLUSTER_PARTS for p in builder.face_pid])
+        verts, faces = [], []
+        for keep in (~cluster, cluster):
+            o2 = part_mesh(obj, keep)
+            me = plain(o2, voxel, smooth_iterations)
+            data = o2.data
+            bpy.data.objects.remove(o2)
+            bpy.data.meshes.remove(data)
+            co = np.empty(len(me.vertices) * 3)
+            me.vertices.foreach_get("co", co)
+            base = sum(len(v) for v in verts)
+            verts.append(co.reshape(-1, 3))
+            faces += [[base + i for i in p.vertices] for p in me.polygons]
+            bpy.data.meshes.remove(me)
+        mesh = bpy.data.meshes.new(obj.name + "_fused")
+        mesh.from_pydata(np.concatenate(verts).tolist(), [], faces)
+        mesh.update()
+        C.log("Shardback clusters remeshed apart:", len(faces), "faces")
+        return mesh
+    C.fuse = fuse
+
+
+def cluster_weights():
+    """Round 49G: with the cluster roots inside the crater floor, nearest-part skinning could give crater-floor
+    vertices a Shard_n weight (the floor would collapse with a shed cluster) or a cluster vertex the Body. After every
+    skinning in this process each mesh island is made pure: an island led by a Shard_n bone goes wholly to it, every
+    other island loses its Shard_n weights (renormalised; Body if nothing is left)."""
+    import check_floating_parts as F
+    plain = C.skin
+
+    def skin(mesh_obj, arm, builder, *a, **kw):
+        out = plain(mesh_obj, arm, builder, *a, **kw)
+        groups = {g.index: g.name for g in mesh_obj.vertex_groups}
+        by_name = {g.name: g for g in mesh_obj.vertex_groups}
+        body = by_name.get("Body") or mesh_obj.vertex_groups.new(name="Body")
+        verts = mesh_obj.data.vertices
+        fixed = 0
+        for isl in F.islands(mesh_obj.data):
+            lead = F.dominant_bone(mesh_obj, isl) or ""
+            shard = lead if lead.startswith("Shard_") else None
+            for i in isl:
+                v = verts[int(i)]
+                ws = {groups[g.group]: g.weight for g in v.groups}
+                if shard:
+                    new = {shard: 1.0}
+                else:
+                    new = {n: w for n, w in ws.items() if not n.startswith("Shard_")}
+                    tot = sum(new.values())
+                    new = {n: w / tot for n, w in new.items()} if tot > 1e-6 else {"Body": 1.0}
+                if new == ws:
+                    continue
+                for g in list(v.groups):
+                    mesh_obj.vertex_groups[g.group].remove([v.index])
+                for n, w in new.items():
+                    (by_name.get(n) or body).add([v.index], w, "REPLACE")
+                fixed += 1
+        C.log(mesh_obj.name, "cluster weights made pure on", fixed, "vertices")
+        return out
+    C.skin = skin
+
+
 def main():
+    drop_specks_after_bake()
+    uvlayout.SPARSE_FIX = True  # round 49D: the crowded crystal back cuts into many small islands
     builder = build_parts()
+    separate_cluster_fuse(builder)
+    cluster_weights()
+    rooted = builder.shell.rooted
     layout = [("Walk", 0, (-1.0, 0.6), 0.2), ("Walk", 10, (0.2, 0.9), -0.15), ("Shatter", 12, (1.2, 0.4), 0.3),
               ("Walk", 5, (-0.5, -0.4), 0.0), ("Walk", 20, (0.8, -0.6), -0.3), ("Idle", 20, (-1.6, -0.2), 0.4)]
     previews = dict(target=(0, 0.0, 0.3), distance=2.4, move=("Walk", 4), layout=layout,
@@ -341,13 +621,19 @@ def main():
         extra=H.weathering(K, markings=PAL.dark, marking_amount=0.4, dust=0.3, seed=71), specular=0.35,
         report={"shard_bones_in_shed_order": SHARD_NAMES, "shatter_burst_frames": shatter_frames(),
                 "walk_distance_per_loop": round(STRIDE / STANCE, 3), "pivot": "ground, body centre",
-                "spit_origin": "Throat, about (0, 0.17, 0.46) model units, from the Head bone"},
-        previews=None if C.cli_args().get("norender") else previews)
+                "spit_origin": "Throat, about (0, 0.17, 0.46) model units, from the Head bone",
+                "round49g": {"spikes_on_shell": len(rooted), "min_root_depth": min(r[1] for r in rooted),
+                             "clusters": "remeshed apart from the body, roots and shards sunk into the crater floor; "
+                                         "one island per Shard_n bone, weights pure"}},
+        previews=None if C.cli_args().get("norender") else previews, mirror=False)
     if not C.cli_args().get("norender"):
         out = C.preview_dir()
         chipped_render(arm, actions, out, set(SHARD_NAMES[:3]), "shardback_chipped.png")
         chipped_render(arm, actions, out, set(SHARD_NAMES), "shardback_bare.png")
     # Round 46: the close-up detail (eyes, mandible teeth, talons) as extra parts, exported again with the body.
+    # `--nodetail` (round 49D) stops after the body (build_attacks36 and build_insect_gait run before the detail).
+    if C.cli_args().get("nodetail"):
+        return
     import shardback_detail
     shardback_detail.run(norender=bool(C.cli_args().get("norender")))
 

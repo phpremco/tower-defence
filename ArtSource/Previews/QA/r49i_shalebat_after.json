@@ -1,0 +1,316 @@
+{
+ "blend": "ArtSource\\Blend\\Shalebat.blend",
+ "clip": "Strike",
+ "parts": [
+  "Shalebat",
+  "Shalebat_Claws",
+  "Shalebat_Face"
+ ],
+ "full": {
+  "fly": {
+   "heights": [
+    -0.0016,
+    0.1523,
+    0.3201,
+    0.4735,
+    0.5821,
+    0.5926,
+    0.5493,
+    0.4436,
+    0.2703,
+    0.0535,
+    -0.1526,
+    -0.2979,
+    -0.3659,
+    -0.3293,
+    -0.2448,
+    -0.1334,
+    -0.0016
+   ],
+   "longest_hold_frames": 1,
+   "turns": 2,
+   "peak_to_peak": 0.9585
+  },
+  "clip": {
+   "heights": [
+    -0.0016,
+    0.1532,
+    0.3268,
+    0.4905,
+    0.5906,
+    0.5663,
+    0.4178,
+    0.114,
+    -0.2369,
+    -0.4363,
+    -0.4214,
+    -0.2635,
+    -0.0408,
+    0.2434,
+    0.5029,
+    0.5948,
+    0.5228,
+    0.3132,
+    0.0156,
+    -0.2324,
+    -0.354,
+    -0.3373,
+    -0.2489,
+    -0.1341,
+    -0.0016
+   ],
+   "longest_hold_frames": 1,
+   "turns": 4,
+   "peak_to_peak": 1.0311
+  },
+  "seam_to_fly0": {
+   "first": {
+    "wing_max_deg": 0.0,
+    "all_bones_max_deg": 0.0,
+    "worst_bone": "Root"
+   },
+   "last": {
+    "wing_max_deg": 0.0,
+    "all_bones_max_deg": 0.0,
+    "worst_bone": "Root"
+   }
+  },
+  "steps": {
+   "Death": {
+    "worst_bone": "Finger_L3",
+    "max_arm_deg": 25.8,
+    "frame": 6,
+    "spikes": {
+     "Arm_L": [
+      3
+     ],
+     "Hand_L": [
+      3
+     ],
+     "Finger_L1": [
+      3
+     ],
+     "Finger_L2": [
+      3
+     ],
+     "Finger_L3": [
+      3
+     ],
+     "Arm_R": [
+      6
+     ]
+    }
+   },
+   "Fly": {
+    "worst_bone": "Finger_L3",
+    "max_arm_deg": 24.5,
+    "frame": 2,
+    "spikes": {}
+   },
+   "Glide": {
+    "worst_bone": "Tail_2",
+    "max_arm_deg": 3.0,
+    "frame": 46,
+    "spikes": {}
+   },
+   "Hit": {
+    "worst_bone": "Finger_L3",
+    "max_arm_deg": 49.5,
+    "frame": 1,
+    "spikes": {
+     "Body": [
+      3
+     ],
+     "Head": [
+      3
+     ],
+     "Tail_1": [
+      3
+     ],
+     "Tail_2": [
+      3
+     ],
+     "Arm_L": [
+      3
+     ],
+     "Hand_L": [
+      3
+     ],
+     "Finger_L1": [
+      3
+     ],
+     "Finger_L2": [
+      3
+     ],
+     "Finger_L3": [
+      3
+     ],
+     "Arm_R": [
+      3
+     ],
+     "Hand_R": [
+      3
+     ],
+     "Finger_R1": [
+      3
+     ],
+     "Finger_R2": [
+      3
+     ],
+     "Finger_R3": [
+      3
+     ]
+    }
+   },
+   "Strike": {
+    "worst_bone": "Finger_R1",
+    "max_arm_deg": 44.3,
+    "frame": 8,
+    "spikes": {}
+   }
+  }
+ },
+ "lod": {
+  "fly": {
+   "heights": [
+    -0.0119,
+    0.2077,
+    0.4182,
+    0.5729,
+    0.6544,
+    0.6661,
+    0.626,
+    0.5243,
+    0.3488,
+    0.1162,
+    -0.1178,
+    -0.2928,
+    -0.3822,
+    -0.385,
+    -0.3207,
+    -0.1952,
+    -0.0119
+   ],
+   "longest_hold_frames": 1,
+   "turns": 2,
+   "peak_to_peak": 1.0511
+  },
+  "clip": {
+   "heights": [
+    -0.0119,
+    0.2089,
+    0.4258,
+    0.5874,
+    0.6632,
+    0.6417,
+    0.4984,
+    0.1831,
+    -0.2121,
+    -0.4593,
+    -0.4908,
+    -0.3638,
+    -0.0703,
+    0.3258,
+    0.5977,
+    0.6679,
+    0.6009,
+    0.3931,
+    0.0742,
+    -0.2125,
+    -0.3654,
+    -0.3886,
+    -0.3245,
+    -0.196,
+    -0.0119
+   ],
+   "longest_hold_frames": 1,
+   "turns": 4,
+   "peak_to_peak": 1.1587
+  },
+  "seam_to_fly0": {
+   "first": {
+    "wing_max_deg": 0.0,
+    "all_bones_max_deg": 0.0,
+    "worst_bone": "Root"
+   },
+   "last": {
+    "wing_max_deg": 0.0,
+    "all_bones_max_deg": 0.0,
+    "worst_bone": "Root"
+   }
+  },
+  "steps": {
+   "Death_LOD": {
+    "worst_bone": "Finger_L1",
+    "max_arm_deg": 25.5,
+    "frame": 6,
+    "spikes": {
+     "Arm_L": [
+      3
+     ],
+     "Hand_L": [
+      3
+     ],
+     "Finger_L1": [
+      3
+     ],
+     "Arm_R": [
+      6
+     ]
+    }
+   },
+   "Fly_LOD": {
+    "worst_bone": "Finger_L1",
+    "max_arm_deg": 24.2,
+    "frame": 2,
+    "spikes": {}
+   },
+   "Glide_LOD": {
+    "worst_bone": "Tail_1",
+    "max_arm_deg": 2.2,
+    "frame": 47,
+    "spikes": {}
+   },
+   "Hit_LOD": {
+    "worst_bone": "Finger_L1",
+    "max_arm_deg": 48.2,
+    "frame": 1,
+    "spikes": {
+     "Body": [
+      3
+     ],
+     "Head": [
+      3
+     ],
+     "Tail_1": [
+      3
+     ],
+     "Arm_L": [
+      3
+     ],
+     "Hand_L": [
+      3
+     ],
+     "Finger_L1": [
+      3
+     ],
+     "Arm_R": [
+      3
+     ],
+     "Hand_R": [
+      3
+     ],
+     "Finger_R1": [
+      3
+     ]
+    }
+   },
+   "Strike_LOD": {
+    "worst_bone": "Finger_R1",
+    "max_arm_deg": 44.3,
+    "frame": 8,
+    "spikes": {}
+   }
+  }
+ }
+}

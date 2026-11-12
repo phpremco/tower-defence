@@ -4,8 +4,8 @@ claws, teeth, eyes etc."). Technique: gravemaw_maw.py; helpers: detail_kit_b.py.
 Before, the eyes were amber slits painted under the visor. Now:
 - `CrystalWarlord_Eyes` (`CrystalWarlord_Eyes_Mat`): three wet amber slit-pupil eyes a side under the visor, in a
   row, sunk in mounds of green hide with wet dark rims (round 45 polish: no rings); bone Head.
-- `CrystalWarlord_Teeth` (`CrystalWarlord_Teeth_Mat`): Crysium fangs (crystal boss): a row from the snout's
-  underside (Head), a shorter row from the jaw (Jaw), pink and lit through.
+- `CrystalWarlord_Teeth` (`CrystalWarlord_Teeth_Mat`): (round 49G) two interlocking rows of matte ivory teeth rooted
+  in the gums of the shared Bulwark mouth (mouth49g.py), upper on Head, lower on Jaw.
 - `CrystalWarlord_Claws` (`CrystalWarlord_Claws_Mat`): three hooked toe talons and a heel spur per foot
   (Leg_*_Foot), pink-hot tips.
 No bone, clip or event changes; the actions are exported again as they are. The body's Corrupted skin
@@ -35,15 +35,9 @@ IRIS, EYE_GLOW = (1.0, 0.62, 0.15), (1.0, 0.86, 0.45)        # the species' ambe
 SCLERA = (0.03, 0.04, 0.02)
 LID_DARK, LID_SKIN, LID_WET = (0.06, 0.085, 0.035), (0.2, 0.28, 0.11), (0.05, 0.05, 0.02)
 PINK, PINK_HOT = (1.0, 0.45, 0.8), (1.0, 0.92, 0.98)
-CRY_ROOT, CRY_BODY, CRY_TIP = (0.3, 0.06, 0.28), (0.95, 0.5, 0.82), (1.0, 0.96, 1.0)
 KER_ROOT, KER_BODY, KER_TIP = (0.04, 0.05, 0.03), (0.16, 0.18, 0.12), (1.0, 0.7, 0.9)
 
 CLIPS = ["Idle", "Walk", "Sweep", "Block", "Hit", "Death"]
-
-
-def front(boss, x, z):
-    p, n = boss.ray(Vector((x, -4.0, z)), Vector((0, 1, 0)))
-    return p, n
 
 
 def eye_parts(boss):
@@ -65,20 +59,18 @@ def eye_parts(boss):
 
 
 def teeth_parts(boss):
+    """Round 49G (Remco on the Bulwark, whose head and mouth this boss shares: "those teeth are strange with the new
+    mouth"): the 49F Crysium fangs stood on the front of the snout. Now two interlocking rows of matte ivory teeth
+    rooted in the gums of build_bulwark's mouth (mouth49g.add_teeth), at boss scale (build_crystalwarlord.M): upper on
+    Head, lower on Jaw, each stopping short of the other gum with the jaw at rest. Old ivory with a faint pink-violet
+    stain at the roots (the crystal in its blood), never glassy."""
+    import build_bulwark as BW
+    import build_crystalwarlord as CW
+    import mouth49g as MO
     b = C.PartBuilder()
-    fang = D.keratin_style(CRY_ROOT, CRY_BODY, CRY_TIP, glow=PINK, glow_at="body", glow_k=0.6, seed=11, wet=0.1,
-                           translucent=0.1, bands=3, family=(0.0, 0.0, 0.8, 0.0))
-    # Crysium fangs: an upper row from the snout's underside (Head), a lower row from the jaw (Jaw).
-    for x, ln, r in ((0.03, 0.09, 0.016), (0.075, 0.11, 0.019), (0.115, 0.08, 0.015)):
-        p, n = front(boss, x, 1.8)
-        if p is not None:
-            D.fang(b, "UpperFang", p - n * 0.012, Vector((0.05, -0.35, -1.0)).normalized(), r, ln, "Head", fang,
-                   hook=Vector((0, 0.3, -1)), hook_k=0.2, sides=6, flute=0.3, twist=0.6)
-    for x, ln, r in ((0.05, 0.08, 0.015), (0.1, 0.09, 0.016)):
-        p, n = front(boss, x, 1.735)
-        if p is not None:
-            D.fang(b, "LowerFang", p - n * 0.012, Vector((-0.05, -0.35, 1.0)).normalized(), r, ln, "Jaw", fang,
-                   hook=Vector((0, 0.3, 1)), hook_k=0.2, sides=6, flute=0.3, twist=0.6)
+    style = MO.ivory_style(11, stain=(0.3, 0.1, 0.2))
+    placed = MO.add_teeth(b, BW.MOUTH, CW.M, style, lambda part, bone, p: None, name="Fang")
+    C.log("crystalwarlord teeth", placed)
     return b
 
 
@@ -102,7 +94,7 @@ def claw_parts(boss):
 MAKERS = [("Eyes", eye_parts, dict(tris=800, lod_tris=250, voxel=0.002, families=("chitin", "membrane"),
                                   emission_strength=2.5, specular=0.6, note="three amber slit eyes a side under the visor")),
           ("Teeth", teeth_parts, dict(tris=700, lod_tris=250, voxel=0.002, families=("crystal", "chitin"),
-                                      emission_strength=2.5, specular=0.6, note="Crysium fangs on snout and jaw")),
+                                      emission_strength=2.5, specular=0.4, note="round 49G: ivory teeth rooted in the gums")),
           ("Claws", claw_parts, dict(tris=900, lod_tris=340, voxel=0.0025, families=("chitin", "crystal"),
                                      emission_strength=2.5, specular=0.5, note="toe talons + heel spurs"))]
 

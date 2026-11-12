@@ -1,0 +1,32 @@
+{
+ "creature": "Bulwark",
+ "threshold_model_units": 0.005,
+ "unity_scale": 0.9,
+ "step": 1,
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\Bulwark\\Bulwark.fbx",
+   "body": "Bulwark",
+   "poses": 217,
+   "islands": {
+    "Bulwark": 1,
+    "Bulwark_Claws": 16,
+    "Bulwark_Face": 8
+   },
+   "floating": [],
+   "exempted": []
+  },
+  "LOD1": {
+   "file": "ArtSource\\Exports\\Bulwark\\Bulwark_LOD1.fbx",
+   "body": "Bulwark_LOD1",
+   "poses": 217,
+   "islands": {
+    "Bulwark_Claws_LOD1": 2,
+    "Bulwark_Face_LOD1": 2,
+    "Bulwark_LOD1": 1
+   },
+   "floating": [],
+   "exempted": []
+  }
+ }
+}

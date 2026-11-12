@@ -1,0 +1,214 @@
+{
+ "creature": "Shardback",
+ "threshold_model_units": 0.00446,
+ "unity_scale": 1.12,
+ "step": 1,
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\Shardback\\Shardback.fbx",
+   "body": "Shardback",
+   "poses": 243,
+   "islands": {
+    "Shardback": 7,
+    "Shardback_Claws": 22,
+    "Shardback_Face": 18
+   },
+   "floating": [
+    {
+     "object": "Shardback",
+     "island": 2,
+     "verts": 77,
+     "gap": 0.1274,
+     "pose": "Shatter@16",
+     "bone": "Shard_2",
+     "size": 0.1124,
+     "centre": [
+      -0.3346,
+      0.292,
+      0.4368
+     ],
+     "poses_floating": 75
+    },
+    {
+     "object": "Shardback",
+     "island": 4,
+     "verts": 58,
+     "gap": 0.1245,
+     "pose": "Shatter@19",
+     "bone": "Shard_3",
+     "size": 0.2157,
+     "centre": [
+      0.3242,
+      0.281,
+      0.4532
+     ],
+     "poses_floating": 77
+    },
+    {
+     "object": "Shardback",
+     "island": 3,
+     "verts": 87,
+     "gap": 0.10714,
+     "pose": "Shatter@34",
+     "bone": "Shard_6",
+     "size": 0.239,
+     "centre": [
+      0.3922,
+      -0.0479,
+      0.4312
+     ],
+     "poses_floating": 77
+    },
+    {
+     "object": "Shardback",
+     "island": 5,
+     "verts": 67,
+     "gap": 0.09806,
+     "pose": "Shatter@10",
+     "bone": "Shard_1",
+     "size": 0.1677,
+     "centre": [
+      0.019,
+      0.4278,
+      0.463
+     ],
+     "poses_floating": 76
+    },
+    {
+     "object": "Shardback",
+     "island": 0,
+     "verts": 90,
+     "gap": 0.09488,
+     "pose": "Shatter@30",
+     "bone": "Shard_5",
+     "size": 0.1943,
+     "centre": [
+      -0.3952,
+      -0.0316,
+      0.4297
+     ],
+     "poses_floating": 76
+    },
+    {
+     "object": "Shardback",
+     "island": 1,
+     "verts": 165,
+     "gap": 0.04609,
+     "pose": "Shatter@21",
+     "bone": "Shard_4",
+     "size": 0.538,
+     "centre": [
+      -0.0821,
+      0.085,
+      0.5817
+     ],
+     "poses_floating": 80
+    }
+   ],
+   "exempted": []
+  },
+  "LOD1": {
+   "file": "ArtSource\\Exports\\Shardback\\Shardback_LOD1.fbx",
+   "body": "Shardback_LOD1",
+   "poses": 243,
+   "islands": {
+    "Shardback_Claws_LOD1": 6,
+    "Shardback_Face_LOD1": 2,
+    "Shardback_LOD1": 7
+   },
+   "floating": [
+    {
+     "object": "Shardback_LOD1",
+     "island": 6,
+     "verts": 27,
+     "gap": 0.13701,
+     "pose": "Shatter@19",
+     "bone": "Shard_3",
+     "size": 0.2175,
+     "centre": [
+      0.3212,
+      0.2776,
+      0.4538
+     ],
+     "poses_floating": 77
+    },
+    {
+     "object": "Shardback_LOD1",
+     "island": 2,
+     "verts": 36,
+     "gap": 0.13034,
+     "pose": "Shatter@16",
+     "bone": "Shard_2",
+     "size": 0.1097,
+     "centre": [
+      -0.335,
+      0.2876,
+      0.4385
+     ],
+     "poses_floating": 75
+    },
+    {
+     "object": "Shardback_LOD1",
+     "island": 3,
+     "verts": 40,
+     "gap": 0.1105,
+     "pose": "Shatter@34",
+     "bone": "Shard_6",
+     "size": 0.2358,
+     "centre": [
+      0.3863,
+      -0.0484,
+      0.432
+     ],
+     "poses_floating": 77
+    },
+    {
+     "object": "Shardback_LOD1",
+     "island": 5,
+     "verts": 34,
+     "gap": 0.10251,
+     "pose": "Shatter@10",
+     "bone": "Shard_1",
+     "size": 0.1673,
+     "centre": [
+      0.0162,
+      0.4238,
+      0.4648
+     ],
+     "poses_floating": 76
+    },
+    {
+     "object": "Shardback_LOD1",
+     "island": 0,
+     "verts": 39,
+     "gap": 0.10126,
+     "pose": "Shatter@30",
+     "bone": "Shard_5",
+     "size": 0.187,
+     "centre": [
+      -0.39,
+      -0.0353,
+      0.433
+     ],
+     "poses_floating": 76
+    },
+    {
+     "object": "Shardback_LOD1",
+     "island": 1,
+     "verts": 71,
+     "gap": 0.05487,
+     "pose": "Shatter@21",
+     "bone": "Shard_4",
+     "size": 0.5324,
+     "centre": [
+      -0.0749,
+      0.0897,
+      0.5731
+     ],
+     "poses_floating": 80
+    }
+   ],
+   "exempted": []
+  }
+ }
+}

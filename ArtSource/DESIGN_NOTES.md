@@ -3299,7 +3299,7 @@ is still exactly one island of its own bone (checked), so Unity's scale-0 sheddi
   in Climb_Up and Roar. The crystal weights are now mirrored from +X (with _L/_R swapped). Hovering fragments removed.
 - The lower jaw was wedged into the head core (no gap even shut), so every tooth crossed a lip. It hangs 0.15 lower
   (a real slot under the head's front rim) and still juts past the head front: upper fangs hang into the slot and stop
-  3.5 cm short of the jaw; lower crystal teeth and fangs rise from the jutting lip in front of the head (underbite).
+  5 cm short of the jaw; lower crystal teeth and fangs rise from the jutting lip in front of the head (underbite).
 
 ## Sealed One: one maw you can read
 

@@ -1,0 +1,83 @@
+{
+ "creature": "Bat",
+ "threshold_model_units": 0.005,
+ "unity_scale": 0.65,
+ "step": 1,
+ "burst_clips": [],
+ "exempt_bones": [],
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\Bat\\Bat.fbx",
+   "body": "Bat",
+   "poses": 139,
+   "islands": {
+    "Bat": 5,
+    "Bat_Claws": 21,
+    "Bat_Face": 8
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": []
+  },
+  "LOD1": {
+   "file": "ArtSource\\Exports\\Bat\\Bat_LOD1.fbx",
+   "body": "Bat_LOD1",
+   "poses": 139,
+   "islands": {
+    "Bat_Claws_LOD1": 6,
+    "Bat_Face_LOD1": 2,
+    "Bat_LOD1": 5
+   },
+   "floating": [
+    {
+     "object": "Bat_Claws_LOD1",
+     "island": 3,
+     "verts": 9,
+     "gap": 0.00981,
+     "bone": "Hand_R",
+     "poses_floating": 139,
+     "clips": {
+      "rest": 0.0091,
+      "Death": 0.0098,
+      "Fly": 0.0097,
+      "Glide": 0.009,
+      "Hit": 0.0094,
+      "Strike": 0.0096
+     },
+     "pose": "Death@37",
+     "size": 0.0356,
+     "centre": [
+      0.1331,
+      -0.1833,
+      0.1972
+     ]
+    },
+    {
+     "object": "Bat_Claws_LOD1",
+     "island": 5,
+     "verts": 9,
+     "gap": 0.00981,
+     "bone": "Hand_L",
+     "poses_floating": 139,
+     "clips": {
+      "rest": 0.0091,
+      "Death": 0.0098,
+      "Fly": 0.0097,
+      "Glide": 0.009,
+      "Hit": 0.0094,
+      "Strike": 0.0096
+     },
+     "pose": "Death@37",
+     "size": 0.0364,
+     "centre": [
+      -0.2173,
+      -0.1833,
+      -0.0968
+     ]
+    }
+   ],
+   "burst_only": [],
+   "exempted": []
+  }
+ }
+}

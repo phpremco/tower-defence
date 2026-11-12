@@ -1,0 +1,33 @@
+{
+ "base": "2e4fc688",
+ "results": [
+  {
+   "creature": "SlimeMonarch",
+   "ok": true,
+   "issues": [],
+   "notes": [
+    "fbx: new bones ['Slosh']",
+    "lod: new bones ['Slosh']",
+    "report: scale_keyed_bones gains ['Slosh']"
+   ],
+   "clips_before": {
+    "Crawl": 40,
+    "Death": 40,
+    "Flood": 44,
+    "Hit": 12,
+    "Idle": 72,
+    "Spawn": 48,
+    "Strike": 30
+   },
+   "clips_after": {
+    "Crawl": 40,
+    "Death": 40,
+    "Flood": 44,
+    "Hit": 12,
+    "Idle": 72,
+    "Spawn": 48,
+    "Strike": 30
+   }
+  }
+ ]
+}

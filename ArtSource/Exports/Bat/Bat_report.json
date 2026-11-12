@@ -127,29 +127,60 @@
         12
       ],
       "settled_by_frame": 23,
-      "starts_and_ends_on": "Glide frame 0",
+      "starts_and_ends_on": "Fly frame 0",
       "body_bone": "Body",
       "body_travel_at_impact": {
         "forward": 0.12,
-        "up": -0.07
+        "up": -0.05
       },
-      "body_travel_max": 0.139,
+      "body_travel_max": 0.13,
       "root_moves": false,
       "feet_planted": false,
       "mesh": {
         "rest": {
-          "tip_forward": 0.309,
-          "top": 0.166,
-          "bottom": -0.115
+          "tip_forward": 0.311,
+          "top": 0.136,
+          "bottom": -0.166
         },
         "impact": {
           "tip_forward": 0.408,
           "top": -0.003,
-          "bottom": -0.483
+          "bottom": -0.619
         }
       },
       "new_clip": true,
-      "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
+      "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)",
+      "wing_beat": {
+        "source": "Fly, time-warped (round 49I)",
+        "wing_bones": [
+          "Arm_L",
+          "Hand_L",
+          "Finger_L1",
+          "Finger_L2",
+          "Finger_L3",
+          "Arm_R",
+          "Hand_R",
+          "Finger_R1",
+          "Finger_R2",
+          "Finger_R3"
+        ],
+        "wing_bones_lod1": [
+          "Arm_L",
+          "Hand_L",
+          "Finger_L1",
+          "Arm_R",
+          "Hand_R",
+          "Finger_R1"
+        ],
+        "beats_in_clip": 2,
+        "fly_cycle_frames": 13,
+        "beat_seconds_at_seams": 0.433,
+        "beat_seconds_fastest": 0.375,
+        "fly_phase_at_impact": 0.823,
+        "seams": "first and last frame = Fly frame 0, at Fly's speed",
+        "strike_bones": "every other bone (Body, Head, Jaw, Tail)",
+        "downbeat_push": "The downstroke that ends at the impact pushes a little deeper (Arm 12 degrees, Hand 6 at the bottom, eased in and out over ten frames): power for the spit, the beat carries on through it."
+      }
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
   }

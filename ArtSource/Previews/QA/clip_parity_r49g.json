@@ -1,0 +1,111 @@
+{
+ "base": "ArtSource/Exports/_backup_r49/{name}_49G",
+ "results": [
+  {
+   "creature": "Bulwark",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Block": 24,
+    "Death": 44,
+    "Hit": 14,
+    "Idle": 72,
+    "Strike": 24,
+    "Walk": 32
+   },
+   "clips_after": {
+    "Block": 24,
+    "Death": 44,
+    "Hit": 14,
+    "Idle": 72,
+    "Strike": 24,
+    "Walk": 32
+   }
+  },
+  {
+   "creature": "CrystalWarlord",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Block": 24,
+    "Death": 44,
+    "Hit": 14,
+    "Idle": 72,
+    "Sweep": 40,
+    "Walk": 32
+   },
+   "clips_after": {
+    "Block": 24,
+    "Death": 44,
+    "Hit": 14,
+    "Idle": 72,
+    "Sweep": 40,
+    "Walk": 32
+   }
+  },
+  {
+   "creature": "Shardback",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Death": 40,
+    "Hit": 12,
+    "Idle": 72,
+    "Shatter": 40,
+    "Strike": 24,
+    "Walk": 48
+   },
+   "clips_after": {
+    "Death": 40,
+    "Hit": 12,
+    "Idle": 72,
+    "Shatter": 40,
+    "Strike": 24,
+    "Walk": 48
+   }
+  },
+  {
+   "creature": "Shattered",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Climb_Down": 186,
+    "Climb_Loop": 81,
+    "Climb_Up": 186,
+    "Death": 80,
+    "Dive_Into_Liquid": 66,
+    "Hit": 14,
+    "Idle": 72,
+    "PhaseBreak1": 40,
+    "PhaseBreak2": 44,
+    "Rejoin": 80,
+    "Roar": 70,
+    "Split": 64,
+    "Submerged_Loop": 80,
+    "Surface_Burst": 64,
+    "Walk": 56
+   },
+   "clips_after": {
+    "Climb_Down": 186,
+    "Climb_Loop": 81,
+    "Climb_Up": 186,
+    "Death": 80,
+    "Dive_Into_Liquid": 66,
+    "Hit": 14,
+    "Idle": 72,
+    "PhaseBreak1": 40,
+    "PhaseBreak2": 44,
+    "Rejoin": 80,
+    "Roar": 70,
+    "Split": 64,
+    "Submerged_Loop": 80,
+    "Surface_Burst": 64,
+    "Walk": 56
+   }
+  }
+ ]
+}

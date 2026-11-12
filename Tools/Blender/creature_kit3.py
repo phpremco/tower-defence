@@ -351,13 +351,15 @@ def splay_feet(poser, specs, legs, fall, twitch=0.0, out=1.2, body="Body", kick_
 def run_creature(name, builder, bone_list, clips, *, tris=3900, lod_tris=1700, families=("chitin", "membrane", "crystal"),
                  game_scale=0.8, rigid=(), blend=2, lod_drop=None, lod_aims=None, scale_bones=(), clip_scales=None,
                  extra=None, voxel=0.0034, extrusion=0.012, ray=0.04, ao_distance=0.08, emission_strength=2.5,
-                 specular=0.35, report=None, previews=None, k=1.0):
-    """Builds, rigs, animates, exports and renders one common enemy. Returns (asset, arm, actions, lod)."""
+                 specular=0.35, report=None, previews=None, k=1.0, mirror=True):
+    """Builds, rigs, animates, exports and renders one common enemy. Returns (asset, arm, actions, lod).
+    `mirror` False (round 49D, an asymmetric body): whole-body UVs and a plain decimation."""
     C.reset_scene()
     out = C.preview_dir()
     asset = C.build_mesh_asset(name, builder, voxel=voxel, target_tris=tris, tex_size=1024, ao_distance=ao_distance,
                                extrusion=extrusion, ray=ray, emission_strength=emission_strength,
-                               extra=extra, specular=specular, mirror=True, k=k, families=families, low_size=512)
+                               extra=extra, specular=specular, mirror=mirror, symmetric=mirror, k=k, families=families,
+                               low_size=512)
     arm = C.build_armature(name + "_Rig", bone_list)
     C.skin(asset.low, arm, builder, rigid=rigid, blend=blend)
     poser = ClipPoser(arm, scale_bones, clip_scales)

@@ -100,5 +100,76 @@
     "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Skyray_<Part> (+ _LOD1 in Skyray_LOD1.fbx), maps Skyray_<Part>_*.png (+ Low/)",
     "body_maps": "round 49A body rebuilt and re-baked (no bead eyes on the body any more)",
     "note": "round 49A: six wet cyan eyes under brow folds, mouth teeth on both lips, fin-tip talons, spade barbs; new Jaw bone (lower lip)"
+  },
+  "round36": {
+    "Dive": {
+      "frames": 24,
+      "loop": false,
+      "impact_frame": 10,
+      "anticipation_frames": [
+        0,
+        5
+      ],
+      "contact_frames": [
+        10,
+        12
+      ],
+      "settled_by_frame": 23,
+      "starts_and_ends_on": "Fly frame 0",
+      "body_bone": "Body",
+      "body_travel_at_impact": {
+        "forward": 0.14,
+        "up": -0.11
+      },
+      "body_travel_max": 0.178,
+      "root_moves": false,
+      "feet_planted": false,
+      "mesh": {
+        "rest": {
+          "tip_forward": 0.636,
+          "top": 0.136,
+          "bottom": -0.397
+        },
+        "impact": {
+          "tip_forward": 0.673,
+          "top": 0.138,
+          "bottom": -0.483
+        }
+      },
+      "wing_beat": {
+        "source": "Fly, time-warped (round 49I)",
+        "wing_bones": [
+          "Fin_L_A1",
+          "Fin_L_A2",
+          "Fin_L_A3",
+          "Fin_L_B1",
+          "Fin_L_B2",
+          "Fin_L_B3",
+          "Fin_R_A1",
+          "Fin_R_A2",
+          "Fin_R_A3",
+          "Fin_R_B1",
+          "Fin_R_B2",
+          "Fin_R_B3"
+        ],
+        "wing_bones_lod1": [
+          "Fin_L_A1",
+          "Fin_L_A2",
+          "Fin_L_A3",
+          "Fin_R_A1",
+          "Fin_R_A2",
+          "Fin_R_A3"
+        ],
+        "beats_in_clip": 1,
+        "fly_cycle_frames": 42,
+        "beat_seconds_at_seams": 1.4,
+        "beat_seconds_fastest": 0.583,
+        "fly_phase_at_impact": 0.387,
+        "seams": "first and last frame = Fly frame 0, at Fly's speed",
+        "strike_bones": "every other bone (Body, Head, Jaw, Tail)",
+        "downbeat_push": "The downstroke through the impact pushes a little deeper (root 8 degrees, middle 5, eased over eleven frames, the bottom just after the tail lands)."
+      }
+    },
+    "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
   }
 }

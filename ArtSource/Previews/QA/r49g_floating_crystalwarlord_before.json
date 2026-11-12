@@ -1,0 +1,95 @@
+{
+ "creature": "CrystalWarlord",
+ "threshold_model_units": 0.005,
+ "unity_scale": 0.96,
+ "step": 1,
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\CrystalWarlord\\CrystalWarlord.fbx",
+   "body": "CrystalWarlord",
+   "poses": 233,
+   "islands": {
+    "CrystalWarlord": 1,
+    "CrystalWarlord_Claws": 16,
+    "CrystalWarlord_Eyes": 2,
+    "CrystalWarlord_Teeth": 18
+   },
+   "floating": [
+    {
+     "object": "CrystalWarlord_Teeth",
+     "island": 9,
+     "verts": 35,
+     "gap": 0.04279,
+     "pose": "Death@38",
+     "bone": "Head",
+     "size": 0.1063,
+     "centre": [
+      1.2007,
+      -0.8517,
+      -0.0719
+     ],
+     "poses_floating": 34
+    },
+    {
+     "object": "CrystalWarlord_Teeth",
+     "island": 0,
+     "verts": 35,
+     "gap": 0.03133,
+     "pose": "Death@38",
+     "bone": "Head",
+     "size": 0.1057,
+     "centre": [
+      1.1789,
+      -0.8742,
+      -0.0102
+     ],
+     "poses_floating": 22
+    },
+    {
+     "object": "CrystalWarlord_Teeth",
+     "island": 5,
+     "verts": 32,
+     "gap": 0.02502,
+     "pose": "Death@38",
+     "bone": "Head",
+     "size": 0.0951,
+     "centre": [
+      1.3318,
+      -0.8404,
+      0.1377
+     ],
+     "poses_floating": 10
+    },
+    {
+     "object": "CrystalWarlord_Teeth",
+     "island": 14,
+     "verts": 32,
+     "gap": 0.01419,
+     "pose": "Death@38",
+     "bone": "Head",
+     "size": 0.0958,
+     "centre": [
+      1.3993,
+      -0.7705,
+      -0.0539
+     ],
+     "poses_floating": 10
+    }
+   ],
+   "exempted": []
+  },
+  "LOD1": {
+   "file": "ArtSource\\Exports\\CrystalWarlord\\CrystalWarlord_LOD1.fbx",
+   "body": "CrystalWarlord_LOD1",
+   "poses": 233,
+   "islands": {
+    "CrystalWarlord_Claws_LOD1": 16,
+    "CrystalWarlord_Eyes_LOD1": 2,
+    "CrystalWarlord_LOD1": 1,
+    "CrystalWarlord_Teeth_LOD1": 18
+   },
+   "floating": [],
+   "exempted": []
+  }
+ }
+}

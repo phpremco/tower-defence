@@ -1,0 +1,264 @@
+{
+ "creature": "SealedOne",
+ "threshold": 0.0288,
+ "poses_checked": 37,
+ "mixed": [],
+ "clips": [
+  "Idle",
+  "Walk",
+  "Hit",
+  "Summon",
+  "Roar",
+  "Rise"
+ ],
+ "islands_per_object": {
+  "SealedOne": 43,
+  "SealedOne_Claws": 18,
+  "SealedOne_Eyes": 3,
+  "SealedOne_Teeth": 17
+ },
+ "specks_under_min_verts": {
+  "SealedOne": 17,
+  "SealedOne_Claws": 10,
+  "SealedOne_Eyes": 0,
+  "SealedOne_Teeth": 0
+ },
+ "floating": [
+  {
+   "object": "SealedOne_Teeth",
+   "island": 0,
+   "verts": 33,
+   "gap": 0.04967,
+   "pose": "Summon@54",
+   "bone": "Jaw",
+   "centre": [
+    -0.3641,
+    0.0964,
+    3.7613
+   ]
+  },
+  {
+   "object": "SealedOne_Teeth",
+   "island": 8,
+   "verts": 33,
+   "gap": 0.04543,
+   "pose": "Summon@36",
+   "bone": "Jaw",
+   "centre": [
+    0.3641,
+    0.0907,
+    3.7813
+   ]
+  }
+ ],
+ "separate_by_design": [
+  {
+   "object": "SealedOne",
+   "island": 37,
+   "verts": 232,
+   "gap": 1.81255,
+   "pose": "Summon@72",
+   "bone": "Ring_3",
+   "centre": [
+    0.1317,
+    2.7513,
+    5.9526
+   ]
+  },
+  {
+   "object": "SealedOne",
+   "island": 12,
+   "verts": 291,
+   "gap": 1.0942,
+   "pose": "Rise@30",
+   "bone": "Seal_2",
+   "centre": [
+    2.6165,
+    2.0771,
+    1.3777
+   ]
+  },
+  {
+   "object": "SealedOne",
+   "island": 39,
+   "verts": 291,
+   "gap": 1.09185,
+   "pose": "Rise@30",
+   "bone": "Seal_3",
+   "centre": [
+    -2.6165,
+    2.0771,
+    1.3777
+   ]
+  },
+  {
+   "object": "SealedOne",
+   "island": 36,
+   "verts": 360,
+   "gap": 1.07246,
+   "pose": "Rise@30",
+   "bone": "Seal_1",
+   "centre": [
+    0.0,
+    3.341,
+    1.3778
+   ]
+  },
+  {
+   "object": "SealedOne",
+   "island": 10,
+   "verts": 261,
+   "gap": 1.0359,
+   "pose": "Rise@30",
+   "bone": "Seal_5",
+   "centre": [
+    -3.2164,
+    -0.7268,
+    1.2934
+   ]
+  },
+  {
+   "object": "SealedOne",
+   "island": 21,
+   "verts": 261,
+   "gap": 1.03377,
+   "pose": "Rise@30",
+   "bone": "Seal_4",
+   "centre": [
+    3.2164,
+    -0.7268,
+    1.2934
+   ]
+  },
+  {
+   "object": "SealedOne",
+   "island": 24,
+   "verts": 184,
+   "gap": 0.97161,
+   "pose": "Roar@29",
+   "bone": "Ring_2",
+   "centre": [
+    -0.929,
+    2.4807,
+    4.2585
+   ]
+  },
+  {
+   "object": "SealedOne",
+   "island": 26,
+   "verts": 184,
+   "gap": 0.96275,
+   "pose": "Summon@72",
+   "bone": "Ring_2",
+   "centre": [
+    -0.6606,
+    2.4908,
+    4.5422
+   ]
+  },
+  {
+   "object": "SealedOne",
+   "island": 33,
+   "verts": 231,
+   "gap": 0.91629,
+   "pose": "Rise@30",
+   "bone": "Seal_6",
+   "centre": [
+    1.3682,
+    -2.8811,
+    1.0518
+   ]
+  },
+  {
+   "object": "SealedOne",
+   "island": 42,
+   "verts": 231,
+   "gap": 0.91629,
+   "pose": "Rise@30",
+   "bone": "Seal_7",
+   "centre": [
+    -1.3682,
+    -2.8811,
+    1.0518
+   ]
+  },
+  {
+   "object": "SealedOne",
+   "island": 18,
+   "verts": 155,
+   "gap": 0.9042,
+   "pose": "Summon@54",
+   "bone": "Ring_1",
+   "centre": [
+    0.0571,
+    1.438,
+    6.0211
+   ]
+  },
+  {
+   "object": "SealedOne",
+   "island": 38,
+   "verts": 319,
+   "gap": 0.9011,
+   "pose": "Summon@36",
+   "bone": "Ring_3",
+   "centre": [
+    -1.2277,
+    2.8771,
+    5.481
+   ]
+  },
+  {
+   "object": "SealedOne",
+   "island": 35,
+   "verts": 177,
+   "gap": 0.70366,
+   "pose": "Summon@18",
+   "bone": "Ring_1",
+   "centre": [
+    0.1109,
+    0.4825,
+    5.8287
+   ]
+  },
+  {
+   "object": "SealedOne",
+   "island": 41,
+   "verts": 232,
+   "gap": 0.70358,
+   "pose": "Idle@72",
+   "bone": "Ring_3",
+   "centre": [
+    0.8667,
+    1.0453,
+    6.0669
+   ]
+  },
+  {
+   "object": "SealedOne",
+   "island": 40,
+   "verts": 244,
+   "gap": 0.66918,
+   "pose": "Summon@18",
+   "bone": "Ring_2",
+   "centre": [
+    0.1892,
+    2.1011,
+    4.7751
+   ]
+  },
+  {
+   "object": "SealedOne",
+   "island": 19,
+   "verts": 155,
+   "gap": 0.5695,
+   "pose": "Walk@64",
+   "bone": "Ring_1",
+   "centre": [
+    0.0834,
+    -1.0726,
+    5.1197
+   ]
+  }
+ ]
+}
