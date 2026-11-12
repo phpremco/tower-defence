@@ -1,0 +1,38 @@
+{
+ "creature": "CrystalWarlord",
+ "threshold_model_units": 0.005,
+ "unity_scale": 0.96,
+ "step": 1,
+ "burst_clips": [],
+ "exempt_bones": [],
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\CrystalWarlord\\CrystalWarlord.fbx",
+   "body": "CrystalWarlord",
+   "poses": 233,
+   "islands": {
+    "CrystalWarlord": 1,
+    "CrystalWarlord_Claws": 16,
+    "CrystalWarlord_Eyes": 2,
+    "CrystalWarlord_Teeth": 13
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": []
+  },
+  "LOD1": {
+   "file": "ArtSource\\Exports\\CrystalWarlord\\CrystalWarlord_LOD1.fbx",
+   "body": "CrystalWarlord_LOD1",
+   "poses": 233,
+   "islands": {
+    "CrystalWarlord_Claws_LOD1": 16,
+    "CrystalWarlord_Eyes_LOD1": 2,
+    "CrystalWarlord_LOD1": 1,
+    "CrystalWarlord_Teeth_LOD1": 13
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": []
+  }
+ }
+}

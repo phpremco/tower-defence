@@ -277,17 +277,20 @@ namespace Game.Core
 
         /// <summary>
         /// Plays an upper-body clip once over the legs' cycle; a held one stays on its last frame (a gun kept at aim) until
-        /// another replaces it or <see cref="StopUpper"/> lets it go. Clips not marked upper body are ignored.
+        /// another replaces it or <see cref="StopUpper"/> lets it go. Clips not marked upper body are ignored. With
+        /// <paramref name="carry"/> a clip that takes over where the showing one ends (a draw that ends in the aim) keeps the
+        /// layer's weight instead of fading in again from the legs' pose.
         /// </summary>
-        public void PlayUpper(int index, float startSeconds = 0f, bool hold = false, float rate = 1f)
+        public void PlayUpper(int index, float startSeconds = 0f, bool hold = false, float rate = 1f, bool carry = false)
         {
             if (index < 0 || _upperMixers == null || !_art.Clips[index].UpperBody)
             {
                 return;
             }
 
-            // Restarting the clip that already shows keeps its weight: a second shot kicks without a fade.
-            if (index != _upper || _upperStopAge >= 0f)
+            // Restarting the clip that already shows keeps its weight, and so does a carried hand-over.
+            bool keeps = index == _upper || (carry && _upper >= 0);
+            if (!keeps || _upperStopAge >= 0f)
             {
                 _upperAge = 0f;
             }

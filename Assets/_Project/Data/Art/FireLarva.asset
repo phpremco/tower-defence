@@ -22,7 +22,7 @@ MonoBehaviour:
   _scale: 1.4
   _yaw: 180
   _bodyCentrePivot: 0
-  _height: 0.25162664
+  _height: 0.24292195
   _lodScreenHeight: 0.05
   _upperBodyBone: 
   _displayExposure: 1
@@ -32,16 +32,18 @@ MonoBehaviour:
   _bleeds: 1
   _shedBones: []
   _vents: {fileID: 0}
+  _beamSockets: []
   _emissionSets: []
   _deathEmissionSet: 
   _clips:
   - _role: 0
     _clip: {fileID: -4180571800164350763, guid: f465085cdff5fdf43af1c6dddfa12a4d, type: 3}
     _farClip: {fileID: -7453941303050706997, guid: 7df02f1d19d02024b8f37f5e9bfde93b, type: 3}
-    _distancePerLoop: 0.2
+    _distancePerLoop: 0.4
     _eventSeconds: 0
     _trigger: 
     _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
     _weight: 1
     _upperBody: 0
     _endOffset: {x: 0, y: 0}
@@ -50,6 +52,7 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
     _blendSeconds: 0
   - _role: 3
     _clip: {fileID: 8449317911502482974, guid: f465085cdff5fdf43af1c6dddfa12a4d, type: 3}
@@ -58,6 +61,7 @@ MonoBehaviour:
     _eventSeconds: 0
     _trigger: 
     _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
     _weight: 1
     _upperBody: 0
     _endOffset: {x: 0, y: 0}
@@ -66,6 +70,7 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
     _blendSeconds: 0
   - _role: 2
     _clip: {fileID: 4487095027481443831, guid: f465085cdff5fdf43af1c6dddfa12a4d, type: 3}
@@ -74,6 +79,7 @@ MonoBehaviour:
     _eventSeconds: 0
     _trigger: 
     _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
     _weight: 0.6
     _upperBody: 0
     _endOffset: {x: 0, y: 0}
@@ -82,6 +88,7 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
     _blendSeconds: 0
   - _role: 1
     _clip: {fileID: -2451719760099836084, guid: f465085cdff5fdf43af1c6dddfa12a4d, type: 3}
@@ -90,6 +97,7 @@ MonoBehaviour:
     _eventSeconds: 0
     _trigger: 
     _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
     _weight: 1
     _upperBody: 0
     _endOffset: {x: 0, y: 0}
@@ -98,4 +106,5 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
     _blendSeconds: 0

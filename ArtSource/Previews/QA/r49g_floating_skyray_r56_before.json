@@ -1,0 +1,183 @@
+{
+ "creature": "Skyray",
+ "threshold_model_units": 0.005,
+ "unity_scale": 1.0,
+ "step": 1,
+ "burst_clips": [],
+ "exempt_bones": [],
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\_backup_r56\\Skyray\\Skyray.fbx",
+   "body": "Skyray",
+   "poses": 184,
+   "islands": {
+    "Skyray": 17,
+    "Skyray_Claws": 16,
+    "Skyray_Face": 27
+   },
+   "floating": [
+    {
+     "object": "Skyray_Claws",
+     "island": 7,
+     "verts": 16,
+     "gap": 0.0357,
+     "bone": "Fin_L_A3",
+     "poses_floating": 145,
+     "clips": {
+      "Death": 0.0357,
+      "Dive": 0.0351,
+      "Fly": 0.0352,
+      "Hit": 0.0342,
+      "Idle": 0.0331
+     },
+     "pose": "Death@19",
+     "size": 0.0681,
+     "centre": [
+      0.4945,
+      -0.0075,
+      -0.5989
+     ]
+    },
+    {
+     "object": "Skyray_Claws",
+     "island": 15,
+     "verts": 16,
+     "gap": 0.0357,
+     "bone": "Fin_R_A3",
+     "poses_floating": 145,
+     "clips": {
+      "Death": 0.0357,
+      "Dive": 0.0351,
+      "Fly": 0.0352,
+      "Hit": 0.0342,
+      "Idle": 0.0331
+     },
+     "pose": "Death@19",
+     "size": 0.0693,
+     "centre": [
+      -0.4093,
+      -0.0075,
+      -0.6601
+     ]
+    },
+    {
+     "object": "Skyray_Claws",
+     "island": 2,
+     "verts": 6,
+     "gap": 0.00547,
+     "bone": "Tail_5",
+     "poses_floating": 184,
+     "clips": {
+      "rest": 0.0055,
+      "Death": 0.0055,
+      "Dive": 0.0055,
+      "Fly": 0.0055,
+      "Hit": 0.0055,
+      "Idle": 0.0055
+     },
+     "pose": "Idle@61",
+     "size": 0.0301,
+     "centre": [
+      -0.3168,
+      1.5209,
+      -0.1306
+     ]
+    },
+    {
+     "object": "Skyray_Claws",
+     "island": 9,
+     "verts": 6,
+     "gap": 0.00547,
+     "bone": "Tail_5",
+     "poses_floating": 184,
+     "clips": {
+      "rest": 0.0055,
+      "Death": 0.0055,
+      "Dive": 0.0055,
+      "Fly": 0.0055,
+      "Hit": 0.0055,
+      "Idle": 0.0055
+     },
+     "pose": "Idle@61",
+     "size": 0.0294,
+     "centre": [
+      -0.1915,
+      1.5715,
+      -0.1371
+     ]
+    },
+    {
+     "object": "Skyray_Claws",
+     "island": 0,
+     "verts": 7,
+     "gap": 0.00517,
+     "bone": "Tail_5",
+     "poses_floating": 24,
+     "clips": {
+      "Death": 0.0052
+     },
+     "pose": "Death@19",
+     "size": 0.031,
+     "centre": [
+      -0.0473,
+      1.4647,
+      0.3868
+     ]
+    },
+    {
+     "object": "Skyray_Claws",
+     "island": 6,
+     "verts": 21,
+     "gap": 0.00506,
+     "bone": "Fin_L_A3",
+     "poses_floating": 3,
+     "clips": {
+      "Dive": 0.005,
+      "Fly": 0.0051
+     },
+     "pose": "Fly@26",
+     "size": 0.0841,
+     "centre": [
+      -0.9349,
+      0.2407,
+      -0.1716
+     ]
+    },
+    {
+     "object": "Skyray_Claws",
+     "island": 14,
+     "verts": 21,
+     "gap": 0.00506,
+     "bone": "Fin_R_A3",
+     "poses_floating": 3,
+     "clips": {
+      "Dive": 0.005,
+      "Fly": 0.0051
+     },
+     "pose": "Fly@26",
+     "size": 0.0841,
+     "centre": [
+      0.9349,
+      0.2407,
+      -0.1716
+     ]
+    }
+   ],
+   "burst_only": [],
+   "exempted": []
+  },
+  "LOD1": {
+   "file": "ArtSource\\Exports\\_backup_r56\\Skyray\\Skyray_LOD1.fbx",
+   "body": "Skyray_LOD1",
+   "poses": 184,
+   "islands": {
+    "Skyray_Claws_LOD1": 2,
+    "Skyray_Face_LOD1": 9,
+    "Skyray_LOD1": 17
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": []
+  }
+ }
+}

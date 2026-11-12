@@ -1,0 +1,11 @@
+{
+ "creature": "CrystalWarlord",
+ "teeth_checked": 9,
+ "poses": 19,
+ "teeth_through_lips": 1,
+ "where": {
+  "CrystalWarlord_Teeth#1": [
+   "Block@2:1"
+  ]
+ }
+}

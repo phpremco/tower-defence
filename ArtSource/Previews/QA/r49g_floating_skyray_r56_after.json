@@ -1,0 +1,36 @@
+{
+ "creature": "Skyray",
+ "threshold_model_units": 0.005,
+ "unity_scale": 1.0,
+ "step": 1,
+ "burst_clips": [],
+ "exempt_bones": [],
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\Skyray\\Skyray.fbx",
+   "body": "Skyray",
+   "poses": 184,
+   "islands": {
+    "Skyray": 16,
+    "Skyray_Claws": 16,
+    "Skyray_Face": 15
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": []
+  },
+  "LOD1": {
+   "file": "ArtSource\\Exports\\Skyray\\Skyray_LOD1.fbx",
+   "body": "Skyray_LOD1",
+   "poses": 184,
+   "islands": {
+    "Skyray_Claws_LOD1": 2,
+    "Skyray_Face_LOD1": 5,
+    "Skyray_LOD1": 16
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": []
+  }
+ }
+}

@@ -228,10 +228,12 @@ namespace Game.Tests
 
         // Round 17: the fire larva's legs flipped through 100-170 degrees in one frame (a world-planted foot ended up
         // under its own swinging hip). A fast scuttle may swing a leg ~50 degrees a frame; a flip is far beyond that.
+        // Round 57: the round-56 planted tripod crawl (two steps in 20 frames) lifts each tripod with a 63-degree lower-leg turn
+        // on its first swing frame (r57_larva_legs.cs); the guard sits between that authored lift and a flip.
         [Test]
         public void FireLarva_Legs_NeverFlipInAnyClip()
         {
-            const float MaxDegreesPerFrame = 60f;
+            const float MaxDegreesPerFrame = 75f;
             var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/FireLarva.asset");
             var model = Object.Instantiate(art.Model);
             try
@@ -422,6 +424,60 @@ namespace Game.Tests
             Assert.AreNotEqual(ember, PartGlow("Bat_Dust"), "the dust bat's parts glow like the ember bat's");
             Assert.AreEqual(ember, PartGlow("Bat_Tide"), "the tide bat's parts should keep the warm glow");
             Assert.AreEqual(ember, PartGlow("Bat_Frost"), "the frost bat's parts should keep the warm glow");
+            Assert.AreNotEqual(ember, PartGlow("Bat_Mire"), "the bog bat's parts glow like the ember bat's");
+        }
+
+        // Round 57: round 56 baked a bog skin, so the Mirebat no longer borrows the moss bat's: its body wears the Mire maps on
+        // the shared bat mesh and its parts lean to that skin's pale yellow-green.
+        [Test]
+        public void Mirebat_WearsItsOwnBogSkin()
+        {
+            var enemy = AssetDatabase.LoadAssetAtPath<EnemyDefinition>($"{EnemyFolder}/Mirebat.asset");
+            Assert.IsNotNull(enemy, "no Mirebat");
+            Assert.AreEqual("Bat_Mire", enemy.Art.name, "the Mirebat wears another skin");
+            StringAssert.Contains("/Skins/Mire/", AssetDatabase.GetAssetPath(enemy.Art.Material.GetTexture("_BaseMap")), "its body is not on the Mire maps");
+            StringAssert.Contains("/Skins/Mire/Low/", AssetDatabase.GetAssetPath(enemy.Art.LowMaterial.GetTexture("_BaseMap")), "its Low body is not on the Mire maps");
+            var bat = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/Bat.asset");
+            Assert.AreEqual(bat.Model, enemy.Art.Model, "the bog bat should share the bat mesh");
+            Assert.AreNotEqual(PartGlow("Bat_Moss"), PartGlow("Bat_Mire"), "the bog bat's parts glow like the moss bat's");
+        }
+
+        // Round 57: the Sealed One's maw (round 52) opens 0.4 m ahead of and 0.55 m above its head bone, so the Summon's moment
+        // leaves from the clip's socket offset, which puts it on the report's throat point at rest, not on the bone.
+        [Test]
+        public void SealedOne_SummonLeavesFromTheThroat()
+        {
+            const float tolerance = 0.01f;
+            var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/SealedOne.asset");
+            ModelClip summon = art.Clips[art.IndexOfTrigger("Spawn")];
+            Assert.AreEqual("Head", summon.Socket);
+            BlenderReport report = BlenderReport.Load("Assets/_Project/Art/Models/Blender/SealedOne/SealedOne_report.json");
+            Vector3 throat = BlenderArtBuilder.FromBlender(report.Numbers("throat_centre_m"));
+            var model = Object.Instantiate(art.Model);
+            try
+            {
+                Transform head = FindBones(model, "Head")[0];
+                Vector3 moment = model.transform.InverseTransformPoint(head.TransformPoint(summon.SocketOffset));
+                Assert.AreEqual(0f, Vector3.Distance(throat, moment), tolerance, "the moment is off the throat");
+                Vector3 fromBone = moment - model.transform.InverseTransformPoint(head.position);
+                Assert.Greater(fromBone.y, 0.4f, "the throat should sit above the head bone");
+                Assert.Less(fromBone.z, -0.3f, "the throat should sit ahead of the head bone (heads at -Z)");
+            }
+            finally
+            {
+                Object.DestroyImmediate(model);
+            }
+        }
+
+        // Round 57: the larva's round-56 crawl plants its feet, so its walk rate must follow the export's own distance.
+        [Test]
+        public void FireLarva_CrawlCoversTheReportedDistance()
+        {
+            var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/FireLarva.asset");
+            BlenderReport report = BlenderReport.Load("Assets/_Project/Art/Models/Blender/FireLarva/FireLarva_report.json");
+            float reported = report.Number("crawl_distance_per_loop");
+            Assert.Greater(reported, 0f, "the report names no crawl distance");
+            Assert.AreEqual(reported, art.Clips[art.IndexOf(ModelClipRole.Move)].DistancePerLoop, 1e-4f);
         }
 
         // Round 49 (approved set 1): the redesigned exports and their corrupted skins are in, on the same parts; the

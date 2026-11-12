@@ -42,5 +42,23 @@ namespace Game.UI
             _sum += unwrapped * strength;
             _weight += strength;
         }
+
+        /// <summary>
+        /// Round 57: adds a yaw (degrees) that is already unwrapped along its own track, as is: where the way round between two
+        /// neighbouring headings was settled once for the whole flight (a builder's legs), the average can never take the other
+        /// way round from one frame to the next. Do not mix with <see cref="Add"/> in one blend.
+        /// </summary>
+        public void AddYaw(float yaw, float weight)
+        {
+            if (weight <= 0f)
+            {
+                return;
+            }
+
+            _last = yaw;
+            _started = true;
+            _sum += yaw * weight;
+            _weight += weight;
+        }
     }
 }

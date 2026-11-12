@@ -1,0 +1,574 @@
+{
+ "creature": "SealedOne",
+ "threshold_model_units": 0.005,
+ "unity_scale": 1.0,
+ "step": 1,
+ "burst_clips": [
+  "Rise",
+  "Surface_Burst"
+ ],
+ "exempt_bones": [
+  "Seal_",
+  "Rubble"
+ ],
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\SealedOne\\SealedOne.fbx",
+   "body": "SealedOne",
+   "poses": 1808,
+   "islands": {
+    "SealedOne": 57,
+    "SealedOne_Claws": 16,
+    "SealedOne_Eyes": 6,
+    "SealedOne_Teeth": 47
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": [
+    {
+     "object": "SealedOne",
+     "island": 51,
+     "verts": 254,
+     "gap": 2.18972,
+     "bone": "Seal_2",
+     "poses_floating": 152,
+     "clips": {
+      "rest": 1.5438,
+      "Rise": 2.1897
+     },
+     "pose": "Rise@27",
+     "size": 2.7513,
+     "centre": [
+      2.6552,
+      2.1174,
+      1.4488
+     ]
+    },
+    {
+     "object": "SealedOne",
+     "island": 55,
+     "verts": 254,
+     "gap": 2.18972,
+     "bone": "Seal_3",
+     "poses_floating": 152,
+     "clips": {
+      "rest": 1.5438,
+      "Rise": 2.1897
+     },
+     "pose": "Rise@27",
+     "size": 2.7513,
+     "centre": [
+      -2.6552,
+      2.1174,
+      1.4488
+     ]
+    },
+    {
+     "object": "SealedOne",
+     "island": 32,
+     "verts": 234,
+     "gap": 2.11604,
+     "bone": "Seal_5",
+     "poses_floating": 67,
+     "clips": {
+      "Rise": 2.116
+     },
+     "pose": "Rise@26",
+     "size": 2.4657,
+     "centre": [
+      -3.2087,
+      -0.7388,
+      1.4305
+     ]
+    },
+    {
+     "object": "SealedOne",
+     "island": 43,
+     "verts": 234,
+     "gap": 2.11604,
+     "bone": "Seal_4",
+     "poses_floating": 67,
+     "clips": {
+      "Rise": 2.116
+     },
+     "pose": "Rise@26",
+     "size": 2.4657,
+     "centre": [
+      3.2087,
+      -0.7388,
+      1.4305
+     ]
+    },
+    {
+     "object": "SealedOne",
+     "island": 52,
+     "verts": 298,
+     "gap": 1.85651,
+     "bone": "Seal_1",
+     "poses_floating": 152,
+     "clips": {
+      "rest": 1.582,
+      "Rise": 1.8565
+     },
+     "pose": "Rise@60",
+     "size": 2.8841,
+     "centre": [
+      0.0,
+      3.1771,
+      1.3204
+     ]
+    },
+    {
+     "object": "SealedOne",
+     "island": 31,
+     "verts": 197,
+     "gap": 1.53955,
+     "bone": "Seal_7",
+     "poses_floating": 135,
+     "clips": {
+      "rest": 0.0123,
+      "Rise": 1.5395
+     },
+     "pose": "Rise@25",
+     "size": 2.0799,
+     "centre": [
+      -1.3074,
+      -2.7536,
+      1.2287
+     ]
+    },
+    {
+     "object": "SealedOne",
+     "island": 56,
+     "verts": 198,
+     "gap": 1.53955,
+     "bone": "Seal_6",
+     "poses_floating": 135,
+     "clips": {
+      "rest": 0.0123,
+      "Rise": 1.5395
+     },
+     "pose": "Rise@25",
+     "size": 2.0799,
+     "centre": [
+      1.3053,
+      -2.7536,
+      1.2256
+     ]
+    },
+    {
+     "object": "SealedOne",
+     "island": 8,
+     "verts": 180,
+     "gap": 1.19857,
+     "bone": "Rubble",
+     "poses_floating": 137,
+     "clips": {
+      "rest": 0.3947,
+      "Rise": 1.1986
+     },
+     "pose": "Rise@23",
+     "size": 1.3738,
+     "centre": [
+      -2.2722,
+      -0.3124,
+      0.0747
+     ]
+    },
+    {
+     "object": "SealedOne",
+     "island": 15,
+     "verts": 180,
+     "gap": 1.19857,
+     "bone": "Rubble",
+     "poses_floating": 137,
+     "clips": {
+      "rest": 0.3947,
+      "Rise": 1.1986
+     },
+     "pose": "Rise@23",
+     "size": 1.3738,
+     "centre": [
+      2.2722,
+      -0.3124,
+      0.0747
+     ]
+    },
+    {
+     "object": "SealedOne",
+     "island": 24,
+     "verts": 181,
+     "gap": 1.03193,
+     "bone": "Rubble",
+     "poses_floating": 152,
+     "clips": {
+      "rest": 0.4938,
+      "Rise": 1.0319
+     },
+     "pose": "Rise@47",
+     "size": 1.4146,
+     "centre": [
+      0.5832,
+      2.0512,
+      0.075
+     ]
+    },
+    {
+     "object": "SealedOne",
+     "island": 30,
+     "verts": 181,
+     "gap": 1.03193,
+     "bone": "Rubble",
+     "poses_floating": 152,
+     "clips": {
+      "rest": 0.4938,
+      "Rise": 1.0319
+     },
+     "pose": "Rise@47",
+     "size": 1.4146,
+     "centre": [
+      -0.5832,
+      2.0512,
+      0.075
+     ]
+    },
+    {
+     "object": "SealedOne",
+     "island": 12,
+     "verts": 359,
+     "gap": 1.02242,
+     "bone": "Rubble",
+     "poses_floating": 152,
+     "clips": {
+      "rest": 0.3184,
+      "Rise": 1.0224
+     },
+     "pose": "Rise@31",
+     "size": 2.3017,
+     "centre": [
+      -1.6783,
+      1.07,
+      0.073
+     ]
+    },
+    {
+     "object": "SealedOne",
+     "island": 27,
+     "verts": 360,
+     "gap": 1.02242,
+     "bone": "Rubble",
+     "poses_floating": 152,
+     "clips": {
+      "rest": 0.3184,
+      "Rise": 1.0224
+     },
+     "pose": "Rise@31",
+     "size": 2.3027,
+     "centre": [
+      1.679,
+      1.0674,
+      0.0735
+     ]
+    },
+    {
+     "object": "SealedOne",
+     "island": 28,
+     "verts": 241,
+     "gap": 0.85628,
+     "bone": "Rubble",
+     "poses_floating": 136,
+     "clips": {
+      "rest": 0.4017,
+      "Rise": 0.8563
+     },
+     "pose": "Rise@69",
+     "size": 1.3709,
+     "centre": [
+      0.0,
+      -2.1526,
+      0.0329
+     ]
+    }
+   ]
+  },
+  "LOD1": {
+   "file": "ArtSource\\Exports\\SealedOne\\SealedOne_LOD1.fbx",
+   "body": "SealedOne_LOD1",
+   "poses": 1808,
+   "islands": {
+    "SealedOne_Claws_LOD1": 16,
+    "SealedOne_Eyes_LOD1": 6,
+    "SealedOne_LOD1": 57,
+    "SealedOne_Teeth_LOD1": 47
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": [
+    {
+     "object": "SealedOne_LOD1",
+     "island": 43,
+     "verts": 124,
+     "gap": 2.18745,
+     "bone": "Seal_3",
+     "poses_floating": 152,
+     "clips": {
+      "rest": 1.5442,
+      "Rise": 2.1875
+     },
+     "pose": "Rise@27",
+     "size": 2.747,
+     "centre": [
+      -2.6734,
+      2.1113,
+      1.4584
+     ]
+    },
+    {
+     "object": "SealedOne_LOD1",
+     "island": 53,
+     "verts": 124,
+     "gap": 2.18744,
+     "bone": "Seal_2",
+     "poses_floating": 152,
+     "clips": {
+      "rest": 1.5442,
+      "Rise": 2.1874
+     },
+     "pose": "Rise@27",
+     "size": 2.747,
+     "centre": [
+      2.6734,
+      2.1112,
+      1.4584
+     ]
+    },
+    {
+     "object": "SealedOne_LOD1",
+     "island": 32,
+     "verts": 127,
+     "gap": 2.12319,
+     "bone": "Seal_5",
+     "poses_floating": 69,
+     "clips": {
+      "Rise": 2.1232
+     },
+     "pose": "Rise@26",
+     "size": 2.4656,
+     "centre": [
+      -3.2041,
+      -0.7123,
+      1.4289
+     ]
+    },
+    {
+     "object": "SealedOne_LOD1",
+     "island": 45,
+     "verts": 127,
+     "gap": 2.12319,
+     "bone": "Seal_4",
+     "poses_floating": 68,
+     "clips": {
+      "Rise": 2.1232
+     },
+     "pose": "Rise@26",
+     "size": 2.4656,
+     "centre": [
+      3.2041,
+      -0.7123,
+      1.4289
+     ]
+    },
+    {
+     "object": "SealedOne_LOD1",
+     "island": 54,
+     "verts": 144,
+     "gap": 1.85719,
+     "bone": "Seal_1",
+     "poses_floating": 152,
+     "clips": {
+      "rest": 1.5806,
+      "Rise": 1.8572
+     },
+     "pose": "Rise@60",
+     "size": 2.8881,
+     "centre": [
+      0.0004,
+      3.202,
+      1.3553
+     ]
+    },
+    {
+     "object": "SealedOne_LOD1",
+     "island": 31,
+     "verts": 93,
+     "gap": 1.53044,
+     "bone": "Seal_7",
+     "poses_floating": 135,
+     "clips": {
+      "rest": 0.0118,
+      "Rise": 1.5304
+     },
+     "pose": "Rise@25",
+     "size": 2.0835,
+     "centre": [
+      -1.3356,
+      -2.7557,
+      1.276
+     ]
+    },
+    {
+     "object": "SealedOne_LOD1",
+     "island": 44,
+     "verts": 93,
+     "gap": 1.53044,
+     "bone": "Seal_6",
+     "poses_floating": 135,
+     "clips": {
+      "rest": 0.0118,
+      "Rise": 1.5304
+     },
+     "pose": "Rise@25",
+     "size": 2.0835,
+     "centre": [
+      1.3356,
+      -2.7557,
+      1.276
+     ]
+    },
+    {
+     "object": "SealedOne_LOD1",
+     "island": 8,
+     "verts": 67,
+     "gap": 1.20103,
+     "bone": "Rubble",
+     "poses_floating": 137,
+     "clips": {
+      "rest": 0.3926,
+      "Rise": 1.201
+     },
+     "pose": "Rise@1",
+     "size": 1.3761,
+     "centre": [
+      -2.2489,
+      -0.3128,
+      0.0771
+     ]
+    },
+    {
+     "object": "SealedOne_LOD1",
+     "island": 20,
+     "verts": 67,
+     "gap": 1.20103,
+     "bone": "Rubble",
+     "poses_floating": 137,
+     "clips": {
+      "rest": 0.3926,
+      "Rise": 1.201
+     },
+     "pose": "Rise@1",
+     "size": 1.3761,
+     "centre": [
+      2.2489,
+      -0.3128,
+      0.0771
+     ]
+    },
+    {
+     "object": "SealedOne_LOD1",
+     "island": 23,
+     "verts": 73,
+     "gap": 1.0355,
+     "bone": "Rubble",
+     "poses_floating": 152,
+     "clips": {
+      "rest": 0.5064,
+      "Rise": 1.0355
+     },
+     "pose": "Rise@47",
+     "size": 1.4156,
+     "centre": [
+      0.5801,
+      2.0477,
+      0.0714
+     ]
+    },
+    {
+     "object": "SealedOne_LOD1",
+     "island": 29,
+     "verts": 73,
+     "gap": 1.0355,
+     "bone": "Rubble",
+     "poses_floating": 152,
+     "clips": {
+      "rest": 0.5064,
+      "Rise": 1.0355
+     },
+     "pose": "Rise@47",
+     "size": 1.4156,
+     "centre": [
+      -0.5801,
+      2.0477,
+      0.0714
+     ]
+    },
+    {
+     "object": "SealedOne_LOD1",
+     "island": 26,
+     "verts": 148,
+     "gap": 1.02299,
+     "bone": "Rubble",
+     "poses_floating": 152,
+     "clips": {
+      "rest": 0.3155,
+      "Rise": 1.023
+     },
+     "pose": "Rise@31",
+     "size": 2.3032,
+     "centre": [
+      1.6806,
+      1.0675,
+      0.072
+     ]
+    },
+    {
+     "object": "SealedOne_LOD1",
+     "island": 30,
+     "verts": 149,
+     "gap": 1.02299,
+     "bone": "Rubble",
+     "poses_floating": 152,
+     "clips": {
+      "rest": 0.3155,
+      "Rise": 1.023
+     },
+     "pose": "Rise@31",
+     "size": 2.3007,
+     "centre": [
+      -1.6822,
+      1.0612,
+      0.0733
+     ]
+    },
+    {
+     "object": "SealedOne_LOD1",
+     "island": 28,
+     "verts": 81,
+     "gap": 0.85743,
+     "bone": "Rubble",
+     "poses_floating": 136,
+     "clips": {
+      "rest": 0.4111,
+      "Rise": 0.8574
+     },
+     "pose": "Rise@69",
+     "size": 1.376,
+     "centre": [
+      0.0,
+      -2.166,
+      0.0292
+     ]
+    }
+   ]
+  }
+ }
+}

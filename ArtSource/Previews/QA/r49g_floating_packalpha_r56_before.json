@@ -1,0 +1,452 @@
+{
+ "creature": "PackAlpha",
+ "threshold_model_units": 0.005,
+ "unity_scale": 0.78,
+ "step": 1,
+ "burst_clips": [],
+ "exempt_bones": [],
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\PackAlpha\\PackAlpha.fbx",
+   "body": "PackAlpha",
+   "poses": 206,
+   "islands": {
+    "PackAlpha": 352,
+    "PackAlpha_Claws": 32,
+    "PackAlpha_Face": 21
+   },
+   "floating": [
+    {
+     "object": "PackAlpha",
+     "island": 186,
+     "verts": 3,
+     "gap": 0.01956,
+     "bone": "Neck",
+     "poses_floating": 170,
+     "clips": {
+      "rest": 0.0195,
+      "Death": 0.0184,
+      "Hit": 0.0195,
+      "Howl": 0.0196,
+      "Idle": 0.0196,
+      "Run": 0.0195
+     },
+     "pose": "Howl@29",
+     "size": 0.0218,
+     "centre": [
+      0.0661,
+      -0.5337,
+      0.8654
+     ]
+    },
+    {
+     "object": "PackAlpha",
+     "island": 37,
+     "verts": 3,
+     "gap": 0.01952,
+     "bone": "Neck",
+     "poses_floating": 170,
+     "clips": {
+      "rest": 0.0195,
+      "Death": 0.0184,
+      "Hit": 0.0195,
+      "Howl": 0.0195,
+      "Idle": 0.0195,
+      "Run": 0.0195
+     },
+     "pose": "Howl@27",
+     "size": 0.0219,
+     "centre": [
+      -0.0661,
+      -0.5337,
+      0.8654
+     ]
+    },
+    {
+     "object": "PackAlpha",
+     "island": 77,
+     "verts": 3,
+     "gap": 0.00915,
+     "bone": "Neck",
+     "poses_floating": 206,
+     "clips": {
+      "rest": 0.0091,
+      "Death": 0.0092,
+      "Hit": 0.0091,
+      "Howl": 0.0092,
+      "Idle": 0.0091,
+      "Run": 0.0091
+     },
+     "pose": "Howl@55",
+     "size": 0.0055,
+     "centre": [
+      -0.1555,
+      -0.3105,
+      1.0001
+     ]
+    },
+    {
+     "object": "PackAlpha",
+     "island": 7,
+     "verts": 3,
+     "gap": 0.00914,
+     "bone": "Neck",
+     "poses_floating": 206,
+     "clips": {
+      "rest": 0.0087,
+      "Death": 0.0083,
+      "Hit": 0.0089,
+      "Howl": 0.0091,
+      "Idle": 0.0089,
+      "Run": 0.0088
+     },
+     "pose": "Howl@26",
+     "size": 0.0113,
+     "centre": [
+      -0.0888,
+      -0.6456,
+      1.0111
+     ]
+    },
+    {
+     "object": "PackAlpha",
+     "island": 157,
+     "verts": 3,
+     "gap": 0.00914,
+     "bone": "Neck",
+     "poses_floating": 206,
+     "clips": {
+      "rest": 0.0087,
+      "Death": 0.0083,
+      "Hit": 0.0089,
+      "Howl": 0.0091,
+      "Idle": 0.009,
+      "Run": 0.0088
+     },
+     "pose": "Howl@39",
+     "size": 0.0113,
+     "centre": [
+      0.0869,
+      -0.6462,
+      1.0115
+     ]
+    },
+    {
+     "object": "PackAlpha",
+     "island": 226,
+     "verts": 3,
+     "gap": 0.00914,
+     "bone": "Chest",
+     "poses_floating": 206,
+     "clips": {
+      "rest": 0.0091,
+      "Death": 0.0091,
+      "Hit": 0.0091,
+      "Howl": 0.0091,
+      "Idle": 0.0091,
+      "Run": 0.0091
+     },
+     "pose": "Death@13",
+     "size": 0.0054,
+     "centre": [
+      0.787,
+      -0.2998,
+      0.7354
+     ]
+    },
+    {
+     "object": "PackAlpha",
+     "island": 68,
+     "verts": 3,
+     "gap": 0.00852,
+     "bone": "Neck",
+     "poses_floating": 206,
+     "clips": {
+      "rest": 0.0076,
+      "Death": 0.0085,
+      "Hit": 0.0077,
+      "Howl": 0.0081,
+      "Idle": 0.0077,
+      "Run": 0.0077
+     },
+     "pose": "Death@23",
+     "size": 0.0127,
+     "centre": [
+      1.2208,
+      -0.6378,
+      0.1347
+     ]
+    },
+    {
+     "object": "PackAlpha",
+     "island": 216,
+     "verts": 3,
+     "gap": 0.00852,
+     "bone": "Neck",
+     "poses_floating": 190,
+     "clips": {
+      "rest": 0.0076,
+      "Death": 0.0085,
+      "Hit": 0.0077,
+      "Howl": 0.0081,
+      "Idle": 0.0075,
+      "Run": 0.0077
+     },
+     "pose": "Death@23",
+     "size": 0.0127,
+     "centre": [
+      1.2503,
+      -0.6378,
+      -0.1454
+     ]
+    },
+    {
+     "object": "PackAlpha",
+     "island": 20,
+     "verts": 3,
+     "gap": 0.00788,
+     "bone": "Head",
+     "poses_floating": 206,
+     "clips": {
+      "rest": 0.0079,
+      "Death": 0.0079,
+      "Hit": 0.0079,
+      "Howl": 0.0079,
+      "Idle": 0.0079,
+      "Run": 0.0079
+     },
+     "pose": "Idle@32",
+     "size": 0.0125,
+     "centre": [
+      -0.1646,
+      -0.7252,
+      0.7754
+     ]
+    },
+    {
+     "object": "PackAlpha",
+     "island": 169,
+     "verts": 3,
+     "gap": 0.00788,
+     "bone": "Head",
+     "poses_floating": 206,
+     "clips": {
+      "rest": 0.0079,
+      "Death": 0.0079,
+      "Hit": 0.0079,
+      "Howl": 0.0079,
+      "Idle": 0.0079,
+      "Run": 0.0079
+     },
+     "pose": "Idle@62",
+     "size": 0.0123,
+     "centre": [
+      0.176,
+      -0.7215,
+      0.8047
+     ]
+    }
+   ],
+   "burst_only": [],
+   "exempted": []
+  },
+  "LOD1": {
+   "file": "ArtSource\\Exports\\PackAlpha\\PackAlpha_LOD1.fbx",
+   "body": "PackAlpha_LOD1",
+   "poses": 206,
+   "islands": {
+    "PackAlpha_Claws_LOD1": 4,
+    "PackAlpha_Face_LOD1": 7,
+    "PackAlpha_LOD1": 354
+   },
+   "floating": [
+    {
+     "object": "PackAlpha_LOD1",
+     "island": 20,
+     "verts": 3,
+     "gap": 0.02974,
+     "bone": "Head",
+     "poses_floating": 206,
+     "clips": {
+      "rest": 0.0297,
+      "Death": 0.0297,
+      "Hit": 0.0297,
+      "Howl": 0.0297,
+      "Idle": 0.0297,
+      "Run": 0.0297
+     },
+     "pose": "Howl@55",
+     "size": 0.0122,
+     "centre": [
+      -0.1817,
+      -0.6796,
+      0.7578
+     ]
+    },
+    {
+     "object": "PackAlpha_LOD1",
+     "island": 170,
+     "verts": 3,
+     "gap": 0.02974,
+     "bone": "Head",
+     "poses_floating": 206,
+     "clips": {
+      "rest": 0.0297,
+      "Death": 0.0297,
+      "Hit": 0.0297,
+      "Howl": 0.0297,
+      "Idle": 0.0297,
+      "Run": 0.0297
+     },
+     "pose": "Howl@55",
+     "size": 0.0122,
+     "centre": [
+      0.1817,
+      -0.6796,
+      0.7578
+     ]
+    },
+    {
+     "object": "PackAlpha_LOD1",
+     "island": 7,
+     "verts": 3,
+     "gap": 0.01578,
+     "bone": "Neck",
+     "poses_floating": 206,
+     "clips": {
+      "rest": 0.0153,
+      "Death": 0.0148,
+      "Hit": 0.0155,
+      "Howl": 0.0158,
+      "Idle": 0.0155,
+      "Run": 0.0154
+     },
+     "pose": "Howl@26",
+     "size": 0.0113,
+     "centre": [
+      -0.0888,
+      -0.6456,
+      1.0111
+     ]
+    },
+    {
+     "object": "PackAlpha_LOD1",
+     "island": 158,
+     "verts": 3,
+     "gap": 0.01578,
+     "bone": "Neck",
+     "poses_floating": 206,
+     "clips": {
+      "rest": 0.0153,
+      "Death": 0.0148,
+      "Hit": 0.0155,
+      "Howl": 0.0158,
+      "Idle": 0.0156,
+      "Run": 0.0154
+     },
+     "pose": "Howl@39",
+     "size": 0.0113,
+     "centre": [
+      0.0869,
+      -0.6462,
+      1.0115
+     ]
+    },
+    {
+     "object": "PackAlpha_LOD1",
+     "island": 69,
+     "verts": 3,
+     "gap": 0.01393,
+     "bone": "Neck",
+     "poses_floating": 206,
+     "clips": {
+      "rest": 0.0125,
+      "Death": 0.0139,
+      "Hit": 0.0127,
+      "Howl": 0.0133,
+      "Idle": 0.0128,
+      "Run": 0.0126
+     },
+     "pose": "Death@41",
+     "size": 0.0127,
+     "centre": [
+      1.2208,
+      -0.6378,
+      0.1347
+     ]
+    },
+    {
+     "object": "PackAlpha_LOD1",
+     "island": 218,
+     "verts": 3,
+     "gap": 0.01393,
+     "bone": "Neck",
+     "poses_floating": 190,
+     "clips": {
+      "rest": 0.0125,
+      "Death": 0.0139,
+      "Hit": 0.0127,
+      "Howl": 0.0133,
+      "Idle": 0.0125,
+      "Run": 0.0126
+     },
+     "pose": "Death@41",
+     "size": 0.0127,
+     "centre": [
+      1.2503,
+      -0.6378,
+      -0.1454
+     ]
+    },
+    {
+     "object": "PackAlpha_LOD1",
+     "island": 78,
+     "verts": 3,
+     "gap": 0.00915,
+     "bone": "Neck",
+     "poses_floating": 206,
+     "clips": {
+      "rest": 0.0091,
+      "Death": 0.0092,
+      "Hit": 0.0091,
+      "Howl": 0.0092,
+      "Idle": 0.0091,
+      "Run": 0.0091
+     },
+     "pose": "Howl@55",
+     "size": 0.0055,
+     "centre": [
+      -0.1555,
+      -0.3105,
+      1.0001
+     ]
+    },
+    {
+     "object": "PackAlpha_LOD1",
+     "island": 228,
+     "verts": 3,
+     "gap": 0.00914,
+     "bone": "Chest",
+     "poses_floating": 206,
+     "clips": {
+      "rest": 0.0091,
+      "Death": 0.0091,
+      "Hit": 0.0091,
+      "Howl": 0.0091,
+      "Idle": 0.0091,
+      "Run": 0.0091
+     },
+     "pose": "Death@9",
+     "size": 0.0054,
+     "centre": [
+      0.3528,
+      -0.2998,
+      0.9519
+     ]
+    }
+   ],
+   "burst_only": [],
+   "exempted": []
+  }
+ }
+}

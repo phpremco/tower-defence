@@ -68,14 +68,14 @@ namespace Game.UI
         private const float BuilderBankPerDegree = 0.4f;
         private const float BuilderPitchPerSpeed = 0.06f;
         private const float BuilderMaxPitch = 10f;
-        // Round 48: the builders' heading and clips are averaged over this long round the moment, in this many samples; a hold
-        // (welding, landed) weighs as much as flying at BuilderHoldSpeed metres a second, the base's pull between legs much less.
+        // Round 48: the builders' heading and clips are averaged over this long round the moment, in this many samples. Round 57:
+        // every moment weighs the same (the legs' unwrapped yaws already hold through the slow ones), so a turn at a join takes
+        // the whole window instead of the few slow frames where the speed weights crossed over.
         private const float BuilderWindowSeconds = 0.5f;
         private const int BuilderWindowSamples = 9;
-        private const float BuilderHoldSpeed = 1f;
-        private const float BuilderIdleHoldSpeed = 0.05f;
-        private const float MinShotSeconds = 0.01f;
         private const float MinWindowWeight = 0.0001f;
+        // Round 57: a leg whose flat way is shorter than this (a climb, a drop, a wait) has no heading of its own.
+        private const float MinHeadingLength = 0.05f;
         private const float RotorDegreesPerSecond = 2400f;
         private const float ParkRing = 3.2f;
         // Round 39: a parking spot must be this level across a drone's span (the drawn ground, not the cells' heights);
@@ -189,6 +189,9 @@ namespace Game.UI
             public float Arc;
             public int Carry;
             public int Welds;
+
+            // Round 57: the heading this leg holds, unwrapped along the whole flight (AssignYaws).
+            public float Yaw;
         }
 
         private sealed class Builder
@@ -197,6 +200,9 @@ namespace Game.UI
             public ParticleSystem Sparks;
             public LineRenderer Tether;
             public readonly List<Leg> Legs = new List<Leg>();
+
+            // Round 57: the heading once landed (facing the base), unwrapped on from the last leg.
+            public float LandedYaw;
         }
 
         /// <param name="decor">The field's drawn decoration, so the builders land clear of every rock and crystal.</param>
@@ -499,8 +505,51 @@ namespace Game.UI
                 Vector3 park = Park(layout, d);
                 Add(builder, time, time + ParkShare, at, park, UpArc * 0.5f, -1, -1);
                 _landings.Add(park);
+                AssignYaws(builder);
             }
         }
+
+        // Round 57: each leg's heading as one yaw, unwrapped along the builder's whole flight: a flight points along its way, a
+        // weld at its module, a climb, a drop or a hold keeps the heading before it, and the landing faces the base. Every turn
+        // goes the short way from the leg before, settled once here, so the window average across a join (a stop and a turn in
+        // the same moment) can no longer take the other way round from one frame to the next (round 48's last quick turns).
+        private void AssignYaws(Builder builder)
+        {
+            List<Leg> legs = builder.Legs;
+            float yaw = YawOf(_baseCentre - legs[0].Start);
+            // A leading wait or drop has no heading of its own: it already holds the first one that follows.
+            for (int i = 0; i < legs.Count; i++)
+            {
+                if (TryLegYaw(legs[i], out float first))
+                {
+                    yaw = first;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < legs.Count; i++)
+            {
+                Leg leg = legs[i];
+                if (TryLegYaw(leg, out float raw))
+                {
+                    yaw += Mathf.DeltaAngle(yaw, raw);
+                }
+
+                leg.Yaw = yaw;
+                legs[i] = leg;
+            }
+
+            builder.LandedYaw = yaw + Mathf.DeltaAngle(yaw, YawOf(_baseCentre - legs[legs.Count - 1].End));
+        }
+
+        private bool TryLegYaw(Leg leg, out float yaw)
+        {
+            Vector3 way = Flat(leg.Welds >= 0 ? _modules[leg.Welds].Centre - leg.End : leg.End - leg.Start);
+            yaw = YawOf(way);
+            return way.sqrMagnitude > MinHeadingLength * MinHeadingLength;
+        }
+
+        private static float YawOf(Vector3 way) => Mathf.Atan2(way.x, way.z) * Mathf.Rad2Deg;
 
         private static void Add(Builder builder, float from, float to, Vector3 start, Vector3 end, float arc, int carry, int welds)
         {
@@ -677,28 +726,10 @@ namespace Game.UI
             return builder.Legs.Count > 0 ? builder.Legs[builder.Legs.Count - 1] : default;
         }
 
-        // Where a builder's nose wants to point at one moment, weighted by how firmly: towards the module it welds or the base it
-        // landed beside (a hold worth BuilderHoldSpeed), else along its way at its speed (metres per second), so a slow moment
-        // between two legs counts little and the window around it carries the turn.
-        private Vector3 RawHeading(Builder builder, float progress, float seconds)
+        // The heading a builder's nose holds at one moment (its leg's, or facing the base once landed; round 57).
+        private static float YawAt(Builder builder, float progress)
         {
-            Vector3 position = Position(builder, progress);
-            Vector3 toBase = Flat(_baseCentre - position).normalized;
-            if (progress >= builder.Legs[builder.Legs.Count - 1].To)
-            {
-                return toBase * BuilderHoldSpeed;
-            }
-
-            Leg leg = LegAt(builder, progress);
-            if (leg.Welds >= 0)
-            {
-                return Flat(_modules[leg.Welds].Centre - position).normalized * BuilderHoldSpeed;
-            }
-
-            Vector3 before = Position(builder, Mathf.Max(0f, progress - HeadingProbe));
-            Vector3 after = Position(builder, Mathf.Min(1f, progress + HeadingProbe));
-            float span = HeadingProbe * 2f * Mathf.Max(seconds, MinShotSeconds);
-            return Flat(after - before) / span + toBase * BuilderIdleHoldSpeed;
+            return progress >= builder.Legs[builder.Legs.Count - 1].To ? builder.LandedYaw : LegAt(builder, progress).Yaw;
         }
 
         // Nose along the way it flies (banked into turns, dipped with speed), facing the module while it welds, level and
@@ -736,7 +767,7 @@ namespace Game.UI
                 float weight = CutsceneMath.WindowWeight(sampled, progress, window);
                 float at = Mathf.Clamp01(sampled);
                 total += weight;
-                heading.Add(RawHeading(builder, at, seconds), weight);
+                heading.AddYaw(YawAt(builder, at), weight);
                 bool down = at >= builder.Legs[builder.Legs.Count - 1].To;
                 rest += down ? weight : 0f;
                 work += !down && LegAt(builder, at).Welds >= 0 ? weight : 0f;

@@ -1,0 +1,25 @@
+{
+ "base": "ArtSource/Exports/_backup_r56/{name}",
+ "results": [
+  {
+   "creature": "Skyray",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Death": 40,
+    "Dive": 24,
+    "Fly": 42,
+    "Hit": 12,
+    "Idle": 60
+   },
+   "clips_after": {
+    "Death": 40,
+    "Dive": 24,
+    "Fly": 42,
+    "Hit": 12,
+    "Idle": 60
+   }
+  }
+ ]
+}

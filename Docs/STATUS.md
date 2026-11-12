@@ -8875,3 +8875,122 @@ Rows to rebuild (`BlenderArtBuilder.RebuildOnly`):
 2. Bulwark / Warlord: from the play camera the mouth faces down under the visor; bigger teeth alone cannot fix that (the
    head would have to lift, or the jaw hang open more in Idle and Walk).
 3. Rays: from straight above the slit stays hidden under the head's front edge; it reads from the 44-degree camera.
+
+## Round 57: final import and polish (2026-11-13)
+
+Not committed. No full generator run; `ArtSource/Exports` and `Tools/Blender/` untouched (stills written to
+`ArtSource/Previews/QA/r57_*`). Save `progress.json` **2eca347e** backed up before every Play Mode run, restored and verified
+after each (MD5 2eca347eb0270fc1566d26e302abf525 at the end; `progress_dev_backup_2026-11-05.json` not touched).
+
+### A. Import (`Tools/PlayTest/Scripts/ApplyRound57.cs`, `.Run`, `.Report`, `.RunSealedOne`)
+
+- `BlenderArtBuilder.RebuildOnly` for 13 rows: SealedOne, Skyray (+ `_Corrupted`), RayBoss (+ `_Corrupted`), Bulwark
+  (+ `_Corrupted`), CrystalWarlord (+ `_Corrupted`), PackAlpha (+ `_Corrupted`, rebuilt for its new mesh), FireLarva and the
+  new **Bat_Mire**; worn by 8 enemies (Skyray, Bulwark, Mirebat, PackAlpha, CrystalWarlord, SkySovereign, FireLarva,
+  SealedOne). Every synced file byte-equal to its export (SealedOne 63, Skyray 35, StormMatriarch 35, Bulwark 35,
+  CrystalWarlord 43, PackAlpha 35, FireLarva 11, Bat 75 incl. the new `Skins/Mire`).
+- Catalog: `Bat_Mire` row (`FaceClaws`, `PartGlowTint = MireBatPartGlow (0.85, 1, 0.6)`, `BodyCentrePivot`, bat clips) and
+  the alias `{ "Mirebat", "Bat_Mire" }`.
+- **Parity** (`Report` before/after, `Logs/r57/report_before|after.txt`): identical clip names, roles, lengths, events,
+  sustains and socket positions on all rows; only triangle counts moved. The SealedOne gains its `Jaw` bone in the import
+  (33 bones / 30 in LOD1, as its report says); the RayBoss keeps `Release` 1.8 s, event 1.0 s on `Emitter`, sustain 1.2-1.4.
+  `r57_clip_check.cs` (copy of r52's): every declared clip present, events and triggers mapped on all 13 rows.
+- **Moved rest bones (SealedOne)**: Neck (0, 3.10, -0.05) -> (0, 2.75, -0.12), Head (0, 3.60, -0.20) -> (0, 3.40, -0.42),
+  Plate_L/R (+-0.12, 3.75, 0.45) -> (+-0.57, 4.28, -0.85), Ring_1..3 (0, 4.35, 0.25) -> (0, 5.02..5.06, 1.22..1.58).
+- **Summon from the maw, data-driven**: new `ModelClip._socketOffset` (the moment's point in the socket bone's own frame),
+  `BlenderClipSpec.SocketPoint` (a report key of a rest-pose point in Blender metres) and
+  `BlenderArtBuilder.SocketOffset/FromBlender` (Blender (x, y, z) -> model (-x, z, y), then into the bone's frame).
+  The Summon spec names `throat_centre_m` (0, -0.82, 3.95); written offset on `Head`: (0, 0.507, -0.453).
+  `EnemyView.PlayClipMoment` throws the sparks at `bone.TransformPoint(offset)`. In play (`r57_moment_probe.cs`): Summon
+  t = 1.480 s, 14 sparks alive at exactly the moment point (-12.51, 3.50, -3.44), 0.54 m above the head bone (boss scale 0.8).
+- **Bar height**: the measure gave 7.569 (the skinned renderer's loose bounds; the baked rest top is 7.07, the Idle/Walk
+  cover 7.05, max 7.18). The halo stands 1.2-1.6 m behind the hood, so walking towards the 44-degree camera it is drawn about
+  a metre higher (the round-53 Shattered case): the SealedOne row now names `BarCrestBones = Ring_1..3`; bar **8.054**
+  (crest-projected cover). Others: FireLarva 0.252 -> 0.243, Bat_Mire 0.208, the rest unchanged.
+- FireLarva `crawl_distance_per_loop` 0.2 -> **0.4** (from the report).
+- Crown-ring tests: `SealedOne_CrownRings_*` pass on the new bone heads (they check rotations, not positions).
+
+### B. Motion polish
+
+1. **Builders (opening cutscene)**: every leg now carries one yaw, unwrapped along the builder's whole flight once at plan
+   time (`FieldBase.AssignYaws`: flight = its way, weld = facing its module, climb/drop/hold = the heading before, landed =
+   facing the base, each the short way from the leg before). The window average uses `HeadingBlend.AddYaw` (new: an
+   unwrapped yaw as given) with the plain triangle window weights; the round-48 speed weights are gone (they squeezed each
+   turn into the few slow frames at a join). Deterministic from the shot time as before.
+2. **Hauler rotors**: `CutsceneMath.SpinUp` (speed rising evenly from rest over `RotorSpinUpSeconds` 0.8 s) at lift-off; the
+   errand drone runs at full speed from its shot's first frame.
+3. **Hero repeated fire**: the Shoot clip's first frame is the aim and is now **held** (rate 0) instead of restarted per shot
+   (its own kick snapped the arm 24 degrees in one frame and back); each shot lays a kick on the gun arm on top
+   (`Game.Hero.RecoilKick`: `s^2 e^(2(1-s))`, peak 0.06 s, times the square of a smooth ramp over the bolt's 0.09 s life, so
+   nothing on the shot frame and little while the bolt is lit; `RecoilDegrees` 16, the last 3 shots add up). The pistol draw
+   is held on its last frame (identical to the aim, 0.0 degrees) and the aim takes over at full weight
+   (`ModelClipPlayer.PlayUpper(..., carry: true)`), so the draw no longer fades to the legs' pose and back before the first
+   shot.
+
+### Measurements
+
+| Probe | Before | After |
+| --- | --- | --- |
+| Builders: yaw snaps / max yaw deg/s (`r48_cut.sh`, `Logs/r48/cut_before`, `cut_after2_report.txt`) | 2 / 8712 (round 48: 4) | **0 / 1216** |
+| Hauler lift-off seen on camera: turn on the first 3 moving frames (deg) | 16.7 28.4 28.3; 28.3 50.0 39.5 | **0.6 0.8 1.0; 0.6 0.7 1.0** |
+| Cutscene total pops / yaw snaps | 3 (enemies, at a frame hitch) / 2 | **0 / 0** |
+| Hero: upper body summed turn on each shot frame (`r57_hero.sh`) | 132, 50, 76, 52, 74 | **10, 6, 22, 8, 23** |
+| Hero: draw -> aim handoff (per frame) | 137, then ~100 x 3 | **11, 6** |
+| Hero: bolt start to muzzle | 0.0000 | **0.0000** |
+| Fire Larva planted-foot slide in play (`r57_feet.cs` / `.py`, drawn rig) | (round 56: never planted) | **0.12 of the body's step, lift 2.2-2.8 cm** |
+
+An intermediate builder pass that kept the speed weights measured 5 snaps / 5196 deg/s (all 20-42 degrees in a 7 ms frame,
+steep but continuous ramps), which is why the weights went.
+
+### Stills (`ArtSource/Previews/QA/r57_*`, Level_C1_01, inspection light x1.8 and `_game`, crops nearest-neighbour)
+
+- `SealedOne` (Walk, facing): cracked stone arms with narrow violet fissures, gold collar, petals shut, six eyes, halo on its
+  tines; bar clear above the halo. Crops `_arm_left|_arm_right|_head|_halo_x3`: nothing loose; thin dark-red rim-light
+  outline on silhouettes (the rim shader).
+- `SealedOne_summon` (Summon at its moment, camera orbited to its face, `r57_orbit_face.cs`): maw wide open, teeth rooted
+  along the petals and in two throat rings, gold glyphs inside, lit gullet. `_maw_x3`: the 14 sparks merge into the gullet
+  glow at this zoom (position verified numerically). `_bar_x3`: **during Summon the flared halo stands round the bar**.
+- `Mirebat` (+ `_head_x3`): dark olive hide, sickly yellow-green V, eyes and mouth glow, parts attached; the wing membrane
+  reads red-brown rather than olive under the warm rim light.
+- `FireLarva` (+ `_side_feet_x3`): glowing-seam segments, legs as tapered claws; no contact shadow visible at this size
+  (contact taken from the probe).
+- `Bulwark_mouth_x4`: tusks and eye ring read; the mouth faces down under the visor, teeth not readable (round-56 point 2).
+- `Skyray_mouth_x3`: dark crescent slit with a row of pale teeth under the lip, readable.
+- `laser_windup|fire|hold|recover` (`r57_laser_seq.sh`, waits for a quiet boss first): Release held during the beam, beam
+  start on `Emitter` 0.000; `hold_source_x4` the beam grows out of the spade-tip glow along its axis, no cut start;
+  `hold_impact_x3` fades into the gate field, no disc.
+- `PackAlpha_side_neck_x3` (Howl 0.4): quill collar rooted, no slivers by the neck; jaw open with fangs.
+- `hero_shot1..3` (+ `_b` two frames later, `_muzzle_x3`, sheet `r57_hero_sequence_muzzle_x3.png`): soft round flash on the
+  muzzle cap, bolt in line with the barrel on the shot frame and two frames later, no wedges.
+
+### Tests
+
+- New: `CreatureArtTests.Mirebat_WearsItsOwnBogSkin`, `SealedOne_SummonLeavesFromTheThroat`,
+  `FireLarva_CrawlCoversTheReportedDistance`; `ElementBatParts_TakeTheirSkinsGlow` covers Mire;
+  `CutsceneBlendTests.AddYaw_AveragesAnUnwrappedTrackAsGiven`, `SpinUp_EasesTheRotorsInThenRunsAtFullSpeed`;
+  `RecoilKickTests` (2). `CrestRows_*` now also covers the SealedOne.
+- Changed: `FireLarva_Legs_NeverFlipInAnyClip` guard 60 -> 75 degrees per frame: the round-56 tripod crawl lifts each
+  tripod with a 63-degree lower-leg turn on its first swing frame (`r57_larva_legs.cs`; other frames 26-52, far LOD <= 34);
+  a flip is 100-170.
+- EditMode suite on w6: **872 tests, 820 passed, 52 skipped, 0 failed** (865 + 7). Recompile: 0 errors; only the known
+  CS0618 (`BalanceProbeTests.cs:601`). Play-run consoles: 0 game errors or warnings (one run showed the known stepping
+  "allocation" warning).
+
+### Tools
+
+`r57_hero.sh`, `r57_hero_pose.cs`, `r57_creatures.sh`, `r57_spawn_now.cs` (primes the Spawn power to the clip's lead, so the
+clip plays as in the game), `r57_moment_probe.cs`, `r57_orbit_face.cs`, `r57_feet.cs` + `r57_feet.py`, `r57_laser_seq.sh`,
+`r57_bar_probe.cs`, `r57_shoot_clip.cs`, `r57_draw_end.cs`, `r57_larva_legs.cs`, `r57_clip_check.cs`; awk helpers
+`Logs/r57/rotor.awk`, `liftoff.awk`. Lesson: never queue a play harness on another's log line (every harness prints the
+save's MD5 first, so the waiter fired at once and runs overlapped; those stills were redone); wait on the process.
+
+### Open points (round 57)
+
+1. **SealedOne bar during Summon**: the bar measure samples Walk and Idle; in Summon (and likely Roar/Release) the halo flares
+   and stands round the bar. Options: sample the power clips for crest rows, or lift the bar by the flare.
+2. **Fire Larva lift-off**: 63 degrees in one frame on the near Crawl (frames 1 and 11). At play rate (~3.5x) that is a fast
+   flick; a Blender in-between frame would soften it.
+3. Bulwark/Warlord mouths still face down from the play camera (round 56 point 2).
+4. Mirebat membrane reads red-brown in game (warm rim light on the bog skin); a cooler rim or greener membrane if wanted.
+5. The hero's kick is on the shoulder only (16 degrees); the authored kick also moved forearm and hand. Tune `RecoilDegrees`
+   by eye.

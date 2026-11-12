@@ -53,6 +53,7 @@ MonoBehaviour:
     _eventSeconds: 0
     _trigger: 
     _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
     _weight: 1
     _upperBody: 0
     _endOffset: {x: 0, y: 0}
@@ -70,6 +71,7 @@ MonoBehaviour:
     _eventSeconds: 0
     _trigger: 
     _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
     _weight: 0.6
     _upperBody: 0
     _endOffset: {x: 0, y: 0}
@@ -87,6 +89,7 @@ MonoBehaviour:
     _eventSeconds: 0
     _trigger: 
     _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
     _weight: 1
     _upperBody: 0
     _endOffset: {x: 0, y: 0}
@@ -104,6 +107,7 @@ MonoBehaviour:
     _eventSeconds: 0
     _trigger: 
     _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
     _weight: 1
     _upperBody: 0
     _endOffset: {x: 0, y: 0}
@@ -121,6 +125,7 @@ MonoBehaviour:
     _eventSeconds: 1
     _trigger: Laser
     _socket: Emitter
+    _socketOffset: {x: 0, y: 0, z: 0}
     _weight: 1
     _upperBody: 0
     _endOffset: {x: 0, y: 0}

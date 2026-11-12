@@ -1,0 +1,69 @@
+{
+ "base": "ArtSource/Exports/_backup_r56/{name}",
+ "results": [
+  {
+   "creature": "Skyray",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Death": 40,
+    "Dive": 24,
+    "Fly": 42,
+    "Hit": 12,
+    "Idle": 60
+   },
+   "clips_after": {
+    "Death": 40,
+    "Dive": 24,
+    "Fly": 42,
+    "Hit": 12,
+    "Idle": 60
+   }
+  },
+  {
+   "creature": "Bulwark",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Block": 24,
+    "Death": 44,
+    "Hit": 14,
+    "Idle": 72,
+    "Strike": 24,
+    "Walk": 32
+   },
+   "clips_after": {
+    "Block": 24,
+    "Death": 44,
+    "Hit": 14,
+    "Idle": 72,
+    "Strike": 24,
+    "Walk": 32
+   }
+  },
+  {
+   "creature": "CrystalWarlord",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Block": 24,
+    "Death": 44,
+    "Hit": 14,
+    "Idle": 72,
+    "Sweep": 40,
+    "Walk": 32
+   },
+   "clips_after": {
+    "Block": 24,
+    "Death": 44,
+    "Hit": 14,
+    "Idle": 72,
+    "Sweep": 40,
+    "Walk": 32
+   }
+  }
+ ]
+}

@@ -31,6 +31,8 @@ namespace Game.UI
         private const float HeightSpread = 0.9f;
         private const float LaneSpread = 2.6f;
         private const float RotorDegreesPerSecond = 2400f;
+        // Round 57: a hauler's rotors come up to full speed over this long after it lifts off (they jumped to full spin).
+        private const float RotorSpinUpSeconds = 0.8f;
         private const float LoadShare = 0.12f;
         private const float MaxBankDegrees = 10f;
         private const float BankPerTurnDegree = 0.35f;
@@ -214,7 +216,8 @@ namespace Game.UI
             _holders[0].gameObject.SetActive(true);
             bool carrying = t >= GrabAt && t < InsertAt;
             Vector3 heading = ErrandHeading(t, start, coreSocket);
-            Place(0, position, position - before, after - position, heading, time, carrying, 1f, time);
+            // On its errand it is long in the air: its rotors run at full speed from the shot's first frame.
+            Place(0, position, position - before, after - position, heading, time, carrying, 1f, time + RotorSpinUpSeconds);
             _chunks[0].gameObject.SetActive(false);
             delivery.Carried = carrying;
             delivery.CarriedTop = position - Vector3.up * CarriedDrop();
@@ -367,7 +370,7 @@ namespace Game.UI
             // The flight cycle while it travels; hovering to load it holds still in its work pose, so its own clip does not rock it.
             // Round 48: the two blend across the hover speed instead of switching at it.
             float move = CutsceneMath.Smooth(CutsceneMath.Span(speed, HoverSpeed * (1f - HoverBlend), HoverSpeed * (1f + HoverBlend)));
-            _drones[index].PoseMixed(move, 1f - flight, time + index * 0.29f, flight > 0f ? spin * RotorDegreesPerSecond : 0f, loaded);
+            _drones[index].PoseMixed(move, 1f - flight, time + index * 0.29f, flight > 0f ? CutsceneMath.SpinUp(spin, RotorSpinUpSeconds) * RotorDegreesPerSecond : 0f, loaded);
             _chunks[index].gameObject.SetActive(loaded);
         }
 

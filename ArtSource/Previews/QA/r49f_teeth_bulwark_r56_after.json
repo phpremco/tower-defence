@@ -1,0 +1,50 @@
+{
+ "creature": "Bulwark",
+ "teeth_checked": 9,
+ "poses": 19,
+ "teeth_through_lips": 2,
+ "where": {
+  "Bulwark_Face#1": [
+   "rest@0:3",
+   "Block@0:3",
+   "Block@1:3",
+   "Block@2:3",
+   "Death@0:3",
+   "Death@1:3",
+   "Death@2:3",
+   "Hit@0:3",
+   "Hit@8:3",
+   "Hit@9:3",
+   "Idle@0:3",
+   "Idle@1:3",
+   "Idle@11:3",
+   "Strike@0:3",
+   "Strike@10:3",
+   "Strike@11:3",
+   "Walk@0:3",
+   "Walk@16:3",
+   "Walk@32:3"
+  ],
+  "Bulwark_Face#5": [
+   "rest@0:3",
+   "Block@0:3",
+   "Block@1:3",
+   "Block@2:3",
+   "Death@0:3",
+   "Death@1:3",
+   "Death@2:3",
+   "Hit@0:3",
+   "Hit@8:3",
+   "Hit@9:3",
+   "Idle@0:3",
+   "Idle@1:3",
+   "Idle@11:3",
+   "Strike@0:3",
+   "Strike@10:3",
+   "Strike@11:3",
+   "Walk@0:3",
+   "Walk@16:3",
+   "Walk@32:3"
+  ]
+ }
+}

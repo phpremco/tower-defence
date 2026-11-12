@@ -23,6 +23,9 @@ namespace Game.Core
         [Tooltip("The bone the clip's moment comes from (a vent, an emitter), or empty for the body.")]
         [SerializeField] private string _socket = string.Empty;
 
+        [Tooltip("Where on the socket bone the moment leaves, in the bone's own frame (the throat of a maw ahead of the head bone); zero is the bone itself.")]
+        [SerializeField] private Vector3 _socketOffset;
+
         [Tooltip("How much of the pose this clip takes over when it plays on top of a cycle.")]
         [SerializeField] [Range(0.1f, 1f)] private float _weight = 1f;
 
@@ -67,6 +70,9 @@ namespace Game.Core
         public float BlendSeconds => _blendSeconds;
         public string Trigger => _trigger;
         public string Socket => _socket;
+
+        /// <summary>Where on the socket bone the moment leaves, in the bone's own frame; zero is the bone itself.</summary>
+        public Vector3 SocketOffset => _socketOffset;
         public float Weight => _weight;
         public Vector2 Sustain => _sustain;
 

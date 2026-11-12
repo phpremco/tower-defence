@@ -1,0 +1,136 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: Bat_Mire
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: 5ab478592a0e38946ae99a944a4039dc, type: 3}
+  _lod1: {fileID: 919132149155446097, guid: 56ef729441a8a084fb18ccad803790f4, type: 3}
+  _material: {fileID: 2100000, guid: feca5d99ac8b789469edc1792f27df55, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: b4066b99f3a0ffc49afd2c3b16934ed6, type: 2}
+  _secondMaterial: {fileID: 0}
+  _lowSecondMaterial: {fileID: 0}
+  _parts:
+  - _object: Bat_Face
+    _material: {fileID: 2100000, guid: e8f6efe50673291428fb1800c64e36ef, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: a272a467d9de58343a1f438d8df89a15, type: 2}
+    _castShadows: 1
+  - _object: Bat_Claws
+    _material: {fileID: 2100000, guid: b75966e2401065e4b8bb9e43e2a63931, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: b02b915da2b3db54c958a8566a982f4b, type: 2}
+    _castShadows: 1
+  _scale: 1.4
+  _yaw: 180
+  _bodyCentrePivot: 1
+  _height: 0.2077197
+  _lodScreenHeight: 0.05
+  _upperBodyBone: 
+  _displayExposure: 1
+  _turnSeconds: 0.08
+  _deathFade: {x: 0.3, y: 1.0200001}
+  _embers: 0
+  _bleeds: 1
+  _shedBones: []
+  _vents: {fileID: 0}
+  _beamSockets: []
+  _emissionSets: []
+  _deathEmissionSet: 
+  _clips:
+  - _role: 3
+    _clip: {fileID: 4891585856528286573, guid: 5ab478592a0e38946ae99a944a4039dc, type: 3}
+    _farClip: {fileID: -3791111358539940719, guid: 56ef729441a8a084fb18ccad803790f4, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
+    _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
+    _blendSeconds: 0
+  - _role: 0
+    _clip: {fileID: -3516113549866372073, guid: 5ab478592a0e38946ae99a944a4039dc, type: 3}
+    _farClip: {fileID: -342393380074297546, guid: 56ef729441a8a084fb18ccad803790f4, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
+    _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
+    _blendSeconds: 0
+  - _role: 1
+    _clip: {fileID: -5546259543306957655, guid: 5ab478592a0e38946ae99a944a4039dc, type: 3}
+    _farClip: {fileID: -7893095288666696438, guid: 56ef729441a8a084fb18ccad803790f4, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
+    _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
+    _blendSeconds: 0
+  - _role: 2
+    _clip: {fileID: 2536552948462655966, guid: 5ab478592a0e38946ae99a944a4039dc, type: 3}
+    _farClip: {fileID: -991649837934718461, guid: 56ef729441a8a084fb18ccad803790f4, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
+    _weight: 0.6
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
+    _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
+    _blendSeconds: 0
+  - _role: 4
+    _clip: {fileID: 8910933526612131937, guid: 5ab478592a0e38946ae99a944a4039dc, type: 3}
+    _farClip: {fileID: 2934233364665459684, guid: 56ef729441a8a084fb18ccad803790f4, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0.33333334
+    _trigger: 
+    _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
+    _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
+    _blendSeconds: 0

@@ -1,0 +1,36 @@
+{
+ "creature": "PackAlpha",
+ "threshold_model_units": 0.005,
+ "unity_scale": 0.78,
+ "step": 1,
+ "burst_clips": [],
+ "exempt_bones": [],
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\PackAlpha\\PackAlpha.fbx",
+   "body": "PackAlpha",
+   "poses": 206,
+   "islands": {
+    "PackAlpha": 23,
+    "PackAlpha_Claws": 32,
+    "PackAlpha_Face": 21
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": []
+  },
+  "LOD1": {
+   "file": "ArtSource\\Exports\\PackAlpha\\PackAlpha_LOD1.fbx",
+   "body": "PackAlpha_LOD1",
+   "poses": 206,
+   "islands": {
+    "PackAlpha_Claws_LOD1": 4,
+    "PackAlpha_Face_LOD1": 7,
+    "PackAlpha_LOD1": 25
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": []
+  }
+ }
+}

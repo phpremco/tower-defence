@@ -36,8 +36,9 @@ namespace Game.Editor
         // One clip as the builder collects it, before it is written into the art definition.
         private readonly struct ClipRow
         {
-            public ClipRow(ModelClipRole role, AnimationClip clip, AnimationClip farClip, float distance, float eventSeconds, string trigger, string socket, float weight, Vector2 sustain, BlenderTravelClips.Facts travel = default)
+            public ClipRow(ModelClipRole role, AnimationClip clip, AnimationClip farClip, float distance, float eventSeconds, string trigger, string socket, float weight, Vector2 sustain, BlenderTravelClips.Facts travel = default, Vector3 socketOffset = default)
             {
+                SocketOffset = socketOffset;
                 Sustain = sustain;
                 Travel = travel;
                 Role = role;
@@ -57,6 +58,7 @@ namespace Game.Editor
             public float EventSeconds { get; }
             public string Trigger { get; }
             public string Socket { get; }
+            public Vector3 SocketOffset { get; }
             public float Weight { get; }
             public Vector2 Sustain { get; }
             public BlenderTravelClips.Facts Travel { get; }
@@ -294,10 +296,52 @@ namespace Game.Editor
                 far.TryGetValue(clip.name, out AnimationClip farClip);
                 int eventFrame = spec?.EventFrame ?? 0;
                 float eventSeconds = (eventFrame > 0 ? eventFrame : facts.EventFrame) / FramesPerSecond;
-                clips.Add(new ClipRow(role, clip, farClip, distance, eventSeconds, spec?.Trigger ?? string.Empty, spec?.Socket ?? string.Empty, weight, Sustain(spec), facts));
+                Vector3 offset = spec != null ? SocketOffset(modelPath, spec.Value, report) : Vector3.zero;
+                clips.Add(new ClipRow(role, clip, farClip, distance, eventSeconds, spec?.Trigger ?? string.Empty, spec?.Socket ?? string.Empty, weight, Sustain(spec), facts, offset));
             }
 
             return clips;
+        }
+
+        /// <summary>
+        /// Where the report's rest-pose point (Blender metres, Z up, heads at -Y) lies in the socket bone's own frame, so the
+        /// moment leaves from it however the bone turns in the clip; zero without a point or a bone.
+        /// </summary>
+        internal static Vector3 SocketOffset(string modelPath, BlenderClipSpec spec, BlenderReport report)
+        {
+            List<float> point = string.IsNullOrEmpty(spec.SocketPoint) ? null : report.Numbers(spec.SocketPoint);
+            var model = point != null && point.Count >= 3 ? AssetDatabase.LoadAssetAtPath<GameObject>(modelPath) : null;
+            if (model == null)
+            {
+                return Vector3.zero;
+            }
+
+            GameObject probe = Object.Instantiate(model);
+            try
+            {
+                Transform bone = FindBone(probe.transform, spec.Socket);
+                return bone != null ? bone.InverseTransformPoint(probe.transform.TransformPoint(FromBlender(point))) : Vector3.zero;
+            }
+            finally
+            {
+                Object.DestroyImmediate(probe);
+            }
+        }
+
+        // Blender's Z-up, right-handed metres to the imported model's Y-up, left-handed frame (Blender -Y forward is -Z here).
+        public static Vector3 FromBlender(List<float> point) => new Vector3(-point[0], point[2], point[1]);
+
+        private static Transform FindBone(Transform root, string name)
+        {
+            foreach (Transform node in root.GetComponentsInChildren<Transform>(true))
+            {
+                if (node.name == name)
+                {
+                    return node;
+                }
+            }
+
+            return null;
         }
 
         // The frames a lasting power loops, in clip seconds; zero when the row names none.
@@ -442,6 +486,7 @@ namespace Game.Editor
                 element.FindPropertyRelative("_eventSeconds").floatValue = clip.EventSeconds;
                 element.FindPropertyRelative("_trigger").stringValue = clip.Trigger;
                 element.FindPropertyRelative("_socket").stringValue = clip.Socket;
+                element.FindPropertyRelative("_socketOffset").vector3Value = clip.SocketOffset;
                 element.FindPropertyRelative("_weight").floatValue = clip.Weight;
                 element.FindPropertyRelative("_sustain").vector2Value = clip.Sustain;
                 element.FindPropertyRelative("_endOffset").vector2Value = clip.Travel.EndOffset;

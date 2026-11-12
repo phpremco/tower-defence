@@ -52,6 +52,13 @@ namespace Game.Hero
         // barrel on it: turning the arm at the shoulder also moves the muzzle, so a second pass takes up what the first left.
         private const float GunAimSpeed = 6f;
         private const int GunAimPasses = 2;
+        // Round 57: repeated fire holds the aim (the Shoot clip's first frame) and kicks the gun arm up on top of it per shot (RecoilKick),
+        // instead of restarting the Shoot clip, whose one-frame kick snapped the pose back to the aim and up again every shot. The
+        // authored kick lifts the arm about 24 degrees; the shoulder alone carries this one. The last few shots add up.
+        private const float RecoilDegrees = 16f;
+        private const float RecoilPeakSeconds = 0.06f;
+        private const float RecoilMaxShare = 1.5f;
+        private const int RecoilShots = 3;
         private const float BladeEmission = 3f;
         // The blade mesh is a thin core; the glow is drawn wider than it so it reads as a blade at the play zoom.
         private const float BladeGlowWidth = 2.5f;
@@ -174,6 +181,8 @@ namespace Game.Hero
         private float _combatUntil;
         private float _ignite = 1f;
         private float _boltAge = float.PositiveInfinity;
+        private readonly float[] _shotTimes = RecoilKick.NoShots(RecoilShots);
+        private int _nextShot;
         private Vector3 _boltTarget;
         private Vector3 _lastPosition;
         private float _speed;
@@ -476,8 +485,10 @@ namespace Game.Hero
 
             if (ranged)
             {
-                // The gun stays at aim on the last frame of the kick until the fighting is over.
-                _player.PlayUpper(_shoot, 0f, hold: true);
+                // The gun stays at aim until the fighting is over; each shot kicks on top of it (round 57).
+                HoldAim();
+                _shotTimes[_nextShot] = Time.time;
+                _nextShot = (_nextShot + 1) % _shotTimes.Length;
                 _boltAge = 0f;
                 _boltTarget = target + Vector3.up * AimHeight;
                 return;
@@ -670,7 +681,9 @@ namespace Game.Hero
             _switchTo = hand;
             _switchSeated = false;
             _switchCued = false;
-            _player.PlayUpper(clip, startSeconds);
+            // Round 57: the pistol draw ends in the aim and is held there until the aim takes over (TickSwitch), instead of
+            // fading out to the legs' pose over its last frames and the aim fading in again after.
+            _player.PlayUpper(clip, startSeconds, hold: clip == _drawPistol);
         }
 
         private int DrawClip(Hand hand) => hand == Hand.Ranged ? _drawPistol : _drawBlade;
@@ -709,9 +722,18 @@ namespace Game.Hero
             // The draw ends in the aim (Shoot frame 0): the gun stays up there while the fighting goes on.
             if (_drawn == Hand.Ranged && Time.time < _combatUntil)
             {
-                _player.PlayUpper(_shoot, 0f, hold: true);
+                // Round 57: the held draw's last frame is the aim, so the aim takes over at full weight (no dip to the legs' pose).
+                HoldAim(carry: true);
+            }
+            else if (_drawn == Hand.Ranged && _player.Upper == _drawPistol)
+            {
+                _player.StopUpper();
             }
         }
+
+        // The Shoot clip's first frame is the aim: held there (rate 0), so a shot never restarts the clip's own one-frame kick
+        // (the kick is laid on top, RecoilKick). Asking again while it shows keeps its weight and its frame.
+        private void HoldAim(bool carry = false) => _player.PlayUpper(_shoot, 0f, hold: true, rate: 0f, carry: carry);
 
         // Ends a draw or stow at once: the weapon in its socket, the blade as it should be.
         private void FinishSwitch()
@@ -980,6 +1002,7 @@ namespace Game.Hero
             {
                 AimSpine();
                 AimGun();
+                Recoil();
             }
 
             // The light strip and the bolt follow the gun as the aim left it.
@@ -1049,6 +1072,25 @@ namespace Game.Hero
                 Quaternion turn = Quaternion.RotateTowards(Quaternion.identity, Quaternion.FromToRotation(_muzzle.forward, wanted), limit);
                 _gunArm.rotation = Quaternion.Slerp(Quaternion.identity, turn, _gunAim) * _gunArm.rotation;
             }
+        }
+
+        // Round 57: the shots' kicks lift the barrel at the shoulder, on top of the aim. Nothing on a shot's own frame and little
+        // while its bolt is lit, so the bolt leaves the barrel in line; the bolt is laid after this, from the muzzle as kicked.
+        private void Recoil()
+        {
+            if (_gunArm == null || _muzzle == null || _drawn != Hand.Ranged)
+            {
+                return;
+            }
+
+            float kick = Mathf.Min(RecoilKick.Sum(_shotTimes, Time.time, RecoilPeakSeconds, BoltSeconds), RecoilMaxShare);
+            Vector3 lift = Vector3.Cross(_muzzle.forward, Vector3.up);
+            if (kick <= 0f || lift.sqrMagnitude < 0.0001f)
+            {
+                return;
+            }
+
+            _gunArm.rotation = Quaternion.AngleAxis(kick * RecoilDegrees, lift.normalized) * _gunArm.rotation;
         }
 
         // The bolt flicks from the muzzle as it is posed this frame to the struck point, half width at both ends under soft glows: the

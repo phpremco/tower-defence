@@ -39,6 +39,12 @@ namespace Game.Editor
         private static readonly Color MossBatPartGlow = new Color(0.75f, 1f, 0.6f);
         private static readonly Color DustBatPartGlow = new Color(1f, 0.95f, 0.8f);
 
+        // Round 56: the bog bat's pale sickly yellow-green glow (Skins_warm_report.json, Mire).
+        private static readonly Color MireBatPartGlow = new Color(0.85f, 1f, 0.6f);
+
+        // The Sealed One's report key for the maw's throat at rest (round 52), where its Summon leaves.
+        private const string SealedOneThroat = "throat_centre_m";
+
         // Exports with a baked corrupted skin under Skins/Corrupted (ArtSource README round 15, Corrupted_skins_report.json).
         private static readonly HashSet<string> CorruptedSkins = new HashSet<string>
         {
@@ -101,8 +107,8 @@ namespace Game.Editor
             { "Dustbat", "Bat_Dust" },
             { "Tidebat", "Bat_Tide" },
             { "Frostbat", "Bat_Frost" },
-            // No bog skin is baked yet: the marsh bat wears the moss one, the closest in colour.
-            { "Mirebat", "Bat_Moss" },
+            // Round 56 baked its own bog skin.
+            { "Mirebat", "Bat_Mire" },
             { "HiveQueen", "Queen" },
             { "BroodMother", "BroodMother" },
             { "PackAlpha", "PackAlpha" },
@@ -187,6 +193,7 @@ namespace Game.Editor
                 new BlenderArtEntry("Bat_Dust", "Bat", "Dust") { ExtraParts = FaceClaws, PartGlowTint = DustBatPartGlow, BodyCentrePivot = true, Clips = bat },
                 new BlenderArtEntry("Bat_Tide", "Bat", "Tide") { ExtraParts = FaceClaws, BodyCentrePivot = true, Clips = bat },
                 new BlenderArtEntry("Bat_Frost", "Bat", "Frost") { ExtraParts = FaceClaws, BodyCentrePivot = true, Clips = bat },
+                new BlenderArtEntry("Bat_Mire", "Bat", "Mire") { ExtraParts = FaceClaws, PartGlowTint = MireBatPartGlow, BodyCentrePivot = true, Clips = bat },
                 new BlenderArtEntry("Queen", "Queen")
                 {
                     ExtraParts = FaceClaws,
@@ -480,10 +487,14 @@ namespace Game.Editor
                     // Round 28: its glow per phase and the white release, swapped at the Release clip's white frame.
                     EmissionSets = new[] { "Phase1", "Phase2", "Phase3", "Phase4", "Release" },
                     DeathEmissionSet = "Release",
+                    // Round 57: the seal halo (round 52) stands on hubs 1.2-1.6 m behind the hood; walking towards the looking-down
+                    // camera it is drawn about a metre above its real top, through the bar.
+                    BarCrestBones = new[] { "Ring_1", "Ring_2", "Ring_3" },
                     Clips = new[]
                     {
                         new BlenderClipSpec("Rise", ModelClipRole.Emerge, 22),
-                        new BlenderClipSpec("Summon", ModelClipRole.Power, 44, "Spawn", "Head"),
+                        // Round 52/57: the maw's throat sits ahead of and above the head bone; the brood's sparks leave from it.
+                        new BlenderClipSpec("Summon", ModelClipRole.Power, 44, "Spawn", "Head", socketPoint: SealedOneThroat),
                         // Its end is the release, not a death; the old Death (the seal shutting) is kept as a burrow.
                         new BlenderClipSpec("Release", ModelClipRole.Death, 64),
                         new BlenderClipSpec("Death", ModelClipRole.Burrow, 124),

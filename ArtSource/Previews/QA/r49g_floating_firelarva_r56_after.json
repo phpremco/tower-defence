@@ -1,0 +1,32 @@
+{
+ "creature": "FireLarva",
+ "threshold_model_units": 0.005,
+ "unity_scale": 0.6,
+ "step": 1,
+ "burst_clips": [],
+ "exempt_bones": [],
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\FireLarva\\FireLarva.fbx",
+   "body": "FireLarva",
+   "poses": 113,
+   "islands": {
+    "FireLarva": 1
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": []
+  },
+  "LOD1": {
+   "file": "ArtSource\\Exports\\FireLarva\\FireLarva_LOD1.fbx",
+   "body": "FireLarva_LOD1",
+   "poses": 113,
+   "islands": {
+    "FireLarva_LOD1": 1
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": []
+  }
+ }
+}

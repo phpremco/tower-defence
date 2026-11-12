@@ -43,7 +43,12 @@
     "tris": 700,
     "bones": 13
   },
-  "crawl_distance_per_loop": 0.2,
+  "crawl_distance_per_loop": 0.4,
   "minion_of": "CinderMatriarch",
-  "spawn": "leaves the Matriarch's chimney mouths (bones Vent_1..3) at Spawn frame 30-36"
+  "spawn": "leaves the Matriarch's chimney mouths (bones Vent_1..3) at Spawn frame 30-36",
+  "round56_crawl": {
+    "gait": "planted tripod crawl, 2 steps per loop, stance 0.50, stride 0.100 model units, feet held in the world while planted",
+    "crawl_distance_per_loop_was": 0.2,
+    "clip_frames": 20
+  }
 }

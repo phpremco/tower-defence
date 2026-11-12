@@ -1267,7 +1267,8 @@ namespace Game.Enemies
             main.gravityModifier = 0.6f;
             // A clip that names no bone of its own throws its sparks where the art's beam leaves (the ray boss's tail).
             Transform beam = moment.Socket.Length == 0 ? FindBeamSocket() : null;
-            _impact.transform.position = beam != null ? beam.position : _model.Socket(moment.Socket).position;
+            // The socket's offset puts the moment where it shows on the body (the Sealed One's throat, ahead of its head bone).
+            _impact.transform.position = beam != null ? beam.position : _model.Socket(moment.Socket).TransformPoint(moment.SocketOffset);
             _impact.Emit(Mathf.RoundToInt(SlamDustBurst * Mathf.Clamp(_creatureScale, 0.6f, 2f)));
         }
 

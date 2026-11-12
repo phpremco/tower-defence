@@ -1,1 +1,1 @@
-draw Weapon_Blaster@26.66 shot@27.28 shot@27.48 shot@27.68 shot@27.88 
+draw Weapon_Blaster@27.19 shot@27.81 shot@28.01 shot@28.21 

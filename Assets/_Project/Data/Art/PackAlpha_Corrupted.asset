@@ -40,6 +40,7 @@ MonoBehaviour:
   _bleeds: 1
   _shedBones: []
   _vents: {fileID: 0}
+  _beamSockets: []
   _emissionSets: []
   _deathEmissionSet: 
   _clips:
@@ -50,6 +51,7 @@ MonoBehaviour:
     _eventSeconds: 0
     _trigger: 
     _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
     _weight: 1
     _upperBody: 0
     _endOffset: {x: 0, y: 0}
@@ -58,6 +60,7 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
     _blendSeconds: 0
   - _role: 2
     _clip: {fileID: 5274815659567452501, guid: 705cb420d667da748b07ea913bc1e8c9, type: 3}
@@ -66,6 +69,7 @@ MonoBehaviour:
     _eventSeconds: 0
     _trigger: 
     _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
     _weight: 0.6
     _upperBody: 0
     _endOffset: {x: 0, y: 0}
@@ -74,6 +78,7 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
     _blendSeconds: 0
   - _role: 3
     _clip: {fileID: -2506640964733693346, guid: 705cb420d667da748b07ea913bc1e8c9, type: 3}
@@ -82,6 +87,7 @@ MonoBehaviour:
     _eventSeconds: 0
     _trigger: 
     _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
     _weight: 1
     _upperBody: 0
     _endOffset: {x: 0, y: 0}
@@ -90,6 +96,7 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
     _blendSeconds: 0
   - _role: 5
     _clip: {fileID: -1800909752393752960, guid: 705cb420d667da748b07ea913bc1e8c9, type: 3}
@@ -98,6 +105,7 @@ MonoBehaviour:
     _eventSeconds: 0.73333335
     _trigger: Rally
     _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
     _weight: 1
     _upperBody: 0
     _endOffset: {x: 0, y: 0}
@@ -106,6 +114,7 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
     _blendSeconds: 0
   - _role: 0
     _clip: {fileID: -156107219395913071, guid: 705cb420d667da748b07ea913bc1e8c9, type: 3}
@@ -114,6 +123,7 @@ MonoBehaviour:
     _eventSeconds: 0
     _trigger: 
     _socket: 
+    _socketOffset: {x: 0, y: 0, z: 0}
     _weight: 1
     _upperBody: 0
     _endOffset: {x: 0, y: 0}
@@ -122,4 +132,5 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
     _blendSeconds: 0

@@ -94,5 +94,25 @@ namespace Game.UI
 
             return since < attack ? Smooth(since / attack) : Mathf.Exp(-(since - attack) / Mathf.Max(decay, 0.0001f));
         }
+
+        /// <summary>
+        /// Round 57: how far a rotor has turned <paramref name="since"/> seconds after it starts, in seconds at full speed: its
+        /// speed rises evenly from rest to full over <paramref name="ramp"/> seconds, so the turn eases in instead of jumping to
+        /// full spin on the first frame. 0 before the start; after the ramp it runs on at full speed.
+        /// </summary>
+        public static float SpinUp(float since, float ramp)
+        {
+            if (since <= 0f)
+            {
+                return 0f;
+            }
+
+            if (ramp <= 0f || since >= ramp)
+            {
+                return since - Mathf.Max(0f, ramp) * 0.5f;
+            }
+
+            return since * since / (2f * ramp);
+        }
     }
 }
