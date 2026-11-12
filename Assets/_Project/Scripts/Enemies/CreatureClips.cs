@@ -12,8 +12,11 @@ namespace Game.Enemies
     /// </summary>
     public sealed class CreatureClips
     {
-        private const float MinRate = 0.3f;
-        private const float MaxRate = 4f;
+        // The travel cycle's playback rate limits. Wide enough that a chilled (half speed) or hasted (1.6x) creature of
+        // almost every species still plants its feet (round 47, Tools/PlayTest/r47_gait_table.cs: all base speeds but the Fire Larva's 6.9, all
+        // hastes up to 5.9, chills down to 0.18); past them a leg would flicker or crawl, and sliding a little is the lesser evil.
+        private const float MinRate = 0.15f;
+        private const float MaxRate = 6f;
         private const float LandAfterSeconds = 0.35f;
         // A power cycle that has passed its moment is ready again once its timer has wound well past the clip's lead.
         private const float RearmMargin = 0.5f;

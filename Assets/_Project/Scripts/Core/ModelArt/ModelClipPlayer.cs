@@ -6,11 +6,12 @@ namespace Game.Core
 {
     /// <summary>
     /// Plays the clips of an imported model without an Animator Controller: one PlayableGraph per animated rig (the near
-    /// and the far LOD each have their own), a mixer with one input per clip, a looping cycle that cross-fades when it
-    /// changes, and one clip at a time on top of it (a hit, a strike, a power, a fall) that fades in and out or holds
-    /// its last frame. The player keeps the clock itself and sets every clip's time each frame, so a rig the camera
-    /// culls (the LOD that is not shown) picks up at exactly the same moment when it appears. Nothing allocates after
-    /// construction; <see cref="Restart"/> resets it for a pooled owner.
+    /// and the far LOD each have their own), a mixer with one input per <see cref="ClipMixer"/> slot (every clip, plus an
+    /// echo for each clip that does not loop), cycles that cross-fade when they change, and clips on top that fade in, cross-
+    /// fade when one replaces another (or the same one restarts) and fade out or hold their last frame. The player keeps the
+    /// clock itself and sets every clip's time each frame, so a rig the camera culls (the LOD that is not shown) picks up at
+    /// exactly the same moment when it appears. Nothing allocates after construction; <see cref="Restart"/> resets it for a
+    /// pooled owner.
     /// </summary>
     public sealed class ModelClipPlayer
     {
@@ -20,40 +21,33 @@ namespace Game.Core
         /// </summary>
         public static bool AlwaysAnimate;
 
-        private const float CycleFadeSeconds = 0.2f;
-        private const float OnceFadeInSeconds = 0.08f;
-        private const float OnceFadeOutSeconds = 0.15f;
+        // Frames a woken rig evaluates even while culled: the tick after the wake, and one more for its renderers' visibility to
+        // register (a culled rig of a pooled owner just switched on would show its last life's pose for a frame).
+        private const int WakeFrames = 2;
 
         private readonly ModelArtDefinition _art;
+        private readonly Animator[] _animators;
+        private int _wakeFrames;
+        private readonly ClipMixer _mixer;
         private readonly PlayableGraph[] _graphs;
         private readonly AnimationMixerPlayable[] _mixers;
         private readonly AnimationClipPlayable[] _playables;
-        private readonly float[] _times;
-        private readonly float[] _lengths;
+        private readonly float[] _written;
         private readonly int _clipCount;
+        private readonly int _slotCount;
 
         // The upper-body layer (a hero shooting while he runs): a second mixer of the clips marked upper body, masked to
         // the art's upper-body bone and laid over the base mixer. Null when the art has no such clips.
         private readonly AnimationLayerMixerPlayable[] _layers;
         private readonly AnimationMixerPlayable[] _upperMixers;
         private readonly AnimationClipPlayable[] _upperPlayables;
+        private readonly float[] _lengths;
         private int _upper = -1;
         private float _upperTime;
         private float _upperSpeed = 1f;
         private float _upperAge;
         private bool _upperHolds;
         private float _upperStopAge = -1f;
-
-        private int _cycle = -1;
-        private int _fadingCycle = -1;
-        private float _cycleSpeed = 1f;
-        private float _fadingSpeed = 1f;
-        private float _cycleBlend = 1f;
-        private int _once = -1;
-        private float _onceSpeed = 1f;
-        private float _onceAge;
-        private bool _onceHolds;
-        private float _stopAge = -1f;
         private bool _disposed;
 
         /// <param name="animators">The rigs to drive: the near LOD first, then the far one, which plays the far clips. Their
@@ -62,8 +56,11 @@ namespace Game.Core
         {
             _art = art;
             ModelClip[] clips = art.Clips;
+            _animators = animators;
             _clipCount = clips.Length;
-            _times = new float[_clipCount];
+            _mixer = CreateMixer(clips);
+            _slotCount = _mixer.SlotCount;
+            _written = new float[_slotCount];
             _lengths = new float[_clipCount];
             for (int i = 0; i < _clipCount; i++)
             {
@@ -72,7 +69,7 @@ namespace Game.Core
 
             _graphs = new PlayableGraph[animators.Length];
             _mixers = new AnimationMixerPlayable[animators.Length];
-            _playables = new AnimationClipPlayable[animators.Length * _clipCount];
+            _playables = new AnimationClipPlayable[animators.Length * _slotCount];
             bool layered = HasUpperBody(art);
             if (layered)
             {
@@ -87,19 +84,20 @@ namespace Game.Core
                 animator.runtimeAnimatorController = null;
                 animator.applyRootMotion = false;
                 // The far LOD's rig only evaluates while its mesh is drawn.
-                animator.cullingMode = AlwaysAnimate ? AnimatorCullingMode.AlwaysAnimate : AnimatorCullingMode.CullCompletely;
+                animator.cullingMode = RestingCulling;
                 PlayableGraph graph = PlayableGraph.Create(art.name);
                 graph.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
                 var output = AnimationPlayableOutput.Create(graph, "Model", animator);
-                var mixer = AnimationMixerPlayable.Create(graph, _clipCount);
-                for (int i = 0; i < _clipCount; i++)
+                var mixer = AnimationMixerPlayable.Create(graph, _slotCount);
+                for (int s = 0; s < _slotCount; s++)
                 {
-                    var playable = AnimationClipPlayable.Create(graph, g == 0 ? clips[i].Clip : clips[i].FarClip);
+                    ModelClip clip = clips[_mixer.ClipOf(s)];
+                    var playable = AnimationClipPlayable.Create(graph, g == 0 ? clip.Clip : clip.FarClip);
                     playable.SetApplyFootIK(false);
                     // The player sets the time itself every frame, so the graph never advances a clip on its own.
                     playable.SetSpeed(0d);
-                    graph.Connect(playable, 0, mixer, i);
-                    _playables[g * _clipCount + i] = playable;
+                    graph.Connect(playable, 0, mixer, s);
+                    _playables[g * _slotCount + s] = playable;
                 }
 
                 _graphs[g] = graph;
@@ -107,6 +105,27 @@ namespace Game.Core
                 output.SetSourcePlayable(layered ? LayerUpperBody(g, graph, mixer, animator, clips) : (Playable)mixer);
                 graph.Play();
             }
+        }
+
+        private static AnimatorCullingMode RestingCulling => AlwaysAnimate ? AnimatorCullingMode.AlwaysAnimate : AnimatorCullingMode.CullCompletely;
+
+        // Lengths, overlay weights, blend times and looping from the art's clips: the mixer itself knows no Unity clips.
+        private static ClipMixer CreateMixer(ModelClip[] clips)
+        {
+            int count = clips.Length;
+            var lengths = new float[count];
+            var overlay = new float[count];
+            var blend = new float[count];
+            var loops = new bool[count];
+            for (int i = 0; i < count; i++)
+            {
+                lengths[i] = clips[i].Length;
+                overlay[i] = clips[i].Weight;
+                blend[i] = clips[i].BlendSeconds;
+                loops[i] = clips[i].Clip == null || clips[i].Clip.isLooping;
+            }
+
+            return new ClipMixer(lengths, overlay, blend, loops);
         }
 
         private static bool HasUpperBody(ModelArtDefinition art)
@@ -195,27 +214,59 @@ namespace Game.Core
         }
 
         /// <summary>The clip on top of the cycle, or -1.</summary>
-        public int Once => _once;
+        public int Once => _mixer.Once;
 
         /// <summary>Seconds into the clip on top of the cycle.</summary>
-        public float OnceTime => _once >= 0 ? _times[_once] : 0f;
+        public float OnceTime => _mixer.OnceTime;
+
+        /// <summary>The looping cycle, or -1.</summary>
+        public int Cycle => _mixer.Cycle;
+
+        /// <summary>The cycle's playback rate (1 = as authored).</summary>
+        public float CycleRate => _mixer.CycleRate;
 
         /// <summary>True while the clip of a role plays on top of the cycle.</summary>
-        public bool IsPlaying(ModelClipRole role) => _once >= 0 && _art.Clips[_once].Role == role;
+        public bool IsPlaying(ModelClipRole role) => _mixer.Once >= 0 && _art.Clips[_mixer.Once].Role == role;
 
-        /// <summary>Back to the first cycle at its start, nothing on top: for a pooled owner sent out again.</summary>
+        /// <summary>Back to nothing playing, every clock at its start: for a pooled owner sent out again.</summary>
         public void Restart()
         {
-            for (int i = 0; i < _clipCount; i++)
-            {
-                _times[i] = 0f;
-            }
-
-            _cycle = -1;
-            _fadingCycle = -1;
-            _cycleBlend = 1f;
-            _once = -1;
+            _mixer.Restart();
             _upper = -1;
+        }
+
+        /// <summary>
+        /// Takes over the whole state of another player of the same art: a corpse that goes on from the pose the body died in
+        /// (mid-stride, mid-flinch) instead of starting from its idle.
+        /// </summary>
+        public void CopyFrom(ModelClipPlayer other)
+        {
+            if (other != null && other._art == _art)
+            {
+                _mixer.CopyFrom(other._mixer);
+            }
+        }
+
+        /// <summary>
+        /// For a pooled owner just switched on (a corpse, a respawned creature): its rigs were not drawn last frame, so a culled
+        /// rig would skip this frame's animation update and show the pose of its last life. They evaluate for a couple of frames
+        /// whether drawn or not, then cull again.
+        /// </summary>
+        public void Wake()
+        {
+            _wakeFrames = WakeFrames;
+            SetCulling(AnimatorCullingMode.AlwaysAnimate);
+        }
+
+        private void SetCulling(AnimatorCullingMode mode)
+        {
+            foreach (Animator animator in _animators)
+            {
+                if (animator != null)
+                {
+                    animator.cullingMode = mode;
+                }
+            }
         }
 
         /// <summary>The upper-body clip playing, or -1.</summary>
@@ -259,60 +310,21 @@ namespace Game.Core
         }
 
         /// <summary>
-        /// Loops a cycle at a playback rate (1 = as authored). A new cycle fades in over the old one; asking for the one
-        /// already playing only changes its rate. A new cycle starts <paramref name="startSeconds"/> in (a flag that should
-        /// not wave in step with its neighbours).
+        /// Loops a cycle at a playback rate (1 = as authored). A new cycle cross-fades over the old one (over the clip's own
+        /// blend time, or the default); asking for the one already playing only changes its rate. A new cycle starts
+        /// <paramref name="startSeconds"/> in (a flag that should not wave in step with its neighbours).
         /// </summary>
-        public void Loop(int index, float rate, float startSeconds = 0f)
-        {
-            if (index < 0)
-            {
-                return;
-            }
-
-            if (index == _cycle)
-            {
-                _cycleSpeed = rate;
-                return;
-            }
-
-            _fadingCycle = _cycle;
-            _fadingSpeed = _cycleSpeed;
-            _cycle = index;
-            _cycleSpeed = rate;
-            _times[index] = Wrap(startSeconds, _lengths[index]);
-            _cycleBlend = _fadingCycle < 0 ? 1f : 0f;
-        }
+        public void Loop(int index, float rate, float startSeconds = 0f) => _mixer.Loop(index, rate, startSeconds);
 
         /// <summary>
         /// Plays a clip once on top of the cycle from a start time. A held clip stays on its last frame (a fall, a raised
         /// shield) until another clip or <see cref="StopOnce"/> replaces it. A negative rate plays it backwards from its end.
+        /// A clip that replaces the one on top, or the same clip restarting, cross-fades with it.
         /// </summary>
-        public void PlayOnce(int index, float startSeconds = 0f, bool hold = false, float rate = 1f)
-        {
-            if (index < 0)
-            {
-                return;
-            }
-
-            _once = index;
-            _onceSpeed = rate;
-            _onceHolds = hold;
-            _onceAge = 0f;
-            _stopAge = -1f;
-            float start = rate < 0f ? _lengths[index] - startSeconds : startSeconds;
-            _times[index] = Mathf.Clamp(start, 0f, _lengths[index]);
-        }
+        public void PlayOnce(int index, float startSeconds = 0f, bool hold = false, float rate = 1f) => _mixer.PlayOnce(index, startSeconds, hold, rate);
 
         /// <summary>Lets the clip on top fade out now, wherever it is.</summary>
-        public void StopOnce()
-        {
-            if (_once >= 0)
-            {
-                _onceHolds = false;
-                _stopAge = 0f;
-            }
-        }
+        public void StopOnce() => _mixer.StopOnce();
 
         /// <summary>Advances the clocks and writes weights and times into every graph.</summary>
         public void Tick(float deltaTime)
@@ -322,33 +334,28 @@ namespace Game.Core
                 return;
             }
 
-            AdvanceCycles(deltaTime);
-            float onceWeight = AdvanceOnce(deltaTime);
-            float cycleWeight = 1f - onceWeight;
-            for (int g = 0; g < _graphs.Length; g++)
+            if (_wakeFrames > 0 && deltaTime > 0f && --_wakeFrames == 0)
             {
-                AnimationMixerPlayable mixer = _mixers[g];
-                for (int i = 0; i < _clipCount; i++)
+                SetCulling(RestingCulling);
+            }
+
+            // At a raised game speed the clips run faster but the blends keep their real duration (ClipMixer.Advance).
+            _mixer.Advance(deltaTime, Time.timeScale);
+            for (int s = 0; s < _slotCount; s++)
+            {
+                float weight = _mixer.WeightOf(s);
+                bool changed = weight != _written[s];
+                _written[s] = weight;
+                for (int g = 0; g < _graphs.Length; g++)
                 {
-                    float weight = 0f;
-                    if (i == _once)
+                    if (changed)
                     {
-                        weight += onceWeight;
+                        _mixers[g].SetInputWeight(s, weight);
                     }
 
-                    if (i == _cycle)
-                    {
-                        weight += cycleWeight * _cycleBlend;
-                    }
-                    else if (i == _fadingCycle)
-                    {
-                        weight += cycleWeight * (1f - _cycleBlend);
-                    }
-
-                    mixer.SetInputWeight(i, weight);
                     if (weight > 0f)
                     {
-                        _playables[g * _clipCount + i].SetTime(_times[i]);
+                        _playables[g * _slotCount + s].SetTime(_mixer.TimeOf(s));
                     }
                 }
             }
@@ -369,11 +376,11 @@ namespace Game.Core
             _upperAge += deltaTime;
             float length = _lengths[_upper];
             _upperTime = Mathf.Clamp(_upperTime + deltaTime * _upperSpeed, 0f, length);
-            float fadeOut = _upperHolds ? 1f : Mathf.Clamp01((length - _upperTime) / OnceFadeOutSeconds);
+            float fadeOut = _upperHolds ? 1f : Mathf.Clamp01((length - _upperTime) / ClipMixer.OnceFadeOutSeconds);
             if (_upperStopAge >= 0f)
             {
                 _upperStopAge += deltaTime;
-                fadeOut = Mathf.Min(fadeOut, 1f - _upperStopAge / OnceFadeOutSeconds);
+                fadeOut = Mathf.Min(fadeOut, 1f - _upperStopAge / ClipMixer.OnceFadeOutSeconds);
             }
 
             if (fadeOut <= 0f)
@@ -382,7 +389,7 @@ namespace Game.Core
                 return 0f;
             }
 
-            return Mathf.Min(Mathf.Clamp01(_upperAge / OnceFadeInSeconds), fadeOut) * _art.Clips[_upper].Weight;
+            return Mathf.Min(Mathf.Clamp01(_upperAge / ClipMixer.DefaultOnceBlendSeconds), fadeOut) * _art.Clips[_upper].Weight;
         }
 
         private void WriteUpper(float weight)
@@ -434,61 +441,6 @@ namespace Game.Core
                     _graphs[g].Destroy();
                 }
             }
-        }
-
-        private void AdvanceCycles(float deltaTime)
-        {
-            if (_cycle >= 0)
-            {
-                _times[_cycle] = Wrap(_times[_cycle] + deltaTime * _cycleSpeed, _lengths[_cycle]);
-            }
-
-            if (_fadingCycle >= 0 && _fadingCycle != _cycle)
-            {
-                _times[_fadingCycle] = Wrap(_times[_fadingCycle] + deltaTime * _fadingSpeed, _lengths[_fadingCycle]);
-            }
-
-            _cycleBlend = Mathf.MoveTowards(_cycleBlend, 1f, deltaTime / CycleFadeSeconds);
-            if (_cycleBlend >= 1f)
-            {
-                _fadingCycle = -1;
-            }
-        }
-
-        // The clip on top fades in quickly, plays, and fades out over its last moments unless it holds.
-        private float AdvanceOnce(float deltaTime)
-        {
-            if (_once < 0)
-            {
-                return 0f;
-            }
-
-            _onceAge += deltaTime;
-            float length = _lengths[_once];
-            float time = Mathf.Clamp(_times[_once] + deltaTime * _onceSpeed, 0f, length);
-            _times[_once] = time;
-            float left = _onceSpeed < 0f ? time : length - time;
-            float fadeOut = _onceHolds ? 1f : Mathf.Clamp01(left / OnceFadeOutSeconds);
-            if (_stopAge >= 0f)
-            {
-                _stopAge += deltaTime;
-                fadeOut = Mathf.Min(fadeOut, 1f - _stopAge / OnceFadeOutSeconds);
-            }
-
-            if (fadeOut <= 0f)
-            {
-                _once = -1;
-                return 0f;
-            }
-
-            float fadeIn = Mathf.Clamp01(_onceAge / OnceFadeInSeconds);
-            return Mathf.Min(fadeIn, fadeOut) * _art.Clips[_once].Weight;
-        }
-
-        private static float Wrap(float time, float length)
-        {
-            time %= length;
-            return time < 0f ? time + length : time;
         }
     }
 }

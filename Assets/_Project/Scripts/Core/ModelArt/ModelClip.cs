@@ -47,6 +47,9 @@ namespace Game.Core
         [Tooltip("Seconds into the clip where a foot plants, in order, baked from the foot bones (Tools/Generate/Hero Footfalls); empty when no foot lands.")]
         [SerializeField] private float[] _footfallSeconds = System.Array.Empty<float>();
 
+        [Tooltip("Seconds this clip blends in over what showed before (a cycle's cross-fade, a clip's fade-in on top of the cycle); zero takes the player's default (ClipMixer).")]
+        [SerializeField] [Min(0f)] private float _blendSeconds;
+
         private const float FramesPerSecond = 30f;
 
         public ModelClipRole Role => _role;
@@ -56,6 +59,9 @@ namespace Game.Core
         public AnimationClip FarClip => _farClip != null ? _farClip : _clip;
         public float DistancePerLoop => _distancePerLoop;
         public float EventSeconds => _eventSeconds;
+
+        /// <summary>Seconds this clip blends in over, or zero for the player's default.</summary>
+        public float BlendSeconds => _blendSeconds;
         public string Trigger => _trigger;
         public string Socket => _socket;
         public float Weight => _weight;

@@ -69,7 +69,10 @@ namespace Game.Enemies
             _model.SetEmissionSet(null, ModelQuality.IsLow);
             _deathLookShown = false;
             _clips.Restart();
+            // The fall blends out of the pose the body died in (mid-stride, mid-flinch) rather than out of a fresh idle.
+            _model.Player.CopyFrom(request.Pose);
             _clips.Die();
+            _model.Player.Wake();
             _shed?.SetShed(request.Shed);
             _model.Player.Evaluate();
             Splash(position);

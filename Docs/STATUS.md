@@ -6335,3 +6335,88 @@ phase strength (eyes brighten with the breaking seal, x1.73 at Release). Checked
 
 1. Corrupted bosses: the parts are tinted, not re-baked. If a corrupted boss is ever placed, a Blender bake of the part maps under
    `Skins/Corrupted` would match the veins exactly.
+
+## Round 47: smoother animation (2026-11-12)
+
+Remco: "the animations of all of them, as smooth as possible". Measured first, then fixed what the numbers showed. No Blender
+clips, ArtSource or Tools/Blender touched; no generator run; no asset changed (the two new data fields default in code).
+
+### Probe (`Tools/PlayTest/r47_*`)
+
+- `r47_rec_start.cs` hooks `Application.onBeforeRender` and logs every animated rig per frame (bone rotation change summed
+  over the bones, root yaw and position, drawn or not, the clip player's cycle / clip on top / rate / times) to
+  `Logs/r47/<tag>.csv`; it also measures the **death handoff** (pose gap between a body's last frame and its pooled corpse's
+  first). `r47_rec_report.cs` writes `<tag>_report.txt` + `<tag>_pops.txt`: pops (one-frame spike: over 3x the median of 8
+  neighbours, over 2x both direct neighbours, over 10 deg), the clip switch behind each, stale wakes (a pooled rig showing its
+  last life's pose for a frame), yaw snaps (over 20 deg in a frame and over 1000 deg/s), foot slip. `r47_rec_stop.cs`.
+- `r47_play.sh` (TAG, LEVEL, SPEED, WAVES, SECS; probe towers via `r47_level.cs`; save backed up and restored, MD5 checked),
+  `r47_cut.sh` (r43_play.sh + recorder), `r47_gait_table.cs` (travel-cycle rate per species at base, chill and haste speed),
+  `r47_clip_loops.cs` (which clips loop).
+
+### Findings (before)
+
+1. **Clip-on-top restarts and replacements cut**: `PlayOnce` of the clip already showing jumped its time to 0 and its weight to
+   0 (spawn gate Spawn: 91-108 pops/run of ~230-250 deg; tower Fire; Skyray Attack 33; hit on hit); a clip replacing another
+   dropped the old one at once (the cycle flashed in between). A cycle changed mid-fade dropped the half-shown one.
+2. **Death handoff**: a pooled corpse showed its *last* corpse's final pose for one frame (culled rig not evaluated on the frame
+   it is switched on; `Evaluate()` did not help), then started from Idle: gap **~1150 deg** (Skitter), every death.
+   Same stale frame for respawned creatures (69-221 stale wakes per run).
+3. **Yaw snaps**: creatures turned to a new heading in one frame at every road corner / gate: 58-671 snaps per run, up to
+   7400-11450 deg/s.
+4. **One-frame lag**: `EnemyView` ticked its clips in LateUpdate, after the animation update, so the legs moved by the last
+   frame's time step and the body by this one's (visible as judder with uneven frame times).
+5. **Gait clamp**: `CreatureClips` clamped the travel rate to 0.3-4: feet slid for hasted Skitter/Oozer/Stinger/Mireleech
+   (needed up to 5.9) and chilled Prowler/Roller/Warden/Sealed One/Shard Runner (down to 0.14). Cutscene creatures slid 15.9%.
+6. Not a problem: no throttled/stepped updates exist; the far LOD rig resumes in step (0 stale LOD wakes); slip of the
+   normal walk 0.0-0.1%.
+
+### Fixes
+
+- **`Core/ModelArt/ClipMixer`** (new, pure C#; `ModelClipPlayer` keeps its API and now only writes the mixer's weights and times
+  into the graphs, only the weights that changed). Every clip that does not loop (`AnimationClip.isLooping`) gets an **echo
+  slot** (719 clips, 442 echoes over all arts): a restart cross-fades the old run out on one slot and the new one in on the
+  other; a replacement cross-fades instead of cutting; a restart asked again during its own fade-in restarts in place.
+  Cycles cross-fade **proportionally from whatever shows** (several cycles mid-fade included, a cycle taken back resumes its
+  own clock); fades are smoothstep-eased; at 2x/3x the blends keep their real-time length (`Advance(dt, timeScale)`) while
+  clip clocks stay in game time, so hit frames, power releases and footfalls fire at the same clip seconds as before.
+- **Data**: `ModelClip._blendSeconds` (0 = default: 0.2 s cycles, 0.08 s clips on top) and
+  `ModelArtDefinition._turnSeconds` (default 0.08 s time constant, 0 snaps).
+- **`ModelClipPlayer.CopyFrom` + `EnemyDeathEffect.Request.Pose`**: the corpse starts from the body's exact pose and blends into
+  Death. **`ModelClipPlayer.Wake()`**: a pooled rig evaluates (AlwaysAnimate) for 2 frames after being switched on (corpse,
+  respawned creature), then culls again.
+- **`EnemyView`**: `[DefaultExecutionOrder(100)]` + `Update` instead of `LateUpdate` (no lag); facing eased with
+  `Core/FacingEase` (exponential, frame-rate independent, short way round; snaps while a boss mechanic is scripted).
+- **`CreatureClips`**: rate clamp 0.15-6.
+
+### Before / after (Level_C1_01 waves 2+4 at x1 and x3; Level_C1_05 waves 8/13/16 "mix"; opening cutscene played through)
+
+| run | pops (/1k rig-frames) | stale wakes | yaw snaps | max enemy yaw deg/s | death handoff gap (deg) | frame ms mean / p95 |
+| --- | --- | --- | --- | --- | --- | --- |
+| C1_01 x1 | 101 (0.3) -> 13 (0.0) | 69 -> 0 | 58 -> 0 | 7450 -> 1045 | 1149 -> 0 | 10.34 / 14.07 -> 10.43 / 14.06 |
+| C1_01 x3 | 257 (0.9) -> 250 (0.8) | 221 -> 0 | 641 -> 0 | 2669 -> 921 | (not measured) -> 1.0 | 15.40 / 27.49 -> 15.40 / 27.87 |
+| C1_05 mix | 239 (0.5) -> 123 (0.2) | 86 -> 0 | 671 -> 5 | 11450 -> 1632 | 1141 -> 6 | 13.81 / 24.72 -> 14.32 / 25.95 |
+| cutscene | 72 (0.4) -> 47 (0.3) | 0 -> 0 | 209 -> 213 | 1138 -> 652 | - | 6.46 / 10.73 -> 6.42 / 10.82 |
+
+Spawn-gate restart pops: x1 91 x 253 deg -> 6 x 58 deg; x3 108 x 228 -> 43 x 129 (spawn bursts every 3 frames at x3).
+The x3 residue is clip content, not blending: the Skitter Attack strike (76, unchanged, the snap is authored and lasts 1-2
+frames at x3) and the Death clip's sparse end keys (80 small spikes, 4x more deaths in that run). Frame time is within run
+noise (editor, uncapped ~100 fps). Cutscene slip of the directed creatures 15.9% -> 4.8% (wider gait clamp).
+
+### Tests and checks
+
+- EditMode on w6: **819 tests, 767 passed, 52 skipped, 0 failed** (was 804; +14 `ClipMixerTests`, +1 `FacingEaseTests`:
+  no weight jump on cycle change / mid-fade change / restart / replacement, clip clocks and clip-end frame unchanged at x3,
+  blend data used, held clip, CopyFrom, Restart, in-place restart; turn short way round and frame-rate independent).
+- Recompile 0 errors, 0 warnings. Every played run (C1_01 x1 and x3, C1_05, opening cutscene into the level): 0 errors,
+  0 warnings from the game (the C1_05 run's single error is the CLI's own 5 s eval timeout on the report script). Save MD5
+  2eca347e... restored after every run.
+
+### Open points (round 47)
+
+1. Cutscene: the sampled cutscene rigs switch clips by hand (`CutsceneHeroRig` hard role switches give 2 pops of ~600 deg in
+   the commander's beats; `CutsceneDrone` turns by snapping, ~80-130 yaw snaps per drone). They follow the shot time, so a
+   fix belongs in those scripts (PoseBlend-style cross-fades); not done here.
+2. LOD switch is still a hard mesh swap (no LOD cross-fade: the custom shaders lack `LOD_FADE_CROSSFADE`). Poses match.
+3. Fire Larva travel rate needs 6.9 at base speed (distance per loop 0.20 looks too short in its art data); it slides a little.
+4. The hero's upper-body layer still restarts a shot without a fade (the kick is meant to snap); props (sword, pistol) are
+   swung by code and were left out of the totals.

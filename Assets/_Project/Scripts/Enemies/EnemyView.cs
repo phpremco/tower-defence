@@ -13,8 +13,16 @@ namespace Game.Enemies
     /// dies in the style of its kind.
     /// </summary>
     [RequireComponent(typeof(Enemy))]
+    [DefaultExecutionOrder(AfterSimulation)]
     public sealed class EnemyView : MonoBehaviour
     {
+        // The view runs in Update after every gameplay script (default order 0), so the clip times it writes are evaluated by
+        // the animation update of the same frame: from LateUpdate they showed a frame late, and the legs moved by the last
+        // frame's time step while the body moved by this one's (a judder whenever frame times vary).
+        private const int AfterSimulation = 100;
+        private const float MinHeadingSqr = 0.0001f;
+        // A procedural body (no imported art) turns like the art default (ModelArtDefinition._turnSeconds).
+        private const float ProceduralTurnSeconds = 0.08f;
         private const float BarWidth = 0.85f;
         private const float BarHeight = 0.085f;
         private const float PlateWidthScale = 1.1f;
@@ -325,6 +333,8 @@ namespace Game.Enemies
         private bool _hidden;
         private readonly List<string> _hiddenParts = new List<string>(1);
         private Quaternion _tilt = Quaternion.identity;
+        private float _facingYaw;
+        private float _turnSeconds;
 
         /// <summary>Gives the view the pool its death animation plays from. Without one the enemy simply disappears.</summary>
         public void Initialize(EnemyDeathEffectPool deaths) => _deaths = deaths;
@@ -503,7 +513,7 @@ namespace Game.Enemies
             _model?.Dispose();
         }
 
-        private void LateUpdate()
+        private void Update()
         {
             if (!_built)
             {
@@ -531,10 +541,7 @@ namespace Game.Enemies
                 return;
             }
 
-            if (_enemy.Heading.sqrMagnitude > 0.0001f)
-            {
-                _body.rotation = Quaternion.LookRotation(_enemy.Heading);
-            }
+            _body.rotation = Quaternion.LookRotation(Facing(Time.deltaTime));
 
             float grow = SpawnCurve(out float emerge);
             _body.localScale = BodyScale(grow);
@@ -587,6 +594,11 @@ namespace Game.Enemies
             _tilt = Quaternion.identity;
             SetHidden(false);
             _clips?.Restart();
+            // The pooled rig still holds its last life's pose; show the fresh one on the first frame, and face the road at once.
+            _model?.Player.Wake();
+            _model?.Player.Evaluate();
+            _turnSeconds = enemy.Definition.Art != null ? enemy.Definition.Art.TurnSeconds : ProceduralTurnSeconds;
+            _facingYaw = HeadingYaw(_facingYaw);
             foreach (string part in _hiddenParts)
             {
                 _model?.SetPartVisible(part, true);
@@ -1049,7 +1061,7 @@ namespace Game.Enemies
             AttackPose(style, rear, strike, out float attackPitch, out float attackYaw, out float attackLift, out float lunge);
             attackPitch -= display * DisplayRearDegrees;
             attackLift += display * DisplayLift;
-            Vector3 forward = _enemy.Heading.sqrMagnitude > 0.0001f ? _enemy.Heading.normalized : Vector3.forward;
+            Vector3 forward = Facing(dt);
             Vector3 right = Vector3.Cross(Vector3.up, forward);
             float along = (strike * lunge - rear * AttackRearBack - knock * HitKnockBack) * _creatureScale;
             float hoverScale = _hover > 0f ? 1f : _creatureScale;
@@ -1121,7 +1133,7 @@ namespace Game.Enemies
             _shed?.Apply();
             PlayClipMoment();
 
-            Vector3 forward = _enemy.Heading.sqrMagnitude > 0.0001f ? _enemy.Heading.normalized : Vector3.forward;
+            Vector3 forward = Facing(dt);
             Vector3 right = Vector3.Cross(Vector3.up, forward);
             float swayWave = _dangle ? Mathf.Sin(_clock * FlyerSwaySpeed + _swayPhase) : 0f;
             float sway = swayWave * FlyerSwayDistance * _creatureScale;
@@ -1155,6 +1167,23 @@ namespace Game.Enemies
             {
                 _model.SetOverlay(Color.white, 0f);
             }
+        }
+
+        // The way the body faces: eased round to the heading (a road corner, a gate it turns to) instead of snapping, in game
+        // time so it keeps up with the walk at any game speed. A boss mechanic places and turns its body exactly, so while
+        // one runs (scripted) the facing follows the heading at once.
+        private Vector3 Facing(float deltaTime)
+        {
+            float target = HeadingYaw(_facingYaw);
+            _facingYaw = _scripted ? target : FacingEase.Step(_facingYaw, target, deltaTime, _turnSeconds);
+            return Quaternion.Euler(0f, _facingYaw, 0f) * Vector3.forward;
+        }
+
+        private float HeadingYaw(float fallback)
+        {
+            Vector3 heading = _enemy.Heading;
+            heading.y = 0f;
+            return heading.sqrMagnitude > MinHeadingSqr ? Mathf.Atan2(heading.x, heading.z) * Mathf.Rad2Deg : fallback;
         }
 
         // A boss's power clip starts early, so that its release frame falls on the moment the power fires.
@@ -1903,6 +1932,7 @@ namespace Game.Enemies
                     GroundY = DeathGroundY + (enemy.Definition.Art.BodyCentrePivot ? FlyerRestHeight * _creatureScale : 0f),
                     Style = enemy.Definition.DeathStyle,
                     Shed = _shed != null ? _shed.Shed : 0,
+                    Pose = _model.Player,
                 });
                 return;
             }

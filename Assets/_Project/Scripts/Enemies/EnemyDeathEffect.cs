@@ -51,6 +51,9 @@ namespace Game.Enemies
 
             /// <summary>For a modelled creature: how many of its armour parts had come off, so the corpse lies without them.</summary>
             public int Shed;
+
+            /// <summary>For a modelled creature: its clip player, whose pose the corpse falls out of (null starts from the idle).</summary>
+            public ModelClipPlayer Pose;
         }
 
         private const float CollapseSeconds = 0.26f;

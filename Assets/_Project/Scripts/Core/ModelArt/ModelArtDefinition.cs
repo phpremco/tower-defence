@@ -40,6 +40,8 @@ namespace Game.Core
         [SerializeField] private string _upperBodyBone = string.Empty;
         [Tooltip("Factor on the painted colour when the model stands on a display stage (codex, upgrade screen, menus): below 1 for a pale body that washes out white under the stage's lights, so it keeps its colour. Its glow is left as it is.")]
         [SerializeField] [Range(0.2f, 1.5f)] private float _displayExposure = 1f;
+        [Tooltip("Seconds (time constant) the body takes to come round to a new heading: a road corner, a gate it turns to. About two thirds of the turn is done after this long; zero snaps. Short, so the body still faces the way it walks.")]
+        [SerializeField] [Range(0f, 1f)] private float _turnSeconds = 0.08f;
 
         [Header("Moments")]
         [Tooltip("Seconds into the Death clip over which the glow dies away (x start, y end); zero keeps it lit.")]
@@ -75,6 +77,7 @@ namespace Game.Core
         public float LodScreenHeight => _lodScreenHeight;
         public string UpperBodyBone => _upperBodyBone;
         public float DisplayExposure => _displayExposure;
+        public float TurnSeconds => _turnSeconds;
         public Vector2 DeathFade => _deathFade;
         public bool FadesOnDeath => _deathFade.y > _deathFade.x;
         public bool Embers => _embers;
