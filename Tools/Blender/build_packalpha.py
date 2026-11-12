@@ -433,6 +433,7 @@ def main():
                           "lod1": {"fbx": LOD_NAME + ".fbx", "tris": C.tri_count(lod[1]), "bones": len(lod[0].data.bones)}})
     C.save_blend(NAME)
     if C.cli_args().get("norender"):
+        detail(norender=True)
         return
     B.boss_previews(
         "packalpha", arm, asset.low, actions, lod, out, asset, target=TARGET, distance=4.4,
@@ -444,6 +445,13 @@ def main():
                 ("mane", P(-0.12, 0.6, 0.28), 1.6, -60, 30)],
         rig_scale=2.0, minions=[(-1.5, 0.8, 0.15, 0), (-0.9, -0.7, 0.1, 5), (1.2, 0.8, 0.2, 11), (1.5, -0.5, 0.0, 3),
                                 (-1.9, -0.1, -0.1, 8), (0.3, 1.4, 0.25, 14)])
+    detail()
+
+
+def detail(norender=False):
+    """Round 45: the close-up detail (eyes, teeth, claws) as extra parts, exported again with the body."""
+    import packalpha_detail
+    packalpha_detail.run(norender)
 
 
 if __name__ == "__main__":

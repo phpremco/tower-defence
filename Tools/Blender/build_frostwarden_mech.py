@@ -32,6 +32,7 @@ import build_frostwarden as BW  # noqa: E402
 import common as C  # noqa: E402
 import creature_kit2 as K2  # noqa: E402
 import deep_kit as DK  # noqa: E402
+import frostwarden_detail as FWD  # noqa: E402
 import ice_kit as IK  # noqa: E402
 import titan_kit as T  # noqa: E402
 from boss_mech_kit import at, ease, pulse  # noqa: E402
@@ -530,6 +531,8 @@ def main():
     # the pose another clip left behind, e.g. Armour_Break's floes flown off at scale 0). Only Armour_Break moves them.
     boss.hold(list(BW.CLIPS), {n: 1.0 for n in plate_bones})
     hold_rest(boss, list(BW.CLIPS), plate_bones)
+    # Round 45: eyes, teeth and claws (frostwarden_detail.py) are rebuilt and exported with the boss.
+    FWD.attach(boss)
     boss.export()
     boss.report({"climb_height_m": CLIMB_H, "liquid": "ice (water under an ice sheet)", "submerged_depth_m": depth,
                  "ice_armour": {"object": ARMOUR, "material": f"{ARMOUR}_Mat", "maps": f"{ARMOUR}_*.png (512, Low 256)",

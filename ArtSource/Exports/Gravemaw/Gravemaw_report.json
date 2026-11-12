@@ -1162,5 +1162,118 @@
       "Gate_Straddle_Loop",
       "Gate_Dismount"
     ]
+  },
+  "round45_detail": {
+    "parts": {
+      "Eyes": {
+        "object": "Gravemaw_Eyes",
+        "material": "Gravemaw_Eyes_Mat",
+        "maps": "Gravemaw_Eyes_*.png (1024, Low 512)",
+        "tris": 1002,
+        "source_tris": 110132,
+        "uv": {
+          "islands": 41,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 501,
+          "uv_coverage": 0.54,
+          "world_per_uv": 0.7304695545220236
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 10.1,
+            "mask": "B"
+          },
+          "membrane": {
+            "map": "Detail_Membrane_Normal.png",
+            "tiling": 7.6,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "membrane"
+        ],
+        "bones": [
+          "Head"
+        ],
+        "note": "sensor crown: three amber eyes a side",
+        "lod1_object": "Gravemaw_Eyes_LOD1",
+        "lod1_tris": 300
+      },
+      "Claws": {
+        "object": "Gravemaw_Claws",
+        "material": "Gravemaw_Claws_Mat",
+        "maps": "Gravemaw_Claws_*.png (1024, Low 512)",
+        "tris": 1634,
+        "source_tris": 203608,
+        "uv": {
+          "islands": 13,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 800,
+          "uv_coverage": 0.568,
+          "world_per_uv": 0.9649451583434351
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 13.4,
+            "mask": "B"
+          },
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 11.5,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "crystal"
+        ],
+        "bones": [
+          "Arm_L_Spade",
+          "Arm_L_Upper",
+          "Arm_R_Spade",
+          "Arm_R_Upper",
+          "Leg_L1_Lower",
+          "Leg_L1_Upper",
+          "Leg_L2_Lower",
+          "Leg_L2_Upper",
+          "Leg_L3_Lower",
+          "Leg_L3_Upper",
+          "Leg_R1_Lower",
+          "Leg_R1_Upper",
+          "Leg_R2_Lower",
+          "Leg_R2_Upper",
+          "Leg_R3_Lower",
+          "Leg_R3_Upper"
+        ],
+        "note": "foot talons, knee and elbow spurs, dew claws",
+        "lod1_object": "Gravemaw_Claws_LOD1",
+        "lod1_tris": 518
+      }
+    },
+    "tris_before": {
+      "lod0": 27323,
+      "lod1": 11240
+    },
+    "tris_after": {
+      "lod0": 29959,
+      "lod1": 12058
+    },
+    "increase": {
+      "lod0": 0.096,
+      "lod1": 0.073
+    },
+    "extra_objects": [
+      "Gravemaw_Eyes",
+      "Gravemaw_Claws",
+      "Gravemaw_Eyes_LOD1",
+      "Gravemaw_Claws_LOD1"
+    ],
+    "unity": "extra parts (BlenderArtEntry.ExtraParts): 'Eyes' -> Gravemaw_Eyes / Gravemaw_Eyes_LOD1, maps Gravemaw_Eyes_*.png (+ Low/), 'Claws' -> Gravemaw_Claws / Gravemaw_Claws_LOD1, maps Gravemaw_Claws_*.png (+ Low/)",
+    "note": "round 45: detail parts (eyes, teeth, claws); bones, clips and events unchanged"
   }
 }

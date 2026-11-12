@@ -34,5 +34,58 @@
     "Walk",
     "Idle",
     "Scream"
-  ]
+  ],
+  "r45_detail": {
+    "parts": {
+      "Face": {
+        "object": "Queen_Face",
+        "material": "Queen_Face_Mat",
+        "maps": "Queen_Face_*.png (1024, Low 512)",
+        "tris": 1828,
+        "lod1_object": null,
+        "lod1_tris": 0,
+        "source_tris": 171848,
+        "uv": {
+          "islands": 82,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 22,
+          "mirrored_faces": 912,
+          "uv_coverage": 0.644,
+          "world_per_uv": 0.6635537401002213
+        },
+        "symmetry_error": 0.011283
+      },
+      "Claws": {
+        "object": "Queen_Claws",
+        "material": "Queen_Claws_Mat",
+        "maps": "Queen_Claws_*.png (1024, Low 512)",
+        "tris": 900,
+        "lod1_object": null,
+        "lod1_tris": 0,
+        "source_tris": 135364,
+        "uv": {
+          "islands": 17,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 14,
+          "mirrored_faces": 430,
+          "uv_coverage": 0.65,
+          "world_per_uv": 0.5810985413920022
+        },
+        "symmetry_error": 0.010234
+      }
+    },
+    "body_tris": 14490,
+    "extra_tris": 2728,
+    "extra_share": 0.188,
+    "lod1": "none (the Queen has no LOD1 export)",
+    "body_maps": "old bead eyes' glow removed from Queen_Albedo/Emission (3485 texels this run)",
+    "clips": [
+      "Idle",
+      "Scream",
+      "Walk"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Queen_Face / Queen_Claws, maps Queen_Face_*.png and Queen_Claws_*.png (+ Low/)",
+    "note": "round 45: brow of wet eyes, compound eyes, petal teeth, talon feet, scythe saw teeth and tips; bones, clips and events unchanged"
+  },
+  "r45_body_maps_edited": true
 }

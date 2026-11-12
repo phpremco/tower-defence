@@ -192,6 +192,7 @@ def main():
                           "lod1": {"fbx": LOD_NAME + ".fbx", "tris": C.tri_count(lod[1]), "bones": len(lod[0].data.bones)}})
     C.save_blend(NAME)
     if C.cli_args().get("norender"):
+        detail(norender=True)
         return
     B.boss_previews(
         "acidempress", arm, asset.low, actions, lod, out, asset, target=(0, 0, 0.3 * M), distance=2.6 * M,
@@ -202,6 +203,14 @@ def main():
         macros=[("plates", G(0.08, 0.27, -0.12) * M, 0.5 * M, -50, 40), ("crown", G(0.0, 0.3, 0.2) * M, 0.45 * M, -30, 25),
                 ("gland", G(0, 0.8, -0.13) * M, 0.45 * M, -60, 20)],
         rig_scale=2.2, minions=[(-1.5, 0.9, 0.2, 3), (-1.0, -0.7, -0.1, 10), (1.4, 0.8, 0.3, 17), (1.6, -0.5, 0.0, 21)])
+
+    detail()
+
+
+def detail(norender=False):
+    """Round 45: the close-up detail (eyes, teeth, claws) as extra parts, exported again with the body."""
+    import acidempress_detail
+    acidempress_detail.run(norender)
 
 
 if __name__ == "__main__":

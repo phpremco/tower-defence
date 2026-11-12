@@ -142,3 +142,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # Round 45: eyes, teeth and claws (crystalwarlord_detail.py) on the saved .blend, exported again with the body.
+    import crystalwarlord_detail as CWD
+    CWD.main()

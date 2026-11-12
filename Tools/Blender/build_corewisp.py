@@ -446,3 +446,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # Round 45: the core eye, slit barbs and tendril grapples (corewisp_detail.py) on the saved .blend, exported
+    # again with the body.
+    import corewisp_detail as CWD
+    CWD.main()

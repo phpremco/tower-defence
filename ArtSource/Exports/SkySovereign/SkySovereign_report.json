@@ -49,5 +49,60 @@
     "fbx": "SkySovereign_LOD1.fbx",
     "tris": 6000,
     "bones": 13
+  },
+  "r45_detail": {
+    "parts": {
+      "Face": {
+        "object": "SkySovereign_Face",
+        "material": "SkySovereign_Face_Mat",
+        "maps": "SkySovereign_Face_*.png (1024, Low 512)",
+        "tris": 1497,
+        "lod1_object": "SkySovereign_Face_LOD1",
+        "lod1_tris": 518,
+        "source_tris": 36280,
+        "uv": {
+          "islands": 49,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 45,
+          "mirrored_faces": 741,
+          "uv_coverage": 0.695,
+          "world_per_uv": 0.16479109705573702
+        },
+        "symmetry_error": 0.004094
+      },
+      "Claws": {
+        "object": "SkySovereign_Claws",
+        "material": "SkySovereign_Claws_Mat",
+        "maps": "SkySovereign_Claws_*.png (1024, Low 512)",
+        "tris": 692,
+        "lod1_object": "SkySovereign_Claws_LOD1",
+        "lod1_tris": 356,
+        "source_tris": 39488,
+        "uv": {
+          "islands": 17,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 4,
+          "mirrored_faces": 257,
+          "uv_coverage": 0.688,
+          "world_per_uv": 0.17708601285991238
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 12607,
+    "extra_tris": 2189,
+    "extra_share": 0.174,
+    "body_lod1_tris": 6000,
+    "extra_lod1_tris": 874,
+    "extra_lod1_share": 0.146,
+    "clips": [
+      "Death",
+      "Fly",
+      "Glide",
+      "Hit",
+      "Laser"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects SkySovereign_<Part> (+ _LOD1 in SkySovereign_LOD1.fbx), maps SkySovereign_<Part>_*.png (+ Low/)",
+    "note": "round 45: wet eyes on the bead rows, fangs and jaw teeth, thumb and wing claws; bones, clips and events unchanged"
   }
 }

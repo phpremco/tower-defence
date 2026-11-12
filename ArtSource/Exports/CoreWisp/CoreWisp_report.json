@@ -55,5 +55,147 @@
     "fbx": "CoreWisp_LOD1.fbx",
     "tris": 3999,
     "bones": 11
+  },
+  "round45_detail": {
+    "parts": {
+      "Eyes": {
+        "object": "CoreWisp_Eyes",
+        "material": "CoreWisp_Eyes_Mat",
+        "maps": "CoreWisp_Eyes_*.png (1024, Low 512)",
+        "tris": 700,
+        "source_tris": 90044,
+        "uv": {
+          "islands": 2,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 347,
+          "uv_coverage": 0.583,
+          "world_per_uv": 0.40576202198346517
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 5.6,
+            "mask": "B"
+          },
+          "membrane": {
+            "map": "Detail_Membrane_Normal.png",
+            "tiling": 4.2,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "membrane"
+        ],
+        "bones": [
+          "Heart"
+        ],
+        "note": "one great core eye in the slit + two sentinel eyes",
+        "lod1_object": "CoreWisp_Eyes_LOD1",
+        "lod1_tris": 218
+      },
+      "Barbs": {
+        "object": "CoreWisp_Barbs",
+        "material": "CoreWisp_Barbs_Mat",
+        "maps": "CoreWisp_Barbs_*.png (1024, Low 512)",
+        "tris": 300,
+        "source_tris": 39384,
+        "uv": {
+          "islands": 4,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 150,
+          "uv_coverage": 0.516,
+          "world_per_uv": 0.22581484369128835
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 3.1,
+            "mask": "B"
+          },
+          "membrane": {
+            "map": "Detail_Membrane_Normal.png",
+            "tiling": 2.4,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "membrane"
+        ],
+        "bones": [
+          "Petal_1",
+          "Petal_6"
+        ],
+        "note": "hooked barbs round the slit (no mouth)",
+        "lod1_object": "CoreWisp_Barbs_LOD1",
+        "lod1_tris": 100
+      },
+      "Claws": {
+        "object": "CoreWisp_Claws",
+        "material": "CoreWisp_Claws_Mat",
+        "maps": "CoreWisp_Claws_*.png (1024, Low 512)",
+        "tris": 702,
+        "source_tris": 48432,
+        "uv": {
+          "islands": 19,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 351,
+          "uv_coverage": 0.642,
+          "world_per_uv": 0.276483709932561
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 3.8,
+            "mask": "B"
+          },
+          "membrane": {
+            "map": "Detail_Membrane_Normal.png",
+            "tiling": 2.9,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "membrane"
+        ],
+        "bones": [
+          "Tendril_1_2",
+          "Tendril_2_2",
+          "Tendril_3_2",
+          "Tendril_4_2",
+          "Tendril_5_2"
+        ],
+        "note": "three-hooked grapples on the five tendril tips",
+        "lod1_object": "CoreWisp_Claws_LOD1",
+        "lod1_tris": 240
+      }
+    },
+    "tris_before": {
+      "lod0": 8992,
+      "lod1": 3999
+    },
+    "tris_after": {
+      "lod0": 10694,
+      "lod1": 4557
+    },
+    "increase": {
+      "lod0": 0.189,
+      "lod1": 0.14
+    },
+    "extra_objects": [
+      "CoreWisp_Eyes",
+      "CoreWisp_Barbs",
+      "CoreWisp_Claws",
+      "CoreWisp_Eyes_LOD1",
+      "CoreWisp_Barbs_LOD1",
+      "CoreWisp_Claws_LOD1"
+    ],
+    "unity": "extra parts (BlenderArtEntry.ExtraParts): 'Eyes' -> CoreWisp_Eyes / CoreWisp_Eyes_LOD1, maps CoreWisp_Eyes_*.png (+ Low/), 'Barbs' -> CoreWisp_Barbs / CoreWisp_Barbs_LOD1, maps CoreWisp_Barbs_*.png (+ Low/), 'Claws' -> CoreWisp_Claws / CoreWisp_Claws_LOD1, maps CoreWisp_Claws_*.png (+ Low/)",
+    "note": "round 45: detail parts (eyes, teeth, claws); bones, clips and events unchanged"
   }
 }

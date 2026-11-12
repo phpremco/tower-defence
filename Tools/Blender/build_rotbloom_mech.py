@@ -26,6 +26,7 @@ from mathutils import Matrix, Vector  # noqa: E402
 
 import boss_mech_kit as M  # noqa: E402
 import build_rotbloom as BR  # noqa: E402
+import rotbloom_detail as RBD  # noqa: E402
 import chitin as H  # noqa: E402
 import common as C  # noqa: E402
 import creature_kit2 as K2  # noqa: E402
@@ -577,6 +578,8 @@ def main():
     boss.add_foot_markers(ad.limbs())
     boss.add_bones([("Socket_Spore", BR.BLOOM_C + G(0, 0.35, 0), BR.BLOOM_C + G(0, 0.8, 0), "Bloom")])
     ad, depth = key_all(boss)
+    # Round 45: eyes, teeth and claws (rotbloom_detail.py) are rebuilt and exported with the boss.
+    RBD.attach(boss)
     boss.export()
     boss.report({"climb_height_m": CLIMB_H, "liquid": "bog", "submerged_depth_m": depth,
                  "foot_markers": "IK_<limb> bones at the rest foot contacts (deform flag on, no weights)",

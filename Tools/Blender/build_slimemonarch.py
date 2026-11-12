@@ -165,6 +165,7 @@ def main():
                           "lod1": {"fbx": LOD_NAME + ".fbx", "tris": C.tri_count(lod[1]), "bones": len(lod[0].data.bones)}})
     C.save_blend(NAME)
     if C.cli_args().get("norender"):
+        detail(norender=True)
         return
     B.boss_previews(
         "slimemonarch", arm, asset.low, actions, lod, out, asset, target=(0, 0, 0.15 * M), distance=2.3 * M,
@@ -176,6 +177,13 @@ def main():
                 ("sac", gp(SAC, 1) * M, 0.4 * M, -70, 30)],
         rig_scale=2.0, minions=[(-1.5, 0.9, 0.2, 3), (-1.0, -0.7, -0.1, 10), (1.4, 0.8, 0.3, 17), (1.6, -0.5, 0.0, 21)],
         extra_shots=[("spawn", "close", "Spawn", SPAWN_RELEASE_FRAME - 4)])
+    detail()
+
+
+def detail(norender=False):
+    """Round 45: the close-up detail (eyes, teeth, claws) as extra parts, exported again with the body."""
+    import slimemonarch_detail
+    slimemonarch_detail.run(norender)
 
 
 if __name__ == "__main__":

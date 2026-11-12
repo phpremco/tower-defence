@@ -480,6 +480,7 @@ def main():
                           "lod1": {"fbx": LOD_NAME + ".fbx", "tris": C.tri_count(lod[1]), "bones": len(lod[0].data.bones)}})
     C.save_blend(NAME)
     if C.cli_args().get("norender"):
+        detail(norender=True)
         return
     B.boss_previews(
         "stormmatriarch", arm, asset.low, actions, lod, out, asset, idle="Idle",
@@ -490,6 +491,13 @@ def main():
                 ("hatch", P(0.06, 0.1, -0.03), 1.9, -150, 45)],
         minions=[(-2.0, 1.0, 0.25, 0), (2.0, 0.7, -0.2, 20), (-1.4, -0.8, 0.1, 31)],
         compare_span=2.6, compare_zoom=1.7, compare_distance=2.0, extra_shots=[("release_top", "top_front", "Release", RELEASE_FRAME), ("under", "front", "Fly", 30)], **common)
+    detail()
+
+
+def detail(norender=False):
+    """Round 45: the close-up detail (eyes, teeth, claws) as extra parts, exported again with the body."""
+    import stormmatriarch_detail
+    stormmatriarch_detail.run(norender)
 
 
 if __name__ == "__main__":

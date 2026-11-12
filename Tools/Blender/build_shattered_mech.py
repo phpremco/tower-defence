@@ -33,6 +33,7 @@ from mathutils import Matrix, Vector  # noqa: E402
 import boss_mech_kit as M  # noqa: E402
 import build_shattered as BS  # noqa: E402
 import build_shattered2 as B2  # noqa: E402
+import shattered_detail as SHD  # noqa: E402
 import chitin as H  # noqa: E402
 import common as C  # noqa: E402
 import creature_kit2 as K2  # noqa: E402
@@ -771,6 +772,8 @@ def main():
     ad = adapter()
     boss.add_foot_markers(ad.limbs())
     ad, depth = key_all(boss)
+    # Round 45: eyes, teeth and claws (shattered_detail.py) are rebuilt and exported with the boss.
+    SHD.attach(boss)
     boss.export()
     boss.report({"climb_height_m": CLIMB_H, "liquid": "water (any pool)", "submerged_depth_m": depth,
                  "foot_markers": "IK_<limb> bones at the rest foot contacts (deform flag on, no weights)",

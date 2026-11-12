@@ -277,5 +277,146 @@
       "note": "swap SealedOne_Emission and SealedOne_Seal_Emission per phase (Adapt marks the change); the decor crystals take the immune tower's colour (BOSSES.md)"
     },
     "mechanic": "Recognition: Adapt at each phase change, 4 phase looks, Release at the end; Rise_OntoBase as its last threat; Walk/Climb/Dive to follow the risen road"
+  },
+  "round45_detail": {
+    "parts": {
+      "Eyes": {
+        "object": "SealedOne_Eyes",
+        "material": "SealedOne_Eyes_Mat",
+        "maps": "SealedOne_Eyes_*.png (1024, Low 512)",
+        "tris": 1220,
+        "source_tris": 89804,
+        "uv": {
+          "islands": 2,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 610,
+          "uv_coverage": 0.612,
+          "world_per_uv": 0.694214428597892
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 9.6,
+            "mask": "B"
+          },
+          "membrane": {
+            "map": "Detail_Membrane_Normal.png",
+            "tiling": 7.2,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "membrane"
+        ],
+        "bones": [
+          "Head"
+        ],
+        "note": "a tall eye in the light seam + a small one above",
+        "lod1_object": "SealedOne_Eyes_LOD1",
+        "lod1_tris": 338
+      },
+      "Teeth": {
+        "object": "SealedOne_Teeth",
+        "material": "SealedOne_Teeth_Mat",
+        "maps": "SealedOne_Teeth_*.png (1024, Low 512)",
+        "tris": 1115,
+        "source_tris": 134956,
+        "uv": {
+          "islands": 42,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 60,
+          "mirrored_faces": 557,
+          "uv_coverage": 0.687,
+          "world_per_uv": 0.7199267161512397
+        },
+        "detail": {
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 8.6,
+            "mask": "B"
+          },
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 10.0,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "crystal",
+          "chitin"
+        ],
+        "bones": [
+          "Plate_L",
+          "Plate_R"
+        ],
+        "note": "ivory seam fangs on the face plates",
+        "lod1_object": "SealedOne_Teeth_LOD1",
+        "lod1_tris": 337
+      },
+      "Claws": {
+        "object": "SealedOne_Claws",
+        "material": "SealedOne_Claws_Mat",
+        "maps": "SealedOne_Claws_*.png (1024, Low 512)",
+        "tris": 1724,
+        "source_tris": 114432,
+        "uv": {
+          "islands": 25,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 15,
+          "mirrored_faces": 670,
+          "uv_coverage": 0.564,
+          "world_per_uv": 1.1610747361761138
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 16.1,
+            "mask": "B"
+          },
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 13.8,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "crystal"
+        ],
+        "bones": [
+          "LArm_L_Hand",
+          "LArm_L_Upper",
+          "LArm_R_Hand",
+          "LArm_R_Upper"
+        ],
+        "note": "fingertip talons + elbow spurs",
+        "lod1_object": "SealedOne_Claws_LOD1",
+        "lod1_tris": 560
+      }
+    },
+    "tris_before": {
+      "lod0": 34478,
+      "lod1": 13998
+    },
+    "tris_after": {
+      "lod0": 38537,
+      "lod1": 15233
+    },
+    "increase": {
+      "lod0": 0.118,
+      "lod1": 0.088
+    },
+    "extra_objects": [
+      "SealedOne_Eyes",
+      "SealedOne_Teeth",
+      "SealedOne_Claws",
+      "SealedOne_Eyes_LOD1",
+      "SealedOne_Teeth_LOD1",
+      "SealedOne_Claws_LOD1"
+    ],
+    "unity": "extra parts (BlenderArtEntry.ExtraParts): 'Eyes' -> SealedOne_Eyes / SealedOne_Eyes_LOD1, maps SealedOne_Eyes_*.png (+ Low/), 'Teeth' -> SealedOne_Teeth / SealedOne_Teeth_LOD1, maps SealedOne_Teeth_*.png (+ Low/), 'Claws' -> SealedOne_Claws / SealedOne_Claws_LOD1, maps SealedOne_Claws_*.png (+ Low/)",
+    "note": "round 45: detail parts (eyes, teeth, claws); bones, clips and events unchanged"
   }
 }

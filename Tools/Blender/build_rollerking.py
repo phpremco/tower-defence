@@ -131,6 +131,7 @@ def main():
                           "lod1": {"fbx": LOD_NAME + ".fbx", "tris": C.tri_count(lod[1]), "bones": len(lod[0].data.bones)}})
     C.save_blend(NAME)
     if C.cli_args().get("norender"):
+        detail(norender=True)
         return
     B.boss_previews(
         "rollerking", arm, asset.low, actions, lod, out, asset, target=(0, -0.05 * M, 0.25 * M), distance=2.5 * M,
@@ -142,6 +143,13 @@ def main():
                 ("head", G(0.0, 0.14, 0.62) * M, 0.4 * M, -30, 15)],
         rig_scale=2.0, minions=[(-1.5, 0.9, 0.2, 3), (-1.0, -0.7, -0.1, 10), (1.4, 0.8, 0.3, 14), (1.6, -0.5, 0.0, 18)],
         extra_shots=[("rolled", "close", "Roll", 6)])
+    detail()
+
+
+def detail(norender=False):
+    """Round 45: the close-up detail (eyes, teeth, claws) as extra parts, exported again with the body."""
+    import rollerking_detail
+    rollerking_detail.run(norender)
 
 
 if __name__ == "__main__":

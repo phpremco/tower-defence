@@ -36,6 +36,7 @@ import deep_kit as DK  # noqa: E402
 import gate_kit as GK  # noqa: E402
 import gravemaw_gate as GG  # noqa: E402
 import gravemaw_maw as GMW  # noqa: E402
+import gravemaw_detail as GMD  # noqa: E402
 from boss_mech_kit import ease, pulse  # noqa: E402
 from common import G  # noqa: E402
 
@@ -545,6 +546,8 @@ def main():
     sub_depth, bur_depth = key_all(boss)
     # Round 38: the toothed maw (gravemaw_maw.py) is rebuilt and exported with the boss; the body loses its old plug.
     maw = GMW.attach(boss)
+    # Round 45: eyes and talons (gravemaw_detail.py), exported with the boss as well.
+    GMD.attach(boss)
     boss.export()
     gate = dict(GK.gate_facts(), clips=[c[0] for c in GATE_CLIPS], usage=GK.USAGE)
     boss.report({"climb_height_m": CLIMB_H, "liquid": "quicksand (its burrow shortcut) or any pool",

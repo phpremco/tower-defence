@@ -51,5 +51,60 @@
     "fbx": "BroodMother_LOD1.fbx",
     "tris": 6000,
     "bones": 21
+  },
+  "r45_detail": {
+    "parts": {
+      "Face": {
+        "object": "BroodMother_Face",
+        "material": "BroodMother_Face_Mat",
+        "maps": "BroodMother_Face_*.png (1024, Low 512)",
+        "tris": 1852,
+        "lod1_object": "BroodMother_Face_LOD1",
+        "lod1_tris": 559,
+        "source_tris": 118840,
+        "uv": {
+          "islands": 64,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 45,
+          "mirrored_faces": 925,
+          "uv_coverage": 0.655,
+          "world_per_uv": 0.40602962802841575
+        },
+        "symmetry_error": 0.008725
+      },
+      "Claws": {
+        "object": "BroodMother_Claws",
+        "material": "BroodMother_Claws_Mat",
+        "maps": "BroodMother_Claws_*.png (1024, Low 512)",
+        "tris": 948,
+        "lod1_object": "BroodMother_Claws_LOD1",
+        "lod1_tris": 320,
+        "source_tris": 54532,
+        "uv": {
+          "islands": 14,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 453,
+          "uv_coverage": 0.593,
+          "world_per_uv": 0.2860212292537881
+        },
+        "symmetry_error": 0.002254
+      }
+    },
+    "body_tris": 14506,
+    "extra_tris": 2800,
+    "extra_share": 0.193,
+    "body_lod1_tris": 6000,
+    "extra_lod1_tris": 879,
+    "extra_lod1_share": 0.146,
+    "clips": [
+      "Death",
+      "Hit",
+      "Idle",
+      "Spawn",
+      "Walk"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects BroodMother_<Part> (+ _LOD1 in BroodMother_LOD1.fbx), maps BroodMother_<Part>_*.png (+ Low/)",
+    "note": "round 45: eye clusters, jaw teeth, throat ring, palps, talon feet, sickle saw teeth and tips; bones, clips and events unchanged"
   }
 }

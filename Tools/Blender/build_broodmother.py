@@ -451,6 +451,7 @@ def main():
                           "lod1": {"fbx": LOD_NAME + ".fbx", "tris": C.tri_count(lod[1]), "bones": len(lod[0].data.bones)}})
     C.save_blend(NAME)
     if C.cli_args().get("norender"):
+        detail(norender=True)
         return
     walk = (WALK_FRAMES * 4) // 48
     B.boss_previews(
@@ -463,6 +464,13 @@ def main():
                 ("vent", P(0, 0.2, -0.95), 1.3, -150, 20)],
         rig_scale=2.2, minions=[(-1.4, 0.9, 0.2, 3), (-0.9, -0.6, -0.1, 10), (1.3, 0.7, 0.3, 17), (1.6, -0.4, 0.0, 21),
                                 (-1.8, 0.0, 0.1, 14), (0.4, 1.3, -0.2, 7)])
+    detail()
+
+
+def detail(norender=False):
+    """Round 45: the close-up detail (eyes, teeth, claws) as extra parts, exported again with the body."""
+    import broodmother_detail
+    broodmother_detail.run(norender)
 
 
 if __name__ == "__main__":

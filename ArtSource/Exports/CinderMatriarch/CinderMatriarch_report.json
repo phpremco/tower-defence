@@ -854,5 +854,151 @@
         }
       }
     }
+  },
+  "round45_detail": {
+    "parts": {
+      "Eyes": {
+        "object": "CinderMatriarch_Eyes",
+        "material": "CinderMatriarch_Eyes_Mat",
+        "maps": "CinderMatriarch_Eyes_*.png (1024, Low 512)",
+        "tris": 1300,
+        "source_tris": 145856,
+        "uv": {
+          "islands": 21,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 650,
+          "uv_coverage": 0.553,
+          "world_per_uv": 0.7273759269474557
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 10.1,
+            "mask": "B"
+          },
+          "membrane": {
+            "map": "Detail_Membrane_Normal.png",
+            "tiling": 7.6,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "membrane"
+        ],
+        "bones": [
+          "Head"
+        ],
+        "note": "three wet ember eyes per side",
+        "lod1_object": "CinderMatriarch_Eyes_LOD1",
+        "lod1_tris": 360
+      },
+      "Teeth": {
+        "object": "CinderMatriarch_Teeth",
+        "material": "CinderMatriarch_Teeth_Mat",
+        "maps": "CinderMatriarch_Teeth_*.png (1024, Low 512)",
+        "tris": 1486,
+        "source_tris": 121584,
+        "uv": {
+          "islands": 22,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 743,
+          "uv_coverage": 0.596,
+          "world_per_uv": 0.5397830686114489
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 7.5,
+            "mask": "B"
+          },
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 6.4,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "crystal"
+        ],
+        "bones": [
+          "Head",
+          "Mand_LL",
+          "Mand_LR",
+          "Mand_UL",
+          "Mand_UR"
+        ],
+        "note": "mandible serrations + mouth ring",
+        "lod1_object": "CinderMatriarch_Teeth_LOD1",
+        "lod1_tris": 458
+      },
+      "Claws": {
+        "object": "CinderMatriarch_Claws",
+        "material": "CinderMatriarch_Claws_Mat",
+        "maps": "CinderMatriarch_Claws_*.png (1024, Low 512)",
+        "tris": 1519,
+        "source_tris": 198696,
+        "uv": {
+          "islands": 15,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 723,
+          "uv_coverage": 0.645,
+          "world_per_uv": 1.013024471105106
+        },
+        "detail": {
+          "chitin": {
+            "map": "Detail_Chitin_Normal.png",
+            "tiling": 14.1,
+            "mask": "B"
+          },
+          "crystal": {
+            "map": "Detail_Crystal_Normal.png",
+            "tiling": 12.1,
+            "mask": "A"
+          }
+        },
+        "families": [
+          "chitin",
+          "crystal"
+        ],
+        "bones": [
+          "Leg_L1_Lower",
+          "Leg_L2_Lower",
+          "Leg_R1_Lower",
+          "Leg_R2_Lower",
+          "Scythe_L_Blade",
+          "Scythe_R_Blade"
+        ],
+        "note": "foot talons + scythe hooks",
+        "lod1_object": "CinderMatriarch_Claws_LOD1",
+        "lod1_tris": 497
+      }
+    },
+    "tris_before": {
+      "lod0": 23051,
+      "lod1": 8997
+    },
+    "tris_after": {
+      "lod0": 27356,
+      "lod1": 10312
+    },
+    "increase": {
+      "lod0": 0.187,
+      "lod1": 0.146
+    },
+    "extra_objects": [
+      "CinderMatriarch_Eyes",
+      "CinderMatriarch_Teeth",
+      "CinderMatriarch_Claws",
+      "CinderMatriarch_Eyes_LOD1",
+      "CinderMatriarch_Teeth_LOD1",
+      "CinderMatriarch_Claws_LOD1"
+    ],
+    "unity": "extra parts (BlenderArtEntry.ExtraParts): 'Eyes' -> CinderMatriarch_Eyes / CinderMatriarch_Eyes_LOD1, maps CinderMatriarch_Eyes_*.png (+ Low/), 'Teeth' -> CinderMatriarch_Teeth / CinderMatriarch_Teeth_LOD1, maps CinderMatriarch_Teeth_*.png (+ Low/), 'Claws' -> CinderMatriarch_Claws / CinderMatriarch_Claws_LOD1, maps CinderMatriarch_Claws_*.png (+ Low/)",
+    "note": "round 45: detail parts (eyes, teeth, claws); bones, clips and events unchanged"
   }
 }

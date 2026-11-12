@@ -27,6 +27,7 @@ from mathutils import Matrix, Vector  # noqa: E402
 
 import boss_mech_kit as M  # noqa: E402
 import cinder_gate as CG  # noqa: E402
+import cindermatriarch_detail as CMD  # noqa: E402
 import gate_kit as GK  # noqa: E402
 import build_cindermatriarch as BC  # noqa: E402
 import chitin as H  # noqa: E402
@@ -387,6 +388,8 @@ def main():
     boss = M.Boss(NAME, list(BC.CLIPS), scale_bones=BC.VENT_NAMES)
     boss.add_foot_markers(adapter().limbs())
     ad, depth = key_all(boss)
+    # Round 45: eyes, teeth and claws (cindermatriarch_detail.py) are rebuilt and exported with the boss.
+    CMD.attach(boss)
     boss.export()
     boss.report({"climb_height_m": CLIMB_H, "liquid": "lava", "submerged_depth_m": depth,
                  "foot_markers": "IK_<limb> bones at the rest foot contacts (deform flag on, no weights)",

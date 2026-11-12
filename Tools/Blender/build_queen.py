@@ -363,6 +363,9 @@ def main():
     C.save_blend(NAME)
     if not C.cli_args().get("norender"):
         previews(arm, asset.low, actions, out, asset)
+    # Round 45: the close-up detail (eyes, teeth, claws) as extra parts, exported again with the body.
+    import queen_detail
+    queen_detail.run(norender=bool(C.cli_args().get("norender")))
 
 
 main()

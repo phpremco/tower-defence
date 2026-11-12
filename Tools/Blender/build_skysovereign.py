@@ -211,6 +211,7 @@ def main():
                           "lod1": {"fbx": LOD_NAME + ".fbx", "tris": C.tri_count(lod[1]), "bones": len(lod[0].data.bones)}})
     C.save_blend(NAME)
     if C.cli_args().get("norender"):
+        detail(norender=True)
         return
     h = BT.AIR_HEIGHT
     B.boss_previews(
@@ -224,6 +225,13 @@ def main():
         rig_scale=1.8, lift=0.9 * M, game_lift=h, game_target=(0, 0.3, 0.9),
         minions=[(-1.6, 1.0, 0.2, 2), (-1.1, -0.8, -0.1, 7), (1.5, 0.9, 0.3, 10), (1.8, -0.5, 0.0, 5)],
         compare_span=1.6)
+    detail()
+
+
+def detail(norender=False):
+    """Round 45: the close-up detail (eyes, teeth, claws) as extra parts, exported again with the body."""
+    import skysovereign_detail
+    skysovereign_detail.run(norender)
 
 
 if __name__ == "__main__":

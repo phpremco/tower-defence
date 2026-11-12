@@ -31,6 +31,7 @@ from mathutils import Vector  # noqa: E402
 
 import boss_mech_kit as M  # noqa: E402
 import build_sealedone as BS  # noqa: E402
+import sealedone_detail as SOD  # noqa: E402
 import common as C  # noqa: E402
 import creature_kit2 as K2  # noqa: E402
 from boss_mech_kit import at, ease, pulse  # noqa: E402
@@ -537,6 +538,8 @@ def main():
     maps = {} if args.get("skip-maps") else phase_maps()
     depth = key_all(boss)
     hold_seal(boss)
+    # Round 45: the seam eye, seam fangs and talons (sealedone_detail.py) are rebuilt and exported with the boss.
+    SOD.attach(boss)
     boss.export()
     boss.report({"climb_height_m": CLIMB_H, "liquid": "void pool (any liquid)", "submerged_depth_m": depth,
                  "hand_markers": "IK_LArm_L / IK_LArm_R at the lower hands' rest contacts",
