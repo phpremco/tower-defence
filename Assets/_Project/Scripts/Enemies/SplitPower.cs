@@ -27,6 +27,10 @@ namespace Game.Enemies
         [Tooltip("Seconds the split lasts in one fight, for the balance ledger.")]
         [SerializeField] [Min(0f)] private float _expectedSplitSeconds = 18f;
 
+        [Header("Entrance through the ruin gate (round 55)")]
+        [Tooltip("Metres the gate stands behind the spot the giant appears on, along the way it walks out: enough that its whole body stands clear of the gate's iris while the petals fold, so it never cuts the stone.")]
+        [SerializeField] [Min(0f)] private float _gateSetBack = 3f;
+
         [Header("Look per phase (README round 28)")]
         [Tooltip("Shell bones, off once it has rejoined.")]
         [SerializeField] private string[] _shellBones = { "Shell_1", "Shell_2", "Shell_3", "Shell_4", "Shell_5", "Shell_6", "Shell_7", "Shell_8" };
@@ -44,6 +48,7 @@ namespace Game.Enemies
         public float WarnShare => _warnShare;
         public float FlyBackSeconds => _flyBackSeconds;
         public float ExpectedSplitSeconds => _expectedSplitSeconds;
+        public float GateSetBack => _gateSetBack;
         public string[] ShellBones => _shellBones ?? new string[0];
         public string[] CrystalBones => _crystalBones ?? new string[0];
         public float RejoinedCrystalScale => _rejoinedCrystalScale;

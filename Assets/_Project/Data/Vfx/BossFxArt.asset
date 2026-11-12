@@ -77,7 +77,7 @@ MonoBehaviour:
     _lowMaterial: {fileID: 2100000, guid: 93144fc9972c0c548aeb85aeb72f54a7, type: 2}
     _framesPerSecond: 12
   _ruinGate: {fileID: 11400000, guid: 9983eff0ded1b534383dd5272778ca06, type: 2}
-  _ruinGateScale: 0.65
+  _ruinGateScale: 0.9
   _sealCrystals: {fileID: 11400000, guid: 5d6202ec817f3c74583e450551a96e95, type: 2}
   _sealCrystalParts:
   - SealCrystal_A

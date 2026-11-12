@@ -27,8 +27,10 @@ namespace Game.Bosses
         private const float SplitBurstRadius = 2.2f;
         private const float ChestHeight = 2f;
         private const float GateRumbleSeconds = 0.8f;
-        // The gate stands this far behind the spot the giant appears on, so the giant steps out of its threshold.
-        private const float GateBehind = 0.6f;
+        // A route point closer than this to where it appears is where it stands, not a way out.
+        private const float MinExitLeg = 0.1f;
+        // Its splayed legs reach a little past its body's half width (BossDefinition.BodyHalfWidth).
+        private const float BodyClearMargin = 0.4f;
         // The split flash across (README round 29: about 6 m at chest height).
         private const float FlashSize = 6f;
         private static readonly Color Crystal = new Color(0.72f, 0.88f, 1f);
@@ -99,13 +101,13 @@ namespace Game.Bosses
             View.SetHidden(true);
             Vector3 spot = _brain.OnGround(Position);
             Vector3 towardRoad = BossGeometry.Flat(OffRoadRoute.NearestRoadCellWorld(Field.Level, spot) - spot);
-            // The gate faces the fixed camera, so its opening and the light inside it are seen (side on it reads as a wall).
-            Camera view = Camera.main;
-            Vector3 facing = view != null ? BossGeometry.Flat(-view.transform.forward) : towardRoad;
-            RuinGateView gate = RuinGateView.Create(Field.Effects, spot - facing * GateBehind, facing, Crystal);
+            // Round 55: the gate faces the way the giant walks out (its route's first leg), so it leaves straight through the
+            // opening, never out of the gate's side; it stands far enough behind that the whole body is clear of the iris.
+            Vector3 exit = ExitDirection(spot, towardRoad);
+            RuinGateView gate = RuinGateView.Create(Field.Effects, spot - exit * Power.GateSetBack, exit, Crystal);
             if (gate != null)
             {
-                yield return ThroughTheGate(gate, spot, towardRoad);
+                yield return ThroughTheGate(gate, spot, exit);
                 yield break;
             }
 
@@ -143,13 +145,35 @@ namespace Game.Bosses
             yield return _brain.BackToRoad();
         }
 
+        // The first leg of the walk it will take to the road (the planner BackToRoad uses), or straight at the road without one.
+        private Vector3 ExitDirection(Vector3 spot, Vector3 towardRoad)
+        {
+            var route = new List<Vector3>();
+            if (BossRoutes.WalkToRoad(Field, spot, Boss.Climb.ClimbsRocks, route))
+            {
+                foreach (Vector3 point in route)
+                {
+                    Vector3 leg = BossGeometry.Flat3(point - spot);
+                    if (leg.sqrMagnitude > MinExitLeg * MinExitLeg)
+                    {
+                        return leg.normalized;
+                    }
+                }
+            }
+
+            return towardRoad;
+        }
+
         // README round 29: the sealed gate rumbles shut, its seal cracks (shards), light floods the seams and the giant
         // stands in the flash as the petals fold back; it walks out once the gate stands open.
-        private IEnumerator ThroughTheGate(RuinGateView gate, Vector3 spot, Vector3 towardRoad)
+        private IEnumerator ThroughTheGate(RuinGateView gate, Vector3 spot, Vector3 exit)
         {
             Field.BreakDecor(spot, EntranceBurstRadius);
             // The plinth is wider than the burst: boulders and the burst's own rubble would stand through it and its threshold.
             Field.Decor?.ClearFootprint(gate.transform.position, gate.transform.forward, gate.FootprintHalfSize);
+            // Round 55: so is the ground the giant appears on in front of it (the burst's rubble would stand through its legs):
+            // its body's width, and the set-back each way, which its tail and its head both stay within.
+            Field.Decor?.ClearFootprint(spot, exit, new Vector2(Boss.BodyHalfWidth + BodyClearMargin, Power.GateSetBack));
             float stirred = 0f;
             while (stirred < GateRumbleSeconds && _brain.Alive)
             {
@@ -166,7 +190,7 @@ namespace Game.Bosses
             _flash?.Play(spot + Vector3.up * (ChestHeight * _brain.Scale), FlashSize * _brain.Scale, 0f, Color.white);
             _brain.Impact(spot, EntranceBurstRadius, Crystal);
             Field.Context.BossImpact.Raise(Boss.ImpactKick);
-            Enemy.Place(spot, towardRoad);
+            Enemy.Place(spot, exit);
             View.SetHidden(false);
             Enemy.SetConcealed(false);
             yield return _brain.Roar();

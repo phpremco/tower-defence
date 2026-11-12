@@ -35,8 +35,9 @@ namespace Game.Editor
         // README round 30: the slabs' baked glow at about x3 while the crack is hot; the view cools it with the strip.
         private const float CrackSlabEmission = 3f;
         private const float RuinGateEmission = 1f;
-        // README round 29: the gate is 8.7 m wide; on a small map about 0.65 so it does not hide the road beside it.
-        private const float RuinGateScale = 0.65f;
+        // README round 29: the gate is 8.7 m wide. Round 55: 0.9, so its opening (4.0 x 4.83 m at 1) clears the Shattered's
+        // body (about 2.8 m wide, 2.75 m tall walking, 3.6 m at its roar) with margin; the hidden-cell probe found no road under it.
+        private const float RuinGateScale = 0.9f;
         private const float IceSmoothness = 0.92f;
         private const float IceRimAlpha = 0.7f;
         private const float SoftDistance = 0.4f;

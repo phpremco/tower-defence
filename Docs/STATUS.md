@@ -8624,3 +8624,90 @@ the GPU skinning never renders; its extent numbers are right, its stills are not
 2. The plinth's front lip reads as one straight line from the play camera in its middle third (it is a dais by design).
 3. `OpeningLight` stays at local 1.8 (1.17 m in the world) in a 3.14 m opening: the glow sits low but reads; not changed.
 4. Glow pools tied to crystals the burst broke earlier stay (`Props/Crystal/GlowPool` under the threshold, decor).
+
+## Round 55: the giant through the gate (2026-11-12)
+
+Not committed. No generator run; `ArtSource/` and `Tools/Blender/` untouched (stills in `Logs/r55/`, not tracked). The
+Sealed One not touched. Save `progress.json` **2eca347e** copied aside before each Play Mode run, restored and verified after
+each (MD5 2eca347eb0270fc1566d26e302abf525 at the end).
+
+### What was wrong (measured, `r55_gate_clear.cs`)
+
+The gate faced the camera, but the giant's route leaves the entrance cell along -x (3 cells to the road's end, then the
+road runs on west): it stood sideways in the threshold, its flank in the arch plane, and walked out through the left jamb.
+Voxel overlap of the posed giant and the posed gate (0.06 m) at 0.65: 950-1320 shared voxels while it roars (body through
+the folding petals and the jambs), 140-400 while it walks out; scaling the gate up alone did not help (at 1.1 still
+54-460 from frame 180 on: the jamb, not the soffit). Measured giant: 2.8 m wide (legs splayed, half 1.47), 4.1-4.2 m long,
+2.75 m walking, 3.6 m at its roar peak; tail up to 2.19 m behind its pivot (art, sampled clips).
+
+### Gate orientation (the fix)
+
+- `SplitSignature.Entrance` now faces the gate along the **first leg of the giant's own route** (`ExitDirection`: the
+  `BossRoutes.WalkToRoad` plan BackToRoad uses, from the entrance cell; straight at the road without one) instead of the camera,
+  and places it **`SplitPower.GateSetBack` (3.0 m, ShatteredBoss data)** behind the spot the giant appears on. The giant is
+  placed facing that same way. It appears in the flash standing in the gate's mouth, its whole body clear of the iris, and
+  walks straight out along the gate's axis; the route already runs straight on for 3 cells (it never turns inside or beside
+  the plinth). Route cells, spawn cell, timing and balance unchanged (the giant still appears on the entrance cell at frame 38
+  and sets off at 130).
+- Set-back chosen from the art and the probe: 2.2/2.4 cut the iris at the roar peak (tail 2.19 m); 2.6 clears the stone but
+  at scale 0.9 the rear feet stand up to 0.18 m into the plinth's bevel; 2.8 leaves a 0.06 m contact; **3.0: 0 everywhere**.
+- `ThroughTheGate` also clears the giant's standing ground of decor (`ClearFootprint(spot, exit, (BodyHalfWidth + 0.4,
+  GateSetBack))`), right after the gate's own clear: three or four `Decor_Boulder` pieces (rubble of the burst and boulders
+  within 2 m) stood through its legs with 145-276 shared voxels each (`r55_decor_clear.cs`, which also reads the instanced
+  decor); after the clear none.
+- Top-down debug still `Logs/r55/r55_top_r55_exit.png`: yellow arrow = gate axis out of the opening, magenta = the route (on
+  the arrow), cyan = towards the play camera (74 degrees off the axis), white = the plinth's footprint.
+
+**Readability: the arch is seen almost edge-on here.** The play camera looks along +z (yaw ~16 degrees); the exit is -x, so
+the gate's axis is 74 degrees off face-on. In `r55_r55_inside|mid|out` the gate reads as a tall leaning slab with a narrow
+glowing slit, not as a doorway; the giant clearly comes out of its mouth and walks straight on, but the opening itself is
+not readable from the play camera. Proposals (not built; need Remco/curator):
+1. **Move the Shattered's entrance** in `BossArena` (Arena_Ruins `BossEntrance`; it is the only level that uses the
+   Shattered) to a cell north of the road's upper lane, so its first leg runs south onto the road, i.e. towards the camera:
+   the gate is then 16 degrees off face-on and its opening reads. This changes only the 3-cell off-road leg (the road route
+   is the same; the join cell moves by one or two), so the finale probe should be re-run.
+2. Or a data cap `GateTurnToCamera` (e.g. 35 degrees): the gate turns part of the way to the camera, the giant still appears
+   clear of the stone (set-back about 3.6 m) and walks off at that angle to the gate's axis. Reads better, but the giant
+   then leaves at an angle, not perpendicular (Remco's "sideways" complaint, milder).
+3. Keep it as now (clean, but the gate reads as a slab from this map's camera).
+
+### Scale: 0.65 -> 0.9
+
+`BossFxArt._ruinGateScale` 0.9 (written through SerializedObject by `Tools/PlayTest/r55_apply.cs`; the builder constant
+`BlenderBossFxBuilder.RuinGateScale` follows, so a rebuild keeps it). Opening 3.6 x 4.34 m: clear 1.80 m each side at
+0.3-1.8 m height, 1.61 at 2.8 m, against the walking giant's 1.47 widest (legs) and 0.69 at 2.55 m; roof 4.34 against 2.78
+(x1.56). At 0.65 (2.6 x 3.14) the giant is visibly bigger than the hole it came out of. Hidden-cell probe at the new
+orientation (`r54_gate_hide.cs`, gate open): **0.9: road 0/58, build 0 hidden, 0 partly of 102**; for reference 0.65: 0/0/0,
+0.8: 0/0/2 partly, 1.0: 0/1 (B(39,15))/1. The gate's top is 7.15 m.
+
+### Verification
+
+- `r55_gate_clear.cs` at the data values, frames 40-300 (every 10-25) plus the still moments: **0 shared voxels with the arch,
+  the petals and the plinth at every frame; deepest point below the stone's top 0.00 m.**
+- `r55_decor_clear.cs`: no decor through the giant; left are the flat `Props/Crystal/GlowPool` light disc at (18.1, 8.7)
+  under its feet (round 54 open point 4, an orphan pool of an already broken crystal), the impact flash rings, and shard
+  crawlers walking past at frame 400. Some instanced crystal/rock meshes are not CPU-readable, so they were judged from the
+  stills only (none touch the giant).
+- Stills (`Logs/r55/`, play camera, fixed 1/30 s frames, inspection light x1.8 and `_game`): `r55_r55_appear` (45, the
+  flash), `r55_r55_inside` (70, roar peak in the mouth), `r55_r55_inside_overview` (72, play zoom), `r55_r55_mid` (160, walking
+  out), `r55_r55_out` (230, just out), `r55_r55_clear_overview` (400); 3x crops `_top_x3`, `_side_x3`, `_base_x3` of each
+  moment (both lights). Looked at: no stone through the giant, rear leg stands just off the plinth's bevel, spikes only pass
+  in front of the far jamb in projection (depth apart), no boulders through its legs any more. The dark straight-edged patch
+  with embers in front of the plinth is the gate's own shadow (unchanged).
+- Tests: new `RuinGateFitTests` (EditMode): `Opening_ClearsTheWalkingGiant_WithMargin` (open gate at its data scale vs the
+  Shattered's Move clip at play scale, per 0.25 m height band, 0.1 m each side, roof >= 1.15 x height) and
+  `GateSetBack_KeepsTheRoaringGiantClearOfTheIris` (set-back - tail reach over Roar/Idle/Move >= 0.3 m). EditMode suite on
+  w6: **864 tests, 812 passed, 52 skipped, 0 failed** (was 862; +2). Recompile: 0 errors; the only warning is the known CS0618
+  in `BalanceProbeTests.cs:601`. Play-run consoles: 0 errors, 0 warnings.
+- Tools: `r55_gate.sh` (measure/hide/stills/top-down driver), `r55_gate_clear.cs`, `r55_gate_profile.cs`, `r55_decor_clear.cs`,
+  `r55_route.cs`, `r55_topdown.cs`, `r55_apply.cs`. Lesson: never edit a bash driver while it runs (bash reads it by offset;
+  one run broke and was redone).
+
+### Open points (round 55)
+
+1. **Readability of the edge-on gate** (above): choose proposal 1, 2 or 3.
+2. In this level the gate's plinth stands on build cells east of the entrance (as before at the old angle): a tower built
+   there before the boss wave would stand through the gate. Not changed.
+3. Before the footprint clear, the walking giant also passed through a `Decor_Boulder` 1.6 m ahead of the entrance (frame
+   170, 268 shared voxels). The entrance ground is now clean; whether bosses walk through solid boulders elsewhere on their
+   off-road walks was not checked this round.

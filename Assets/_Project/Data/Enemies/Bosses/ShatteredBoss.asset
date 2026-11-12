@@ -124,6 +124,7 @@ MonoBehaviour:
     _warnShare: 0.08
     _flyBackSeconds: 0.6
     _expectedSplitSeconds: 18
+    _gateSetBack: 3
     _shellBones:
     - Shell_1
     - Shell_2
