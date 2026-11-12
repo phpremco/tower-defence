@@ -1,3 +1,4 @@
+using Game.Bosses;
 using Game.Combat;
 using Game.Core;
 using Game.Levels;
@@ -71,6 +72,46 @@ namespace Game.Tests
             Assert.AreEqual(4, art.CrackSlabParts.Length);
             Assert.IsNotNull(art.Dampened, "no dampened overlay");
         }
+
+        // Round 53 gate: the petals fold flat into the stone by bone scale. They stand whole while the seal breaks and the
+        // light comes through (RuinGateView's moments), are gone once the gate stands open and stay gone while it idles.
+        [Test]
+        public void RuinGate_PetalsStandUntilTheSwing_AndAreGoneOnceOpen()
+        {
+            ModelArtDefinition gate = Art().RuinGate;
+            AnimationClip open = gate.Clips[gate.IndexOf(ModelClipRole.Open)].Clip;
+            AnimationClip idle = gate.Clips[gate.IndexOf(ModelClipRole.Idle)].Clip;
+            Assert.GreaterOrEqual(open.length, RuinGateView.FullyOpenSeconds, "the Open take ends before the gate stands open");
+            GameObject probe = Object.Instantiate(gate.Model);
+            try
+            {
+                Transform[] petals = System.Array.FindAll(probe.GetComponentsInChildren<Transform>(true), t => t.name.StartsWith("Petal_"));
+                Assert.AreEqual(5, petals.Length, "the gate has five petal bones");
+                foreach (float seconds in new[] { RuinGateView.SealCrackSeconds, RuinGateView.FirstLightSeconds })
+                {
+                    open.SampleAnimation(probe, seconds);
+                    foreach (Transform petal in petals)
+                    {
+                        Assert.Greater(Smallest(petal.localScale), 0.95f, $"{petal.name} folds before the swing ({seconds:0.00} s)");
+                    }
+                }
+
+                foreach ((AnimationClip clip, float seconds) in new[] { (open, RuinGateView.FullyOpenSeconds), (idle, 0f), (idle, idle.length * 0.5f) })
+                {
+                    clip.SampleAnimation(probe, seconds);
+                    foreach (Transform petal in petals)
+                    {
+                        Assert.Less(petal.localScale.magnitude, 0.01f, $"{petal.name} still shows in {clip.name} at {seconds:0.00} s");
+                    }
+                }
+            }
+            finally
+            {
+                Object.DestroyImmediate(probe);
+            }
+        }
+
+        private static float Smallest(Vector3 v) => Mathf.Min(v.x, Mathf.Min(v.y, v.z));
 
         [Test]
         public void DrillWreck_CarriesItsCollapse_AsDeathWithTheImpactMoment()

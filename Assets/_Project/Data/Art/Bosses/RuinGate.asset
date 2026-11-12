@@ -22,13 +22,17 @@ MonoBehaviour:
   _scale: 1
   _yaw: 180
   _bodyCentrePivot: 0
-  _height: 7.348611
+  _height: 7.943412
   _lodScreenHeight: 0.05
   _upperBodyBone: 
+  _displayExposure: 1
+  _turnSeconds: 0.08
   _deathFade: {x: 0, y: 0}
   _embers: 0
   _bleeds: 0
   _shedBones: []
+  _vents: {fileID: 0}
+  _beamSockets: []
   _emissionSets: []
   _deathEmissionSet: 
   _clips:
@@ -46,6 +50,9 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
+    _blendSeconds: 0
   - _role: 1
     _clip: {fileID: 360638642050581009, guid: 8e557cdf3f08a344f8a504383b3f3cd2, type: 3}
     _farClip: {fileID: 0}
@@ -60,6 +67,9 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
+    _blendSeconds: 0
   - _role: 29
     _clip: {fileID: -4577243411151536061, guid: 8e557cdf3f08a344f8a504383b3f3cd2, type: 3}
     _farClip: {fileID: 0}
@@ -74,3 +84,6 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
+    _blendSeconds: 0

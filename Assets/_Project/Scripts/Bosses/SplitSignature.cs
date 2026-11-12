@@ -148,6 +148,8 @@ namespace Game.Bosses
         private IEnumerator ThroughTheGate(RuinGateView gate, Vector3 spot, Vector3 towardRoad)
         {
             Field.BreakDecor(spot, EntranceBurstRadius);
+            // The plinth is wider than the burst: boulders and the burst's own rubble would stand through it and its threshold.
+            Field.Decor?.ClearFootprint(gate.transform.position, gate.transform.forward, gate.FootprintHalfSize);
             float stirred = 0f;
             while (stirred < GateRumbleSeconds && _brain.Alive)
             {

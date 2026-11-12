@@ -2,7 +2,7 @@
   "asset": "RuinGate",
   "round": 28,
   "game_tris": 6400,
-  "source_tris": 2110180,
+  "source_tris": 2502684,
   "bones": 11,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -14,21 +14,21 @@
   ],
   "material": "RuinGate_Mat",
   "uv": {
-    "islands": 230,
-    "folded_fallback_faces": 2028,
+    "islands": 248,
+    "folded_fallback_faces": 46,
     "mirrored_faces": 0,
-    "uv_coverage": 0.561,
-    "world_per_uv": 16.144344513853856
+    "uv_coverage": 0.6,
+    "world_per_uv": 16.932423318287256
   },
   "detail": {
     "rock": {
       "map": "Detail_Rock_Normal.png",
-      "tiling": 44.8,
+      "tiling": 47.0,
       "mask": "B"
     },
     "crystal": {
       "map": "Detail_Crystal_Normal.png",
-      "tiling": 76.9,
+      "tiling": 80.6,
       "mask": "A"
     }
   },
@@ -43,17 +43,22 @@
     "Seal_1",
     "Seal_2",
     "Seal_3",
-    "Seal_4"
+    "Seal_4",
+    "Petal_1",
+    "Petal_2",
+    "Petal_3",
+    "Petal_4",
+    "Petal_5"
   ],
   "size_m": [
-    8.677,
-    2.177,
-    7.768
+    8.972,
+    3.546,
+    8.743
   ],
   "pivot": "centre of the threshold on the ground; the gate faces -Y in Blender (Unity +Z after the FBX axis conversion): the giant walks out towards -Y",
   "opening_m": {
     "width": 4.0,
-    "height": 4.3,
+    "height": 4.828,
     "note": "The Shattered (3.4 x 5.3 x 3.6) fits"
   },
   "clips_info": {
@@ -69,13 +74,14 @@
       "first_light_frame": 38,
       "swing_start_frame": 52,
       "fully_open_frame": 130,
-      "note": "the first and only opening; rumble 0-30 (camera shake, dust off the voussoirs), crack: the knot collapses and four seal shards fly (flash + shard burst at Seal), first light: the seams open (raise the emission and a point light inside), the petals swing back bottom first; spawn the giant in the flash at first_light or when fully open"
+      "note": "the first and only opening; rumble 0-30 (camera shake, dust off the arch), crack: the knot flares and collapses, drawing its four shards in (flash + shard burst VFX at Seal), first light: the seams part (raise the emission and a point light inside), the petals fold into slots in the arch from swing_start, bottom first (round 53: each folds flat along its rim's normal, as one piece, and goes to nothing inside the stone); spawn the giant in the flash at first_light or when fully open"
     },
     "Opened_Idle": {
       "frames": 72,
       "loop": true,
-      "note": "stays open for the rest of the level"
+      "note": "stays open for the rest of the level; the opening is clear"
     }
   },
-  "emission": "magenta glyph grooves, jamb seams, petal rims and sigil, crystals; suggested _EmissionColor strength 0.6 while closed (dormant), ramp to 2.5 from first_light to fully_open, then 1.6"
+  "emission": "magenta crack lines, worn glyph bands, the soffit slot, petal rims and sigil, plinth sigil, crystals; suggested _EmissionColor strength 0.6 while closed (dormant), ramp to 2.5 from first_light to fully_open, then 1.6",
+  "round53": "rebuilt as one band of stone on a plinth (build_ruingate53.py); same bones, clips and moments; the petal bones are scale-keyed (withdraw into the stone)"
 }

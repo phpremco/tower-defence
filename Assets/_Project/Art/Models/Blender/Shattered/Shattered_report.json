@@ -1,11 +1,11 @@
 {
   "asset": "Shattered",
-  "game_tris": 24106,
+  "game_tris": 24087,
   "tris_per_material": [
-    17543,
+    17524,
     6567
   ],
-  "source_tris": 1979536,
+  "source_tris": 2012264,
   "bones": 34,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -21,12 +21,12 @@
   ],
   "uv": {
     "Shattered": {
-      "islands": 129,
+      "islands": 162,
       "closed_islands_cut": 0,
-      "folded_fallback_faces": 53,
-      "mirrored_faces": 8725,
-      "uv_coverage": 0.677,
-      "world_per_uv": 6.882196205910769
+      "folded_fallback_faces": 52,
+      "mirrored_faces": 8700,
+      "uv_coverage": 0.695,
+      "world_per_uv": 6.874607229070855
     },
     "Shattered_Crystal": {
       "islands": 89,
@@ -41,7 +41,7 @@
     "Shattered": {
       "chitin": {
         "map": "Detail_Chitin_Normal.png",
-        "tiling": 28.7,
+        "tiling": 28.6,
         "mask": "B"
       },
       "membrane": {
@@ -107,7 +107,7 @@
   ],
   "lod1": {
     "fbx": "Shattered_LOD1.fbx",
-    "tris": 9483,
+    "tris": 9485,
     "bones": 33
   },
   "walk_distance_per_loop": 1.452,
@@ -348,25 +348,25 @@
         "object": "Shattered_Eyes",
         "material": "Shattered_Eyes_Mat",
         "maps": "Shattered_Eyes_*.png (1024, Low 512)",
-        "tris": 1198,
-        "source_tris": 128744,
+        "tris": 1196,
+        "source_tris": 128456,
         "uv": {
-          "islands": 11,
+          "islands": 9,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 599,
-          "uv_coverage": 0.622,
-          "world_per_uv": 0.8335128559521193
+          "mirrored_faces": 598,
+          "uv_coverage": 0.674,
+          "world_per_uv": 0.8000414229285386
         },
         "detail": {
           "chitin": {
             "map": "Detail_Chitin_Normal.png",
-            "tiling": 11.6,
+            "tiling": 11.1,
             "mask": "B"
           },
           "membrane": {
             "map": "Detail_Membrane_Normal.png",
-            "tiling": 8.7,
+            "tiling": 8.3,
             "mask": "A"
           }
         },
@@ -461,12 +461,12 @@
       }
     },
     "tris_before": {
-      "lod0": 24106,
-      "lod1": 9483
+      "lod0": 24087,
+      "lod1": 9485
     },
     "tris_after": {
-      "lod0": 28130,
-      "lod1": 10717
+      "lod0": 28109,
+      "lod1": 10719
     },
     "increase": {
       "lod0": 0.167,

@@ -8263,11 +8263,23 @@ The new gate:
   clusters break out of a pillar on each side and out of one shoulder, rooted 0.3 m inside the stone.
 - **Plinth:** a worn, flat-topped dais (8.7 x 3.5 m, top 0.2 m). Its rounded rim meets the ground, and the seal sigil is
   carved into its top.
-- **The seal:**
-  - The same five black-glass petals and the crystal knot. The petals' rims run 9 cm into the jambs, and the floor petals
-    run into the plinth.
-  - On `Open`, each petal withdraws into the stone: it shrinks onto a pivot 0.15 m inside the arch, slides out 0.3 m and
-    turns 28 degrees, bottom petal first.
+- **The seal (an aperture), after the curator's review of the first rise sheet:**
+  - Five black-glass petals with hairline seams. The petals meet in the middle behind the knot, so there is no hole.
+  - Rims: the petals' rims run 9 cm into the jambs, and the floor petal runs into the plinth.
+  - Inside the iris the petals follow a blurred outline, so the pointed apex no longer creases them.
+  - Edges: matte dark stone with a thin magenta rim (no pale grey).
+  - On `Open`:
+    - The knot flares (to 1.22), then collapses at 30-38 and draws its four shards in. Nothing flies, nothing is left behind.
+    - Each petal folds as one solid piece along its rim's normal (non-uniform bone scale) onto a line through a pivot 0.3 m
+      inside the stone. Its leading edge runs back to the rim, and it goes to nothing only once it lies flat inside the
+      stone (k > 0.97).
+    - The opening is convex, so that line stays in the stone along the whole rim.
+    - The floor petal sinks into an organic groove across the threshold: a lens 3.7 m long that tapers to a point at
+      both ends, with a wavering edge, a dark-violet floor and lit lips that fade with the taper (Remco's rule: no
+      square-cut ends on the ground).
+    - Order: bottom first, then alternating. The motion eases out: each petal folds quickly and seats slowly, so none
+      lingers half-folded.
+    - The seams no longer part at first light; the light is the rim glow.
   - In `Opened_Idle` the opening is clear.
 
 Build notes:
@@ -8309,6 +8321,8 @@ Build notes:
 - `_close.png` (low 3/4 front, the right jamb's inner face, the crest, 3/4 back);
 - `_rise.png` (the Open clip at 0, 24, 34, 44, 60, 76, 92, 112, 130 + Opened_Idle);
 - `_rise_game.png`;
+- the frames 40-100 (every 5th) at 3x: `r53_ruingate_after_seq_<frame>_x3.png` and the sheet
+  `r53_ruingate_after_seq_40_100_x3_sheet.png`;
 - crops `r53_ruingate_after_game_open_<threshold|keystone|leftfoot|rightjamb>_x3.png`.
 
 Tool: `r53_ruingate_views.py`.
@@ -8353,10 +8367,221 @@ The purity pass then gave each merged island to whichever bone weighted it most,
 
 ### Open points (round 53)
 
-1. **RuinGate, shut:**
-   - The petal at the upper right shows a soft fold where its spiral meets the pointed apex.
-   - While the petals part (frames 44-60), their seam walls show pale grey.
-   - In mid-withdrawal (around frame 92) a shrinking petal reads as a dark lump at the left shoulder for a few frames.
+1. **RuinGate:** the curator's first review found pale seam bands, petals shrinking in mid-air, a lump at the shoulder and
+   the apex fold. All are fixed (see above), and I checked every frame of the rise sheets and the 3x 40-100 sequence.
+   - Since then the threshold slot, first a square-ended black bar, is a tapered violet groove
+     (`r53_ruingate_after_open_threshold_x3.png`, `_x3_overview.png`).
+   - In the jamb close-up of `_close.png` there is a hairline dark slit near the right jamb's foot, probably a UV seam on
+     the soffit. It is not visible from the play camera.
 2. **RuinGate in play:** check its height at scale 0.65, the emission ramp (the slot is bright at 1.6) and the OpeningLight
    height (1.8; the opening is now 4.83 high).
 3. **RuinGate:** the interlocking joint grooves are faint at the play camera. The cracks and glyph bands carry the read.
+
+## Round 52 SealedOne (Blender): concept B "The opening seal" built: one hooded head, one three-petal maw, a seal halo behind it (2026-11-12)
+
+Blender only; nothing under `Assets/` touched, Unity not run, not committed. Backup of the export, the .blend and the
+three scripts before this round: `ArtSource/Exports/_backup_r49/SealedOne_52/` (gitignored). Remco picked concept B of
+round 49G ("continue with direction B ... it may be much more epic, as long as it's clear that there is a head").
+Design reasoning: `ArtSource/DESIGN_NOTES.md`, "Round 52: the Sealed One, the opening seal".
+
+### What it is now
+
+- **One head**: a massive hood of near-black sealed stone (one shell of revolution with a crest and two cowl folds)
+  sits on the hunched bone-stone body. Its face is a deep funnel ringed by a **gold seal collar** (two thin gold rings
+  with a band of 14 seal glyphs). **Three pairs of small violet eyes** sit in dark sockets on the brow above it.
+- **One mouth** (the face IS the mouth): three **bone-white petals** (upper right, upper left, lower) meet in a pointed
+  snout. They hinge on the funnel lip and open outwards. At rest they stand 4 degrees apart: dark violet slits with
+  teeth.
+  - Inside: 47 matte-ivory teeth rooted in wet gums, in a row along both edges of every petal and in two inner rings
+    round the funnel.
+  - A hot violet gullet sits at the bottom of the funnel.
+  - A **gold seal glyph on each petal's inner face** only shows as the maw opens. A faint carved version of the glyph
+    is on each petal's outer face.
+- **Halo behind the head, never in front of it**: three broken flat stone seal rings with gold glyphs on both faces.
+  - Each ring sits on its own hub on an axle that grows out of the back of the hood, carried by stone tines, so a ring
+    stays attached while it turns and flares.
+  - Flares past 1.0 are halved (`RING_GROW`), so the halo stays clear of the back.
+- **Framing shapes**:
+  - two massive planted arms with dark stone shackles (gold glyph band) and broken three-link chain stubs;
+  - three-fingered hands with talons;
+  - dark stone mantles with the seal glyph on the shoulders;
+  - a few violet crystals low on the back.
+
+  The seven seal stones and the rubble ring are as before (shown in Rise only).
+- **Removed**: the thin praying upper arms, which cluttered the front of the maw. Their bones `UArm_*` stay and are
+  keyed, but deform nothing.
+- Value plan from the play camera: dark hood, gold collar, pale snout, violet throat, mid-grey body.
+
+### The maw is the mechanic (same bones, same clips)
+
+The petals use the old face-plate rig: **`Plate_R` = upper right petal, `Plate_L` = upper left petal, `Jaw` = lower
+petal**. Every clip that parted the plates now opens the maw: in `specs(plates=...)` each petal turns PETAL_K x plates
+outwards about its hinge and never closes past rest.
+
+Maximum opening per clip on top of rest (from `r52_sealedone_after_mouth_clips.png`):
+
+| Clip | Max opening (deg) | Note |
+| --- | --- | --- |
+| Summon | 48 | peak frame 44; was 40 |
+| Surface_Burst | 46 | frame 74; was 34 |
+| Release | 50 | |
+| OnBase_Loop | 32 to 49 | |
+| Rise | 40 | |
+| Roar | 40 | |
+| Rise_OntoBase | 36 | |
+| Adapt | 34 | |
+| Death | 34 | frame 8 |
+| Hit | 14 | was 10 |
+| Dive_Into_Liquid | 10 | |
+| Climb | 6 | |
+| Walk | 4 | |
+| Idle | 0 to 4 | breathing; was 0 to 2 |
+
+The throat "glows brighter" because a wide-open maw shows the whole lit gullet, the teeth rings and the gold inner
+glyphs. The emission maps themselves are constant.
+
+### Unity import (exact)
+
+Row to rebuild (`BlenderArtBuilder.RebuildOnly`): **SealedOne** only. It has no corrupted skin.
+
+| Export | Tris LOD0 / LOD1 (was) | Bones (LOD1) | Clips / events | Parts (tris LOD0 / LOD1) | Maps |
+| --- | --- | --- | --- | --- | --- |
+| SealedOne | body 34487 (25501 + Seal 8986) / 13999; with parts 39350 / 15494 (was 39447 / 15433) | 33 (30), **same names**; `Jaw` (from 49F) is still the only bone not in round 48 | all 17 with the same names and lengths: Idle 120, Rise 150 (break 22, slam 92), Summon 90 (peak 44), Hit 18, Death 150 (seal shut 128), Walk 80, Roar 72 (slam 30), Climb_Up 132, Climb_Loop 100, Climb_Down 132, Submerged_Loop 96, Dive_Into_Liquid 90, Surface_Burst 100 (hands slam 24), Rise_OntoBase 130 (grab 34, crush 96), OnBase_Loop 96 (strikes 34/82), Adapt 64 (pulse 30), Release 170 (white 64) | Eyes 900/300 (was 1702), Teeth 2418/698 (was 1506), Claws 1545/497 (was 1724) | body, Seal, Eyes, Teeth, Claws and all Phase1-4/Release emission sets re-baked (+ Low/); UVs changed |
+
+- `ExtraParts` unchanged: Eyes, Teeth, Claws.
+- Sockets unchanged: `Head` (Summon), `Ring_1..3`, `Seal_1..7`, `Rubble`, `IK_LArm_L/R`.
+- **Rest-pose changes that Unity may notice**:
+  - `Neck` and `Head` rest a little further forward (Head now runs from G(0,3.4,0.42) to G(0,4.6,0.3)).
+  - `Plate_R/L` and `Jaw` sit on the petal hinges round the maw.
+  - The `Ring_1..3` heads are the hubs behind the hood, at about G(0, 5.07, -1.22..-1.58).
+  - The arms are 10-20 cm wider.
+- **Check in Unity**:
+  1. The Summon effect on `Head`: the maw's throat is now 0.4 m forward and 0.55 m above the Head bone's head (report
+     `summon.socket`, `round52.throat_centre_m`), and the open maw faces the camera.
+  2. The health-bar `_height`: the halo top is at about 6.9 m. Re-measure it with `CreatureBarHeight`.
+  3. The crown-ring tests (`SealedOne_CrownRings_*`): the spin values are unchanged, but the bone heads moved.
+
+### Checks
+
+- **Clip parity** (`check_clip_parity.py --only SealedOne --base 2e4fc688 --tag r52`, `clip_parity_r52.json`): **OK**.
+  The only note is `Jaw` as a new bone against round 48 (added in 49F, kept). No clip, length, event or socket is
+  lost.
+- **Strict floating check** (`check_floating_49g.py --only SealedOne --tag r52 --burst Rise,Surface_Burst --exempt
+  Seal_,Rubble --step 1`; every frame of all 17 clips plus rest, 1808 poses per LOD;
+  `r49g_floating_sealedone_r52.json`): **LOD0 0 floating, LOD1 0 floating, 0 burst_only**.
+  - Exempted (14 per LOD) are only the seven seal stones and the rubble islands. They are the fissure's ground props:
+    they stand on the ground, not on the body, and are at scale 0.001 in every clip except Rise.
+  - Everything else is attached: the petals are fused into the hood wall at their roots, the teeth are rooted in
+    gums, and each halo ring's hub sits round the axle.
+  - The first run found a 3-vertex Teeth speck 18 cm off the jaw. Islands under 4 vertices are now dropped from the
+    detail parts (`sealedone_detail.attach`). All 47 teeth survive in both LODs.
+- **Smooth clips** (largest per-frame bone turn, rings and seal stones excluded, compared with the 49F build): within
+  2 degrees of before, except two authored beats. Hit went from 9.2 to 12.4 deg on `Plate_L` at frame 1 (the recoil
+  now opens 14 deg). Surface_Burst went down from 21.9 to 19.4 deg. No new 1-2 frame snaps.
+- **Weights fix** (`build_sealedone_mech.split_rubble`): only the rubble islands move to `Rubble` now.
+  - Before, the skin blend weight that the waist tendrils had towards `Root` was moved as well. In OnBase_Loop and
+    Release those vertices were dragged to the collapsed Rubble bone under the ground, as thin violet slivers.
+  - Now 1639 stray Root weights are renormalised onto the tendrils' other bones (LOD1: 728).
+
+### Previews (`ArtSource/Previews/QA/`, bright lighting; tool `Tools/Blender/r52_sealedone.py`)
+
+- `r52_sealedone_after_game.png` (play camera, Idle), `_close.png`, `_move.png` (Walk), `_mouth.png` (maw open wide,
+  Summon peak), `_game_summon.png` (the open maw from the play camera) and the 2x2 sheet `r52_sealedone_after.png`.
+- LOD1 panels: `r52_sealedone_after_lod_*.png`.
+- `r52_sealedone_after_mouth_clips.png`: for each clip the most closed and the most open frame, from two angles. Rows
+  are in alphabetical order. The Rise and Submerged rows are blank or dark where the head is underground.
+- `r52_sealedone_loose_<clip>.png` for all 17 clips (4 frames x 4 angles).
+- The unbaked look passes q1 to q4 are in `ArtSource/Previews/QA/_r52_quick/`.
+
+### Files
+
+- Rewritten: `Tools/Blender/build_sealedone.py` (parts, bones, `specs`, styles) and `Tools/Blender/sealedone_detail.py`
+  (eyes, teeth, claws).
+- Changed: `Tools/Blender/build_sealedone_mech.py` (`split_rubble`; Surface_Burst opens to 46 deg).
+- New: `Tools/Blender/r52_sealedone.py` (`--quick`: rigged, unbaked look pass; `--views`: QA views).
+
+### Open points (round 52)
+
+1. With the maw shut, the top seam still shows a sliver of the lower petal's gold glyph from the play camera. The
+   glyph was moved back to s = 0.24 but stays faintly visible. It can move further back or be dimmed if Remco wants it
+   hidden until the maw opens.
+2. In Summon the two upper petals swing up and out and are seen almost edge-on from the play camera, as a white brim
+   over the open throat. The lower petal hangs over the chest like a bib. It reads, but the upper petals could open
+   more sideways than upwards.
+3. The chain stubs hang along the forearm and read as a dark bar when a hand reaches forward (Walk).
+4. In Rise, the bare axle shows as a short peg on the back of the hood until the halo unfolds (from frame ~104).
+5. The halo is big and bright gold. In the dark Core level it may out-shine the maw while the maw is shut. Its glow
+   (0.72) is one constant in `halo_glyphs`.
+6. The lower body (the waist tendrils) is unchanged and is meant to sit under the terrain, as before.
+
+## Round 54 import: the one-arch RuinGate and the Shattered's own-bone plates in the game (2026-11-12)
+
+Not committed. No generator run; `ArtSource/Exports` and `Tools/Blender/` untouched (stills written to `ArtSource/Previews/QA`);
+the Sealed One not synced. Save `progress.json` **2eca347e** copied to the scratchpad before each of the five Play Mode runs,
+restored and verified after each.
+
+### 1. Import (`Tools/PlayTest/Scripts/ApplyRound54.cs`)
+
+- **RuinGate alone:** new `BlenderBossFxBuilder.SyncAndBuildRuinGate()` syncs only `RuinGate` (FBX, 4 maps, `Low/`, report)
+  and rebuilds only `BossFxArt._ruinGate` (+ its scale); the full boss FX step now calls the same `WriteRuinGate`. MD5 of the
+  synced files equal to the exports. Art height 7.349 -> **7.943**; detail tiling 47 / 80.6 from the new report.
+- **Petal scale keys survive the import** (`removeConstantScaleCurves` off): all three takes carry scale curves on Petal_1..5
+  and the Seal bones. Sampled Open take: every petal 1.0 up to frame 52, folding flat on one axis (f70 Petal_1 y 0.30,
+  Petal_3 y 0.59; f90 most near 0), all **0.000 at 130 and through Opened_Idle**. `RuinGateView` and `SplitSignature` keep
+  their moments (30/38/130, 52 is the clip's own); Open is 5.33 s, longer than FullyOpen 4.33 s.
+- **Shattered:** `BlenderArtBuilder.RebuildOnly("Shattered")` (FBX, LOD1, report, all maps incl. `Low/`), worn by 1 enemy.
+  Clips 15, events and sockets unchanged; the art asset did not change at all (height stays **4.197** with the crest bones,
+  so the round-53 `CrestRows` measure holds; only the material's detail tiling moved 28.7 -> 28.6).
+
+### 2. Scale: kept at 0.65
+
+`r54_gate_hide.cs` bakes the posed gate and casts a ray from every cell within 12 of it to the play camera:
+- **0.65** (top 5.16 m): road hidden **0/74** at every moment; build cells fully hidden 4 (shut) / 2 (open), 2-3 partly, all
+  behind the gate off the road. **0.58** (top 4.61 m): road 0/74, build 2 / 1.
+- Seen in the overviews (`gate_*_overview[_s058]`) at play zoom the gate is a small landmark beside the road either way.
+- The giant (bar 3.61 m) already stands taller than the 0.65 opening (4.83 x 0.65 = 3.14 m) during its roar; at 0.58 (2.8 m)
+  it would look even more like it squeezes through a doorway. The 0.58 gain is one build cell. So `RuinGateScale` stays 0.65
+  (no data change).
+
+### 3. Decor through the plinth (fixed)
+
+The new plinth (8.97 x 3.55 m, 5.8 x 2.3 at 0.65) is wider than the break-out burst (radius 2), so in play two crystal-tipped
+boulders stood through its front right, one through the left, and the burst's crystal rubble lay in the threshold as glowing
+specks (`r54_decor_probe.cs`). New `EnvironmentInstancer.ClearFootprint(centre, forward, halfSize)` leaves out every piece
+(solid, breakable or remains, with its glow pool) on a turned rectangle; `RuinGateView.FootprintHalfSize` measures the gate's
+rest mesh in its own frame; `SplitSignature.ThroughTheGate` clears it right after the burst, before the first frame is seen.
+After: the plinth stands on clear ground, no specks.
+
+### 4. Plates
+
+`r54_shells_view.cs` takes the armour off by the game's own path (a `BoneScaleView` holding every Shell bone at 0, as after
+the rejoin, one stepped frame): bare glowing core, no strap or sliver left (`r54_boss_shells_on|off*`). Purity of the islands
+is covered by `ScaledOffParts_ArePureIslands_InBothRigs`. Note: `r52_shells_off.cs` sets the bones on a paused frame, which
+the GPU skinning never renders; its extent numbers are right, its stills are not.
+
+### 5. Stills (`ArtSource/Previews/QA/r54_*`, Arena_Ruins, play camera, fixed 1/30 s frames; inspection light x1.8 and `_game`)
+
+- `gate_shut` (+ `_overview`, crops `_keystone|_jamb_left|_jamb_right|_threshold_x3`): one band, no seam at the keystone,
+  crest horns rooted, roots run into the plinth, iris black glass with hairline rings; plinth clear.
+- `gate_opening_a` (frame 72, the giant in it), `gate_fold_a|b|c|d` (60/76/92/110, giant hidden by `r54_boss_hidden.cs`,
+  crops `_petals_x3`): petals fold at their rims, floor petal sinks into the groove, nothing floats, no grey rim.
+- `gate_open` (135), `gate_walk_a|b` (165/200, `boss_walk_*`), `gate_clear` (330, crops `_threshold|_keystone_x3`):
+  opening clear, groove tapered at both ends with fading lit lips, glow at 1.6 crisp (not blown).
+- `*_overview_s058` (run 1, before the decor fix): the same moments at 0.58.
+- Tools: `r54_gate.sh` (moments, hide measure, stills, fold/hidden giant, shells), `r54_gate_hide.cs`, `r54_gate_until.cs`,
+  `r54_decor_probe.cs`, `r54_boss_hidden.cs`, `r54_shells_view.cs`.
+
+### Tests
+
+- `BossFxArtTests.RuinGate_PetalsStandUntilTheSwing_AndAreGoneOnceOpen`, `EnvironmentFootprintTests.ClearFootprint_LeavesOutWhatStandsOnTheTurnedRectangle_AndKeepsTheRest`.
+- EditMode suite on w6: **862 tests, 810 passed, 52 skipped, 0 failed** (was 860; +2). `CrestRows`, `ScaledOffParts` and
+  `BossBars` pass on the new Shattered. Recompile: 0 errors, 0 warnings; consoles of all play runs: 0 errors, 0 warnings.
+
+### Open points (round 54)
+
+1. **The giant is taller than the opening** (about 4.2 m against 3.14 m at 0.65): during its roar in the threshold its back
+   and crown rise through the arch's soffit (`gate_opening_a`). A gate big enough for it would be about 0.9 and hide more
+   build ground; the alternative is the giant crouching through (Blender clip) or spawning a step further out (`GateBehind`).
+2. The plinth's front lip reads as one straight line from the play camera in its middle third (it is a dais by design).
+3. `OpeningLight` stays at local 1.8 (1.17 m in the world) in a 3.14 m opening: the glow sits low but reads; not changed.
+4. Glow pools tied to crystals the burst broke earlier stay (`Props/Crystal/GlowPool` under the threshold, decor).

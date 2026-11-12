@@ -439,6 +439,65 @@ namespace Game.Levels
             return count;
         }
 
+        /// <summary>
+        /// Leaves out every piece (solid, breakable or remains) that stands on a rectangle of ground for the rest of the level,
+        /// with nothing laid in its place: a structure raised there later (the ruin gate on its plinth) then stands on clear
+        /// ground instead of through boulders. The rectangle is centred on <paramref name="centre"/>, its depth along
+        /// <paramref name="forward"/>; a piece counts when its centre lies within the rectangle grown by half its reach (as
+        /// <see cref="Break"/> measures). Returns how many were left out.
+        /// </summary>
+        public int ClearFootprint(Vector3 centre, Vector3 forward, Vector2 halfSize)
+        {
+            Vector3 along = new Vector3(forward.x, 0f, forward.z).normalized;
+            Vector3 across = new Vector3(along.z, 0f, -along.x);
+            int count = 0;
+            foreach (Batch batch in _batches)
+            {
+                if (batch.All == null || batch.Mesh == null)
+                {
+                    continue;
+                }
+
+                foreach (Matrix4x4 matrix in batch.All)
+                {
+                    Bounds piece = Transform(batch.Mesh.bounds, matrix);
+                    Vector3 offset = piece.center - centre;
+                    float grow = Mathf.Max(piece.extents.x, piece.extents.z) * 0.5f;
+                    if (Mathf.Abs(Vector3.Dot(offset, across)) > halfSize.x + grow || Mathf.Abs(Vector3.Dot(offset, along)) > halfSize.y + grow)
+                    {
+                        continue;
+                    }
+
+                    Forget(batch, matrix);
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        // Drops a piece from its group and from the breakable and brittle lists (its glow pool goes with it).
+        private void Forget(Batch batch, Matrix4x4 matrix)
+        {
+            Remove(batch, matrix);
+            _breakable.RemoveAll(entry => entry.Batch == batch && entry.Matrix == matrix);
+            for (int i = _brittle.Count - 1; i >= 0; i--)
+            {
+                Brittle piece = _brittle[i];
+                if (piece.Batch != batch || piece.Matrix != matrix)
+                {
+                    continue;
+                }
+
+                if (piece.Attachment != null)
+                {
+                    Destroy(piece.Attachment.gameObject);
+                }
+
+                _brittle.RemoveAt(i);
+            }
+        }
+
         // The remains turned as the piece stood (its yaw read off the placed frame) and fitted to its reach.
         private void LayRemains(DecorRemains kind, Matrix4x4 piece, float reach)
         {

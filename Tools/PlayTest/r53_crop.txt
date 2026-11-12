@@ -1,7 +1,3 @@
-C:/Users/remco/Tower defense/ArtSource/Previews/QA/r53_bar_walk.png|C:/Users/remco/Tower defense/ArtSource/Previews/QA/r53_bar_walk_crest_x3.png|820|230|280|230|3
-C:/Users/remco/Tower defense/ArtSource/Previews/QA/r53_bar_0.png|C:/Users/remco/Tower defense/ArtSource/Previews/QA/r53_bar_0_crest_x3.png|820|230|280|230|3
-C:/Users/remco/Tower defense/ArtSource/Previews/QA/r53_bar_90.png|C:/Users/remco/Tower defense/ArtSource/Previews/QA/r53_bar_90_crest_x3.png|820|230|280|230|3
-C:/Users/remco/Tower defense/ArtSource/Previews/QA/r53_bar_180.png|C:/Users/remco/Tower defense/ArtSource/Previews/QA/r53_bar_180_crest_x3.png|820|230|280|230|3
-C:/Users/remco/Tower defense/ArtSource/Previews/QA/r53_bar_270.png|C:/Users/remco/Tower defense/ArtSource/Previews/QA/r53_bar_270_crest_x3.png|820|230|280|230|3
-C:/Users/remco/Tower defense/ArtSource/Previews/QA/r53_gate_breakout.png|C:/Users/remco/Tower defense/ArtSource/Previews/QA/r53_gate_breakout_threshold_x3.png|760|300|420|330|2
-C:/Users/remco/Tower defense/ArtSource/Previews/QA/r53_gate_open.png|C:/Users/remco/Tower defense/ArtSource/Previews/QA/r53_gate_open_threshold_x3.png|760|300|420|330|3
+C:/Users/remco/Tower defense/ArtSource/Previews/QA/r54_boss_shells_on.png|C:/Users/remco/Tower defense/ArtSource/Previews/QA/r54_boss_shells_on_body_x3.png|760|300|400|360|2
+C:/Users/remco/Tower defense/ArtSource/Previews/QA/r54_boss_shells_off.png|C:/Users/remco/Tower defense/ArtSource/Previews/QA/r54_boss_shells_off_body_x3.png|760|300|400|360|2
+C:/Users/remco/Tower defense/ArtSource/Previews/QA/r54_boss_shells_off_game.png|C:/Users/remco/Tower defense/ArtSource/Previews/QA/r54_boss_shells_off_game_body_x3.png|760|300|400|360|2

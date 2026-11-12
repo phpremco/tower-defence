@@ -76,8 +76,7 @@ namespace Game.Editor
             var so = new SerializedObject(art);
             WriteMarks(so.FindProperty("_marks"));
             WriteSheets(so.FindProperty("_sheets"));
-            so.FindProperty("_ruinGate").objectReferenceValue = BuildProp(BlenderBossFxCatalog.RuinGate, RuinGateEmission, RuinGateRoles);
-            so.FindProperty("_ruinGateScale").floatValue = RuinGateScale;
+            WriteRuinGate(so);
             so.FindProperty("_sealCrystals").objectReferenceValue = BuildProp(BlenderBossFxCatalog.SealCrystal, SealCrystalEmission, null);
             so.FindProperty("_iceBlock").objectReferenceValue = BuildIceBlock();
             so.FindProperty("_crackSlabs").objectReferenceValue = BuildProp(BlenderBossFxCatalog.CrackSlabs, CrackSlabEmission, null);
@@ -99,6 +98,34 @@ namespace Game.Editor
 
             ApplyWreck();
             return art;
+        }
+
+        /// <summary>
+        /// Syncs and rebuilds the ruin gate alone (a re-export of that one prop), leaving every other boss effect and prop as
+        /// it is. Returns the gate's art, or null when its export or the effect asset is missing.
+        /// </summary>
+        public static ModelArtDefinition SyncAndBuildRuinGate()
+        {
+            var art = AssetDatabase.LoadAssetAtPath<BossFxArt>(ArtPath);
+            if (art == null)
+            {
+                Debug.LogWarning("Blender boss FX: no BossFxArt yet; run the full boss FX step first.");
+                return null;
+            }
+
+            BlenderSync.Sync(new[] { BlenderBossFxCatalog.RuinGate });
+            EnsureFolder(PropArtFolder);
+            var so = new SerializedObject(art);
+            WriteRuinGate(so);
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(art);
+            return art.RuinGate;
+        }
+
+        private static void WriteRuinGate(SerializedObject so)
+        {
+            so.FindProperty("_ruinGate").objectReferenceValue = BuildProp(BlenderBossFxCatalog.RuinGate, RuinGateEmission, RuinGateRoles);
+            so.FindProperty("_ruinGateScale").floatValue = RuinGateScale;
         }
 
         private static void Sync()
