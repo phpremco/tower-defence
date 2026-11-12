@@ -1,0 +1,707 @@
+{
+ "creature": "RuinGate",
+ "threshold_model_units": 0.005,
+ "unity_scale": 1.0,
+ "step": 1,
+ "burst_clips": [],
+ "exempt_bones": [
+  "Seal"
+ ],
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\_backup_r53\\RuinGate\\RuinGate.fbx",
+   "body": "RuinGate",
+   "poses": 308,
+   "islands": {
+    "RuinGate": 35
+   },
+   "floating": [
+    {
+     "object": "RuinGate",
+     "island": 30,
+     "verts": 3,
+     "gap": 6.21017,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 6.2102,
+      "Closed_Idle": 6.2102,
+      "Open": 6.2102,
+      "Opened_Idle": 6.2102
+     },
+     "pose": "rest@0",
+     "size": 0.0004,
+     "centre": [
+      4.147,
+      -0.8058,
+      2.8729
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 28,
+     "verts": 3,
+     "gap": 6.19907,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 6.1991,
+      "Closed_Idle": 6.1991,
+      "Open": 6.1991,
+      "Opened_Idle": 6.1991
+     },
+     "pose": "rest@0",
+     "size": 0.0071,
+     "centre": [
+      4.1992,
+      -0.4498,
+      1.3909
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 29,
+     "verts": 3,
+     "gap": 5.76638,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 5.7664,
+      "Closed_Idle": 5.7664,
+      "Open": 5.7664,
+      "Opened_Idle": 5.7664
+     },
+     "pose": "Opened_Idle@73",
+     "size": 0.001,
+     "centre": [
+      3.6919,
+      -0.208,
+      2.9631
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 26,
+     "verts": 3,
+     "gap": 5.45448,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 5.4545,
+      "Closed_Idle": 5.4545,
+      "Open": 5.4545,
+      "Opened_Idle": 5.4545
+     },
+     "pose": "Opened_Idle@73",
+     "size": 0.0339,
+     "centre": [
+      1.0478,
+      -0.3768,
+      6.5822
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 34,
+     "verts": 35,
+     "gap": 5.45305,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 5.4531,
+      "Closed_Idle": 5.4531,
+      "Open": 5.4531,
+      "Opened_Idle": 5.4531
+     },
+     "pose": "Opened_Idle@73",
+     "size": 0.776,
+     "centre": [
+      3.5802,
+      -0.0536,
+      2.5394
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 12,
+     "verts": 3,
+     "gap": 4.52093,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 4.5209,
+      "Closed_Idle": 4.5209,
+      "Open": 4.5209,
+      "Opened_Idle": 4.5209
+     },
+     "pose": "rest@0",
+     "size": 0.0018,
+     "centre": [
+      -1.0522,
+      -0.377,
+      6.591
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 31,
+     "verts": 619,
+     "gap": 4.00008,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 4.0001,
+      "Closed_Idle": 4.0001,
+      "Open": 4.0001,
+      "Opened_Idle": 4.0001
+     },
+     "pose": "Opened_Idle@73",
+     "size": 4.3645,
+     "centre": [
+      3.3448,
+      -0.0713,
+      1.0262
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 32,
+     "verts": 76,
+     "gap": 3.93749,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 3.9375,
+      "Closed_Idle": 3.9375,
+      "Open": 3.9375,
+      "Opened_Idle": 3.9375
+     },
+     "pose": "rest@0",
+     "size": 1.9288,
+     "centre": [
+      2.3414,
+      0.0004,
+      2.6463
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 27,
+     "verts": 93,
+     "gap": 3.74387,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 3.7439,
+      "Closed_Idle": 3.7439,
+      "Open": 3.7439,
+      "Opened_Idle": 3.7439
+     },
+     "pose": "Opened_Idle@73",
+     "size": 2.263,
+     "centre": [
+      1.9955,
+      0.0059,
+      3.6539
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 33,
+     "verts": 89,
+     "gap": 3.34933,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 3.3493,
+      "Closed_Idle": 3.3493,
+      "Open": 3.3493,
+      "Opened_Idle": 3.3493
+     },
+     "pose": "rest@0",
+     "size": 2.1671,
+     "centre": [
+      1.1073,
+      0.0061,
+      4.3576
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 24,
+     "verts": 176,
+     "gap": 3.34098,
+     "bone": "Petal_3",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 2.2101,
+      "Closed_Idle": 2.2101,
+      "Open": 3.341,
+      "Opened_Idle": 3.3327
+     },
+     "pose": "Open@96",
+     "size": 3.3843,
+     "centre": [
+      1.4059,
+      1.0137,
+      3.4944
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 25,
+     "verts": 313,
+     "gap": 2.68535,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 2.6854,
+      "Closed_Idle": 2.6854,
+      "Open": 2.6854,
+      "Opened_Idle": 2.6854
+     },
+     "pose": "Opened_Idle@73",
+     "size": 4.0395,
+     "centre": [
+      -0.0168,
+      -0.2086,
+      5.7144
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 5,
+     "verts": 92,
+     "gap": 1.83478,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 1.8348,
+      "Closed_Idle": 1.8348,
+      "Open": 1.8348,
+      "Opened_Idle": 1.8348
+     },
+     "pose": "Opened_Idle@73",
+     "size": 2.2363,
+     "centre": [
+      -1.1472,
+      0.0108,
+      4.4465
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 14,
+     "verts": 97,
+     "gap": 0.93682,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 0.9368,
+      "Closed_Idle": 0.9368,
+      "Open": 0.9368,
+      "Opened_Idle": 0.9368
+     },
+     "pose": "rest@0",
+     "size": 2.237,
+     "centre": [
+      -1.9371,
+      0.0299,
+      3.6469
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 23,
+     "verts": 181,
+     "gap": 0.67665,
+     "bone": "Petal_4",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 0.5412,
+      "Closed_Idle": 0.5412,
+      "Open": 0.6766,
+      "Opened_Idle": 0.6687
+     },
+     "pose": "Open@123",
+     "size": 3.4347,
+     "centre": [
+      -1.2071,
+      1.0943,
+      3.7133
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 18,
+     "verts": 260,
+     "gap": 0.65572,
+     "bone": "Petal_2",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 0.6557,
+      "Closed_Idle": 0.6557,
+      "Open": 0.6557,
+      "Opened_Idle": 0.6555
+     },
+     "pose": "Open@7",
+     "size": 4.0663,
+     "centre": [
+      0.5155,
+      -0.1076,
+      1.1139
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 6,
+     "verts": 130,
+     "gap": 0.06884,
+     "bone": "Petal_5",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 0.0363,
+      "Closed_Idle": 0.0363,
+      "Open": 0.0688,
+      "Opened_Idle": 0.0285
+     },
+     "pose": "Open@82",
+     "size": 3.1024,
+     "centre": [
+      -1.3457,
+      0.7596,
+      1.5522
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 4,
+     "verts": 77,
+     "gap": 0.06472,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 0.0647,
+      "Closed_Idle": 0.0647,
+      "Open": 0.0647,
+      "Opened_Idle": 0.0647
+     },
+     "pose": "Opened_Idle@73",
+     "size": 2.0353,
+     "centre": [
+      -2.3758,
+      0.0222,
+      2.679
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 15,
+     "verts": 200,
+     "gap": 0.0646,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 0.0646,
+      "Closed_Idle": 0.0646,
+      "Open": 0.0646,
+      "Opened_Idle": 0.0646
+     },
+     "pose": "Opened_Idle@73",
+     "size": 4.4876,
+     "centre": [
+      0.2775,
+      -0.1782,
+      -0.0414
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 3,
+     "verts": 3,
+     "gap": 0.05285,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 0.0529,
+      "Closed_Idle": 0.0529,
+      "Open": 0.0529,
+      "Opened_Idle": 0.0529
+     },
+     "pose": "Opened_Idle@73",
+     "size": 0.0008,
+     "centre": [
+      -3.6919,
+      -0.208,
+      2.9636
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 2,
+     "verts": 3,
+     "gap": 0.04822,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 0.0482,
+      "Closed_Idle": 0.0482,
+      "Open": 0.0482,
+      "Opened_Idle": 0.0482
+     },
+     "pose": "rest@0",
+     "size": 0.0002,
+     "centre": [
+      -4.147,
+      -0.8059,
+      2.8728
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 0,
+     "verts": 3,
+     "gap": 0.02803,
+     "bone": "Root",
+     "poses_floating": 308,
+     "clips": {
+      "rest": 0.028,
+      "Closed_Idle": 0.028,
+      "Open": 0.028,
+      "Opened_Idle": 0.028
+     },
+     "pose": "rest@0",
+     "size": 0.0011,
+     "centre": [
+      -4.1986,
+      -0.4436,
+      1.3907
+     ]
+    }
+   ],
+   "burst_only": [],
+   "exempted": [
+    {
+     "object": "RuinGate",
+     "island": 22,
+     "verts": 12,
+     "gap": 3.4933,
+     "bone": "Seal_1",
+     "poses_floating": 120,
+     "clips": {
+      "rest": 2.1746,
+      "Closed_Idle": 2.1839,
+      "Open": 3.4933
+     },
+     "pose": "Open@46",
+     "size": 0.0647,
+     "centre": [
+      1.084,
+      -1.5392,
+      3.3802
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 21,
+     "verts": 3,
+     "gap": 3.48911,
+     "bone": "Seal_1",
+     "poses_floating": 120,
+     "clips": {
+      "rest": 2.3184,
+      "Closed_Idle": 2.3251,
+      "Open": 3.4891
+     },
+     "pose": "Open@46",
+     "size": 0.0002,
+     "centre": [
+      1.0556,
+      -1.561,
+      3.3605
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 16,
+     "verts": 9,
+     "gap": 3.2261,
+     "bone": "Seal_4",
+     "poses_floating": 120,
+     "clips": {
+      "rest": 2.1766,
+      "Closed_Idle": 2.1852,
+      "Open": 3.2261
+     },
+     "pose": "Open@46",
+     "size": 0.0602,
+     "centre": [
+      1.0839,
+      -1.5377,
+      1.2026
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 17,
+     "verts": 3,
+     "gap": 3.22147,
+     "bone": "Seal_4",
+     "poses_floating": 120,
+     "clips": {
+      "rest": 2.3122,
+      "Closed_Idle": 2.3179,
+      "Open": 3.2215
+     },
+     "pose": "Open@46",
+     "size": 0.0003,
+     "centre": [
+      1.0553,
+      -1.5609,
+      1.2228
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 19,
+     "verts": 3,
+     "gap": 2.06254,
+     "bone": "Seal",
+     "poses_floating": 110,
+     "clips": {
+      "rest": 2.0422,
+      "Closed_Idle": 2.0456,
+      "Open": 2.0625
+     },
+     "pose": "Open@31",
+     "size": 0.0013,
+     "centre": [
+      0.0329,
+      -0.8635,
+      2.0721
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 11,
+     "verts": 3,
+     "gap": 1.94503,
+     "bone": "Seal",
+     "poses_floating": 110,
+     "clips": {
+      "rest": 1.8745,
+      "Closed_Idle": 1.8779,
+      "Open": 1.945
+     },
+     "pose": "Open@36",
+     "size": 0.0008,
+     "centre": [
+      -0.055,
+      -0.4925,
+      1.8841
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 20,
+     "verts": 85,
+     "gap": 1.93724,
+     "bone": "Seal",
+     "poses_floating": 110,
+     "clips": {
+      "rest": 1.8372,
+      "Closed_Idle": 1.8437,
+      "Open": 1.9372
+     },
+     "pose": "Open@36",
+     "size": 0.3284,
+     "centre": [
+      -0.0007,
+      -0.3684,
+      1.8982
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 9,
+     "verts": 3,
+     "gap": 1.93085,
+     "bone": "Seal_2",
+     "poses_floating": 120,
+     "clips": {
+      "rest": 1.697,
+      "Closed_Idle": 1.697,
+      "Open": 1.9309
+     },
+     "pose": "Open@46",
+     "size": 0.0003,
+     "centre": [
+      -1.0556,
+      -1.5609,
+      3.3604
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 10,
+     "verts": 10,
+     "gap": 1.90697,
+     "bone": "Seal_2",
+     "poses_floating": 120,
+     "clips": {
+      "rest": 1.7117,
+      "Closed_Idle": 1.7117,
+      "Open": 1.907
+     },
+     "pose": "Open@46",
+     "size": 0.0612,
+     "centre": [
+      -1.0847,
+      -1.5392,
+      3.3802
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 8,
+     "verts": 9,
+     "gap": 1.70373,
+     "bone": "Seal_3",
+     "poses_floating": 120,
+     "clips": {
+      "rest": 1.7037,
+      "Closed_Idle": 1.7037,
+      "Open": 1.7037
+     },
+     "pose": "rest@0",
+     "size": 0.1925,
+     "centre": [
+      -0.2272,
+      -0.4759,
+      1.6683
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 7,
+     "verts": 3,
+     "gap": 1.68821,
+     "bone": "Seal_3",
+     "poses_floating": 120,
+     "clips": {
+      "rest": 1.6882,
+      "Closed_Idle": 1.6882,
+      "Open": 1.6882
+     },
+     "pose": "Open@31",
+     "size": 0.0009,
+     "centre": [
+      -0.312,
+      -0.5457,
+      1.5862
+     ]
+    }
+   ]
+  }
+ }
+}

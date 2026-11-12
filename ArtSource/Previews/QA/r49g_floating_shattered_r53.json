@@ -1,0 +1,716 @@
+{
+ "creature": "Shattered",
+ "threshold_model_units": 0.005,
+ "unity_scale": 1.0,
+ "step": 1,
+ "burst_clips": [
+  "Split",
+  "Rejoin",
+  "PhaseBreak1",
+  "PhaseBreak2",
+  "Death"
+ ],
+ "exempt_bones": [],
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\Shattered\\Shattered.fbx",
+   "body": "Shattered",
+   "poses": 1199,
+   "islands": {
+    "Shattered": 34,
+    "Shattered_Claws": 36,
+    "Shattered_Eyes": 1,
+    "Shattered_Teeth": 13
+   },
+   "floating": [],
+   "burst_only": [
+    {
+     "object": "Shattered",
+     "island": 12,
+     "verts": 609,
+     "gap": 1.59544,
+     "bone": "Shell_4",
+     "poses_floating": 11,
+     "clips": {
+      "PhaseBreak1": 0.6792,
+      "Split": 1.5954
+     },
+     "pose": "Split@40",
+     "size": 0.5979,
+     "centre": [
+      0.0022,
+      1.2793,
+      3.1284
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 8,
+     "verts": 369,
+     "gap": 1.2105,
+     "bone": "Shell_7",
+     "poses_floating": 17,
+     "clips": {
+      "PhaseBreak2": 0.5918,
+      "Split": 1.2105
+     },
+     "pose": "Split@46",
+     "size": 0.4635,
+     "centre": [
+      0.0008,
+      1.7516,
+      2.5689
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 9,
+     "verts": 369,
+     "gap": 1.02537,
+     "bone": "Shell_7",
+     "poses_floating": 15,
+     "clips": {
+      "PhaseBreak2": 0.2063,
+      "Split": 1.0254
+     },
+     "pose": "Split@46",
+     "size": 0.4657,
+     "centre": [
+      0.0062,
+      1.2917,
+      2.5205
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 14,
+     "verts": 596,
+     "gap": 1.00481,
+     "bone": "Shell_2",
+     "poses_floating": 6,
+     "clips": {
+      "PhaseBreak1": 1.0048,
+      "Split": 0.2065
+     },
+     "pose": "PhaseBreak1@20",
+     "size": 0.6941,
+     "centre": [
+      -0.0082,
+      -0.0617,
+      3.827
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 0,
+     "verts": 663,
+     "gap": 0.88121,
+     "bone": "Shell_1",
+     "poses_floating": 7,
+     "clips": {
+      "PhaseBreak1": 0.8812,
+      "Split": 0.3309
+     },
+     "pose": "PhaseBreak1@18",
+     "size": 0.7811,
+     "centre": [
+      0.0698,
+      -1.2761,
+      3.4796
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 3,
+     "verts": 618,
+     "gap": 0.82446,
+     "bone": "Shell_3",
+     "poses_floating": 4,
+     "clips": {
+      "PhaseBreak1": 0.8245
+     },
+     "pose": "PhaseBreak1@22",
+     "size": 0.6546,
+     "centre": [
+      -0.0727,
+      1.1452,
+      3.4733
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 32,
+     "verts": 19,
+     "gap": 0.56136,
+     "bone": "Crys_2",
+     "poses_floating": 134,
+     "clips": {
+      "Death": 0.5614,
+      "PhaseBreak2": 0.1412,
+      "Rejoin": 0.1395,
+      "Split": 0.0691
+     },
+     "pose": "Death@47",
+     "size": 1.0946,
+     "centre": [
+      -0.7427,
+      0.8423,
+      2.9069
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 23,
+     "verts": 19,
+     "gap": 0.56132,
+     "bone": "Crys_2",
+     "poses_floating": 134,
+     "clips": {
+      "Death": 0.5613,
+      "PhaseBreak2": 0.1412,
+      "Rejoin": 0.1395,
+      "Split": 0.0693
+     },
+     "pose": "Death@47",
+     "size": 1.0912,
+     "centre": [
+      0.6468,
+      0.8421,
+      2.9481
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 5,
+     "verts": 404,
+     "gap": 0.55654,
+     "bone": "Shell_5",
+     "poses_floating": 4,
+     "clips": {
+      "PhaseBreak2": 0.5565
+     },
+     "pose": "PhaseBreak2@20",
+     "size": 0.4788,
+     "centre": [
+      0.0778,
+      -1.6774,
+      2.7566
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 4,
+     "verts": 404,
+     "gap": 0.44974,
+     "bone": "Shell_5",
+     "poses_floating": 3,
+     "clips": {
+      "PhaseBreak2": 0.4497
+     },
+     "pose": "PhaseBreak2@20",
+     "size": 0.5232,
+     "centre": [
+      0.0688,
+      -1.2741,
+      2.8984
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 21,
+     "verts": 19,
+     "gap": 0.39113,
+     "bone": "Crys_6",
+     "poses_floating": 31,
+     "clips": {
+      "Split": 0.3911
+     },
+     "pose": "Split@65",
+     "size": 0.7179,
+     "centre": [
+      0.4981,
+      1.2313,
+      1.0068
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 27,
+     "verts": 19,
+     "gap": 0.39113,
+     "bone": "Crys_6",
+     "poses_floating": 31,
+     "clips": {
+      "Split": 0.3911
+     },
+     "pose": "Split@65",
+     "size": 0.7179,
+     "centre": [
+      -0.4981,
+      1.2313,
+      1.0068
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 10,
+     "verts": 362,
+     "gap": 0.20756,
+     "bone": "Shell_8",
+     "poses_floating": 2,
+     "clips": {
+      "PhaseBreak2": 0.2076
+     },
+     "pose": "PhaseBreak2@26",
+     "size": 0.3901,
+     "centre": [
+      0.0413,
+      -1.5704,
+      2.3376
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 24,
+     "verts": 13,
+     "gap": 0.15462,
+     "bone": "Crys_1",
+     "poses_floating": 9,
+     "clips": {
+      "Death": 0.1546
+     },
+     "pose": "Death@47",
+     "size": 0.9227,
+     "centre": [
+      -0.2336,
+      -0.4845,
+      2.7947
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 18,
+     "verts": 13,
+     "gap": 0.15445,
+     "bone": "Crys_1",
+     "poses_floating": 7,
+     "clips": {
+      "Death": 0.1545
+     },
+     "pose": "Death@47",
+     "size": 0.9224,
+     "centre": [
+      0.145,
+      -0.4844,
+      2.8059
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 22,
+     "verts": 25,
+     "gap": 0.07132,
+     "bone": "Crys_3",
+     "poses_floating": 5,
+     "clips": {
+      "Death": 0.0713
+     },
+     "pose": "Death@47",
+     "size": 1.3327,
+     "centre": [
+      1.1015,
+      0.9584,
+      1.3654
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 30,
+     "verts": 25,
+     "gap": 0.06023,
+     "bone": "Crys_3",
+     "poses_floating": 4,
+     "clips": {
+      "Death": 0.0602
+     },
+     "pose": "Death@46",
+     "size": 1.2966,
+     "centre": [
+      -1.0698,
+      0.9541,
+      1.3909
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 7,
+     "verts": 468,
+     "gap": 0.05575,
+     "bone": "Shell_6",
+     "poses_floating": 1,
+     "clips": {
+      "PhaseBreak2": 0.0558
+     },
+     "pose": "PhaseBreak2@22",
+     "size": 0.6016,
+     "centre": [
+      -0.0544,
+      0.9673,
+      2.6531
+     ]
+    },
+    {
+     "object": "Shattered",
+     "island": 29,
+     "verts": 45,
+     "gap": 0.00622,
+     "bone": "Crys_6",
+     "poses_floating": 29,
+     "clips": {
+      "Split": 0.0062
+     },
+     "pose": "Split@65",
+     "size": 0.6211,
+     "centre": [
+      0.0,
+      0.8022,
+      1.4046
+     ]
+    }
+   ],
+   "exempted": []
+  },
+  "LOD1": {
+   "file": "ArtSource\\Exports\\Shattered\\Shattered_LOD1.fbx",
+   "body": "Shattered_LOD1",
+   "poses": 1199,
+   "islands": {
+    "Shattered_Claws_LOD1": 36,
+    "Shattered_Eyes_LOD1": 1,
+    "Shattered_LOD1": 33,
+    "Shattered_Teeth_LOD1": 13
+   },
+   "floating": [],
+   "burst_only": [
+    {
+     "object": "Shattered_LOD1",
+     "island": 13,
+     "verts": 237,
+     "gap": 1.59585,
+     "bone": "Shell_4",
+     "poses_floating": 11,
+     "clips": {
+      "PhaseBreak1": 0.6836,
+      "Split": 1.5959
+     },
+     "pose": "Split@40",
+     "size": 0.5975,
+     "centre": [
+      0.0031,
+      1.2797,
+      3.1242
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 11,
+     "verts": 155,
+     "gap": 1.21132,
+     "bone": "Shell_7",
+     "poses_floating": 17,
+     "clips": {
+      "PhaseBreak2": 0.5972,
+      "Split": 1.2113
+     },
+     "pose": "Split@46",
+     "size": 0.4655,
+     "centre": [
+      0.0016,
+      1.7507,
+      2.5645
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 15,
+     "verts": 155,
+     "gap": 1.0246,
+     "bone": "Shell_7",
+     "poses_floating": 15,
+     "clips": {
+      "PhaseBreak2": 0.211,
+      "Split": 1.0246
+     },
+     "pose": "Split@46",
+     "size": 0.469,
+     "centre": [
+      0.0071,
+      1.2935,
+      2.5164
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 5,
+     "verts": 237,
+     "gap": 1.00477,
+     "bone": "Shell_2",
+     "poses_floating": 6,
+     "clips": {
+      "PhaseBreak1": 1.0048,
+      "Split": 0.2069
+     },
+     "pose": "PhaseBreak1@20",
+     "size": 0.6884,
+     "centre": [
+      -0.0097,
+      -0.0603,
+      3.8232
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 1,
+     "verts": 273,
+     "gap": 0.87821,
+     "bone": "Shell_1",
+     "poses_floating": 7,
+     "clips": {
+      "PhaseBreak1": 0.8782,
+      "Split": 0.33
+     },
+     "pose": "PhaseBreak1@18",
+     "size": 0.783,
+     "centre": [
+      0.0649,
+      -1.2779,
+      3.484
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 6,
+     "verts": 234,
+     "gap": 0.82629,
+     "bone": "Shell_3",
+     "poses_floating": 4,
+     "clips": {
+      "PhaseBreak1": 0.8263
+     },
+     "pose": "PhaseBreak1@22",
+     "size": 0.6561,
+     "centre": [
+      -0.0726,
+      1.1454,
+      3.4727
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 8,
+     "verts": 159,
+     "gap": 0.55933,
+     "bone": "Shell_5",
+     "poses_floating": 4,
+     "clips": {
+      "PhaseBreak2": 0.5593
+     },
+     "pose": "PhaseBreak2@20",
+     "size": 0.4794,
+     "centre": [
+      0.071,
+      -1.6773,
+      2.753
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 31,
+     "verts": 11,
+     "gap": 0.55594,
+     "bone": "Crys_2",
+     "poses_floating": 132,
+     "clips": {
+      "Death": 0.5559,
+      "PhaseBreak2": 0.1401,
+      "Rejoin": 0.1405,
+      "Split": 0.0661
+     },
+     "pose": "Death@47",
+     "size": 0.919,
+     "centre": [
+      -0.6951,
+      0.8907,
+      2.8539
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 24,
+     "verts": 11,
+     "gap": 0.55582,
+     "bone": "Crys_2",
+     "poses_floating": 132,
+     "clips": {
+      "Death": 0.5558,
+      "PhaseBreak2": 0.1401,
+      "Rejoin": 0.1405,
+      "Split": 0.066
+     },
+     "pose": "Death@47",
+     "size": 0.9192,
+     "centre": [
+      0.6024,
+      0.8906,
+      2.8924
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 7,
+     "verts": 159,
+     "gap": 0.44971,
+     "bone": "Shell_5",
+     "poses_floating": 3,
+     "clips": {
+      "PhaseBreak2": 0.4497
+     },
+     "pose": "PhaseBreak2@20",
+     "size": 0.525,
+     "centre": [
+      0.0619,
+      -1.2722,
+      2.8955
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 22,
+     "verts": 8,
+     "gap": 0.38732,
+     "bone": "Crys_6",
+     "poses_floating": 31,
+     "clips": {
+      "Split": 0.3873
+     },
+     "pose": "Split@37",
+     "size": 0.6154,
+     "centre": [
+      0.4656,
+      1.2871,
+      1.0015
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 27,
+     "verts": 8,
+     "gap": 0.38732,
+     "bone": "Crys_6",
+     "poses_floating": 31,
+     "clips": {
+      "Split": 0.3873
+     },
+     "pose": "Split@37",
+     "size": 0.6154,
+     "centre": [
+      -0.4656,
+      1.2871,
+      1.0015
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 12,
+     "verts": 158,
+     "gap": 0.21235,
+     "bone": "Shell_8",
+     "poses_floating": 2,
+     "clips": {
+      "PhaseBreak2": 0.2123
+     },
+     "pose": "PhaseBreak2@26",
+     "size": 0.3894,
+     "centre": [
+      0.0382,
+      -1.5697,
+      2.3365
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 23,
+     "verts": 14,
+     "gap": 0.07213,
+     "bone": "Crys_3",
+     "poses_floating": 5,
+     "clips": {
+      "Death": 0.0721
+     },
+     "pose": "Death@47",
+     "size": 1.2531,
+     "centre": [
+      1.0695,
+      1.022,
+      1.3424
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 30,
+     "verts": 14,
+     "gap": 0.05872,
+     "bone": "Crys_3",
+     "poses_floating": 5,
+     "clips": {
+      "Death": 0.0587
+     },
+     "pose": "Death@48",
+     "size": 1.2436,
+     "centre": [
+      -1.0592,
+      1.0161,
+      1.3183
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 9,
+     "verts": 171,
+     "gap": 0.05586,
+     "bone": "Shell_6",
+     "poses_floating": 1,
+     "clips": {
+      "PhaseBreak2": 0.0559
+     },
+     "pose": "PhaseBreak2@22",
+     "size": 0.6039,
+     "centre": [
+      -0.0516,
+      0.9659,
+      2.6519
+     ]
+    },
+    {
+     "object": "Shattered_LOD1",
+     "island": 16,
+     "verts": 20,
+     "gap": 0.00597,
+     "bone": "Crys_6",
+     "poses_floating": 29,
+     "clips": {
+      "Split": 0.006
+     },
+     "pose": "Split@65",
+     "size": 0.5699,
+     "centre": [
+      0.0,
+      0.8013,
+      1.4022
+     ]
+    }
+   ],
+   "exempted": []
+  }
+ }
+}

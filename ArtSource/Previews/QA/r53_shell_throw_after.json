@@ -1,0 +1,904 @@
+{
+ "Shattered": {
+  "mesh": "Shattered",
+  "plates": {
+   "Shell_1": [
+    [
+     -0.0,
+     -0.68,
+     2.65
+    ],
+    [
+     0.0,
+     -0.24,
+     3.42
+    ]
+   ],
+   "Shell_2": [
+    [
+     0.0,
+     0.77,
+     3.3
+    ],
+    [
+     -0.0,
+     0.21,
+     2.69
+    ]
+   ],
+   "Shell_3": [
+    [
+     -0.0,
+     0.98,
+     2.39
+    ],
+    [
+     0.0,
+     1.15,
+     2.7
+    ]
+   ],
+   "Shell_5": [
+    [
+     0.68,
+     -0.85,
+     2.26
+    ],
+    [
+     -0.68,
+     -0.85,
+     2.26
+    ]
+   ],
+   "Shell_6": [
+    [
+     -0.99,
+     0.16,
+     1.82
+    ],
+    [
+     0.99,
+     0.16,
+     1.82
+    ]
+   ],
+   "Shell_7": [
+    [
+     0.73,
+     1.26,
+     1.43
+    ],
+    [
+     -0.73,
+     1.26,
+     1.43
+    ]
+   ],
+   "Shell_8": [
+    [
+     0.0,
+     -1.5,
+     1.6
+    ]
+   ],
+   "Shell_4": [
+    [
+     -0.0,
+     1.36,
+     1.97
+    ]
+   ]
+  },
+  "clips": {
+   "PhaseBreak1": [
+    {
+     "bone": "Shell_1",
+     "frame": 15,
+     "centre": [
+      -0.0,
+      -0.68,
+      2.65
+     ]
+    },
+    {
+     "bone": "Shell_1",
+     "frame": 16,
+     "centre": [
+      -0.0,
+      -0.68,
+      2.65
+     ]
+    },
+    {
+     "bone": "Shell_8",
+     "frame": 16,
+     "centre": [
+      0.0,
+      -1.5,
+      1.6
+     ]
+    },
+    {
+     "bone": "Shell_2",
+     "frame": 17,
+     "centre": [
+      0.0,
+      0.77,
+      3.3
+     ]
+    },
+    {
+     "bone": "Shell_2",
+     "frame": 17,
+     "centre": [
+      0.0,
+      0.77,
+      3.3
+     ]
+    },
+    {
+     "bone": "Shell_3",
+     "frame": 19,
+     "centre": [
+      -0.0,
+      0.98,
+      2.39
+     ]
+    },
+    {
+     "bone": "Shell_3",
+     "frame": 19,
+     "centre": [
+      -0.0,
+      0.98,
+      2.39
+     ]
+    },
+    {
+     "bone": "Shell_4",
+     "frame": 21,
+     "centre": [
+      -0.0,
+      1.36,
+      1.97
+     ]
+    }
+   ],
+   "PhaseBreak1_hidden": [],
+   "PhaseBreak1_kept": [
+    "Shell_5",
+    "Shell_6",
+    "Shell_7"
+   ],
+   "PhaseBreak2": [
+    {
+     "bone": "Shell_5",
+     "frame": 17,
+     "centre": [
+      0.68,
+      -0.85,
+      2.26
+     ]
+    },
+    {
+     "bone": "Shell_5",
+     "frame": 18,
+     "centre": [
+      0.68,
+      -0.85,
+      2.26
+     ]
+    },
+    {
+     "bone": "Shell_8",
+     "frame": 18,
+     "centre": [
+      0.0,
+      -1.5,
+      1.6
+     ]
+    },
+    {
+     "bone": "Shell_6",
+     "frame": 19,
+     "centre": [
+      -0.99,
+      0.16,
+      1.82
+     ]
+    },
+    {
+     "bone": "Shell_6",
+     "frame": 20,
+     "centre": [
+      -0.99,
+      0.16,
+      1.82
+     ]
+    },
+    {
+     "bone": "Shell_7",
+     "frame": 21,
+     "centre": [
+      0.73,
+      1.26,
+      1.43
+     ]
+    },
+    {
+     "bone": "Shell_7",
+     "frame": 21,
+     "centre": [
+      0.73,
+      1.26,
+      1.43
+     ]
+    }
+   ],
+   "PhaseBreak2_hidden": [
+    "Shell_1",
+    "Shell_2",
+    "Shell_3",
+    "Shell_4"
+   ],
+   "PhaseBreak2_kept": [
+    "Shell_1",
+    "Shell_2",
+    "Shell_3"
+   ],
+   "Split": [
+    {
+     "bone": "Shell_8",
+     "frame": 18,
+     "centre": [
+      0.0,
+      -1.5,
+      1.6
+     ]
+    },
+    {
+     "bone": "Shell_1",
+     "frame": 21,
+     "centre": [
+      -0.0,
+      -0.68,
+      2.65
+     ]
+    },
+    {
+     "bone": "Shell_2",
+     "frame": 23,
+     "centre": [
+      0.0,
+      0.77,
+      3.3
+     ]
+    },
+    {
+     "bone": "Shell_1",
+     "frame": 25,
+     "centre": [
+      -0.0,
+      -0.68,
+      2.65
+     ]
+    },
+    {
+     "bone": "Shell_5",
+     "frame": 27,
+     "centre": [
+      0.68,
+      -0.85,
+      2.26
+     ]
+    },
+    {
+     "bone": "Shell_5",
+     "frame": 32,
+     "centre": [
+      0.68,
+      -0.85,
+      2.26
+     ]
+    },
+    {
+     "bone": "Shell_3",
+     "frame": 32,
+     "centre": [
+      -0.0,
+      0.98,
+      2.39
+     ]
+    },
+    {
+     "bone": "Shell_3",
+     "frame": 33,
+     "centre": [
+      -0.0,
+      0.98,
+      2.39
+     ]
+    },
+    {
+     "bone": "Shell_6",
+     "frame": 33,
+     "centre": [
+      -0.99,
+      0.16,
+      1.82
+     ]
+    },
+    {
+     "bone": "Shell_6",
+     "frame": 33,
+     "centre": [
+      -0.99,
+      0.16,
+      1.82
+     ]
+    },
+    {
+     "bone": "Shell_2",
+     "frame": 33,
+     "centre": [
+      0.0,
+      0.77,
+      3.3
+     ]
+    },
+    {
+     "bone": "Shell_4",
+     "frame": 37,
+     "centre": [
+      -0.0,
+      1.36,
+      1.97
+     ]
+    },
+    {
+     "bone": "Shell_7",
+     "frame": 43,
+     "centre": [
+      0.73,
+      1.26,
+      1.43
+     ]
+    },
+    {
+     "bone": "Shell_7",
+     "frame": 43,
+     "centre": [
+      0.73,
+      1.26,
+      1.43
+     ]
+    }
+   ],
+   "Split_hidden": [],
+   "Split_kept": [],
+   "Rejoin": [
+    {
+     "bone": "Shell_1",
+     "frame": 29,
+     "centre": [
+      -0.0,
+      -0.68,
+      2.65
+     ]
+    },
+    {
+     "bone": "Shell_2",
+     "frame": 31,
+     "centre": [
+      0.0,
+      0.77,
+      3.3
+     ]
+    },
+    {
+     "bone": "Shell_3",
+     "frame": 33,
+     "centre": [
+      -0.0,
+      0.98,
+      2.39
+     ]
+    }
+   ],
+   "Rejoin_hidden": [
+    "Shell_1",
+    "Shell_2",
+    "Shell_3",
+    "Shell_4",
+    "Shell_5",
+    "Shell_6",
+    "Shell_7",
+    "Shell_8"
+   ],
+   "Rejoin_kept": [],
+   "Death": [],
+   "Death_hidden": [
+    "Shell_1",
+    "Shell_2",
+    "Shell_3",
+    "Shell_4",
+    "Shell_5",
+    "Shell_6",
+    "Shell_7",
+    "Shell_8"
+   ],
+   "Death_kept": [
+    "Shell_1",
+    "Shell_2",
+    "Shell_3"
+   ]
+  }
+ },
+ "Shattered_LOD1": {
+  "mesh": "Shattered_LOD1",
+  "plates": {
+   "Shell_1": [
+    [
+     -0.0,
+     -0.66,
+     2.66
+    ],
+    [
+     0.0,
+     -0.24,
+     3.42
+    ]
+   ],
+   "Shell_2": [
+    [
+     0.0,
+     0.77,
+     3.32
+    ],
+    [
+     0.0,
+     0.77,
+     3.3
+    ],
+    [
+     0.0,
+     0.21,
+     2.68
+    ]
+   ],
+   "Shell_3": [
+    [
+     -0.0,
+     0.98,
+     2.39
+    ],
+    [
+     0.0,
+     1.15,
+     2.7
+    ]
+   ],
+   "Shell_5": [
+    [
+     0.68,
+     -0.84,
+     2.24
+    ],
+    [
+     -0.68,
+     -0.84,
+     2.24
+    ]
+   ],
+   "Shell_6": [
+    [
+     0.98,
+     0.15,
+     1.82
+    ],
+    [
+     -0.98,
+     0.15,
+     1.83
+    ]
+   ],
+   "Shell_7": [
+    [
+     0.73,
+     1.26,
+     1.42
+    ],
+    [
+     -0.73,
+     1.26,
+     1.42
+    ]
+   ],
+   "Shell_8": [
+    [
+     -0.0,
+     -1.5,
+     1.59
+    ]
+   ],
+   "Shell_4": [
+    [
+     -0.0,
+     1.35,
+     1.96
+    ]
+   ]
+  },
+  "clips": {
+   "PhaseBreak1": [
+    {
+     "bone": "Shell_1",
+     "frame": 15,
+     "centre": [
+      -0.0,
+      -0.66,
+      2.66
+     ]
+    },
+    {
+     "bone": "Shell_1",
+     "frame": 16,
+     "centre": [
+      -0.0,
+      -0.66,
+      2.66
+     ]
+    },
+    {
+     "bone": "Shell_8",
+     "frame": 16,
+     "centre": [
+      -0.0,
+      -1.5,
+      1.59
+     ]
+    },
+    {
+     "bone": "Shell_2",
+     "frame": 17,
+     "centre": [
+      0.0,
+      0.77,
+      3.32
+     ]
+    },
+    {
+     "bone": "Shell_2",
+     "frame": 17,
+     "centre": [
+      0.0,
+      0.77,
+      3.32
+     ]
+    },
+    {
+     "bone": "Shell_2",
+     "frame": 17,
+     "centre": [
+      0.0,
+      0.77,
+      3.32
+     ]
+    },
+    {
+     "bone": "Shell_3",
+     "frame": 19,
+     "centre": [
+      -0.0,
+      0.98,
+      2.39
+     ]
+    },
+    {
+     "bone": "Shell_3",
+     "frame": 19,
+     "centre": [
+      -0.0,
+      0.98,
+      2.39
+     ]
+    },
+    {
+     "bone": "Shell_4",
+     "frame": 21,
+     "centre": [
+      -0.0,
+      1.35,
+      1.96
+     ]
+    }
+   ],
+   "PhaseBreak1_hidden": [],
+   "PhaseBreak1_kept": [
+    "Shell_5",
+    "Shell_6",
+    "Shell_7"
+   ],
+   "PhaseBreak2": [
+    {
+     "bone": "Shell_5",
+     "frame": 17,
+     "centre": [
+      0.68,
+      -0.84,
+      2.24
+     ]
+    },
+    {
+     "bone": "Shell_5",
+     "frame": 18,
+     "centre": [
+      0.68,
+      -0.84,
+      2.24
+     ]
+    },
+    {
+     "bone": "Shell_8",
+     "frame": 18,
+     "centre": [
+      -0.0,
+      -1.5,
+      1.59
+     ]
+    },
+    {
+     "bone": "Shell_6",
+     "frame": 19,
+     "centre": [
+      0.98,
+      0.15,
+      1.82
+     ]
+    },
+    {
+     "bone": "Shell_6",
+     "frame": 20,
+     "centre": [
+      0.98,
+      0.15,
+      1.82
+     ]
+    },
+    {
+     "bone": "Shell_7",
+     "frame": 21,
+     "centre": [
+      0.73,
+      1.26,
+      1.42
+     ]
+    },
+    {
+     "bone": "Shell_7",
+     "frame": 21,
+     "centre": [
+      0.73,
+      1.26,
+      1.42
+     ]
+    }
+   ],
+   "PhaseBreak2_hidden": [
+    "Shell_1",
+    "Shell_2",
+    "Shell_3",
+    "Shell_4"
+   ],
+   "PhaseBreak2_kept": [
+    "Shell_1",
+    "Shell_2",
+    "Shell_3"
+   ],
+   "Split": [
+    {
+     "bone": "Shell_8",
+     "frame": 18,
+     "centre": [
+      -0.0,
+      -1.5,
+      1.59
+     ]
+    },
+    {
+     "bone": "Shell_1",
+     "frame": 21,
+     "centre": [
+      -0.0,
+      -0.66,
+      2.66
+     ]
+    },
+    {
+     "bone": "Shell_2",
+     "frame": 23,
+     "centre": [
+      0.0,
+      0.77,
+      3.32
+     ]
+    },
+    {
+     "bone": "Shell_2",
+     "frame": 23,
+     "centre": [
+      0.0,
+      0.77,
+      3.32
+     ]
+    },
+    {
+     "bone": "Shell_1",
+     "frame": 26,
+     "centre": [
+      -0.0,
+      -0.66,
+      2.66
+     ]
+    },
+    {
+     "bone": "Shell_5",
+     "frame": 32,
+     "centre": [
+      0.68,
+      -0.84,
+      2.24
+     ]
+    },
+    {
+     "bone": "Shell_5",
+     "frame": 32,
+     "centre": [
+      0.68,
+      -0.84,
+      2.24
+     ]
+    },
+    {
+     "bone": "Shell_3",
+     "frame": 32,
+     "centre": [
+      -0.0,
+      0.98,
+      2.39
+     ]
+    },
+    {
+     "bone": "Shell_2",
+     "frame": 33,
+     "centre": [
+      0.0,
+      0.77,
+      3.32
+     ]
+    },
+    {
+     "bone": "Shell_3",
+     "frame": 33,
+     "centre": [
+      -0.0,
+      0.98,
+      2.39
+     ]
+    },
+    {
+     "bone": "Shell_6",
+     "frame": 33,
+     "centre": [
+      0.98,
+      0.15,
+      1.82
+     ]
+    },
+    {
+     "bone": "Shell_6",
+     "frame": 33,
+     "centre": [
+      0.98,
+      0.15,
+      1.82
+     ]
+    },
+    {
+     "bone": "Shell_4",
+     "frame": 37,
+     "centre": [
+      -0.0,
+      1.35,
+      1.96
+     ]
+    },
+    {
+     "bone": "Shell_7",
+     "frame": 43,
+     "centre": [
+      0.73,
+      1.26,
+      1.42
+     ]
+    },
+    {
+     "bone": "Shell_7",
+     "frame": 43,
+     "centre": [
+      0.73,
+      1.26,
+      1.42
+     ]
+    }
+   ],
+   "Split_hidden": [],
+   "Split_kept": [],
+   "Rejoin": [
+    {
+     "bone": "Shell_1",
+     "frame": 29,
+     "centre": [
+      -0.0,
+      -0.66,
+      2.66
+     ]
+    },
+    {
+     "bone": "Shell_2",
+     "frame": 31,
+     "centre": [
+      0.0,
+      0.77,
+      3.32
+     ]
+    },
+    {
+     "bone": "Shell_2",
+     "frame": 31,
+     "centre": [
+      0.0,
+      0.77,
+      3.32
+     ]
+    },
+    {
+     "bone": "Shell_3",
+     "frame": 33,
+     "centre": [
+      -0.0,
+      0.98,
+      2.39
+     ]
+    }
+   ],
+   "Rejoin_hidden": [
+    "Shell_1",
+    "Shell_2",
+    "Shell_3",
+    "Shell_4",
+    "Shell_5",
+    "Shell_6",
+    "Shell_7",
+    "Shell_8"
+   ],
+   "Rejoin_kept": [],
+   "Death": [],
+   "Death_hidden": [
+    "Shell_1",
+    "Shell_2",
+    "Shell_3",
+    "Shell_4",
+    "Shell_5",
+    "Shell_6",
+    "Shell_7",
+    "Shell_8"
+   ],
+   "Death_kept": [
+    "Shell_1",
+    "Shell_2",
+    "Shell_3"
+   ]
+  }
+ }
+}

@@ -1,0 +1,64 @@
+{
+ "base": "ArtSource/Exports/_backup_r53/{name}",
+ "results": [
+  {
+   "creature": "RuinGate",
+   "ok": true,
+   "issues": [],
+   "notes": [
+    "lod: no base file",
+    "report: scale_keyed_bones gains ['Petal_1', 'Petal_2', 'Petal_3', 'Petal_4', 'Petal_5']"
+   ],
+   "clips_before": {
+    "Closed_Idle": 72,
+    "Open": 160,
+    "Opened_Idle": 72
+   },
+   "clips_after": {
+    "Closed_Idle": 72,
+    "Open": 160,
+    "Opened_Idle": 72
+   }
+  },
+  {
+   "creature": "Shattered",
+   "ok": true,
+   "issues": [],
+   "notes": [],
+   "clips_before": {
+    "Climb_Down": 186,
+    "Climb_Loop": 81,
+    "Climb_Up": 186,
+    "Death": 80,
+    "Dive_Into_Liquid": 66,
+    "Hit": 14,
+    "Idle": 72,
+    "PhaseBreak1": 40,
+    "PhaseBreak2": 44,
+    "Rejoin": 80,
+    "Roar": 70,
+    "Split": 64,
+    "Submerged_Loop": 80,
+    "Surface_Burst": 64,
+    "Walk": 56
+   },
+   "clips_after": {
+    "Climb_Down": 186,
+    "Climb_Loop": 81,
+    "Climb_Up": 186,
+    "Death": 80,
+    "Dive_Into_Liquid": 66,
+    "Hit": 14,
+    "Idle": 72,
+    "PhaseBreak1": 40,
+    "PhaseBreak2": 44,
+    "Rejoin": 80,
+    "Roar": 70,
+    "Split": 64,
+    "Submerged_Loop": 80,
+    "Surface_Burst": 64,
+    "Walk": 56
+   }
+  }
+ ]
+}

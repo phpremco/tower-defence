@@ -1,0 +1,124 @@
+{
+ "creature": "RuinGate",
+ "threshold_model_units": 0.005,
+ "unity_scale": 1.0,
+ "step": 1,
+ "burst_clips": [],
+ "exempt_bones": [
+  "Seal"
+ ],
+ "lods": {
+  "LOD0": {
+   "file": "ArtSource\\Exports\\RuinGate\\RuinGate.fbx",
+   "body": "RuinGate",
+   "poses": 308,
+   "islands": {
+    "RuinGate": 11
+   },
+   "floating": [],
+   "burst_only": [],
+   "exempted": [
+    {
+     "object": "RuinGate",
+     "island": 9,
+     "verts": 9,
+     "gap": 1.8945,
+     "bone": "Seal_3",
+     "poses_floating": 110,
+     "clips": {
+      "rest": 1.709,
+      "Closed_Idle": 1.7106,
+      "Open": 1.8945
+     },
+     "pose": "Open@36",
+     "size": 0.0728,
+     "centre": [
+      -0.0666,
+      -0.4041,
+      2.1822
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 10,
+     "verts": 10,
+     "gap": 1.89074,
+     "bone": "Seal_4",
+     "poses_floating": 110,
+     "clips": {
+      "rest": 1.7096,
+      "Closed_Idle": 1.7112,
+      "Open": 1.8907
+     },
+     "pose": "Open@36",
+     "size": 0.076,
+     "centre": [
+      0.0704,
+      -0.4058,
+      2.1793
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 7,
+     "verts": 10,
+     "gap": 1.85227,
+     "bone": "Seal_1",
+     "poses_floating": 110,
+     "clips": {
+      "rest": 1.596,
+      "Closed_Idle": 1.5982,
+      "Open": 1.8523
+     },
+     "pose": "Open@36",
+     "size": 0.0773,
+     "centre": [
+      0.0717,
+      -0.406,
+      2.3207
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 8,
+     "verts": 9,
+     "gap": 1.85187,
+     "bone": "Seal_2",
+     "poses_floating": 110,
+     "clips": {
+      "rest": 1.5935,
+      "Closed_Idle": 1.5956,
+      "Open": 1.8519
+     },
+     "pose": "Open@36",
+     "size": 0.079,
+     "centre": [
+      -0.0714,
+      -0.4076,
+      2.322
+     ]
+    },
+    {
+     "object": "RuinGate",
+     "island": 6,
+     "verts": 119,
+     "gap": 1.83478,
+     "bone": "Seal",
+     "poses_floating": 110,
+     "clips": {
+      "rest": 1.6266,
+      "Closed_Idle": 1.6401,
+      "Open": 1.8348
+     },
+     "pose": "Open@36",
+     "size": 0.4626,
+     "centre": [
+      0.0052,
+      -0.3893,
+      2.2522
+     ]
+    }
+   ]
+  }
+ }
+}

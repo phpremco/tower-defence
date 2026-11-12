@@ -1,0 +1,24 @@
+{
+ "base": "ArtSource/Exports/_backup_r53/{name}",
+ "results": [
+  {
+   "creature": "RuinGate",
+   "ok": true,
+   "issues": [],
+   "notes": [
+    "lod: no base file",
+    "report: scale_keyed_bones gains ['Petal_1', 'Petal_2', 'Petal_3', 'Petal_4', 'Petal_5']"
+   ],
+   "clips_before": {
+    "Closed_Idle": 72,
+    "Open": 160,
+    "Opened_Idle": 72
+   },
+   "clips_after": {
+    "Closed_Idle": 72,
+    "Open": 160,
+    "Opened_Idle": 72
+   }
+  }
+ ]
+}

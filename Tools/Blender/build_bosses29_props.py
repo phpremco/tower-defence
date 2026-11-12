@@ -15,7 +15,8 @@
   gate gun glow dying to a faint violet residue (the Sealed One's GateDrainer).
 
 Run: blender --background --factory-startup --python Tools/Blender/build_bosses29_props.py --
-     [--preview <dir>] [--norender] [--only RuinGate,SealCrystal,IceBlock,DrillWreck,Drained]
+     [--preview <dir>] [--norender] [--only RuinGate,SealCrystal,IceBlock,DrillWreck,Drained] [--old-gate]
+(Round 53: RuinGate comes from build_ruingate53.py; --old-gate builds the round-29 gate below.)
 """
 
 import math
@@ -815,7 +816,13 @@ def main():
     names = only.split(",") if isinstance(only, str) else ["RuinGate", "SealCrystal", "IceBlock", "DrillWreck", "Drained"]
     render = not args.get("norender")
     if "RuinGate" in names:
-        asset, arm, actions = build_gate()
+        # Round 53: the gate is built by build_ruingate53.py (one band of stone on a plinth); this round-29 build is
+        # kept only as the base it was rebuilt from (--old-gate).
+        if args.get("old-gate"):
+            asset, arm, actions = build_gate()
+        else:
+            import build_ruingate53 as RG
+            asset, arm, actions = RG.build_gate()
         if render:
             preview_gate(arm, actions, out)
     if "SealCrystal" in names:

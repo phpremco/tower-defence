@@ -65,12 +65,20 @@ SPIRE_SINK = 0.5
 CREST_SINK = 0.35
 
 
+def plate_bone(part):
+    """The Shell bone a body part belongs to when it is a plate, its spike or its strap (else None)."""
+    if part.name in BS.SHELL_PARTS and part.chain and part.chain[0].startswith("Shell_"):
+        return part.chain[0]
+    return None
+
+
 def separate_shell_fuse():
     """Round 49G: the shell plates now carry sinew straps into the core, so one voxel remesh would weld each plate to
     the core and the phase breaks could no longer scale a plate away. The body material's parts are remeshed twice in
-    this process (the plates with their spikes and straps, BS.SHELL_PARTS, apart from the rest) and joined, and every
-    skinning is preceded by a speck clean-up (islands under 8 vertices) and followed by a purity pass: an island led by a Shell_n bone goes wholly to it, every other island loses
-    its Shell_n weights (the core round a strap must not follow a plate)."""
+    this process (the plates with their spikes and straps, BS.SHELL_PARTS, apart from the rest; since round 53 each Shell
+    bone's plates on their own) and joined, and every skinning is preceded by a speck clean-up (islands under 8
+    vertices) and followed by a purity pass: an island built from a Shell_n plate goes wholly to Shell_n, every other
+    island loses its Shell_n weights (the core round a strap must not follow a plate)."""
     import bmesh
     import bpy
     import check_floating_parts as F
@@ -91,9 +99,14 @@ def separate_shell_fuse():
     def fuse(obj, voxel, smooth_iterations=6):
         if len(obj.data.polygons) != body_faces:
             return plain_fuse(obj, voxel, smooth_iterations)
-        shell = np.array([body.parts[p].name in BS.SHELL_PARTS for p in body.face_pid])
+        # Round 53: one remesh per Shell bone (not one for all plates): touching plates welded into shared islands
+        # (Shell_1 with the Shell_5 pair, Shell_3/4 with the Shell_7 pair), so a phase break threw the wrong plates
+        # and LOD0/LOD1 gave a merged island to different bones.
+        owner = np.array([plate_bone(body.parts[p]) or "" for p in body.face_pid])
         verts, faces = [], []
-        for keep in (~shell, shell):
+        for keep in [owner == ""] + [owner == n_ for n_ in BS.SHELL_NAMES]:
+            if not keep.any():
+                continue
             o2 = split(obj, keep)
             me = plain_fuse(o2, voxel, smooth_iterations)
             data = o2.data
@@ -120,10 +133,20 @@ def separate_shell_fuse():
         groups = {g.index: g.name for g in mesh_obj.vertex_groups}
         by_name = {g.name: g for g in mesh_obj.vertex_groups}
         verts = mesh_obj.data.vertices
+        points, _ = C.mesh_arrays(mesh_obj.data)
+        # Round 53: an island's plate bone is the bone of the plate parts it was built from (nearest source surface,
+        # majority vote), not the bone that happened to weigh it most.
+        source = [plate_bone(builder.parts[p]) for p in C.assign_parts(points, builder)]
         fixed = 0
+        owners = {}
         for isl in F.islands(mesh_obj.data):
-            lead = F.dominant_bone(mesh_obj, isl) or ""
-            shell = lead if lead.startswith("Shell_") else None
+            votes = {}
+            for i in isl:
+                votes[source[int(i)]] = votes.get(source[int(i)], 0) + 1
+            lead = max(votes, key=votes.get)
+            shell = lead if lead and votes[lead] * 2 > len(isl) else None
+            if shell:
+                owners.setdefault(shell, []).append(len(isl))
             for i in isl:
                 v = verts[int(i)]
                 ws = {groups[g.group]: g.weight for g in v.groups}
@@ -141,7 +164,8 @@ def separate_shell_fuse():
                     (by_name.get(n_) or mesh_obj.vertex_groups.new(name=n_)).add([v.index], w, "REPLACE")
                     by_name = {g.name: g for g in mesh_obj.vertex_groups}
                 fixed += 1
-        C.log(mesh_obj.name, "shell weights made pure on", fixed, "vertices")
+        C.log(mesh_obj.name, "shell weights made pure on", fixed, "vertices; plate islands per bone",
+              {n_: owners.get(n_, []) for n_ in BS.SHELL_NAMES})
         return out
     C.fuse, C.skin = fuse, skin
 
