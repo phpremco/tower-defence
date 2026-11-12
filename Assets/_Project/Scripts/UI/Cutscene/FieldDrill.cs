@@ -168,9 +168,10 @@ namespace Game.UI
 
         /// <summary>
         /// <paramref name="build"/>: the rig out of the ground (0..1). <paramref name="depth"/>: how far the string has
-        /// sunk (0..1). <paramref name="crack"/>: how far the ground has cracked open (0..1).
+        /// sunk (0..1). <paramref name="crack"/>: how far the ground has cracked open (0..1). <paramref name="sunkAt"/>: the
+        /// moment (on the same clock as <paramref name="time"/>) the string reached the bottom, so its turn runs on from there.
         /// </summary>
-        public void Pose(float build, float depth, float crack, float time, bool loud)
+        public void Pose(float build, float depth, float crack, float time, bool loud, float sunkAt)
         {
             Root.gameObject.SetActive(build > 0f);
             if (_footing != null)
@@ -189,7 +190,7 @@ namespace Game.UI
             _bit.gameObject.SetActive(build >= 1f && _art == null);
             if (_art != null)
             {
-                PoseArt(depth, time);
+                PoseArt(depth, time, sunkAt);
             }
 
             _bit.localPosition = Vector3.up * (_bitLength + BitTop - depth * MaxDepth);
@@ -217,7 +218,7 @@ namespace Game.UI
 
         // While it sinks the Sink clip drives the string (with an extra turn on top); once down, the clip's last frame
         // holds it down and the string turns on its own bone. The Spin clip would lift it back to the top.
-        private void PoseArt(float depth, float time)
+        private void PoseArt(float depth, float time, float sunkAt)
         {
             float sinkLength = _art.LengthOf(ModelClipRole.Deploy);
             _art.Sample(ModelClipRole.Deploy, Mathf.Clamp01(depth) * sinkLength, loop: false);
@@ -226,7 +227,10 @@ namespace Game.UI
                 return;
             }
 
-            float spin = depth >= 1f ? time * SpinDegreesPerSecond : time * SinkSpinDegreesPerSecond * Mathf.Min(1f, depth * 4f);
+            // Round 48: once down it turns faster from where the sinking turn left it (the angle jumped by ~120 deg before).
+            float spin = depth >= 1f
+                ? sunkAt * SinkSpinDegreesPerSecond + (time - sunkAt) * SpinDegreesPerSecond
+                : time * SinkSpinDegreesPerSecond * Mathf.Min(1f, depth * 4f);
             _string.localRotation *= Quaternion.AngleAxis(spin, Vector3.up);
         }
 

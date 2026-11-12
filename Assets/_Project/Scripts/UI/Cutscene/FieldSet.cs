@@ -137,6 +137,16 @@ namespace Game.UI
         private const float ReactTurnAt = 0.3f;
         private const float HandoffLowerAt = 1.6f;
         private const float StowGap = 0.2f;
+        // Round 48: they did not quite (a pop of up to ~600 deg summed over the bones at a beat change): each change inside a shot
+        // now cross-fades over this long, the clip it leaves running on under the new one.
+        private const float HeroBeatFadeSeconds = 0.25f;
+        private const int ReactionBeats = 5;
+
+        // The share of the landing shot over which the beacon unfolds.
+        private const float BeaconDeployFrom = 0.7f;
+        private const float BeaconDeployTo = 0.8f;
+        // The share of the harvest shot over which the haulers lift off one after another.
+        private const float LaunchShare = 0.35f;
 
         // Round 42: his acting beats sound as the clock crosses them (the gasp as he startles, the holster as he draws, the
         // charge whine once the gun is in his hand), only when played forward: a seek or a jumped frame stays silent.
@@ -192,11 +202,15 @@ namespace Game.UI
         private Vector3[] _exitPath = new Vector3[0];
         private float _exitLength;
         private float _landingSeconds;
+        private float _drillSeconds;
+        private float _unfoldSeconds;
         private ParticleSystem _hatchSteam;
         private Light _hatchLight;
 
         private BeaconModel _beacon;
         private CutsceneHeroRig _hero;
+        // When each beat of the reaction starts in its shot (idle, turn, startle, draw, aim), worked out every frame.
+        private readonly float[] _reactionStarts = new float[ReactionBeats];
         private FieldBase _base;
         private FieldDrill _drill;
         private FieldDrones _drones;
@@ -242,6 +256,8 @@ namespace Game.UI
             // The decor is drawn by now: the builders pick their landing spots clear of it.
             _base = new FieldBase(root, _layout, context, root.GetComponentsInChildren<EnvironmentInstancer>(true));
             _layout.PlaceCore(_base.CoreSocket);
+            _drillSeconds = cutscene.CameraLengthOf(CutsceneAction.DrillDown);
+            _unfoldSeconds = cutscene.CameraLengthOf(CutsceneAction.BaseUnfolds);
             float contact = (DrillSinkFrom + FieldDrill.ContactShareOfSink * (DrillSinkTo - DrillSinkFrom)) * cutscene.CameraLengthOf(CutsceneAction.DrillDown);
             _drill = new FieldDrill(root, _layout, context, contact);
             Vector3 heap = _layout.Ground(_drill.Pickup);
@@ -355,7 +371,9 @@ namespace Game.UI
                 _hatch.localRotation = Quaternion.Euler(open * HatchOpenDegrees, 0f, 0f);
             }
 
-            _beacon.Pose(landing ? CutsceneMath.Span(progress, 0.7f, 0.8f) : 1f, time);
+            // Round 48: how long it has stood, so its idle blends in from the end of the unfolding instead of popping.
+            float stood = landing ? (progress - BeaconDeployTo) * _landingSeconds : float.PositiveInfinity;
+            _beacon.Pose(landing ? CutsceneMath.Span(progress, BeaconDeployFrom, BeaconDeployTo) : 1f, time, stood);
             ParticleKit.SetRate(_hatchSteam, landing && progress >= HatchSteamFrom && progress < HatchSteamTo ? HatchSteamRate : 0f);
             float lit = landing ? CutsceneMath.Smooth(CutsceneMath.Span(progress, HatchLightFrom, HatchLightTo)) : 1f;
             _hatchLight.enabled = lit > 0f && !After(CutsceneAction.CoreIgnites);
@@ -477,7 +495,7 @@ namespace Game.UI
         private void PoseBase(float time, float progress)
         {
             float unfold = After(CutsceneAction.BaseUnfolds) ? 1f : At(CutsceneAction.BaseUnfolds) ? progress : 0f;
-            _base.PoseUnfold(unfold, time, AtOrAfter(CutsceneAction.BaseUnfolds));
+            _base.PoseUnfold(unfold, time, AtOrAfter(CutsceneAction.BaseUnfolds), _unfoldSeconds);
             _base.PoseGates(time);
             float ignite = After(CutsceneAction.CoreIgnites) ? 1f : At(CutsceneAction.CoreIgnites) ? CutsceneMath.Span(progress, IgniteFrom, IgniteTo) : 0f;
             // The Crysium the hauler carries in already shines; the core only lights once it sits in its socket.
@@ -495,12 +513,12 @@ namespace Game.UI
         {
             if (At(CutsceneAction.DrillDown))
             {
-                _drill.Pose(CutsceneMath.Span(progress, 0f, DrillBuildTo), CutsceneMath.Span(progress, DrillSinkFrom, DrillSinkTo), CutsceneMath.Span(progress, DrillCrackFrom, 1f), time, true);
+                _drill.Pose(CutsceneMath.Span(progress, 0f, DrillBuildTo), CutsceneMath.Span(progress, DrillSinkFrom, DrillSinkTo), CutsceneMath.Span(progress, DrillCrackFrom, 1f), time, true, DrillSinkTo * _drillSeconds);
                 return;
             }
 
             bool built = After(CutsceneAction.DrillDown);
-            _drill.Pose(built ? 1f : 0f, built ? 1f : 0f, built ? 1f : 0f, time, false);
+            _drill.Pose(built ? 1f : 0f, built ? 1f : 0f, built ? 1f : 0f, time, false, 0f);
         }
 
         // Parked on the pad from the drill shot, off in the harvest shot, the errand with the first crystal in the core
@@ -523,21 +541,21 @@ namespace Game.UI
 
             if (At(CutsceneAction.DronesHarvest))
             {
-                _drones.Pose(time, CutsceneMath.Span(progress, 0f, 0.35f), 1f);
+                _drones.Pose(time, CutsceneMath.Span(progress, 0f, LaunchShare), 1f, LaunchShare * _harvestSeconds);
                 _base.PoseCrystal(false, Vector3.zero, 0f);
                 return;
             }
 
             if (At(CutsceneAction.CoreIgnites))
             {
-                _drones.Pose(_harvestSeconds + time, 1f, 1f, skip: 0);
+                _drones.Pose(_harvestSeconds + time, 1f, 1f, LaunchShare * _harvestSeconds, skip: 0);
                 FieldDrones.Delivery delivery = _drones.PoseDelivery(progress, _harvestSeconds, _base.CoreSocket, time);
                 _base.PoseCrystal(delivery.Carried, delivery.CarriedTop, CutsceneMath.Span(progress, InsertFrom, InsertTo));
                 return;
             }
 
             bool attack = AtOrAfter(CutsceneAction.SwarmPours);
-            _drones.Pose(_harvestSeconds + _coreSeconds + time, 1f, attack ? 0.15f : 1f);
+            _drones.Pose(_harvestSeconds + _coreSeconds + time, 1f, attack ? 0.15f : 1f, LaunchShare * _harvestSeconds);
             _base.PoseCrystal(false, Vector3.zero, 1f);
         }
 
@@ -691,41 +709,59 @@ namespace Game.UI
             Beat(startleAt, time, CutsceneSound.Gasp, GaspVolume);
             Beat(drawAt, time, CutsceneSound.PistolDraw, DrawVolume);
             Beat(drawAt + _hero.EventOf(ModelClipRole.DrawAimNervous), time, CutsceneSound.PistolCharge, ChargeVolume);
-            if (time < ReactTurnAt)
+            _reactionStarts[0] = float.NegativeInfinity;
+            _reactionStarts[1] = ReactTurnAt;
+            _reactionStarts[2] = startleAt;
+            _reactionStarts[3] = drawAt;
+            _reactionStarts[4] = aimAt;
+            int beat = _reactionStarts.Length - 1;
+            while (beat > 0 && time < _reactionStarts[beat])
             {
-                // The idle reaches its first frame as the turn begins, which is the turn clip's first frame turned back.
-                _hero.PoseClip(_layout.DigSite, brood - turn, ModelClipRole.Idle, time - ReactTurnAt, true, false);
-                return;
+                beat--;
             }
 
-            if (time < startleAt)
+            // Round 48: each clip still starts at its moment (the sounds above keep theirs), but the clip it follows runs on under
+            // it for a moment and the body blends across, so the change does not pop.
+            float since = time - _reactionStarts[beat];
+            float share = beat > 0 ? CutsceneMath.Fade(since, HeroBeatFadeSeconds) : 1f;
+            if (share < 1f)
             {
-                float into = time - ReactTurnAt;
-                _hero.PoseClip(_layout.DigSite, brood, ModelClipRole.TurnLookLeft, into, false, false);
-                _hero.Face(ModelClipRole.TurnLookLeft, into);
-                return;
+                PoseReactionBeat(beat - 1, time, brood, turn, 1f - share);
+                _hero.HoldForFade();
             }
 
-            Vector3 back = StartleEnd;
-            if (time < drawAt)
-            {
-                float into = time - startleAt;
-                _hero.PoseClip(back, brood, ModelClipRole.StartleBackstep, into, false, false);
-                _hero.Face(ModelClipRole.StartleBackstep, into);
-                return;
-            }
+            PoseReactionBeat(beat, time, brood, turn, share);
+            _hero.FadeFromHeld(share);
+        }
 
-            if (time < aimAt)
+        // One beat of the reaction at this moment of the shot (a clip played once holds its last frame after its end), with its
+        // face at <paramref name="faceShare"/>: 0 idle, 1 the turn, 2 the startle, 3 the draw, 4 the nervous aim.
+        private void PoseReactionBeat(int beat, float time, float brood, float turn, float faceShare)
+        {
+            float into = time - _reactionStarts[Mathf.Max(1, beat)];
+            switch (beat)
             {
-                float into = time - drawAt;
-                _hero.PoseClip(back, brood, ModelClipRole.DrawAimNervous, into, false, into >= _hero.EventOf(ModelClipRole.DrawAimNervous));
-                _hero.Face(ModelClipRole.DrawAimNervous, into);
-                return;
+                case 0:
+                    // The idle reaches its first frame as the turn begins, which is the turn clip's first frame turned back.
+                    _hero.PoseClip(_layout.DigSite, brood - turn, ModelClipRole.Idle, time - ReactTurnAt, true, false);
+                    return;
+                case 1:
+                    _hero.PoseClip(_layout.DigSite, brood, ModelClipRole.TurnLookLeft, into, false, false);
+                    _hero.Face(ModelClipRole.TurnLookLeft, into, faceShare);
+                    return;
+                case 2:
+                    _hero.PoseClip(StartleEnd, brood, ModelClipRole.StartleBackstep, into, false, false);
+                    _hero.Face(ModelClipRole.StartleBackstep, into, faceShare);
+                    return;
+                case 3:
+                    _hero.PoseClip(StartleEnd, brood, ModelClipRole.DrawAimNervous, into, false, into >= _hero.EventOf(ModelClipRole.DrawAimNervous));
+                    _hero.Face(ModelClipRole.DrawAimNervous, into, faceShare);
+                    return;
+                default:
+                    _hero.PoseClip(StartleEnd, brood, ModelClipRole.AimHoldNervous, into, true, true);
+                    _hero.Face(ModelClipRole.AimHoldNervous, Mathf.Repeat(into, _hero.ClipLength(ModelClipRole.AimHoldNervous)), faceShare);
+                    return;
             }
-
-            float held = time - aimAt;
-            _hero.PoseClip(back, brood, ModelClipRole.AimHoldNervous, held, true, true);
-            _hero.Face(ModelClipRole.AimHoldNervous, Mathf.Repeat(held, _hero.ClipLength(ModelClipRole.AimHoldNervous)));
         }
 
         private void Beat(float at, float time, CutsceneSound sound, float volume)
@@ -776,8 +812,17 @@ namespace Game.UI
                 return;
             }
 
+            // Round 48: the lowered weapon's last frame runs on under the stow for a moment, so the stow does not pop in.
             float stow = time - stowAt;
+            float stowShare = CutsceneMath.Fade(stow, HeroBeatFadeSeconds);
+            if (stowShare < 1f)
+            {
+                _hero.PoseClip(_layout.GuardPost, yaw, ModelClipRole.LowerWeapon, lowered, false, true);
+                _hero.HoldForFade();
+            }
+
             _hero.PoseLayered(_layout.GuardPost, yaw, ModelClipRole.Idle, stow, ModelClipRole.StowPistol, stow, stow < _hero.EventOf(ModelClipRole.StowPistol));
+            _hero.FadeFromHeld(stowShare);
         }
 
         // He cannot believe it: still facing them, he backs away from the gate, the hand comes up to the visor.
@@ -933,7 +978,9 @@ namespace Game.UI
         // turn ends), at the gait the turned angle gives, so the steps keep pace with the turn.
         private void TurnOnTheSpot(Vector3 position, float yaw, float remainingDegrees, float turnedDegrees, float headYaw, float time, bool pistolInHand = false)
         {
-            float stride = TurnStride * Mathf.Clamp01(remainingDegrees / StrideFullAtDegrees);
+            // Round 48: the stride also grows in over the first degrees of the turn, so stepping round starts from the stand
+            // (the run's end, the exit clip's last frame) instead of jumping into a step.
+            float stride = TurnStride * Mathf.Clamp01(remainingDegrees / StrideFullAtDegrees) * CutsceneMath.Smooth(Mathf.Clamp01(turnedDegrees / StrideFullAtDegrees));
             float gait = turnedDegrees / 180f * MetresPerHalfTurn * CutsceneHeroRig.GaitPerUnit;
             _hero.Root.gameObject.SetActive(true);
             if (pistolInHand)

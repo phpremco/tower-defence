@@ -25,6 +25,9 @@ namespace Game.Core
         // The far mesh from its own file (the art's Lod1) on its own rig, posed alongside the near one; null without.
         private readonly Transform _farRig;
 
+        // The pose a SampleOver blends from; made the first time one is asked for (most models never blend by sampling).
+        private PoseSnapshot _blend;
+
         private ArtModel(ModelArtDefinition art, Transform root, Material material, bool ownMaterial, ModelClipPlayer player, Renderer[] renderers, Transform farRig)
         {
             _farRig = farRig;
@@ -115,6 +118,30 @@ namespace Game.Core
                 clip.FarClip.SampleAnimation(_farRig.gameObject, Mathf.Min(time, clip.FarClip.length));
             }
 
+            return true;
+        }
+
+        /// <summary>
+        /// Round 48: samples the clip of a role over the pose the model shows, by <paramref name="weight"/> 0..1 (0 leaves the
+        /// pose, 1 is <see cref="Sample"/>): a cross-fade a sampled rig can work out from the shot time alone. False when the
+        /// model has no such clip (the pose is left as it was).
+        /// </summary>
+        public bool SampleOver(ModelClipRole role, float seconds, bool loop, float weight)
+        {
+            if (weight <= 0f || Art.IndexOf(role) < 0)
+            {
+                return false;
+            }
+
+            if (weight >= 1f)
+            {
+                return Sample(role, seconds, loop);
+            }
+
+            _blend ??= new PoseSnapshot(Root);
+            _blend.Capture();
+            Sample(role, seconds, loop);
+            _blend.BlendFromCaptured(weight);
             return true;
         }
 

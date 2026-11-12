@@ -34,6 +34,44 @@ namespace Game.UI
         /// <summary>How long a turn of <paramref name="degrees"/> takes at <paramref name="degreesPerSecond"/> on average.</summary>
         public static float TurnSeconds(float degrees, float degreesPerSecond) => degreesPerSecond > 0f ? Mathf.Abs(degrees) / degreesPerSecond : 0f;
 
+        /// <summary>
+        /// Round 48: the share of a cross-fade <paramref name="since"/> seconds after it began, eased in and out over
+        /// <paramref name="seconds"/>; 1 once it is over, or at once when it has no length.
+        /// </summary>
+        public static float Fade(float since, float seconds) => seconds > 0f ? Smooth(Mathf.Clamp01(since / seconds)) : 1f;
+
+        /// <summary>
+        /// Round 48: the moment of sample <paramref name="index"/> (0 to <paramref name="count"/>, both included) of a window of
+        /// <paramref name="width"/> centred on <paramref name="centre"/>, for a heading or a clip weight averaged over the moments
+        /// around now. The samples sit on a fixed grid (width / count apart) rather than moving with the moment, and
+        /// <see cref="WindowWeight"/> fades them in and out at the window's edges, so the average changes smoothly from frame to
+        /// frame: a step in the raw value becomes a ramp, worked out from the moment alone (a seek lands on the same value).
+        /// </summary>
+        public static float WindowAt(int index, int count, float centre, float width)
+        {
+            if (width <= 0f || count <= 0)
+            {
+                return centre;
+            }
+
+            float step = width / count;
+            return (Mathf.Ceil((centre - width * 0.5f) / step) + index) * step;
+        }
+
+        /// <summary>
+        /// Round 48: the weight of a sample at <paramref name="at"/> in that window: a triangle peaking at the centre and zero at
+        /// the edges. Divide the weighted sum by the sum of the weights. Without a width only the centre counts.
+        /// </summary>
+        public static float WindowWeight(float at, float centre, float width)
+        {
+            if (width <= 0f)
+            {
+                return Mathf.Approximately(at, centre) ? 1f : 0f;
+            }
+
+            return Mathf.Max(0f, 1f - Mathf.Abs(at - centre) / (width * 0.5f));
+        }
+
         /// <summary>A stable pseudo-random number in 0..1 for an index, so seeded scatter never changes between runs.</summary>
         public static float Hash(int index, int salt)
         {

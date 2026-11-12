@@ -49,6 +49,8 @@ namespace Game.UI
         private const float RunCrouch = 0.04f;
         private const float DrawHandOver = 0.45f;
         private const float RunAbove = 0.5f;
+        // Round 48: from this stride on the walk or run shows in full; below it the cycle blends over the idle.
+        private const float CycleFullAtStride = 0.3f;
         private const string HeadBone = "Head";
         private const string SpineBone = "Spine2";
         private const string UpperArmBone = "UpperArm_R";
@@ -108,6 +110,12 @@ namespace Game.UI
         private bool _drawn;
         private readonly Transform[] _feet = new Transform[0];
 
+        // Round 48: the pose a beat change inside a shot blends from (every node of the model, and the root), so a new clip fades
+        // in instead of popping; held and blended anew every frame, so a sought moment shows the same blend.
+        private PoseSnapshot _held;
+        private Vector3 _heldPosition;
+        private Quaternion _heldRotation;
+
         // Round 44: the clip this pose sampled (the one that carries the feet) and the one the last step check saw, so a
         // footstep sounds only when the clip's clock crosses one of its baked footfalls.
         private ModelClipRole _sampledRole;
@@ -145,6 +153,7 @@ namespace Game.UI
                 _face = new FaceRig(_art.Renderers, hero.Art.FaceShapes());
                 _feet = FindFeet(_art);
                 _nodes = _art.Root.GetComponentsInChildren<Transform>(true);
+                _held = new PoseSnapshot(_art.Root);
                 _fadePositions = new Vector3[_nodes.Length];
                 _fadeRotations = new Quaternion[_nodes.Length];
 
@@ -393,6 +402,38 @@ namespace Game.UI
         }
 
         /// <summary>
+        /// Round 48: keeps the pose just made (the beat a shot is leaving, posed at this moment) for <see cref="FadeFromHeld"/>.
+        /// Pose the old beat, hold it, pose the new beat, fade: the clip change inside a shot blends instead of popping.
+        /// </summary>
+        public void HoldForFade()
+        {
+            if (_held == null)
+            {
+                return;
+            }
+
+            _held.Capture();
+            _heldPosition = Root.position;
+            _heldRotation = Root.rotation;
+        }
+
+        /// <summary>
+        /// Round 48: blends from the held pose to the pose just made, <paramref name="share"/> 0 the held one, 1 the new; the root
+        /// moves and turns with it, so a beat that starts a little aside or turned comes round instead of jumping.
+        /// </summary>
+        public void FadeFromHeld(float share)
+        {
+            if (_held == null || share >= 1f)
+            {
+                return;
+            }
+
+            float weight = Mathf.Clamp01(share);
+            _held.BlendFromCaptured(weight);
+            Root.SetPositionAndRotation(Vector3.Lerp(_heldPosition, Root.position, weight), Quaternion.Slerp(_heldRotation, Root.rotation, weight));
+        }
+
+        /// <summary>
         /// A clip that moves the upper body only (the stow) over a cycle that carries the legs: the cycle first, the clip on top.
         /// </summary>
         public void PoseLayered(Vector3 position, float yawDegrees, ModelClipRole cycle, float cycleSeconds, ModelClipRole top, float topSeconds, bool pistolInHand)
@@ -629,7 +670,16 @@ namespace Game.UI
             ModelClip clip = _artDefinition.Body.Clips[Mathf.Max(0, _artDefinition.Body.IndexOf(cycle))];
             float distance = gait / GaitPerUnit;
             float phase = clip.DistancePerLoop > 0f ? distance / clip.DistancePerLoop * clip.Length : time;
-            _art.Sample(cycle, phase, loop: true);
+            // Round 48: a short stride (a walk setting off or coming to a stop, a turn on the spot) is the cycle over the idle by
+            // the stride, so starting and stopping blend instead of popping from the idle into a full step. The feet (and the
+            // footfalls) still follow the cycle whenever he steps at all, as before.
+            float weight = CutsceneMath.Smooth(Mathf.Clamp01(stride / CycleFullAtStride));
+            if (weight < 1f)
+            {
+                _art.Sample(ModelClipRole.Idle, time, loop: true);
+            }
+
+            _art.SampleOver(cycle, phase, true, weight);
             Sampled(cycle, phase, true);
         }
 

@@ -6465,3 +6465,243 @@ generator run. Save `progress.json` **2eca347e** copied aside before each Play M
 
 1. The Wisp's face is small inside its glowing rings; it reads only up close.
 2. A Mirebat-specific glow (0.85, 1, 0.6 was suggested) needs a `Bat_Mire` skin first; today it shares the moss row.
+
+## Round 48: smooth opening-cutscene animation (2026-11-12)
+
+Round 47's open point 1: the opening's rigs are posed by sampling clips from the shot time, so round 47's clip-player
+cross-fades did not reach them. Measured first, then fixed what the numbers showed. No Blender clips, ArtSource or
+Tools/Blender touched; no generator run; no asset changed. Every blend is worked out from the shot time alone, so a seek or
+a skip lands on the same pose as a played frame. Beat timing and sounds (footfalls, gasp, draw, charge, landings, roars,
+burrow closes) are unchanged.
+
+### Probe (`Tools/PlayTest/r48_*`)
+
+`r48_cut.sh` plays the opening into the level, like `r47_cut.sh`. `r48_rec_start.cs` is round 47's recorder plus the shot
+and the shot time on every row. The yaw is now the turn about world up, summed frame by frame: Euler yaw flipped by 180 deg
+on the Z-up imported drones, which read as false snaps. `r48_rec_report.cs` counts a jump on the frame the shot changes as
+a cut jump (a hard cut hides it), not as a pop or a yaw snap, and lists every yaw snap with its shot and time. Output goes
+to `Logs/r48/`.
+
+### Findings (before)
+
+- **Commander:**
+  - Hard beat changes inside a shot: idle -> turn 126 deg plus a 90 deg root yaw jump; the run's end into turning on the
+    spot 606 deg and 252 deg; lowered weapon -> stow 423 deg.
+  - Any stride above zero switched straight from the idle into a full walk or run step.
+- **Haulers and builders:** clips switched (rest / work / move) and the heading snapped.
+  - The haulers flipped 180 deg at the heap and pad dips, where they nearly stop and double back. A narrow probe also
+    snapped them to a fixed heading.
+  - The builders snapped between facing their module, their travel direction and the base.
+  - Rotors jumped at lift-off and on landing.
+- **Beacon:** the unfolding switched to the idle (160 deg).
+- **Drill:** the string's spin angle jumped when it reached the bottom (121 deg).
+- **Burrows:** closing jumped from the idle into the opening's last frame (up to 189 deg).
+- **Not a problem:** the creatures and the Queen (round 47's player and facing ease already covered them), the ships and
+  capsules, and the base modules (their jumps are at cuts only).
+
+### Fixes
+
+- **`Core/ModelArt/PoseSnapshot`** (new): keeps every node's local pose and blends from it. On top of it,
+  **`ArtModel.SampleOver(role, seconds, loop, weight)`** samples a clip over the current pose by a weight. Blends use
+  round 47's `ClipMixer.DefaultCycleBlendSeconds` where a clip-to-clip default fits.
+- **Commander** (`CutsceneHeroRig.HoldForFade` / `FadeFromHeld`, `FieldSet`):
+  - Each beat change inside a shot cross-fades over 0.25 s (`HeroBeatFadeSeconds`): idle -> turn -> startle -> draw ->
+    nervous aim, and lowered weapon -> stow. The beat he leaves runs on under the new one, and the root position and
+    heading blend with it.
+  - A stride below 0.3 blends the walk or run over the idle. Footfalls still follow the cycle.
+  - Turning on the spot grows its stride in over the first 30 deg of the turn.
+- **Drones** (`CutsceneDrone.PoseMixed`, `FieldDrones`, `FieldBase`):
+  - Rest, work and move blend by share instead of switching.
+  - Headings are averaged by angle (new `HeadingBlend`) over a window of about 0.5 s around now. The samples sit on a fixed
+    grid, with triangle weights from `CutsceneMath.WindowAt` / `WindowWeight`. Averaging by angle means a doubling back
+    turns instead of cancelling out and flipping.
+  - Haulers hold their heap-facing heading while they only rise or sink, turn from their parked heading as they lift off,
+    and spin their rotors up from rest.
+  - Builders' rotors stop where they were when they land.
+- **Beacon:** the unfolding's last frame blends into the idle. **Drill:** the spin runs on from where the sinking left it.
+  **Burrows:** the idle blends into the closing.
+
+### Before / after (opening cutscene played into the level; in-shot frames only, jumps at cuts counted separately)
+
+| rig | pops | yaw snaps | max yaw deg/s |
+| --- | --- | --- | --- |
+| Commander (Mercer) | 5 (up to 606 deg) -> 0 | 1 -> 0 | 8115 -> 540 |
+| Builder drones | 1 -> 0 | 79 -> 4 (20-107 deg in a frame) | 32498 -> 2344 |
+| Hauler drones | 1 -> 1 (rotor spin-up, 152 deg) | 124 (Euler yaw, partly false) -> 0 | 32781 -> 971 |
+| Beacon | 1 (160 deg) -> 2 small (12/22 deg) | - | - |
+| Drill | 1 (121 deg) -> 0 | - | - |
+| Burrows | 3 (up to 189 deg) -> 0 | - | - |
+| Total | 15 -> 6 | 204 -> 4 | - |
+
+- **Frame time:** 6.59 ms mean / 10.97 ms p95 before. The final run measured 10.71 / 32.44 ms, but it ran while Blender
+  jobs held two CPU cores. A cleaner earlier run on nearly final code (no Blender load) measured 7.03 / 11.72 ms.
+- **The two small beacon pops:** these sit on frame-time spikes from the same load.
+
+### Tests and checks
+
+- **EditMode on w6:** 826 tests, 774 passed, 52 skipped, 0 failed. That is 821 before plus 5 new `CutsceneBlendTests`:
+  - fade share
+  - the fixed-grid window
+  - a step in heading becoming a ramp
+  - the angle average turning through opposite headings
+  - the pose snapshot
+- **Recompile:** 0 errors, 0 warnings. One existing CS0618 warning, in `Tests/PlayMode/BalanceProbeTests.cs` line 601, shows
+  in the console when that assembly rebuilds; it is not from this round.
+- **Opening played into the level on the final code:** 0 errors, 0 warnings. The save MD5 2eca347e... was restored after
+  every run.
+
+### Open points (round 48)
+
+1. The builders keep 4 quick turns (20-107 deg in a frame) where a leg ends on top of the next one's start (a stop and an
+   immediate turn). A wider `BuilderWindowSeconds` would soften them at the cost of a lazier nose.
+2. The hauler's rotors visibly start at lift-off: the rotor pop is the spin starting, not a pose jump.
+3. Blend lengths to tune by eye: `HeroBeatFadeSeconds` (0.25 s) in `FieldSet`, `BuilderWindowSeconds` (0.5 s) in
+   `FieldBase`, `HeadingWindow` in `FieldDrones`.
+
+## Round 49A (Blender): Prowler and PackAlpha as alien wolves, the rays get a mouth and a tail, the slugs lose their roundness (2026-11-12)
+
+Not committed. Blender only (no Unity run, nothing under `Assets/`). Remco's verdicts ("Opnieuw") on six models worked through.
+Backups of the six exports and their `.blend` files: `ArtSource/Exports/_backup_r49/<Name>/` (gitignored, plus the old
+`Corrupted_skins_report.json`). Previews (bright light, play-camera angle and close-ups): `ArtSource/Previews/QA/r49_<name>_before.png`
+and `_after.png` (panels `_game` = play camera 44 degrees orthographic, `_close` = 3/4 head, `_move` = run/fly/crawl mid-pose,
+`_front`, `_mouth`), plus `r49_<name>_after_clips.png` (every clip, four frames) and `r49_<name>_after_clip_steps.json`.
+
+### What changed
+
+- **Prowler + PackAlpha** (`Tools/Blender/wolf_kit.py`, new, shared): one alien-wolf anatomy at two sizes. Deep narrow keel chest
+  over a tucked-up waist, long forelegs and digitigrade hind legs on four-toed paws, a thick raised neck under a ruff of fur-like
+  quill plates that continues down the spine, a wolf skull with a long muzzle, two pairs of tall swept ear blades, a split lower
+  jaw (two mandible halves that now drop and splay a little instead of opening sideways like shears), a drooping brush tail;
+  orange glow in the plate seams (tiger stripes) and the throat. No reptile spine crest, no shear jaws, no armour ribs.
+  Face part: two eyes per side under the brow ridge (Alpha: three), upper canines and teeth under the muzzle, lower fangs on
+  both jaw halves; Claws: a talon on each of the four toes. PackAlpha = the same species x1.65 with a heavier front (chest x1.28,
+  thicker legs), a collar of long glowing plates on the Mane bones (flares on the howl), two pale bone horns, a bone chevron on the
+  withers, glowing flank scars.
+- **Skyray + ray boss** (export `StormMatriarch`, Unity row `RayBoss` on the Sky Sovereign): broad blunt manta head; the Pincer bones
+  now carry rolled cephalic lobes without teeth; a wide mouth across the front edge (dark red-violet maw, lower lip plate on a new
+  `Jaw` bone, at rest 5 degrees open, it opens with the lobes' flare, e.g. on the Dive impact and on Hit); the teeth sit on the
+  upper and lower lip (`skyray_detail.mouth_teeth`). The tail is long, thick and lighter blue with a lit cyan dorsal line, rows of
+  backward hooks and a big barbed spade (flat glowing arrowhead, two harpoon hooks, saw barbs along its edges in the Claws part)
+  (`build_skyray.tail_parts`, used by both). The ray boss keeps its crown, charge horns, hatches and capacitor beads; two charge
+  nodes sit at the spade root. Claws: fin-tip talons + spade barbs (the pincer tips and trident tines are gone).
+- **Oozer + SlimeMonarch**: the body is uneven rolls of different sizes, slumping onto a slime foot with a ragged outline, an
+  off-centre lumpy mantle, a drooping lumpy hood over a slack open maw, a thick sagging lower lip, soft glowing blisters instead of
+  the spine row (`build_oozer.lumpy`, seeded; the body is **not mirrored any more**: left and right differ, whole-body UVs, not
+  symmetric-decimated; only hood and lip are symmetric because the face parts are). The round lamprey mouth is gone: the Face part
+  has translucent lime slime teeth (hanging from the hood, standing on the lip, uneven), goo strands between the jaws and drips
+  under the lip, in front of a dark throat (`oozer_detail.slime_mouth`, used by the SlimeMonarch at its size). Eye stalks, sacs and
+  crown spines unchanged.
+
+### Unity import list (exact)
+
+All six exports re-exported (FBX + LOD1 FBX + body maps + part maps + Low/ + report + `Skins/Corrupted/`):
+
+| Catalog row (export) | Bones | Clips / events | Parts | Maps | Other |
+| --- | --- | --- | --- | --- | --- |
+| Prowler (Prowler) | same 22 names (LOD1 14) | same 6 clips and lengths; Strike impact 10 | Face + Claws (names unchanged) | body + parts + corrupted re-baked | `run_distance_per_loop` 1.19 -> 1.429 (longer stride); model is taller (shoulder ~0.6 model units): health-bar `_height` should be re-measured |
+| PackAlpha (PackAlpha) | same 24 (LOD1 18) | same 5 clips; Howl peak 22 | Face + Claws | all re-baked | `run_distance_per_loop` 1.907 -> 2.2; taller, re-measure `_height` |
+| Skyray (Skyray) | 22 -> **23: new `Jaw`** (child of Head; LOD1 folds it into Head, still 12) | same 5 clips; Dive impact 10 | Face + Claws | all re-baked (no bead eyes on the body any more) | tail now reaches 1.5 + spade (was 1.3): bounds grow |
+| RayBoss (StormMatriarch) | 26 -> **27: new `Jaw`** (LOD1 still 16) | same 5 clips; Release frame 30 | Face + Claws (Claws LOD1 319 -> 128 tris) | all re-baked | tail laser still from `Tail_5` (now at the spade root) |
+| Oozer (Oozer) | same 9 (LOD1 7) | same 5 clips; Strike impact 10 | Face only | all re-baked, **UV layout now unmirrored** | the mouth moved lower (front at ~0.09 up, 0.45 forward) |
+| SlimeMonarch (SlimeMonarch) | same 13 (LOD1 11), Sac_L/Sac_R sockets unchanged | same 7 clips; Flood slam 24, Spawn release 30, Strike impact 13 | Face only | all re-baked, unmirrored UVs | |
+
+Tri counts stay on budget (Prowler 3904/1700, PackAlpha 14430/5998, Skyray 3832/1699, StormMatriarch 13467/5999, Oozer
+3800/1700, SlimeMonarch 13000/6000; part tris in each report's `r46_detail`/`r45_detail`). No catalog code change is needed
+beyond a `RebuildOnly` of the six rows plus their corrupted rows; `ExtraParts` names are unchanged. Unity code does not look up
+the new `Jaw` bone. Check in game: the Oozer/SlimeMonarch art `_height`, the wolves' footfall/gait rate with the new distance
+per loop, and that the ray mouths read at play zoom.
+
+### Clips
+
+Clip functions, names, lengths and event frames are the same; they are re-keyed on the new rigs. Changes: the wolf jaw opens
+downward (`wolf_kit.jaw_rot`); a `NECK_BIAS` of 12 degrees keeps the old neck angles relative to the raised wolf neck; the rays'
+`specs_for` drives the new Jaw from the lobe flare. Per-frame steps (largest bone turn per frame, armature space): no new snaps;
+the largest values are the authored ones (Prowler Strike neck 28 deg on the lunge frame, Skyray Dive tail tip 41 deg on the whip
+crack, hit reactions on frame 1); cycles are even (ratio to median <= 2.3 in Run/Fly/Crawl/Idle).
+
+### Open points (round 49A)
+
+1. The corrupted-skin report is shared with the parallel Blender agent; I merged it by hand (27 entries) after both runs.
+2. The Prowler's legs are lean on purpose (wolf); if they read too thin at play zoom, `wolf_kit` leg radii are one number.
+3. The rays' upper teeth are small from directly above; they show best from the play camera's front-oblique view.
+
+## Round 49B (Blender): Cragback, Cinder Matriarch's head, Knitback, Slagstrider, Siftjaw, Surgefin (2026-11-12)
+
+Blender only; nothing under `Assets/` touched, Unity not run, not committed. Backups of every overwritten export and
+.blend: `ArtSource/Exports/_backup_r49/<Name>/` (gitignored). Design reasoning: `ArtSource/DESIGN_NOTES.md`, "Round 49B".
+
+### What changed (per Remco's verdict)
+
+- **Cragback** (redo): a walking lava field. Cooled crust floes on a dome over the molten core (gaps glow); the only
+  spikes are basalt columns standing in the open fissure down the spine (logical: columnar jointing); three vent
+  cones with lava craters on the rear, with new smoke sockets; a broad skull with a V brow ram and two stub basalt
+  horns; **two pairs** of slanted ember eyes in dark sockets (no single eye); molten throat, lava drips under the
+  belly. Basalt grey a step cooler so the lava orange carries the colour. Boss check: the Cragback has **no species
+  boss**; the Cinder Matriarch is the Slagstrider's mother (DESIGN_NOTES), and the Frost Warden is the boss that
+  summons Cragbacks.
+- **Cinder Matriarch** (scarier head): broader skull, two brow ridges in a V over deep glowing sockets, the eyes as
+  narrow almonds under round-45 organic socket folds (no lid rings), a flared slag hood with ember shards, longer
+  great horns and forward brow horns, a heavy underjaw with a chin spike, obsidian cheek spikes, a wider maw, longer
+  hooked mandibles, two sabre fangs. Body, sac, legs and all clips are unchanged.
+- **Knitback** (from scratch): a low stalker on four tall root legs (burled, thorned knees above the back); heartwood
+  ribs curl over the three sap pods, so from above it is a star of thorns round a glowing heart; long skull, narrow
+  bark mask, two pairs of amber eyes, pincer thorn tusks, branching antlers, a splintered collar, thorned tendrils.
+- **Slagstrider** (from scratch): a walking crucible. A slag-plated teardrop between four stilts with serrated
+  obsidian blade thighs, glowing spiked knees and pointed slag foot cones; furnace chimneys and spines on the spine;
+  a crusted molten sac with a drip spout (bone `Drip`, same place); an armoured wedge head with slit jaw, blade
+  mandibles, back-spike crown and three ember eyes per side.
+- **Siftjaw** (from scratch): an armoured arrowhead. Shovel scoop with five red eyes on its crown, two great serrated
+  **sickle jaws** (Jaw_L/Jaw_R), a chevron thorax shield with back-raked umber side spikes, spined abdomen plates,
+  a fluted twisted drill, toothed spades, darker limbs; glowing lamprey gullet under the scoop.
+- **Surgefin** (finish): five taller ragged sails with spines past the rim, bony scutes, a pale ribbed belly, a
+  lateral line of photophores, brow ridges, cheek spines, coral external gill fronds, a hooded lure, a double tail
+  fin, a rougher, less glossy skin.
+
+### Unity import list
+
+Rows to rebuild (`BlenderArtBuilder.RebuildOnly`): **Cragback, Knitback, Slagstrider, Siftjaw, Surgefin,
+CinderMatriarch** and the corrupted-skin rows of the first five (`Skins/Corrupted` re-baked on the new UVs).
+CinderMatriarch has no corrupted skin. FireLarva and CinderEgg were **not** re-exported.
+
+| Export | Tris LOD0 / LOD1 | Bones LOD0 / LOD1 | Clips (names, frames) | Parts (tris LOD0/LOD1) | Detail families (B, A) |
+| --- | --- | --- | --- | --- | --- |
+| Cragback | 3893 / 1699 | **22 / 13** (was 19 / 10) | unchanged: Walk 32, Idle 72, Hit 14, Death 40, Strike 24 (impact 10) | Face 332/84, Claws 216/84 | rock, **membrane** (was crystal) |
+| Knitback | 3886 / 1700 | 18 / 12 | unchanged: Walk 40, Idle 72, Hit 14, Death 44, Regrow 48 | Face 336/84, Claws 196/68 | chitin, membrane |
+| Slagstrider | 3954 / 1698 | 13 / 8 | unchanged: Walk 36, Idle 72, Hit 12, Death 42 | Face 330/84, Claws 212/76 | rock, membrane |
+| Siftjaw | 3957 / 1697 | 19 / 12 | unchanged: Walk 24, Idle 60, Hit 12, Death 40, Burrow 36 (under 24), Emerge 36 (breach 8) | Face 337/74, Claws 184/76 | chitin, membrane |
+| Surgefin | 3939 / 1699 | 16 / 10 | unchanged (Walk, Swim, Idle, Hit, Death, Emerge 48 / surface 10) | Face 352/84, Claws 180/60 | membrane, chitin |
+| CinderMatriarch | 23107 / 8998 | 30 / 25 | unchanged (18 clips incl. round-28 mechanics and round-33 gate clips) | Eyes 1300/360, Teeth 1486/460, Claws 1519/497 | per material, as before |
+
+- **Bone changes:** only the Cragback gains **`Smoke_1`** (parent `Plate_C`), **`Smoke_2`** (`Plate_R`) and
+  **`Smoke_3`** (`Plate_L`): sockets at the three crater mouths, bone +Y up out of the crater, deform flag on with no
+  weights (so the FBX keeps them), also in LOD1 (parented to `Body` there). The report lists them under
+  `r49_smoke_sockets`. Socket for a later smoke/ember particle effect; no data uses them yet. Every other bone name
+  is unchanged. Rest positions moved where the bodies changed (Knitback `Head` tail and the `Pod_n` bones, which are
+  slightly taller); the Slagstrider's `Drip` is in the same place.
+- **Clips, events, part names:** identical names, frame counts and event frames on all six; the Regrow event socket
+  `Pod_1`, the Spawn sockets `Vent_1..3` and the trail bone `Drip` are kept. ExtraParts stay `Face`+`Claws` (five
+  species) and `Eyes`+`Teeth`+`Claws` (Cinder Matriarch).
+- **Report changes:** Knitback `walk_distance_per_loop` 0.194 -> **0.25** (longer legs, stride 0.18); others the same.
+  Cragback detail families changed (its second mask channel is now membrane, no crystal left on it).
+- **Maps:** every body and part map of the six exports is re-baked (new UVs); the Low/ sets too.
+- `ArtSource/Exports/Corrupted_skins_report.json`: `build_corrupted_skins.py` now **merges** into the shared report
+  (an `--only` run used to overwrite it). It was restored from git HEAD plus this round's five entries; round 49A's
+  re-baked species keep their HEAD coverage numbers in it (only `vein_coverage` text, no maps affected).
+
+### Previews (`ArtSource/Previews/QA/`)
+
+`r49_<name>_before.png` / `r49_<name>_after.png` (2x2: play-camera angle framed on the creature, 3/4 close-up, walk
+mid-pose from the side, play camera at in-game size), `r49_<name>_walk.png` (walk mid-pose) and
+`r49_<name>_after_face.png` (two face close-ups) for cragback, cindermatriarch, knitback, slagstrider, siftjaw,
+surgefin. Tools: `Tools/Blender/r49_preview.py` (sheets), `Tools/Blender/r49_quick.py` (fast unbaked look at a
+build script's parts).
+
+### Open points (round 49B)
+
+1. Unity: a smoke/ember emitter on the Cragback's `Smoke_1..3` (light, as Remco asked: "lightly smoking").
+2. The Cragback's crust floes are chiselled ellipsoids; up close a few read as stacked pebbles.
+3. The Knitback's ribs read as bars from a pure side view; from the play camera they read as a thorn crown.
+4. Siftjaw keeps a low, crab-like plan (it burrows); the sickle jaws and the arrowhead carry it. Its jaws are a bit
+   metallic in close-ups.
+5. Not seen in Unity yet: check the new silhouettes at play zoom after the import, especially the Slagstrider's
+   long stilts against the health bar height.

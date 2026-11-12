@@ -378,7 +378,9 @@ namespace Game.UI
             if (closing > 0f)
             {
                 float openLength = model.LengthOf(ModelClipRole.Open);
-                model.Sample(ModelClipRole.Open, Mathf.Max(0f, openLength - closing), loop: false);
+                // Round 48: the idle it was showing runs on under the closing for a moment, so the maw does not pop into the
+                // opening's last frame (it did, by up to ~190 deg summed over its slabs).
+                model.SampleOver(ModelClipRole.Open, Mathf.Max(0f, openLength - closing), false, CutsceneMath.Fade(closing / CloseSpeed, ClipMixer.DefaultCycleBlendSeconds));
                 glow *= 1f - CutsceneMath.Span(closing, 0f, openLength);
             }
 

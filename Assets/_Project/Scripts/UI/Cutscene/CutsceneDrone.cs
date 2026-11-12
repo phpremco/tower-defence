@@ -187,12 +187,50 @@ namespace Game.UI
                 _art.Sample(ModelClipRole.Idle, time, loop: true);
             }
 
+            Turn(rotorDegrees);
+            Light(loaded);
+        }
+
+        /// <summary>
+        /// Round 48: poses the drone between its three cycles by share instead of switching: the work hover at
+        /// <paramref name="time"/>, the flight cycle over it by <paramref name="move"/>, and the rest pose (the idle's first frame,
+        /// where its feet were measured) over both by <paramref name="rest"/>; rotors and pod as <see cref="Pose"/>. The shares
+        /// come from the moment alone, so a sought frame shows the same blend.
+        /// </summary>
+        public void PoseMixed(float move, float rest, float time, float rotorDegrees, bool loaded)
+        {
+            if (_art == null)
+            {
+                PoseProcedural(rotorDegrees, loaded);
+                return;
+            }
+
+            if (move < 1f && rest < 1f && !_art.Sample(ModelClipRole.Work, time, loop: true))
+            {
+                _art.Sample(ModelClipRole.Idle, time, loop: true);
+            }
+
+            if (rest < 1f && !_art.SampleOver(ModelClipRole.Move, time, true, move) && move >= 1f)
+            {
+                _art.Sample(ModelClipRole.Idle, time, loop: true);
+            }
+
+            _art.SampleOver(ModelClipRole.Idle, 0f, false, rest);
+            Turn(rotorDegrees);
+            Light(loaded);
+        }
+
+        private void Turn(float rotorDegrees)
+        {
             for (int i = 0; i < _rotors.Length; i++)
             {
                 float turn = i % 2 == 0 ? rotorDegrees : -rotorDegrees;
                 _rotors[i].localRotation = _rotorRest[i] * Quaternion.AngleAxis(turn, Vector3.up);
             }
+        }
 
+        private void Light(bool loaded)
+        {
             if (_cargo != null)
             {
                 _cargo.SetColor(EmissionColorId, _cargoGlow * (loaded ? 1f : EmptyCargoGlow));

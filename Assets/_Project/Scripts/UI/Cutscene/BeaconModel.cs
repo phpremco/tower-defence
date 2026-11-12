@@ -107,8 +107,11 @@ namespace Game.UI
 
         public Transform Root { get; }
 
-        /// <summary>Unfolds the beacon (0 folded and dark, 1 standing and lit) and pulses its lamp.</summary>
-        public void Pose(float deploy, float time)
+        /// <summary>
+        /// Unfolds the beacon (0 folded and dark, 1 standing and lit) and pulses its lamp; <paramref name="stood"/> is how long it has
+        /// stood unfolded (round 48: its idle blends in from the unfolding's last frame over the first moment).
+        /// </summary>
+        public void Pose(float deploy, float time, float stood = float.PositiveInfinity)
         {
             deploy = Mathf.Clamp01(deploy);
             float legs = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(deploy * 2f));
@@ -123,12 +126,12 @@ namespace Game.UI
             _pool.SetActive(mast > 0.5f);
             if (_art != null)
             {
-                PoseArt(deploy, time, lit);
+                PoseArt(deploy, time, lit, stood);
             }
         }
 
         // Unfolding follows the Deploy clip over the deploy share, then the idle loops; the lamp's glow pulses with the light.
-        private void PoseArt(float deploy, float time, float lit)
+        private void PoseArt(float deploy, float time, float lit, float stood)
         {
             // Folded in the commander's hands until he plants it.
             _art.SetActive(deploy > 0f);
@@ -138,7 +141,13 @@ namespace Game.UI
             }
             else
             {
-                _art.Sample(ModelClipRole.Idle, time, loop: true);
+                float share = CutsceneMath.Fade(stood, ClipMixer.DefaultCycleBlendSeconds);
+                if (share < 1f)
+                {
+                    _art.Sample(ModelClipRole.Deploy, _art.LengthOf(ModelClipRole.Deploy), loop: false);
+                }
+
+                _art.SampleOver(ModelClipRole.Idle, time, true, share);
             }
 
             _art.Material.SetColor(EmissionColorId, _artGlow * Mathf.Max(0.15f, lit));

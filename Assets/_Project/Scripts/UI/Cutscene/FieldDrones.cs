@@ -39,6 +39,23 @@ namespace Game.UI
         private const float HeadingProbe = 0.012f;
         private const float LaneSwing = 0.9f;
         private const float HoverSpeed = 0.8f;
+
+        // Round 48 (smooth motion): half the stretch of the loop (loop share, about 0.3 s) either side of the moment that the nose
+        // follows the way over, in HeadingSamples steps; the share of the take-off over which a hauler comes round from its parked
+        // heading and out of its rest pose; how far either side of the hover speed the flight cycle blends with the work hover; the
+        // errand's own half window (share of its shot) and the weight (metres a share) of the way to the core that holds its nose
+        // while it only rises or sinks, and of the way to the heap that holds a flock drone's while it rises off
+        // or sinks to the pad (metres per HeadingProbe step). Headings are averaged by angle over the window (HeadingBlend), so where a drone doubles back
+        // it comes round instead of reversing in a frame.
+        private const float HeadingWindow = 0.035f;
+        private const float LiftOffShare = 0.25f;
+        private const float HoverBlend = 0.35f;
+        private const float ErrandHeadingWindow = 0.04f;
+        private const float ErrandHoldWeight = 0.05f;
+        private const float FlockHoldWeight = 0.02f;
+        private const int HeadingSamples = 8;
+        private const float LiftStagger = 0.55f;
+        private const float LiftSpan = 0.45f;
         private const float FanShare = 0.35f;
         // Cinematic scale: at their real size next to the drill the haulers read as specks in a wide shot.
         private const float HaulerScale = 2.2f;
@@ -150,9 +167,10 @@ namespace Game.UI
         /// <summary>
         /// Flies the flock at <paramref name="clock"/> (seconds since the first take-off). <paramref name="launch"/> 0..1
         /// staggers the take-off from the pad; <paramref name="loudness"/> sets the fan hum; drone
-        /// <paramref name="skip"/> (or none with -1) is on an errand of its own.
+        /// <paramref name="skip"/> (or none with -1) is on an errand of its own. <paramref name="launchSeconds"/> is how long the
+        /// launch takes on the clock (round 48: each hauler's rotors spin up from rest the moment it lifts off).
         /// </summary>
-        public void Pose(float clock, float launch, float loudness, int skip = -1)
+        public void Pose(float clock, float launch, float loudness, float launchSeconds, int skip = -1)
         {
             for (int i = 0; i < _drones.Count; i++)
             {
@@ -167,9 +185,10 @@ namespace Game.UI
                 Vector3 position = Sample(i, loop, awake);
                 Vector3 before = Sample(i, Mathf.Repeat(loop - HeadingProbe, 1f), awake);
                 Vector3 after = Sample(i, Mathf.Repeat(loop + HeadingProbe, 1f), awake);
+                Vector3 heading = FlockHeading(i, clock, awake);
                 // Loaded on the way home: from the grab at the heap (half way round) to the drop on the pad.
                 bool loaded = awake >= 1f && loop >= 0.5f;
-                Place(i, position, position - before, after - position, clock, loaded, awake > 0f);
+                Place(i, position, position - before, after - position, heading, clock, loaded, CutsceneMath.Smooth(CutsceneMath.Span(awake, 0f, LiftOffShare)), Mathf.Max(0f, clock - LiftShare(i) * launchSeconds));
             }
 
             _audio.SetLoopVolume(_fans, FanShare * loudness * Mathf.Min(1f, launch * 3f));
@@ -194,12 +213,49 @@ namespace Game.UI
             Vector3 after = Errand(Mathf.Min(1f, t + HeadingProbe), start, coreSocket);
             _holders[0].gameObject.SetActive(true);
             bool carrying = t >= GrabAt && t < InsertAt;
-            Place(0, position, position - before, after - position, time, carrying, true);
+            Vector3 heading = ErrandHeading(t, start, coreSocket);
+            Place(0, position, position - before, after - position, heading, time, carrying, 1f, time);
             _chunks[0].gameObject.SetActive(false);
             delivery.Carried = carrying;
             delivery.CarriedTop = position - Vector3.up * CarriedDrop();
             delivery.Insert = t >= InsertAt ? 1f : 0f;
             return delivery;
+        }
+
+        // Round 48: the way a flock drone flies, averaged by angle over the moments either side of now (on the flock's clock, so
+        // the window never jumps where the loop wraps): at the dips it comes round instead of reversing in a frame. While it
+        // only rises or sinks it keeps facing the heap, as it stands parked.
+        private Vector3 FlockHeading(int index, float clock, float awake)
+        {
+            float width = HeadingWindow * 2f * LoopSeconds;
+            Vector3 hold = Flat(_heap - _pad).normalized * FlockHoldWeight;
+            var blend = new HeadingBlend();
+            for (int k = 0; k <= HeadingSamples; k++)
+            {
+                float at = CutsceneMath.WindowAt(k, HeadingSamples, clock, width);
+                float loop = Loop(index, at);
+                Vector3 way = Sample(index, Mathf.Repeat(loop + HeadingProbe, 1f), awake, false) - Sample(index, Mathf.Repeat(loop - HeadingProbe, 1f), awake, false);
+                blend.Add(Flat(way) + hold, CutsceneMath.WindowWeight(at, clock, width));
+            }
+
+            return blend.HasHeading ? Quaternion.Euler(0f, blend.Yaw, 0f) * Vector3.forward : Vector3.zero;
+        }
+
+        // Round 48: the errand's way averaged the same way over the shot share; while it only rises or sinks over the core, the
+        // way on to the core holds its nose.
+        private Vector3 ErrandHeading(float t, Vector3 start, Vector3 socket)
+        {
+            float width = ErrandHeadingWindow * 2f;
+            Vector3 hold = Flat(socket - _heap).normalized * ErrandHoldWeight;
+            var blend = new HeadingBlend();
+            for (int k = 0; k <= HeadingSamples; k++)
+            {
+                float at = CutsceneMath.WindowAt(k, HeadingSamples, t, width);
+                Vector3 way = Errand(Mathf.Clamp01(at + HeadingProbe), start, socket) - Errand(Mathf.Clamp01(at - HeadingProbe), start, socket);
+                blend.Add(Flat(way) + hold, CutsceneMath.WindowWeight(at, t, width));
+            }
+
+            return blend.HasHeading ? Quaternion.Euler(0f, blend.Yaw, 0f) * Vector3.forward : Vector3.zero;
         }
 
         // How far under the drone's pivot the crystal's top rides (the grip sits under the belly).
@@ -237,18 +293,17 @@ namespace Game.UI
             return Vector3.Lerp(from, to, eased) + Vector3.up * (Mathf.Sin(eased * Mathf.PI) * arc);
         }
 
-        private float Awake(int index, float launch)
-        {
-            float start = index / (float)Mathf.Max(1, _drones.Count);
-            return CutsceneMath.Span(launch, start * 0.55f, start * 0.55f + 0.45f);
-        }
+        private float Awake(int index, float launch) => CutsceneMath.Span(launch, LiftShare(index), LiftShare(index) + LiftSpan);
+
+        // The share of the launch at which a hauler leaves the pad: one after another, the last at LiftStagger.
+        private float LiftShare(int index) => index / (float)Mathf.Max(1, _drones.Count) * LiftStagger;
 
         // The drones spread evenly round the loop, so the stream never bunches up at the heap; the phase runs on with the clock.
         private float Loop(int index, float clock) => Mathf.Repeat(clock / LoopSeconds - index / (float)Mathf.Max(1, _drones.Count), 1f);
 
         // A closed oval: out along one side of the lane, a wide turn round the heap with a dip down to it, back along the
         // other side and a dip onto the pad. Smooth everywhere, so the heading never snaps round.
-        private Vector3 Sample(int index, float loop, float awake)
+        private Vector3 Sample(int index, float loop, float awake, bool grounded = true)
         {
             float lane = (CutsceneMath.Hash(index, 5) - 0.5f) * LaneSpread;
             float height = CruiseHeight + CutsceneMath.Hash(index, 7) * HeightSpread;
@@ -268,7 +323,8 @@ namespace Game.UI
             // A drone that has not taken off yet sits on the pad. Round 39: one parked up on the border flew its lane straight
             // through a ridge; in the air its feet keep a little above the drawn ground under it.
             Vector3 result = Vector3.Lerp(home, position, awake);
-            if (awake > 0f)
+            // (Round 48: a heading only needs the flat way, so its many samples skip the ground.)
+            if (awake > 0f && grounded)
             {
                 result.y = Mathf.Max(result.y, _ground(result.x, result.z) + _footDepths[index] + FlightClearance * awake);
             }
@@ -289,11 +345,12 @@ namespace Game.UI
         }
 
         // Heading from the way the drone moves along its own path (a step either side of the moment), so it always
-        // faces where it flies, banks a little into its turns and dips its nose only with speed.
-        private void Place(int index, Vector3 position, Vector3 incoming, Vector3 outgoing, float time, bool loaded, bool flying)
+        // faces where it flies (<paramref name="heading"/>, the way over a wider stretch), banks a little into its turns and dips
+        // its nose only with speed. <paramref name="flight"/> 0 is parked, 1 flying: round 48, lifting off it comes round from its
+        // parked heading and its clips blend from the rest pose instead of switching.
+        private void Place(int index, Vector3 position, Vector3 incoming, Vector3 outgoing, Vector3 heading, float time, bool loaded, float flight, float spin)
         {
             Transform holder = _holders[index];
-            Vector3 heading = incoming + outgoing;
             heading.y = 0f;
             if (heading.sqrMagnitude < 0.000001f)
             {
@@ -301,15 +358,16 @@ namespace Game.UI
                 heading = Flat(_heap - _pad);
             }
 
-            Quaternion facing = flying ? Quaternion.LookRotation(heading) : Parked;
+            Quaternion facing = Quaternion.Slerp(Parked, Quaternion.LookRotation(heading), flight);
             float turn = Vector3.SignedAngle(Flat(incoming), Flat(outgoing), Vector3.up);
-            float bank = Mathf.Clamp(turn * BankPerTurnDegree, -MaxBankDegrees, MaxBankDegrees);
+            float bank = Mathf.Clamp(turn * BankPerTurnDegree, -MaxBankDegrees, MaxBankDegrees) * flight;
             float speed = Flat(outgoing).magnitude / (HeadingProbe * LoopSeconds);
-            float pitch = Mathf.Min(MaxPitchDegrees, speed * PitchPerSpeed);
+            float pitch = Mathf.Min(MaxPitchDegrees, speed * PitchPerSpeed) * flight;
             holder.SetPositionAndRotation(position, facing * Quaternion.Euler(pitch, 0f, -bank));
-            // The flight cycle only while it travels; hovering to load it holds still in its work pose, so its own clip does not rock it.
-            ModelClipRole role = !flying ? ModelClipRole.Idle : speed > HoverSpeed ? ModelClipRole.Move : ModelClipRole.Work;
-            _drones[index].Pose(role, flying ? time + index * 0.29f : 0f, flying ? time * RotorDegreesPerSecond + index * 37f : 0f, loaded);
+            // The flight cycle while it travels; hovering to load it holds still in its work pose, so its own clip does not rock it.
+            // Round 48: the two blend across the hover speed instead of switching at it.
+            float move = CutsceneMath.Smooth(CutsceneMath.Span(speed, HoverSpeed * (1f - HoverBlend), HoverSpeed * (1f + HoverBlend)));
+            _drones[index].PoseMixed(move, 1f - flight, time + index * 0.29f, flight > 0f ? spin * RotorDegreesPerSecond : 0f, loaded);
             _chunks[index].gameObject.SetActive(loaded);
         }
 

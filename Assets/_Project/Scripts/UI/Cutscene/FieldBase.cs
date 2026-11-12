@@ -68,6 +68,14 @@ namespace Game.UI
         private const float BuilderBankPerDegree = 0.4f;
         private const float BuilderPitchPerSpeed = 0.06f;
         private const float BuilderMaxPitch = 10f;
+        // Round 48: the builders' heading and clips are averaged over this long round the moment, in this many samples; a hold
+        // (welding, landed) weighs as much as flying at BuilderHoldSpeed metres a second, the base's pull between legs much less.
+        private const float BuilderWindowSeconds = 0.5f;
+        private const int BuilderWindowSamples = 9;
+        private const float BuilderHoldSpeed = 1f;
+        private const float BuilderIdleHoldSpeed = 0.05f;
+        private const float MinShotSeconds = 0.01f;
+        private const float MinWindowWeight = 0.0001f;
         private const float RotorDegreesPerSecond = 2400f;
         private const float ParkRing = 3.2f;
         // Round 39: a parking spot must be this level across a drone's span (the drawn ground, not the cells' heights);
@@ -230,8 +238,8 @@ namespace Game.UI
         /// <summary>The top of the landing pad, where the haulers take off and come home.</summary>
         public Vector3 PadTop { get; private set; }
 
-        /// <summary>Timelapse share of the whole base, 0 nothing built, 1 complete; the builders fly while it runs.</summary>
-        public void PoseUnfold(float progress, float time, bool visible)
+        /// <summary>Timelapse share of the whole base, 0 nothing built, 1 complete; the builders fly while it runs, which takes <paramref name="seconds"/>.</summary>
+        public void PoseUnfold(float progress, float time, bool visible, float seconds)
         {
             bool played = progress >= _lastUnfold && progress - _lastUnfold < UnfoldShare;
             bool welding = false;
@@ -269,7 +277,7 @@ namespace Game.UI
 
             for (int i = 0; i < _builders.Count; i++)
             {
-                PoseBuilder(_builders[i], i, progress, time, visible);
+                PoseBuilder(_builders[i], i, progress, time, visible, seconds);
             }
         }
 
@@ -669,9 +677,33 @@ namespace Game.UI
             return builder.Legs.Count > 0 ? builder.Legs[builder.Legs.Count - 1] : default;
         }
 
+        // Where a builder's nose wants to point at one moment, weighted by how firmly: towards the module it welds or the base it
+        // landed beside (a hold worth BuilderHoldSpeed), else along its way at its speed (metres per second), so a slow moment
+        // between two legs counts little and the window around it carries the turn.
+        private Vector3 RawHeading(Builder builder, float progress, float seconds)
+        {
+            Vector3 position = Position(builder, progress);
+            Vector3 toBase = Flat(_baseCentre - position).normalized;
+            if (progress >= builder.Legs[builder.Legs.Count - 1].To)
+            {
+                return toBase * BuilderHoldSpeed;
+            }
+
+            Leg leg = LegAt(builder, progress);
+            if (leg.Welds >= 0)
+            {
+                return Flat(_modules[leg.Welds].Centre - position).normalized * BuilderHoldSpeed;
+            }
+
+            Vector3 before = Position(builder, Mathf.Max(0f, progress - HeadingProbe));
+            Vector3 after = Position(builder, Mathf.Min(1f, progress + HeadingProbe));
+            float span = HeadingProbe * 2f * Mathf.Max(seconds, MinShotSeconds);
+            return Flat(after - before) / span + toBase * BuilderIdleHoldSpeed;
+        }
+
         // Nose along the way it flies (banked into turns, dipped with speed), facing the module while it welds, level and
-        // facing the base once landed.
-        private void PoseBuilder(Builder builder, int index, float progress, float time, bool visible)
+        // facing the base once landed. <paramref name="seconds"/> is how long the timelapse runs.
+        private void PoseBuilder(Builder builder, int index, float progress, float time, bool visible, float seconds)
         {
             CutsceneDrone drone = builder.Drone;
             drone.Holder.gameObject.SetActive(visible && builder.Legs.Count > 0);
@@ -689,28 +721,42 @@ namespace Game.UI
             Vector3 after = Position(builder, Mathf.Min(1f, progress + HeadingProbe));
             Vector3 travel = Flat(after - before);
             bool welding = leg.Welds >= 0 && !landed;
-            Quaternion facing;
-            if (welding)
+
+            // Round 48: the heading and the clips are averaged over the moments around now (a window of about half a second), so
+            // the turn to a module, away from it and down to land comes round, and the clips blend, instead of switching in a
+            // frame; worked out from the moment alone, so a seek shows the same.
+            float window = seconds > 0f ? BuilderWindowSeconds / seconds : 0f;
+            var heading = new HeadingBlend();
+            float work = 0f;
+            float rest = 0f;
+            float total = 0f;
+            for (int k = 0; k <= BuilderWindowSamples; k++)
             {
-                facing = Quaternion.LookRotation(Flat(_modules[leg.Welds].Centre - position));
-            }
-            else if (travel.sqrMagnitude > 0.0004f)
-            {
-                facing = Quaternion.LookRotation(travel);
-            }
-            else
-            {
-                facing = Quaternion.LookRotation(Flat(_baseCentre - position));
+                float sampled = CutsceneMath.WindowAt(k, BuilderWindowSamples, progress, window);
+                float weight = CutsceneMath.WindowWeight(sampled, progress, window);
+                float at = Mathf.Clamp01(sampled);
+                total += weight;
+                heading.Add(RawHeading(builder, at, seconds), weight);
+                bool down = at >= builder.Legs[builder.Legs.Count - 1].To;
+                rest += down ? weight : 0f;
+                work += !down && LegAt(builder, at).Welds >= 0 ? weight : 0f;
             }
 
+            rest /= Mathf.Max(total, MinWindowWeight);
+            work /= Mathf.Max(total, MinWindowWeight);
+
+            Quaternion facing = heading.HasHeading ? Quaternion.Euler(0f, heading.Yaw, 0f) : Quaternion.LookRotation(Flat(_baseCentre - position));
+            float flying = 1f - rest;
             float speed = travel.magnitude / (HeadingProbe * 2f);
             float turn = Vector3.SignedAngle(Flat(position - before), Flat(after - position), Vector3.up);
-            float bank = landed ? 0f : Mathf.Clamp(turn * BuilderBankPerDegree, -BuilderMaxBank, BuilderMaxBank);
-            float pitch = landed ? 0f : Mathf.Min(BuilderMaxPitch, speed * BuilderPitchPerSpeed);
-            Vector3 bob = landed ? Vector3.zero : Vector3.up * (BuilderBob * Mathf.Sin(time * BuilderBobSpeed + index * 2.1f));
+            float bank = Mathf.Clamp(turn * BuilderBankPerDegree, -BuilderMaxBank, BuilderMaxBank) * flying;
+            float pitch = Mathf.Min(BuilderMaxPitch, speed * BuilderPitchPerSpeed) * flying;
+            Vector3 bob = Vector3.up * (BuilderBob * Mathf.Sin(time * BuilderBobSpeed + index * 2.1f) * flying);
             drone.Holder.SetPositionAndRotation(position + bob, facing * Quaternion.Euler(pitch, 0f, -bank));
-            ModelClipRole role = welding ? ModelClipRole.Work : landed ? ModelClipRole.Idle : ModelClipRole.Move;
-            drone.Pose(role, landed ? 0f : time + index * 0.37f, landed ? 0f : time * RotorDegreesPerSecond, false);
+            float move = flying > 0f ? Mathf.Clamp01(1f - work / flying) : 0f;
+            // The rotors stop where they were as it lands (they jumped back to rest before).
+            float landedAt = builder.Legs[builder.Legs.Count - 1].To * seconds;
+            drone.PoseMixed(move, rest, time + index * 0.37f, Mathf.Min(time, landedAt) * RotorDegreesPerSecond, false);
             ParticleKit.SetRate(builder.Sparks, welding ? SparkRate : 0f);
             bool carrying = leg.Carry >= 0 && progress >= _modules[leg.Carry].Pick && progress < _modules[leg.Carry].Start;
             builder.Tether.enabled = carrying;

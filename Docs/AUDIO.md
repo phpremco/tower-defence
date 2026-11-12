@@ -7,6 +7,8 @@ alive without turning into noise: a crowd of thirty ants is one skittering bed, 
 
 1. **Files** live in `Assets/_Project/Audio/Approved/<Category>/...` (Remco's recordings and syntheses) plus the
    CC0 packs (`Kenney_SciFi`, `Lentikula`, `Freesound`). Variants are numbered `name_01.wav`, loops end in `_loop`.
+   The mp3 sources Remco supplied for the intro and dialogue sounds (round 42 onward) come from free sound sites
+   such as Pixabay (free licence, no attribution required); check each file's page again before a commercial release.
 2. **The generator** (`Tools/Generate/Scenes and Starter Data`, file `ProjectGenerator.Audio.cs`) fills
    `Data/Audio/SfxLibrary.asset` and one `Data/Audio/Voices/Voice_<Species>.asset` per creature. It measures the
    loudness of every file (90th percentile of 50 ms RMS windows) and stores a **gain per set** that brings the set
