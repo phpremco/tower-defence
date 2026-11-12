@@ -1,7 +1,7 @@
 {
   "asset": "Bulwark",
   "game_tris": 3950,
-  "source_tris": 372988,
+  "source_tris": 407204,
   "bones": 19,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -12,21 +12,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 237,
-    "folded_fallback_faces": 22,
+    "islands": 374,
+    "folded_fallback_faces": 20,
     "mirrored_faces": 0,
-    "uv_coverage": 0.543,
-    "world_per_uv": 2.0047976994523005
+    "uv_coverage": 0.434,
+    "world_per_uv": 2.344137943246724
   },
   "detail": {
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 33.4,
+      "tiling": 39.1,
       "mask": "B"
     },
     "crystal": {
       "map": "Detail_Crystal_Normal.png",
-      "tiling": 28.6,
+      "tiling": 33.5,
       "mask": "A"
     }
   },
@@ -42,50 +42,11 @@
   "walk_distance_per_loop": 0.5,
   "unity_scale": 0.9,
   "pivot": "ground, between the feet",
+  "round49f_specks_dropped": 10,
   "lod1": {
     "fbx": "Bulwark_LOD1.fbx",
     "tris": 1700,
     "bones": 16
-  },
-  "round36": {
-    "Strike": {
-      "frames": 24,
-      "loop": false,
-      "impact_frame": 10,
-      "anticipation_frames": [
-        0,
-        6
-      ],
-      "contact_frames": [
-        10,
-        12
-      ],
-      "settled_by_frame": 23,
-      "starts_and_ends_on": "Idle frame 0",
-      "body_bone": "Pelvis",
-      "body_travel_at_impact": {
-        "forward": 0.04,
-        "up": -0.03
-      },
-      "body_travel_max": 0.05,
-      "root_moves": false,
-      "feet_planted": true,
-      "mesh": {
-        "rest": {
-          "tip_forward": 0.754,
-          "top": 0.996,
-          "bottom": -0.019
-        },
-        "impact": {
-          "tip_forward": 0.812,
-          "top": 0.914,
-          "bottom": -0.019
-        }
-      },
-      "new_clip": true,
-      "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
-    },
-    "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
   },
   "r46_detail": {
     "parts": {
@@ -93,19 +54,19 @@
         "object": "Bulwark_Face",
         "material": "Bulwark_Face_Mat",
         "maps": "Bulwark_Face_*.png (1024, Low 512)",
-        "tris": 352,
+        "tris": 350,
         "lod1_object": "Bulwark_Face_LOD1",
         "lod1_tris": 88,
-        "source_tris": 13660,
+        "source_tris": 16940,
         "uv": {
-          "islands": 14,
+          "islands": 15,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 0,
-          "mirrored_faces": 176,
-          "uv_coverage": 0.554,
-          "world_per_uv": 0.12452439508943222
+          "folded_fallback_faces": 28,
+          "mirrored_faces": 175,
+          "uv_coverage": 0.675,
+          "world_per_uv": 0.12566527978123518
         },
-        "symmetry_error": 0.003326
+        "symmetry_error": 0.006298
       },
       "Claws": {
         "object": "Bulwark_Claws",
@@ -126,8 +87,8 @@
         "symmetry_error": 0.0
       }
     },
-    "body_tris": 3950,
-    "extra_tris": 548,
+    "body_tris": 3930,
+    "extra_tris": 546,
     "extra_share": 0.139,
     "body_lod1_tris": 1700,
     "extra_lod1_tris": 162,
@@ -137,11 +98,50 @@
       "Death",
       "Hit",
       "Idle",
-      "Strike",
       "Walk"
     ],
     "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Bulwark_<Part> (+ _LOD1 in Bulwark_LOD1.fbx), maps Bulwark_<Part>_*.png (+ Low/)",
     "body_maps": "unchanged",
     "note": "round 46: wet amber eyes under the visor, jaw fangs, toe talons; bones, clips and events unchanged"
+  },
+  "round36": {
+    "Strike": {
+      "frames": 24,
+      "loop": false,
+      "impact_frame": 10,
+      "anticipation_frames": [
+        0,
+        5
+      ],
+      "contact_frames": [
+        10,
+        12
+      ],
+      "settled_by_frame": 23,
+      "starts_and_ends_on": "Idle frame 0",
+      "body_bone": "Pelvis",
+      "body_travel_at_impact": {
+        "forward": 0.042,
+        "up": -0.03
+      },
+      "body_travel_max": 0.06,
+      "root_moves": false,
+      "feet_planted": true,
+      "mesh": {
+        "rest": {
+          "tip_forward": 0.73,
+          "top": 1.018,
+          "bottom": -0.019
+        },
+        "impact": {
+          "tip_forward": 0.821,
+          "top": 0.948,
+          "bottom": -0.019
+        }
+      },
+      "new_clip": true,
+      "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
+    },
+    "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
   }
 }

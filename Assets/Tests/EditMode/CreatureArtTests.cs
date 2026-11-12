@@ -552,6 +552,148 @@ namespace Game.Tests
             }
         }
 
+        // Round 52 (49G import): the Bulwark and the Warlord got a real mouth, the Shardback rooted spikes and the Shattered a
+        // hinged jaw, all on the same rigs: the corrupted rows share the new model, every declared clip keeps its moment on
+        // its frame, the jaws, shed clusters and shell plates keep their bones in both rigs where the view needs them, and the
+        // Shattered keeps all fifteen clips.
+        private static readonly string[] Redesign49GRows = { "Bulwark", "CrystalWarlord", "Shardback", "Shattered" };
+        private static readonly string[] Redesign49GCorruptedRows = { "Bulwark", "CrystalWarlord", "Shardback" };
+        private static readonly (string Id, string Socket, bool InFarRig)[] Redesign49GSockets =
+        {
+            ("Bulwark", "Jaw", false), ("CrystalWarlord", "Jaw", false), ("Shattered", "Jaw", false),
+            ("Bulwark", "Tail_3", false), ("CrystalWarlord", "Tail_3", false),
+        };
+
+        private const int ShatteredClipCount = 15;
+        private const float ClipFramesPerSecond = 30f;
+        private const float EventTolerance = 0.002f;
+
+        [Test]
+        public void Redesign49GRows_ShareTheNewModel_KeepTheirSockets_AndEveryClipMoment()
+        {
+            foreach (string id in Redesign49GCorruptedRows)
+            {
+                AssertCorruptedRowSharesModel(id);
+            }
+
+            foreach ((string id, string socket, bool inFarRig) in Redesign49GSockets)
+            {
+                var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}.asset");
+                Assert.IsTrue(HasNode(art.Model.transform, socket), $"{id}: no {socket} socket");
+                Assert.IsTrue(!inFarRig || HasNode(art.Lod1.transform, socket), $"{id}: no {socket} socket in the far rig");
+            }
+
+            foreach (BlenderArtEntry entry in BlenderArtCatalog.Creatures)
+            {
+                if (System.Array.IndexOf(Redesign49GRows, entry.Id.Replace(BlenderArtCatalog.CorruptedSuffix, string.Empty)) >= 0)
+                {
+                    AssertClipMoments(entry);
+                }
+            }
+
+            var shattered = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/Shattered.asset");
+            Assert.AreEqual(ShatteredClipCount, shattered.Clips.Length, "Shattered: clips lost or gained");
+        }
+
+        // The Shardback sheds its clusters and the Shattered loses its shell plates by scaling their bones to zero. That only
+        // leaves nothing hanging when every part vertex sits wholly on one part bone and no triangle joins a part to the body
+        // (49G sank the clusters into the crater floors and strapped the plates to the core, both remeshed apart for this).
+        private static readonly (string Id, string Prefix, int Parts)[] ScaledOffParts =
+        {
+            ("Shardback", "Shard_", 6), ("Shardback" + BlenderArtCatalog.CorruptedSuffix, "Shard_", 6), ("Shattered", "Shell_", 0),
+        };
+
+        [Test]
+        public void ScaledOffParts_ArePureIslands_InBothRigs()
+        {
+            foreach ((string id, string prefix, int parts) in ScaledOffParts)
+            {
+                var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}.asset");
+                foreach (GameObject model in new[] { art.Model, art.Lod1 })
+                {
+                    foreach (SkinnedMeshRenderer renderer in model.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+                    {
+                        AssertPureParts(renderer, prefix, parts, $"{id}/{renderer.name}");
+                    }
+                }
+            }
+        }
+
+        private static void AssertClipMoments(BlenderArtEntry entry)
+        {
+            var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{entry.Id}.asset");
+            foreach (BlenderClipSpec spec in entry.Clips)
+            {
+                Assert.IsTrue(HasClip(art, spec), $"{entry.Id}: no {spec.Clip} clip as {spec.Role}");
+                foreach (ModelClip clip in art.Clips)
+                {
+                    if (clip.Clip == null || clip.Clip.name != spec.Clip || clip.Role != spec.Role)
+                    {
+                        continue;
+                    }
+
+                    if (spec.EventFrame > 0)
+                    {
+                        Assert.AreEqual(spec.EventFrame / ClipFramesPerSecond, clip.EventSeconds, EventTolerance, $"{entry.Id}: {spec.Clip} moment moved");
+                    }
+
+                    Assert.AreEqual(spec.Trigger, clip.Trigger, $"{entry.Id}: {spec.Clip} lost its trigger");
+                }
+            }
+        }
+
+        // Every vertex is owned by one part bone, by the body or (wrongly) by both; a triangle whose corners have different
+        // owners would stretch between a hidden part and the body. Rigs whose mesh holds part vertices must spread them over
+        // at least <paramref name="parts"/> part bones.
+        private static void AssertPureParts(SkinnedMeshRenderer renderer, string prefix, int parts, string label)
+        {
+            const float Whole = 0.999f;
+            const float None = 0.001f;
+            const int Mixed = -2;
+            const int Body = -1;
+            Transform[] bones = renderer.bones;
+            BoneWeight[] weights = renderer.sharedMesh.boneWeights;
+            var owner = new int[weights.Length];
+            var used = new System.Collections.Generic.HashSet<int>();
+            for (int v = 0; v < weights.Length; v++)
+            {
+                float share = PartShare(weights[v], bones, prefix, out int bone);
+                owner[v] = share > Whole ? bone : share > None ? Mixed : Body;
+                Assert.AreNotEqual(Mixed, owner[v], $"{label}: vertex {v} is partly on a {prefix} bone");
+                if (owner[v] >= 0)
+                {
+                    used.Add(bone);
+                }
+            }
+
+            int[] triangles = renderer.sharedMesh.triangles;
+            for (int t = 0; t < triangles.Length; t += 3)
+            {
+                int a = owner[triangles[t]];
+                Assert.IsTrue(a == owner[triangles[t + 1]] && a == owner[triangles[t + 2]], $"{label}: triangle {t / 3} joins a {prefix} part to another owner");
+            }
+
+            Assert.IsTrue(used.Count == 0 || used.Count >= parts, $"{label}: the parts sit on {used.Count} {prefix} bones, not {parts}");
+        }
+
+        private static float PartShare(BoneWeight weight, Transform[] bones, string prefix, out int bone)
+        {
+            bone = -1;
+            float share = 0f;
+            int[] index = { weight.boneIndex0, weight.boneIndex1, weight.boneIndex2, weight.boneIndex3 };
+            float[] amount = { weight.weight0, weight.weight1, weight.weight2, weight.weight3 };
+            for (int k = 0; k < index.Length; k++)
+            {
+                if (amount[k] > 0f && bones[index[k]] != null && bones[index[k]].name.StartsWith(prefix))
+                {
+                    share += amount[k];
+                    bone = index[k];
+                }
+            }
+
+            return share;
+        }
+
         // Round 49 (set 3b): a bar height measured at rest alone sat inside wing beats and rearing bodies. Every enemy's bar
         // clears its body for the covered share of its travel and idle cycles (a small tolerance for rows built before the
         // cycle-aware measure whose cycles barely lift them).

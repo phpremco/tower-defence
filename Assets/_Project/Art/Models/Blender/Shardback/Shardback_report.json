@@ -1,7 +1,7 @@
 {
   "asset": "Shardback",
-  "game_tris": 3940,
-  "source_tris": 590792,
+  "game_tris": 3948,
+  "source_tris": 596728,
   "bones": 23,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -12,21 +12,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 76,
-    "folded_fallback_faces": 0,
-    "mirrored_faces": 1970,
-    "uv_coverage": 0.602,
-    "world_per_uv": 1.3841733679984416
+    "islands": 875,
+    "folded_fallback_faces": 106,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.221,
+    "world_per_uv": 3.2326726328372613
   },
   "detail": {
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 23.1,
+      "tiling": 53.9,
       "mask": "B"
     },
     "crystal": {
       "map": "Detail_Crystal_Normal.png",
-      "tiling": 19.8,
+      "tiling": 46.2,
       "mask": "A"
     }
   },
@@ -49,7 +49,7 @@
   ],
   "lod1": {
     "fbx": "Shardback_LOD1.fbx",
-    "tris": 1698,
+    "tris": 1700,
     "bones": 15
   },
   "shard_bones_in_shed_order": [
@@ -71,6 +71,11 @@
   "walk_distance_per_loop": 0.64,
   "pivot": "ground, body centre",
   "spit_origin": "Throat, about (0, 0.17, 0.46) model units, from the Head bone",
+  "round49g": {
+    "spikes_on_shell": 65,
+    "min_root_depth": 0.0277,
+    "clusters": "remeshed apart from the body, roots and shards sunk into the crater floor; one island per Shard_n bone, weights pure"
+  },
   "round36": {
     "Strike": {
       "frames": 24,
@@ -96,14 +101,14 @@
       "feet_planted": true,
       "mesh": {
         "rest": {
-          "tip_forward": 0.555,
-          "top": 0.767,
-          "bottom": -0.013
+          "tip_forward": 0.606,
+          "top": 0.776,
+          "bottom": -0.014
         },
         "impact": {
-          "tip_forward": 0.621,
-          "top": 0.752,
-          "bottom": -0.012
+          "tip_forward": 0.702,
+          "top": 0.744,
+          "bottom": -0.03
         }
       },
       "new_clip": true,
@@ -168,25 +173,25 @@
         "object": "Shardback_Face",
         "material": "Shardback_Face_Mat",
         "maps": "Shardback_Face_*.png (1024, Low 512)",
-        "tris": 334,
+        "tris": 312,
         "lod1_object": "Shardback_Face_LOD1",
         "lod1_tris": 84,
-        "source_tris": 15520,
+        "source_tris": 15496,
         "uv": {
-          "islands": 12,
+          "islands": 11,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 16,
-          "mirrored_faces": 167,
-          "uv_coverage": 0.598,
-          "world_per_uv": 0.12509197167596164
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 156,
+          "uv_coverage": 0.596,
+          "world_per_uv": 0.12486720278532412
         },
-        "symmetry_error": 0.001127
+        "symmetry_error": 0.012172
       },
       "Claws": {
         "object": "Shardback_Claws",
         "material": "Shardback_Claws_Mat",
         "maps": "Shardback_Claws_*.png (1024, Low 512)",
-        "tris": 196,
+        "tris": 192,
         "lod1_object": "Shardback_Claws_LOD1",
         "lod1_tris": 78,
         "source_tris": 13376,
@@ -194,17 +199,17 @@
           "islands": 12,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 98,
-          "uv_coverage": 0.534,
-          "world_per_uv": 0.12066367760711656
+          "mirrored_faces": 96,
+          "uv_coverage": 0.523,
+          "world_per_uv": 0.12206255925290037
         },
         "symmetry_error": 0.0
       }
     },
-    "body_tris": 3940,
-    "extra_tris": 530,
-    "extra_share": 0.135,
-    "body_lod1_tris": 1698,
+    "body_tris": 3838,
+    "extra_tris": 504,
+    "extra_share": 0.131,
+    "body_lod1_tris": 1700,
     "extra_lod1_tris": 162,
     "extra_lod1_share": 0.095,
     "clips": [
@@ -216,7 +221,7 @@
       "Walk"
     ],
     "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Shardback_<Part> (+ _LOD1 in Shardback_LOD1.fbx), maps Shardback_<Part>_*.png (+ Low/)",
-    "body_maps": "round-15 bead eyes' glow removed from Shardback_Albedo/Emission (4460 texels this run)",
+    "body_maps": "round-15 bead eyes' glow removed from Shardback_Albedo/Emission (1950 texels this run)",
     "note": "round 46: four wet amber eyes under lid folds, mandible saw teeth, leg talons; bones, clips and events unchanged"
   }
 }

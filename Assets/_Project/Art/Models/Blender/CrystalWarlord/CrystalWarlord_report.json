@@ -2,7 +2,7 @@
   "asset": "CrystalWarlord",
   "base_species": "Bulwark",
   "game_tris": 14000,
-  "source_tris": 1136008,
+  "source_tris": 1245184,
   "bones": 19,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -13,21 +13,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 455,
-    "folded_fallback_faces": 130,
+    "islands": 885,
+    "folded_fallback_faces": 44,
     "mirrored_faces": 0,
-    "uv_coverage": 0.487,
-    "world_per_uv": 2.29995012616031
+    "uv_coverage": 0.303,
+    "world_per_uv": 3.0508812989588465
   },
   "detail": {
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 38.3,
+      "tiling": 50.8,
       "mask": "B"
     },
     "crystal": {
       "map": "Detail_Crystal_Normal.png",
-      "tiling": 32.9,
+      "tiling": 43.6,
       "mask": "A"
     }
   },
@@ -45,6 +45,7 @@
   "walk_distance_per_loop": 1.05,
   "unity_scale": 0.96,
   "model_scale_from_bulwark_units": 2.1,
+  "round49f_specks_dropped": 22,
   "lod1": {
     "fbx": "CrystalWarlord_LOD1.fbx",
     "tris": 6000,
@@ -56,15 +57,15 @@
         "object": "CrystalWarlord_Eyes",
         "material": "CrystalWarlord_Eyes_Mat",
         "maps": "CrystalWarlord_Eyes_*.png (1024, Low 512)",
-        "tris": 796,
-        "source_tris": 60096,
+        "tris": 800,
+        "source_tris": 59816,
         "uv": {
           "islands": 6,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 398,
-          "uv_coverage": 0.706,
-          "world_per_uv": 0.23636997618493885
+          "mirrored_faces": 400,
+          "uv_coverage": 0.701,
+          "world_per_uv": 0.23643577599626373
         },
         "detail": {
           "chitin": {
@@ -87,31 +88,31 @@
         ],
         "note": "three amber slit eyes a side under the visor",
         "lod1_object": "CrystalWarlord_Eyes_LOD1",
-        "lod1_tris": 248
+        "lod1_tris": 250
       },
       "Teeth": {
         "object": "CrystalWarlord_Teeth",
         "material": "CrystalWarlord_Teeth_Mat",
         "maps": "CrystalWarlord_Teeth_*.png (1024, Low 512)",
-        "tris": 704,
-        "source_tris": 34984,
+        "tris": 696,
+        "source_tris": 30064,
         "uv": {
-          "islands": 6,
+          "islands": 8,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 352,
-          "uv_coverage": 0.529,
-          "world_per_uv": 0.21176521570359538
+          "mirrored_faces": 348,
+          "uv_coverage": 0.636,
+          "world_per_uv": 0.18604167046993766
         },
         "detail": {
           "crystal": {
             "map": "Detail_Crystal_Normal.png",
-            "tiling": 2.5,
+            "tiling": 2.2,
             "mask": "B"
           },
           "chitin": {
             "map": "Detail_Chitin_Normal.png",
-            "tiling": 2.9,
+            "tiling": 2.6,
             "mask": "A"
           }
         },
@@ -123,33 +124,33 @@
           "Head",
           "Jaw"
         ],
-        "note": "Crysium fangs on snout and jaw",
+        "note": "round 49G: ivory teeth rooted in the gums",
         "lod1_object": "CrystalWarlord_Teeth_LOD1",
-        "lod1_tris": 248
+        "lod1_tris": 250
       },
       "Claws": {
         "object": "CrystalWarlord_Claws",
         "material": "CrystalWarlord_Claws_Mat",
         "maps": "CrystalWarlord_Claws_*.png (1024, Low 512)",
-        "tris": 876,
+        "tris": 880,
         "source_tris": 86048,
         "uv": {
           "islands": 4,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 438,
-          "uv_coverage": 0.465,
-          "world_per_uv": 0.4326761881202715
+          "mirrored_faces": 440,
+          "uv_coverage": 0.541,
+          "world_per_uv": 0.4010709182194702
         },
         "detail": {
           "chitin": {
             "map": "Detail_Chitin_Normal.png",
-            "tiling": 6.0,
+            "tiling": 5.6,
             "mask": "B"
           },
           "crystal": {
             "map": "Detail_Crystal_Normal.png",
-            "tiling": 5.2,
+            "tiling": 4.8,
             "mask": "A"
           }
         },
@@ -167,16 +168,16 @@
       }
     },
     "tris_before": {
-      "lod0": 14000,
+      "lod0": 13956,
       "lod1": 6000
     },
     "tris_after": {
-      "lod0": 16376,
-      "lod1": 6836
+      "lod0": 16332,
+      "lod1": 6840
     },
     "increase": {
       "lod0": 0.17,
-      "lod1": 0.139
+      "lod1": 0.14
     },
     "extra_objects": [
       "CrystalWarlord_Eyes",

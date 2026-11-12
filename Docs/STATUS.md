@@ -8092,3 +8092,71 @@ ends and joins its source.
   skipped, 0 failed**. Recompile: 0 errors (only the known CS0618). Play-run consoles: 0 errors, 0 warnings. Save MD5
   2eca347eb0270fc1566d26e302abf525 after every run (one run aborted on an unset variable in `r51_hero.sh`, now fixed; Play
   Mode was stopped and the save restored from its copy and verified).
+
+## Round 52 import: the 49G Bulwark, Crystal Warlord, Shardback and Shattered in the game (2026-11-12)
+
+Not committed. No generator run; `ArtSource/` exports and `Tools/Blender/` untouched; the Sealed One not synced. Save
+`progress.json` **2eca347e** copied aside before each of the five Play Mode runs and verified after each.
+
+### 1. Import (`Tools/PlayTest/Scripts/ApplyRedesign49G.cs`, `BlenderArtBuilder.RebuildOnly`)
+
+- 7 rows rebuilt (Bulwark, CrystalWarlord, Shardback, Shattered + the corrupted rows of the first three), worn by 4 enemies.
+  Only these four exports synced (FBX, LOD1, report, every map incl. `Low/` and `Skins/Corrupted`; MD5 equal to the exports).
+  30 materials re-pointed. `ApplyRedesign49G.Report` prints the same description without rebuilding (used for the before
+  state).
+- **Parity (before/after report diff):** identical clip names, roles, lengths, events, sockets (Jaw, Head, Neck, Tail_3,
+  Shard_1..6, Shell_1..8), bone counts and shed order on all 7 rows. The art assets changed only in `_height` and newer
+  default-valued fields.
+- Unity tris (LOD0/LOD1): Bulwark 3930/1700, CrystalWarlord 13956/6000, Shardback 3838/1700, Shattered 24096/9477. Unity
+  welds and drops degenerate triangles; the Shardback's lost 110 against its report's 3948.
+- **Bar heights (`CreatureBarHeight`, written by the builder, re-checked with `r52_clip_check.cs`):** Bulwark 1.043 ->
+  1.036, CrystalWarlord 2.232 -> 2.179, Shardback 0.768 -> 0.788, Shattered 3.467 -> 3.464; corrupted twins equal.
+- **Clip checks (`r52_clip_check.cs`):** every declared clip present, events on their frames (Strike 10, Block 7, Sweep 20,
+  Shatter 3, PhaseBreak1/2 12/14, Split 28, Rejoin 30, Roar 18, DiveIn 28, SurfaceBurst 16), power triggers mapped, the
+  Shattered keeps all 15 clips.
+- **Scaled-off parts (`r52_island_purity.cs`):** Shardback 6 clusters pure in both rigs (0 mixed vertices, 0 bridging
+  triangles); Shattered plates pure in both rigs. The committed (pre-49G) Shattered had mixed plate weights, so this is new.
+
+### 2. In play
+
+- **Shardback shedding** (`r52_shed.cs` chips armour as fire does, 17 hits -> armour 0.830): Shard_1 scale 0 in both rigs,
+  its baked vertices collapse to a point (extent 0.000; the other five 0.32..0.55); the crater stays as a glowing pit, nothing
+  hangs (`r52_shed_probe.cs`).
+- **Shattered plates** (`r52_shells_off.cs`, the post-rejoin state of `SplitSignature`): all Shell bones at 0, every plate's
+  baked extent 0.000 in both rigs; the core shows bare with no strap or sliver left. PhaseBreak1 at 60 % throws the flank
+  plates off as in Blender; Split at 55 % bursts into the big crystal shards as in `r49g_shattered_loose_Split.png`.
+- Consoles: 0 errors, 0 warnings on all five runs.
+
+### 3. Stills (`ArtSource/Previews/QA/r52_ingame_*`, Level_C1_01, inspection light x1.8, `_game` plain light, `_side` 35 degrees)
+
+`Bulwark_walk`, `Bulwark_strike` (55 %), `Bulwark_strike_close` (42 %), `CrystalWarlord_sweep` (50 %, the hit),
+`CrystalWarlord_sweep_late` (70 %), `CrystalWarlord_sweep_close`, `Shardback_intact`, `Shardback_shed`, `Shattered_walk`,
+`Shattered_split`, `Shattered_phasebreak1`, `Shattered_shells_off`; crops `*_mouth_x3/x4`, `Bulwark_strike_spikes_x3`,
+`CrystalWarlord_sweep_late_side_crystals_x3`, `Shardback_shed_side_crater_x4`, `Shardback_intact_side_cluster_x4|mouth_x4`,
+`Shattered_walk_crest_bar_x3`, `Shattered_walk_ruingate_top|left|base_x3`. Tool change: `r45_pose.cs` takes an optional clip
+fraction as a third field (default 0.3 unchanged).
+
+### 4. Tests
+
+- `CreatureArtTests.Redesign49GRows_ShareTheNewModel_KeepTheirSockets_AndEveryClipMoment` and
+  `ScaledOffParts_ArePureIslands_InBothRigs` (Shardback, its corrupted row and the Shattered; every skinned mesh of both rigs).
+- EditMode suite on w6: **853 tests, 801 passed, 52 skipped, 0 failed** (was 851; +2). Recompile: 0 errors, 0 warnings.
+
+### Open points (round 52)
+
+1. **Shattered bar inside its crest:** in play the world bar (3.02) sits 0.32 below the drawn top (3.35) among the crown
+   crystals. `CreatureBarHeight` samples the clips, where the phase-1 clusters are at 0.25, but the runtime crystal look stands
+   taller. This is older than the import (height 3.467 -> 3.464). A fix would measure with the runtime crystal scale.
+2. **Shell plate bones (Blender):** the purity pass gave each plate its dominant bone. Only Shell_1/2/6/7/8 carry plates in
+   LOD0 and Shell_2/5/6/7/8 in LOD1 (the plate at the Shell_1 bone rides Shell_1 near and Shell_5 far; the plate at Shell_4
+   rides Shell_7; Shell_3/4 carry nothing). Hiding all plates works. Clips that move single plates move them on these bones
+   and differ between LODs.
+3. PhaseBreak1/2 are in the catalog, but no runtime code plays the `PhaseBreak` role; in play the plates come off through
+   Split and the Shell scale after Rejoin.
+4. The Bulwark teeth are a few pixels at the play camera (49G open point 2); the tusks and the glowing slot carry the read.
+5. **Ruin gate (Remco's screenshot came from these test runs):** the stone arch is `RuinGate` (Blender `build_bosses29_props.py`,
+   export `ArtSource/Exports/RuinGate`, built by `BlenderBossFxBuilder`, scale 0.65, unchanged since round 29). `SplitSignature`
+   raises it at the Shattered's entrance, facing the camera. The test spawned the Shattered at Level_C1_01's route gate (it
+   is not in that level's data; only `BossArena` holds it), so the arch stood over the `SpawnGate_0` mound with a nearby CinderEgg
+   under it. Seen at 3x: stepped block edges, a dark seam at the keystone, petal slabs beside the pillars that read as loose
+   boulders. Not fixed.
