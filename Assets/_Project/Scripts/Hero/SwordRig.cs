@@ -1,5 +1,5 @@
+using Game.Core;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Game.Hero
 {
@@ -68,7 +68,7 @@ namespace Game.Hero
             _trail.widthMultiplier = TrailWidth;
             _trail.minVertexDistance = 0.02f;
             _trail.emitting = false;
-            _trail.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
+            LineKit.UseBeam(_trail);
             Color color = definition.Color;
             var gradient = new Gradient();
             gradient.SetKeys(

@@ -47,7 +47,7 @@ namespace Game.Hero
             _beam.positionCount = 2;
             _beam.useWorldSpace = true;
             _beam.widthMultiplier = BeamWidth;
-            _beam.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
+            LineKit.UseBeam(_beam);
             _beam.shadowCastingMode = ShadowCastingMode.Off;
             _beam.enabled = false;
 

@@ -303,7 +303,7 @@ namespace Game.Levels
             trail.time = TrailSeconds;
             trail.widthMultiplier = TrailWidth;
             trail.minVertexDistance = 0.1f;
-            trail.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
+            LineKit.UseBeam(trail);
             var gradient = new Gradient();
             gradient.SetKeys(
                 new[] { new GradientColorKey(colour, 0f), new GradientColorKey(colour, 1f) },

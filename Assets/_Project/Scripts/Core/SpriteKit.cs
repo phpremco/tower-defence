@@ -2,14 +2,18 @@ using UnityEngine;
 
 namespace Game.Core
 {
-    /// <summary>Small generated textures shared by the effects: a soft ring, a ragged puff and tileable noise.</summary>
+    /// <summary>Small generated textures shared by the effects: a soft ring, a ragged puff, a beam profile and tileable noise.</summary>
     public static class SpriteKit
     {
         private const int Size = 128;
         private const float Tau = Mathf.PI * 2f;
+        // Share of the half-width the beam's white core fills, and how quickly its glow falls off towards the edge.
+        private const float BeamCoreWidth = 0.3f;
+        private const float BeamGlowFalloff = 1.6f;
 
         private static Texture2D _ring;
         private static Texture2D _puff;
+        private static Texture2D _beam;
         private static Texture2D _noise;
 
         /// <summary>A soft ring with a transparent centre and edge, for ripples and shock waves seen from above.</summary>
@@ -49,6 +53,28 @@ namespace Game.Core
                 return new Color(1f, 1f, 1f, edge * edge * Mathf.Clamp01(noise * 1.6f - 0.2f));
             });
             return _puff;
+        }
+
+        /// <summary>
+        /// The cross-section of an energy beam for lines and trails (U along the line, V across it): a narrow white-hot core
+        /// in red, a wider soft glow in green and the same glow as coverage, so a line fades out at its edges instead of
+        /// ending in a hard flat strip.
+        /// </summary>
+        public static Texture2D Beam()
+        {
+            if (_beam != null)
+            {
+                return _beam;
+            }
+
+            _beam = Make("Beam", TextureWrapMode.Clamp, (u, v) =>
+            {
+                float across = Mathf.Abs(v) * 2f;
+                float core = Mathf.Exp(-(across * across) / (BeamCoreWidth * BeamCoreWidth));
+                float glow = Mathf.Pow(Mathf.Clamp01(1f - across), BeamGlowFalloff);
+                return new Color(core, glow, 0f, glow);
+            });
+            return _beam;
         }
 
         /// <summary>Seamless cloudy noise from summed sines, for shaders that churn a surface.</summary>

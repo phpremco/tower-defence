@@ -121,6 +121,9 @@ namespace Game.Enemies
             return found != null ? found : Root;
         }
 
+        /// <summary>The bone of that name in the near LOD, or null when the rig has none.</summary>
+        public Transform FindBone(string bone) => string.IsNullOrEmpty(bone) ? null : Find(Near, bone);
+
         /// <summary>The bone of that name in each LOD's rig (near first), for a view that scales it over the clips.</summary>
         public Transform[] Bones(string bone)
         {

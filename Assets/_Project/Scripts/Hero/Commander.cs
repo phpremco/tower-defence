@@ -33,6 +33,9 @@ namespace Game.Hero
         private float _reloadRemaining;
         private HeroFlight _flight;
         private float _sinceHurt = float.PositiveInfinity;
+        private HeroWeaponDefinition _drawn;
+        private float _drawRemaining;
+        private float _drawnRemaining;
 
         public HeroDefinition Definition => _definition;
 
@@ -99,6 +102,12 @@ namespace Game.Hero
 
         /// <summary>Raised with the enemy's position and the weapon used whenever the hero attacks.</summary>
         public event Action<Vector3, HeroWeaponDefinition> Struck;
+
+        /// <summary>
+        /// Raised with the weapon when the hero takes it in hand to fight (the first strike of an engagement, or a change of
+        /// weapon); its first blow or shot follows the weapon's draw time later.
+        /// </summary>
+        public event Action<HeroWeaponDefinition> Drawing;
 
         /// <summary>Raised when the hero's health runs out and it goes down.</summary>
         public event Action Downed;
@@ -363,6 +372,9 @@ namespace Game.Hero
                 _reloadRemaining = Mathf.Max(0f, _reloadRemaining - seconds);
             }
 
+            _drawRemaining = Mathf.Max(0f, _drawRemaining - seconds);
+            _drawnRemaining = Mathf.Max(0f, _drawnRemaining - seconds);
+
             if (shownChanged)
             {
                 Changed?.Invoke();
@@ -459,16 +471,44 @@ namespace Game.Hero
                 Facing = toTarget.normalized;
             }
 
+            if (!InHand(weapon))
+            {
+                return false;
+            }
+
             // Without a tower as source his blow counts as a blast, as it did before: it still reaches a hidden boss in part.
             Hits.Deal(target, weapon.Damage * _damageMultiplier, weapon.ArmourFactor);
             Struck?.Invoke(target.Position, weapon);
             _strikeCooldown = Cadence.Rearm(_strikeCooldown, ranged ? RangedInterval : weapon.AttackInterval);
+            _drawnRemaining = weapon.StayDrawnSeconds;
             if (ranged)
             {
                 CountShot(weapon);
             }
 
             return true;
+        }
+
+        // A weapon fires only once it is in hand: the first strike of an engagement (or with the other weapon) starts the
+        // draw and waits its draw time; while it stays drawn between strikes nothing waits, so the rate of fire is unchanged.
+        private bool InHand(HeroWeaponDefinition weapon)
+        {
+            if (_drawn != weapon || _drawnRemaining <= 0f)
+            {
+                _drawn = weapon;
+                _drawRemaining = weapon.DrawSeconds;
+                _drawnRemaining = weapon.DrawSeconds + weapon.StayDrawnSeconds;
+                Drawing?.Invoke(weapon);
+            }
+
+            return _drawRemaining <= 0f;
+        }
+
+        private void PutAway()
+        {
+            _drawn = null;
+            _drawRemaining = 0f;
+            _drawnRemaining = 0f;
         }
 
         private void CountShot(HeroWeaponDefinition weapon)
@@ -483,6 +523,8 @@ namespace Game.Hero
             {
                 _shotsFired = 0;
                 _reloadRemaining = ReloadSeconds;
+                // The gun stays in hand through the reload.
+                _drawnRemaining = Mathf.Max(_drawnRemaining, _reloadRemaining + weapon.StayDrawnSeconds);
                 Reloading?.Invoke(_reloadRemaining);
             }
         }
@@ -500,6 +542,7 @@ namespace Game.Hero
 
             IsDown = true;
             IsWalking = false;
+            PutAway();
             _reviveRemaining = _definition.ReviveSeconds;
             ReleaseGuard();
             Downed?.Invoke();

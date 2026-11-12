@@ -54,6 +54,8 @@ namespace Game.Core
         [SerializeField] private string[] _shedBones = new string[0];
         [Tooltip("Smoke and embers rising from the model's vent sockets (a lava creature's craters), or empty for none.")]
         [SerializeField] private ModelVentDefinition _vents;
+        [Tooltip("The bones a boss's beam and bolts leave from, in order of preference (a tail-tip emitter, else the last tail joint): the first the rig has wins, read every frame so the shot follows the animated body. Empty when the art names none.")]
+        [SerializeField] private string[] _beamSockets = new string[0];
 
         [Header("Glow looks")]
         [Tooltip("Named looks of the glow a view can swap to (a boss's phase maps), or none.")]
@@ -86,6 +88,7 @@ namespace Game.Core
         public bool Bleeds => _bleeds;
         public string[] ShedBones => _shedBones;
         public ModelVentDefinition Vents => _vents;
+        public string[] BeamSockets => _beamSockets ?? new string[0];
         public ModelClip[] Clips => _clips;
         public ModelEmissionSet[] EmissionSets => _emissionSets ?? new ModelEmissionSet[0];
         public string DeathEmissionSet => _deathEmissionSet;

@@ -1,3 +1,4 @@
+using Game.Core;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -107,7 +108,7 @@ namespace Game.Levels
 
         private static Material Material(Color tint, float alpha)
         {
-            var material = new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
+            var material = PipelineMaterials.Lit();
             material.SetFloat("_Surface", 1f);
             material.SetFloat("_Blend", 0f);
             material.SetFloat("_ZWrite", 0f);

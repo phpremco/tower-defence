@@ -5,8 +5,10 @@ namespace Game.Editor
     /// <summary>A clip of one Blender model that needs more than its name says: an event frame, a power, a socket.</summary>
     public readonly struct BlenderClipSpec
     {
-        public BlenderClipSpec(string clip, ModelClipRole role, int eventFrame = 0, string trigger = "", string socket = "", float weight = 1f)
+        public BlenderClipSpec(string clip, ModelClipRole role, int eventFrame = 0, string trigger = "", string socket = "", float weight = 1f, int sustainFrom = 0, int sustainTo = 0)
         {
+            SustainFrom = sustainFrom;
+            SustainTo = sustainTo;
             Clip = clip;
             Role = role;
             EventFrame = eventFrame;
@@ -25,5 +27,9 @@ namespace Game.Editor
         public string Trigger { get; }
         public string Socket { get; }
         public float Weight { get; }
+
+        /// <summary>For a lasting power: the frames (at 30 fps) that loop while it goes on, or zero for a hold on the event frame.</summary>
+        public int SustainFrom { get; }
+        public int SustainTo { get; }
     }
 }

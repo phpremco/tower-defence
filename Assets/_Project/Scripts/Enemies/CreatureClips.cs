@@ -85,6 +85,12 @@ namespace Game.Enemies
         /// <summary>True while a boss mechanic plays its own clips: the cycle choice and pending strikes wait.</summary>
         public bool Scripted { get; set; }
 
+        /// <summary>
+        /// A flyer in the field: when it holds its place (striking a gate, burning a tower) it keeps beating its wings on its
+        /// travel cycle at the authored rate instead of dropping into its resting glide, which hung it in the air (round 50).
+        /// </summary>
+        public bool StaysOnTheWing { get; set; }
+
         /// <summary>The clip whose moment passed this frame (a power's release, a strike's hit), or -1.</summary>
         public int EventClip => _eventClip;
 
@@ -196,6 +202,45 @@ namespace Game.Enemies
             }
         }
 
+        /// <summary>
+        /// Keeps a power's clip on its aim while the power lasts (the ray boss's tail on target while its beam burns): it loops
+        /// the clip's sustain stretch, or without one holds the release frame, and plays the rest out once the power ends.
+        /// Does nothing while another clip is on top.
+        /// </summary>
+        public void HoldPower(int slot, bool lasting)
+        {
+            int index = _powers[slot];
+            if (index < 0 || _player.Once != index)
+            {
+                return;
+            }
+
+            ModelClip clip = _art.Clips[index];
+            float time = _player.OnceTime;
+            bool aiming = lasting && time >= clip.EventSeconds;
+            if (!aiming || !clip.Sustains)
+            {
+                _player.SetOnceRate(aiming ? 0f : 1f);
+                return;
+            }
+
+            _player.SetOnceRate(1f);
+            if (time >= clip.Sustain.y)
+            {
+                _player.SetOnceTime(clip.Sustain.x + (time - clip.Sustain.y));
+            }
+        }
+
+        /// <summary>
+        /// True while a power's clip is on top and past its release with the power still on (lasting as given to
+        /// <see cref="HoldPower"/>): the pose that aims the power's socket.
+        /// </summary>
+        public bool IsAiming(int slot, bool lasting)
+        {
+            int index = _powers[slot];
+            return lasting && index >= 0 && _player.Once == index && _player.OnceTime >= _art.Clips[index].EventSeconds;
+        }
+
         /// <summary>The fall: the death clip, held on its last frame.</summary>
         public void Die()
         {
@@ -229,6 +274,12 @@ namespace Game.Enemies
             if (moving && _move >= 0)
             {
                 _player.Loop(_move, Rate(_move, groundSpeed, scale));
+                return;
+            }
+
+            if (StaysOnTheWing && _move >= 0)
+            {
+                _player.Loop(_move, 1f);
                 return;
             }
 

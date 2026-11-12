@@ -17,7 +17,7 @@ namespace Game.Combat
     public sealed class ProjectileView : MonoBehaviour
     {
         private const float CoreEmission = 4f;
-        private const float BeamEmission = 5f;
+        private const float CoreWhiteness = 0.6f;
         private const float BeamWidth = 0.1f;
         private const float BeamGlowWidth = 0.36f;
         private const float BeamGlowAlpha = 0.3f;
@@ -123,7 +123,7 @@ namespace Game.Combat
             _exhaust = VfxQuad.Create(transform, "Exhaust", VfxQuad.FromStart);
 
             _ribbonFade = FadingGradient(1f);
-            _plainTrail = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
+            _plainTrail = LineKit.Beam();
             _trail = gameObject.AddComponent<TrailRenderer>();
             _trail.minVertexDistance = 0.03f;
             _trail.shadowCastingMode = ShadowCastingMode.Off;
@@ -198,7 +198,7 @@ namespace Game.Combat
             line.widthMultiplier = width;
             line.positionCount = 2;
             line.shadowCastingMode = ShadowCastingMode.Off;
-            line.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
+            LineKit.UseBeam(line);
             line.enabled = false;
             return line;
         }
@@ -375,8 +375,11 @@ namespace Game.Combat
             _beamGlow.positionCount = _beam.positionCount;
             _beam.textureMode = LineTextureMode.Stretch;
             _beam.SetPropertyBlock(null);
-            // An opaque glowing core, so the bloom catches the beam and the halo never hides it.
-            _beam.sharedMaterial = PlaceholderVisuals.MaterialFor(Color.Lerp(bright, Color.white, 0.6f), BeamEmission);
+            // A white-hot core inside the soft halo line; both wear the beam profile, so neither ends in a hard flat strip.
+            _beam.sharedMaterial = LineKit.Beam();
+            Color core = Color.Lerp(bright, Color.white, CoreWhiteness);
+            _beam.startColor = core;
+            _beam.endColor = core;
             _beamGlow.startColor = new Color(color.r, color.g, color.b, BeamGlowAlpha);
             _beamGlow.endColor = new Color(color.r, color.g, color.b, BeamGlowAlpha * 0.5f);
             _flicker = 0f;

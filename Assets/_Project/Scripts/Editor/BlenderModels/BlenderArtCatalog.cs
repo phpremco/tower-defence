@@ -218,6 +218,7 @@ namespace Game.Editor
                 new BlenderArtEntry("AcidEmpress", "AcidEmpress")
                 {
                     ExtraParts = FaceClaws,
+                    BeamSockets = new[] { "Gland" },
                     Scale = BossFactor,
                     Clips = new[]
                     {
@@ -258,6 +259,7 @@ namespace Game.Editor
                 new BlenderArtEntry("BatBoss", "SkySovereign")
                 {
                     ExtraParts = FaceClaws,
+                    BeamSockets = new[] { "Emitter" },
                     Scale = 0.7f,
                     BodyCentrePivot = true,
                     Clips = new[]
@@ -267,12 +269,17 @@ namespace Game.Editor
                     },
                 },
                 // The ray boss (exported as StormMatriarch) on the Sky Sovereign, a ray boss of scale 1.4 in the data:
-                // 0.514 keeps the model at its built size (0.72). Its tail laser has no clip of its own; the beam is VFX.
+                // 0.514 keeps the model at its built size (0.72).
+                // Round 50: the tail laser plays the Release clip (nose dips, tail aims over the back) with the beam on its release
+                // frame, leaving from the spade-tip Emitter (round 49H), else from the last tail joint.
                 new BlenderArtEntry("RayBoss", "StormMatriarch")
                 {
                     ExtraParts = FaceClaws,
+                    BeamSockets = new[] { "Emitter", "Tail_5" },
                     Scale = 0.514f,
                     BodyCentrePivot = true,
+                    // Round 49H: wind-up 0-27, fire on 30, hold 30-42 looping 36-42 while the beam burns, recover 42-54.
+                    Clips = new[] { new BlenderClipSpec("Release", ModelClipRole.Power, 30, "Laser", "Emitter", sustainFrom: 36, sustainTo: 42) },
                 },
 
                 // Round 15, P3 species (import stage 4b). The Shardback sheds its six prism clusters with its armour; the

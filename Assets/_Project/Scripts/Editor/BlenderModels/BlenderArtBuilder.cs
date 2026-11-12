@@ -36,8 +36,9 @@ namespace Game.Editor
         // One clip as the builder collects it, before it is written into the art definition.
         private readonly struct ClipRow
         {
-            public ClipRow(ModelClipRole role, AnimationClip clip, AnimationClip farClip, float distance, float eventSeconds, string trigger, string socket, float weight, BlenderTravelClips.Facts travel = default)
+            public ClipRow(ModelClipRole role, AnimationClip clip, AnimationClip farClip, float distance, float eventSeconds, string trigger, string socket, float weight, Vector2 sustain, BlenderTravelClips.Facts travel = default)
             {
+                Sustain = sustain;
                 Travel = travel;
                 Role = role;
                 Clip = clip;
@@ -57,6 +58,7 @@ namespace Game.Editor
             public string Trigger { get; }
             public string Socket { get; }
             public float Weight { get; }
+            public Vector2 Sustain { get; }
             public BlenderTravelClips.Facts Travel { get; }
             public float Length => Clip.length;
         }
@@ -249,6 +251,7 @@ namespace Game.Editor
             so.FindProperty("_embers").boolValue = entry.Embers;
             so.FindProperty("_vents").objectReferenceValue = entry.Vents != null ? LoadOrCreate<ModelVentDefinition>(VentPath(entry.Vents)) : null;
             so.FindProperty("_bleeds").boolValue = entry.Bleeds;
+            WriteStrings(so.FindProperty("_beamSockets"), new List<string>(entry.BeamSockets));
             so.FindProperty("_displayExposure").floatValue = entry.DisplayExposure;
             WriteStrings(so.FindProperty("_shedBones"), entry.ShedBonesKey != null ? report.Strings(entry.ShedBonesKey) : new List<string>());
             WriteClips(so.FindProperty("_clips"), clips);
@@ -291,10 +294,18 @@ namespace Game.Editor
                 far.TryGetValue(clip.name, out AnimationClip farClip);
                 int eventFrame = spec?.EventFrame ?? 0;
                 float eventSeconds = (eventFrame > 0 ? eventFrame : facts.EventFrame) / FramesPerSecond;
-                clips.Add(new ClipRow(role, clip, farClip, distance, eventSeconds, spec?.Trigger ?? string.Empty, spec?.Socket ?? string.Empty, weight, facts));
+                clips.Add(new ClipRow(role, clip, farClip, distance, eventSeconds, spec?.Trigger ?? string.Empty, spec?.Socket ?? string.Empty, weight, Sustain(spec), facts));
             }
 
             return clips;
+        }
+
+        // The frames a lasting power loops, in clip seconds; zero when the row names none.
+        private static Vector2 Sustain(BlenderClipSpec? spec)
+        {
+            return spec != null && spec.Value.SustainTo > spec.Value.SustainFrom
+                ? new Vector2(spec.Value.SustainFrom / FramesPerSecond, spec.Value.SustainTo / FramesPerSecond)
+                : Vector2.zero;
         }
 
         private static Dictionary<string, AnimationClip> ClipsByName(string path)
@@ -432,6 +443,7 @@ namespace Game.Editor
                 element.FindPropertyRelative("_trigger").stringValue = clip.Trigger;
                 element.FindPropertyRelative("_socket").stringValue = clip.Socket;
                 element.FindPropertyRelative("_weight").floatValue = clip.Weight;
+                element.FindPropertyRelative("_sustain").vector2Value = clip.Sustain;
                 element.FindPropertyRelative("_endOffset").vector2Value = clip.Travel.EndOffset;
                 element.FindPropertyRelative("_anchorForward").floatValue = clip.Travel.Anchor;
                 element.FindPropertyRelative("_cueSeconds").floatValue = clip.Travel.CueFrame / FramesPerSecond;

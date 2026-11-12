@@ -32,6 +32,12 @@ namespace Game.Hero
 
         [SerializeField] [Min(0f)] private float _reloadSeconds;
 
+        [Tooltip("Seconds from taking the weapon in hand to its first blow or shot: the draw, ending in the aim or the guard (the hero art's draw clip). The first strike of an engagement waits this long; strikes while it stays drawn do not, so the rate of fire is unchanged.")]
+        [SerializeField] [Min(0f)] private float _drawSeconds;
+
+        [Tooltip("Seconds the weapon stays in hand after its last blow or shot (or its reload) before it is put away; a strike within this time needs no new draw.")]
+        [SerializeField] [Min(0f)] private float _stayDrawnSeconds = 4f;
+
         /// <summary>Colour of the blade, the bolt and the muzzle glow.</summary>
         [SerializeField] private Color _color = new Color(0.3f, 0.95f, 1f);
 
@@ -45,6 +51,8 @@ namespace Game.Hero
         public float ArmourFactor => _armourFactor;
         public int Magazine => _magazine;
         public float ReloadSeconds => _reloadSeconds;
+        public float DrawSeconds => _drawSeconds;
+        public float StayDrawnSeconds => _stayDrawnSeconds;
         public Color Color => _color;
     }
 }

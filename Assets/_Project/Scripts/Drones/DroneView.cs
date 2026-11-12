@@ -240,7 +240,7 @@ namespace Game.Drones
             trail.startWidth = TrailWidth;
             trail.endWidth = 0f;
             trail.minVertexDistance = 0.05f;
-            trail.material = PlaceholderVisuals.TransparentMaterialFor(color, 0.6f, 2f);
+            LineKit.UseBeam(trail);
             var gradient = new Gradient();
             gradient.SetKeys(
                 new[] { new GradientColorKey(Color.Lerp(color, Color.white, 0.4f), 0f), new GradientColorKey(color, 1f) },

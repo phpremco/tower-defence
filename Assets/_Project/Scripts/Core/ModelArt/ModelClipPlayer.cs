@@ -323,6 +323,12 @@ namespace Game.Core
         /// </summary>
         public void PlayOnce(int index, float startSeconds = 0f, bool hold = false, float rate = 1f) => _mixer.PlayOnce(index, startSeconds, hold, rate);
 
+        /// <summary>Changes the playback rate of the clip on top where it is: zero holds it on its current frame.</summary>
+        public void SetOnceRate(float rate) => _mixer.SetOnceRate(rate);
+
+        /// <summary>Moves the clip on top to a time in it (a lasting power looping its sustain).</summary>
+        public void SetOnceTime(float seconds) => _mixer.SetOnceTime(seconds);
+
         /// <summary>Lets the clip on top fade out now, wherever it is.</summary>
         public void StopOnce() => _mixer.StopOnce();
 

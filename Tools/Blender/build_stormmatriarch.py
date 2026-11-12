@@ -7,14 +7,18 @@ their own bones cover a glowing brood chamber: in the Release clip they open lik
 the small flyers come out of the back. Round 49A (Remco on the rays: the teeth are not logical, no tail to see): a broad manta head with rolled cephalic
 lobes (Pincer bones, no teeth) beside a wide mouth across the front edge (lower lip on a new Jaw bone, teeth in the
 Face part), and the Skyray's new whip tail at her size (build_skyray.tail_parts): thick, a lit dorsal line, hooks,
-a big barbed spade with two charge nodes at its root (the tail laser is Unity VFX from Tail_5).
+a big barbed spade with two charge nodes at its root (round 49H: the beam leaves from the Emitter bone at its tip).
 Round 49E (Remco: "the mouth isn't attached"): the Skyray's slit mouth cut into the head (build_skyray.Mouth) at her
 size; the maw and lip balls are gone.
 
 The palette is one parameter (PALETTES at the top): `--palette cool` (default, the Skyray's colours) or
 `--palette warm` (Remco's open question; a warm variant bakes into the preview folder, never into Exports).
 
-Clips: Fly (loop), Idle (loop), Hit, Death, Release (the power; flyers at RELEASE_FRAME). Also exports
+Round 49H (Remco: "the tail is supposed to whip over the top of the body and fire a laser"): Release is the scorpion
+tail shot (the tail curls over the back, the beam from the new Emitter bone at the spade tip, RELEASE_FRAME to the end
+of RELEASE_HOLD); the hatches only crack open as heat vents now.
+
+Clips: Fly (loop), Idle (loop), Hit, Death, Release (the tail laser; beam on at RELEASE_FRAME). Also exports
 StormMatriarch_LOD1.
 
 Run: blender --background --python Tools/Blender/build_stormmatriarch.py -- [--preview <dir>] [--palette warm] [--norender]
@@ -161,6 +165,12 @@ def aft_uv(points):
 TAIL = [P(0, 0.0, -0.34), P(0, 0.008, -0.6), P(0, 0.004, -0.87), P(0, -0.01, -1.14), P(0, -0.024, -1.4),
         P(0, -0.036, -1.64)]
 TAIL_BONES = [f"Tail_{i + 1}" for i in range(5)]
+# Round 49H (Remco: "the tail is supposed to whip over the top of the body and fire a laser"): the beam's origin, a
+# bone at the needle point of the spade (build_skyray.tail_parts: the spade ends 0.24 * s past Tail_5's tail) whose
+# head is the beam origin and whose +Y (head to tail) is the firing direction, along the spade. Child of Tail_5, no
+# weights (it carries no mesh; deform stays on only so the FBX export, which keeps deform bones, writes it).
+SPADE_DIR = (TAIL[-1] - TAIL[-2]).normalized()
+EMITTER = (TAIL[-1] + SPADE_DIR * R(0.24), TAIL[-1] + SPADE_DIR * R(0.34))
 
 
 def pincer_points(sx):
@@ -269,7 +279,7 @@ def build_parts():
                [R(0.02 + length * 0.12), R(0.011), R(0.001)], sides=10, chain=["Body"], style=H.hook(PAL, k, glow=0.8, glow_from=0.78))
 
     SR.tail_parts(b, k, TAIL, TAIL_BONES, P, s=M, pal=PAL)
-    # The tail laser's charge nodes at the root of the spade (the beam is Unity VFX from Tail_5).
+    # The tail laser's charge nodes at the root of the spade (the beam leaves from the Emitter bone at the spade tip).
     d = (TAIL[-1] - TAIL[-2]).normalized()
     for sx in (-1, 1):
         b.ellipsoid("TailNode", TAIL[-1] - d * R(0.03) + P(0.03 * sx, 0.012, 0), (R(0.02),) * 3, bone="Tail_5",
@@ -302,6 +312,7 @@ def bones():
     for i, n in enumerate(TAIL_BONES):
         out.append((n, TAIL[i], TAIL[i + 1], prev, True))
         prev = n
+    out.append(("Emitter", EMITTER[0], EMITTER[1], "Tail_5", True))
     return out
 
 
@@ -416,27 +427,82 @@ def death_spec(poser):
 
 
 RELEASE_FRAMES = 54
-# The hatches are open widest and the body heaves: spawn the small flyers over the back (Body bone, about 0.25
-# above it) here.
+# Round 49H: Release is the scorpion tail shot. The beam starts here (unchanged from the old brood release frame, so
+# Unity's event stays where it was), from the Emitter bone.
 RELEASE_FRAME = 30
+# The beam stays on from RELEASE_FRAME through the last frame of this window (the tail holds its aim).
+RELEASE_HOLD = (30, 42)
+# Inside the hold the pose repeats every HOLD_PERIOD frames (the aim tremor is the only motion), so Unity can loop
+# these frames, or freeze on one, to sustain a longer beam (the TailLaser sweeps 3.5 s; the clip is 1.8 s).
+HOLD_PERIOD = 6
+RELEASE_HOLD_LOOP = (RELEASE_HOLD[1] - HOLD_PERIOD, RELEASE_HOLD[1])
+# The aim pose: each tail bone's curl over the back (deg, up positive), about 205 deg in all, so the spade points
+# forward and about 25 deg down in the body's frame (35 deg in the world with the nose dip) past the head.
+AIM_CURL = (38, 46, 50, 42, 29)
+# Overlapping action: each bone starts and settles a little after the one before it, and the later ones overshoot more.
+CURL_START, CURL_END, CURL_LAG = 3.0, 22.0, 1.2
+CURL_OVERSHOOT = (2, 3, 4, 5, 6)
+RECOVER_START, RECOVER_END = 42.0, 50.0
+# The kick rises over RECOIL_RISE frames and dies away with RECOIL_DECAY frames.
+RECOIL_RISE, RECOIL_DECAY = 2.5, 1.8
+
+
+def hump(a, b, f):
+    """0 outside a..b, a smooth sin^2 bump inside it (zero speed at both ends)."""
+    if f <= a or f >= b:
+        return 0.0
+    return math.sin(math.pi * (f - a) / (b - a)) ** 2
+
+
+def recoil(f):
+    """The kick of the shot: rises smoothly from 0 at RELEASE_FRAME to 1 RECOIL_RISE frames later, then dies away."""
+    x = f - RELEASE_FRAME
+    if x <= 0:
+        return 0.0
+    rise = math.sin(0.5 * math.pi * min(x / RECOIL_RISE, 1.0)) ** 2
+    return rise * math.exp(-max(0.0, x - RECOIL_RISE) / RECOIL_DECAY)
+
+
+def tail_shot_pitch(f):
+    """Per tail bone: anticipation dip, the staggered curl up over the back with overshoot, the shot's recoil (the tip
+    kicks back), the aim tremor while the beam is on, the whip back root-first and its follow-through."""
+    d = math.radians
+    hold = s_(RELEASE_HOLD[0] - 2, RELEASE_HOLD[0] + 1, f) * (1 - s_(RELEASE_HOLD[1], RELEASE_HOLD[1] + 2, f))
+    tremor = math.sin(2 * math.pi * f / HOLD_PERIOD)
+    r = recoil(f)
+    out = []
+    for i, curl in enumerate(AIM_CURL):
+        a, b = CURL_START + CURL_LAG * i, CURL_END + CURL_LAG * i
+        wind = s_(a, b, f)
+        back = s_(RECOVER_START + 0.8 * i, RECOVER_END + 0.8 * i, f)
+        pitch = -d(7) * hump(0.0 + i, 9.0 + 1.5 * i, f)
+        pitch += d(curl) * wind * (1 - back) + d(CURL_OVERSHOOT[i]) * hump(b - 3, b + 3, f)
+        pitch -= d((0.5, 0.5, 1.0, 1.5, 3.0)[i]) * r
+        pitch += d(0.1 + 0.05 * i) * tremor * hold
+        pitch -= d(CURL_OVERSHOOT[i]) * hump(RECOVER_START + 3 + 0.5 * i, RELEASE_FRAMES, f)
+        out.append(pitch)
+    return out
 
 
 def release_spec(poser):
     d = math.radians
 
     def spec(t, f):
-        rear = s_(0.0, 0.3, t) * (1 - s_(0.75, 1.0, t))
-        opening = s_(0.18, 0.45, t) * (1 - s_(0.66, 0.82, t))
-        heave = math.sin(math.pi * s_(0.42, 0.68, t))
-        snap = math.exp(-max(0.0, t - 0.8) * 30) * math.sin(max(0.0, t - 0.8) * 60) * (1 if t > 0.8 else 0)
-        # She rears up, holds the fins high, opens the hatches and heaves the brood out; the hatches snap shut.
-        fins = {(sd, "A"): [d(12) * rear - d(8) * heave, d(8) * rear, d(10) * rear] for sd, _ in SIDES}
-        fins.update({(sd, "B"): [d(16) * rear - d(10) * heave, d(10) * rear, d(12) * rear] for sd, _ in SIDES})
-        return specs_for(loc=Vector((0, 0, R(0.06) * rear - R(0.05) * heave)), pitch=-d(16) * rear, head=d(8) * rear,
-                         pincer=d(26) * rear, fins=fins, aft=-d(16) * rear + d(10) * heave,
-                         hatch=d(80) * opening + d(6) * snap,
-                         tail_pitch=[-d(9) * rear + d(6) * heave for _ in range(5)],
-                         tail_yaw=[d(5) * heave * math.sin(t * 20 - i) for i in range(5)])
+        # The nose dips and the body rises a little as the tail comes over; level again by the end.
+        dip = s_(2, 22, f) * (1 - s_(RECOVER_START + 1, RELEASE_FRAMES - 1, f))
+        hold = s_(RELEASE_HOLD[0] - 2, RELEASE_HOLD[0] + 1, f) * (1 - s_(RELEASE_HOLD[1], RELEASE_HOLD[1] + 2, f))
+        tremor = math.sin(2 * math.pi * f / HOLD_PERIOD)
+        r = recoil(f)
+        # The fins brace: roots raised, tips cupped down; they beat down against the recoil.
+        fins = {(sd, "A"): [d(10) * dip - d(4) * r, -d(4) * dip, -d(10) * dip + d(1) * tremor * hold] for sd, _ in SIDES}
+        fins.update({(sd, "B"): [d(12) * dip - d(5) * r, -d(6) * dip, -d(14) * dip + d(1.5) * tremor * hold]
+                     for sd, _ in SIDES})
+        sway = math.sin(math.pi * s_(2, 26, f))
+        return specs_for(loc=Vector((0, R(0.015) * r, R(0.03) * dip)), pitch=d(9) * dip - d(1.5) * r,
+                         head=d(5) * dip, pincer=d(8) * dip + d(12) * r, fins=fins, aft=-d(12) * dip,
+                         hatch=d(10) * hold + d(1.5) * tremor * hold,
+                         tail_pitch=tail_shot_pitch(f),
+                         tail_yaw=[d(4) * sway * math.sin(math.pi * (0.3 + 0.15 * i)) for i in range(5)])
     return RELEASE_FRAMES, spec, False
 
 
@@ -478,7 +544,12 @@ def main():
                           "low_texture_size": LOW_TEX, "maps": ["Albedo", "Normal", "Emission", "Mask"],
                           "uv": asset.uv_stats, "detail": asset.details,
                           "actions": {n: CLIPS[n](poser)[0] for n in CLIPS}, "release_frame": RELEASE_FRAME,
-                          "release_point": "Body bone, 0.25 above the back", "fly_beat_seconds": round(FLY_FRAMES / 30, 2),
+                          "release_point": "Emitter bone (round 49H): beam origin at the bone's head (the spade tip), "
+                                           "firing direction along the bone's +Y (head to tail)",
+                          "release_hold_frames": list(RELEASE_HOLD), "release_hold_loop_frames": list(RELEASE_HOLD_LOOP),
+                          "laser_origin_bone": "Emitter", "emitter_axis": "+Y",
+                          "release_clip": "round 49H scorpion tail shot: wind-up 0-27, aim settled 27-30, beam on "
+                                          f"{RELEASE_HOLD[0]}-{RELEASE_HOLD[1]}, recovery {int(RECOVER_START)}-{RELEASE_FRAMES}","fly_beat_seconds": round(FLY_FRAMES / 30, 2),
                           "pivot": "body centre (flight height)", "unity_scale": GAME_SCALE,
                           "lod1": {"fbx": LOD_NAME + ".fbx", "tris": C.tri_count(lod[1]), "bones": len(lod[0].data.bones)}})
     C.save_blend(NAME)

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Game.Core
 {
@@ -27,8 +26,8 @@ namespace Game.Core
         public static Material Create(Color color, float emission, float smoothness, float metallic = 0f)
         {
             Shader shader = UnitShader();
-            // The pipeline default material is always included in builds, unlike a shader found by name.
-            var material = shader != null ? new Material(shader) : new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
+            // The stock lit shader is kept in the build by the shader keepers; the URP default material is null there.
+            var material = shader != null ? new Material(shader) : PipelineMaterials.Lit();
             material.SetColor("_BaseColor", color);
             material.SetFloat("_Smoothness", smoothness);
             material.SetFloat("_Metallic", metallic);

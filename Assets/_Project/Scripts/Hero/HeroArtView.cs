@@ -19,7 +19,6 @@ namespace Game.Hero
     {
         private const float TurnDegreesPerSecond = 260f;
         private const float TurnWalkingDegreesPerSecond = 540f;
-        private const float CombatHoldSeconds = 4f;
         private const float IgniteSeconds = 0.18f;
         private const float SpeedSettle = 10f;
         private const float MovingSpeed = 0.2f;
@@ -200,6 +199,7 @@ namespace Game.Hero
             _lastPosition = transform.position;
             _lastHealth = hero.Health.Current;
             _player?.Loop(_idle, 1f);
+            _hero.Drawing += OnDrawing;
             _hero.Struck += OnStruck;
             _hero.Reloading += OnReloading;
             _hero.AbilityUsed += OnAbilityUsed;
@@ -214,6 +214,7 @@ namespace Game.Hero
         {
             if (_hero != null)
             {
+                _hero.Drawing -= OnDrawing;
                 _hero.Struck -= OnStruck;
                 _hero.Reloading -= OnReloading;
                 _hero.AbilityUsed -= OnAbilityUsed;
@@ -417,7 +418,7 @@ namespace Game.Hero
             _bolt.positionCount = 2;
             _bolt.useWorldSpace = true;
             _bolt.widthMultiplier = BoltWidth;
-            _bolt.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
+            LineKit.UseBeam(_bolt);
             _bolt.startColor = Color.Lerp(colour, Color.white, 0.6f);
             _bolt.endColor = colour;
             _bolt.shadowCastingMode = ShadowCastingMode.Off;
@@ -452,6 +453,19 @@ namespace Game.Hero
             _lastHealth = health;
         }
 
+        // The logic takes the weapon in hand and waits its draw time before the first blow or shot, so the draw clip plays out
+        // to the aim or the guard before anything fires (round 50: he shot while still drawing).
+        private void OnDrawing(HeroWeaponDefinition weapon)
+        {
+            if (_isDown || _player == null)
+            {
+                return;
+            }
+
+            Draw(weapon.Kind == HeroWeaponKind.Ranged ? Hand.Ranged : Hand.Melee);
+            _combatUntil = Time.time + weapon.DrawSeconds + weapon.StayDrawnSeconds;
+        }
+
         private void OnStruck(Vector3 target, HeroWeaponDefinition weapon)
         {
             if (_isDown || _player == null)
@@ -461,7 +475,7 @@ namespace Game.Hero
 
             bool ranged = weapon.Kind == HeroWeaponKind.Ranged;
             Draw(ranged ? Hand.Ranged : Hand.Melee);
-            _combatUntil = Time.time + CombatHoldSeconds;
+            _combatUntil = Time.time + weapon.StayDrawnSeconds;
             if (_switchClip >= 0)
             {
                 // The draw plays out first (it ends in the aim or the guard); the logic's blow has landed already.
@@ -492,7 +506,8 @@ namespace Game.Hero
             float length = _body.Art.Clips[_reload].Length;
             float rate = seconds > 0f ? Mathf.Clamp(length / seconds, ReloadRateMin, ReloadRateMax) : 1f;
             _player.PlayUpper(_reload, 0f, hold: false, rate: rate);
-            _combatUntil = Time.time + Mathf.Max(seconds, CombatHoldSeconds);
+            HeroWeaponDefinition gun = _hero.Definition.RangedWeapon;
+            _combatUntil = Time.time + seconds + (gun != null ? gun.StayDrawnSeconds : 0f);
         }
 
         private void OnAbilityUsed(int slot, HeroAbilityDefinition ability, Vector3 position)

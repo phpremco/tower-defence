@@ -12,6 +12,8 @@ namespace Game.Core
         private static readonly int CoreColorId = Shader.PropertyToID("_CoreColor");
         private static readonly int GlowColorId = Shader.PropertyToID("_GlowColor");
         private static readonly int ThirdColorId = Shader.PropertyToID("_ThirdColor");
+        private static readonly int TintId = Shader.PropertyToID("_Tint");
+        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         private static readonly int AtlasFrameId = Shader.PropertyToID("_AtlasFrame");
         private static readonly int FrameId = Shader.PropertyToID("_Frame");
 
@@ -149,6 +151,54 @@ namespace Game.Core
                 material.SetFloat(FrameId, (float)MarkerArt.ParticleCell.Mote);
             }
 
+            return material;
+        }
+
+        /// <summary>
+        /// A new additive material that lights a white sprite in <paramref name="colour"/> (its red channel, faded by its
+        /// alpha), for glows and soft lines built outside a particle system. Built from the atlas's glow material; the default
+        /// material only without registered art (bare EditMode tests).
+        /// </summary>
+        public static Material AdditiveSprite(Texture2D sprite, Color colour)
+        {
+            MarkerArt art = MarkerArt.Active;
+            if (art == null)
+            {
+                var plain = new Material(FallbackMaterial);
+                plain.SetTexture(BaseMapId, sprite);
+                plain.SetColor(BaseColorId, colour);
+                return plain;
+            }
+
+            var material = new Material(art.ParticleMaterial(false));
+            material.SetTexture(MainTexId, sprite);
+            material.SetColor(CoreColorId, colour);
+            material.SetColor(GlowColorId, Color.clear);
+            material.SetColor(ThirdColorId, Color.clear);
+            return material;
+        }
+
+        /// <summary>
+        /// A new covering material that shows a painted picture unlit in its own colours (a backdrop): each channel of the
+        /// atlas shader lights its own primary. Built from the atlas's covering material; the default material only without
+        /// registered art.
+        /// </summary>
+        public static Material Picture(Texture2D picture)
+        {
+            MarkerArt art = MarkerArt.Active;
+            if (art == null)
+            {
+                var plain = new Material(FallbackMaterial);
+                plain.SetTexture(BaseMapId, picture);
+                return plain;
+            }
+
+            var material = new Material(art.ParticleMaterial(true));
+            material.SetTexture(MainTexId, picture);
+            material.SetColor(CoreColorId, Color.red);
+            material.SetColor(GlowColorId, Color.green);
+            material.SetColor(ThirdColorId, Color.blue);
+            material.SetColor(TintId, Color.white);
             return material;
         }
 

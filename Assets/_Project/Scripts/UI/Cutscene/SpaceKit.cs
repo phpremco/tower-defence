@@ -83,21 +83,8 @@ namespace Game.UI
         /// <summary>The painted soft dot, for callers that need the fallback of a round sprite.</summary>
         public static Texture2D SoftDotTexture => SoftDot();
 
-        // The unlit particle shader is always in the build (it is the pipeline's default particle material).
-        private static Material Additive(Texture2D texture, Color colour)
-        {
-            var material = new Material(GraphicsSettings.currentRenderPipeline.defaultParticleMaterial);
-            material.SetFloat("_Surface", 1f);
-            material.SetFloat("_Blend", 2f);
-            material.SetFloat("_SrcBlend", (float)BlendMode.One);
-            material.SetFloat("_DstBlend", (float)BlendMode.One);
-            material.SetFloat("_ZWrite", 0f);
-            material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
-            material.renderQueue = (int)RenderQueue.Transparent;
-            material.SetTexture("_BaseMap", texture);
-            material.SetColor("_BaseColor", colour);
-            return material;
-        }
+        // Built from the Blender particle atlas's additive material: the URP default particle material is null in a player build.
+        private static Material Additive(Texture2D texture, Color colour) => ParticleKit.AdditiveSprite(texture, colour);
 
         // Bright in the middle and gone at the edge, round for glows.
         private static Texture2D SoftDot()

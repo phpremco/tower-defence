@@ -456,6 +456,36 @@ namespace Game.Enemies
         /// <summary>Where a bone of the near model is in the world (a breath socket, an egg sac), or the body when it has none.</summary>
         public Vector3 SocketPosition(string bone) => _model != null ? _model.Socket(bone).position : transform.position;
 
+        /// <summary>
+        /// The bone of the near model a boss's beam and bolts leave from: the first of the art's beam sockets the rig has (a
+        /// tail-tip emitter, else the last tail joint), or null when the creature wears no imported model or none fits. A
+        /// search: callers look it up once per shot, not per frame.
+        /// </summary>
+        /// <summary>
+        /// True while the model holds the pose its beam clip aims in (the ray boss's tail over its back): then the beam socket's
+        /// up axis is the way the shot leaves it. Outside that pose the bone may point anywhere.
+        /// </summary>
+        public bool IsAimingBeam { get; private set; }
+
+        public Transform FindBeamSocket()
+        {
+            if (_model == null)
+            {
+                return null;
+            }
+
+            foreach (string socket in _model.Art.BeamSockets)
+            {
+                Transform bone = _model.FindBone(socket);
+                if (bone != null)
+                {
+                    return bone;
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>Shows or hides an extra part of the model (an ice armour); it stays so through hiding under a liquid.</summary>
         public void SetPartVisible(string part, bool visible)
         {
@@ -819,6 +849,7 @@ namespace Game.Enemies
             }
 
             _clips = new CreatureClips(_model.Player, art, triggers);
+            _clips.StaysOnTheWing = definition.Flies;
             if (definition.IsBoss)
             {
                 AddBossPresence(body, definition, _shellMaterials);
@@ -1200,10 +1231,19 @@ namespace Game.Enemies
                 return;
             }
 
+            bool aiming = false;
             for (int i = 0; i < _powerKinds.Length; i++)
             {
                 _clips.Anticipate(i, _abilities.SecondsUntil(_powerKinds[i]));
+                if (_powerKinds[i] == BossAbilityKind.Laser)
+                {
+                    // The beam burns for seconds: the clip stays on its aim (the tail on target) until it stops.
+                    _clips.HoldPower(i, _abilities.LaserActive);
+                    aiming |= _clips.IsAiming(i, _abilities.LaserActive);
+                }
             }
+
+            IsAimingBeam = aiming;
         }
 
         // The moment inside a clip (a brood leaving the vent, the acid leaving the gland, a sweep passing the front)
@@ -1225,7 +1265,9 @@ namespace Game.Enemies
             ParticleSystem.MainModule main = _impact.main;
             main.startColor = _rush.main.startColor;
             main.gravityModifier = 0.6f;
-            _impact.transform.position = _model.Socket(moment.Socket).position;
+            // A clip that names no bone of its own throws its sparks where the art's beam leaves (the ray boss's tail).
+            Transform beam = moment.Socket.Length == 0 ? FindBeamSocket() : null;
+            _impact.transform.position = beam != null ? beam.position : _model.Socket(moment.Socket).position;
             _impact.Emit(Mathf.RoundToInt(SlamDustBurst * Mathf.Clamp(_creatureScale, 0.6f, 2f)));
         }
 

@@ -37,7 +37,7 @@
   },
   "Bulwark": {
     "folder": "ArtSource/Exports/Bulwark/Skins/Corrupted",
-    "vein_coverage": 0.104
+    "vein_coverage": 0.106
   },
   "Oozer": {
     "folder": "ArtSource/Exports/Oozer/Skins/Corrupted",
@@ -45,7 +45,7 @@
   },
   "Shardback": {
     "folder": "ArtSource/Exports/Shardback/Skins/Corrupted",
-    "vein_coverage": 0.038
+    "vein_coverage": 0.023
   },
   "Mireleech": {
     "folder": "ArtSource/Exports/Mireleech/Skins/Corrupted",
@@ -93,7 +93,7 @@
   },
   "CrystalWarlord": {
     "folder": "ArtSource/Exports/CrystalWarlord/Skins/Corrupted",
-    "vein_coverage": 0.035
+    "vein_coverage": 0.034
   },
   "SkySovereign": {
     "folder": "ArtSource/Exports/SkySovereign/Skins/Corrupted",

@@ -69,6 +69,9 @@ namespace Game.Editor
 
         public bool Bleeds { get; set; } = true;
 
+        /// <summary>The bones a boss's beam and bolts leave from, in order of preference (the first the rig has wins); empty for none.</summary>
+        public string[] BeamSockets { get; set; } = new string[0];
+
         public BlenderClipSpec[] Clips { get; set; } = new BlenderClipSpec[0];
 
         /// <summary>The second material's name in the export (<c>Crystal</c> for <c>&lt;Asset&gt;_Crystal_*.png</c>), or null for one material.</summary>
@@ -134,6 +137,7 @@ namespace Game.Editor
                 Embers = Embers,
                 Vents = Vents,
                 Bleeds = Bleeds,
+                BeamSockets = BeamSockets,
                 Clips = Clips,
                 SecondMaterial = SecondMaterial,
                 ExtraParts = ExtraParts,

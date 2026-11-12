@@ -361,7 +361,7 @@ namespace Game.Levels
 
         private static Material MaterialFor(TerrainKind kind, VisualTheme theme)
         {
-            var material = new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
+            var material = PipelineMaterials.Lit();
             material.SetFloat("_Metallic", 0f);
 
             if (kind == TerrainKind.Water)
@@ -430,7 +430,7 @@ namespace Game.Levels
         // The drifting layer adds light only: black where there is nothing, so it never darkens the sheet below.
         private static Material OverlayMaterialFor(TerrainKind kind, VisualTheme theme)
         {
-            var material = new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
+            var material = PipelineMaterials.Lit();
             material.SetFloat("_Metallic", 0f);
             material.SetFloat("_Smoothness", 0f);
             material.SetFloat("_SpecularHighlights", 0f);

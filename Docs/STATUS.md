@@ -7418,3 +7418,220 @@ corrupted rows is in the art; Prowler, Skyray and SlimeMonarch have an Attack cl
 yet rebuilt, e.g. 49F's Shattered and Shardback at +0.3/+0.5 %). PackAlpha, the ray boss and the Cinder Matriarch have no attack
 clip in the catalog (never had), so the Attack assertion covers the three that attack.
 EditMode suite on w6: **834 tests, 782 passed, 52 skipped, 0 failed** (was 832; +2). Recompile: 0 errors, 0 warnings.
+
+## Round 49H (Blender): the ray boss fires from its tail, scorpion style (2026-11-12)
+
+Not committed. Blender only (no Unity run, nothing under `Assets/`). Only the StormMatriarch export (Unity row `RayBoss`,
+worn by the Sky Sovereign) was touched. Backup of the old export, `.blend` and the shared corrupted report:
+`ArtSource/Exports/_backup_r49/StormMatriarch_49H/` (gitignored).
+
+Remco (in-game screenshot): the cyan beam went straight through the middle of the body and had nothing to do with the tail;
+"the tail is supposed to whip over the top of the body and fire a laser, so the tip of the body goes down a bit, the tail
+aims and shoots".
+
+### What changed (`Tools/Blender/build_stormmatriarch.py`)
+
+- **`Release` (54 frames, name and length unchanged) is now the tail shot** (it was the round-6 brood release with the hatches
+  opening). Wind-up 0-27: the tail dips first (anticipation), then curls up over the back root-first (overlapping action,
+  each bone 1.2 frames behind the one before it, small overshoot on the later bones; about 205 degrees over the five tail
+  bones, `AIM_CURL`), while the nose dips (Body +9 degrees, Head +5), the body rises a little, the fins brace (roots up,
+  tips cupped down) and the aft fins press down. Aim settled 27-30: the spade sits over the front half of the back, its
+  needle point forward and down past the head. **Fire on frame 30**: a soft recoil (the tip kicks back 3 degrees, the
+  body 1.5 degrees nose-up and a little back, the fins beat down, the lobes and the mouth flare), peaking 2.5 frames later
+  and gone by about frame 36. **Hold 30-42**: the aim holds with a fine tremor only (period 6 frames); the hatches crack
+  open 10 degrees as heat vents. **Recovery 42-54**: the tail whips back root-first and dips slightly past level
+  (follow-through); the body levels out by frame 53; frame 54 equals frame 0.
+- **New bone `Emitter`**: child of `Tail_5` at the spade's needle point (`EMITTER` in the script), **no weights** (deform is
+  left on only because the FBX export keeps deform bones only; its vertex group is empty). It is in LOD1 too (17 bones,
+  full rig 28) and is keyed there from the full rig's pose, so in every frame of every clip its position and direction in
+  LOD1 match the full rig exactly (measured: 0.0 difference).
+- Other clips (Fly, Idle, Hit, Death) have the same specs and the same rest bones, so their keys are unchanged. The mesh was
+  rebuilt by the build script (same tri counts: 13391 / LOD1 5997; Face 2150/558, Claws 344/128), but the remesh moved the
+  UV islands a little (338 -> 335 islands), so the body maps and the corrupted skin (`Skins/Corrupted`, `--only
+  StormMatriarch`) were re-baked; the shared `Corrupted_skins_report.json` keeps its 27 entries.
+
+### Unity import notes (row `RayBoss`, export `StormMatriarch`)
+
+| Key | Value |
+| --- | --- |
+| Beam bone | `Emitter` (new). **Origin = the bone's head = the transform's position** (the spade tip). **Direction = the bone's +Y** (head to tail; the same convention as the bat boss's `Emitter`, i.e. the transform's local up after import). |
+| `release_frame` | **30** (unchanged): the beam starts. |
+| `release_hold_frames` | **[30, 42]**: the beam stays on through frame 42 (0.43 s at 30 fps); the tail whips back from 42. |
+| `release_hold_loop_frames` | **[36, 42]**: inside the hold the pose repeats every 6 frames (frame 36 equals frame 42 within half a degree), so to sustain the TailLaser's 3.5 s sweep, loop frames 36-42 (or freeze on a frame in it) and play 42-54 when the beam ends. |
+| Aim in the hold | spade tip about 0.70 forward and 0.77 up from the body centre (model units at export scale); firing 25-32 degrees below the horizontal, straight ahead (no sideways component). The beam's first 3 units pass at least 0.63 from any body part. |
+| Rest / other clips | Emitter points backward along the trailing spade (it only aims forward in Release); Unity should only use its direction while Release is between 30 and 42. |
+| Report | `release_point` now names the Emitter; new keys `release_hold_frames`, `release_hold_loop_frames`, `laser_origin_bone: "Emitter"`, `emitter_axis: "+Y"`, `release_clip` (the timeline). |
+
+Catalog change for the Unity agent (not made here): `BeamSocket = "Tail_5"` -> `"Emitter"`, the beam direction taken from the
+socket's up axis instead of the logic's aim (or the logic's aim drawn from the socket's position), and a `Release` power clip
+(`ModelClipRole.Power`, event 30, socket `Emitter`) with the hold window; today the RayBoss entry has no clips, so the boss
+never played Release in the game. Re-import: FBX, LOD1, report, body maps (+ Low/) and `Skins/Corrupted`.
+
+### Checks
+
+- Per-frame bone turn (`Tools/Blender/r49h_rayboss.py`, `ArtSource/Previews/QA/r49h_rayboss_release_check.json`): Release has
+  no snaps (no step that is 1.8 times larger than both of its neighbours); the largest is `Tail_5` at 42.7 degrees in armature
+  space on frame 48, in the middle of the whip back, built up and released over neighbouring frames (local turn at most
+  10.7 degrees per frame; LOD1 19.7 because Tail_4 folds into Tail_3 there). For comparison, the Skyray's Dive whip is 41.
+  During the hold the aim moves less than 7 degrees in all (the recoil); from frame 36 to 42 it stays within 1.6 degrees.
+  The curled tail never comes closer than 0.44 to the body or the head.
+- Level flight outside Release: Fly Body pitch -2..+2 degrees, roll 0; Idle pitch 0, roll -3..+3 (unchanged).
+- Pre-existing, not touched: the Hit clip has a kink on frame 4 (its authored spring curve), seen in both rigs.
+- Floating parts (`check_floating_49g.py`, exported FBX, every 2nd frame, LOD0 and LOD1): LOD1 clean; LOD0 has the 5 islands
+  the backup has too (same gaps): the two known fin-tip talons (0.05) plus a third talon piece in one Fly pose (0.006), and two
+  small spade barbs 7 mm off the spade, already in the rest pose (round 49A `skyray_detail.spade_barbs`). Release adds
+  nothing.
+- `check_clip_parity.py --only StormMatriarch --base-dir ArtSource/Exports/_backup_r49/StormMatriarch_49H --tag r49h`:
+  **OK**; the only note is the new bone `Emitter` (FBX and LOD1); clip set and lengths unchanged, `release_frame` unchanged.
+
+### Previews (`ArtSource/Previews/QA/`)
+
+- `r49h_rayboss_release_sheet.png`: Release frames 0, 8, 14, 22, 30, 38, 46, 50; side view on top, play camera below; a
+  white line is drawn from `Emitter` along its +Y in every frame (the beam is on only in 30-42).
+- `r49h_rayboss_release_game.png`: the aim pose (frame 34) from the play camera; `r49h_rayboss_release_aim34.png`: the same
+  from a low 3/4 angle.
+
+### Open points (round 49H)
+
+1. The spade's two small saw barbs sit 7 mm off the spade (pre-existing since 49A); a one-line fix in `spade_barbs`, not done here.
+2. The beam direction is fixed by the clip (about 30 degrees down, straight ahead). If the TailLaser sweeps sideways, Unity
+   moves the beam end and should keep only the origin from the bone, or the clip would need a yaw sweep.
+
+## Round 50: ray laser and line materials (2026-11-12)
+
+Not committed. No generator run. `ArtSource/` and `Tools/Blender/` untouched; the only import is the 49H StormMatriarch export
+(row `RayBoss` and its corrupted row, `BlenderArtBuilder.RebuildOnly`). The 49F/49G creatures were not touched. Save
+`progress.json` **2eca347e** copied aside before every Play Mode run (six runs) and verified after each.
+
+### 1. Remco's "square energy beam that didn't even touch the body" (the ray boss: enemy SkySovereign, art RayBoss)
+
+- **Square:** `BossAbilityView` drew the beam core with `PlaceholderVisuals.MaterialFor` (an opaque lit URP material) on a
+  2-point LineRenderer: a flat, hard-edged, square-ended strip. Its soft halo line wore the URP default particle material,
+  which draws nothing here (round 49 set 2) and is null in a build. The Skyray (Dive, a melee tail whip) and the bat boss
+  (bolt volley in painted marker art) have no line effect, so the beam Remco saw is the ray boss's.
+- **Not touching the body:** the beam started at `BossAbilities.LaserOrigin`, the body position plus 0.9 up. The view looked
+  for a procedural `Orb` that the Blender art does not have. With the 49A tail, the beam started 2.1 from the tail and ran
+  through the body.
+- **Fix, data-driven:** `ModelArtDefinition._beamSockets` lists bones in order of preference. It comes from the catalog
+  (`BlenderArtEntry.BeamSockets`) and the builder writes it. RayBoss has `Emitter, Tail_5`, BatBoss `Emitter` and
+  AcidEmpress `Gland` (it volleys too). `EnemyView.FindBeamSocket()` picks the first of these bones that the near rig has.
+  `BossAbilityView` reads its world position every frame for the beam and for every volley (bat boss, Acid Empress). The
+  procedural `Orb` and the logic point remain only as fallbacks.
+- **49H tail shot:** the catalog's `Release` is a Power clip with event frame 30, trigger `Laser`, socket `Emitter` and
+  **sustain frames 36-42** (new `ModelClip._sustain`, `BlenderClipSpec(sustainFrom, sustainTo)`). Like every power clip it
+  is anticipated, so its frame 30 falls when the laser fires.
+  - `CreatureClips.HoldPower` loops frames 36-42 while `BossAbilities.LaserActive` is on, then lets 42-54 play when the beam
+    stops. It uses the new `SetOnceRate`/`SetOnceTime` on `ClipMixer` and `ModelClipPlayer`. A clip without a sustain holds
+    its release frame instead.
+  - While the clip aims (`EnemyView.IsAimingBeam`), the beam has three points. From the Emitter it runs up to 0.9 (at most
+    30 % of the beam) along the bone's +Y, forward and down, then bends to the target. So it visibly leaves the spade tip
+    even when the target is off that line. At other times the beam is straight.
+  - Re-importing a reworked export needs no code change.
+- **Re-import** (`Tools/PlayTest/r50_import_rayboss.cs`): FBX, LOD1, report, body maps, Low and `Skins/Corrupted`.
+  `Emitter` is in both rigs. Release is 1.8 s with its event at 1.0 s and the sustain at 1.2-1.4 s. Height stays 0.342.
+
+### 2. Lines and trails (set 2, open point 2)
+
+- New `Game.Core.LineKit`: one additive beam material per quality, built from the particle atlas's glow material
+  (`Game/VfxParticle`). It wears `SpriteKit.Beam()`, a generated cross-section with a white-hot core in R and a soft glow in G
+  and alpha. The renderer's own colours tint it, and the profile is stretched along the line. It is now used for:
+  - the boss beam and its halo;
+  - projectile trails, and the plain beam and arc fallback (its core is no longer an opaque lit strip);
+  - the hero bolt (both hero views) and the repair beam;
+  - the sword trail, the recon trail fallback and the drone thruster trails.
+- `ParticleKit.AdditiveSprite` (the cutscene glows and lines in `SpaceKit`) and `ParticleKit.Picture` (the `ModelPreview`
+  backdrop, unlit in its own colours) replace the copies of the URP default particle material.
+- **Also null in a build:** `GraphicsSettings.currentRenderPipeline.defaultMaterial`. Outside the editor URP returns null
+  for it, as it does for the particle material. The new `PipelineMaterials.Lit()` creates a material on the stock Lit shader
+  (kept in the build by the shader keepers), set up like the stock material (base colour 0.5 grey, and so on). It replaces
+  the default material in `PlaceholderVisuals`, `GlowDecal`, `GroundMistBuilder`, `PropFactory`, `TerrainLiquidBuilder`,
+  `TerrainSurfaceBuilder`, `PlanetMaterials` and `SurfaceMaterials`. Only `ParticleKit.FallbackMaterial` (for bare EditMode
+  tests) still reads a URP default.
+- Probe (`r50_beam_probe.cs`): every line and trail in Level_C1_01 wears `Lines_Beam`. None is on the default material or
+  has no material.
+
+### 3. Bats "stop flying as they attack"
+
+- **Diagnosis** (clip scan: `r50_wing_probe.cs`, `r50_wing_series.cs`):
+  - The bats' `Glide` idle holds the wings almost still: the wing tip moves 0.08 over 1.6 s, against 0.27 every 0.43 s in Fly.
+  - A flyer that stopped at a gate dropped from Fly into that idle, because `CreatureClips` chose Idle whenever it stood.
+  - The strikes play on top at full weight. The bat `Strike` flicks the wings up once and holds them down for about 0.2 s,
+    with no beat. The Skyray `Dive` sweeps the fins down and holds them. The bat boss's `Laser` beats twice.
+  - Speed does drop to 0 at a gate. That is the gameplay hold that lets it strike the gate, so it stays.
+- **Fixed in code:** `CreatureClips.StaysOnTheWing`, set by `EnemyView` for every flying enemy. A flyer standing in the field
+  keeps its Fly cycle at the authored rate. Display stages (`CreatureDisplay`) keep their idle. In play, the Emberbat at its
+  gate shows `cycle=Fly x1.00` under `Strike` and between strikes, and the Skyray does the same under `Dive`.
+- **Left for Blender (spec):** the bat `Strike` (and the element and boss skins that share the clip) and the Skyray `Dive`
+  should carry the wing beat inside the strike.
+  - Keep the Fly beat through the whole clip on `Arm_*`, `Hand_*` and `Finger_*` (bats) and on `Fin_*_A/B 1-3` (rays). Use at
+    least one full beat of Fly's period (0.43 s for bats, 1.4 s for rays), phase-matched to Fly frame 0 at both ends.
+  - Author the strike only on the Body, Head, Jaw and Tail bones.
+  - Alternative: a masked overlay in code that plays the strike on the body, head and tail only. Not built this round.
+
+### 4. Spencer shooting while still drawing
+
+- **Cause:** `Commander` dealt the damage and raised `Struck` on the first frame a target was in reach. `HeroArtView` then
+  started the draw clip and skipped the bolt, so the first shot (and the first sword blow) landed during the draw.
+- **Fix:** two new fields on `HeroWeaponDefinition`.
+  - `_drawSeconds`: 0.6 for the blaster (`Draw_Pistol`) and 0.733 for the sword (`Draw_Blade`). Both clips end in the aim or
+    the guard.
+  - `_stayDrawnSeconds`: 4 (previously a constant in the views).
+- `Commander` raises the new `Drawing` event when it takes a weapon in hand: on the first strike of an engagement, on a weapon
+  change, or after the weapon was put away. It strikes only once the draw time has passed. Between strikes the weapon stays
+  drawn (through a reload too), so nothing waits and the rate of fire and the DPS are unchanged. Only the first shot or blow
+  of an engagement comes 0.6 s (blaster) or 0.733 s (sword) later. Going down puts the weapon away.
+- **In play** (`r50_hero_draw.sh`): the draw starts at 27.21 s. At 27.23 s and 27.55 s `Draw_Pistol` is playing and there is
+  no bolt. The first shot falls at 27.83 s, then one every 0.20 s. The sword draw starts at 28.82 s and its first blow lands
+  at 29.56 s.
+
+### 5. Stills (`ArtSource/Previews/QA/`, Level_C1_01, 1920x1080, inspection light x1.8, `_game` in the plain light)
+
+- `r50_laser_windup`, `_fire`, `_hold` and `_recover` (each with `_game` and `_side`):
+  - The nose dips and the tail curls over the back.
+  - The beam leaves the spade tip (`start-socket 0.000`), runs forward and down, then bends to the gate.
+  - The side view (from behind) shows the tail over the back and the beam going into the gate.
+  - By `recover` the clip had already played out (the beam ended before that step).
+- `r50_SkySovereign*` (first run, before the 49H import): the beam starts at Tail_5 with a soft core and halo, but runs
+  through the body.
+- `r50_StormMatriarch*`: the volley leaves the lens.
+- `r50_Skyray*`: Dive at 0.22 s, with Fly beneath.
+- `r50_bat_Emberbat*`: mid-strike at its gate, with Fly beneath. `r50_Emberbat*`: an earlier run with the bat in flight
+  (no strike caught).
+- `r50_hero_draw_start`, `_draw_mid`, `_aim`, `_fire` and `_fire_next`: the pistol comes out of the holster with no bolt, then
+  is aimed and fires. The bolt is the new soft beam.
+- Tools:
+  - run scripts: `r50_beam_shots.sh`, `r50_laser_seq.sh`, `r50_hero_draw.sh`;
+  - stills and probes: `r50_still.cs` (orbits the camera instead of turning the model), `r50_beam_probe.cs`,
+    `r50_clip_state.cs`, `r50_hero_state.cs`, `r50_hero_count.cs`;
+  - triggers: `r50_laser_in.cs`, `volley_now.cs`;
+  - data writers: `r50_beam_sockets.cs`, `r50_rebuild_rayboss.cs`, `r50_import_rayboss.cs`, `r50_set_draw.cs`;
+  - read-only checks: `r50_bones.cs`, `r50_litdiff.cs`, `r50_beam_users.cs`, `r50_vfx_trails.cs`, `r50_wing_probe.cs`,
+    `r50_wing_series.cs`, `r50_hero_draw.cs`.
+
+### 6. Tests
+
+- `ParticleMaterialTests`: three new tests.
+  - Lines and trails wear the beam profile from the atlas, with the stretch mode, and share one material. The additive
+    sprite and picture materials use the atlas shader.
+  - No runtime script reads a URP default material.
+  - `PipelineMaterials.Lit()` matches the stock material.
+- `BeamSocketTests`: the catalog sockets are in the art, and one of them is a bone of both rigs. Every modelled boss with a
+  laser or volley has one. The ray boss's laser clip is a Power clip with its release moment inside the clip.
+- `FlyerClipTests`: a flyer standing in the field keeps Fly at rate 1, while a displayed one rests in its idle. Every
+  modelled flyer has a Fly cycle.
+- `HeroDrawTests`: the first shot waits the draw time, the next one does not, and the weapon is drawn again after a pause.
+  The weapons' draw times cover their draw clips.
+- `ClipMixerTests.OnceRateZero_HoldsTheClipOnItsFrame_AndOneLetsItPlayOut`.
+- EditMode suite on w6: **845 tests, 793 passed, 52 skipped, 0 failed** (was 834; +11). The balance EditMode tests (ledger, model, acceptance) pass or skip as before.
+- Recompile: 0 errors. The only warning is the known CS0618 in `BalanceProbeTests.cs:601`, which shows on a full recompile.
+  Play-run consoles: 0 errors, 0 game warnings (the stepped runs log the known job-allocation notice).
+
+### Open points (round 50)
+
+1. Blender: the wing beat inside the bat `Strike` and the Skyray `Dive` (section 3).
+2. If the TailLaser target lies behind or beside the ray, the beam bends sharply after its 0.9 lead. A yaw towards the
+   target while aiming (or a sweep in the clip) would read better.
+3. The cutscene glows and lines (`SpaceKit`) now light their sprite through the atlas shader. Its coverage multiplies the
+   sprite's alpha once more, so their edges fall off a little faster than before. Check the opening cutscene by eye.
+4. The first shot or blow of an engagement now waits the draw (0.6 s blaster, 0.733 s sword). Steady DPS is unchanged.
+   The probe bot (PlayMode) was not re-run.

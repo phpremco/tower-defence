@@ -48,7 +48,7 @@ namespace Game.Hero
             _bolt.positionCount = 2;
             _bolt.useWorldSpace = true;
             _bolt.widthMultiplier = BoltWidth;
-            _bolt.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
+            LineKit.UseBeam(_bolt);
             _bolt.startColor = Color.Lerp(_color, Color.white, 0.6f);
             _bolt.endColor = _color;
             _bolt.enabled = false;

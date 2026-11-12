@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Game.Core
 {
@@ -52,7 +51,7 @@ namespace Game.Core
                 return cached;
             }
 
-            var material = new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
+            var material = PipelineMaterials.Lit();
             material.SetFloat("_Surface", 1f);
             material.SetFloat("_Blend", 0f);
             material.SetFloat("_ZWrite", 0f);
@@ -81,8 +80,8 @@ namespace Game.Core
                 return material;
             }
 
-            // The pipeline default material is always included in builds, unlike a shader found by name.
-            material = new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
+            // The stock lit shader is kept in the build by the shader keepers; the URP default material is null there.
+            material = PipelineMaterials.Lit();
             material.SetColor(BaseColorProperty, color);
             if (emission > 0f)
             {

@@ -288,5 +288,24 @@ namespace Game.Tests
             mixer.Advance(Step, 1f);
             Assert.AreEqual(1f, ClipWeight(mixer, Idle), 1e-5f, "the first cycle after a restart shows at once");
         }
+
+        // Round 50: the ray boss keeps its tail on aim while the beam burns by holding its power clip where it is.
+        [Test]
+        public void OnceRateZero_HoldsTheClipOnItsFrame_AndOneLetsItPlayOut()
+        {
+            ClipMixer mixer = Create();
+            mixer.Loop(Walk, 1f, 0f);
+            mixer.PlayOnce(Strike, 0f, false, 1f);
+            Run(mixer, 30);
+            float held = mixer.OnceTime;
+            mixer.SetOnceRate(0f);
+            Run(mixer, 240);
+            Assert.AreEqual(Strike, mixer.Once, "a held clip stays on top");
+            Assert.AreEqual(held, mixer.OnceTime, 1e-5f, "a held clip keeps its frame");
+            Assert.AreEqual(1f, ClipWeight(mixer, Strike), 1e-4f, "a held clip keeps its full weight");
+            mixer.SetOnceRate(1f);
+            Run(mixer, 120);
+            Assert.AreEqual(-1, mixer.Once, "released, the clip plays out and fades back to the cycle");
+        }
     }
 }

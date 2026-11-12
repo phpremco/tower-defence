@@ -1,7 +1,6 @@
 using Game.Core;
 using Game.Levels;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Game.UI
 {
@@ -179,7 +178,7 @@ namespace Game.UI
         private static Material Create(string shaderName, string name)
         {
             Shader shader = Shader.Find(shaderName);
-            Material material = shader != null ? new Material(shader) : new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
+            Material material = shader != null ? new Material(shader) : PipelineMaterials.Lit();
             material.name = name;
             return material;
         }

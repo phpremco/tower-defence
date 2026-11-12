@@ -1,3 +1,4 @@
+using Game.Core;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -36,7 +37,7 @@ namespace Game.Levels
 
         private static Material PaintedMaterial(TerrainField field, TerrainPainter.Result textures)
         {
-            var material = new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
+            var material = PipelineMaterials.Lit();
             material.SetTexture("_BaseMap", textures.Albedo);
             material.SetColor("_BaseColor", Color.white);
             material.SetFloat("_Smoothness", TextureSmoothness);

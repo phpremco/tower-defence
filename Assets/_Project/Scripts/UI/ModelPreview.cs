@@ -386,9 +386,8 @@ namespace Game.UI
             backdrop.transform.localPosition = new Vector3(0f, 0f, BackdropDistance);
             // The painted wall is 2:1; the square window sees its middle (the lit bay and the floor line).
             backdrop.transform.localScale = new Vector3(BackdropSize, BackdropSize * 0.5f, 1f);
-            Material backdropMaterial = Own(new Material(UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline.defaultParticleMaterial));
-            backdropMaterial.SetTexture("_BaseMap", _stage.Backdrop(low));
-            backdrop.GetComponent<MeshRenderer>().sharedMaterial = backdropMaterial;
+            // Unlit in its own colours, from the particle atlas's covering material (the URP default is null in a build).
+            backdrop.GetComponent<MeshRenderer>().sharedMaterial = Own(ParticleKit.Picture(_stage.Backdrop(low)));
         }
 
         private static Transform Holder(string name, Transform parent)

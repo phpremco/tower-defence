@@ -47,6 +47,9 @@ namespace Game.Core
         [Tooltip("Seconds into the clip where a foot plants, in order, baked from the foot bones (Tools/Generate/Hero Footfalls); empty when no foot lands.")]
         [SerializeField] private float[] _footfallSeconds = System.Array.Empty<float>();
 
+        [Tooltip("For a power that lasts (a beam): the stretch of the clip, in seconds (x start, y end), that loops after its release while the power goes on, before the rest plays out; zero holds the release frame instead.")]
+        [SerializeField] private Vector2 _sustain;
+
         [Tooltip("Seconds this clip blends in over what showed before (a cycle's cross-fade, a clip's fade-in on top of the cycle); zero takes the player's default (ClipMixer).")]
         [SerializeField] [Min(0f)] private float _blendSeconds;
 
@@ -65,6 +68,10 @@ namespace Game.Core
         public string Trigger => _trigger;
         public string Socket => _socket;
         public float Weight => _weight;
+        public Vector2 Sustain => _sustain;
+
+        /// <summary>True when the clip has a stretch to loop while its power lasts.</summary>
+        public bool Sustains => _sustain.y > _sustain.x;
         public bool UpperBody => _upperBody;
 
         /// <summary>Model units the body has travelled by the last frame of a fixed-pivot travel clip (x forward, y up).</summary>

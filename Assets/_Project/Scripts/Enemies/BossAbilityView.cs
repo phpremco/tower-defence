@@ -15,7 +15,12 @@ namespace Game.Enemies
         private const float BeamWidth = 0.3f;
         private const float BeamGlowWidth = 0.95f;
         private const float BeamGlowAlpha = 0.45f;
-        private const float BeamEmission = 4f;
+        private const float BeamCoreWhiteness = 0.5f;
+        // The beam's points (origin, bend, end) and how far it runs along the aimed socket before it bends to the target: at most
+        // this many world units, and never more than this share of the whole beam.
+        private const int BeamPoints = 3;
+        private const float BeamLeadLength = 0.9f;
+        private const float BeamLeadShare = 0.3f;
         private const float BeamTipSize = 0.5f;
         private const float BeamTipEmission = 3f;
         private const float BeamSparkRate = 70f;
@@ -50,6 +55,9 @@ namespace Game.Enemies
         private float _ringRadius;
         private ParticleSystem _sparks;
         private ParticleSystem _beamSparks;
+        private EnemyView _view;
+        private Transform _socket;
+        private bool _socketSearched;
         private Transform _emitter;
         private bool _emitterSearched;
         private ParticleSystem _spores;
@@ -60,6 +68,7 @@ namespace Game.Enemies
         {
             _abilities = GetComponent<BossAbilities>();
             _enemy = GetComponent<Enemy>();
+            _view = GetComponent<EnemyView>();
             if (_enemy != null)
             {
                 _enemy.Deactivated += OnDeactivated;
@@ -108,6 +117,7 @@ namespace Game.Enemies
         {
             _ringAge = float.PositiveInfinity;
             _attachments.Clear();
+            _socketSearched = false;
             if (_emitter != null)
             {
                 _emitter.localScale = Vector3.one;
@@ -120,18 +130,19 @@ namespace Game.Enemies
             if (laser)
             {
                 Color color = _abilities.LaserColor;
-                // The core is an opaque, glowing material, so it never sinks behind the see-through halo drawn around it.
-                _beam.sharedMaterial = PlaceholderVisuals.MaterialFor(Color.Lerp(color, Color.white, 0.5f), BeamEmission);
+                // A white-hot core inside the wide soft halo; both lines wear the beam profile, so the beam has no hard edge.
+                Color core = Color.Lerp(color, Color.white, BeamCoreWhiteness);
+                _beam.startColor = core;
+                _beam.endColor = core;
                 Color halo = color;
                 halo.a = BeamGlowAlpha;
                 _beamGlow.startColor = halo;
                 _beamGlow.endColor = halo;
-                Vector3 origin = Emitter() != null ? _emitter.position : _abilities.LaserOrigin;
+                Vector3 origin = BeamOrigin(_abilities.LaserOrigin);
                 Vector3 end = _abilities.LaserEnd;
-                _beam.SetPosition(0, origin);
-                _beam.SetPosition(1, end);
-                _beamGlow.SetPosition(0, origin);
-                _beamGlow.SetPosition(1, end);
+                Vector3 bend = BeamBend(origin, end);
+                SetBeam(_beam, origin, bend, end);
+                SetBeam(_beamGlow, origin, bend, end);
                 _beamTip.position = end;
                 _beamTipRenderer.sharedMaterial = PlaceholderVisuals.MaterialFor(Color.Lerp(color, Color.white, 0.4f), BeamTipEmission);
                 _beamSparks.transform.position = end;
@@ -205,11 +216,12 @@ namespace Game.Enemies
                 }
             }
 
+            Vector3 from = BeamOrigin(origin);
             for (int i = 0; i < targets.Count; i++)
             {
                 EnemyBoltView bolt = _bolts[_nextBolt];
                 _nextBolt = (_nextBolt + 1) % _bolts.Length;
-                bolt.Fire(origin, targets[i] + Vector3.up * 0.4f, VolleyBoltSize);
+                bolt.Fire(from, targets[i] + Vector3.up * 0.4f, VolleyBoltSize);
             }
         }
 
@@ -242,7 +254,48 @@ namespace Game.Enemies
             _sparks.Emit(RegrowSparks);
         }
 
-        // The model names the part the beam leaves from; it is built after the first Initialize, so look it up late.
+        // While the model holds its aim (the ray boss's tail over its back) the beam first runs out along the socket's up axis,
+        // the way the spade points, and then bends to the target: it visibly leaves the tip forward and down even when the
+        // target lies off that line. Otherwise the middle point sits halfway and the beam is straight.
+        private Vector3 BeamBend(Vector3 origin, Vector3 end)
+        {
+            Vector3 straight = Vector3.Lerp(origin, end, 0.5f);
+            if (_socket == null || _view == null || !_view.IsAimingBeam)
+            {
+                return straight;
+            }
+
+            float lead = Mathf.Min(BeamLeadLength, Vector3.Distance(origin, end) * BeamLeadShare);
+            return origin + _socket.up * lead;
+        }
+
+        private static void SetBeam(LineRenderer line, Vector3 origin, Vector3 bend, Vector3 end)
+        {
+            line.SetPosition(0, origin);
+            line.SetPosition(1, bend);
+            line.SetPosition(2, end);
+        }
+
+        // Where a beam or a volley leaves the body this frame: the bone the art names for it (the ray boss's tail, the bat
+        // boss's lens), so the shot follows the animated body; else a procedural model's orb; else the logic's point.
+        private Vector3 BeamOrigin(Vector3 fallback)
+        {
+            if (!_socketSearched)
+            {
+                // The model is built after the first Initialize and again for a reused body, so it is looked up late.
+                _socketSearched = true;
+                _socket = _view != null ? _view.FindBeamSocket() : null;
+            }
+
+            if (_socket != null)
+            {
+                return _socket.position;
+            }
+
+            return Emitter() != null ? _emitter.position : fallback;
+        }
+
+        // A procedural model names the part the beam leaves from; it is built after the first Initialize, so look it up late.
         private Transform Emitter()
         {
             if (!_emitterSearched)
@@ -269,9 +322,9 @@ namespace Game.Enemies
             var line = go.AddComponent<LineRenderer>();
             line.useWorldSpace = true;
             line.widthMultiplier = width;
-            line.positionCount = 2;
+            line.positionCount = BeamPoints;
             line.shadowCastingMode = ShadowCastingMode.Off;
-            line.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
+            LineKit.UseBeam(line);
             line.enabled = false;
             return line;
         }

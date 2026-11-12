@@ -250,6 +250,24 @@ namespace Game.Core
             _times[slot] = Mathf.Clamp(rate < 0f ? length - startSeconds : startSeconds, 0f, length);
         }
 
+        /// <summary>Changes the playback rate of the clip on top where it is: zero holds it on its current frame (a tail kept on aim).</summary>
+        public void SetOnceRate(float rate)
+        {
+            if (_onceSlot >= 0)
+            {
+                _speeds[_onceSlot] = rate;
+            }
+        }
+
+        /// <summary>Moves the clip on top to a time in it (a lasting power looping its sustain), clamped to the clip.</summary>
+        public void SetOnceTime(float seconds)
+        {
+            if (_onceSlot >= 0)
+            {
+                _times[_onceSlot] = Mathf.Clamp(seconds, 0f, _lengths[_slotClip[_onceSlot]]);
+            }
+        }
+
         /// <summary>Lets the clip on top fade out now, wherever it is.</summary>
         public void StopOnce()
         {

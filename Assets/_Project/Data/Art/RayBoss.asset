@@ -40,6 +40,9 @@ MonoBehaviour:
   _bleeds: 1
   _shedBones: []
   _vents: {fileID: 0}
+  _beamSockets:
+  - Emitter
+  - Tail_5
   _emissionSets: []
   _deathEmissionSet: 
   _clips:
@@ -58,6 +61,7 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
     _blendSeconds: 0
   - _role: 2
     _clip: {fileID: 1723744316781822598, guid: 38e2062b209fead43b5f112f724174bc, type: 3}
@@ -74,6 +78,7 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
     _blendSeconds: 0
   - _role: 3
     _clip: {fileID: 3880577021068054073, guid: 38e2062b209fead43b5f112f724174bc, type: 3}
@@ -90,6 +95,7 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
     _blendSeconds: 0
   - _role: 1
     _clip: {fileID: 119843423913696501, guid: 38e2062b209fead43b5f112f724174bc, type: 3}
@@ -106,4 +112,22 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _sustain: {x: 0, y: 0}
+    _blendSeconds: 0
+  - _role: 5
+    _clip: {fileID: -2203396977791966400, guid: 38e2062b209fead43b5f112f724174bc, type: 3}
+    _farClip: {fileID: -3734475454794189751, guid: 3273a9b04e811a243b82aca9de5d4d78, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 1
+    _trigger: Laser
+    _socket: Emitter
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
+    _footfallSeconds: []
+    _sustain: {x: 1.2, y: 1.4}
     _blendSeconds: 0

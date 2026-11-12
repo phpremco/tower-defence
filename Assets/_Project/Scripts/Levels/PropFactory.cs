@@ -1,6 +1,5 @@
 using Game.Core;
 using UnityEngine;
-using UnityEngine.Rendering;
 using Random = System.Random;
 
 namespace Game.Levels
@@ -124,7 +123,7 @@ namespace Game.Levels
 
         private static Material Lit(Color color, float emission, float smoothness)
         {
-            var material = new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
+            var material = PipelineMaterials.Lit();
             material.SetColor("_BaseColor", color);
             material.SetFloat("_Smoothness", smoothness);
             material.SetFloat("_Metallic", 0f);

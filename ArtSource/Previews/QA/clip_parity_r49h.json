@@ -1,0 +1,28 @@
+{
+ "base": "ArtSource/Exports/_backup_r49/StormMatriarch_49H",
+ "results": [
+  {
+   "creature": "StormMatriarch",
+   "ok": true,
+   "issues": [],
+   "notes": [
+    "fbx: new bones ['Emitter']",
+    "lod: new bones ['Emitter']"
+   ],
+   "clips_before": {
+    "Death": 48,
+    "Fly": 56,
+    "Hit": 14,
+    "Idle": 72,
+    "Release": 54
+   },
+   "clips_after": {
+    "Death": 48,
+    "Fly": 56,
+    "Hit": 14,
+    "Idle": 72,
+    "Release": 54
+   }
+  }
+ ]
+}

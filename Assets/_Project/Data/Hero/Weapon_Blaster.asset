@@ -22,4 +22,6 @@ MonoBehaviour:
   _armourFactor: 0.2
   _magazine: 8
   _reloadSeconds: 1.2
+  _drawSeconds: 0.6
+  _stayDrawnSeconds: 4
   _color: {r: 1, g: 0.6, b: 0.25, a: 1}
