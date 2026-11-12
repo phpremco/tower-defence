@@ -8768,3 +8768,110 @@ builder's towers get a little more time on it. Not retuned (the boss health come
   CS0618. Play-run console: 0 game errors or warnings; one error line from the Pipeline CLI itself ("Failed to handle
   /api/exec request: Main thread operation timed out after 5000ms", a probe call that took over 5 s), not from the game.
 - Tools: `r55b_finale.sh`, `r55b_apply.cs`, `r55b_map.cs`; `r55_gate.sh` reused with prefix `r55b`.
+
+## Round 56 (Blender): cleanup of the small leftovers (2026-11-12)
+
+Blender only; nothing under `Assets/` touched, Unity not run, not committed. Backups of every touched export folder and
+`.blend` from before this round: `ArtSource/Exports/_backup_r56/<Name>/` (gitignored; also the shared
+`Corrupted_skins_report.json`). Previews `ArtSource/Previews/QA/r56_<key>_before|after*.png` (bright light, `_x3` = 3x
+crops, sheets `r56_<key>_<tag>.png`); tool `Tools/Blender/r56_views.py`.
+
+### Per item
+
+1. **Sealed One, crack glow on the shoulder (improved, not perfect).** The smear sits on the upper arm (`LUpper`) by
+   the shoulder hot spot (found by ray-casting the round-52b arms shot): there the fissure widened by up to 2 cm and the
+   glow filled all of it, soft edge included. `build_sealedone.cracked` now puts the light in a narrow core (`glow_w`:
+   the hot-spot widening mostly taken out of the glow, core at 0.2..0.65 of it) while the dark fissure keeps its width,
+   and measures the fissure distance along the surface (`_edge_on_surface`: no broad band where a round surface runs
+   along a crack plane). `r56_sealedone_after_arms_topleft_x3.png`: the bands are about a third narrower and crisper;
+   the shoulder still reads as glowing cracks. Still soft at this extreme close-up: the colour is sampled per vertex of
+   the 1.4 cm voxel high mesh and baked, so no crack light gets much sharper than 2-3 cm. Head, maw, halo, bones and
+   clips unchanged.
+2. **Skyray and ray boss (StormMatriarch), talons and barbs (fixed).** The fin-tip talons are rooted 4 mm under the fin
+   skin and skinned with the fin skin's own blended weights at their root (`skyray_detail.talon_root`: an anchor instead
+   of the rigid `Fin_*_A3` bone), so they follow the skin when the two fin chains bend apart. The spade barbs are moved
+   onto the spade edge as built and sunk 3 mm. Strict float check (every frame, both LODs): Skyray LOD0 7 -> **0** (two
+   3-vertex tooth crumbs that the mouth change left in `Skyray_Face` were deleted, `r56_drop_specks.py --parts`), ray
+   boss LOD0 5 -> **0**; LOD1 0 / 0. The 49H `Release` and `Emitter` are kept (parity OK).
+   `r56_skyray_after_fin_*_dive8*.png`: the talons sit on the fin tip in Dive frame 8 (before: dark pegs beside it).
+3. **PackAlpha specks (fixed).** `r56_drop_specks.py` deleted only loose islands of the body: 21 faced specks (the two
+   4-vertex fragments by the neck, 1.5 cm off, and 19 3-vertex ones 0.8-2.5 cm off) plus 257 faceless loose vertices and
+   edges; LOD1 likewise. Nothing else changed (no re-bake, same UVs). Strict check: LOD0 10 -> **0**, LOD1 8 -> **0**.
+   `r56_packalpha_before|after.png`: the hairline slivers in the air by the neck at the Howl peak are gone.
+4. **Bulwark and Crystal Warlord teeth (done; the gain at play zoom is modest).** `JAW_DROP` 0.05 -> 0.06 (the slot
+   1 cm taller; tusk bosses and chin hook move with the jaw), 5 + 4 teeth instead of 6 + 5, radius 0.0075 -> 0.0095,
+   canines x1.4, paler ivory with a darker root (`mouth49g.IVORY_BRIGHT`, opt-in: the Shattered keeps the old ivory),
+   darker gums, palate and tongue, clearance 3 -> 8 mm (at 3 mm the thicker upper canines reached into the tusk
+   bosses). Teeth 1.7..3.6 cm long (were 1.3..3). The Bulwark's teeth are now in its LOD1 too (Unity shows LOD1 under
+   5 % of the screen height, where the mouth read empty). `check_teeth` (new options `--part Face --below 0.87` and
+   `--suffix ""`): Crystal Warlord 5 -> 1 tooth grazing (Block frame 2, 1 vertex); Bulwark: 2 lower front teeth flagged
+   in every pose, but the flagged vertices are their root ends inside the lower gum (z 0.80; the checker reads these
+   short, thick teeth backwards); no tip enters a lip (checked vertex by vertex). Honest read of
+   `r56_bulwark|crystalwarlord_after*.png`: up close the teeth are clearer against a darker mouth, but from the play
+   camera the mouth faces down under the visor and the change is small.
+5. **Ray mouths (done; reads better from the play camera, still hidden from straight above).** `build_skyray.Mouth`:
+   the slit a little higher and more open (Skyray palate 0.006 -> 0.009, gap 0.015 -> 0.019; ray boss 0.007 -> 0.010,
+   0.016 -> 0.020), a dark crescent painted 4 mm onto the lip's front face and a pale lip line above it (`LIP_DARK`,
+   `LIP_HI`). `r56_skyray|rayboss_after_game_mouth_x3.png`: a taller dark crescent with the teeth in it. From straight
+   top-down the head's front edge still hides the slit (it lies under the head's widest line).
+6. **Fire Larva (the gait was wrong, fixed).** Measured (`r56_larva_gait.py`, `r56_firelarva_gait_before|after.json`):
+   the old crawl never planted. Feet carried 80 % with the waving segments rose up to 9 cm and sank 5.6 cm under the
+   ground (model units), and the six feet slid back at different speeds (front 0.007-0.013, middle 0.017 per frame),
+   because the 0.12 stride put the front feet past the 0.11 reach of the legs. So no single report value was right.
+   New `larva_crawl` (`build_cindermatriarch.py`): two tripod steps per 20-frame loop, stance 0.5, stride 0.1 centred
+   under the hips (a little splay kept), feet held in the world while planted, calmer body wave (2.5 / 1.5 degrees).
+   After: every planted foot at z 0, sliding exactly 0.020 per frame, lift 3.3 cm; **`crawl_distance_per_loop` 0.20 ->
+   0.40**, so the walk rate at base speed drops from 6.9 to about 3.45 (inside the clamp of 6). Only Crawl was re-keyed
+   on the saved `.blend` (`r56_larva_rekey.py`): mesh, maps and the other clips unchanged. `FireLarva.asset` not edited.
+7. **Bat_Mire (done).** `build_bat_skins.py --element Mire --onto-shipped`: a bog palette (murky olive-brown hide and
+   membrane, yellowed bone, a pale sickly yellow-green glow). The rebuilt bat mesh no longer unwraps onto the shipped
+   UVs (max 0.095 since 49C), so the new `--onto-shipped` bakes onto the body mesh saved in `Bat.blend` (the one in
+   `Bat.fbx`; geometry within 5 mm) with its own mirror half. `Skins_warm_report.json` is merged now (Tide, Frost,
+   Mire). `r56_bat_mire_before|after*.png` (before = the Moss skin the Mirebat wears today).
+
+### Unity import (exact)
+
+Rows to rebuild (`BlenderArtBuilder.RebuildOnly`):
+
+| Row (export) | Files | Corrupted row | Notes |
+| --- | --- | --- | --- |
+| SealedOne | FBX, LOD1, report, body + Seal maps, all Phase1-4/Release emission sets, part maps (+ Low/) | none | UVs changed; 33 (30) bones, 17 clips, events, sockets unchanged |
+| Skyray | FBX, LOD1, report, body + Face + Claws maps (+ Low/) | Skyray_Corrupted (`Skins/Corrupted` re-baked) | UVs changed; 23 bones; Dive 24 (impact 10) kept |
+| RayBoss (StormMatriarch) | FBX, LOD1, report, body + Face + Claws maps (+ Low/) | StormMatriarch corrupted row (re-baked) | UVs changed; `Emitter`, `Release` 54 (frame 30, hold 30-42) kept |
+| Bulwark | FBX, LOD1, report, body + Face maps (+ Low/) | Bulwark corrupted row (re-baked) | UVs changed; Face part now also in LOD1 (teeth); Block 7 / Strike 10 unchanged |
+| CrystalWarlord | FBX, LOD1, report, body + Eyes + Teeth + Claws maps (+ Low/) | CrystalWarlord corrupted row (re-baked) | UVs changed; Sweep 40 (hit 20) unchanged |
+| PackAlpha | FBX, LOD1, report only | none needed (no UV or map change) | specks deleted |
+| FireLarva | FBX, LOD1, report only | none | `crawl_distance_per_loop` 0.2 -> **0.4**; Crawl re-keyed (20 frames) |
+| **Bat_Mire (new row)** | `ArtSource/Exports/Bat/Skins/Mire/Bat_Mire_{Albedo,Normal,Emission,Mask}.png` (+ Low/) | none | same mesh and clips as Bat |
+
+- New catalog row: `new BlenderArtEntry("Bat_Mire", "Bat", "Mire") { ExtraParts = FaceClaws, PartGlowTint =
+  MireBatPartGlow, BodyCentrePivot = true, Clips = bat }` with `MireBatPartGlow = new Color(0.85f, 1f, 0.6f)`, and the
+  alias `{ "Mirebat", "Bat_Mire" }` instead of `"Bat_Moss"`: the **Mirebat** wears it.
+- `Corrupted_skins_report.json` merged (27 entries); vein coverage Skyray 0.028, StormMatriarch 0.021, Bulwark 0.109,
+  CrystalWarlord 0.035.
+- Re-measure the bar `_height` of the rebuilt rows (`CreatureBarHeight`); the larva's gait rate follows the new report.
+
+### Checks
+
+- `check_clip_parity.py --base-dir ArtSource/Exports/_backup_r56/{name}` (`clip_parity_r56.json`): **OK** for
+  SealedOne, Skyray, StormMatriarch, Bulwark, CrystalWarlord, PackAlpha, FireLarva (no lost clip, bone, event or socket).
+- Strict float check (`check_floating_49g.py --step 1`, both LODs; `r49g_floating_<name>_r56_before|after.json`):
+  SealedOne 0/0 (burst Rise, Surface_Burst; Seal_/Rubble exempt), Skyray 7/0 -> 0/0, StormMatriarch 5/0 -> 0/0,
+  PackAlpha 10/8 -> 0/0, Bulwark 0/0, CrystalWarlord 0/0, FireLarva 0/0.
+- Build note: `build_bulwark.py --norender` returns before its detail pass; after it, `bulwark_detail.py --norender` and
+  `build_attacks36.py --only Bulwark` must run (done). Skyray: `build_attacks36.py --only Skyray` after its build (done).
+
+### Files
+
+- Changed: `build_sealedone.py`, `build_skyray.py`, `build_stormmatriarch.py`, `skyray_detail.py`,
+  `stormmatriarch_detail.py`, `build_bulwark.py`, `bulwark_detail.py`, `crystalwarlord_detail.py`, `mouth49g.py`,
+  `build_cindermatriarch.py` (larva crawl), `build_bat_skins.py`, `check_teeth_49f.py`.
+- New: `r56_views.py`, `r56_drop_specks.py`, `r56_larva_gait.py`, `r56_larva_rekey.py`.
+
+### Open points (round 56)
+
+1. Sealed One: the shoulder cracks are narrower but still soft in an extreme close-up (per-vertex colour on a 1.4 cm
+   voxel high mesh). Sharper light would need a finer high mesh for the arm parts (a longer build).
+2. Bulwark / Warlord: from the play camera the mouth faces down under the visor; bigger teeth alone cannot fix that (the
+   head would have to lift, or the jaw hang open more in Idle and Walk).
+3. Rays: from straight above the slit stays hidden under the head's front edge; it reads from the 44-degree camera.

@@ -100,5 +100,14 @@
     ],
     "unity": "ExtraParts { \"Face\", \"Claws\" }: objects PackAlpha_<Part> (+ _LOD1 in PackAlpha_LOD1.fbx), maps PackAlpha_<Part>_*.png (+ Low/)",
     "note": "round 49A: three brow eyes per side, upper canines and teeth, split-jaw fangs, paw talons (round 45 parts re-fitted to the alien-wolf body)"
+  },
+  "round56_specks": {
+    "min_vertices": 8,
+    "min_gap_model_units": 0.003,
+    "islands_dropped": {
+      "PackAlpha": 278,
+      "PackAlpha_LOD1": 276
+    },
+    "note": "loose decimation specks deleted from the body; nothing else changed (maps, UVs)"
   }
 }

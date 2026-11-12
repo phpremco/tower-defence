@@ -517,13 +517,38 @@ def larva_place(poser, sp, feet, follow=LARVA_FOOT_FOLLOW):
 LARVA_PHASES = {("L", 1): 0.0, ("R", 2): 0.0, ("L", 3): 0.0, ("R", 1): 0.5, ("L", 2): 0.5, ("R", 3): 0.5}
 
 
+# Round 56 (the larva slid in the game: its 0.20 per loop asked Unity for a walk rate of 6.9 at base speed, over the
+# clamp of 6). Measured on the old crawl, the feet never planted: carried 80 % with the waving segments they rose up to
+# 0.09 and sank 0.056 under the ground, and the six feet slid back at different speeds (front 0.007-0.013, middle
+# 0.017 per frame), because the 0.12 stride put the front feet 0.25 ahead of hips that reach only 0.11. The crawl now
+# plants them: two tripod steps per loop (a small, fast bug), each foot held in the world for half a step while the
+# body passes over it, its stride centred under its hip (a little splay kept) so the two-bone leg can always reach,
+# and a calmer body wave so the hips stay over the feet. Distance per loop = cycles x stride / stance.
+LARVA_CRAWL_CYCLES = 2
+LARVA_CRAWL_STANCE = 0.5
+LARVA_CRAWL_STRIDE = 0.1
+LARVA_CRAWL_LIFT = 0.035
+LARVA_CRAWL_SPLAY = 0.012
+LARVA_CRAWL_DISTANCE = LARVA_CRAWL_CYCLES * LARVA_CRAWL_STRIDE / LARVA_CRAWL_STANCE
+
+
 def larva_crawl(poser):
     lg = larva_legs()
+    n = LARVA_CRAWL_CYCLES
 
     def spec(t, f):
-        w = 2 * math.pi * t
-        sp = larva_specs(wave=math.radians(9), phase=w, lift=math.radians(5), mand=math.radians(8) * math.sin(2 * w))
-        return larva_place(poser, sp, K3.gait_feet(lg, t, LARVA_PHASES, 0.6, 0.12, 0.04), LARVA_CRAWL_FOOT_FOLLOW)
+        w = 2 * math.pi * t * n
+        sp = larva_specs(wave=math.radians(2.5), phase=w, lift=math.radians(1.5), mand=math.radians(8) * math.sin(w))
+        pose = poser.solve(sp)
+        for key, l in lg.items():
+            fwd, up = C.step_curve((t * n + LARVA_PHASES[key]) % 1.0, LARVA_CRAWL_STANCE, LARVA_CRAWL_STRIDE,
+                                   LARVA_CRAWL_LIFT)
+            splay = LARVA_CRAWL_SPLAY * (2 - key[1])          # front feet a little ahead, rear a little behind
+            foot = Vector((l.foot.x, l.root.y - splay - fwd, l.foot.z + up))
+            seg = ("Seg_2", "Seg_3", "Seg_4")[key[1] - 1]
+            move = pose[seg] @ poser.rest[seg].inverted()
+            sp.update(l.pose(poser, move @ l.root, foot, move.to_3x3() @ l.pole))
+        return sp
     return 20, spec, True
 
 
@@ -575,7 +600,7 @@ def build_larva():
                               for i in (1, 2, 3)},
                     extra=H.weathering(1.0, scratches=0.3, dust=0.2, seed=7), voxel=0.004, specular=0.25,
                     emission_strength=3.0,
-                    report={"crawl_distance_per_loop": round(0.12 / 0.6, 3), "minion_of": NAME,
+                    report={"crawl_distance_per_loop": round(LARVA_CRAWL_DISTANCE, 3), "minion_of": NAME,
                             "spawn": "leaves the Matriarch's chimney mouths (bones Vent_1..3) at Spawn frame 30-36"},
                     previews=previews)
 

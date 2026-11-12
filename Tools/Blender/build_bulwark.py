@@ -223,7 +223,13 @@ def serrated_sword(b, cfg, fore, k):
 # JAW_DROP lower than in 49F, so a slot opens under the head; gums run along both rims, the teeth (bulwark_detail)
 # are rooted in them, a dark palate, tongue and the glowing throat fill the slot, and the tusks are lower canines
 # grown out of a bony boss on each front corner of the jaw (matte ivory, dark roots).
-JAW_DROP = 0.05
+JAW_DROP = 0.06
+# Round 56 (the rooted teeth were a few pixels from the play camera): the jaw hangs 1 cm lower than in 49G (0.05), so
+# the slot and the teeth in it are taller; 5 + 4 thicker teeth instead of 6 + 5 (MOUTH); the gums, palate and tongue
+# darker (gum_style) and the teeth paler (mouth49g.IVORY_BRIGHT), so they stand out of a dark mouth; the teeth stop 8 mm
+# short of the other gum (was 3 mm: the thicker upper canines reached into the tusk bosses). The tusk bosses and
+# the chin hook move down with the jaw.
+JAW_49G = 0.05
 
 
 def head_shape(b, style=None):
@@ -239,11 +245,11 @@ def jaw_shape(b, style=None):
 MOUTH = MO.Mouth(u=[(-0.045, 0.32), (-0.04, 0.36), (-0.03, 0.39), (-0.017, 0.415), (0.0, 0.432), (0.017, 0.415),
                     (0.03, 0.39), (0.04, 0.36), (0.045, 0.32)],
                  upper_fn=head_shape, lower_fn=jaw_shape, gum_r=0.006, gum_sink=0.003, ray_from=(0.6, 1.2),
-                 lower_inset=0.9, clearance=0.003, upper_teeth=6, lower_teeth=5, tooth_r=0.0075, canine=1.3)
+                 lower_inset=0.9, clearance=0.008, upper_teeth=5, lower_teeth=4, tooth_r=0.0095, canine=1.4)
 
 
 def gum_style(seed):
-    return MO.gum_style(seed, flesh=(0.26, 0.08, 0.05), deep=(0.06, 0.02, 0.012))
+    return MO.gum_style(seed, flesh=(0.15, 0.04, 0.03), deep=(0.03, 0.009, 0.007))
 
 
 def mouth_parts(b, k):
@@ -263,11 +269,11 @@ def mouth_parts(b, k):
                 style=H.inner_glow(PAL, 0.9), segments=(16, 8))
     tusk = MO.ivory_style(31)
     for side, sx in SIDES:
-        boss = G(0.04 * sx, 0.805, 0.405)
+        boss = G(0.04 * sx, 0.805 - (JAW_DROP - JAW_49G), 0.405)
         b.ellipsoid("TuskBoss", boss, (0.014, 0.017, 0.012), bone="Jaw", segments=(16, 8),
                     deform=C.chiselled(8, 83 + (sx > 0), depth=0.12), style=H.band_plates(PAL, k, 2, height=0.001))
         size = 1.1 if sx < 0 else 0.9
-        root = G(0.03 * sx, 0.795, 0.4)
+        root = G(0.03 * sx, 0.795 - (JAW_DROP - JAW_49G), 0.4)
         b.tube("Tusk", [root, root + G(0.026 * sx, 0.02, 0.01), root + G(0.044 * sx, 0.042 * size, 0.02),
                         root + G(0.05 * sx, 0.06 * size, 0.012)], [0.0105, 0.0085, 0.005, 0.0012], sides=10,
                chain=["Jaw"], style=tusk)

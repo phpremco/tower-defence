@@ -185,10 +185,37 @@ def panels(lod=False):
     shot("move", "Walk", 20, lambda c, m: V.cam("close", c, size, -72, 8, size * 1.45))
     shot("mouth", "Summon", BS.SUMMON_PEAK, lambda c, m: V.cam("close", m, size, -14, 24, size * 0.5))
     C.contact_sheet(out, os.path.join(QA, f"{PREFIX}_{tag}.png"), 2, 640)
+    # Round 52b: the cracked stone arms (3/4 from the front right, the right arm and shoulder) and a 3x crop of the
+    # elbow (the hot fissures) for the review.
+    C.set_action(arm, acts["Idle"], 30)
+    el = arm.matrix_world @ arm.pose.bones["LArm_R_Fore"].head
+    sh = arm.matrix_world @ arm.pose.bones["LArm_R_Upper"].head
+    arms = os.path.join(QA, f"{PREFIX}_{tag}_arms.png")
+    C.render(V.cam("close", el.lerp(sh, 0.35), size, -35, 20, size * 0.5), arms, 1280, 720)
+    crop(arms, os.path.join(QA, f"{PREFIX}_{tag}_arms_x3.png"), 3)
     # The open maw from the play camera too (the read that matters in the game).
     C.set_action(arm, acts["Summon"], BS.SUMMON_PEAK)
     plo, phi = V.bounds(meshes)
     C.render(V.cam("game", (plo + phi) * 0.5, size * 1.9), os.path.join(QA, f"{PREFIX}_{tag}_game_summon.png"), 1280, 720)
+
+
+def crop(src, dst, zoom):
+    """The centre 1/zoom of a render, scaled back up (nearest pixels kept honest by the full-res source)."""
+    img = bpy.data.images.load(src)
+    w, h = img.size
+    import numpy as np
+    px = np.array(img.pixels[:]).reshape(h, w, 4)
+    cw, ch = w // zoom, h // zoom
+    x0, y0 = (w - cw) // 2, (h - ch) // 2
+    sub = px[y0:y0 + ch, x0:x0 + cw]
+    big = np.repeat(np.repeat(sub, zoom, axis=0), zoom, axis=1)
+    out = bpy.data.images.new("crop", big.shape[1], big.shape[0], alpha=True)
+    out.pixels = big.ravel()
+    out.filepath_raw = dst
+    out.file_format = "PNG"
+    out.save()
+    bpy.data.images.remove(img)
+    bpy.data.images.remove(out)
 
 
 def mouth_sheet(clips=None):

@@ -114,21 +114,35 @@ def claw_parts(c):
         bones = f"Fin_{side}_A3"
         # Two hooked talons under the fin tip, curling down and in: a grapple for the gate walls.
         for k, (fwd, ln) in enumerate(((0.03, 0.075), (-0.03, 0.06))):
-            base = tip + G(-0.03 * sx, -0.008, fwd)
+            base, anchor = talon_root(c, tip + G(-0.03 * sx, -0.008, fwd), 0.004)
             d = (G(0.35 * sx, -1.0, 0.25 if k == 0 else -0.2)).normalized()
-            D.add_claw(b, base, d, 0.011, ln, talon[k], hook=G(-0.6 * sx, -0.2, 0.4), hook_amount=0.6, bone=bones,
+            D.add_claw(b, base, d, 0.011, ln, talon[k], hook=G(-0.6 * sx, -0.2, 0.4), hook_amount=0.6, anchor=anchor,
                        name="Talon", lod=k == 0)
-    spade_barbs(b, barb, TAIL_END, TAIL_PREV, 1.0)
+    spade_barbs(b, barb, TAIL_END, TAIL_PREV, 1.0, c)
     return b
 
 
-def spade_barbs(b, barb, end, prev, s):
-    """Round 49A: saw teeth along both edges of the tail spade (build_skyray.tail_parts), raked back."""
+def talon_root(c, p, sink):
+    """Round 56 (the talons parted from the fin tip in Dive frame 8 and the ray boss's last Death frame): the talon
+    starts `sink` under the fin skin nearest to `p`, and it is skinned with the fin skin's own blended weights at that
+    point (no bone: detail_kit.skin_from_body takes the body's weights at the anchor), so its root follows the skin
+    when the fin's two bone chains bend apart instead of riding the leading chain's last bone alone.
+    Returns (root, anchor)."""
+    loc, nor, _, _ = c.bvh().find_nearest(Vector(p))
+    return loc - nor.normalized() * sink, loc
+
+
+def spade_barbs(b, barb, end, prev, s, c=None):
+    """Round 49A: saw teeth along both edges of the tail spade (build_skyray.tail_parts), raked back.
+    Round 56 (two barbs stood 7 mm off the spade): with the creature `c`, each barb's root is moved onto the spade's
+    edge as built (the nearest skin point) and sunk 3 mm (x s) into it, instead of sitting on the ideal outline."""
     d = (end - prev).normalized()
     side = Vector((1, 0, 0))
     for sx in (1, -1):
         for t, w in ((0.1, 0.066), (0.15, 0.052), (0.195, 0.032)):
             p = end + d * t * s + side * sx * (w - 0.004) * s
+            if c is not None:
+                p, _ = talon_root(c, p, 0.003 * s)
             D.add_tooth(b, p, (side * sx * 0.8 - d * 0.6).normalized(), 0.006 * s, 0.03 * s, barb, hook=-d,
                         hook_amount=0.35, bone="Tail_5", lod=False, name="Barb")
 

@@ -17,7 +17,7 @@
   },
   "Skyray": {
     "folder": "ArtSource/Exports/Skyray/Skins/Corrupted",
-    "vein_coverage": 0.03
+    "vein_coverage": 0.028
   },
   "Shalebat": {
     "folder": "ArtSource/Exports/Shalebat/Skins/Corrupted",
@@ -37,7 +37,7 @@
   },
   "Bulwark": {
     "folder": "ArtSource/Exports/Bulwark/Skins/Corrupted",
-    "vein_coverage": 0.106
+    "vein_coverage": 0.109
   },
   "Oozer": {
     "folder": "ArtSource/Exports/Oozer/Skins/Corrupted",
@@ -81,7 +81,7 @@
   },
   "StormMatriarch": {
     "folder": "ArtSource/Exports/StormMatriarch/Skins/Corrupted",
-    "vein_coverage": 0.022
+    "vein_coverage": 0.021
   },
   "CoreWisp": {
     "folder": "ArtSource/Exports/CoreWisp/Skins/Corrupted",
@@ -93,7 +93,7 @@
   },
   "CrystalWarlord": {
     "folder": "ArtSource/Exports/CrystalWarlord/Skins/Corrupted",
-    "vein_coverage": 0.034
+    "vein_coverage": 0.035
   },
   "SkySovereign": {
     "folder": "ArtSource/Exports/SkySovereign/Skins/Corrupted",

@@ -1,8 +1,9 @@
 {
-  "asset": "Bat skins (warm glow)",
+  "asset": "Bat skins (warm glow; round 56: Mire, bog)",
   "skins": {
     "Tide": "Skins/Tide/",
-    "Frost": "Skins/Frost/"
+    "Frost": "Skins/Frost/",
+    "Mire": "Skins/Mire/"
   },
   "palettes": {
     "Tide": {
@@ -38,7 +39,25 @@
         0.8,
         0.42
       ]
+    },
+    "Mire": {
+      "top": [
+        0.22,
+        0.21,
+        0.1
+      ],
+      "glow": [
+        0.78,
+        0.9,
+        0.5
+      ],
+      "eye": [
+        0.92,
+        0.98,
+        0.62
+      ]
     }
   },
-  "mesh_check_max_uv_diff": 0.0
+  "mesh_check_max_uv_diff": 0.0,
+  "round56_baked_onto_shipped_mesh_max_co_diff": 0.0050000000000000044
 }

@@ -227,10 +227,24 @@ class Mouth:
             # Matte: a glossy inside mirrored the sky as a silver band in the slit.
             s.rough[idx] = s.rough[idx] * (1 - w) + 0.6 * w
             s.disp[idx] = s.disp[idx] * (1 - w) + 0.0008 * s_ * ridge * w
+            # Round 56 (from the play camera the slit read as a thin line): outside the slit, on the lip's front face,
+            # a dark crescent runs on from the slit edge (the opening reads wider) and a pale lip line borders it.
+            out = (up - limit) if upper else (limit - up)
+            front = C.smoothstep(0.15, 0.55, -n[:, 1]) * slit * t
+            dark = (1 - C.smoothstep(LIP_DARK * 0.6, LIP_DARK, out)) * C.smoothstep(-0.001, 0.0005, out) * front
+            pale = C.smoothstep(LIP_DARK * 0.7, LIP_DARK * 1.1, out) * (1 - C.smoothstep(LIP_DARK * 1.4, LIP_DARK * 2.0, out))
+            pale = pale * front
+            s.albedo[idx] = C.lerp3(s.albedo[idx], maw.top * 0.8, np.clip(dark, 0, 1) * 0.9)
+            s.albedo[idx] = C.lerp3(s.albedo[idx], LIP_HI, np.clip(pale, 0, 1) * 0.45)
+            s.rough[idx] = s.rough[idx] * (1 - dark) + 0.6 * dark
         return style
 
 
 GUM = np.array((0.32, 0.07, 0.12))
+# Round 56: the lip paint outside the slit (in Skyray units: the dark crescent's height off the slit edge) and the
+# pale lip line's colour.
+LIP_DARK = 0.004
+LIP_HI = np.array((0.72, 0.8, 0.95))
 
 
 def head_with_mouth(b, k, P, mouth, head_style, jaw_style, maw, segments=(48, 24)):
@@ -246,7 +260,9 @@ def head_with_mouth(b, k, P, mouth, head_style, jaw_style, maw, segments=(48, 24
                 segments=(24, 12), style=H.inner_glow(maw, 0.2))
 
 
-MOUTH = Mouth(1.0, (0.0, 0.012, 0.33), (0.13, 0.205, 0.048), start=0.42, palate=0.006, gap=0.015, frown=0.018)
+# Round 56: the slit a little higher on the front edge and a little more open (palate 0.006 -> 0.009, gap 0.015 ->
+# 0.019), so the play camera sees more of it.
+MOUTH = Mouth(1.0, (0.0, 0.012, 0.33), (0.13, 0.205, 0.048), start=0.42, palate=0.009, gap=0.019, frown=0.018)
 
 
 def body_top(fwd):

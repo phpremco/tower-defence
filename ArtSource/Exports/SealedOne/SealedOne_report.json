@@ -29,12 +29,12 @@
       "world_per_uv": 10.295023816924184
     },
     "SealedOne_Seal": {
-      "islands": 103,
+      "islands": 105,
       "closed_islands_cut": 3,
       "folded_fallback_faces": 79,
       "mirrored_faces": 4270,
-      "uv_coverage": 0.66,
-      "world_per_uv": 6.4882854551783
+      "uv_coverage": 0.637,
+      "world_per_uv": 6.608568915330714
     }
   },
   "detail": {
@@ -53,12 +53,12 @@
     "SealedOne_Seal": {
       "rock": {
         "map": "Detail_Rock_Normal.png",
-        "tiling": 20.0,
+        "tiling": 20.4,
         "mask": "B"
       },
       "crystal": {
         "map": "Detail_Crystal_Normal.png",
-        "tiling": 34.3,
+        "tiling": 35.0,
         "mask": "A"
       }
     }

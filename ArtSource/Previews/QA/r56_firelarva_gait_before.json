@@ -1,0 +1,75 @@
+{
+ "blend": "C:\\Users\\remco\\Tower defense\\ArtSource\\Blend\\FireLarva.blend",
+ "contact": 0.004,
+ "report_crawl_distance_per_loop": 0.2,
+ "Crawl": {
+  "frames": 20,
+  "feet": {
+   "Leg_L3_Lower": {
+    "planted_frames": [
+     4,
+     5
+    ],
+    "slide_per_frame": -0.0038,
+    "planted_sweep": 0.0038,
+    "reach_y": 0.059,
+    "lift": 0.1445
+   },
+   "Leg_R3_Lower": {
+    "planted_frames": [
+     2,
+     3
+    ],
+    "slide_per_frame": 0.0025,
+    "planted_sweep": 0.0025,
+    "reach_y": 0.0735,
+    "lift": 0.0873
+   },
+   "Leg_L2_Lower": {
+    "planted_frames": [
+     2
+    ],
+    "slide_per_frame": null,
+    "planted_sweep": 0.0,
+    "reach_y": 0.1735,
+    "lift": 0.0735
+   },
+   "Leg_R2_Lower": {
+    "planted_frames": [
+     3,
+     4,
+     5
+    ],
+    "slide_per_frame": 0.01796,
+    "planted_sweep": 0.0359,
+    "reach_y": 0.172,
+    "lift": 0.107
+   },
+   "Leg_L1_Lower": {
+    "planted_frames": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "slide_per_frame": -0.00074,
+    "planted_sweep": 0.0075,
+    "reach_y": 0.1266,
+    "lift": 0.0639
+   },
+   "Leg_R1_Lower": {
+    "planted_frames": [
+     1,
+     2
+    ],
+    "slide_per_frame": 0.01732,
+    "planted_sweep": 0.0173,
+    "reach_y": 0.0913,
+    "lift": 0.0576
+   }
+  },
+  "mean_slide_per_frame": 0.00544,
+  "planted_distance_per_loop": 0.1089
+ }
+}

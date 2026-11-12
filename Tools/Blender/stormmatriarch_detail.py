@@ -69,12 +69,13 @@ def claw_parts(boss):
     for side, sx in SIDES:
         tip = boss.tail(f"Fin_{side}_A3")
         for k, (fwd, ln) in enumerate(((0.03, 0.075), (-0.03, 0.06))):
-            base = tip + P(-0.03 * sx, -0.008, fwd)
+            # Round 56: rooted under the fin skin and skinned with its blended weights (skyray_detail.talon_root).
+            base, anchor = SD.talon_root(boss, tip + P(-0.03 * sx, -0.008, fwd), 0.004 * SM.M)
             d = (P(0.35 * sx, -1.0, 0.25 if k == 0 else -0.2)).normalized()
             D.add_claw(b, base, d, 0.011 * SM.M, ln * SM.M, claw[k], hook=P(-0.6 * sx, -0.2, 0.4), hook_amount=0.6,
-                       bone=f"Fin_{side}_A3", name="Talon", lod=k == 0)
+                       anchor=anchor, name="Talon", lod=k == 0)
     barb = D.tooth_style(TOOTH, glow=0.6, seed=8)
-    SD.spade_barbs(b, barb, SM.TAIL[-1], SM.TAIL[-2], SM.M)
+    SD.spade_barbs(b, barb, SM.TAIL[-1], SM.TAIL[-2], SM.M, boss)
     return b
 
 

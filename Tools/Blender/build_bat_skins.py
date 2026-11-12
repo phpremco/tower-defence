@@ -1,4 +1,5 @@
-"""Bat element skins Tide and Frost with a WARM glow (round 14, see ArtSource/DESIGN_NOTES.md).
+"""Bat element skins Tide and Frost with a WARM glow (round 14, see ArtSource/DESIGN_NOTES.md), and (round 56) the bog
+skin Mire for the Mirebat (`--element Mire`).
 
 build_bat.py keeps the data colours for Tide and Frost (cool glow). The alien rule says the glow stays warm, so this
 wrapper passes its own palettes without editing build_bat.py: the water bat keeps a deep sea-teal body with a coral
@@ -11,7 +12,8 @@ the exported Bat.fbx (vertex count, triangle count and UVs) and the run stops if
 skins baked into Exports/Bat/Skins/<Element>/ (same file layout as build_bat.py --element).
 
 Run: blender --background --factory-startup --python Tools/Blender/build_bat_skins.py -- [--preview <dir>]
-     [--element Tide,Frost] [--norender]
+     [--element Tide,Frost] [--norender] [--onto-shipped]
+(--onto-shipped, round 56: bake onto the shipped body mesh in Bat.blend instead of stopping on an unwrap mismatch.)
 """
 
 import os
@@ -35,6 +37,15 @@ WARM = {
                      eye=(1.0, 0.8, 0.42), membrane=(0.52, 0.58, 0.64), under=(0.8, 0.82, 0.86), flush=(0.75, 0.32, 0.16),
                      bone=(0.95, 0.94, 0.9)),
 }
+
+# Round 56: the bog bat (Mirebat) wore the Moss skin. Its own: murky green-brown hide and membrane, yellowed bone and a
+# pale, sickly yellow-green glow (Unity tints its parts' glow about (0.85, 1, 0.6)).
+BOG = {
+    "Mire": BB.skin(top=(0.22, 0.21, 0.1), side=(0.085, 0.075, 0.035), belly=(0.03, 0.028, 0.018), glow=(0.78, 0.9, 0.5),
+                    eye=(0.92, 0.98, 0.62), membrane=(0.2, 0.17, 0.07), under=(0.33, 0.31, 0.18), flush=(0.3, 0.27, 0.1),
+                    bone=(0.78, 0.76, 0.6)),
+}
+PALETTES = {**WARM, **BOG}
 
 REAL_EXPORTS = C.EXPORTS
 
@@ -67,6 +78,27 @@ def check_against_export(low):
     return uv_diff
 
 
+def shipped_target(asset):
+    """Round 56 (--onto-shipped): the shipped game mesh as the bake target. The rebuilt mesh has the shipped geometry
+    (same vertices and triangles) but its unwrap no longer lands on the shipped UVs (max 0.095 since the round-49C
+    redesign), so the skin is baked onto the body mesh saved in ArtSource/Blend/Bat.blend (the one in Bat.fbx), with
+    its own UVs and its own mirror half (faces at x >= 0, as uvlayout.unwrap bakes). Stops if the geometry differs."""
+    import types
+    from mathutils import Vector  # noqa: F401
+    with bpy.data.libraries.load(os.path.join(C.BLEND, BB.NAME + ".blend")) as (src, dst):
+        dst.objects = [BB.NAME]
+    mesh = dst.objects[0].data
+    low = C.link(bpy.data.objects.new(BB.NAME + "_Shipped", mesh))
+    low.data.materials.clear()
+    a, b = mesh_signature(asset.low), mesh_signature(low)
+    co_diff = float(np.abs(a[3] - b[3]).max()) if a[0] == b[0] and len(a[3]) == len(b[3]) else 1.0
+    C.log("bat shipped mesh check", "verts", a[0], b[0], "tris", a[1], b[1], "max co diff", co_diff)
+    if a[0] != b[0] or a[1] != b[1] or co_diff > 0.01:  # projection bake: a few mm are inside its ray
+        raise RuntimeError("the rebuilt Bat geometry differs from the shipped mesh in Bat.blend")
+    faces = [f.index for f in mesh.polygons if f.center.x >= -1e-5]
+    return types.SimpleNamespace(settings=asset.settings, low=low, bake_faces=faces), co_diff
+
+
 def main():
     C.reset_scene()
     out = C.preview_dir()
@@ -77,24 +109,35 @@ def main():
     builder = BB.build_parts(BB.ELEMENTS[BB.DEFAULT_ELEMENT])
     asset = BB.build_asset(BB.NAME, builder, BB.GAME_TRIS)
     C.EXPORTS = REAL_EXPORTS
-    uv_diff = check_against_export(asset.low)
+    target, check_key = asset, "mesh_check_max_uv_diff"
+    if C.cli_args().get("onto-shipped"):
+        target, uv_diff = shipped_target(asset)
+        check_key = "round56_baked_onto_shipped_mesh_max_co_diff"
+    else:
+        uv_diff = check_against_export(asset.low)
     arm = C.build_armature(BB.NAME + "_Rig", BB.bones())
     C.skin(asset.low, arm, builder, rigid=BB.RIGID, blend=2)
     poser = C.Poser(arm)
     actions = C.key_clips(poser, BB.CLIPS)
     skins = {}
     for el in names:
-        sk_builder = BB.build_parts(WARM[el])
+        sk_builder = BB.build_parts(PALETTES[el])
         folder = os.path.join(REAL_EXPORTS, BB.NAME, "Skins", el)
-        skins[el] = K2.rebake_skin(asset, sk_builder, folder, f"{BB.NAME}_{el}",
+        skins[el] = K2.rebake_skin(target, sk_builder, folder, f"{BB.NAME}_{el}",
                                    extra=H.weathering(BB.K, scratches=0.4, dust=0.35, seed=71))
-    report = {"asset": "Bat skins (warm glow)", "skins": {el: f"Skins/{el}/" for el in skins},
-              "palettes": {el: {"top": WARM[el]["pal"].top.tolist(), "glow": WARM[el]["pal"].glow.tolist(),
-                                "eye": WARM[el]["pal"].eye.tolist()} for el in skins},
-              "mesh_check_max_uv_diff": uv_diff}
+    import json
     path = os.path.join(REAL_EXPORTS, BB.NAME, "Skins", "Skins_warm_report.json")
+    # Round 56: merge into the report (a run with --element Mire used to drop the Tide and Frost entries).
+    report = {"asset": "Bat skins (warm glow; round 56: Mire, bog)", "skins": {}, "palettes": {}}
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            report.update(json.load(f))
+    report["asset"] = "Bat skins (warm glow; round 56: Mire, bog)"
+    report["skins"].update({el: f"Skins/{el}/" for el in skins})
+    report["palettes"].update({el: {"top": PALETTES[el]["pal"].top.tolist(), "glow": PALETTES[el]["pal"].glow.tolist(),
+                                    "eye": PALETTES[el]["pal"].eye.tolist()} for el in skins})
+    report[check_key] = uv_diff
     with open(path, "w", encoding="utf-8") as f:
-        import json
         json.dump(report, f, indent=2)
     if C.cli_args().get("norender"):
         return

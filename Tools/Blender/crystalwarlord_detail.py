@@ -68,7 +68,8 @@ def teeth_parts(boss):
     import build_crystalwarlord as CW
     import mouth49g as MO
     b = C.PartBuilder()
-    style = MO.ivory_style(11, stain=(0.3, 0.1, 0.2))
+    # Round 56: paler ivory with a darker root (mouth49g.IVORY_BRIGHT) against the darkened gums.
+    style = MO.ivory_style(11, stain=(0.3, 0.1, 0.2), **MO.IVORY_BRIGHT)
     placed = MO.add_teeth(b, BW.MOUTH, CW.M, style, lambda part, bone, p: None, name="Fang")
     C.log("crystalwarlord teeth", placed)
     return b

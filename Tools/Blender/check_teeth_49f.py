@@ -78,19 +78,27 @@ def jaw_frames(arm, act, bone, count=3):
     return [f for _, f in sorted(turns)[:count]]
 
 
+# Round 56: `--part Face --below <z>` checks the teeth of a Face part (the Bulwark's fangs share it with the eyes: only
+# islands whose rest centre lies below z count), `--suffix ""` reads a backup laid out as <dir>/<Name>/<Name>.blend.
+PART = "Teeth"
+BELOW = None
+SUFFIX = "_49F"
+
+
 def blend_path(name, backup):
-    return os.path.join(backup, name + "_49F", name + ".blend") if backup else os.path.join(C.BLEND, name + ".blend")
+    return os.path.join(backup, name + SUFFIX, name + ".blend") if backup else os.path.join(C.BLEND, name + ".blend")
 
 
 def run(name, crystal_prefix, backup=None):
     bpy.ops.wm.open_mainfile(filepath=blend_path(name, backup))
     arm = bpy.data.objects[name + "_Rig"]
     body = bpy.data.objects[name]
-    teeth = bpy.data.objects.get(name + "_Teeth")
+    teeth = bpy.data.objects.get(name + "_" + PART)
     jaw = "Jaw" if "Jaw" in arm.pose.bones else None
     subjects = []
     if teeth is not None:
-        subjects += [(teeth, isl) for isl in F.islands(teeth.data) if len(isl) >= 8]
+        subjects += [(teeth, isl) for isl in F.islands(teeth.data) if len(isl) >= 8
+                     and (BELOW is None or rest_positions[teeth.name][isl][:, 2].mean() < BELOW)]
     body_isl = F.islands(body.data)
     crystal = []
     if crystal_prefix:
@@ -147,6 +155,10 @@ rest_positions = {}
 def main():
     args = C.cli_args()
     tag = args.get("tag") or "after"
+    global PART, BELOW, SUFFIX
+    PART = args.get("part") or PART
+    BELOW = float(args["below"]) if args.get("below") else None
+    SUFFIX = args["suffix"] if "suffix" in args else SUFFIX
     backup = args.get("from")
     if backup and not os.path.isabs(backup):
         backup = os.path.join(C.REPO, backup)
@@ -157,7 +169,7 @@ def main():
         dg = bpy.context.evaluated_depsgraph_get()
         dg.update()
         rest_positions.clear()
-        for o in (bpy.data.objects.get(name), bpy.data.objects.get(name + "_Teeth")):
+        for o in (bpy.data.objects.get(name), bpy.data.objects.get(name + "_" + PART)):
             if o is not None:
                 rest_positions[o.name] = F.evaluated_points(o, dg)
         rep = run(name, args.get("crystal-teeth") if name == "Shattered" else None, backup)

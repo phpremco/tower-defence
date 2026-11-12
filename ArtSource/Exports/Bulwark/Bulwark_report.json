@@ -1,7 +1,7 @@
 {
   "asset": "Bulwark",
   "game_tris": 3950,
-  "source_tris": 407204,
+  "source_tris": 408196,
   "bones": 19,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -12,21 +12,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 374,
-    "folded_fallback_faces": 20,
+    "islands": 373,
+    "folded_fallback_faces": 18,
     "mirrored_faces": 0,
-    "uv_coverage": 0.434,
-    "world_per_uv": 2.344137943246724
+    "uv_coverage": 0.423,
+    "world_per_uv": 2.37632997977985
   },
   "detail": {
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 39.1,
+      "tiling": 39.6,
       "mask": "B"
     },
     "crystal": {
       "map": "Detail_Crystal_Normal.png",
-      "tiling": 33.5,
+      "tiling": 33.9,
       "mask": "A"
     }
   },
@@ -42,67 +42,11 @@
   "walk_distance_per_loop": 0.5,
   "unity_scale": 0.9,
   "pivot": "ground, between the feet",
-  "round49f_specks_dropped": 10,
+  "round49f_specks_dropped": 9,
   "lod1": {
     "fbx": "Bulwark_LOD1.fbx",
     "tris": 1700,
     "bones": 16
-  },
-  "r46_detail": {
-    "parts": {
-      "Face": {
-        "object": "Bulwark_Face",
-        "material": "Bulwark_Face_Mat",
-        "maps": "Bulwark_Face_*.png (1024, Low 512)",
-        "tris": 350,
-        "lod1_object": "Bulwark_Face_LOD1",
-        "lod1_tris": 88,
-        "source_tris": 16940,
-        "uv": {
-          "islands": 15,
-          "closed_islands_cut": 0,
-          "folded_fallback_faces": 28,
-          "mirrored_faces": 175,
-          "uv_coverage": 0.675,
-          "world_per_uv": 0.12566527978123518
-        },
-        "symmetry_error": 0.006298
-      },
-      "Claws": {
-        "object": "Bulwark_Claws",
-        "material": "Bulwark_Claws_Mat",
-        "maps": "Bulwark_Claws_*.png (1024, Low 512)",
-        "tris": 196,
-        "lod1_object": "Bulwark_Claws_LOD1",
-        "lod1_tris": 74,
-        "source_tris": 23968,
-        "uv": {
-          "islands": 3,
-          "closed_islands_cut": 0,
-          "folded_fallback_faces": 0,
-          "mirrored_faces": 98,
-          "uv_coverage": 0.377,
-          "world_per_uv": 0.1988200069400207
-        },
-        "symmetry_error": 0.0
-      }
-    },
-    "body_tris": 3930,
-    "extra_tris": 546,
-    "extra_share": 0.139,
-    "body_lod1_tris": 1700,
-    "extra_lod1_tris": 162,
-    "extra_lod1_share": 0.095,
-    "clips": [
-      "Block",
-      "Death",
-      "Hit",
-      "Idle",
-      "Walk"
-    ],
-    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Bulwark_<Part> (+ _LOD1 in Bulwark_LOD1.fbx), maps Bulwark_<Part>_*.png (+ Low/)",
-    "body_maps": "unchanged",
-    "note": "round 46: wet amber eyes under the visor, jaw fangs, toe talons; bones, clips and events unchanged"
   },
   "round36": {
     "Strike": {
@@ -143,5 +87,62 @@
       "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
+  },
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Bulwark_Face",
+        "material": "Bulwark_Face_Mat",
+        "maps": "Bulwark_Face_*.png (1024, Low 512)",
+        "tris": 356,
+        "lod1_object": "Bulwark_Face_LOD1",
+        "lod1_tris": 86,
+        "source_tris": 18484,
+        "uv": {
+          "islands": 14,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 14,
+          "mirrored_faces": 178,
+          "uv_coverage": 0.178,
+          "world_per_uv": 0.25906740944432677
+        },
+        "symmetry_error": 0.006427
+      },
+      "Claws": {
+        "object": "Bulwark_Claws",
+        "material": "Bulwark_Claws_Mat",
+        "maps": "Bulwark_Claws_*.png (1024, Low 512)",
+        "tris": 196,
+        "lod1_object": "Bulwark_Claws_LOD1",
+        "lod1_tris": 74,
+        "source_tris": 23968,
+        "uv": {
+          "islands": 3,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 98,
+          "uv_coverage": 0.377,
+          "world_per_uv": 0.1988200069400207
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 3932,
+    "extra_tris": 552,
+    "extra_share": 0.14,
+    "body_lod1_tris": 1700,
+    "extra_lod1_tris": 160,
+    "extra_lod1_share": 0.094,
+    "clips": [
+      "Block",
+      "Death",
+      "Hit",
+      "Idle",
+      "Strike",
+      "Walk"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Bulwark_<Part> (+ _LOD1 in Bulwark_LOD1.fbx), maps Bulwark_<Part>_*.png (+ Low/)",
+    "body_maps": "unchanged",
+    "note": "round 46: wet amber eyes under the visor, jaw fangs, toe talons; bones, clips and events unchanged"
   }
 }

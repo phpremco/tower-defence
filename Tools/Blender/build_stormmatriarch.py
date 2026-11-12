@@ -182,7 +182,8 @@ def pincer_points(sx):
 JAW = (P(0, -0.034, 0.38), P(0, -0.046, 0.585))
 MOUTH_REST = math.radians(5)
 # Round 49E: the slit mouth cut into the head (build_skyray.Mouth), at the boss's size.
-MOUTH = SR.Mouth(M, (0.0, 0.014, 0.35), (0.135, 0.22, 0.052), start=0.45, palate=0.007, gap=0.016, frown=0.02)
+# Round 56: as the Skyray's, the slit a little higher and more open (palate 0.007 -> 0.010, gap 0.016 -> 0.020).
+MOUTH = SR.Mouth(M, (0.0, 0.014, 0.35), (0.135, 0.22, 0.052), start=0.45, palate=0.010, gap=0.020, frown=0.02)
 
 
 def horn_points(sx):

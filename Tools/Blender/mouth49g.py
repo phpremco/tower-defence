@@ -30,6 +30,9 @@ from common import G  # noqa: E402
 # Matte ivory (sRGB): a dark brown root where it leaves the gum, an old-bone body, a paler worn tip.
 IVORY_ROOT, IVORY_BODY, IVORY_TIP = (0.17, 0.12, 0.07), (0.74, 0.68, 0.54), (0.88, 0.84, 0.72)
 GUM_FLESH, GUM_DEEP = (0.3, 0.07, 0.07), (0.07, 0.015, 0.02)
+# Round 56 (the Bulwark's and the Warlord's teeth were a few pixels from the play camera): a paler ivory with a darker
+# root, for a stronger value step against their darkened gums (opt-in; the Shattered keeps the defaults).
+IVORY_BRIGHT = dict(root=(0.1, 0.06, 0.035), body=(0.86, 0.82, 0.7), tip=(0.96, 0.94, 0.87))
 
 
 class Mouth:

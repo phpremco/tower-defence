@@ -334,6 +334,39 @@ def _edge(points, seeds, pad):
     return C.voronoi_edge(points, near)
 
 
+def _edge_on_surface(points, normals, seeds, pad):
+    """Round 56: the fissure distance measured ON the surface, and how squarely the surface cuts the crack.
+
+    voronoi_edge is a distance in space to the border plane between the two nearest seeds. Where a surface runs
+    nearly along that plane (the round shoulder and mantle), every point of a broad patch is close to it, so a 2 cm
+    fissure became a 10-20 cm violet smear. Measured along the surface the distance is the space distance divided by
+    the sine of the angle between the surface and the plane; `cut` is that sine (1 = the crack cuts straight across,
+    0 = the surface lies in the crack plane), so a fissure keeps its width wherever it runs and fades where the stone
+    would be split along its face instead of across it."""
+    lo, hi = points.min(axis=0) - pad, points.max(axis=0) + pad
+    near = seeds[np.all((seeds >= lo) & (seeds <= hi), axis=1)]
+    if len(near) < 2:
+        return np.full(len(points), 1.0), np.ones(len(points))
+    d1 = np.full(len(points), np.inf)
+    d2 = np.full(len(points), np.inf)
+    i1 = np.zeros(len(points), dtype=int)
+    i2 = np.zeros(len(points), dtype=int)
+    for i, s in enumerate(near):
+        d = np.linalg.norm(points - s, axis=1)
+        closer = d < d1
+        second = ~closer & (d < d2)
+        d2 = np.where(closer, d1, np.where(second, d, d2))
+        i2 = np.where(closer, i1, np.where(second, i, i2))
+        d1 = np.where(closer, d, d1)
+        i1 = np.where(closer, i, i1)
+    plane = near[i2] - near[i1]
+    plane /= np.maximum(np.linalg.norm(plane, axis=1), 1e-9)[:, None]
+    n = normals / np.maximum(np.linalg.norm(normals, axis=1), 1e-9)[:, None]
+    cos = np.abs(np.einsum("ij,ij->i", n, plane))
+    cut = np.sqrt(np.clip(1.0 - cos * cos, 0.0, 1.0))
+    return (d2 - d1) * 0.5 / np.maximum(cut, 0.2), cut
+
+
 def crack_hot_spots():
     """Where the seal strains most (wider fissures): the elbows and shoulders of the planted arms."""
     out = []
@@ -359,7 +392,9 @@ def cracked(base, seed=0, scale=1.0, fine=1.0):
         p = s.p[idx]
         warp = np.stack([C.value_noise(p, 2.2 / scale, seed + 30 + i) for i in range(3)], axis=1)
         q = p + warp * 0.07 * scale
-        e_big = _edge(q, CRACK_SEEDS["big"], 0.8)
+        # Round 56: measured along the surface (no broad smear where a round shoulder runs along a crack plane).
+        e_big, cut = _edge_on_surface(q, s.n[idx], CRACK_SEEDS["big"], 0.8)
+        across = C.smoothstep(0.12, 0.35, cut)
         e_fine = _edge(q + warp * 0.05, CRACK_SEEDS["fine"], 0.5)
         heat = np.zeros(len(idx))
         for c, r in hot:
@@ -369,7 +404,13 @@ def cracked(base, seed=0, scale=1.0, fine=1.0):
         width = (0.004 + 0.018 * C.smoothstep(-0.2, 0.9, C.value_noise(p, 2.6 / scale, seed + 42)) ** 1.5
                  + 0.02 * heat)
         gate = np.maximum(open_, 0.7 * heat * C.smoothstep(-0.3, 0.2, C.value_noise(p, 1.9 / scale, seed + 46)))
+        gate = gate * across
         fissure = (1 - C.smoothstep(width * 0.35, width, e_big)) * gate
+        # Round 56 (the glow bled into a broad blurry band on the upper arm by the shoulder): the light sits in a
+        # narrow core inside the fissure. Near the hot spots the fissure widened by up to 2 cm and the glow filled all
+        # of it, soft edge included; the core widens by 4 mm at most, so the open crack stays dark round its light.
+        glow_w = width - 0.016 * heat
+        core = (1 - C.smoothstep(glow_w * 0.2, glow_w * 0.65, e_big)) * gate
         chip = (1 - C.smoothstep(width, width * 2.6, e_big)) * gate * (1 - fissure)
         chip *= C.smoothstep(-0.1, 0.4, C.value_noise(p, 14.0 / scale, seed + 43))
         hair = (1 - C.smoothstep(0.0015, 0.005, e_fine)) * C.smoothstep(0.0, 0.5, C.value_noise(p, 2.4 / scale, seed + 44))
@@ -377,7 +418,7 @@ def cracked(base, seed=0, scale=1.0, fine=1.0):
         pulse = 0.2 + 0.8 * C.smoothstep(-0.5, 0.8, C.value_noise(p, 2.0 / scale, seed + 45))
         # Hairlines glow only where they branch off an open fissure; elsewhere they are dark dry cracks.
         branch = hair * (1 - C.smoothstep(0.03, 0.16, e_big)) * gate
-        glow = fissure * pulse * (0.62 + 0.3 * heat) + branch * 0.45 * pulse + hair * 0.04
+        glow = core * pulse * (0.62 + 0.3 * heat) + branch * 0.45 * pulse + hair * 0.04
         col = s.albedo[idx]
         col = C.lerp3(col, PAL.bone * 0.95, chip * 0.5)
         col = C.lerp3(col, PAL.seam, hair * 0.6)

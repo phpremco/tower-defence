@@ -63,8 +63,10 @@ def face_parts(c):
     # upper on Head, lower on Jaw, each stopping short of the other gum with the jaw at rest.
     import build_bulwark as BW
     import mouth49g as MO
-    placed = MO.add_teeth(b, BW.MOUTH, 1.0, MO.ivory_style(5), lambda part, bone, p: D._tag(part, p, bone, False),
-                          name="Fang")
+    # Round 56: fewer, thicker, paler teeth (build_bulwark.MOUTH, mouth49g.IVORY_BRIGHT), now kept in LOD1 too: the
+    # play camera often sees the LOD1 (a creature under 5 % of the screen height), where the mouth read empty.
+    placed = MO.add_teeth(b, BW.MOUTH, 1.0, MO.ivory_style(5, **MO.IVORY_BRIGHT),
+                          lambda part, bone, p: D._tag(part, p, bone, True), name="Fang")
     C.log("bulwark teeth", placed)
     return b
 

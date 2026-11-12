@@ -2,8 +2,8 @@
   "asset": "StormMatriarch",
   "base_species": "Skyray",
   "palette": "cool",
-  "game_tris": 13391,
-  "source_tris": 829768,
+  "game_tris": 13455,
+  "source_tris": 829976,
   "bones": 28,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -14,21 +14,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 335,
-    "folded_fallback_faces": 313,
-    "mirrored_faces": 4843,
-    "uv_coverage": 0.546,
-    "world_per_uv": 3.3688540867073713
+    "islands": 307,
+    "folded_fallback_faces": 307,
+    "mirrored_faces": 4970,
+    "uv_coverage": 0.568,
+    "world_per_uv": 3.2767437035726994
   },
   "detail": {
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 22.2,
+      "tiling": 21.6,
       "mask": "B"
     },
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 29.6,
+      "tiling": 28.7,
       "mask": "A"
     }
   },
@@ -57,7 +57,7 @@
   "unity_scale": 0.72,
   "lod1": {
     "fbx": "StormMatriarch_LOD1.fbx",
-    "tris": 5997,
+    "tris": 5998,
     "bones": 17
   },
   "r45_detail": {
@@ -66,45 +66,45 @@
         "object": "StormMatriarch_Face",
         "material": "StormMatriarch_Face_Mat",
         "maps": "StormMatriarch_Face_*.png (1024, Low 512)",
-        "tris": 2150,
+        "tris": 2146,
         "lod1_object": "StormMatriarch_Face_LOD1",
-        "lod1_tris": 558,
-        "source_tris": 58232,
+        "lod1_tris": 559,
+        "source_tris": 58140,
         "uv": {
-          "islands": 47,
+          "islands": 49,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 0,
-          "mirrored_faces": 1075,
-          "uv_coverage": 0.654,
-          "world_per_uv": 0.33383691114901515
+          "folded_fallback_faces": 59,
+          "mirrored_faces": 1068,
+          "uv_coverage": 0.677,
+          "world_per_uv": 0.32800799330478947
         },
-        "symmetry_error": 0.016915
+        "symmetry_error": 0.01699
       },
       "Claws": {
         "object": "StormMatriarch_Claws",
         "material": "StormMatriarch_Claws_Mat",
         "maps": "StormMatriarch_Claws_*.png (1024, Low 512)",
-        "tris": 344,
+        "tris": 335,
         "lod1_object": "StormMatriarch_Claws_LOD1",
-        "lod1_tris": 128,
-        "source_tris": 19568,
+        "lod1_tris": 134,
+        "source_tris": 19632,
         "uv": {
-          "islands": 12,
+          "islands": 15,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 0,
-          "mirrored_faces": 113,
-          "uv_coverage": 0.664,
-          "world_per_uv": 0.2080107329071336
+          "folded_fallback_faces": 18,
+          "mirrored_faces": 110,
+          "uv_coverage": 0.693,
+          "world_per_uv": 0.20354252244259627
         },
-        "symmetry_error": 0.00568
+        "symmetry_error": 0.006397
       }
     },
-    "body_tris": 13391,
-    "extra_tris": 2494,
-    "extra_share": 0.186,
-    "body_lod1_tris": 5997,
-    "extra_lod1_tris": 686,
-    "extra_lod1_share": 0.114,
+    "body_tris": 13455,
+    "extra_tris": 2481,
+    "extra_share": 0.184,
+    "body_lod1_tris": 5998,
+    "extra_lod1_tris": 693,
+    "extra_lod1_share": 0.116,
     "clips": [
       "Death",
       "Fly",
