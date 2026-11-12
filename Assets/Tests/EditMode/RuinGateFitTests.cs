@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Game.Combat;
 using Game.Core;
 using Game.Enemies;
+using Game.Levels;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -11,12 +12,17 @@ namespace Game.Tests
     /// <summary>
     /// Round 55: the Shattered and its ruin gate, both measured from the art. The gate's opening (open, at its data scale)
     /// clears the giant's walking body with margin, so it could have come through it; and the gate stands far enough behind
-    /// the spot the giant appears on that its whole body, roaring, stays clear of the iris while the petals still fold.
+    /// the spot the giant appears on that its whole body, roaring, stays clear of the iris while the petals still fold. Round 55b: in its arena the gate faces the camera and no tower
+    /// can stand where it rises.
     /// </summary>
     public sealed class RuinGateFitTests
     {
         private const string LibraryPath = "Assets/_Project/Data/Vfx/VfxLibrary.asset";
         private const string GiantPath = "Assets/_Project/Data/Enemies/Shattered.asset";
+        private const string ArenaPath = "Assets/_Project/Data/Levels/Arena/Arena_Ruins.asset";
+        // How far the gate may turn from facing the camera (round 55b: side on it read as a slab), and the longest straight walk.
+        private const float MaxGateTurnFromCamera = 20f;
+        private const int MaxLegCells = 4;
         private const int SamplesPerClip = 16;
         // Headroom over its tallest walking pose and room each side of its widest, in metres.
         private const float HeadroomShare = 1.15f;
@@ -81,6 +87,34 @@ namespace Game.Tests
             float setBack = giant.Boss.Split.GateSetBack;
             TestContext.WriteLine($"tail reach {rear:0.00} m, set-back {setBack:0.00} m");
             Assert.GreaterOrEqual(setBack - rear, IrisClearance, $"its tail reaches {rear:0.00} m behind it; the gate stands {setBack:0.00} m back");
+        }
+
+        // Round 55b: the giant walks straight out of the gate towards the camera (so its opening is seen, not its side), and no
+        // build cell lies where the gate will rise.
+        [Test]
+        public void ArenaRuins_GateFacesTheCamera_AndNoTowerStandsWhereItRises()
+        {
+            (BossFxArt art, EnemyDefinition giant) = Load();
+            var level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(ArenaPath);
+            Assert.IsNotNull(level, "no Arena_Ruins");
+            Vector2Int entrance = level.BossEntrance.Cell;
+            Vector2Int exit = GroundEntranceRules.TowardCamera(level.Camera.YawDegrees);
+            float yaw = level.Camera.YawDegrees * Mathf.Deg2Rad;
+            float off = Vector2.Angle(exit, new Vector2(-Mathf.Sin(yaw), -Mathf.Cos(yaw)));
+            Assert.LessOrEqual(off, MaxGateTurnFromCamera, $"the gate faces {off:0} degrees away from the camera");
+            int leg = 1;
+            while (leg <= MaxLegCells && !level.Road.IsRoad(entrance + exit * leg))
+            {
+                leg++;
+            }
+
+            Assert.LessOrEqual(leg, MaxLegCells, $"no straight walk from {entrance} towards the camera reaches the road");
+            Vector2 halfSize = GroundEntranceRules.GateHalfSize(art.RuinGate.Model.transform, art.RuinGateScale);
+            var build = new BuildGrid(level);
+            foreach (Vector2Int cell in GroundEntranceRules.GateCells(level.Grid, entrance, exit, giant.Boss.Split.GateSetBack, halfSize))
+            {
+                Assert.IsFalse(build.CanBuild(cell), $"{cell} under the gate is a build cell");
+            }
         }
 
         private static (BossFxArt Art, EnemyDefinition Giant) Load()

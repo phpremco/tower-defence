@@ -8711,3 +8711,60 @@ orientation (`r54_gate_hide.cs`, gate open): **0.9: road 0/58, build 0 hidden, 0
 3. Before the footprint clear, the walking giant also passed through a `Decor_Boulder` 1.6 m ahead of the entrance (frame
    170, 268 shared voxels). The entrance ground is now clean; whether bosses walk through solid boulders elsewhere on their
    off-road walks was not checked this round.
+
+## Round 55b: the ruin gate's entrance turned towards the camera (2026-11-12)
+
+Curator's pick of proposal 1. Not committed. No full generator; `Tools/Blender/` untouched; stills in
+`ArtSource/Previews/QA/r55b_*`. Save `progress.json` 2eca347e backed up before the Play Mode run, restored and verified.
+
+### Entrance (generator and data)
+
+- `ProjectGenerator.Bosses`: the ruin arena copy now gets its entrance from `PlaceRuinGate`: open ground from which a straight
+  walk of 2 (at most 4) cells towards the camera (`GroundEntranceRules.TowardCamera(yaw)`, here (0,-1), 16 degrees off the
+  camera) reaches the road, joining nearest the main road's early corner (same `RuinRoadShare` 0.12 point as before), clear of
+  the field's sides; the gate may stand past the field's back edge. A cell whose gate would stand on road or liquid is ruled
+  out. The gate's half size comes from the art (`GroundEntranceRules.GateHalfSize`, now shared with `RuinGateView`) at the
+  effect library's scale, the set-back from `ShatteredBoss` (`GateSetBack` 3.0).
+- Applied through the generator's own targeted path (`RebuildArenaCopiesOf("Level_C1_04")`, `Tools/PlayTest/r55b_apply.cs`).
+  Arena_Ruins: entrance **(37,18) -> (34,21)**; the route is (34,21) -> (34,20) -> road (34,19), the same corner the old
+  3-cell walk joined at (34,18). The nest at (37,16) the old threshold rule had removed is back (no longer within 3 cells of
+  the entrance; the arena's waves use no nests). `_balanceTargetScale` was kept at the arena's [1] (a fresh copy would take
+  the source's round-31 values [0.87, 1.15, 1, 0.66]: older drift, not touched here).
+- The gate (centre (14.5, 13.5), plinth z 11.9..15.1) stands just past the field's north edge (grid ends at z 11.0): its
+  footprint covers **0 grid cells**, so no build cell is lost.
+
+### Footprint never buildable
+
+- `BossEntrance.Footprint` (new, cells): written by the generator from `GroundEntranceRules.GateCells` (every grid cell whose
+  square touches the gate's rectangle). `BuildGrid` blocks those cells. `LevelValidator.CheckGateFootprint`: every footprint
+  cell must be on the grid, not road, not liquid, and not a build cell. Validator on Arena_Ruins: ok.
+- `RuinGateFitTests.ArenaRuins_GateFacesTheCamera_AndNoTowerStandsWhereItRises`: the exit is within 20 degrees of the camera,
+  the straight walk reaches the road within 4 cells, and every cell under the gate (measured from the art) is not buildable.
+
+### Finale probe, Shattered only (`Tools/PlayTest/r55b_finale.sh`, w1..w4, `finale_probe.txt` not touched)
+
+| | Easy | Medium | Hard | Psycho |
+|---|---|---|---|---|
+| before (entrance (37,18)) | x1.80 | x1.18 | x1.96 | x1.52 |
+| after (entrance (34,21)) | **x1.96** | x1.18 | x1.96 | x1.52 |
+
+Medium, Hard and Psycho identical. Easy holds one search step more (x1.88 lost before, x1.96 won now; the probe is seeded,
+so this is a real, small shift, not noise): the giant now joins the road from the north side of the corner and the Easy
+builder's towers get a little more time on it. Not retuned (the boss health comes from Medium; Easy now has more margin).
+
+### Checks
+
+- Overlap probe frames 40-300 and at every still: 0 shared voxels with the arch, petals or plinth; 0.00 m below the stone.
+- Decor probe: nothing through the giant; two flat crystal glow discs past the field's edge at (14.3, 11.8) and (15.2, 11.7)
+  touch its tail and feet while it roars (orphan glow pools, round 54 open point 4; not visible in the crops), impact rings,
+  shard crawlers at frame 400.
+- Hidden-cell probe at 0.9, gate open: **road 0/56, build 0 hidden, 0 partly of 99**.
+- Stills (play camera, light x1.8 and `_game`): `r55b_appear` (45), `r55b_inside` (70), `r55b_inside_overview` (72),
+  `r55b_mid` (160), `r55b_out` (230), `r55b_clear_overview` (400), 3x crops `_top|_side_left|_side_right|_base_x3` of
+  appear/inside/mid/out, top-down `r55b_top_exit` (yellow axis = route, cyan camera 16 degrees off). Looked at: the gate reads
+  as a pointed doorway seen face-on with the iris glowing inside; the giant roars in its mouth and walks straight out towards
+  the camera onto the road corner; nothing intersects in the crops.
+- EditMode suite on w6: **865 tests, 813 passed, 52 skipped, 0 failed** (864 + the new arena test). Recompile: 0 errors, only the known
+  CS0618. Play-run console: 0 game errors or warnings; one error line from the Pipeline CLI itself ("Failed to handle
+  /api/exec request: Main thread operation timed out after 5000ms", a probe call that took over 5 s), not from the game.
+- Tools: `r55b_finale.sh`, `r55b_apply.cs`, `r55b_map.cs`; `r55_gate.sh` reused with prefix `r55b`.

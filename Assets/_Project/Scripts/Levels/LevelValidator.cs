@@ -594,7 +594,31 @@ namespace Game.Levels
                     }
 
                     CheckEntranceThreshold(level, entrance.Cell, errors);
+                    CheckGateFootprint(level, grid, entrance, errors);
                     break;
+            }
+        }
+
+        // Round 55: the ruin gate rises on its footprint mid-fight, so a tower standing there would stand through the stone; the
+        // footprint must be plain ground on the grid (no road, no liquid) that the build grid never offers.
+        private static void CheckGateFootprint(LevelDefinition level, GridMap grid, BossEntrance entrance, List<string> errors)
+        {
+            if (entrance.Footprint == null || entrance.Footprint.Length == 0)
+            {
+                return;
+            }
+
+            var build = new BuildGrid(level);
+            foreach (Vector2Int cell in entrance.Footprint)
+            {
+                if (!grid.Contains(cell) || level.Road.IsRoad(cell) || level.Terrain.IsLiquid(cell))
+                {
+                    errors.Add($"The boss entrance's gate footprint names cell {cell}, which is off the grid, on the road or liquid.");
+                }
+                else if (build.CanBuild(cell))
+                {
+                    errors.Add($"The boss entrance's gate footprint cell {cell} is a build cell: a tower there would stand through the gate.");
+                }
             }
         }
 

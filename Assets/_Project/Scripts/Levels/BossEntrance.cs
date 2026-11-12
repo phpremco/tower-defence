@@ -12,5 +12,8 @@ namespace Game.Levels
     {
         public EntranceKind Kind;
         public Vector2Int Cell;
+
+        [Tooltip("Cells the structure that rises at this entrance (the sealed ruin gate) will stand on: no tower may be built there (GroundEntranceRules.GateCells). Empty when nothing rises.")]
+        public Vector2Int[] Footprint;
     }
 }

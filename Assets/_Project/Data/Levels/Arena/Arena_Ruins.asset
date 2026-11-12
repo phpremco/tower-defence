@@ -220,8 +220,11 @@ MonoBehaviour:
   _mineStock: 140
   _bossEntrance:
     Kind: 2
-    Cell: {x: 37, y: 18}
+    Cell: {x: 34, y: 21}
+    Footprint: []
   _nests:
+  - Cell: {x: 37, y: 16}
+    Element: 7
   - Cell: {x: 30, y: 11}
     Element: 7
   - Cell: {x: 22, y: 11}

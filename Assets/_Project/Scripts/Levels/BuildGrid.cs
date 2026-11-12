@@ -4,8 +4,8 @@ using UnityEngine;
 namespace Game.Levels
 {
     /// <summary>
-    /// Which cells can hold a tower: any cell of the grid except the road, the blocked cells the level lists and the
-    /// ground under the base model, and not a cell that already has a tower. The road stays free for path objects.
+    /// Which cells can hold a tower: any cell of the grid except the road, the blocked cells the level lists, the ground
+    /// under the base model and under the gate that rises at the boss entrance, and not a cell that already has a tower. The road stays free for path objects.
     /// </summary>
     public sealed class BuildGrid
     {
@@ -28,6 +28,12 @@ namespace Game.Levels
             foreach (ElementNest nest in level.Nests)
             {
                 _blocked.Add(nest.Cell);
+            }
+
+            // Round 55: where the ruin gate will rise at the boss entrance, so no tower stands through it.
+            if (level.BossEntrance.Footprint != null)
+            {
+                _blocked.UnionWith(level.BossEntrance.Footprint);
             }
 
             BlockBase(level);

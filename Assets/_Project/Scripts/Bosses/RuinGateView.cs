@@ -1,4 +1,5 @@
 using Game.Core;
+using Game.Levels;
 using UnityEngine;
 
 namespace Game.Bosses
@@ -47,7 +48,7 @@ namespace Game.Bosses
             go.transform.localScale = Vector3.one * art.RuinGateScale;
             var view = go.AddComponent<RuinGateView>();
             view._model = ArtModel.CreateSampled(go.transform, art.RuinGate, ownMaterial: true);
-            view.FootprintHalfSize = Footprint(go.transform, art.RuinGateScale);
+            view.FootprintHalfSize = GroundEntranceRules.GateHalfSize(go.transform, art.RuinGateScale);
             view._material = view._model.Material;
             view._glow = view._material.GetColor(EmissionColorId);
             var lightObject = new GameObject("OpeningLight");
@@ -69,33 +70,6 @@ namespace Game.Bosses
         /// so the decoration standing there can be cleared before it rises.
         /// </summary>
         public Vector2 FootprintHalfSize { get; private set; }
-
-        // The model's mesh bounds (its rest pose, petals shut) in the gate's own frame, so the turn on the field does not widen it.
-        private static Vector2 Footprint(Transform gate, float scale)
-        {
-            Matrix4x4 toGate = gate.worldToLocalMatrix;
-            float x = 0f;
-            float z = 0f;
-            foreach (SkinnedMeshRenderer skinned in gate.GetComponentsInChildren<SkinnedMeshRenderer>(true))
-            {
-                if (skinned.sharedMesh == null)
-                {
-                    continue;
-                }
-
-                Matrix4x4 toLocal = toGate * skinned.transform.localToWorldMatrix;
-                Bounds bounds = skinned.sharedMesh.bounds;
-                for (int corner = 0; corner < 8; corner++)
-                {
-                    Vector3 point = bounds.center + Vector3.Scale(bounds.extents, new Vector3((corner & 1) == 0 ? -1f : 1f, (corner & 2) == 0 ? -1f : 1f, (corner & 4) == 0 ? -1f : 1f));
-                    Vector3 local = toLocal.MultiplyPoint3x4(point);
-                    x = Mathf.Max(x, Mathf.Abs(local.x));
-                    z = Mathf.Max(z, Mathf.Abs(local.z));
-                }
-            }
-
-            return new Vector2(x, z) * scale;
-        }
 
         /// <summary>Seconds since it began to open (negative while it is still shut).</summary>
         public float Opened => _opened;

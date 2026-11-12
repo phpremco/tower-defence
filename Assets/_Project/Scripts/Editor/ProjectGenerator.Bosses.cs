@@ -44,11 +44,16 @@ namespace Game.Editor
 
         private const string ArenaLevelFolder = DataRoot + "/Levels/Arena";
 
-        // Where the sealed ruin gate stands: this many cells off the road, near this share of the main road.
-        private const int RuinCellsOffRoad = 3;
+        // Where the sealed ruin gate's entrance lies: a straight walk of about this many cells (at most RuinLegMax) towards the
+        // camera onto the road, joining it near this share of the main road's corners, clear of the field's sides and a cell
+        // off the road. A cell's walk counts this much per cell it differs from RuinLegCells against its join distance.
+        private const int RuinLegCells = 2;
+        private const int RuinLegMax = 4;
+        private const float RuinLegWeight = 0.5f;
         private const float RuinRoadShare = 0.12f;
         private const int RuinEdgeCells = 2;
         private const int RuinRoadMargin = 1;
+        private const string BossFxArtPath = DataRoot + "/Vfx/BossFxArt.asset";
 
         private sealed class BossSpec
         {
@@ -296,7 +301,7 @@ namespace Game.Editor
             int rebuilt = 0;
             foreach (var arena in ArenaLevels)
             {
-                if (arena.Source == sourceLevelName && CreateArenaLevel(arena.Source, arena.Id, arena.Name, arena.From, arena.To, arena.Ruins, BossPoolsOf(arena.Boss)) != null)
+                if (arena.Source == sourceLevelName && CreateArenaLevel(arena.Source, arena.Id, arena.Name, arena.From, arena.To, arena.Ruins ? arena.Boss : null, BossPoolsOf(arena.Boss)) != null)
                 {
                     rebuilt++;
                 }
@@ -508,7 +513,7 @@ namespace Game.Editor
             {
                 if (arena.Boss == boss)
                 {
-                    return CreateArenaLevel(arena.Source, arena.Id, arena.Name, arena.From, arena.To, arena.Ruins, BossPoolsOf(arena.Boss));
+                    return CreateArenaLevel(arena.Source, arena.Id, arena.Name, arena.From, arena.To, arena.Ruins ? arena.Boss : null, BossPoolsOf(arena.Boss));
                 }
             }
 
@@ -531,7 +536,7 @@ namespace Game.Editor
             return PoolKinds.None;
         }
 
-        private static LevelDefinition CreateArenaLevel(string source, string id, string displayName, TerrainKind[] from, TerrainKind to, bool ruins, PoolKinds pools)
+        private static LevelDefinition CreateArenaLevel(string source, string id, string displayName, TerrainKind[] from, TerrainKind to, string ruinBoss, PoolKinds pools)
         {
             var original = AssetDatabase.LoadAssetAtPath<LevelDefinition>($"{DataRoot}/Levels/{source}.asset");
             if (original == null)
@@ -584,13 +589,10 @@ namespace Game.Editor
                 EnsureEntrancePool(original, terrain, turned, to, id);
             }
 
-            if (ruins)
+            if (ruinBoss != null)
             {
-                SerializedProperty entrance = so.FindProperty("_bossEntrance");
-                entrance.FindPropertyRelative("Kind").intValue = (int)EntranceKind.Ground;
-                Vector2Int gate = RuinGateCell(original);
-                entrance.FindPropertyRelative("Cell").vector2IntValue = gate;
-                ClearRuinThreshold(nests, gate);
+                PlaceRuinGate(original, so.FindProperty("_bossEntrance"), ruinBoss, id);
+                ClearRuinThreshold(nests, so.FindProperty("_bossEntrance").FindPropertyRelative("Cell").vector2IntValue);
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();
@@ -599,8 +601,7 @@ namespace Game.Editor
         }
 
         // Round 53: the copied level's nest mound stood in the ruin gate's mouth (Arena_Ruins: two cells in front of the
-        // threshold, the giant walked out over it). The arena's waves use no nests, so the ones in the threshold go; the gate's
-        // cell stays where it is, so the boss's route (and the finale numbers set on it) does not move.
+        // threshold, the giant walked out over it). The arena's waves use no nests, so the ones in the threshold go.
         internal static void ClearRuinThreshold(SerializedProperty nests, Vector2Int gate)
         {
             for (int i = nests.arraySize - 1; i >= 0; i--)
@@ -612,27 +613,77 @@ namespace Game.Editor
             }
         }
 
-        // The sealed ruin gate: open ground a few cells off the main road near its start, clear of the road, pools and the
-        // field's edge, so the giant breaks out in view and has the whole road ahead of it.
-        private static Vector2Int RuinGateCell(LevelDefinition level)
+        // Round 55: the sealed ruin gate faces the way the giant walks out, so the giant leaves straight through its opening;
+        // seen side on from the fixed camera it read as a slab (round 55 stills). So the entrance is open ground from which the
+        // straight way to the road runs towards the camera (GroundEntranceRules.TowardCamera), joining the main road near its
+        // start; the gate stands behind it (it may stand past the field's edge) and its footprint is kept from towers.
+        private static void PlaceRuinGate(LevelDefinition level, SerializedProperty entrance, string boss, string arena)
+        {
+            Vector2Int exit = GroundEntranceRules.TowardCamera(level.Camera.YawDegrees);
+            bool measured = RuinGateMeasure(boss, out Vector2 halfSize, out float setBack);
+            Vector2Int cell = RuinGateCell(level, exit, measured, halfSize, setBack);
+            List<Vector2Int> footprint = measured ? GroundEntranceRules.GateCells(level.Grid, cell, exit, setBack, halfSize) : new List<Vector2Int>();
+            entrance.FindPropertyRelative("Kind").intValue = (int)EntranceKind.Ground;
+            entrance.FindPropertyRelative("Cell").vector2IntValue = cell;
+            SerializedProperty cells = entrance.FindPropertyRelative("Footprint");
+            cells.arraySize = footprint.Count;
+            for (int i = 0; i < footprint.Count; i++)
+            {
+                cells.GetArrayElementAtIndex(i).vector2IntValue = footprint[i];
+            }
+
+            Debug.Log($"[Generator] {arena}: ruin gate entrance {cell}, exit {exit}, {footprint.Count} footprint cells on the grid" + (measured ? string.Empty : " (no gate art or boss data yet: footprint left empty)"));
+        }
+
+        // The gate's half size on the ground (its art at the effect library's scale) and how far behind the entrance it stands
+        // (the boss's split power); false while either does not exist yet (a first generator run builds them later).
+        private static bool RuinGateMeasure(string boss, out Vector2 halfSize, out float setBack)
+        {
+            halfSize = Vector2.zero;
+            setBack = 0f;
+            var art = AssetDatabase.LoadAssetAtPath<BossFxArt>(BossFxArtPath);
+            var definition = AssetDatabase.LoadAssetAtPath<BossDefinition>($"{BossFolder}/{boss}Boss.asset");
+            if (art == null || art.RuinGate == null || art.RuinGate.Model == null || definition == null || definition.Split == null)
+            {
+                return false;
+            }
+
+            halfSize = GroundEntranceRules.GateHalfSize(art.RuinGate.Model.transform, art.RuinGateScale);
+            setBack = definition.Split.GateSetBack;
+            return true;
+        }
+
+        // Open ground clear of the road, pools and the field's sides, from which a straight walk of a few cells towards the
+        // camera reaches the road; of those, the one whose walk joins nearest the main road's early corner, with a walk close
+        // to RuinLegCells. A gate that would stand on the road or a pool rules the cell out.
+        private static Vector2Int RuinGateCell(LevelDefinition level, Vector2Int exit, bool measured, Vector2 halfSize, float setBack)
         {
             Vector2Int[] road = level.MainRoad;
             Vector2Int near = road[Mathf.Clamp(Mathf.RoundToInt(road.Length * RuinRoadShare), 0, road.Length - 1)];
             var roadCells = new HashSet<Vector2Int>(level.Road.Cells);
             var blocked = new HashSet<Vector2Int>(level.BlockedCells);
+            GridMap grid = level.Grid;
             Vector2Int best = near;
             float bestScore = float.PositiveInfinity;
-            for (int x = RuinEdgeCells; x < level.GridSize.x - RuinEdgeCells; x++)
+            for (int x = 0; x < level.GridSize.x; x++)
             {
-                for (int y = RuinEdgeCells; y < level.GridSize.y - RuinEdgeCells; y++)
+                for (int y = 0; y < level.GridSize.y; y++)
                 {
                     var cell = new Vector2Int(x, y);
-                    if (roadCells.Contains(cell) || blocked.Contains(cell) || level.Terrain.IsLiquid(cell) || NearAny(roadCells, cell, RuinRoadMargin))
+                    int side = exit.x == 0 ? x : y;
+                    int sideSize = exit.x == 0 ? level.GridSize.x : level.GridSize.y;
+                    if (side < RuinEdgeCells || side >= sideSize - RuinEdgeCells || !IsOpenGround(level, roadCells, blocked, cell) || NearAny(roadCells, cell, RuinRoadMargin))
                     {
                         continue;
                     }
 
-                    float score = Mathf.Abs(Vector2Int.Distance(cell, near) - RuinCellsOffRoad);
+                    int leg = StraightLegToRoad(level, roadCells, blocked, cell, exit);
+                    if (leg < 0 || (measured && GateOnRoadOrPool(level, roadCells, GroundEntranceRules.GateCells(grid, cell, exit, setBack, halfSize))))
+                    {
+                        continue;
+                    }
+
+                    float score = Vector2Int.Distance(cell + exit * leg, near) + RuinLegWeight * Mathf.Abs(leg - RuinLegCells);
                     if (score < bestScore)
                     {
                         bestScore = score;
@@ -642,6 +693,43 @@ namespace Game.Editor
             }
 
             return best;
+        }
+
+        private static bool IsOpenGround(LevelDefinition level, HashSet<Vector2Int> roadCells, HashSet<Vector2Int> blocked, Vector2Int cell) =>
+            level.Grid.Contains(cell) && !roadCells.Contains(cell) && !blocked.Contains(cell) && !level.Terrain.IsLiquid(cell);
+
+        // Cells walked from the entrance along the exit until the road (the road cell counted), or -1 when open ground does
+        // not lead there within RuinLegMax cells.
+        private static int StraightLegToRoad(LevelDefinition level, HashSet<Vector2Int> roadCells, HashSet<Vector2Int> blocked, Vector2Int cell, Vector2Int exit)
+        {
+            for (int leg = 1; leg <= RuinLegMax; leg++)
+            {
+                Vector2Int step = cell + exit * leg;
+                if (roadCells.Contains(step))
+                {
+                    return leg;
+                }
+
+                if (!IsOpenGround(level, roadCells, blocked, step))
+                {
+                    return -1;
+                }
+            }
+
+            return -1;
+        }
+
+        private static bool GateOnRoadOrPool(LevelDefinition level, HashSet<Vector2Int> roadCells, List<Vector2Int> footprint)
+        {
+            foreach (Vector2Int cell in footprint)
+            {
+                if (roadCells.Contains(cell) || level.Terrain.IsLiquid(cell))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         // Round 30: a boss that rises from a pool (BossArrival.Pool) wants one that joins the road in its first half, else the
