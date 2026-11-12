@@ -1,7 +1,7 @@
 {
   "asset": "Slagstrider",
-  "game_tris": 3957,
-  "source_tris": 422000,
+  "game_tris": 3954,
+  "source_tris": 488180,
   "bones": 13,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -12,21 +12,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 32,
-    "folded_fallback_faces": 9,
-    "mirrored_faces": 1974,
-    "uv_coverage": 0.622,
-    "world_per_uv": 1.1434996192522888
+    "islands": 61,
+    "folded_fallback_faces": 29,
+    "mirrored_faces": 1971,
+    "uv_coverage": 0.649,
+    "world_per_uv": 1.21502910906845
   },
   "detail": {
     "rock": {
       "map": "Detail_Rock_Normal.png",
-      "tiling": 9.5,
+      "tiling": 10.1,
       "mask": "B"
     },
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 14.3,
+      "tiling": 15.2,
       "mask": "A"
     }
   },
@@ -40,7 +40,7 @@
   "scale_keyed_bones": [],
   "lod1": {
     "fbx": "Slagstrider_LOD1.fbx",
-    "tris": 1699,
+    "tris": 1698,
     "bones": 8
   },
   "walk_distance_per_loop": 0.387,
@@ -56,14 +56,14 @@
         "tris": 330,
         "lod1_object": "Slagstrider_Face_LOD1",
         "lod1_tris": 84,
-        "source_tris": 13524,
+        "source_tris": 17220,
         "uv": {
-          "islands": 21,
+          "islands": 24,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 0,
+          "folded_fallback_faces": 25,
           "mirrored_faces": 165,
-          "uv_coverage": 0.571,
-          "world_per_uv": 0.11832382529146127
+          "uv_coverage": 0.673,
+          "world_per_uv": 0.1251361834202235
         },
         "symmetry_error": 0.003582
       },
@@ -71,27 +71,27 @@
         "object": "Slagstrider_Claws",
         "material": "Slagstrider_Claws_Mat",
         "maps": "Slagstrider_Claws_*.png (1024, Low 512)",
-        "tris": 196,
+        "tris": 212,
         "lod1_object": "Slagstrider_Claws_LOD1",
-        "lod1_tris": 60,
-        "source_tris": 21840,
+        "lod1_tris": 76,
+        "source_tris": 21680,
         "uv": {
           "islands": 6,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 98,
-          "uv_coverage": 0.533,
-          "world_per_uv": 0.1525238684096838
+          "mirrored_faces": 106,
+          "uv_coverage": 0.559,
+          "world_per_uv": 0.15227770700808868
         },
         "symmetry_error": 0.0
       }
     },
-    "body_tris": 3957,
-    "extra_tris": 526,
-    "extra_share": 0.133,
-    "body_lod1_tris": 1699,
-    "extra_lod1_tris": 144,
-    "extra_lod1_share": 0.085,
+    "body_tris": 3954,
+    "extra_tris": 542,
+    "extra_share": 0.137,
+    "body_lod1_tris": 1698,
+    "extra_lod1_tris": 160,
+    "extra_lod1_share": 0.094,
     "clips": [
       "Death",
       "Hit",
@@ -100,6 +100,6 @@
     ],
     "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Slagstrider_<Part> (+ _LOD1 in Slagstrider_LOD1.fbx), maps Slagstrider_<Part>_*.png (+ Low/)",
     "body_maps": "unchanged",
-    "note": "round 46: deep-set ember eyes, obsidian slit-jaw fangs, foot spurs; bones, clips and events unchanged"
+    "note": "round 49B (redesigned body): three ember eyes per side in their pits, obsidian slit-jaw fangs, foot spurs; bones, clips and events unchanged"
   }
 }

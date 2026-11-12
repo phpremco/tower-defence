@@ -300,6 +300,7 @@ namespace Game.Enemies
         private MeshRenderer[] _partRenderers;
         private Quaternion[] _partCurls;
         private ParticleSystem _embers;
+        private CreatureVents _vents;
         private ParticleSystem _emergence;
         private ParticleSystem _drips;
         private ParticleSystem _rush;
@@ -824,6 +825,8 @@ namespace Game.Enemies
             }
 
             BuildEffects(definition, art.Embers);
+            _vents = CreatureVents.Create(_model, _creatureScale, ModelQuality.IsLow);
+            _vents?.TrackIn(_attachments);
             if (_clips.Lands)
             {
                 GlowDecal.PlacePool(transform, definition.AccentColor * HoverPoolBrightness, HoverPoolRadius * _creatureScale, ShadowHeight);
@@ -1100,6 +1103,9 @@ namespace Game.Enemies
             {
                 ParticleKit.SetRate(_embers, walking ? EmberRate : EmberIdleRate);
             }
+
+            // The vents smoke whether it walks or stands; a creature out of sight (under the ground) does not.
+            _vents?.SetStrength(_hidden ? 0f : 1f);
 
             _rush.transform.position = position - forward * (0.2f * _creatureScale) + Vector3.up * (0.1f * _creatureScale + lift);
             ParticleKit.SetRate(_rush, hasted && walking ? HasteTrailRate : 0f);

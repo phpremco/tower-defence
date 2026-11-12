@@ -1,7 +1,7 @@
 {
   "asset": "Surgefin",
-  "game_tris": 3947,
-  "source_tris": 195952,
+  "game_tris": 3939,
+  "source_tris": 241096,
   "bones": 16,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -12,21 +12,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 38,
-    "folded_fallback_faces": 57,
-    "mirrored_faces": 1949,
-    "uv_coverage": 0.622,
-    "world_per_uv": 0.8038179687254244
+    "islands": 126,
+    "folded_fallback_faces": 126,
+    "mirrored_faces": 1926,
+    "uv_coverage": 0.59,
+    "world_per_uv": 0.9196846769695409
   },
   "detail": {
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 10.0,
+      "tiling": 11.5,
       "mask": "B"
     },
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 13.4,
+      "tiling": 15.3,
       "mask": "A"
     }
   },
@@ -60,17 +60,17 @@
         "object": "Surgefin_Face",
         "material": "Surgefin_Face_Mat",
         "maps": "Surgefin_Face_*.png (1024, Low 512)",
-        "tris": 356,
+        "tris": 352,
         "lod1_object": "Surgefin_Face_LOD1",
         "lod1_tris": 84,
-        "source_tris": 17752,
+        "source_tris": 17816,
         "uv": {
-          "islands": 15,
-          "closed_islands_cut": 1,
-          "folded_fallback_faces": 18,
-          "mirrored_faces": 178,
-          "uv_coverage": 0.654,
-          "world_per_uv": 0.11418723512771908
+          "islands": 16,
+          "closed_islands_cut": 2,
+          "folded_fallback_faces": 4,
+          "mirrored_faces": 176,
+          "uv_coverage": 0.633,
+          "world_per_uv": 0.11634823049082792
         },
         "symmetry_error": 0.002149
       },
@@ -93,9 +93,9 @@
         "symmetry_error": 0.0
       }
     },
-    "body_tris": 3947,
-    "extra_tris": 536,
-    "extra_share": 0.136,
+    "body_tris": 3939,
+    "extra_tris": 532,
+    "extra_share": 0.135,
     "body_lod1_tris": 1699,
     "extra_lod1_tris": 144,
     "extra_lod1_share": 0.085,
@@ -108,7 +108,7 @@
       "Walk"
     ],
     "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Surgefin_<Part> (+ _LOD1 in Surgefin_LOD1.fbx), maps Surgefin_<Part>_*.png (+ Low/)",
-    "body_maps": "round-15 bead eyes' glow removed from Surgefin_Albedo/Emission (6508 texels this run)",
-    "note": "round 46: four wet coral eyes under lid folds, needle-tooth grin, toe claws; bones, clips and events unchanged"
+    "body_maps": "round-15 bead eyes' glow removed from Surgefin_Albedo/Emission (0 texels this run)",
+    "note": "round 46: four wet coral eyes under lid folds, needle-tooth grin, toe claws (refit unchanged on the round-49B finished body); bones, clips and events unchanged"
   }
 }

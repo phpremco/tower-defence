@@ -1,7 +1,7 @@
 {
   "asset": "Siftjaw",
-  "game_tris": 3950,
-  "source_tris": 278572,
+  "game_tris": 3957,
+  "source_tris": 301376,
   "bones": 19,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -12,21 +12,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 32,
-    "folded_fallback_faces": 0,
-    "mirrored_faces": 1973,
-    "uv_coverage": 0.612,
-    "world_per_uv": 0.9481167354923091
+    "islands": 59,
+    "folded_fallback_faces": 9,
+    "mirrored_faces": 1956,
+    "uv_coverage": 0.59,
+    "world_per_uv": 0.9970361324973938
   },
   "detail": {
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 15.8,
+      "tiling": 16.6,
       "mask": "B"
     },
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 11.9,
+      "tiling": 12.5,
       "mask": "A"
     }
   },
@@ -42,7 +42,7 @@
   "scale_keyed_bones": [],
   "lod1": {
     "fbx": "Siftjaw_LOD1.fbx",
-    "tris": 1698,
+    "tris": 1697,
     "bones": 12
   },
   "walk_distance_per_loop": 0.2,
@@ -57,52 +57,51 @@
     "start_depth": 0.5,
     "start_back": 0.1
   },
-  "r46_body_maps_edited": true,
   "r46_detail": {
     "parts": {
       "Face": {
         "object": "Siftjaw_Face",
         "material": "Siftjaw_Face_Mat",
         "maps": "Siftjaw_Face_*.png (1024, Low 512)",
-        "tris": 340,
+        "tris": 337,
         "lod1_object": "Siftjaw_Face_LOD1",
-        "lod1_tris": 58,
-        "source_tris": 14764,
+        "lod1_tris": 74,
+        "source_tris": 15044,
         "uv": {
-          "islands": 21,
-          "closed_islands_cut": 1,
-          "folded_fallback_faces": 14,
-          "mirrored_faces": 170,
-          "uv_coverage": 0.78,
-          "world_per_uv": 0.09219052299292291
+          "islands": 17,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 39,
+          "mirrored_faces": 163,
+          "uv_coverage": 0.619,
+          "world_per_uv": 0.10295836731168986
         },
-        "symmetry_error": 0.00307
+        "symmetry_error": 0.002814
       },
       "Claws": {
         "object": "Siftjaw_Claws",
         "material": "Siftjaw_Claws_Mat",
         "maps": "Siftjaw_Claws_*.png (1024, Low 512)",
-        "tris": 192,
+        "tris": 184,
         "lod1_object": "Siftjaw_Claws_LOD1",
-        "lod1_tris": 78,
-        "source_tris": 14928,
+        "lod1_tris": 76,
+        "source_tris": 15224,
         "uv": {
-          "islands": 6,
+          "islands": 7,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 96,
-          "uv_coverage": 0.562,
-          "world_per_uv": 0.11199481318895749
+          "mirrored_faces": 92,
+          "uv_coverage": 0.558,
+          "world_per_uv": 0.11333351902760444
         },
         "symmetry_error": 0.0
       }
     },
-    "body_tris": 3950,
-    "extra_tris": 532,
-    "extra_share": 0.135,
-    "body_lod1_tris": 1698,
-    "extra_lod1_tris": 136,
-    "extra_lod1_share": 0.08,
+    "body_tris": 3957,
+    "extra_tris": 521,
+    "extra_share": 0.132,
+    "body_lod1_tris": 1697,
+    "extra_lod1_tris": 150,
+    "extra_lod1_share": 0.088,
     "clips": [
       "Burrow",
       "Death",
@@ -112,7 +111,7 @@
       "Walk"
     ],
     "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Siftjaw_<Part> (+ _LOD1 in Siftjaw_LOD1.fbx), maps Siftjaw_<Part>_*.png (+ Low/)",
-    "body_maps": "round-15 bead eyes' glow removed from Siftjaw_Albedo/Emission (0 texels this run)",
-    "note": "round 46: five wet red eyes, scoop-jaw and gullet teeth, spade digging claws, leg talons; bones, clips and events unchanged"
+    "body_maps": "unchanged (the round-49B body has sockets, no bead eyes to dim)",
+    "note": "round 49B (redesigned body): five wet red eyes in the crown sockets, sickle-jaw and gullet teeth, spade digging claws, leg talons; bones, clips and events unchanged"
   }
 }

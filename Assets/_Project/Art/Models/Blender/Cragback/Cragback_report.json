@@ -1,8 +1,8 @@
 {
   "asset": "Cragback",
-  "game_tris": 3933,
-  "source_tris": 644332,
-  "bones": 19,
+  "game_tris": 3893,
+  "source_tris": 769436,
+  "bones": 22,
   "texture_size": 1024,
   "low_texture_size": 512,
   "maps": [
@@ -12,21 +12,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 49,
-    "folded_fallback_faces": 0,
-    "mirrored_faces": 1965,
-    "uv_coverage": 0.563,
-    "world_per_uv": 1.7904686408659112
+    "islands": 109,
+    "folded_fallback_faces": 6,
+    "mirrored_faces": 1938,
+    "uv_coverage": 0.556,
+    "world_per_uv": 1.9519845887894902
   },
   "detail": {
     "rock": {
       "map": "Detail_Rock_Normal.png",
-      "tiling": 12.4,
+      "tiling": 13.6,
       "mask": "B"
     },
-    "crystal": {
-      "map": "Detail_Crystal_Normal.png",
-      "tiling": 21.3,
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 20.3,
       "mask": "A"
     }
   },
@@ -47,10 +47,78 @@
     "to_frame": 40,
     "curve": "ease-out to 0"
   },
+  "r49_smoke_sockets": {
+    "bones": [
+      "Smoke_1",
+      "Smoke_2",
+      "Smoke_3"
+    ],
+    "parents": {
+      "Smoke_1": "Plate_C",
+      "Smoke_2": "Plate_R",
+      "Smoke_3": "Plate_L"
+    },
+    "note": "crater mouths of the vent cones; bone +Y points up out of the crater; no weights; kept in LOD1 (parented to Body there)"
+  },
   "lod1": {
     "fbx": "Cragback_LOD1.fbx",
-    "tris": 1698,
-    "bones": 10
+    "tris": 1699,
+    "bones": 13
+  },
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Cragback_Face",
+        "material": "Cragback_Face_Mat",
+        "maps": "Cragback_Face_*.png (1024, Low 512)",
+        "tris": 332,
+        "lod1_object": "Cragback_Face_LOD1",
+        "lod1_tris": 84,
+        "source_tris": 35004,
+        "uv": {
+          "islands": 20,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 163,
+          "uv_coverage": 0.559,
+          "world_per_uv": 0.23782274722037922
+        },
+        "symmetry_error": 0.009211
+      },
+      "Claws": {
+        "object": "Cragback_Claws",
+        "material": "Cragback_Claws_Mat",
+        "maps": "Cragback_Claws_*.png (1024, Low 512)",
+        "tris": 216,
+        "lod1_object": "Cragback_Claws_LOD1",
+        "lod1_tris": 84,
+        "source_tris": 20976,
+        "uv": {
+          "islands": 5,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 108,
+          "uv_coverage": 0.541,
+          "world_per_uv": 0.18290205562960543
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 3893,
+    "extra_tris": 548,
+    "extra_share": 0.141,
+    "body_lod1_tris": 1699,
+    "extra_lod1_tris": 168,
+    "extra_lod1_share": 0.099,
+    "clips": [
+      "Death",
+      "Hit",
+      "Idle",
+      "Walk"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Cragback_<Part> (+ _LOD1 in Cragback_LOD1.fbx), maps Cragback_<Part>_*.png (+ Low/)",
+    "body_maps": "unchanged (round 49B body: glowing sockets, no bead eyes to dim)",
+    "note": "round 49B: two pairs of wet amber eyes in glowing sockets under stone lids, basalt fangs, obsidian talons; bones, clips and events unchanged"
   },
   "round36": {
     "Strike": {
@@ -77,76 +145,19 @@
       "feet_planted": true,
       "mesh": {
         "rest": {
-          "tip_forward": 0.515,
-          "top": 0.876,
-          "bottom": -0.012
+          "tip_forward": 0.62,
+          "top": 0.807,
+          "bottom": -0.013
         },
         "impact": {
-          "tip_forward": 0.534,
-          "top": 0.869,
-          "bottom": -0.012
+          "tip_forward": 0.674,
+          "top": 0.783,
+          "bottom": -0.02
         }
       },
       "new_clip": true,
       "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
-  },
-  "r46_body_maps_edited": true,
-  "r46_detail": {
-    "parts": {
-      "Face": {
-        "object": "Cragback_Face",
-        "material": "Cragback_Face_Mat",
-        "maps": "Cragback_Face_*.png (1024, Low 512)",
-        "tris": 364,
-        "lod1_object": "Cragback_Face_LOD1",
-        "lod1_tris": 84,
-        "source_tris": 34200,
-        "uv": {
-          "islands": 19,
-          "closed_islands_cut": 0,
-          "folded_fallback_faces": 6,
-          "mirrored_faces": 182,
-          "uv_coverage": 0.635,
-          "world_per_uv": 0.22481219867810412
-        },
-        "symmetry_error": 0.00902
-      },
-      "Claws": {
-        "object": "Cragback_Claws",
-        "material": "Cragback_Claws_Mat",
-        "maps": "Cragback_Claws_*.png (1024, Low 512)",
-        "tris": 216,
-        "lod1_object": "Cragback_Claws_LOD1",
-        "lod1_tris": 84,
-        "source_tris": 20976,
-        "uv": {
-          "islands": 5,
-          "closed_islands_cut": 0,
-          "folded_fallback_faces": 0,
-          "mirrored_faces": 108,
-          "uv_coverage": 0.541,
-          "world_per_uv": 0.18290205562960543
-        },
-        "symmetry_error": 0.0
-      }
-    },
-    "body_tris": 3933,
-    "extra_tris": 580,
-    "extra_share": 0.147,
-    "body_lod1_tris": 1698,
-    "extra_lod1_tris": 168,
-    "extra_lod1_share": 0.099,
-    "clips": [
-      "Death",
-      "Hit",
-      "Idle",
-      "Strike",
-      "Walk"
-    ],
-    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Cragback_<Part> (+ _LOD1 in Cragback_LOD1.fbx), maps Cragback_<Part>_*.png (+ Low/)",
-    "body_maps": "round-4 bead eyes' glow removed from Cragback_Albedo/Emission (0 texels this run)",
-    "note": "round 46: three wet amber eyes under stone lids, basalt fangs, obsidian talons; bones, clips and events unchanged"
   }
 }

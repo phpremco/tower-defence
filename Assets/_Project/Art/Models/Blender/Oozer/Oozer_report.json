@@ -1,7 +1,7 @@
 {
   "asset": "Oozer",
-  "game_tris": 3801,
-  "source_tris": 269640,
+  "game_tris": 3800,
+  "source_tris": 299900,
   "bones": 9,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -12,21 +12,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 27,
-    "folded_fallback_faces": 34,
-    "mirrored_faces": 1893,
-    "uv_coverage": 0.644,
-    "world_per_uv": 0.93510285327151
+    "islands": 357,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.499,
+    "world_per_uv": 1.5830701867802033
   },
   "detail": {
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 11.7,
+      "tiling": 19.8,
       "mask": "B"
     },
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 15.6,
+      "tiling": 26.4,
       "mask": "A"
     }
   },
@@ -53,7 +53,7 @@
   "trail_origin": "under Body_1 (rear), on the ground",
   "lod1": {
     "fbx": "Oozer_LOD1.fbx",
-    "tris": 1699,
+    "tris": 1700,
     "bones": 7
   },
   "round31": {
@@ -62,21 +62,21 @@
       "loop": false,
       "impact_frame": 10,
       "impact": {
-        "front_min_z": -0.005,
-        "tip_forward": 0.883,
-        "rear": 0.472,
-        "min_z": -0.007
+        "front_min_z": -0.016,
+        "tip_forward": 0.852,
+        "rear": 0.49,
+        "min_z": -0.016
       },
       "rest": {
-        "front_min_z": 0.014,
-        "tip_forward": 0.499,
-        "rear": 0.469,
+        "front_min_z": 0.011,
+        "tip_forward": 0.49,
+        "rear": 0.484,
         "min_z": -0.005
       },
       "snap_back_shortest": {
-        "front_min_z": 0.01,
-        "tip_forward": 0.446,
-        "rear": 0.468,
+        "front_min_z": 0.007,
+        "tip_forward": 0.435,
+        "rear": 0.483,
         "min_z": -0.006
       }
     },
@@ -95,27 +95,27 @@
         "object": "Oozer_Face",
         "material": "Oozer_Face_Mat",
         "maps": "Oozer_Face_*.png (1024, Low 512)",
-        "tris": 543,
+        "tris": 538,
         "lod1_object": "Oozer_Face_LOD1",
-        "lod1_tris": 160,
-        "source_tris": 51672,
+        "lod1_tris": 162,
+        "source_tris": 60728,
         "uv": {
-          "islands": 17,
+          "islands": 26,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 26,
-          "mirrored_faces": 271,
-          "uv_coverage": 0.75,
-          "world_per_uv": 0.18601384771264742
+          "folded_fallback_faces": 4,
+          "mirrored_faces": 269,
+          "uv_coverage": 0.607,
+          "world_per_uv": 0.2283709730039322
         },
-        "symmetry_error": 0.006212
+        "symmetry_error": 0.005329
       }
     },
-    "body_tris": 3801,
-    "extra_tris": 543,
-    "extra_share": 0.143,
-    "body_lod1_tris": 1699,
-    "extra_lod1_tris": 160,
-    "extra_lod1_share": 0.094,
+    "body_tris": 3800,
+    "extra_tris": 538,
+    "extra_share": 0.142,
+    "body_lod1_tris": 1700,
+    "extra_lod1_tris": 162,
+    "extra_lod1_share": 0.095,
     "clips": [
       "Crawl",
       "Death",
@@ -124,7 +124,7 @@
       "Strike"
     ],
     "unity": "ExtraParts { \"Face\" }: objects Oozer_<Part> (+ _LOD1 in Oozer_LOD1.fbx), maps Oozer_<Part>_*.png (+ Low/)",
-    "body_maps": "round-10 stalk bulbs' bead glow dimmed in Oozer_Albedo/Emission (0 texels this run)",
-    "note": "round 46: wet slit eyes on the stalk bulbs, lamprey tooth rings (no limbs: no Claws part); bones, clips and events unchanged"
+    "body_maps": "round-10 stalk bulbs' bead glow dimmed in Oozer_Albedo/Emission (24151 texels this run)",
+    "note": "round 49A: wet slit eyes on the stalk bulbs, translucent slime teeth with goo strands and drips in the slack maw (no limbs: no Claws part)"
   }
 }

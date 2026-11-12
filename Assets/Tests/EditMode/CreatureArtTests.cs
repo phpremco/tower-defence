@@ -423,6 +423,107 @@ namespace Game.Tests
             Assert.AreEqual(ember, PartGlow("Bat_Frost"), "the frost bat's parts should keep the warm glow");
         }
 
+        // Round 49 (approved set 1): the redesigned exports and their corrupted skins are in, on the same parts; the
+        // Cragback carries its three crater sockets in both rigs.
+        private static readonly string[] Redesign49Rows = { "Oozer", "Cragback", "Slagstrider", "Siftjaw", "Surgefin" };
+        private static readonly string[] CragbackSmokeSockets = { "Smoke_1", "Smoke_2", "Smoke_3" };
+
+        [Test]
+        public void Redesign49Rows_AndTheirCorruptedSkins_ShareTheNewModel()
+        {
+            foreach (string id in Redesign49Rows)
+            {
+                var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}.asset");
+                var corrupted = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}{BlenderArtCatalog.CorruptedSuffix}.asset");
+                Assert.IsNotNull(art, $"{id}: no art definition");
+                Assert.IsNotNull(corrupted, $"{id}: no corrupted art definition");
+                Assert.AreSame(art.Model, corrupted.Model, $"{id}: the corrupted row wears another model");
+                Assert.AreSame(art.Lod1, corrupted.Lod1, $"{id}: the corrupted row wears another far model");
+                Assert.AreEqual(art.Parts.Length, corrupted.Parts.Length, $"{id}: the corrupted row has other parts");
+                Assert.AreEqual(art.Height, corrupted.Height, 1e-4f, $"{id}: the corrupted row measures another height");
+            }
+
+            var cragback = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/Cragback.asset");
+            foreach (GameObject model in new[] { cragback.Model, cragback.Lod1 })
+            {
+                foreach (string socket in CragbackSmokeSockets)
+                {
+                    Assert.IsTrue(HasNode(model.transform, socket), $"{model.name}: no {socket} socket");
+                }
+            }
+        }
+
+        // The Cragback's craters smoke from data: its art (and its corrupted skin's) names a sound vent definition, the
+        // view finds one vent per crater socket, and the Low profile spends fewer particles than High.
+        [Test]
+        public void CragbackVents_ResolveOnItsCraterSockets_AndLowSpendsLess()
+        {
+            foreach (string id in new[] { "Cragback", "Cragback" + BlenderArtCatalog.CorruptedSuffix })
+            {
+                var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}.asset");
+                Assert.IsNotNull(art.Vents, $"{id}: no vent definition");
+                Assert.AreEqual(string.Empty, art.Vents.Problem(), $"{id}: vent data");
+                Assert.Greater(art.Vents.SmokeRate, 0f, $"{id}: the vents do not smoke");
+                Assert.Less(art.Vents.SmokeColor.a, 1f, $"{id}: the smoke should stay light (see-through)");
+                Assert.Less(art.Vents.RateShare(true), art.Vents.RateShare(false), $"{id}: Low should emit less than High");
+                int high = VentParticleBudget(art, false, out int vents);
+                Assert.AreEqual(CragbackSmokeSockets.Length, vents, $"{id}: vents found");
+                Assert.Less(VentParticleBudget(art, true, out _), high, $"{id}: Low particle budget");
+            }
+
+            foreach (string guid in AssetDatabase.FindAssets("t:ModelArtDefinition", new[] { ArtFolder }))
+            {
+                var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>(AssetDatabase.GUIDToAssetPath(guid));
+                if (art.Vents != null)
+                {
+                    Assert.IsTrue(HasNodeStartingWith(art.Model.transform, art.Vents.SocketPrefix), $"{art.name}: vents without sockets");
+                }
+            }
+        }
+
+        private static int VentParticleBudget(ModelArtDefinition art, bool low, out int vents)
+        {
+            var owner = new GameObject("Owner");
+            CreatureModel model = CreatureModel.Create(owner.transform, art, 1f, low);
+            try
+            {
+                CreatureVents created = CreatureVents.Create(model, 1f, low);
+                vents = created != null ? created.Count : 0;
+                int budget = 0;
+                foreach (ParticleSystem system in owner.GetComponentsInChildren<ParticleSystem>(true))
+                {
+                    budget += system.main.maxParticles;
+                }
+
+                return budget;
+            }
+            finally
+            {
+                model.Player.Dispose();
+                foreach (Material material in model.Materials)
+                {
+                    Object.DestroyImmediate(material);
+                }
+
+                Object.DestroyImmediate(owner);
+            }
+        }
+
+        private static bool HasNode(Transform root, string name) => HasNodeStartingWith(root, name, true);
+
+        private static bool HasNodeStartingWith(Transform root, string prefix, bool exact = false)
+        {
+            foreach (Transform node in root.GetComponentsInChildren<Transform>(true))
+            {
+                if (exact ? node.name == prefix : node.name.StartsWith(prefix, System.StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private static Color PartGlow(string id)
         {
             var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}.asset");

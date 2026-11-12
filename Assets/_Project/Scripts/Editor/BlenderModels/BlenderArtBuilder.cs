@@ -18,6 +18,7 @@ namespace Game.Editor
         public const string MaterialFolder = "Assets/_Project/Art/Materials/Blender";
         private const float CreatureExportYaw = 180f;
         private const string EnemyDataFolder = "Assets/_Project/Data/Enemies";
+        public const string VentDataFolder = "Assets/_Project/Data/Vfx";
         private const float FramesPerSecond = 30f;
         private const string PreviewPrefix = "__preview__";
 
@@ -168,6 +169,9 @@ namespace Game.Editor
 
         internal static string AssetFolder(string asset) => $"{BlenderSync.TargetRoot}/{asset}";
 
+        /// <summary>Where the vent definition of that name lives.</summary>
+        public static string VentPath(string vents) => $"{VentDataFolder}/Vents_{vents}.asset";
+
         private static ModelArtDefinition Build(BlenderArtEntry entry)
         {
             string folder = AssetFolder(entry.Asset);
@@ -244,6 +248,7 @@ namespace Game.Editor
             so.FindProperty("_lodScreenHeight").floatValue = entry.Scale < BlenderArtEntry.SpeciesScale ? BossLodScreenHeight : CreatureLodScreenHeight;
             so.FindProperty("_deathFade").vector2Value = DeathFade(entry, clips);
             so.FindProperty("_embers").boolValue = entry.Embers;
+            so.FindProperty("_vents").objectReferenceValue = entry.Vents != null ? LoadOrCreate<ModelVentDefinition>(VentPath(entry.Vents)) : null;
             so.FindProperty("_bleeds").boolValue = entry.Bleeds;
             so.FindProperty("_displayExposure").floatValue = entry.DisplayExposure;
             WriteStrings(so.FindProperty("_shedBones"), entry.ShedBonesKey != null ? report.Strings(entry.ShedBonesKey) : new List<string>());

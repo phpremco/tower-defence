@@ -52,6 +52,8 @@ namespace Game.Core
         [SerializeField] private bool _bleeds = true;
         [Tooltip("Bones that are shed in this order as the armour is chipped away (scaled to zero), or none.")]
         [SerializeField] private string[] _shedBones = new string[0];
+        [Tooltip("Smoke and embers rising from the model's vent sockets (a lava creature's craters), or empty for none.")]
+        [SerializeField] private ModelVentDefinition _vents;
 
         [Header("Glow looks")]
         [Tooltip("Named looks of the glow a view can swap to (a boss's phase maps), or none.")]
@@ -83,6 +85,7 @@ namespace Game.Core
         public bool Embers => _embers;
         public bool Bleeds => _bleeds;
         public string[] ShedBones => _shedBones;
+        public ModelVentDefinition Vents => _vents;
         public ModelClip[] Clips => _clips;
         public ModelEmissionSet[] EmissionSets => _emissionSets ?? new ModelEmissionSet[0];
         public string DeathEmissionSet => _deathEmissionSet;

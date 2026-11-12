@@ -101,10 +101,15 @@ namespace Game.Core
         public Material Material(MarkerKind kind) => Find(kind)?.Material(ModelQuality.IsLow);
 
         /// <summary>The particle material for a cell: additive for the glowing ones, covering for drips and splats.</summary>
-        public Material Particles(ParticleCell cell)
+        public Material Particles(ParticleCell cell) => ParticleMaterial(cell == ParticleCell.Drip || cell == ParticleCell.IchorSplat || cell == ParticleCell.GooDecal);
+
+        /// <summary>
+        /// The covering (alpha-blended) or the additive particle material of the atlas, for any cell: a soft mote drawn covering
+        /// is a puff of smoke that hides a little of what lies behind it instead of glowing.
+        /// </summary>
+        public Material ParticleMaterial(bool covers)
         {
             bool low = ModelQuality.IsLow;
-            bool covers = cell == ParticleCell.Drip || cell == ParticleCell.IchorSplat || cell == ParticleCell.GooDecal;
             return covers ? (low && _particleCoverLow != null ? _particleCoverLow : _particleCover) : (low && _particleGlowLow != null ? _particleGlowLow : _particleGlow);
         }
 

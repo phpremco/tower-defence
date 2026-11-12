@@ -6705,3 +6705,239 @@ build script's parts).
    metallic in close-ups.
 5. Not seen in Unity yet: check the new silhouettes at play zoom after the import, especially the Slagstrider's
    long stilts against the health bar height.
+
+## Round 49D (Blender): Shardback, Bulwark, Crystal Warlord, Brood Mother, Hive Queen, Shattered (2026-11-12)
+
+Blender only; nothing under `Assets/` touched, Unity not run, not committed. Backups of every overwritten export and
+.blend: `ArtSource/Exports/_backup_r49/<Name>/` (gitignored; the merged corrupted-skin report before this round is
+`_backup_r49/Corrupted_skins_report_49D.json`). Design reasoning: `ArtSource/DESIGN_NOTES.md`, "Round 49D".
+
+### What changed (per Remco's verdict)
+
+- **Crystals everywhere** (`Tools/Blender/crystal_growth.py`, new; used only by these six): every shard is built
+  irregular (4..7 faces at uneven angles and widths, flared root, fracture steps, chips, off-centre or broken tip),
+  grown in clusters (one dominant shard, satellites of falling size, spiralling and bent ones, a lumpy flesh/chitin
+  root, fragments hovering off the cluster) with uneven inner light per shard. No repeated hex prisms left.
+- **Shardback**: faceted carapace with a saw-toothed rim and back-raked rim spikes; torn crater sockets with broken
+  chitin lips (no ring collars or discs); six irregular clusters, each its own island on its `Shard_n` bone (checked:
+  no vertex of a cluster connects to the body, LOD0 and LOD1); serrated pronotum with forward hooks, jagged brow,
+  crystal ram horn, hewn head, longer hooked mandibles with barbs. The clusters float a little higher over their
+  sockets (0.055 model units).
+- **Bulwark**: a grown bone shield (chipped, lopsided, a jagged bottom point, notches, warped ridges, scars, a few lit
+  cracks; no rings, no boss target); hewn, lopsided head and jaw, a jagged visor with a broken keel, V brow ridges,
+  uneven horns/tusks/cheek spikes, a chin hook; a serrated Crysium sword (raked teeth on the edge, barbs on the back,
+  a slight hook at the point).
+- **Bulwark clips smoothed** (same names, lengths, events): Walk (feet leave and land at ground speed, sin^2 lift and
+  toe fold, hips shift the weight over the stance foot, head/sword/shield/tail lag), Hit (eased shove, a ring-out
+  without the shared recoil's jump), Death (feet blend from planted to carried instead of switching), Block (shield
+  follow-through and brace), Strike (`build_attacks36.bulwark_strike`: lower cock, smootherstep chop, the shield arm
+  on the same curve, follow-through past the target; Bulwark beat `coil_end` 6 -> 5, `power` 1.5, `blend_in` 1).
+  Largest per-frame bone turn (armature space), `ArtSource/Previews/QA/r49_bulwark_before_clip_steps.json` ->
+  `r49_bulwark_after_clip_steps.json`:
+
+  | Clip | Before (deg, bone, frame, ratio to median) | After |
+  | --- | --- | --- |
+  | Walk | 9.7 Leg_L_Foot f32 (x10.1, lift-off snap) | 9.0 Leg_L_Shin f28 (x2.6) |
+  | Hit | 35.6 Jaw f1 (x18.2) | 27.3 Jaw f2 (x4.9) |
+  | Death | 26.9 Leg_L_Shin f14 (x16.8, feet switched) | 7.2 UpperArm_R f24 (x3.1) |
+  | Strike | 61.5 ForeArm_R f9 (x13.2) | 38.9 ForeArm_R f8 (x8.6; the chop itself, smootherstep) |
+  | Block | 21.4 ForeArm_L f4 (x42.8) | 21.4 ForeArm_L f4 (x31.5; the 7-frame raise, kept for the event) |
+  | Idle | 3.1 | 3.1 |
+
+- **Crystal Warlord**: the Bulwark's new body and clips (it reuses `build_bulwark`), plus a lopsided crown cluster
+  (and a smaller second one) from the helm, uneven shoulder clusters (shield side larger), a broken back ridge. Sweep
+  unchanged (28.0 deg, x5.3).
+- **Brood Mother / Hive Queen**: crowns rebuilt as lopsided growth on a chitin mound with hovering fragments; the
+  Queen's ridge clusters alternate sides; the Brood Mother's thorax crystals differ left and right; every knee crystal
+  differs. Both bodies are **no longer mirrored** (whole-body UVs, plain decimation).
+- **Shattered**: all crystal parts (`build_shattered2.crystal_parts`): Crys_1..6 clusters, jaw teeth, head crest, fist
+  cleavers (fractured, stepped blades with spurs on the back), the three spires (same silhouettes, fractured shards
+  plus a fragment each). The crystal material stays mirrored (titan pipeline), so growths are built on +X and
+  mirrored.
+
+### Unity import list
+
+Rows to rebuild (`BlenderArtBuilder.RebuildOnly`): **Shardback, Bulwark, CrystalWarlord, BroodMother, HiveQueen
+(export `Queen`), Shattered**, plus the corrupted-skin rows of Shardback, Bulwark, CrystalWarlord, BroodMother and
+Queen (`Skins/Corrupted` re-baked on the new UVs and merged into `ArtSource/Exports/Corrupted_skins_report.json`).
+The Shattered's shards (ShardRunner/Flyer/Crawler) were **not** re-exported.
+
+| Export | Tris LOD0 / LOD1 | Bones | Clips (names, frames, events) | Parts (tris LOD0/LOD1) | UVs |
+| --- | --- | --- | --- | --- | --- |
+| Shardback | 3950 / 1700 | 23 / 15, names and rest unchanged | unchanged: Walk 48, Idle 72, Hit 12, Death 40, Shatter 40 (bursts 3/8/13/18/23/28), Strike 24 (impact 10) | Face 324/84, Claws 196/78 | **unmirrored** now (coverage 0.34) |
+| Bulwark | 3950 / 1700 | 19 / 16 unchanged | unchanged names/lengths: Walk 32, Idle 72, Hit 14, Death 44, Block 24 (up 7), Strike 24 (impact 10; anticipation now 0-5); all re-keyed smoother | Face 352/88, Claws 196/74 | unmirrored as before (0.44) |
+| CrystalWarlord | 14000 / 6000 | 19 / 16 unchanged | unchanged: Walk 32, Idle 72, Hit 14, Death 44, Block 24 (up 7), Sweep 40 (hit 20); shared clips re-keyed smoother | Eyes 800/250, Teeth 704/250, Claws 880/340 | unmirrored (0.38) |
+| BroodMother | 14500 / 6000 | 29 / 21 unchanged | unchanged: Walk 48, Idle 80, Hit 14, Death 48, Spawn 60 (release 40) | Face 1844/558, Claws 940/320 | **unmirrored** now (0.51) |
+| Queen (HiveQueen) | 14500 / none (as before) | 26 unchanged | unchanged: Walk 40, Idle 80, Scream 50 | Face 1833, Claws 932 | **unmirrored** now (0.58) |
+| Shattered | 24021 / 9497 | 34 / 33 unchanged | all 15 clips unchanged (names, lengths, phase/burst/split frames) | Eyes 1194/340, Teeth 1100/340, Claws 1712/558 | mirrored as before |
+
+- No new bones, sockets, clips or part names; `ExtraParts` unchanged (Face+Claws; Eyes+Teeth+Claws).
+- `walk_distance_per_loop` unchanged on all six. Every body and part map re-baked (and Low/); UV layouts changed.
+- Check in game: the Shardback's clusters still hide by scale (own islands verified in Blender); the health-bar
+  `_height` may need a re-measure for the Queen and the Shardback (taller crystal); the unmirrored bodies have about
+  half their old texel density.
+
+### Shared-kit changes (no effect on other creatures)
+
+- `creature_kit3.run_creature`: new `mirror=True` keyword (default = old behaviour); the Shardback passes False.
+- `uvlayout.py`: opt-in `SPARSE_FIX` (default False; only these six builders set it): if the minimum-stretch unwrap
+  collapses entirely it falls back to angle-based; sparse or folded islands are re-cut by smart projection; islands
+  collapsed onto a line are shrunk (the Shardback's first unmirrored build packed into 0.005 % of the texture).
+- `build_attacks36.Beat`: new `blend_in` (default 3 = old behaviour); only the Bulwark's beat changes.
+
+### Previews (`ArtSource/Previews/QA/`)
+
+`r49_<key>_before_game/close/move.png` and `r49_<key>_after_game/close/move.png` for shardback, broodmother, queen,
+shattered, crystalwarlord, bulwark; `r49_bulwark_{before,after}_clips.png` and `_clip_steps.json`, the same for
+crystalwarlord. Tool: `Tools/Blender/r49d_views.py`.
+
+### Open points (round 49D)
+
+1. The Bulwark's sword teeth read as small nubs at play zoom (3950-tri budget); bigger teeth would cost triangles.
+2. Floating fragments use the crystal's bright root colour; from far away a few read as sparks.
+3. The Shattered's crystals stay bilateral (mirrored material); the irregularity is per growth only.
+4. The Bulwark's round-10 painted eye slits remain under the round-46 eyes.
+
+## Round 49C (Blender): bat necks, the bat boss, scorpion heads, the Sealed One's face, the Frost Warden's teeth (2026-11-12)
+
+Blender only; nothing under `Assets/` touched, Unity not run, not committed. Backups of the six exports and their
+.blend files: `ArtSource/Exports/_backup_r49/<Name>/` (gitignored; plus `Corrupted_skins_report.r49c.json`). Design
+reasoning: `ArtSource/DESIGN_NOTES.md`, "Round 49C". Remco's verdicts were "Bijna": refined, not redesigned.
+
+### What changed (per verdict)
+
+- **Element bats** (`build_bat.py`, one mesh for Ember/Moss/Dust/Tide/Frost/Mire/Corrupted): the cause of "strange
+  right of the head" was geometry, not weights or clips: the head sat on the chest with no neck, the shoulders right
+  behind it and the sensor horns swept out over the wing roots, so from the in-game three-quarter view the raised
+  near wing seemed to grow from the head (`r49_bat_before_side.png`). Now the head sits 0.065 further forward on a
+  short darker ringed neck (`HEAD_SHIFT`), the shoulders 0.025 further back on a raised shoulder mound blended into
+  the arm, and the horns sweep straight back along the skull (`r49_bat_after_side.png`).
+- **Bat boss** (export `SkySovereign`, row BatBoss, enemy StormMatriarch): one clear wing pair (the aft wing pair is
+  now a tail membrane between hips, hind-leg spur and tail, same `Aft_L/R` bones, 12 degrees of lift instead of 30), a
+  1.3x head (`head_scale`) with two broad forward-facing bat ears instead of the five-horn crown and the sensor horns,
+  lighter wine wings with a rose underside, a light chevroned mantle on the back, a thick ringed tail sheath glowing at
+  the joints and a bigger amber lens. Gets the bat neck/shoulder fix too.
+- **Stinger + Acid Empress** (`build_stinger.head_parts`, shared): a separate armoured head capsule in front of the
+  carapace between the claw arms (darker limb plum, pale front lip, dark collar under the carapace rim), two big
+  median eyes on a brow mound and three small eyes at each front corner, two thick hooked chelicerae with pale fangs
+  and the acid mouth between them; the old eye row on the carapace and the palps are gone. The Empress's Crysium crown
+  now stands on her head (two shoulder barbs stay on the rim); her detail keeps the jumping-spider stare on the new head.
+- **Sealed One** (`build_sealedone.py` + `sealedone_detail.py`): the tall egg became a long skull pushed forward and
+  tilted nose-down (face plates still part on the violet column) over a heavy lower jaw with a violet maw; the crown
+  rings sit higher and further back (halo, no bar across the face); the praying hands sit lower. Face: two pairs of
+  violet eyes in dark sockets under heavy brows on the face plates (they part with the plates), the seam eye as a
+  third eye on the brow, fangs down the plates' front edges over the jaw and a row of jaw fangs.
+- **Frost Warden** (`frostwarden_detail.py` only, body and its maps untouched): teeth about twice the size and
+  bone-ivory with ice tips (were cyan and vanished against the pale head): two sabre fangs that hang past the chin,
+  a lower row, and two tusks rising outside the upper lip (seen from above). Every clip (and its `_LOD`) holds the Jaw
+  12 degrees further open (`open_jaw_at_rest`: a constant turn on the Jaw keys, flagged per action with
+  `r49c_jaw_rest_open_deg`, so a rerun adds only the difference); the clips' own jaw motion is unchanged.
+
+### Unity import list (exact)
+
+Rows to rebuild (`BlenderArtBuilder.RebuildOnly`): **Bat, Bat_Moss, Bat_Dust, Bat_Tide, Bat_Frost, BatBoss
+(SkySovereign), Stinger, AcidEmpress, SealedOne, FrostWarden**, plus the corrupted rows of Bat, SkySovereign,
+Stinger and AcidEmpress (re-baked on the new UVs). There is still no `Bat_Mire` row (the Mirebat wears Bat_Moss).
+
+| Export | Tris LOD0 / LOD1 (was) | Bones (LOD1) | Clips / events | Parts (tris LOD0/LOD1) | Maps | Rest-pose changes |
+| --- | --- | --- | --- | --- | --- | --- |
+| Bat | 3899 / 1697 (3896 / 1698) | 16 (10), same names | same: Fly 13, Glide 48, Hit 12, Death 36, Strike 24 (impact 10) | Face 316/84, Claws 200/78 | body + parts + Low/ + Skins Moss, Dust, Tide, Frost, Corrupted all re-baked | `Head`, `Jaw` 0.065 forward (0.005 down); `Arm_L/R` roots 0.025 back, 0.005 up |
+| SkySovereign | 12639 / 5999 (12607 / 6000) | 19 (13), same names | same: Fly, Glide, Hit, Death, Laser 72 (beam 20-60, `Emitter` +Y) | Face 1498/518, Claws 692/356 | all re-baked + Corrupted | `Head`/`Jaw` forward and 1.3x; `Aft_L/R` now short (hip to spur); `Arm_*` roots back |
+| Stinger | 3952 / 1700 (3961 / 1697) | 25 (14), same | same: Walk 28, Idle 60, Hit 12, Death 40, Strike 24 (impact 10) | Face 334/82, Claws 208/78 | all re-baked + Corrupted | none (the head is on `Body`) |
+| AcidEmpress | 14341 / 5997 (14217 / 5998) | 28 (17), same | same incl. Spray 48 (release 26) | Face 1660/518, Claws 1026/358 | all re-baked + Corrupted | none |
+| SealedOne | 34512 / 13995 (34478 / 13998) | 32 (29) + `Rubble`, same | all 17 the same (Rise 150, Summon 90 peak 44, Release 170, ...) | Eyes 1702/458, Teeth 1482/418, Claws 1724/560 | body, Seal and all Phase1-4/Release emission sets re-baked | `Ring_1..3` roots moved to the new crown centre (0, 4.85 up, -0.3 fwd); `UArm_*_Fore/_Hand` lower |
+| FrostWarden | 23995 / 9500 (same) | 37 (36), same | all 16 the same lengths; Jaw keys +12 deg | Eyes 1196/338, **Teeth 1688/460** (was 1100/340), Claws 1752/560 | Teeth/Eyes/Claws maps re-baked; body maps unchanged | none |
+
+- Names unchanged everywhere: bones, clips, events, sockets, `ExtraParts` (Face+Claws on the bats and scorpions;
+  Eyes+Teeth+Claws on the Sealed One and the Frost Warden, after its IceArmour). No new bones, clips or parts.
+- Reports: same keys and values (unity_scale, walk distances, laser/spray/strike frames); detail blocks updated.
+  `Corrupted_skins_report.json` merged (27 entries; coverage Bat 0.041, SkySovereign 0.028, Stinger 0.126, AcidEmpress
+  0.181).
+- Check in Unity: the health-bar `_height` of SkySovereign (ears) and SealedOne (skull lower, crown higher), and that
+  the Sealed One's summon socket (`Head`, the violet column) still sits where the effect expects it.
+
+### Clips
+
+Clip functions, names, lengths and events are the same and re-keyed on the new rigs (bat Strike via
+`build_attacks36.py --only Bat`, Stinger Strike via `--only Stinger`). Per-frame steps (`r49c_views.py --steps`,
+largest bone turn per frame, before vs after on the backed-up rigs): no clip of the six changed by more than 2
+degrees, except the Sealed One's Surface_Burst (18.5 -> 21.9 deg, `LArm_L_Fore`, the authored burst frame 15). The
+Frost Warden's jaw offset is constant, so it adds no step (Idle max 1.3 deg).
+
+### Previews (`ArtSource/Previews/QA/`)
+
+`r49_<key>_before_*.png` / `r49_<key>_after_*.png` with panels `_game` (play camera 44 degrees, framed), `_close`
+(3/4 head), `_move` (walk/fly mid-pose), `_mouth`, and the 2x2 sheets `r49_<key>_before.png` / `_after.png`, for
+bat, batboss, stinger, acidempress, sealedone, frostwarden; the problem angle for the bats:
+`r49_bat_before_side.png` / `r49_bat_after_side.png` and `r49_batboss_before_side.png` / `_after_side.png` (Fly at
+four frames, high 3/4 from front-left and front-right); `r49_<key>_before|after_clip_steps.json`. Tool:
+`Tools/Blender/r49c_views.py` (`--side`, `--steps`, `--from <backup dir>` renders the backed-up .blend with its own
+maps).
+
+### Open points (round 49C)
+
+1. The element bats' brow cap is still the round-10 helmet shape: the head reads apart now, but up close it stays a
+   little toy-like.
+2. The bat boss's ears read as two pink spikes in a pure side view (from the play camera they read as ears).
+3. The Sealed One's mech pass crashed once (exit 127, no traceback) during the eye bake while another Blender was
+   baking on the GPU; the rerun went through. Run boss mech passes one at a time.
+
+## Round 49 import (set 1): Oozer, Cragback, Slagstrider, Siftjaw, Surgefin in the game; the Cragback smokes (2026-11-12)
+
+Not committed. Only the five redesigns Remco approved in 223908e5; Prowler, PackAlpha, Skyray, the ray boss, SlimeMonarch,
+Cinder Matriarch and Knitback stay as they were (back to Blender). No generator run, nothing under `ArtSource/` or
+`Tools/Blender/` touched. Save `progress.json` **2eca347e** copied aside before every Play Mode run and verified after each.
+
+### 1. Import (`Tools/PlayTest/Scripts/ApplyRedesign49.cs`, `BlenderArtBuilder.RebuildOnly` for the five exports' rows)
+
+- 10 rows rebuilt (the five plus their `_Corrupted` skins); 2 enemies wear them (Cragback, Oozer); Slagstrider, Siftjaw and
+  Surgefin are art-only rows. FBX, LOD1, body/part maps, Low/, `Skins/Corrupted/` and reports synced; 20 materials changed
+  (detail scales from the new reports; the Cragback's second detail family is now membrane instead of crystal).
+- Renderers match the 49B/49A tables: Cragback 3893/1699 tris, **22/13 bones** with `Smoke_1..3` in both rigs; Oozer 3800/1700,
+  Face 538/162; Slagstrider 3954/1698; Siftjaw 3957/1697; Surgefin 3939/1699; parts Face+Claws (Oozer Face only), High and Low.
+- `Data/Art/*.asset`: only `_height` (re-measured from the model: Cragback 0.881 -> 0.837, Slagstrider 0.718 -> 0.753, Siftjaw
+  0.285 -> 0.298, Surgefin 0.359 -> 0.437, Oozer unchanged 0.431 - its top is still the eye stalks) and the new `_vents` field.
+  No clip-order churn; move distances unchanged (none of these five changed theirs; the Knitback's new 0.25 waits for its import).
+
+### 2. The Cragback's crater smoke (view only, data-driven)
+
+- `ModelVentDefinition` (Core, new): socket prefix, smoke colour/rate/life/size/speed/buoyancy/budget, ember colour/rate/...,
+  `_lowShare` (share of particles on Low/Switch, 0.5) and `_deathFadeSeconds` (1.2). Sizes and speeds per unit of creature
+  scale. `ModelArtDefinition._vents` points at one; asset `Data/Vfx/Vents_Cragback.asset`. Catalog: `BlenderArtEntry.Vents`
+  ("Cragback", copied to the corrupted row), the builder creates the asset with its defaults when missing and never overwrites
+  tuning.
+- `CreatureVents` (Enemies, new): one smoke + one ember emitter per socket bone, parented to the bone (follows the clips),
+  world-space so wisps trail behind; built once per pooled body, budgets cut on Low. Smoke is the atlas's soft mote drawn
+  with the covering particle material (new `ParticleKit.UseCoveringCell` / `MarkerArt.ParticleMaterial(bool)`): the URP
+  default particle material drew nothing in game (particles alive and "visible", nothing on screen), so the atlas is used.
+  Embers use the Ember cell (additive, bloom).
+- `EnemyView`: builds the vents for a modelled creature, tracks them in `EnemyAttachments` (cleared when it leaves the field),
+  full strength each frame unless hidden. `ModelCorpse`: its own vents restart when the corpse is laid and die down over
+  `_deathFadeSeconds`; the puffs already out live their life; the pooled corpse clears them on reuse.
+- Lava glow: left at the row's emission (2.5). In game the seams read orange with bloom and do not blow out; the three crater
+  cores and the throat are the hottest spots (near white-yellow), which reads as molten. No change needed.
+
+### 3. Tests and checks
+
+- `CreatureArtTests.Redesign49Rows_AndTheirCorruptedSkins_ShareTheNewModel` (rows and corrupted rows share model, far model,
+  parts, height; the Cragback's `Smoke_1..3` in both rigs) and `CragbackVents_ResolveOnItsCraterSockets_AndLowSpendsLess`
+  (vent data sound and light, 3 vents found on a built model, Low budget below High, no art with vents but no sockets).
+- EditMode suite on w6: **828 tests, 776 passed, 52 skipped, 0 failed** (was 826; +2), run after the last code change. Recompile: 0 errors; only the known CS0618 in `BalanceProbeTests.cs:601`.
+- Stills (`Tools/PlayTest/r49_shots.sh`, Level_C1_01, no waves, 1920x1080 off-screen): `ArtSource/Previews/QA/r49_ingame_<Name>.png`
+  and `_side` with an **inspection light** (`r49_still.cs`: directional lights and ambient x1.8 plus a soft camera-side key, for
+  the render only, put back afterwards), `_game` in the plain game light, and for the Cragback `_death` (corpse ~0.5 s after the
+  kill). `r49_vent_probe.cs` / `r49_corpse_probe.cs` follow the vents: alive 3 x (smoke rate 3/s, 6-7 puffs, ember 1.2/s);
+  corpse at the death still smoke rate 1.0/s, embers 0.4/s; 2.4 s later the corpse has sunk and been parked, no vents left.
+  Seen: the Cragback's crust floes, basalt columns, three glowing craters, two pairs of ember eyes and the molten throat; soft
+  grey-warm wisps rising from the craters and trailing behind as it walks, a few embers; the corpse rolls over, its glow dies
+  and thin smoke still rises over it. The Oozer: uneven lumpy rolls, glowing blisters, slime foot outline, stalk eyes, slack
+  lip with slime teeth and drips. Console 0 errors, 0 warnings on every run.
+
+### Open points (round 49 import, set 1)
+
+1. Smoke look: tuned light (alpha 0.5, rate 3/s per crater). If Remco wants it fainter or thicker, it is all in
+   `Data/Vfx/Vents_Cragback.asset`.
+2. The URP default particle material (used by `ParticleKit.Create` without a cell, e.g. tower damage smoke, hero smoke) drew
+   nothing in these stills; worth checking whether the tower damage smoke is visible in play.
+3. Slagstrider/Siftjaw/Surgefin have no enemy yet, so no in-game stills; the Slagstrider's stilts vs its bar height wait for
+   its first enemy.

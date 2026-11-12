@@ -60,6 +60,13 @@ namespace Game.Editor
         public int DeathFadeFrom { get; set; }
         public int DeathFadeTo { get; set; }
         public bool Embers { get; set; }
+
+        /// <summary>
+        /// Name of the vent definition (<c>Data/Vfx/Vents_&lt;name&gt;.asset</c>) whose smoke and embers rise from the model's vent
+        /// sockets, or null for none. Created with its defaults on the first build; tuned in the asset after that.
+        /// </summary>
+        public string Vents { get; set; }
+
         public bool Bleeds { get; set; } = true;
 
         public BlenderClipSpec[] Clips { get; set; } = new BlenderClipSpec[0];
@@ -125,6 +132,7 @@ namespace Game.Editor
                 DeathFadeFrom = DeathFadeFrom,
                 DeathFadeTo = DeathFadeTo,
                 Embers = Embers,
+                Vents = Vents,
                 Bleeds = Bleeds,
                 Clips = Clips,
                 SecondMaterial = SecondMaterial,

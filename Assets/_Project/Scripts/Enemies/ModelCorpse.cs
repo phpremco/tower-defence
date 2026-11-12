@@ -25,6 +25,7 @@ namespace Game.Enemies
         private CreatureModel _model;
         private CreatureClips _clips;
         private ModelShedParts _shed;
+        private CreatureVents _vents;
         private ParticleSystem _splash;
         private Action<ModelCorpse> _release;
         private EnemyDeathEffect.Request _request;
@@ -46,6 +47,7 @@ namespace Game.Enemies
             corpse._model = CreatureModel.Create(go.transform, art, scale, lowDetail);
             corpse._clips = new CreatureClips(corpse._model.Player, art, Array.Empty<string>());
             corpse._shed = art.ShedBones.Length > 0 ? new ModelShedParts(corpse._model) : null;
+            corpse._vents = CreatureVents.Create(corpse._model, scale, lowDetail);
             int death = art.IndexOf(ModelClipRole.Death);
             corpse._clipSeconds = death >= 0 ? art.Clips[death].Length : 0f;
             // A body that releases its glow at its death (the Sealed One's white) swaps to that look at the clip's moment.
@@ -74,6 +76,7 @@ namespace Game.Enemies
             _clips.Die();
             _model.Player.Wake();
             _shed?.SetShed(request.Shed);
+            _vents?.Restart();
             _model.Player.Evaluate();
             Splash(position);
         }
@@ -85,6 +88,7 @@ namespace Game.Enemies
             _clips.Tick(dt, 0f, false, false, _scale);
             FadeGlow();
             ShowDeathLook();
+            FadeVents();
             Fall(dt);
             float lieUntil = _clipSeconds + RestSeconds;
             if (_age <= lieUntil)
@@ -114,6 +118,15 @@ namespace Game.Enemies
 
             _deathLookShown = true;
             _model.SetEmissionSet(_model.Art.EmissionSet(_model.Art.DeathEmissionSet), ModelQuality.IsLow);
+        }
+
+        // The craters keep smoking for a moment after the death and die down; the puffs already out live their life.
+        private void FadeVents()
+        {
+            if (_vents != null)
+            {
+                _vents.SetStrength(1f - Mathf.Clamp01(_age / _vents.DeathFadeSeconds));
+            }
         }
 
         private void FadeGlow()

@@ -60,7 +60,18 @@ namespace Game.Core
         public static ParticleSystem UseCell(ParticleSystem system, MarkerArt.ParticleCell cell)
         {
             MarkerArt art = MarkerArt.Active;
-            Material material = art != null ? art.Particles(cell) : null;
+            return UseCell(system, cell, art != null ? art.Particles(cell) : null);
+        }
+
+        /// <summary>Dresses a system in a cell of the atlas drawn with the covering material (smoke from a soft mote).</summary>
+        public static ParticleSystem UseCoveringCell(ParticleSystem system, MarkerArt.ParticleCell cell)
+        {
+            MarkerArt art = MarkerArt.Active;
+            return UseCell(system, cell, art != null ? art.ParticleMaterial(true) : null);
+        }
+
+        private static ParticleSystem UseCell(ParticleSystem system, MarkerArt.ParticleCell cell, Material material)
+        {
             if (material == null)
             {
                 return system;

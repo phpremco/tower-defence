@@ -160,7 +160,8 @@ namespace Game.Editor
                 // against the night ground, so their albedo is lifted and their glow pushed.
                 new BlenderArtEntry("Skitter", "Skitter") { ExtraParts = FaceClaws, MoveDistance = 0.36f, Brightness = 1.6f, Emission = 3.5f, Rim = 0.9f, Clips = new[] { strike } },
                 new BlenderArtEntry("Roller", "Roller") { ExtraParts = FaceClaws, Clips = new[] { strike } },
-                new BlenderArtEntry("Cragback", "Cragback") { ExtraParts = FaceClaws, DeathFadeFrom = 8, DeathFadeTo = 40, Clips = new[] { strike } },
+                // Round 49: a walking lava field; light smoke and a few embers rise from its three craters (sockets Smoke_1..3).
+                new BlenderArtEntry("Cragback", "Cragback") { ExtraParts = FaceClaws, DeathFadeFrom = 8, DeathFadeTo = 40, Vents = "Cragback", Clips = new[] { strike } },
                 new BlenderArtEntry("Prowler", "Prowler") { ExtraParts = FaceClaws, Brightness = 1.45f, Emission = 3.5f, Rim = 0.9f, Clips = new[] { strike } },
                 new BlenderArtEntry("Skyray", "Skyray")
                 {
