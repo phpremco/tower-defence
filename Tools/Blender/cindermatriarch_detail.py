@@ -13,6 +13,11 @@ Before, her face read as a slag wedge with four mandibles and pin-head eyes (0.0
   scythe blade (Scythe_*_Blade).
 No bone, clip or event changes; the actions are exported again as they are.
 
+Round 49B (Remco: "the head may be scarier"): the skull was rebuilt (build_cindermatriarch.py: V brow ridges over
+deep glowing sockets, hood, underjaw, cheek spikes, longer hooked mandibles). The eyes are probed into the sockets
+(BC.SOCKETS), the mandible serrations follow the new curve (BC.mandible_points), and two sabre fangs hang from the
+upper lip either side of the lamprey ring.
+
 Run: blender -b --factory-startup --python Tools/Blender/cindermatriarch_detail.py -- [--before | --blockout | --qa]
      [--norender]
 Hooked from build_cindermatriarch_mech.py (attach(boss) before boss.export()).
@@ -49,17 +54,20 @@ def eye_parts(boss):
     b = C.PartBuilder()
     eye = D.eye_style(IRIS, EYE_GLOW, SCLERA, pupil="slit", glow_k=1.0, seed=3)
     small = D.eye_style(IRIS, EYE_GLOW, SCLERA, pupil="round", glow_k=0.9, seed=4)
-    lid = D.lid_style(LID_DARK, LID_RIM, seed=5)
-    # (point on the head to probe from outside, look direction, radius, style)
-    for probe, look, r, st in (((0.3, -1.88, 1.47), (0.75, -0.75, 0.15), 0.1, eye),
-                               ((0.3, -1.62, 1.6), (0.85, -0.35, 0.4), 0.075, small),
-                               ((0.36, -1.66, 1.4), (0.95, -0.3, -0.1), 0.065, small)):
-        p, n = boss.ray(Vector(probe) + Vector(look) * 1.0, -Vector(look))
-        if p is None:
-            p, n = boss.nearest(probe)
-        centre = p - n * r * 0.35
-        D.eye(b, "Eye", centre, n.lerp(Vector(look).normalized(), 0.5), r, "Head", st, squash=(1.0, 0.9, 0.75),
-              lid=(1.02, 0.24, 0.32), lid_style_fn=lid)
+    mound = D.fold_style(LID_RIM, LID_DARK, wet=(0.35, 0.1, 0.03), facing=-1.0, glow=EMBER, glow_k=0.4, seed=5)
+    brow = D.fold_style(LID_RIM, LID_DARK, wet=(0.2, 0.06, 0.02), facing=-1.0, seed=6)
+    # (socket centre, look direction, radius, style): each lens sits in its glowing socket under the brow ridges.
+    for ((x, u, f), r_socket), look, r, st in zip(BC.SOCKETS, ((0.75, -0.75, 0.15), (0.85, -0.35, 0.4), (0.95, -0.3, -0.1)),
+                                                 (0.1, 0.075, 0.065), (eye, small, small)):
+        probe = Vector((x, -f, u))
+        hit = boss.ray(probe + Vector(look) * 1.0, -Vector(look))
+        p, n = hit if hit[0] is not None else boss.nearest(probe)
+        # Round 49B: the round-45 organic socket (a slag mound the lens breaks through as a narrow almond) and a
+        # heavy brow fold tilted down over it, instead of the lid ring that read as goggles.
+        centre = p - n * r * 0.4
+        D.eye(b, "Eye", centre, n.lerp(Vector(look).normalized(), 0.5), r, "Head", st, squash=(1.15, 0.75, 0.7),
+              socket=dict(mound=mound, brow=brow, size=(1.4, 1.5, 0.85), sink=0.35,
+                                                      brow_tilt=0.75, brow_size=(1.6, 0.8, 1.1)))
     return b
 
 
@@ -71,10 +79,8 @@ def curve_at(pts, t):
 
 
 def mandible_points(ang):
-    a, up, right = BC.mouth_frame()
-    d = BC.mand_dir(ang)
-    root = BC.MOUTH - a * 0.12 + d * 0.13
-    return [root, root + a * 0.3 + d * 0.16, root + a * 0.62 + d * 0.06, root + a * 0.8 - d * 0.14], d
+    """Round 49B: the build's own (heavier, hooked) mandible curve."""
+    return BC.mandible_points(ang)
 
 
 def teeth_parts(boss):
@@ -95,6 +101,11 @@ def teeth_parts(boss):
             ln = 0.12 - 0.05 * t
             D.fang(b, "MandTooth", base, (inward * 0.85 - tan * 0.35).normalized(), 0.036 - 0.012 * t, ln * 1.25, name,
                    tooth, hook=-tan, hook_k=0.35)
+    # Round 49B: two sabre fangs hanging from the upper lip, outside the ring, hooked back.
+    base = BC.MOUTH - a * 0.06 + up * 0.2 + right * 0.16
+    if base.x < 0:
+        base = base - right * 0.32
+    D.fang(b, "Sabre", base, (-up * 0.85 + a * 0.35).normalized(), 0.05, 0.42, "Head", tooth, hook=-a, hook_k=0.3)
     # Lamprey ring round the mouth: fangs pointing in and down the throat, ember light at the roots.
     centre = BC.MOUTH - a * 0.03
     for deg in (0.0, 20.0, 72.0, 92.0, 112.0, 162.0, 180.0):

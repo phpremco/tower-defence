@@ -9,7 +9,7 @@
   },
   "Cragback": {
     "folder": "ArtSource/Exports/Cragback/Skins/Corrupted",
-    "vein_coverage": 0.035
+    "vein_coverage": 0.037
   },
   "Prowler": {
     "folder": "ArtSource/Exports/Prowler/Skins/Corrupted",
@@ -53,19 +53,19 @@
   },
   "Knitback": {
     "folder": "ArtSource/Exports/Knitback/Skins/Corrupted",
-    "vein_coverage": 0.037
+    "vein_coverage": 0.062
   },
   "Slagstrider": {
     "folder": "ArtSource/Exports/Slagstrider/Skins/Corrupted",
-    "vein_coverage": 0.055
+    "vein_coverage": 0.036
   },
   "Siftjaw": {
     "folder": "ArtSource/Exports/Siftjaw/Skins/Corrupted",
-    "vein_coverage": 0.209
+    "vein_coverage": 0.143
   },
   "Surgefin": {
     "folder": "ArtSource/Exports/Surgefin/Skins/Corrupted",
-    "vein_coverage": 0.064
+    "vein_coverage": 0.051
   },
   "Queen": {
     "folder": "ArtSource/Exports/Queen/Skins/Corrupted",

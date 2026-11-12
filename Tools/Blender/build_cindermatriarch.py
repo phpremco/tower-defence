@@ -85,6 +85,20 @@ def mand_axis(angle):
     return HEAD_AXIS.cross(mand_dir(angle)).normalized()
 
 
+def mandible_points(ang):
+    """Round 49B: the mandible curve (heavier, longer, hooked back in at the tip) and its outward direction; the
+    Teeth part (cindermatriarch_detail.py) lines the inner edge of this same curve."""
+    a, up, right = mouth_frame()
+    d = mand_dir(ang)
+    root = MOUTH - a * 0.12 + d * 0.13
+    return [root, root + a * 0.34 + d * 0.22, root + a * 0.72 + d * 0.12, root + a * 0.95 - d * 0.2], d
+
+
+# Round 49B: eye sockets (x, up, forward on the right; radius) under the brow ridges, where the Eyes part sits its
+# three lenses per side (cindermatriarch_detail.py probes these points).
+SOCKETS = [((0.3, 1.47, 1.88), 0.1), ((0.3, 1.6, 1.62), 0.075), ((0.36, 1.4, 1.66), 0.065)]
+
+
 # ------------------------------------------------------------------------------------------------------------
 # Parts
 # ------------------------------------------------------------------------------------------------------------
@@ -106,26 +120,38 @@ def body_parts():
     # Neck and head: a long slag wedge, a glowing mouth under four mandibles.
     b.tube("Neck", [G(0, 1.55, 0.7), G(0, 1.58, 1.0), G(0, 1.52, 1.3)], [0.3, 0.26, 0.24], sides=16, chain=["Neck"],
            style=S.pillar(PAL, k * 0.5, drums=3, seed=40, glow=0.7))
-    head_c = G(0, 1.42, 1.66)
-    b.ellipsoid("Head", head_c, (0.38, 0.33, 0.66), T.frame_from(HEAD_AXIS), bone="Head", segments=(40, 20),
-                deform=C.chiselled(14, 41, 0.07, squash=(0.8, 1.0)),
+    # Round 49B (Remco: "the head may be scarier"): a broader, heavier skull; two brow ridges that meet low in a V
+    # over deep glowing sockets (the eyes sit in them: the Eyes part), a flared slag hood behind the skull, a heavy
+    # underjaw with a chin spike, rows of obsidian cheek spikes, a wider molten maw and longer hooked mandibles.
+    head_c = G(0, 1.42, 1.68)
+    b.ellipsoid("Head", head_c, (0.44, 0.36, 0.7), T.frame_from(HEAD_AXIS), bone="Head", segments=(40, 20),
+                deform=C.chiselled(16, 41, 0.1, squash=(0.8, 1.0)),
                 style=S.slab(PAL, k * 0.6, strata=30, veins=0.9, fault=0.8, seed=42))
-    b.ellipsoid("Brow", G(0, 1.62, 1.6), (0.36, 0.42, 0.12), T.rot(pitch=12), bone="Head", segments=(32, 16),
-                deform=C.chiselled(12, 43, 0.08, squash=(0.7, 1.0)),
-                style=K2.armour_plate(PAL, k * 0.55, rim_glow=0.6, chevron=1.0, lip=0.8, seed=44))
-    b.ellipsoid("Mouth", MOUTH - HEAD_AXIS * 0.08, (0.17, 0.17, 0.12), T.frame_from(HEAD_AXIS), bone="Head",
+    for side, sx in SIDES:
+        b.ellipsoid("Brow", G(0.22 * sx, 1.66, 1.74), (0.2, 0.44, 0.1), T.rot(pitch=16, roll=-22 * sx, yaw=14 * sx),
+                    bone="Head", segments=(32, 16), deform=C.chiselled(12, 43, 0.1, squash=(0.7, 1.0)),
+                    style=K2.armour_plate(PAL, k * 0.55, rim_glow=0.8, chevron=0.0, lip=0.8, seed=44))
+        for (x, u, f), r in SOCKETS:
+            b.ellipsoid("Socket", G(x * sx, u, f), (r * 1.35, r * 1.35, r * 1.2), bone="Head", segments=(16, 8),
+                        style=H.inner_glow(HOT, 0.55))
+        for j, (u, f, ln) in enumerate(((1.28, 1.95, 0.3), (1.25, 1.7, 0.36), (1.27, 1.45, 0.3))):
+            base = G(0.4 * sx, u, f)
+            b.tube("CheekSpike", [base, base + G(0.12 * sx, 0.04, -0.12), base + G(ln * 0.6 * sx, 0.06, -ln)],
+                   [0.06, 0.035, 0.004], sides=8, chain=["Head"], style=H.hook(HOT, k * 0.35, glow=0.9, glow_from=0.6))
+    b.ellipsoid("Hood", G(0, 1.82, 1.3), (0.66, 0.13, 0.44), T.rot(pitch=-38), bone="Head", segments=(36, 16),
+                deform=C.chiselled(16, 45, 0.12, squash=(0.6, 1.0)),
+                style=K2.armour_plate(PAL, k * 0.55, rim_glow=1.0, chevron=0.0, lip=0.6, cells=8, seed=46))
+    b.ellipsoid("Underjaw", G(0, 1.16, 1.86), (0.3, 0.5, 0.13), T.rot(pitch=-14), bone="Head", segments=(32, 14),
+                deform=C.chiselled(12, 47, 0.1, squash=(0.6, 1.0)),
+                style=S.slab(PAL, k * 0.6, strata=30, veins=0.6, fault=0.9, seed=48))
+    b.tube("ChinSpike", [G(0, 1.1, 2.2), G(0, 0.98, 2.32), G(0, 0.86, 2.36)], [0.08, 0.045, 0.004], sides=8,
+           chain=["Head"], style=H.hook(HOT, k * 0.35, glow=0.9, glow_from=0.6))
+    b.ellipsoid("Mouth", MOUTH - HEAD_AXIS * 0.08, (0.24, 0.24, 0.14), T.frame_from(HEAD_AXIS), bone="Head",
                 segments=(24, 12), style=H.inner_glow(HOT, 1.0))
-    for sx in (-1, 1):
-        for j, (x, u, f) in enumerate(((0.2, 1.52, 1.86), (0.25, 1.42, 1.72))):
-            b.ellipsoid("Eye", G(x * sx, u, f), (0.045, 0.045, 0.03), bone="Head", segments=(12, 8),
-                        style=H.eye(PAL, k * 0.3, 0.95))
-    a, up, right = mouth_frame()
     for name, ang in MANDS:
-        d = mand_dir(ang)
-        root = MOUTH - a * 0.12 + d * 0.13
-        pts = [root, root + a * 0.3 + d * 0.16, root + a * 0.62 + d * 0.06, root + a * 0.8 - d * 0.14]
-        b.tube("Mandible", pts, [0.1, 0.085, 0.05, 0.006], sides=10, chain=[name], flatten=0.55,
-               style=H.blade(HOT, k * 0.35, glow=0.9, teeth=4))
+        pts, d = mandible_points(ang)
+        b.tube("Mandible", pts, [0.13, 0.11, 0.065, 0.008], sides=10, chain=[name], flatten=0.55,
+               style=H.blade(HOT, k * 0.35, glow=1.0, teeth=5))
     # The kiln-sac: two overlapping molten ellipsoids, a crust of slag floes on top, three chimneys, a dripping tip.
     b.ellipsoid("SacFront", G(0, 1.2, -1.0), (0.92, 0.82, 0.72), T.rot(pitch=14), bone="Sac_1", segments=(48, 24),
                 style=T.kiln_crust(PAL, k * 0.6, cells=14, seed=50, glow=1.0, under=0.6, rifts=0.5))
@@ -177,12 +203,18 @@ def body_parts():
 
 def crystal_parts():
     b = C.PartBuilder()
-    # Horn crown: two great back-swept horns and two smaller, plus a pair over the brow.
+    # Horn crown: two great back-swept horns and two smaller, a pair of brow horns hooked forward over the sockets
+    # (round 49B: the aggressive front), and a fan of shards along the rim of the hood.
     for side, sx in SIDES:
-        b.shard("Horn", G(0.2 * sx, 1.68, 1.5), G(0.45 * sx, 0.55, -1.0), 0.11, 1.15, sides=8, flute=0.42,
-                twist=1.1 * sx, bend=G(0, 0.25, 0), bone="Head", style=Y.shard_style("ember", 0.9, seed=100))
-        b.shard("HornSmall", G(0.3 * sx, 1.55, 1.75), G(0.8 * sx, 0.45, -0.6), 0.06, 0.5, sides=6, flute=0.4,
+        b.shard("Horn", G(0.22 * sx, 1.72, 1.48), G(0.45 * sx, 0.6, -1.0), 0.13, 1.45, sides=8, flute=0.42,
+                twist=1.1 * sx, bend=G(0, 0.3, 0), bone="Head", style=Y.shard_style("ember", 0.9, seed=100))
+        b.shard("HornSmall", G(0.34 * sx, 1.58, 1.72), G(0.8 * sx, 0.45, -0.6), 0.07, 0.62, sides=6, flute=0.4,
                 twist=0.9 * sx, bone="Head", style=Y.shard_style("ember", 0.85, seed=101))
+        b.shard("BrowHorn", G(0.3 * sx, 1.74, 1.86), G(0.35 * sx, 0.9, 0.45), 0.07, 0.5, sides=6, flute=0.4,
+                twist=0.7 * sx, bend=G(0, -0.05, 0.22), bone="Head", style=Y.shard_style("ember", 0.9, seed=102))
+        for j, (x, u, f) in enumerate(((0.62, 1.66, 1.16), (0.45, 1.96, 1.08))):
+            b.shard("HoodShard", G(x * sx, u, f), G(0.6 * sx, 0.7, -0.5), 0.05, 0.36 - 0.05 * j, sides=6, flute=0.4,
+                    twist=0.8 * sx, bone="Head", style=Y.shard_style("ember", 0.85, seed=103 + j))
     # Spine ridge on the mantle, tallest at the front, swept back.
     for i, (f, h, r, l) in enumerate(((0.62, 1.98, 0.09, 0.6), (0.2, 2.02, 0.085, 0.52), (-0.24, 1.96, 0.075, 0.44))):
         b.shard("Spine", G(0, h, f), G(0, 1.0, -0.75), r, l, sides=8, flute=0.45, bone="Body",
@@ -383,8 +415,9 @@ def death_spec(poser):
 
 CLIPS = {"Walk": walk_spec, "Idle": idle_spec, "Hit": hit_spec, "Death": death_spec, "Spawn": spawn_spec,
          "Roar": roar_spec}
-BODY_RIGID = {"Mantle", "Head", "Brow", "Floe", "Mandible", "ScytheBlade", "Chimney", "ChimneyFire"}
-CRYSTAL_RIGID = {"Horn", "HornSmall", "Spine", "SacShard", "KneeSpike"}
+BODY_RIGID = {"Mantle", "Head", "Brow", "Floe", "Mandible", "ScytheBlade", "Chimney", "ChimneyFire", "Hood", "Underjaw",
+              "Socket", "CheekSpike", "ChinSpike"}
+CRYSTAL_RIGID = {"Horn", "HornSmall", "BrowHorn", "HoodShard", "Spine", "SacShard", "KneeSpike"}
 LOD_DROP = {"Drip": "Sac_2", "Mand_LL": "Head", "Mand_LR": "Head",
             **{f"Scythe_{s}_Blade": f"Scythe_{s}_Arm" for s, _ in SIDES}}
 LOD_AIMS = {}

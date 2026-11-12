@@ -117,7 +117,8 @@ def build(c, blockout_only=False):
     specs = {"Face": (face, int(lod0 * 0.6), int(lod1 * 0.5), {"Eye": 2.2, "Needle": 1.2}),
              "Claws": (claws, int(lod0 * 0.36), int(lod1 * 0.47), {"Claw": 1.2})}
     return S.build_all(c, specs, VOXEL, "round 46: four wet coral eyes under lid folds, needle-tooth grin, toe "
-                                        "claws; bones, clips and events unchanged",
+                                        "claws (refit unchanged on the round-49B finished body); bones, clips and "
+                                        "events unchanged",
                        body_maps=f"round-15 bead eyes' glow removed from Surgefin_Albedo/Emission ({dimmed} texels "
                                  f"this run)")
 

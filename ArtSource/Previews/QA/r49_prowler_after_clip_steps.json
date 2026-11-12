@@ -1,0 +1,44 @@
+{
+  "Death": {
+    "frames": 36,
+    "max_step_deg": 13.8,
+    "bone": "Leg_LF_Upper",
+    "frame": 23,
+    "ratio_to_median": 3.0
+  },
+  "Hit": {
+    "frames": 12,
+    "max_step_deg": 24.0,
+    "bone": "Tail_3",
+    "frame": 1,
+    "ratio_to_median": 10.7
+  },
+  "Idle": {
+    "frames": 60,
+    "max_step_deg": 11.1,
+    "bone": "Jaw_L",
+    "frame": 3,
+    "ratio_to_median": 6.7
+  },
+  "Pounce": {
+    "frames": 26,
+    "max_step_deg": 18.8,
+    "bone": "Leg_LH_Foot",
+    "frame": 14,
+    "ratio_to_median": 37.5
+  },
+  "Run": {
+    "frames": 16,
+    "max_step_deg": 37.9,
+    "bone": "Leg_LH_Upper",
+    "frame": 11,
+    "ratio_to_median": 1.8
+  },
+  "Strike": {
+    "frames": 24,
+    "max_step_deg": 27.8,
+    "bone": "Neck",
+    "frame": 6,
+    "ratio_to_median": 20.4
+  }
+}

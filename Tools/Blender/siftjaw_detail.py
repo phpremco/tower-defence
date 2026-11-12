@@ -9,6 +9,9 @@ Two extra skinned parts (detail_kit / detail_kit_small), exported in Siftjaw.fbx
   spade, and a pair of hooked talons at the end of the four rear legs.
 No bone, clip or event changes (Burrow and Emerge untouched); the actions are exported again as they are.
 
+Round 49B: the body was redesigned (build_siftjaw.py): the eyes sit in its crown sockets, the fangs line the inner
+edge of the new sickle jaws (between the body's serrations), the gullet ring follows the moved gullet.
+
 Run after build_siftjaw.py (which calls run() itself at the end of a rebuild):
   blender -b --factory-startup --python Tools/Blender/siftjaw_detail.py -- [--before | --blockout | --qa] [--norender]
 """
@@ -22,6 +25,7 @@ from mathutils import Matrix, Vector  # noqa: E402
 
 import common as C  # noqa: E402
 import detail_kit as D  # noqa: E402
+import build_siftjaw as BS  # noqa: E402
 import detail_kit_small as S  # noqa: E402
 from common import G  # noqa: E402
 
@@ -61,25 +65,27 @@ def face_parts(c):
     lid = S.skin_style(LID_DARK, LID_SKIN, LID_WET, seed=17)
     eyes = [D.eye_style(EYE, pupil="round", iris_size=0.66, pupil_size=0.3, glow=0.7, seed=s) for s in range(3)]
     head_c = G(0, 0.14, 0.29)
-    for k, x in enumerate((0.0, 0.032, 0.062)):
-        p = bead(x)
-        # Centred on the round-15 bead (dimmed: its dark rim is the socket), small enough that the five stay apart.
-        n = ((p - head_c).normalized() + G(0, 0.0, 0.3)).normalized()
+    # Round 49B: the five eyes sit in the sockets of the redesigned scoop's crown (build_siftjaw.EYES).
+    for k, ((x, u, f), r) in enumerate(BS.EYES):
+        p = G(x, u, f)
+        n = ((p - head_c).normalized() + G(0, 0.3, 0.4)).normalized()
         for sx in ((1,) if x == 0 else (1, -1)):
-            S.organic_eye(b, S.flip(p + n * 0.004, sx), S.flip(n, sx), (0.0145, 0.013, 0.0125)[k], eyes[k], lid,
-                          up=G(0, 0.4, -1.0), bone="Head", lod=k == 0, brow=(1.05, 0.55, 0.5), lower=None,
+            S.organic_eye(b, S.flip(p + n * 0.003, sx), S.flip(n, sx), r * 0.95, eyes[k], lid,
+                          up=G(0, 0.4, -1.0), bone="Head", lod=k == 0, brow=(1.1, 0.55, 0.5), lower=None,
                           brow_lift=0.55, segments=(18, 9), lid_segments=(12, 6))
     tooth = [D.tooth_style(TOOTH, glow=0.4, seed=s) for s in range(2)]
+    # Fangs on the inner edge of each sickle jaw, between the body's own serrations (t 0.3..0.74).
     for side, sx in SIDES:
-        jc = gp((0.075, 0.1, 0.42), sx)
-        yaw = Matrix.Rotation(math.radians(16 * sx), 3, "Z")
-        for j in range(3):
-            # Between the round-15 hooks (they sit at j = 0..3 on -0.045 + 0.022 j, 0.12 - 0.035 j).
-            base = jc + yaw @ gp((-0.034 + 0.022 * j, -0.004, 0.103 - 0.035 * j), sx)
-            d = gp((-0.8, -0.25, 0.55), sx).normalized()
-            D.add_tooth(b, base, d, 0.006, 0.03, tooth[j % 2], hook=gp((-0.3, 0, 1), sx), hook_amount=0.35,
-                        bone=f"Jaw_{side}", lod=False, name="Tooth")
-    gullet = G(0, 0.1, 0.385)
+        curve = C.catmull_rom(BS.jaw_points(sx), 6)
+        for j, t in enumerate((0.22, 0.38, 0.52, 0.67, 0.82)):
+            i = int(t * (len(curve) - 1))
+            p, tan = curve[i], (curve[i + 1] - curve[i]).normalized()
+            inward = (G(-sx, 0, 0) - tan * tan.dot(G(-sx, 0, 0))).normalized()
+            radius = 0.03 * (1 - t) + 0.006
+            d = (inward + tan * 0.35 + Vector((0, 0, -0.25))).normalized()
+            D.add_tooth(b, p + inward * radius * 0.5, d, 0.0055, 0.026 - 0.008 * t, tooth[j % 2], hook=tan,
+                        hook_amount=0.3, bone=f"Jaw_{side}", lod=False, name="Tooth")
+    gullet = G(0, 0.095, 0.35)
     D.add_ring_teeth(b, gullet, G(0, 0, -1), 0.03, 8, 0.024, 0.005, tooth[0], inward=0.6, bone="Head", lod=False,
                      name="RingTooth")
     return b
@@ -117,21 +123,19 @@ def claw_parts(c):
 # Run
 # ------------------------------------------------------------------------------------------------------------
 
-OLD_EYES = [(S.flip(bead(x), sx), 0.019) for x in (0.0, 0.032, 0.062) for sx in ((1,) if x == 0 else (1, -1))]
 
 
 def build(c, blockout_only=False):
     face, claws = face_parts(c), claw_parts(c)
     if blockout_only:
         return {"Face": face, "Claws": claws}
-    dimmed = S.dim_body(c, OLD_EYES, emission_keep=0.05, darken=(0.08, 0.05, 0.025), darken_amount=0.5)
     lod0, lod1 = S.budget(c)
     specs = {"Face": (face, int(lod0 * 0.58), int(lod1 * 0.5), {"Eye": 2.2, "Tooth": 1.2, "RingTooth": 1.1}),
              "Claws": (claws, int(lod0 * 0.38), int(lod1 * 0.47), {"Dig": 1.2, "Talon": 1.1})}
-    return S.build_all(c, specs, VOXEL, "round 46: five wet red eyes, scoop-jaw and gullet teeth, spade digging "
-                                        "claws, leg talons; bones, clips and events unchanged",
-                       body_maps=f"round-15 bead eyes' glow removed from Siftjaw_Albedo/Emission ({dimmed} texels "
-                                 f"this run)")
+    return S.build_all(c, specs, VOXEL, "round 49B (redesigned body): five wet red eyes in the crown sockets, "
+                                        "sickle-jaw and gullet teeth, spade digging claws, leg talons; bones, clips "
+                                        "and events unchanged",
+                       body_maps="unchanged (the round-49B body has sockets, no bead eyes to dim)")
 
 
 def shots(c):

@@ -8,6 +8,9 @@ Two extra skinned parts (detail_kit / detail_kit_small), exported in Slagstrider
   cone (dark glassy roots, ember-hot tips).
 No bone, clip or event changes; the actions are exported again as they are.
 
+Round 49B: the body was redesigned (build_slagstrider.py); three eyes per side sit in the new head's ember pits, the
+slit fangs follow its slit, the spurs sit on the new pointed foot cones.
+
 Run after build_slagstrider.py (which calls run() itself at the end of a rebuild):
   blender -b --factory-startup --python Tools/Blender/slagstrider_detail.py -- [--before | --blockout | --qa]
   [--norender]
@@ -30,7 +33,7 @@ PARTS = ("Face", "Claws")
 VOXEL = 0.002
 
 SIDES = (("L", -1), ("R", 1))
-SLIT = G(0, 0.47, 0.5)
+SLIT = G(0, 0.455, 0.53)  # round 49B: build_slagstrider.SLIT
 PITCH = Matrix.Rotation(math.radians(12), 3, "X")
 
 # Colours (sRGB): charcoal slag, molten orange glow.
@@ -40,7 +43,9 @@ LID_DARK, LID_SKIN, LID_WET = (0.03, 0.025, 0.022), (0.16, 0.14, 0.13), (0.3, 0.
 OBSIDIAN = D.Keratin(root=(0.04, 0.03, 0.03), body=(0.1, 0.085, 0.08), tip=(1.0, 0.65, 0.3), glow=(1.0, 0.5, 0.1),
                      stain=(0.3, 0.08, 0.02))
 
-HEAD_FOCUS = G(0, 0.5, 0.46)
+HEAD_FOCUS = G(0, 0.5, 0.48)
+# Round 49B: the redesigned head's eye pits (build_slagstrider.EYES): three small ember eyes per side in a row.
+EYES = [((0.062, 0.52, 0.5), 0.016), ((0.07, 0.522, 0.45), 0.013), ((0.072, 0.522, 0.405), 0.011)]
 
 
 # ------------------------------------------------------------------------------------------------------------
@@ -50,9 +55,10 @@ HEAD_FOCUS = G(0, 0.5, 0.46)
 def face_parts(c):
     b = C.PartBuilder()
     lid = S.skin_style(LID_DARK, LID_SKIN, LID_WET, seed=16, rough=0.6)
-    eyes = [D.eye_style(EYE, pupil="slit", iris_size=0.6, pupil_size=0.26, glow=0.95, seed=s) for s in range(2)]
-    for k, (x, up, fwd, r) in enumerate(((0.04, 0.51, 0.48, 0.014), (0.05, 0.515, 0.43, 0.012))):
-        look = G(1.0, 0.1, 0.55 - 0.2 * k).normalized()
+    eyes = [D.eye_style(EYE, pupil="slit", iris_size=0.6, pupil_size=0.26, glow=0.95, seed=s) for s in range(3)]
+    for k, ((x, up, fwd), r) in enumerate(EYES):
+        look = G(1.0, 0.25, 0.7 - 0.25 * k).normalized()
+        # From inside the head out through its pit: the lens sits on the skin, not buried in the wedge.
         p, n = c.out(G(x * 0.3, up, fwd), look)
         n = (n * 0.5 + look * 0.5).normalized()
         for sx in (1, -1):
@@ -89,7 +95,7 @@ def claw_parts(c):
         for k, deg in enumerate((-50.0, 10.0, 70.0)):
             phi = math.radians(deg) * (1 if i == 1 else -1)
             out = Vector((math.cos(phi), -math.sin(phi), 0.0))
-            base = foot + out * 0.035 + Vector((0, 0, 0.02))
+            base = foot + out * 0.02 + Vector((0, 0, 0.035))
             d = (out + Vector((0, 0, -0.25))).normalized()
             for side, sx in SIDES:
                 D.add_claw(b, S.flip(base, sx), S.flip(d, sx), 0.011, 0.05, spur[k], hook=Vector((0, 0, -1)),
@@ -108,8 +114,8 @@ def build(c, blockout_only=False):
     lod0, lod1 = S.budget(c)
     specs = {"Face": (face, int(lod0 * 0.56), int(lod1 * 0.5), {"Eye": 2.2, "Fang": 1.3}),
              "Claws": (claws, int(lod0 * 0.4), int(lod1 * 0.47), {"Spur": 1.2})}
-    return S.build_all(c, specs, VOXEL, "round 46: deep-set ember eyes, obsidian slit-jaw fangs, foot spurs; bones, "
-                                        "clips and events unchanged")
+    return S.build_all(c, specs, VOXEL, "round 49B (redesigned body): three ember eyes per side in their pits, "
+                                        "obsidian slit-jaw fangs, foot spurs; bones, clips and events unchanged")
 
 
 def shots(c):

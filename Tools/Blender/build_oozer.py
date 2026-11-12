@@ -1,10 +1,12 @@
 """Oozer: the slug on a toxic slime foot whose trail hastes other species and burns the hero and gates (round 10,
 see ArtSource/DESIGN_NOTES.md).
 
-A long low body on a wide translucent slime foot (lime rim, pedal-wave stripes on the sole); a ridged mantle with
-glowing toxin glands of mixed size and a row of soft dorsal spines; a round lamprey mouth with a ring of hooked teeth
-around a glowing gullet; four eye stalks (a long front pair, a short rear pair), each with a glowing bulb, on their
-own bones. Dark olive-brown mottled hide so the lime glow carries.
+Round 49A (Remco: "too perfectly round, its mouth may have a kind of slime teeth"): a sagging, lumpy slug body made
+of uneven rolls that slump onto a wide slime foot with a ragged outline, an off-centre mantle hump with glowing toxin
+glands, a heavy hood that droops over a slack, gaping maw (the slimy teeth and goo strands are the Face part,
+oozer_detail.py), a thick lower lip, soft blisters of different sizes down the back; four eye stalks (a long front
+pair, a short rear pair), each with a glowing bulb, on their own bones. Not mirrored: the lumps and folds differ left
+and right. Dark olive-brown mottled hide so the lime glow carries.
 
 Clips: Crawl (loop: a pedal wave runs from tail to head), Idle (loop), Hit, Death. The stalks retract by bone scale
 (Hit, Death). Also exports Oozer_LOD1. Geometry and clips take a `cfg` so the SlimeMonarch can reuse them.
@@ -14,6 +16,7 @@ Run: blender --background --python Tools/Blender/build_oozer.py -- [--preview <d
 
 import math
 import os
+import random
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -57,39 +60,102 @@ def gp(p, sx):
     return G(p[0] * sx, p[1], p[2])
 
 
+def lumpy(seed, amp=0.12, sag=0.35, droop=0.0, folds=0.05, freq=2.6, mirror=False):
+    """A deform for PartBuilder.ellipsoid (unit-sphere local: x side, -y forward, z up) that breaks the perfect
+    ellipsoid: uneven lumps (sum of tilted sine waves, seeded, so left and right differ; `mirror` makes them match, for the mouth parts the symmetric detail teeth sit
+    on), creased folds running
+    roughly across the body, a slumping underside that flattens and spreads, and `droop`: the front sags down."""
+    rng = random.Random(seed)
+    waves = []
+    for _ in range(6):
+        d = Vector((rng.uniform(-1, 1), rng.uniform(-1, 1), rng.uniform(-1, 1))).normalized()
+        waves.append((d, rng.uniform(0, 2 * math.pi), rng.uniform(0.5, 1.0)))
+    total = sum(w for _, _, w in waves)
+    tilt = rng.uniform(-0.6, 0.6)
+    phase = rng.uniform(0, 2 * math.pi)
+
+    def deform(v):
+        q = Vector((abs(v.x), v.y, v.z)) if mirror else v
+        bump = sum(w * math.sin(freq * q.dot(d) + ph) for d, ph, w in waves) / total
+        fold = -abs(math.sin(7.0 * q.y + tilt * q.x * 3.0 + phase)) ** 3
+        r = 1.0 + amp * bump + folds * fold * max(0.0, v.z + 0.3)
+        x, y, z = v.x * r, v.y * r, v.z * r
+        if z < 0:
+            spread = -v.z
+            z *= 1 - sag
+            x *= 1 + 0.45 * sag * spread
+            y *= 1 + 0.15 * sag * spread
+        z -= droop * max(0.0, -v.y) ** 2
+        return Vector((x, y, z))
+    return deform
+
+
+def ragged(seed, amp=0.1):
+    """The slime foot's outline: a wobbling, uneven edge instead of an oval."""
+    rng = random.Random(seed)
+    terms = [(n, rng.uniform(0, 2 * math.pi), rng.uniform(0.4, 1.0)) for n in (3, 5, 7, 11)]
+
+    def deform(v):
+        a = math.atan2(v.y, v.x)
+        k = 1.0 + amp * sum(w * math.sin(n * a + ph) for n, ph, w in terms) / len(terms)
+        return Vector((v.x * k, v.y * k, v.z))
+    return deform
+
+
+# Body rolls (forward, up, x offset, radii (side, length, height), seed, bones): uneven sizes, a little off the
+# midline in turn, so the back reads as slumped folds of flesh, not one smooth pill.
+ROLLS = [(-0.33, 0.085, 0.012, (0.125, 0.16, 0.075), 11, ["Body_1"]),
+         (-0.13, 0.108, -0.014, (0.165, 0.19, 0.102), 12, ["Body_1", "Body_2"]),
+         (0.08, 0.118, 0.01, (0.16, 0.17, 0.108), 13, ["Body_2", "Body_3"]),
+         (0.25, 0.12, -0.008, (0.135, 0.12, 0.098), 14, ["Body_3", "Head"])]
+# The maw: a drooping hood above, a thick sagging lip below, a dark throat between (Oozer units; oozer_detail places
+# the slime teeth and the goo in the gap).
+MOUTH = G(0, 0.09, 0.45)
+HOOD = (G(0, 0.178, 0.36), (0.132, 0.12, 0.074))
+LOWER_LIP = (G(0, 0.045, 0.415), (0.094, 0.058, 0.032))
+# The throat: dark olive flesh with a dim lime glow deep inside, so the pale glowing teeth and strands stand out.
+THROAT = H.Palette(top=(0.1, 0.1, 0.03), side=(0.05, 0.05, 0.015), belly=(0.03, 0.03, 0.01), seam=(0.02, 0.02, 0.005),
+                   dark=(0.03, 0.03, 0.01), glow=(0.11, 0.15, 0.02), eye=(1.0, 0.98, 0.5))
+BLISTERS = [(0.17, 0.025, 0.024), (0.05, -0.03, 0.03), (-0.06, 0.035, 0.02), (-0.16, -0.02, 0.028), (-0.27, 0.02, 0.018),
+            (0.0, 0.06, 0.016)]
+
+
 def build_parts(cfg=CFG, b=None):
     b = b or C.PartBuilder()
     k = K
     chain = list(BODY_BONES)
-    b.ellipsoid("Foot", G(0, 0.04, 0.0), (0.21, 0.47, 0.045), bone="Body_2", style=K2.slime_foot(PAL, k, waves=10.0, edge_glow=0.75),
-                segments=(48, 20))
+    b.ellipsoid("Foot", G(0, 0.035, -0.01), (0.225, 0.48, 0.04), bone="Body_2", deform=ragged(cfg.get("seed", 0) + 3),
+                style=K2.slime_foot(PAL, k, waves=10.0, edge_glow=0.75), segments=(56, 20))
     b.parts[-1].chain = chain
-    b.ellipsoid("Body", G(0, 0.12, -0.03), (0.15, 0.44, 0.1), bone="Body_2", segments=(48, 24),
-                style=K2.slug_hide(PAL, k, glands=12, seed=3, gland_size=0.12, gland_zone=0.5))
-    b.parts[-1].chain = chain
-    b.ellipsoid("Mantle", G(0, 0.185, -0.07), (0.168, 0.3, 0.085), Matrix.Rotation(math.radians(3), 3, "X"), bone="Body_2",
-                segments=(48, 24), style=K2.slug_hide(PAL, k, glands=cfg["glands"], seed=5, gland_size=cfg["gland_size"],
-                                                     gland_zone=0.05, grooves=7.0))
+    seed0 = cfg.get("seed", 0)
+    for f, up, dx, radii, seed, bones in ROLLS:
+        b.ellipsoid("Body", G(dx, up, f), radii, bone=bones[0], segments=(40, 20),
+                    deform=lumpy(seed + seed0, amp=0.16, sag=0.5, folds=0.12, freq=3.2),
+                    style=K2.slug_hide(PAL, k, glands=6, seed=seed, gland_size=0.12, gland_zone=0.5))
+        b.parts[-1].chain = bones
+    b.ellipsoid("Mantle", G(0.018, 0.185, -0.07), (0.15, 0.28, 0.078),
+                Matrix.Rotation(math.radians(3), 3, "X") @ Matrix.Rotation(math.radians(5), 3, "Z"), bone="Body_2",
+                segments=(48, 24), deform=lumpy(seed0 + 21, amp=0.16, sag=0.2, folds=0.06),
+                style=K2.slug_hide(PAL, k, glands=cfg["glands"], seed=5, gland_size=cfg["gland_size"],
+                                   gland_zone=0.05, grooves=7.0))
     b.parts[-1].chain = ["Body_1", "Body_2", "Body_3"]
-    b.ellipsoid("Head", G(0, 0.15, 0.36), (0.1, 0.12, 0.085), bone="Head", segments=(32, 16),
+    # The hood droops over the mouth; the lower lip is a thick, sagging roll; the gullet glows between them.
+    b.ellipsoid("Head", HOOD[0], HOOD[1], bone="Head", segments=(36, 18),
+                deform=lumpy(seed0 + 31, amp=0.27, sag=0.12, droop=0.5, folds=0.14, freq=3.4, mirror=True),
                 style=K2.slug_hide(PAL, k, glands=8, seed=7, gland_size=0.12, gland_zone=0.6))
     b.parts[-1].chain = ["Head", "Body_3"]
-    # The ring mouth: a lip ring, hooked teeth pointing in, a glowing gullet.
-    mouth = G(0, 0.12, 0.465)
-    b.ring("Lip", mouth, G(0, 0.15, 1.0), 0.05, 0.016, arcs=3, sides=8, chain=["Head"],
-           style=H.band_plates(PAL, k, 1, height=0.0), ref=Vector((1, 0, 0)))
-    b.ellipsoid("Gullet", mouth + G(0, 0.0, -0.012), (0.04, 0.02, 0.04), bone="Head", style=H.inner_glow(PAL, 1.0), segments=(16, 8))
-    for i in range(8):
-        a = 2 * math.pi * i / 8
-        root = mouth + G(math.cos(a) * 0.05, math.sin(a) * 0.05, 0.004)
-        tip = mouth + G(math.cos(a) * 0.018, math.sin(a) * 0.018, 0.03)
-        b.tube("Tooth", [root, root.lerp(tip, 0.5) + G(0, 0, 0.012), tip], [0.009, 0.006, 0.001], sides=6, chain=["Head"],
-               style=H.hook(PAL, k, glow=0.5))
+    b.ellipsoid("LowerLip", LOWER_LIP[0], LOWER_LIP[1], bone="Head", segments=(32, 16),
+                deform=lumpy(seed0 + 41, amp=0.14, sag=0.3, folds=0.04, mirror=True),
+                style=K2.slug_hide(PAL, k, glands=3, seed=9, gland_size=0.1, gland_zone=0.7))
+    b.parts[-1].chain = ["Head", "Body_3"]
+    b.ellipsoid("Gullet", MOUTH + G(0, 0.0, -0.05), (0.075, 0.05, 0.034), bone="Head", style=H.inner_glow(THROAT, 0.7),
+                segments=(20, 10))
+    # Soft glowing blisters of different sizes down the back (they replace the round-10 spine row).
     for i in range(cfg["spines"]):
-        f = 0.1 - 0.11 * i
-        base = G(0, 0.29 - 0.004 * i * i, f)
-        b.tube("DorsalSpine", [base, base + G(0, 0.04, -0.02), base + G(0, 0.05, -0.06)], [0.016, 0.009, 0.0015], sides=8,
-               chain=["Body_2" if f < -0.05 else "Body_3"], style=H.hook(PAL, k, glow=0.8, glow_from=0.6))
+        f, dx, r = BLISTERS[i % len(BLISTERS)]
+        b.ellipsoid("Blister", G(dx, 0.26 - 0.1 * abs(f + 0.05), f), (r, r * 1.2, r * 0.7), bone="Body_2" if f < -0.05 else "Body_3",
+                    segments=(16, 8), deform=lumpy(seed0 + 50 + i, amp=0.2, sag=0.5, folds=0.0),
+                    style=K2.bladder(PAL, k, cells=8, seed=60 + i, glow=0.9, plate=0.0))
     for side, sx in SIDES:
         for n, (root, tip) in cfg["stalks"].items():
             r, t = gp(root, sx), gp(tip, sx)
@@ -195,14 +261,15 @@ def death_spec(poser):
 CLIPS = {"Crawl": crawl_spec, "Idle": idle_spec, "Hit": hit_spec, "Death": death_spec}
 LOD_DROP = {"Stalk_L2": "Head", "Stalk_R2": "Head"}
 LOD_AIMS = {}
-RIGID = {"Lip", "Tooth"}
+RIGID = set()
 
 
 def build_asset(name, builder, tris, voxel=0.0034, k=K):
+    # Round 49A: not mirrored (the lumps and folds differ left and right), so the whole body is unwrapped.
     return C.build_mesh_asset(name, builder, voxel=voxel, target_tris=tris, tex_size=TEX, ao_distance=0.08,
                               extrusion=0.012, ray=0.04, emission_strength=2.5,
                               extra=H.weathering(k, scratches=0.2, dust=0.25, seed=17), specular=0.45,
-                              mirror=True, k=k, families=FAMILIES, low_size=LOW_TEX)
+                              mirror=False, symmetric=False, k=k, families=FAMILIES, low_size=LOW_TEX)
 
 
 def main():
@@ -227,7 +294,10 @@ def main():
                           "pivot": "ground, body centre", "trail_origin": "under Body_1 (rear), on the ground",
                           "lod1": {"fbx": LOD_NAME + ".fbx", "tris": C.tri_count(lod[1]), "bones": len(lod[0].data.bones)}})
     C.save_blend(NAME)
-    if C.cli_args().get("norender"):
+    if C.cli_args().get("norender") or C.cli_args().get("nodetail"):
+        if not C.cli_args().get("nodetail"):
+            import oozer_detail
+            oozer_detail.run(norender=True)
         return
     layout = [("Crawl", 0, (-1.0, 0.6), 0.2), ("Crawl", 12, (0.3, 0.9), -0.15), ("Crawl", 25, (1.3, 0.3), 0.3),
               ("Idle", 30, (-0.4, -0.5), 0.0), ("Crawl", 33, (0.9, -0.7), -0.3)]

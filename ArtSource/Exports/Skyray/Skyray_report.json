@@ -1,8 +1,8 @@
 {
   "asset": "Skyray",
-  "game_tris": 3893,
-  "source_tris": 419604,
-  "bones": 22,
+  "game_tris": 3832,
+  "source_tris": 476176,
+  "bones": 23,
   "texture_size": 1024,
   "low_texture_size": 512,
   "maps": [
@@ -12,21 +12,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 53,
-    "folded_fallback_faces": 81,
-    "mirrored_faces": 1841,
-    "uv_coverage": 0.591,
-    "world_per_uv": 1.372151352938576
+    "islands": 48,
+    "folded_fallback_faces": 105,
+    "mirrored_faces": 1839,
+    "uv_coverage": 0.647,
+    "world_per_uv": 1.3876369434091038
   },
   "detail": {
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 13.2,
+      "tiling": 13.3,
       "mask": "B"
     },
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 17.6,
+      "tiling": 17.8,
       "mask": "A"
     }
   },
@@ -42,7 +42,7 @@
   "dive_strike_frame": 10,
   "lod1": {
     "fbx": "Skyray_LOD1.fbx",
-    "tris": 1697,
+    "tris": 1699,
     "bones": 12
   },
   "round36": {
@@ -70,65 +70,64 @@
       "feet_planted": false,
       "mesh": {
         "rest": {
-          "tip_forward": 0.606,
+          "tip_forward": 0.637,
           "top": 0.14,
           "bottom": -0.26
         },
         "impact": {
-          "tip_forward": 0.665,
+          "tip_forward": 0.673,
           "top": 0.036,
-          "bottom": -0.416
+          "bottom": -0.525
         }
       }
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
   },
-  "r46_body_maps_edited": true,
   "r46_detail": {
     "parts": {
       "Face": {
         "object": "Skyray_Face",
         "material": "Skyray_Face_Mat",
         "maps": "Skyray_Face_*.png (1024, Low 512)",
-        "tris": 336,
+        "tris": 337,
         "lod1_object": "Skyray_Face_LOD1",
-        "lod1_tris": 84,
-        "source_tris": 20820,
+        "lod1_tris": 81,
+        "source_tris": 24604,
         "uv": {
-          "islands": 15,
+          "islands": 22,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 8,
+          "folded_fallback_faces": 19,
           "mirrored_faces": 168,
-          "uv_coverage": 0.636,
-          "world_per_uv": 0.14066800286970155
+          "uv_coverage": 0.677,
+          "world_per_uv": 0.14805895422525134
         },
-        "symmetry_error": 0.000966
+        "symmetry_error": 0.004118
       },
       "Claws": {
         "object": "Skyray_Claws",
         "material": "Skyray_Claws_Mat",
         "maps": "Skyray_Claws_*.png (1024, Low 512)",
-        "tris": 190,
+        "tris": 188,
         "lod1_object": "Skyray_Claws_LOD1",
         "lod1_tris": 76,
-        "source_tris": 10772,
+        "source_tris": 11064,
         "uv": {
-          "islands": 9,
+          "islands": 8,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 34,
-          "mirrored_faces": 83,
-          "uv_coverage": 0.682,
-          "world_per_uv": 0.10168946982770853
+          "folded_fallback_faces": 26,
+          "mirrored_faces": 76,
+          "uv_coverage": 0.621,
+          "world_per_uv": 0.11220201670988576
         },
         "symmetry_error": 0.00307
       }
     },
-    "body_tris": 3893,
-    "extra_tris": 526,
-    "extra_share": 0.135,
-    "body_lod1_tris": 1697,
-    "extra_lod1_tris": 160,
-    "extra_lod1_share": 0.094,
+    "body_tris": 3832,
+    "extra_tris": 525,
+    "extra_share": 0.137,
+    "body_lod1_tris": 1699,
+    "extra_lod1_tris": 157,
+    "extra_lod1_share": 0.092,
     "clips": [
       "Death",
       "Dive",
@@ -137,7 +136,7 @@
       "Idle"
     ],
     "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Skyray_<Part> (+ _LOD1 in Skyray_LOD1.fbx), maps Skyray_<Part>_*.png (+ Low/)",
-    "body_maps": "round-5 bead eyes' glow removed from Skyray_Albedo/Emission (0 texels this run)",
-    "note": "round 46: six wet cyan eyes under brow folds, pincer teeth, fin-tip talons, stinger barbs; bones, clips and events unchanged"
+    "body_maps": "round 49A body rebuilt and re-baked (no bead eyes on the body any more)",
+    "note": "round 49A: six wet cyan eyes under brow folds, mouth teeth on both lips, fin-tip talons, spade barbs; new Jaw bone (lower lip)"
   }
 }

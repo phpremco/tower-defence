@@ -3,9 +3,10 @@
 A slug has no claws, so the monarch gets one part, its face:
 - SlimeMonarch_Face: a wet eye on the tip of each of the six stalks over the old glowing bulbs (yellow irises with
   horizontal bar pupils, lime glow, glossy corneas, dark lids; they follow the stalks' scale when they retract) and
-  a second ring of hooked teeth inside the lamprey lip, raking down the glowing gullet. The old
-  bulbs' glow is lowered in the body maps.
-LOD1 version in SlimeMonarch_LOD1.fbx (the inner tooth ring left out there). No bone, clip or event changes.
+  (round 49A, Remco: "its mouth may have a kind of slime teeth") the Oozer's slack maw at the monarch's size:
+  translucent lime slime teeth on the hood and the lower lip, goo strands between them, drips under the lip
+  (oozer_detail.slime_mouth). The old bulbs' glow is lowered in the body maps.
+LOD1 version in SlimeMonarch_LOD1.fbx (the smaller teeth and the drips left out there). No bone, clip or event changes.
 
 Run after build_slimemonarch.py (which calls run() at the end of a rebuild):
   blender -b --factory-startup --python Tools/Blender/slimemonarch_detail.py -- [--before | --blockout | --qa] [--norender]
@@ -19,6 +20,7 @@ from mathutils import Vector  # noqa: E402
 
 import build_oozer as OZ  # noqa: E402
 import build_slimemonarch as SM  # noqa: E402
+import oozer_detail as OD  # noqa: E402
 import common as C  # noqa: E402
 import detail_kit as D  # noqa: E402
 from common import G  # noqa: E402
@@ -37,8 +39,7 @@ SOCKET = D.Flesh(dark=(0.03, 0.03, 0.01), flesh=(0.22, 0.22, 0.06))
 TOOTH = D.Keratin(root=(0.55, 0.6, 0.35), body=(0.9, 0.9, 0.72), tip=(0.98, 0.98, 0.9), glow=(0.66, 1.0, 0.16),
                   stain=(0.4, 0.5, 0.15))
 
-MOUTH = G(0, 0.12, 0.465) * M
-MOUTH_AXIS = G(0, 0.15, 1.0).normalized()
+MOUTH = OD.MOUTH * M
 FACE_FOCUS = G(0, 0.2, 0.42) * M
 
 
@@ -58,11 +59,8 @@ def face_parts(boss):
             D.add_eye(b, t_ + d * 0.02, look, r, eyes[n - 1], sock, squash=(1.0, 1.0, 0.9), socket=0.22,
                       up=Vector((0, 0, 1)) - look * look.z, bone=bone, socket_shift=-0.5,
                       socket_size=0.86)
-    # The maw: a second ring of hooked teeth inside the lamprey lip, between the old teeth, raking down the glowing
-    # gullet (deeper rings would sit inside the gullet's glow and never show).
-    tooth = [D.tooth_style(TOOTH, glow=0.4, seed=s) for s in range(3)]
-    D.add_ring_teeth(b, MOUTH + MOUTH_AXIS * 0.01, -MOUTH_AXIS, 0.068, 12, 0.055, 0.012, tooth[0], inward=0.85,
-                     offset=0.2618, bone="Head", lod=False, name="RingTooth")
+    # Round 49A: the Oozer's slack maw at the monarch's size: translucent slime teeth, goo strands, drips.
+    OD.slime_mouth(boss, b, M, lod_strands=True)
     return b
 
 
@@ -78,9 +76,9 @@ def build(boss, blockout_only=False):
             d = (boss.tail(bone) - boss.head(bone)).normalized()
             bulbs.append((boss.tail(bone) + d * 0.024, 0.06))
     dimmed = D.dim_body(boss, bulbs, emission_keep=0.12)
-    specs = {"Face": (face, FACE_TRIS, FACE_LOD, {"Eye": 1.6, "RingTooth": 1.4})}
-    return D.build_all(boss, specs, VOXEL, "round 45: stalk eyes and a toothed maw (no claws on a slug); bones, clips "
-                                           "and events unchanged",
+    specs = {"Face": (face, FACE_TRIS, FACE_LOD, {"Eye": 1.6, "SlimeTooth": 1.4, "Goo": 1.1, "Drip": 1.0})}
+    return D.build_all(boss, specs, VOXEL, "round 49A: stalk eyes, slime teeth with goo strands and drips in the slack "
+                                           "maw (no claws on a slug); bones, clips and events unchanged",
                        dimmed=f"stalk bulbs' glow lowered in SlimeMonarch_Emission ({dimmed} texels this run)")
 
 

@@ -1,0 +1,37 @@
+{
+  "Crawl": {
+    "frames": 40,
+    "max_step_deg": 6.1,
+    "bone": "Stalk_R2",
+    "frame": 28,
+    "ratio_to_median": 2.3
+  },
+  "Death": {
+    "frames": 40,
+    "max_step_deg": 7.1,
+    "bone": "Body_3",
+    "frame": 3,
+    "ratio_to_median": 10.8
+  },
+  "Hit": {
+    "frames": 12,
+    "max_step_deg": 24.6,
+    "bone": "Stalk_L1",
+    "frame": 1,
+    "ratio_to_median": 6.2
+  },
+  "Idle": {
+    "frames": 72,
+    "max_step_deg": 8.1,
+    "bone": "Stalk_L2",
+    "frame": 12,
+    "ratio_to_median": 1.5
+  },
+  "Strike": {
+    "frames": 24,
+    "max_step_deg": 23.0,
+    "bone": "Stalk_L1",
+    "frame": 12,
+    "ratio_to_median": 7.1
+  }
+}

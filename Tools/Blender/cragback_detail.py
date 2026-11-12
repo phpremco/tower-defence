@@ -8,6 +8,10 @@ Two extra skinned parts (detail_kit / detail_kit_small), exported in Cragback.fb
   the forward toe of the others), dark glassy roots, ember-hot tips.
 No bone, clip or event changes; the actions are exported again as they are.
 
+Round 49B (the redesigned body, build_cragback.py): two pairs of eyes in the glowing sockets under the brow (a big
+front pair, a small pair behind and above), no third eye; the fang rows follow the new skull and jaw. The body has
+no bead eyes any more, so the body maps are not edited.
+
 Run after build_cragback.py (which calls run() itself at the end of a rebuild):
   blender -b --factory-startup --python Tools/Blender/cragback_detail.py -- [--before | --blockout | --qa] [--norender]
 """
@@ -42,7 +46,8 @@ TALON = D.Keratin(root=(0.04, 0.035, 0.035), body=(0.1, 0.085, 0.08), tip=(0.95,
 
 HEAD_FOCUS = G(0, 0.38, 0.4)
 FOOT_FOCUS = G(-0.47, 0.03, 0.27)
-OLD_EYES = [(G(0, 0.55 - i * 0.008, 0.38 - i * 0.055), 0.03) for i in range(3)]
+# Round 49B: the eye sockets of the redesigned skull (build_cragback.EYES: (x, up, forward) right side, radius).
+BC_EYES = [((0.085, 0.335, 0.555), 0.033), ((0.125, 0.37, 0.505), 0.022)]
 
 
 def foot(side, i):
@@ -58,20 +63,23 @@ def foot(side, i):
 def face_parts(c):
     b = C.PartBuilder()
     lid = S.skin_style(LID_DARK, LID_SKIN, LID_WET, seed=2, rough=0.6)
-    eyes = [D.eye_style(EYE, pupil="slit", iris_size=0.6, pupil_size=0.26, glow=0.95, seed=s) for s in range(3)]
-    # The three eyes in a row along the top of the brow, looking up and forward, the biggest in front; their lids
-    # (stone folds) close from behind and in front so they sit deep in the slab.
-    for i, ((p0, _), r) in enumerate(zip(OLD_EYES, (0.036, 0.03, 0.025))):
-        p, n = c.out(p0 - Vector((0, 0, 0.08)), Vector((0, -0.45, 1.0)))
-        n = (n * 0.6 + Vector((0, -0.45, 1.0)).normalized() * 0.4).normalized()
-        S.organic_eye(b, p - n * r * 0.2, n, r, eyes[i], lid, up=Vector((0, 1, 0.2)), bone="Front", lod=i == 0,
-                      squash=(0.85, 1.0, 0.65), brow=(1.4, 0.6, 0.65), lower=(1.3, 0.45, 0.5), brow_tilt=0.35,
-                      segments=(20, 10), lid_segments=(14, 7))
+    eyes = [D.eye_style(EYE, pupil="slit", iris_size=0.6, pupil_size=0.26, glow=0.95, seed=s) for s in range(2)]
+    # Round 49B: two pairs, each lens sunk in its glowing socket (build_cragback.EYES), looking forward and out;
+    # stone lids close over them from above (a heavy brow fold) and below.
+    for i, ((x, u, f), r) in enumerate(BC_EYES):
+        for sx in (1, -1):
+            centre = G(x * sx, u, f)
+            look = Vector((0.45 * sx, -1.0, 0.15 - 0.1 * i)).normalized()
+            # Narrow, slanted almonds (inner corners low) under a heavy brow fold: a scowl, not a stare.
+            S.organic_eye(b, centre + look * r * 0.05, look, r * 0.95, eyes[i], lid, up=Vector((0.35 * sx, 0.25, 1)),
+                          bone="Front", lod=i == 0, squash=(1.2, 0.6, 0.6), brow=(1.35, 0.8, 0.75),
+                          lower=(1.25, 0.55, 0.55), brow_lift=0.35, brow_tilt=0.75, segments=(20, 10),
+                          lid_segments=(14, 7))
     # Fangs: a ragged row up from the lower jaw's lip (bone Jaw) and a row down from under the brow (bone Front),
     # mirrored pairs plus a centre fang below; hot at the roots like the faults.
     fang = [D.tooth_style(FANG, glow=0.55, seed=s) for s in range(3)]
     for k, (x, ln) in enumerate(((0.03, 0.06), (0.068, 0.078), (0.1, 0.05))):
-        p, n = c.hit(G(x, 0.225, 0.8), Vector((0, 1, 0))) or (None, None)
+        p, n = c.hit(G(x, 0.205, 0.8), Vector((0, 1, 0))) or (None, None)
         if p is None:
             C.log("lower fang skipped", x)
             continue
@@ -81,7 +89,7 @@ def face_parts(c):
             D.add_tooth(b, q, d, 0.014 + 0.004 * (k == 1), ln, fang[k], hook=Vector((0, 0.6, 0.4)), hook_amount=0.25, bone="Jaw",
                         lod=False, name="Fang")
     for k, (x, ln) in enumerate(((0.0, 0.05), (0.06, 0.045), (0.11, 0.038))):
-        p, n = c.hit(G(x, 0.285, 0.8), Vector((0, 1, 0))) or (None, None)
+        p, n = c.hit(G(x, 0.275, 0.8), Vector((0, 1, 0))) or (None, None)
         if p is None:
             C.log("upper fang skipped", x)
             continue
@@ -126,24 +134,22 @@ def build(c, blockout_only=False):
     face, claws = face_parts(c), claw_parts(c)
     if blockout_only:
         return {"Face": face, "Claws": claws}
-    dimmed = S.dim_body(c, OLD_EYES, emission_keep=0.05, darken=(0.1, 0.08, 0.07), darken_amount=0.5)
     lod0, lod1 = S.budget(c)
     specs = {"Face": (face, int(lod0 * 0.57), int(lod1 * 0.5), {"Eye": 2.0, "Fang": 1.3}),
              "Claws": (claws, int(lod0 * 0.38), int(lod1 * 0.5), {"Talon": 1.2})}
-    return S.build_all(c, specs, VOXEL, "round 46: three wet amber eyes under stone lids, basalt fangs, obsidian "
-                                        "talons; bones, clips and events unchanged",
-                       body_maps=f"round-4 bead eyes' glow removed from Cragback_Albedo/Emission ({dimmed} texels "
-                                 f"this run)")
+    return S.build_all(c, specs, VOXEL, "round 49B: two pairs of wet amber eyes in glowing sockets under stone lids, "
+                                        "basalt fangs, obsidian talons; bones, clips and events unchanged",
+                       body_maps="unchanged (round 49B body: glowing sockets, no bead eyes to dim)")
 
 
-EYE_FOCUS = G(0, 0.53, 0.33)
+EYE_FOCUS = G(0, 0.35, 0.53)
 
 
 def shots(c):
     out = S.standard_shots("Front", HEAD_FOCUS, "Leg_L1_Lower", FOOT_FOCUS, "Leg_L1_Lower", FOOT_FOCUS, 1.2,
                            face_dist=1.5, claw_dist=0.7, foot_dist=0.55)
-    # The eyes sit on top of the brow (seen from the game camera): the macro looks down at them.
-    out[1] = ("face_macro", "Idle", 15, "Front", EYE_FOCUS, "close", dict(distance=0.45, azimuth=-25, elevation=48))
+    # The eyes sit under the brow at the front: the macro looks in from the front.
+    out[1] = ("face_macro", "Idle", 15, "Front", EYE_FOCUS, "close", dict(distance=0.5, azimuth=-25, elevation=12))
     return out
 
 

@@ -1,7 +1,7 @@
 {
   "asset": "Knitback",
-  "game_tris": 3952,
-  "source_tris": 612796,
+  "game_tris": 3886,
+  "source_tris": 710584,
   "bones": 18,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -12,21 +12,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 36,
+    "islands": 65,
     "folded_fallback_faces": 0,
-    "mirrored_faces": 1976,
-    "uv_coverage": 0.552,
-    "world_per_uv": 1.4728179727099793
+    "mirrored_faces": 1932,
+    "uv_coverage": 0.585,
+    "world_per_uv": 1.5483348768398109
   },
   "detail": {
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 24.5,
+      "tiling": 25.8,
       "mask": "B"
     },
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 18.4,
+      "tiling": 19.4,
       "mask": "A"
     }
   },
@@ -45,10 +45,10 @@
   ],
   "lod1": {
     "fbx": "Knitback_LOD1.fbx",
-    "tris": 1698,
+    "tris": 1700,
     "bones": 12
   },
-  "walk_distance_per_loop": 0.194,
+  "walk_distance_per_loop": 0.25,
   "pivot": "ground, body centre",
   "camouflage": "two-value bark/moss albedo; fade albedo towards the ground tint and the emission down",
   "regrow_pod_bones": [
@@ -56,24 +56,23 @@
     "Pod_2",
     "Pod_3"
   ],
-  "r46_body_maps_edited": true,
   "r46_detail": {
     "parts": {
       "Face": {
         "object": "Knitback_Face",
         "material": "Knitback_Face_Mat",
         "maps": "Knitback_Face_*.png (1024, Low 512)",
-        "tris": 340,
+        "tris": 336,
         "lod1_object": "Knitback_Face_LOD1",
         "lod1_tris": 84,
-        "source_tris": 17800,
+        "source_tris": 19944,
         "uv": {
-          "islands": 12,
-          "closed_islands_cut": 1,
+          "islands": 10,
+          "closed_islands_cut": 0,
           "folded_fallback_faces": 10,
-          "mirrored_faces": 170,
-          "uv_coverage": 0.459,
-          "world_per_uv": 0.15584979042959815
+          "mirrored_faces": 168,
+          "uv_coverage": 0.654,
+          "world_per_uv": 0.13664977432634048
         },
         "symmetry_error": 0.00307
       },
@@ -81,7 +80,7 @@
         "object": "Knitback_Claws",
         "material": "Knitback_Claws_Mat",
         "maps": "Knitback_Claws_*.png (1024, Low 512)",
-        "tris": 200,
+        "tris": 196,
         "lod1_object": "Knitback_Claws_LOD1",
         "lod1_tris": 68,
         "source_tris": 17344,
@@ -89,19 +88,19 @@
           "islands": 6,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 100,
-          "uv_coverage": 0.482,
-          "world_per_uv": 0.14223059633051002
+          "mirrored_faces": 98,
+          "uv_coverage": 0.48,
+          "world_per_uv": 0.1420883416518733
         },
         "symmetry_error": 0.0
       }
     },
-    "body_tris": 3952,
-    "extra_tris": 540,
+    "body_tris": 3886,
+    "extra_tris": 532,
     "extra_share": 0.137,
-    "body_lod1_tris": 1698,
+    "body_lod1_tris": 1700,
     "extra_lod1_tris": 152,
-    "extra_lod1_share": 0.09,
+    "extra_lod1_share": 0.089,
     "clips": [
       "Death",
       "Hit",
@@ -110,7 +109,7 @@
       "Walk"
     ],
     "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Knitback_<Part> (+ _LOD1 in Knitback_LOD1.fbx), maps Knitback_<Part>_*.png (+ Low/)",
-    "body_maps": "round-15 eye slits' glow removed from Knitback_Albedo/Emission (0 texels this run)",
-    "note": "round 46: wet amber eyes under bark lids, thorn teeth, root-claw thorns; bones, clips and events unchanged"
+    "body_maps": "unchanged (the round-49B body has no eye slits to dim)",
+    "note": "round 49B (redesigned body): two pairs of wet amber eyes under bark lids, thorn teeth, root-claw thorns; bones, clips and events unchanged"
   }
 }

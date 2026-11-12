@@ -1,9 +1,12 @@
-"""Siftjaw: the sand-element digger that burrows for a moment to dodge turret fire (round 15, name proposed; see
-ArtSource/DESIGN_NOTES.md).
+"""Siftjaw: the sand-element digger that burrows for a moment to dodge turret fire (round 15, name proposed;
+redesigned from scratch in round 49B, see ArtSource/DESIGN_NOTES.md).
 
-A low wedge, widest at the shoulders: a shovel head of two serrated scoop jaws (own bones) that close into a wedge and
-open sideways, a row of five red eye beads behind them; two heavy digging arms ending in toothed spades; four short
-rear legs; ochre sand plates with red-orange seams over a segmented abdomen that ends in a twisted drill cone.
+Round 49B (Remco on the round-15 model: "ugly"): an armoured arrowhead hugging the ground. A flat shovel scoop with a
+keel carries a cluster of five red eyes on its crown (the Face part) and two great sickle jaws (own bones
+Jaw_L/Jaw_R), serrated on the inner edge, that hook in front of it like a pincer ring and flare wide when they open;
+a broad thorax shield with a forward chevron whose rim is drawn out into back-raked side spikes; heavy digging arms
+ending in toothed spades; a segmented abdomen of shingled plates with side and dorsal spines that tapers into a
+fluted, twisted drill cone (it screws itself in). Ochre-tan plates, dark umber bands, red-orange glowing seams.
 
 Clips: Walk (loop), Idle (loop), Hit, Death, Burrow (noses down, spades churn, sinks fully under the ground by
 BURROW_UNDER_FRAME), Emerge (bursts up out of the ground at EMERGE_BREACH_FRAME and shakes off). Also exports
@@ -34,15 +37,26 @@ GAME_SCALE = 0.75  # proposal
 PAL = H.Palette(top=(0.46, 0.31, 0.15), side=(0.22, 0.13, 0.06), belly=(0.09, 0.06, 0.035), seam=(0.05, 0.03, 0.016),
                 dark=(0.17, 0.1, 0.05), glow=(1.0, 0.33, 0.1), eye=(1.0, 0.28, 0.16), membrane=(0.45, 0.14, 0.05),
                 bone=(0.86, 0.76, 0.56))
-LEGP = H.Palette(top=(0.42, 0.29, 0.15), side=(0.2, 0.12, 0.06), belly=PAL.belly, seam=PAL.seam, dark=PAL.dark,
+# Round 49B: spikes and serrations in dark umber with red-hot tips (they must read against the tan plates).
+SPK = H.Palette(top=(0.2, 0.12, 0.06), side=(0.12, 0.07, 0.035), belly=(0.05, 0.03, 0.015), seam=(0.03, 0.02, 0.01),
+                dark=(0.06, 0.035, 0.02), glow=(1.0, 0.33, 0.1), eye=(1.0, 0.28, 0.16), bone=(0.45, 0.16, 0.07))
+# Round 49B: limbs a step darker (umber) than the sand plates, so the armour reads as one wedge from above.
+LEGP = H.Palette(top=(0.26, 0.16, 0.08), side=(0.13, 0.075, 0.035), belly=PAL.belly, seam=PAL.seam, dark=PAL.dark,
                  glow=PAL.glow, eye=PAL.eye, bone=PAL.bone)
 
 SIDES = K3.SIDES
 X, Yv, Z = K3.X, K3.Yv, K3.Z
 
-LEG_TABLE = [((0.15, 0.13, -0.02), (0.34, 0.0, 0.0), (0.17, 0.19)),
-             ((0.13, 0.12, -0.17), (0.32, 0.0, -0.28), (0.17, 0.19))]
+LEG_TABLE = [((0.15, 0.13, -0.02), (0.29, 0.0, -0.03), (0.15, 0.17)),
+             ((0.13, 0.12, -0.17), (0.27, 0.0, -0.29), (0.15, 0.17))]
 ARM = {"shoulder": (0.15, 0.15, 0.2), "elbow": (0.27, 0.14, 0.27), "wrist": (0.25, 0.07, 0.37), "spade": (0.245, 0.055, 0.42)}
+SPADE_ROT = (-15, -35)  # (yaw, pitch) of the spade plate; the Claws part puts its digging claws on its front edge
+# Round 49B: the sickle jaws (right side, mirrored): a curve that swings out from the jaw root and hooks in towards
+# the midline in front of the scoop, so the closed pair is a pincer ring and the open pair flares wide.
+JAW = [(0.065, 0.11, 0.35), (0.14, 0.115, 0.44), (0.145, 0.105, 0.54), (0.1, 0.1, 0.62), (0.035, 0.1, 0.66)]
+JAW_RADII = [0.032, 0.028, 0.02, 0.011, 0.001]
+# Eyes (the Face part puts the lenses here): a cluster of five on the crown of the scoop, the centre one biggest.
+EYES = [((0.0, 0.222, 0.335), 0.016), ((0.036, 0.215, 0.322), 0.014), ((0.066, 0.203, 0.3), 0.012)]
 
 
 def legs():
@@ -54,64 +68,99 @@ def rot(yaw=0.0, pitch=0.0, roll=0.0):
             @ Matrix.Rotation(math.radians(roll), 3, "Y"))
 
 
+def jaw_points(sx):
+    return [K3.gp(q, sx) for q in JAW]
+
+
+def spike(b, base, d, length, radius, chain, style, name="Spike"):
+    d = Vector(d).normalized()
+    b.tube(name, [base, base + d * length * 0.55 + Vector((0, 0, 0.004)), base + d * length],
+           [radius, radius * 0.55, 0.001], sides=6, chain=chain, style=style)
+
+
 def build_parts(b=None):
     b = b or C.PartBuilder()
     k = K
-    b.ellipsoid("Under", G(0, 0.13, 0.06), (0.17, 0.2, 0.07), bone="Body", segments=(32, 14),
-                style=H.glow_flesh(PAL, k, glow=0.5, flank=(0.55, 0.95), folds=9.0))
-    b.ellipsoid("Thorax", G(0, 0.18, 0.1), (0.2, 0.17, 0.085), rot(pitch=-4), bone="Body", segments=(40, 18),
+    hook = H.hook(SPK, k, glow=0.9, glow_from=0.7)
+    b.ellipsoid("Under", G(0, 0.12, 0.04), (0.16, 0.22, 0.06), bone="Body", segments=(32, 14),
+                style=H.glow_flesh(PAL, k, glow=0.18, flank=(0.55, 0.95), folds=9.0))
+    # The thorax: one broad armour shield with a forward chevron, its rim drawn out into back-raked side spikes (from
+    # above an arrowhead, widest at the shoulders).
+    b.ellipsoid("Thorax", G(0, 0.175, 0.1), (0.22, 0.18, 0.075), rot(pitch=-4), bone="Body", segments=(40, 18),
+                deform=C.chiselled(16, 9, depth=0.06, squash=(0.6, 1.0)),
                 style=K2.armour_plate(PAL, k, rim_glow=0.9, chevron=1.0, chevron_angle=1.1, lip=0.5, cells=18, seed=3))
+    for j, (f, ln) in enumerate(((0.2, 0.11), (0.1, 0.14), (0.0, 0.12))):
+        for side, sx in SIDES:
+            spike(b, K3.gp((0.19 - 0.01 * j, 0.17, f), sx), K3.gp((1.0, 0.12, -0.55 - 0.15 * j), sx), ln, 0.026,
+                  ["Body"], hook)
+    for j, f in enumerate((0.17, 0.08, -0.01)):
+        spike(b, G(0, 0.245, f), G(0, 0.55, -1.0), 0.06 - 0.01 * j, 0.016, ["Body"], hook, name="DorsalSpine")
     b.ellipsoid("Abdomen", G(0, 0.15, -0.12), (0.16, 0.11, 0.08), bone="Abdomen_1", segments=(36, 16),
                 style=H.band_plates(PAL, k, 3, height=0.004, glow=0.0, shingle=True))
     b.ellipsoid("AbdomenRear", G(0, 0.13, -0.27), (0.12, 0.1, 0.066), bone="Abdomen_2", segments=(32, 14),
                 style=H.band_plates(PAL, k, 3, height=0.004, glow=0.0, shingle=True))
     b.parts[-1].chain = ["Abdomen_2", "Abdomen_1"]
     for i, f in enumerate((-0.07, -0.17, -0.25, -0.32)):
-        r = 0.16 - 0.025 * i
-        b.ellipsoid("SegPlate", G(0, 0.2 - 0.015 * i, f), (r, 0.045, 0.03), rot(pitch=10), bone="Abdomen_1" if i < 2 else "Abdomen_2",
+        r = 0.165 - 0.028 * i
+        bone = "Abdomen_1" if i < 2 else "Abdomen_2"
+        b.ellipsoid("SegPlate", G(0, 0.2 - 0.016 * i, f), (r, 0.05, 0.03), rot(pitch=12), bone=bone,
+                    deform=C.chiselled(10, 20 + i, depth=0.08, squash=(0.5, 1.0)),
                     style=K2.armour_plate(PAL, k, rim_glow=1.0, chevron=0.0, lip=0.7, seed=10 + i), segments=(28, 10))
-    b.shard("Drill", G(0, 0.12, -0.33), G(0, -0.2, -1.0), 0.06, 0.21, sides=8, flute=0.35, twist=4.0, rings=14,
-            bone="Abdomen_2", chain=["Abdomen_2"], style=S.pillar(PAL, k, drums=5, seed=14, glow=0.7))
-    # Head: a core under two scoop jaws, five eye beads in a row.
-    b.ellipsoid("Head", G(0, 0.14, 0.29), (0.13, 0.09, 0.07), bone="Head", style=H.band_plates(PAL, k, 2, height=0.002),
-                segments=(32, 14))
-    b.ellipsoid("Gullet", G(0, 0.1, 0.36), (0.05, 0.03, 0.03), bone="Head", style=H.inner_glow(PAL, 0.9), segments=(14, 8))
-    for x in (0.0, 0.032, 0.062):
-        for side, sx in ([(None, 1)] if x == 0 else SIDES):
-            b.ellipsoid("Eye", K3.gp((x, 0.215 - 0.012 * (x > 0.05), 0.33 - 0.01 * (x > 0.05)), sx), (0.014, 0.014, 0.012),
-                        bone="Head", style=H.eye(PAL, k, 1.0), segments=(10, 6))
+        for side, sx in SIDES:
+            spike(b, K3.gp((r * 0.92, 0.19 - 0.016 * i, f - 0.01), sx), K3.gp((0.8, 0.1, -0.8), sx), 0.08 - 0.012 * i,
+                  0.02, [bone], hook)
+        spike(b, G(0, 0.225 - 0.016 * i, f - 0.01), G(0, 0.5, -1.0), 0.05 - 0.008 * i, 0.013, [bone], hook,
+              name="DorsalSpine")
+    b.shard("Drill", G(0, 0.12, -0.33), G(0, -0.2, -1.0), 0.065, 0.25, sides=8, flute=0.45, twist=5.0, rings=16,
+            bone="Abdomen_2", chain=["Abdomen_2"], style=S.pillar(PAL, k, drums=6, seed=14, glow=0.8))
+    # Head: a flat shovel scoop with a keel, the eye cluster on its crown (Face part), a glowing gullet under it and
+    # two great sickle jaws, serrated on the inner edge, that hook in front of it (own bones Jaw_L/Jaw_R).
+    b.ellipsoid("Head", G(0, 0.145, 0.3), (0.15, 0.12, 0.062), rot(pitch=-10), bone="Head", segments=(36, 16),
+                deform=C.chiselled(14, 31, depth=0.06, squash=(0.6, 1.0)),
+                style=K2.armour_plate(PAL, k, rim_glow=0.7, chevron=0.6, chevron_angle=1.4, lip=1.0, cells=10, seed=32))
+    b.ellipsoid("Keel", G(0, 0.2, 0.27), (0.03, 0.11, 0.03), rot(pitch=-6), bone="Head", segments=(20, 10),
+                style=H.band_plates(PAL, k, 2, height=0.002))
+    b.ellipsoid("Gullet", G(0, 0.1, 0.335), (0.05, 0.02, 0.018), bone="Head", style=H.inner_glow(PAL, 0.6), segments=(14, 8))
+    for (x, u, f), r in EYES:
+        for sx in ((1,) if x == 0 else (1, -1)):
+            b.ellipsoid("EyeSocket", K3.gp((x, u - 0.006, f), sx), (r * 1.2, r * 1.2, r * 0.8), bone="Head",
+                        segments=(12, 6), style=H.inner_glow(PAL, 0.45))
     for side, sx in SIDES:
-        jc = K3.gp((0.075, 0.1, 0.42), sx)
-        b.ellipsoid("Jaw", jc, (0.068, 0.15, 0.024), rot(yaw=16 * sx, pitch=-8), bone=f"Jaw_{side}", segments=(28, 12),
-                    style=K2.armour_plate(PAL, k, rim_glow=0.8, chevron=0.0, lip=1.0, cells=14, seed=20 + (sx > 0)))
-        b.parts[-1].chain = [f"Jaw_{side}"]
-        for j in range(4):
-            # Teeth along the jaw's inner front edge, rooted in the plate (yawed 16 degrees inwards).
-            base = jc + Matrix.Rotation(math.radians(16 * sx), 3, "Z") @ K3.gp((-0.045 + 0.022 * j, 0.0, 0.12 - 0.035 * j), sx)
-            b.tube("JawTooth", [base, base + K3.gp((-0.006, -0.004, 0.022), sx), base + K3.gp((-0.016, -0.01, 0.036), sx)],
-                   [0.011, 0.007, 0.001], sides=6, chain=[f"Jaw_{side}"], style=H.hook(PAL, k, glow=0.7, glow_from=0.6))
+        pts = jaw_points(sx)
+        b.tube("Jaw", pts, JAW_RADII, sides=10, chain=[f"Jaw_{side}"], flatten=0.5, style=H.blade(PAL, k, glow=0.9, teeth=6))
+        curve = C.catmull_rom(pts, 6)
+        for j, t in enumerate((0.3, 0.45, 0.6, 0.74)):
+            i = int(t * (len(curve) - 1))
+            p, tan = curve[i], (curve[i + 1] - curve[i]).normalized()
+            inward = (G(-sx, 0, 0) - tan * tan.dot(G(-sx, 0, 0))).normalized()
+            spike(b, p + inward * 0.012, inward + tan * 0.6, 0.03 - 0.004 * j, 0.009, [f"Jaw_{side}"],
+                  H.hook(PAL, k, glow=0.7, glow_from=0.6), name="JawTooth")
         sh, el, wr, sp = (K3.gp(ARM[n], sx) for n in ("shoulder", "elbow", "wrist", "spade"))
-        b.tube("ArmUpper", [sh, sh.lerp(el, 0.5) + Vector((0, 0, 0.015)), el], [0.045, 0.042, 0.036], sides=10,
-               chain=[f"Arm_{side}_Upper"], style=H.leg(LEGP, k, "Femur", spines=2), flatten=0.8)
-        b.tube("ArmFore", [el, el.lerp(wr, 0.5), wr], [0.036, 0.04, 0.042], sides=10, chain=[f"Arm_{side}_Spade"],
-               style=H.leg(LEGP, k, "Femur"))
-        b.ellipsoid("Spade", sp, (0.065, 0.08, 0.02), rot(yaw=-15 * sx, pitch=-35), bone=f"Arm_{side}_Spade", segments=(24, 10),
-                    style=K2.armour_plate(PAL, k, rim_glow=0.6, chevron=0.0, lip=1.0, cells=5, seed=24 + (sx > 0)))
+        b.tube("ArmUpper", [sh, sh.lerp(el, 0.5) + Vector((0, 0, 0.018)), el], [0.046, 0.042, 0.036], sides=8,
+               chain=[f"Arm_{side}_Upper"], style=H.leg(LEGP, k, "Femur", spines=3), flatten=0.8)
+        spike(b, sh.lerp(el, 0.6) + Vector((0, 0, 0.03)), K3.gp((0.3, 1.0, -0.5), sx), 0.05, 0.014,
+              [f"Arm_{side}_Upper"], hook)
+        b.tube("ArmFore", [el, el.lerp(wr, 0.5), wr], [0.036, 0.042, 0.046], sides=8, chain=[f"Arm_{side}_Spade"],
+               style=H.leg(LEGP, k, "Femur", spines=2), flatten=0.75)
+        spike(b, el.lerp(wr, 0.4) + K3.gp((0.03, 0.02, 0.0), sx), K3.gp((1.0, 0.4, -0.3), sx), 0.05, 0.014,
+              [f"Arm_{side}_Spade"], hook)
+        spade_rot = rot(yaw=SPADE_ROT[0] * sx, pitch=SPADE_ROT[1])
+        b.ellipsoid("Spade", sp, (0.07, 0.085, 0.022), spade_rot, bone=f"Arm_{side}_Spade", segments=(24, 10),
+                    deform=C.chiselled(9, 24, depth=0.08, squash=(0.6, 1.0)),
+                    style=K2.armour_plate(PAL, k, rim_glow=0.6, chevron=0.0, lip=1.0, cells=5, seed=24))
         b.parts[-1].chain = [f"Arm_{side}_Spade"]
-        spade_rot = rot(yaw=-15 * sx, pitch=-35)
         ahead = spade_rot @ Vector((0, -1, 0))
-        for j in range(3):
-            # Rooted on the spade's own front edge (in the spade's rotated frame), pointing on along it.
-            base = sp + spade_rot @ Vector(((-0.03 + 0.03 * j) * sx, -0.062, 0.0))
-            b.tube("SpadeTooth", [base, base + ahead * 0.025, base + ahead * 0.045 + Vector((0, 0, -0.006))],
-                   [0.012, 0.007, 0.001], sides=6, chain=[f"Arm_{side}_Spade"], style=H.hook(PAL, k, glow=0.5))
+        for j in range(4):
+            base = sp + spade_rot @ Vector(((-0.045 + 0.03 * j) * sx, -0.066, 0.0))
+            b.tube("SpadeTooth", [base, base + ahead * 0.03, base + ahead * 0.05 + Vector((0, 0, -0.008))],
+                   [0.013, 0.008, 0.001], sides=6, chain=[f"Arm_{side}_Spade"], style=H.hook(PAL, k, glow=0.5))
     for (side, i), lg in legs().items():
         hip, knee, foot = lg.rest_points
         sx = -1 if side == "L" else 1
-        b.tube("LegUpper", [hip, hip.lerp(knee, 0.5) + Vector((0, 0, 0.01)), knee], [0.032, 0.03, 0.022], sides=10,
+        b.tube("LegUpper", [hip, hip.lerp(knee, 0.5) + Vector((0, 0, 0.01)), knee], [0.034, 0.032, 0.024], sides=10,
                chain=[lg.names[0]], style=H.leg(LEGP, k, "Femur", spines=2), flatten=0.75)
         tip = foot + (foot - knee).normalized() * 0.012
-        b.tube("LegLower", [knee, knee.lerp(foot, 0.5) + K3.gp((0.01, 0.008, 0), sx), tip], [0.022, 0.017, 0.002], sides=10,
+        b.tube("LegLower", [knee, knee.lerp(foot, 0.5) + K3.gp((0.01, 0.008, 0), sx), tip], [0.024, 0.018, 0.002], sides=10,
                chain=[lg.names[1]], style=H.leg(LEGP, k, "Tibia"))
     return b
 
@@ -275,7 +324,7 @@ def ride_feet_blend(poser, specs, lg, a):
 
 CLIPS = {"Walk": walk_spec, "Idle": idle_spec, "Hit": hit_spec, "Death": death_spec, "Burrow": burrow_spec,
          "Emerge": emerge_spec}
-RIGID = {"Thorax", "Jaw", "Spade", "SegPlate"}
+RIGID = {"Thorax", "Jaw", "JawTooth", "Spade", "SpadeTooth", "SegPlate", "Keel"}
 # LOD1: jaws fold into the head, the rear abdomen into the front one, each rear leg one bone: 12 bones.
 LOD_DROP = {"Jaw_L": "Head", "Jaw_R": "Head", "Abdomen_2": "Abdomen_1",
             **{f"Leg_{s}{i}_Lower": f"Leg_{s}{i}_Upper" for s, _ in SIDES for i in (1, 2)}}

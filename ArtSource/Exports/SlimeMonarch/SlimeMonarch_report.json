@@ -2,7 +2,7 @@
   "asset": "SlimeMonarch",
   "base_species": "Oozer",
   "game_tris": 13000,
-  "source_tris": 643976,
+  "source_tris": 717008,
   "bones": 13,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -13,21 +13,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 112,
-    "folded_fallback_faces": 162,
-    "mirrored_faces": 6187,
-    "uv_coverage": 0.65,
-    "world_per_uv": 1.0115236261442673
+    "islands": 789,
+    "folded_fallback_faces": 5,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.381,
+    "world_per_uv": 1.9655167293028812
   },
   "detail": {
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 12.6,
+      "tiling": 24.6,
       "mask": "B"
     },
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 16.9,
+      "tiling": 32.8,
       "mask": "A"
     }
   },
@@ -65,7 +65,7 @@
   "model_scale_from_oozer_units": 2.0,
   "lod1": {
     "fbx": "SlimeMonarch_LOD1.fbx",
-    "tris": 5999,
+    "tris": 6000,
     "bones": 11
   },
   "round31": {
@@ -74,22 +74,22 @@
       "loop": false,
       "impact_frame": 13,
       "impact": {
-        "front_min_z": 0.001,
-        "tip_forward": 1.771,
-        "rear": 1.045,
-        "min_z": -0.01
+        "front_min_z": -0.022,
+        "tip_forward": 1.709,
+        "rear": 0.982,
+        "min_z": -0.022
       },
       "rest": {
-        "front_min_z": 0.039,
+        "front_min_z": 0.023,
         "tip_forward": 1.0,
-        "rear": 1.017,
+        "rear": 0.97,
         "min_z": -0.01
       },
       "snap_back_shortest": {
-        "front_min_z": 0.02,
-        "tip_forward": 0.901,
-        "rear": 1.013,
-        "min_z": -0.011
+        "front_min_z": 0.016,
+        "tip_forward": 0.899,
+        "rear": 0.968,
+        "min_z": -0.012
       }
     },
     "Flood": {
@@ -97,16 +97,16 @@
       "loop": false,
       "slam_frame": 24,
       "top": {
-        "front_min_z": 0.677,
-        "tip_forward": 1.332,
-        "rear": 1.038,
+        "front_min_z": 0.693,
+        "tip_forward": 1.364,
+        "rear": 0.977,
         "min_z": -0.01
       },
       "slam": {
-        "front_min_z": -0.01,
-        "tip_forward": 1.297,
-        "rear": 1.029,
-        "min_z": -0.01
+        "front_min_z": -0.024,
+        "tip_forward": 1.25,
+        "rear": 0.975,
+        "min_z": -0.024
       }
     },
     "chain_scale_bones": [
@@ -117,33 +117,34 @@
     ],
     "note": "tail end planted; the chain stretches toward the target (length L, width L^-0.65, height L^-0.35); old clips hold the chain at scale 1"
   },
+  "r45_body_maps_edited": true,
   "r45_detail": {
     "parts": {
       "Face": {
         "object": "SlimeMonarch_Face",
         "material": "SlimeMonarch_Face_Mat",
         "maps": "SlimeMonarch_Face_*.png (1024, Low 512)",
-        "tris": 2464,
+        "tris": 2494,
         "lod1_object": "SlimeMonarch_Face_LOD1",
-        "lod1_tris": 848,
-        "source_tris": 134364,
+        "lod1_tris": 850,
+        "source_tris": 169940,
         "uv": {
-          "islands": 34,
+          "islands": 46,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 1232,
-          "uv_coverage": 0.698,
-          "world_per_uv": 0.4232515782398588
+          "mirrored_faces": 1243,
+          "uv_coverage": 0.69,
+          "world_per_uv": 0.48340706674551737
         },
-        "symmetry_error": 0.00649
+        "symmetry_error": 0.010725
       }
     },
     "body_tris": 13000,
-    "extra_tris": 2464,
-    "extra_share": 0.19,
-    "body_lod1_tris": 5999,
-    "extra_lod1_tris": 848,
-    "extra_lod1_share": 0.141,
+    "extra_tris": 2494,
+    "extra_share": 0.192,
+    "body_lod1_tris": 6000,
+    "extra_lod1_tris": 850,
+    "extra_lod1_share": 0.142,
     "clips": [
       "Crawl",
       "Death",
@@ -154,8 +155,7 @@
       "Strike"
     ],
     "unity": "ExtraParts { \"Face\" }: objects SlimeMonarch_<Part> (+ _LOD1 in SlimeMonarch_LOD1.fbx), maps SlimeMonarch_<Part>_*.png (+ Low/)",
-    "note": "round 45: stalk eyes and a toothed maw (no claws on a slug); bones, clips and events unchanged",
-    "body_maps": "stalk bulbs' glow lowered in SlimeMonarch_Emission (0 texels this run)"
-  },
-  "r45_body_maps_edited": true
+    "note": "round 49A: stalk eyes, slime teeth with goo strands and drips in the slack maw (no claws on a slug); bones, clips and events unchanged",
+    "body_maps": "stalk bulbs' glow lowered in SlimeMonarch_Emission (27047 texels this run)"
+  }
 }

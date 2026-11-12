@@ -1,0 +1,37 @@
+{
+  "Death": {
+    "frames": 40,
+    "max_step_deg": 35.5,
+    "bone": "Tail_5",
+    "frame": 1,
+    "ratio_to_median": 2.2
+  },
+  "Dive": {
+    "frames": 24,
+    "max_step_deg": 41.2,
+    "bone": "Tail_5",
+    "frame": 6,
+    "ratio_to_median": 5.2
+  },
+  "Fly": {
+    "frames": 42,
+    "max_step_deg": 5.9,
+    "bone": "Fin_L_B3",
+    "frame": 31,
+    "ratio_to_median": 1.4
+  },
+  "Hit": {
+    "frames": 12,
+    "max_step_deg": 51.3,
+    "bone": "Fin_L_B3",
+    "frame": 1,
+    "ratio_to_median": 6.2
+  },
+  "Idle": {
+    "frames": 60,
+    "max_step_deg": 3.4,
+    "bone": "Pincer_R",
+    "frame": 27,
+    "ratio_to_median": 6.9
+  }
+}

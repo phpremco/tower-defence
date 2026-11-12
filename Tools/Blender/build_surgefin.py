@@ -6,6 +6,11 @@ coral glowing edges, a long tail with a vertical fin; a wide flat head with a lu
 needle teeth along the lip, four small coral eyes and glowing gill slits. Wet petrol-teal skin with a paler belly
 and fine spots: the element is in the body, the light is warm.
 
+Round 49B (Remco: "somewhat more finished"): a finishing pass on the same body, rig and clips: five taller, ragged
+sails with spines running on past the rim, a ridge of bony scutes down the spine, a pale ribbed belly, a lateral
+line of glowing photophores, brow ridges and back-swept cheek spines, coral-lit external gill fronds behind the jaw,
+a hooded lure bulb, a split double tail fin, and a less glossy skin (roughness 0.5, more pitting).
+
 Clips: Walk (loop, sprawling with a side-to-side spine wave), Swim (loop, limbs tucked, strong wave), Idle (loop),
 Hit, Death, Emerge (rises from under the water surface; the head breaks it at EMERGE_SURFACE_FRAME). Also exports
 Surgefin_LOD1.
@@ -18,7 +23,9 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
-from mathutils import Vector  # noqa: E402
+from mathutils import Matrix, Vector  # noqa: E402
+
+import numpy as np  # noqa: E402
 
 import chitin as H  # noqa: E402
 import common as C  # noqa: E402
@@ -34,6 +41,8 @@ GAME_SCALE = 0.75  # proposal
 PAL = H.Palette(top=(0.07, 0.24, 0.25), side=(0.03, 0.1, 0.11), belly=(0.02, 0.04, 0.045), seam=(0.01, 0.022, 0.026),
                 dark=(0.02, 0.06, 0.07), glow=(1.0, 0.45, 0.24), eye=(1.0, 0.62, 0.3), membrane=(0.12, 0.3, 0.3),
                 bone=(0.72, 0.6, 0.48))
+BELLY = H.Palette(top=(0.42, 0.36, 0.3), side=(0.3, 0.26, 0.22), belly=(0.2, 0.17, 0.14), seam=(0.06, 0.08, 0.08),
+                  dark=(0.1, 0.1, 0.09), glow=PAL.glow, eye=PAL.eye, bone=PAL.bone)
 FIN = H.Palette(top=PAL.top, side=(0.03, 0.09, 0.1), belly=PAL.belly, seam=PAL.seam, dark=PAL.dark, glow=PAL.glow,
                 eye=PAL.eye, membrane=(0.05, 0.15, 0.16), bone=PAL.bone)
 
@@ -47,29 +56,95 @@ TAIL_BONES = ["Tail_1", "Tail_2", "Tail_3"]
 LEG_TABLE = [((0.085, 0.1, 0.2), (0.23, 0.0, 0.29), (0.11, 0.13)),
              ((0.085, 0.1, -0.07), (0.23, 0.0, -0.15), (0.11, 0.13))]
 LEG_PARENT = {1: "Spine_2", 2: "Spine_1"}
-SAILS = [(0.19, 0.08, "Spine_2"), (0.06, 0.11, "Spine_2"), (-0.08, 0.1, "Spine_1"), (-0.22, 0.075, "Tail_1")]
+# Round 49B: five taller sails, the middle ones highest, each with spines that run on past its ragged rim.
+SAILS = [(0.2, 0.085, "Spine_2"), (0.09, 0.13, "Spine_2"), (-0.03, 0.14, "Spine_1"), (-0.15, 0.115, "Spine_1"),
+         (-0.27, 0.08, "Tail_1")]
+# External gill fronds behind the jaw (right side; mirrored): root, direction, length. Coral-lit feathery stalks
+# that flare from the head like a crown seen from above.
+FRONDS = [((0.1, 0.15, 0.3), (0.9, 0.55, -0.45), 0.13), ((0.105, 0.13, 0.27), (1.0, 0.25, -0.6), 0.15),
+          ((0.1, 0.11, 0.24), (0.9, 0.0, -0.75), 0.13)]
+# Photophores along the flank (lateral line): (forward, height) on the right side, mirrored.
+PHOTOPHORES = [0.24, 0.17, 0.1, 0.03, -0.04, -0.11, -0.18, -0.25]  # forward positions along the lateral line
 
 
 def legs():
     return K3.limbs(LEG_TABLE, pole=(0.6, 1.0, 0.0))
 
 
+def lateral_line(f):
+    """A point on the right flank a little below the side's widest line at forward position f (torso or tail)."""
+    if f > -0.12:
+        x = 0.115 * math.sqrt(max(0.0, 1 - ((f - 0.07) / 0.23) ** 2)) * 0.95
+        up = 0.11
+    else:
+        x = float(np.interp(-f, (0.12, 0.22, 0.3), (0.075, 0.062, 0.045))) * 0.95
+        up = float(np.interp(-f, (0.12, 0.3), (0.105, 0.09)))
+    return G(x, up, f), G(1, 0, 0)
+
+
+def rot(yaw=0.0, pitch=0.0, roll=0.0):
+    return (Matrix.Rotation(math.radians(yaw), 3, "Z") @ Matrix.Rotation(math.radians(pitch), 3, "X")
+            @ Matrix.Rotation(math.radians(roll), 3, "Y"))
+
+
 def build_parts(b=None):
     b = b or C.PartBuilder()
     k = K
     b.ellipsoid("Torso", G(0, 0.12, 0.07), (0.115, 0.23, 0.075), bone="Spine_1", segments=(40, 20),
-                style=K3.wet_skin(PAL, k, spots=70, seed=1, glow_spots=0.3))
+                style=K3.wet_skin(PAL, k, spots=70, seed=1, glow_spots=0.3, gloss=0.5))
     b.parts[-1].chain = ["Spine_1", "Spine_2"]
+    # A pale, ribbed belly (finished underside), a ridge of bony scutes down the spine, glowing photophores along
+    # the lateral line: surface break-up that reads at play size.
+    b.ellipsoid("BellyPlate", G(0, 0.085, 0.07), (0.09, 0.2, 0.035), bone="Spine_1", segments=(32, 12),
+                style=H.band_plates(BELLY, k, 9, height=0.002, glow=0.0, axis=1))
+    b.parts[-1].chain = ["Spine_1", "Spine_2"]
+    for j, f in enumerate((0.27, 0.22, 0.15, 0.1, 0.03, -0.02, -0.09, -0.14, -0.21, -0.27, -0.34, -0.41)):
+        bone = "Spine_2" if f > 0.08 else ("Spine_1" if f > -0.12 else "Tail_1")
+        up = 0.19 if -0.12 < f < 0.24 else (0.175 if f >= 0.24 else 0.165 - 0.12 * (-0.12 - f))
+        b.ellipsoid("Scute", G(0, up, f), (0.018, 0.024, 0.012), rot(pitch=-12), bone=bone, segments=(12, 6),
+                    deform=C.chiselled(7, 70 + j, depth=0.2),
+                    style=K2.armour_plate(PAL, k, rim_glow=0.3, chevron=0.0, lip=0.7, seed=70 + j))
+    for side, sx in SIDES:
+        for j, f in enumerate(PHOTOPHORES):
+            bone = "Spine_2" if f > 0.08 else ("Spine_1" if f > -0.12 else "Tail_1")
+            p, n = lateral_line(f)
+            b.ellipsoid("Photophore", K3.gp((p.x + 0.003, p.z, -p.y), sx), (0.009, 0.009, 0.007), bone=bone, segments=(10, 6),
+                        style=H.eye(PAL, k, 0.9))
     b.tube("Tail", TAIL[:1] + [G(0, 0.1, -0.22)] + TAIL[1:], [0.08, 0.065, 0.045, 0.025, 0.004], sides=12,
-           chain=TAIL_BONES, style=K3.wet_skin(PAL, k, spots=70, seed=2, glow_spots=0.25))
-    b.ellipsoid("TailFin", G(0, 0.09, -0.52), (0.009, 0.17, 0.055), bone="Tail_2",
-                style=K3.fin_sail(FIN, k, rays=6, edge_glow=0.9, axis=1, height_axis=2, seed=3), segments=(32, 12))
-    b.parts[-1].chain = ["Tail_2", "Tail_3"]
+           chain=TAIL_BONES, style=K3.wet_skin(PAL, k, spots=70, seed=2, glow_spots=0.25, gloss=0.5))
+    for name, c0, r0, seed in (("TailFin", G(0, 0.1, -0.52), (0.009, 0.19, 0.06), 3),
+                               ("TailFin", G(0, 0.055, -0.5), (0.008, 0.15, 0.035), 4)):
+        b.ellipsoid(name, c0, r0, bone="Tail_2", deform=C.chiselled(12, 80 + seed, depth=0.12),
+                    style=K3.fin_sail(FIN, k, rays=7, edge_glow=0.9, axis=1, height_axis=2, seed=seed), segments=(32, 12))
+        b.parts[-1].chain = ["Tail_2", "Tail_3"]
     # Head: wide and flat, a dark lip line with needle teeth and a glowing mouth seam, eyes, gills, the lure.
     b.ellipsoid("Head", G(0, 0.125, 0.38), (0.12, 0.13, 0.055), bone="Head", segments=(36, 16),
-                style=K3.wet_skin(PAL, k, spots=80, seed=4, glow_spots=0.4))
+                style=K3.wet_skin(PAL, k, spots=80, seed=4, glow_spots=0.4, gloss=0.5))
     b.ellipsoid("Jaw", G(0, 0.09, 0.38), (0.108, 0.12, 0.03), bone="Head", segments=(32, 12),
-                style=K3.wet_skin(PAL, k, spots=80, seed=5, belly_light=0.8))
+                style=K3.wet_skin(PAL, k, spots=80, seed=5, belly_light=0.8, gloss=0.5))
+    # A bony brow ridge over each eye pair and a back-swept cheek spine at each jaw corner.
+    for side, sx in SIDES:
+        b.ellipsoid("Brow", K3.gp((0.07, 0.172, 0.385), sx), (0.04, 0.06, 0.014), rot(yaw=-18 * sx, roll=18 * sx),
+                    bone="Head", segments=(16, 8), deform=C.chiselled(8, 91, depth=0.15),
+                    style=K2.armour_plate(PAL, k, rim_glow=0.2, chevron=0.0, lip=0.6, seed=91))
+        cheek = K3.gp((0.115, 0.1, 0.33), sx)
+        b.tube("CheekSpine", [cheek, cheek + K3.gp((0.04, 0.01, -0.04), sx), cheek + K3.gp((0.07, 0.02, -0.1), sx)],
+               [0.013, 0.008, 0.001], sides=6, chain=["Head"], style=H.hook(PAL, k, glow=0.8, glow_from=0.7))
+        # External gill fronds: a stalk with short feathery filaments, coral-lit towards the tip.
+        for j, (root, d, ln) in enumerate(FRONDS):
+            r0 = K3.gp(root, sx)
+            dd = K3.gp(d, sx).normalized()
+            pts = [r0, r0 + dd * ln * 0.45 + G(0, 0.015, 0), r0 + dd * ln + G(0, -0.01, -0.01)]
+            b.tube("Frond", pts, [0.012, 0.008, 0.002], sides=8, chain=["Head"],
+                   style=H.tube(FIN, k, FIN.side, FIN.glow * 0.8, tip_glow=1.0, glow_from=0.4))
+            for m in range(4):
+                t = 0.35 + 0.15 * m
+                p0 = r0.lerp(pts[-1], t)
+                for side_off in (1, -1):
+                    fd = (dd.cross(Vector((0, 0, 1))).normalized() * side_off * 0.8 + dd * 0.6).normalized()
+                    b.tube("Frond", [p0, p0 + fd * 0.022, p0 + fd * 0.034 + Vector((0, 0, -0.004))],
+                           [0.004, 0.003, 0.0008], sides=5, chain=["Head"],
+                           style=H.tube(FIN, k, FIN.side, FIN.glow, tip_glow=1.0, glow_from=0.2))
     b.ellipsoid("MouthSeam", G(0, 0.104, 0.46), (0.085, 0.03, 0.009), bone="Head", style=H.inner_glow(PAL, 0.9), segments=(20, 6))
     for side, sx in SIDES:
         for j in range(3):
@@ -84,14 +159,20 @@ def build_parts(b=None):
     lure = [G(0, 0.17, 0.33), G(0, 0.24, 0.38), G(0, 0.255, 0.46), G(0, 0.235, 0.52)]
     b.tube("LureStalk", lure, [0.014, 0.011, 0.008, 0.007], sides=8, chain=["Lure"],
            style=H.tube(PAL, k, PAL.side, PAL.top, rings=(0.3, 0.6), ring_dark=0.5))
-    b.ellipsoid("LureBulb", lure[-1] + G(0, -0.01, 0.01), (0.024, 0.024, 0.026), bone="Lure", style=H.eye(PAL, k, 1.0),
+    b.ellipsoid("LureBulb", lure[-1] + G(0, -0.012, 0.012), (0.017, 0.017, 0.022), bone="Lure", style=H.eye(PAL, k, 1.0),
                 segments=(14, 8))
+    # A hood of two thin membranes cupped round the bulb (it reads as an organ, not a ball).
+    for sx in (-1, 1):
+        b.ellipsoid("LureHood", lure[-1] + G(0.012 * sx, -0.002, 0.004), (0.004, 0.026, 0.024), rot(yaw=-25 * sx),
+                    bone="Lure", segments=(16, 8), style=K3.fin_sail(FIN, k, rays=4, edge_glow=1.0, axis=1, height_axis=2))
     for i, (f, h, bone) in enumerate(SAILS):
         c = G(0, 0.18 + h * 0.55, f)
-        b.ellipsoid("Sail", c, (0.008, 0.06, h), bone=bone, segments=(28, 12),
-                    style=K3.fin_sail(FIN, k, rays=4, edge_glow=1.0, axis=1, height_axis=2, seed=10 + i))
-        b.tube("SailSpine", [G(0, 0.16, f + 0.02), G(0, 0.18 + h * 1.2, f - 0.03)], [0.01, 0.002], sides=6, chain=[bone],
-               style=H.hook(PAL, k, glow=0.8, glow_from=0.7))
+        b.ellipsoid("Sail", c, (0.008, 0.065, h), rot(pitch=-14), bone=bone, segments=(28, 12),
+                    deform=C.chiselled(11, 110 + i, depth=0.1),
+                    style=K3.fin_sail(FIN, k, rays=5, edge_glow=1.0, axis=1, height_axis=2, seed=10 + i))
+        for j, (df, lean) in enumerate(((0.025, 0.0), (-0.03, 0.03))):
+            b.tube("SailSpine", [G(0, 0.16, f + df), G(0, 0.18 + h * (1.25 - 0.2 * j), f + df - 0.04 - lean)],
+                   [0.009, 0.0015], sides=6, chain=[bone], style=H.hook(PAL, k, glow=0.8, glow_from=0.7))
     for (side, i), lg in legs().items():
         hip, knee, foot = lg.rest_points
         sx = -1 if side == "L" else 1
@@ -265,7 +346,7 @@ def emerge_spec(poser):
 
 
 CLIPS = {"Walk": walk_spec, "Swim": swim_spec, "Idle": idle_spec, "Hit": hit_spec, "Death": death_spec, "Emerge": emerge_spec}
-RIGID = set()
+RIGID = {"Scute", "Brow"}
 # LOD1: each leg one bone, the tail two bones, the lure on the head: 10 bones.
 LOD_DROP = {"Lure": "Head", "Tail_3": "Tail_2", **{f"Leg_{s}{i}_Lower": f"Leg_{s}{i}_Upper" for s, _ in SIDES for i in (1, 2)}}
 LOD_AIMS = {"Tail_2": ("Tail_2", "Tail_3"),
@@ -284,7 +365,7 @@ def main():
                     rig_scale=1.0, power=("Emerge", 20))
     K3.run_creature(NAME, builder, bones(), CLIPS, tris=3950, families=("membrane", "chitin", "crystal"), game_scale=GAME_SCALE,
                     rigid=RIGID, blend=0, lod_drop=LOD_DROP, lod_aims=LOD_AIMS,
-                    extra=H.weathering(K, scratches=0.15, dust=0.0, pits=0.4, seed=41), specular=0.5,
+                    extra=H.weathering(K, scratches=0.3, dust=0.1, pits=0.6, seed=41), specular=0.35,
                     report={"walk_distance_per_loop": round(STRIDE / STANCE, 3), "swim_distance_per_loop": SWIM_DISTANCE,
                             "pivot": "ground (dry) or water surface (swimming: Swim keeps the body 0.03 lower)",
                             "emerge": {"surface_frame": EMERGE_SURFACE_FRAME, "start_depth": EMERGE_DEPTH, "start_back": 0.15}},

@@ -1,12 +1,12 @@
 """Round 46: the Skyray's close-up detail (Remco: "do the same for the small enemies").
 
 Two extra skinned parts (detail_kit / detail_kit_small), exported in Skyray.fbx and Skyray_LOD1.fbx:
-- Skyray_Face (Skyray_Face_Mat): the six cyan eye pits on the ram become wet cyan eyes with slit pupils, sunk under
-  chitin brow folds (the round-5 bead eyes' glow goes from the body maps), and a row of hooked teeth down the inner
-  edge of both pincers (they close with the pincers).
+- Skyray_Face (Skyray_Face_Mat): six wet cyan eyes with slit pupils on top of the head, sunk under chitin brow
+  folds, and (round 49A, Remco: "the teeth are not logical") the teeth where a ray's mouth is: a row hanging from
+  the upper lip across the front edge of the head and a row standing on the lower lip (Jaw bone), so the mouth
+  between the cephalic lobes shows its teeth from the play camera and opens with the dive.
 - Skyray_Claws (Skyray_Claws_Mat): a grappling hook of two keratin talons under each fin tip (the fin's own claw
-  is their thumb), and barbs on the three stinger prongs.
-No bone, clip or event changes; the actions are exported again as they are.
+  is their thumb), and (round 49A) serrations along both edges of the tail's spade.
 
 Run after build_skyray.py (which calls run() itself at the end of a rebuild):
   blender -b --factory-startup --python Tools/Blender/skyray_detail.py -- [--before | --blockout | --qa] [--norender]
@@ -40,12 +40,11 @@ TALON = D.Keratin(root=(0.03, 0.035, 0.09), body=(0.12, 0.15, 0.32), tip=(0.85, 
                   stain=(0.03, 0.04, 0.1))
 
 EYES = ((0.042, 0.37), (0.064, 0.315), (0.086, 0.26))
-TAIL_END = G(0, -0.034, -1.3)
-HEAD_FOCUS = G(0, 0.02, 0.38)
-
-
-def pincer_points(sx):
-    return [G(0.08 * sx, 0.0, 0.37), G(0.118 * sx, 0.004, 0.47), G(0.098 * sx, 0.008, 0.56), G(0.038 * sx, 0.002, 0.61)]
+TAIL_END = G(0, -0.036, -1.5)
+TAIL_PREV = G(0, -0.024, -1.28)
+HEAD_FOCUS = G(0, 0.0, 0.45)
+FWD = G(0, 0, 1)
+UP = Vector((0, 0, 1))
 
 
 # ------------------------------------------------------------------------------------------------------------
@@ -65,14 +64,28 @@ def face_parts(c):
             S.organic_eye(b, S.flip(p - n * r * 0.15, sx), S.flip(n, sx), r, eyes[i], lid,
                           up=S.flip(Vector((0.4, 1.0, 0.0)), sx), bone="Head", lod=i == 0, squash=(1.0, 0.8, 0.6),
                           brow=(1.35, 0.62, 0.6), lower=(1.2, 0.4, 0.45), segments=(18, 9), lid_segments=(12, 6))
-    # Pincer teeth: hooked, raked towards the pincer's point, on the edge that faces the other pincer.
-    tooth = D.tooth_style(TOOTH, glow=0.4, seed=5)
-    for side, sx in SIDES:
-        crv = D.curve_points(pincer_points(sx), 30)
-        placed = D.edge_saw(c, b, crv, (0.3, 0.45, 0.6, 0.74), Vector((-sx, 0, 0)), 0.006, 0.03, tooth,
-                            f"Pincer_{side}", rake=0.45, max_off=0.05, lod=False, start=0.05, name="Tooth")
-        C.log("pincer teeth", side, placed)
+    mouth_teeth(c, b, TOOTH, 1.0)
     return b
+
+
+def mouth_teeth(c, b, pal, s, upper=(0.0, 0.022, 0.044, 0.064), lower=(0.011, 0.033, 0.054), length=1.0, upper_ray=(0.004, 0.45),
+                lower_ray=(-0.05, 0.3)):
+    """Round 49A: teeth in the mouth slit across the front edge (`s` the model's size against the Skyray). The
+    upper row hangs from the head's front edge (Head bone), the lower row stands on the lip plate (Jaw bone); both
+    point a little back into the maw, the middle teeth longest."""
+    tooth = D.tooth_style(pal, glow=0.4, seed=5)
+    # Rays from inside the head (forward and a little down: the lip's under edge) and inside the lip plate (forward
+    # and a little up: its top edge), so the rows stand on the lips, not in the throat behind them.
+    for xs, z, ray, bone, d in ((upper, upper_ray[0], FWD - UP * upper_ray[1], "Head", Vector((0, 0.2, -1))),
+                                (lower, lower_ray[0], FWD + UP * lower_ray[1], "Jaw", Vector((0, 0.15, 1)))):
+        for i, x in enumerate(xs):
+            for sx in ((1, -1) if x else (1,)):
+                p, n = c.out(G(x * sx * s, z * s, 0.4 * s), ray)
+                base = p - n * 0.004 * s + d.normalized() * -0.004 * s
+                k = 1.0 - 0.35 * (x / 0.07)
+                ln = (0.05 if bone == "Head" else 0.04) * length
+                D.add_tooth(b, base, d.normalized(), 0.0078 * s * k, ln * s * k, tooth, hook=-FWD, hook_amount=0.2,
+                            bone=bone, lod=i < 2, name="Tooth")
 
 
 # ------------------------------------------------------------------------------------------------------------
@@ -97,39 +110,35 @@ def claw_parts(c):
             d = (G(0.35 * sx, -1.0, 0.25 if k == 0 else -0.2)).normalized()
             D.add_claw(b, base, d, 0.011, ln, talon[k], hook=G(-0.6 * sx, -0.2, 0.4), hook_amount=0.6, bone=bones,
                        name="Talon", lod=k == 0)
-    # Barbs on the stinger prongs: two backward hooks on the outer prongs, one under the centre prong.
-    end = TAIL_END
-    for sx in (1, -1):
-        for t, ln in ((0.45, 0.03), (0.75, 0.025)):
-            p = end + G(0.075 * sx, 0.004, -0.11) * t
-            D.add_tooth(b, p + G(0.006 * sx, 0, 0), G(1.0 * sx, 0.1, 0.55).normalized(), 0.006, ln, barb,
-                        hook=G(0, 0, 1), hook_amount=0.35, bone="Tail_5", lod=False, name="Barb")
-    for t, ln in ((0.4, 0.03), (0.7, 0.024)):
-        p = end + G(0, 0.0, -0.15) * t
-        D.add_tooth(b, p + G(0, -0.006, 0), G(0, -1.0, 0.55).normalized(), 0.006, ln, barb, hook=G(0, 0, 1),
-                    hook_amount=0.35, bone="Tail_5", lod=False, name="Barb")
+    spade_barbs(b, barb, TAIL_END, TAIL_PREV, 1.0)
     return b
+
+
+def spade_barbs(b, barb, end, prev, s):
+    """Round 49A: saw teeth along both edges of the tail spade (build_skyray.tail_parts), raked back."""
+    d = (end - prev).normalized()
+    side = Vector((1, 0, 0))
+    for sx in (1, -1):
+        for t, w in ((0.1, 0.066), (0.15, 0.052), (0.195, 0.032)):
+            p = end + d * t * s + side * sx * (w - 0.004) * s
+            D.add_tooth(b, p, (side * sx * 0.8 - d * 0.6).normalized(), 0.006 * s, 0.03 * s, barb, hook=-d,
+                        hook_amount=0.35, bone="Tail_5", lod=False, name="Barb")
 
 
 # ------------------------------------------------------------------------------------------------------------
 # Run
 # ------------------------------------------------------------------------------------------------------------
 
-OLD_EYES = [(G(x * sx, 0.044 - 0.004 * i, f), 0.024) for i, (x, f) in enumerate(EYES) for sx in (1, -1)]
-
-
 def build(c, blockout_only=False):
     face, claws = face_parts(c), claw_parts(c)
     if blockout_only:
         return {"Face": face, "Claws": claws}
-    dimmed = S.dim_body(c, OLD_EYES, emission_keep=0.05, darken=(0.03, 0.035, 0.09), darken_amount=0.5)
     lod0, lod1 = S.budget(c)
     specs = {"Face": (face, int(lod0 * 0.6), int(lod1 * 0.5), {"Eye": 2.0, "Tooth": 1.3}),
              "Claws": (claws, int(lod0 * 0.37), int(lod1 * 0.48), {"Talon": 1.2, "Barb": 1.2})}
-    return S.build_all(c, specs, VOXEL, "round 46: six wet cyan eyes under brow folds, pincer teeth, fin-tip "
-                                        "talons, stinger barbs; bones, clips and events unchanged",
-                       body_maps=f"round-5 bead eyes' glow removed from Skyray_Albedo/Emission ({dimmed} texels "
-                                 f"this run)")
+    return S.build_all(c, specs, VOXEL, "round 49A: six wet cyan eyes under brow folds, mouth teeth on both lips, "
+                                        "fin-tip talons, spade barbs; new Jaw bone (lower lip)",
+                       body_maps="round 49A body rebuilt and re-baked (no bead eyes on the body any more)")
 
 
 def shots(c):

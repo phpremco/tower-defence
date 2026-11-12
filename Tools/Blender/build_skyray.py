@@ -1,10 +1,12 @@
 """Skyray: the flying ray that lashes gates with its tail (round 5, see ArtSource/DESIGN_NOTES.md).
 
-A flat body between two broad fins. The head is a pointed chitin ram with two hooked pincers curling in ahead of it
-and six cyan eye pits on top; the fins are membranes over a fan of raised rays with a glowing leading edge, pale
-chevrons across the dark back, a serrated trailing edge and a hooked claw at each tip; a ridge of backward hooks and
-two pairs of glowing jet vents run down the back; the pale belly carries chevrons of glowing gill slits; the long
-segmented tail is barbed and ends in a glowing three-pronged stinger.
+A flat body between two broad fins: membranes over a fan of raised rays with a glowing leading edge, pale chevrons
+across the dark back, a serrated trailing edge and a hooked claw at each tip; a ridge of backward hooks and two pairs
+of glowing jet vents run down the back; the pale belly carries chevrons of glowing gill slits.
+Round 49A (Remco: "the teeth are not logical, and it is a stingray-like but I see no tail"): the head is a broad
+manta head with two rolled cephalic lobes (on the old Pincer bones, no teeth) either side of a wide mouth across
+its front edge; the lower lip hinges on a new Jaw bone and the teeth sit in the mouth (Face part). The tail is a
+long, thick whip with a lit dorsal line, rows of backward hooks and a big barbed spade at the end.
 
 The fin wave is in the bones: each fin has a leading and a trailing chain of three bones along the span, keyed
 as a wave that travels from root to tip and from the leading to the trailing edge (Unity's shader wave can be
@@ -44,6 +46,10 @@ PAL = H.Palette(top=(0.27, 0.38, 0.72), side=(0.1, 0.13, 0.32), belly=(0.05, 0.0
                 dark=(0.06, 0.07, 0.19), glow=(0.4, 0.95, 1.0), eye=(0.3, 0.9, 1.0), membrane=(0.2, 0.12, 0.32),
                 bone=(0.66, 0.8, 0.96))
 UNDER = (0.5, 0.56, 0.68)
+# Round 49A: the throat behind the teeth is dark violet flesh with a dim warm glow, so the mouth reads as a mouth
+# (a cyan glow there read as a lamp).
+MAW = H.Palette(top=(0.1, 0.03, 0.08), side=(0.05, 0.015, 0.04), belly=(0.03, 0.01, 0.02), seam=(0.02, 0.005, 0.01),
+                dark=(0.03, 0.01, 0.02), glow=(0.42, 0.08, 0.3), eye=(0.4, 0.9, 1.0))
 FLUSH = (0.3, 0.14, 0.4)
 
 SIDES = (("L", -1), ("R", 1))
@@ -102,13 +108,21 @@ def fin_chain(side, sx, chain):
     return names, pts
 
 
-TAIL = [G(0, 0.0, -0.3), G(0, 0.005, -0.5), G(0, 0.0, -0.71), G(0, -0.012, -0.92), G(0, -0.024, -1.12),
-        G(0, -0.034, -1.3)]
+# Round 49A (Remco: "it is a stingray but I see no tail"): a longer, thicker, lighter whip with a lit dorsal line.
+TAIL = [G(0, 0.0, -0.3), G(0, 0.008, -0.54), G(0, 0.004, -0.79), G(0, -0.01, -1.04), G(0, -0.024, -1.28),
+        G(0, -0.036, -1.5)]
 TAIL_BONES = [f"Tail_{i + 1}" for i in range(5)]
 
 
 def pincer_points(sx):
-    return [G(0.08 * sx, 0.0, 0.37), G(0.118 * sx, 0.004, 0.47), G(0.098 * sx, 0.008, 0.56), G(0.038 * sx, 0.002, 0.61)]
+    """Round 49A: the Pincer bones carry the cephalic lobes, two rolled flaps either side of the mouth that curl
+    forward and down (a manta's head fins), no teeth on them."""
+    return [G(0.082 * sx, 0.0, 0.42), G(0.112 * sx, -0.004, 0.52), G(0.1 * sx, -0.022, 0.6), G(0.072 * sx, -0.04, 0.635)]
+
+
+# The mouth: a wide slit across the front edge of the head; the lower lip plate hinges on its own bone (Jaw).
+MOUTH_FWD = 0.535
+JAW = (G(0, -0.034, 0.36), G(0, -0.046, 0.55))
 
 
 def body_top(fwd):
@@ -126,16 +140,19 @@ def build_parts():
                 style=H.gill_belly(PAL, k, UNDER, slits=4, start=-0.32, spacing=0.13, width=0.03, side=(0.2, 0.8)))
 
     def head_deform(v):
+        # Round 49A: a broad, blunt front edge (the mouth runs across it), not a pointed ram.
         front = max(0.0, -v.y)
-        return Vector((v.x * (1 - 0.6 * front), v.y * (1 + 0.15 * front), v.z * (1 - 0.45 * front)))
-    b.ellipsoid("Head", G(0, 0.012, 0.33), (0.125, 0.21, 0.048), bone="Head", segments=(40, 20), deform=head_deform,
+        return Vector((v.x * (1 - 0.3 * front), v.y * (1 - 0.08 * front), v.z * (1 - 0.35 * front)))
+    b.ellipsoid("Head", G(0, 0.012, 0.33), (0.13, 0.205, 0.048), bone="Head", segments=(40, 20), deform=head_deform,
                 style=H.crest(PAL, k, ribs=7, height=0.004))
+    # The maw behind the lips (a dim cyan throat) and the lower lip plate on the Jaw bone.
+    b.ellipsoid("Maw", G(0, -0.026, MOUTH_FWD - 0.07), (0.075, 0.04, 0.02), bone="Head", style=H.inner_glow(MAW, 0.5),
+                segments=(24, 12))
+    b.ellipsoid("LowerLip", G(0, -0.05, MOUTH_FWD - 0.09), (0.088, 0.085, 0.016), bone="Jaw", segments=(32, 16),
+                style=H.band_plates(PAL, k, 3, height=0.002))
     for side, sx in SIDES:
-        for i, (x, f) in enumerate(((0.042, 0.37), (0.064, 0.315), (0.086, 0.26))):
-            b.ellipsoid("Eye", G(x * sx, 0.044 - 0.004 * i, f), (0.017, 0.017, 0.012), bone="Head",
-                        style=H.eye(PAL, k, 1.0), segments=(12, 6))
-        b.tube("Pincer", pincer_points(sx), [0.03, 0.026, 0.016, 0.002], sides=10, chain=[f"Pincer_{side}"],
-               style=H.blade(PAL, k, glow=0.9, teeth=3), flatten=0.45)
+        b.tube("Pincer", pincer_points(sx), [0.028, 0.03, 0.022, 0.01], sides=10, chain=[f"Pincer_{side}"],
+               style=H.tube(PAL, k, PAL.top, PAL.side, tip_glow=0.9, glow_from=0.7, rough=0.6), flatten=0.4)
         # Glowing jet vents between the dorsal hooks.
         for x, f in ((0.07, 0.08), (0.08, -0.08)):
             b.ellipsoid("Vent", G(x * sx, body_top(f) - 0.006, f), (0.012, 0.04, 0.01), bone="Body",
@@ -160,21 +177,43 @@ def build_parts():
         b.tube("Hook", [base, base + G(0, length * 0.7, -length * 0.2), base + G(0, length * 0.9, -length * 0.85)],
                [0.018 + length * 0.12, 0.01, 0.001], sides=10, chain=["Body"], style=H.hook(PAL, k, glow=0.8, glow_from=0.78))
 
-    b.tube("Tail", TAIL, [0.05, 0.032, 0.024, 0.018, 0.013, 0.01], sides=12, chain=TAIL_BONES,
-           style=H.tube(PAL, k, PAL.top * 0.85, PAL.dark, rings=(0.12, 0.25, 0.38, 0.51, 0.64, 0.77, 0.9), rough=0.6))
-    for i in range(1, 5):
-        scale = 1 - 0.15 * (i - 1)
-        for sx in (-1, 1):
-            base = TAIL[i] + G(0.012 * sx, 0.008, 0)
-            b.tube("Barb", [base, base + G(0.03 * sx, 0.02, -0.02) * scale, base + G(0.052 * sx, 0.03, -0.06) * scale],
-                   [0.012 * scale, 0.007 * scale, 0.001], sides=8, chain=[TAIL_BONES[i]], style=H.hook(PAL, k, glow=0.5))
-    end = TAIL[-1]
-    b.tube("Prong", [end, end + G(0, 0.004, -0.07), end + G(0, 0.0, -0.15)], [0.022, 0.015, 0.001], sides=10,
-           chain=["Tail_5"], style=H.blade(PAL, k, glow=1.0), flatten=0.4)
-    for sx in (-1, 1):
-        b.tube("Prong", [end, end + G(0.042 * sx, 0.0, -0.04), end + G(0.075 * sx, 0.004, -0.11)], [0.018, 0.012, 0.001],
-               sides=10, chain=["Tail_5"], style=H.blade(PAL, k, glow=1.0), flatten=0.4)
+    tail_parts(b, k, TAIL, TAIL_BONES, G)
     return b
+
+
+def tail_parts(b, k, tail, bones, P, s=1.0, pal=None):
+    """Round 49A: the whip tail (shared with the ray boss, `P` its point function, `s` its size): a thick tapering
+    whip in the back's blue with a lit dorsal line, rows of backward hooks, and a big barbed spade at the end (a flat
+    glowing arrowhead with two harpoon hooks), so the tail and its weapon read from the play camera."""
+    pal = pal or PAL
+    b.tube("Tail", tail, [0.068 * s, 0.05 * s, 0.04 * s, 0.033 * s, 0.027 * s, 0.022 * s], sides=14, chain=bones,
+           style=H.tube(pal, k, pal.top * 1.05, pal.side * 1.3, rings=(0.14, 0.28, 0.42, 0.56, 0.7, 0.84), ring_dark=0.45,
+                        rough=0.6))
+    curve = C.catmull_rom([Vector(p) for p in tail], 6)
+    n = len(curve)
+    line = []
+    for i in range(14):
+        t = 0.04 + 0.92 * i / 13
+        c = curve[int(t * (n - 1))]
+        line.append(c + Vector((0, 0, (0.068 - 0.046 * t) * s * 0.82)))
+    b.tube("TailLine", line, [0.012 * s, 0.009 * s, 0.006 * s], sides=8, chain=bones,
+           style=H.tube(pal, k, pal.glow * 0.6, pal.glow * 0.6, tip_glow=1.0, glow_from=-3.0, rough=0.4))
+    for i in range(1, 5):
+        scale = 1.5 - 0.15 * (i - 1)
+        for sx in (-1, 1):
+            base = tail[i] + P(0.016 * sx, 0.012, 0)
+            b.tube("Barb", [base, base + P(0.035 * sx, 0.024, -0.02) * scale, base + P(0.06 * sx, 0.034, -0.07) * scale],
+                   [0.014 * scale * s, 0.008 * scale * s, 0.001], sides=8, chain=[bones[i]], style=H.hook(pal, k, glow=0.8))
+    end = tail[-1]
+    d = (tail[-1] - tail[-2]).normalized()
+    side = Vector((1, 0, 0))
+    # The spade: wide and flat (flatten squashes it top to bottom), widest a third of the way, a needle point.
+    b.tube("Spade", [end - d * 0.02 * s, end + d * 0.06 * s, end + d * 0.15 * s, end + d * 0.24 * s],
+           [0.03 * s, 0.07 * s, 0.045 * s, 0.002], sides=12, chain=[bones[-1]], style=H.blade(pal, k, glow=1.0), flatten=0.22)
+    for sx in (-1, 1):
+        root = end + d * 0.06 * s + side * sx * 0.05 * s
+        b.tube("Harpoon", [root, root + (side * sx * 0.045 - d * 0.03) * s, root + (side * sx * 0.06 - d * 0.1) * s],
+               [0.016 * s, 0.01 * s, 0.001], sides=8, chain=[bones[-1]], style=H.hook(pal, k, glow=1.0, glow_from=0.6))
 
 
 def bones():
@@ -183,6 +222,8 @@ def bones():
         ("Root", G(0, -0.5, 0), G(0, -0.5, 0.2), None, True),
         ("Body", G(0, 0, -0.28), G(0, 0, 0.16), "Root", True),
         ("Head", G(0, 0, 0.16), G(0, 0.01, 0.5), "Body", True),
+        # Round 49A: new bone, the lower lip of the mouth.
+        ("Jaw", JAW[0], JAW[1], "Head", True),
     ]
     for side, sx in SIDES:
         pts = pincer_points(sx)
@@ -205,13 +246,17 @@ def bones():
 # ------------------------------------------------------------------------------------------------------------
 
 def specs_for(loc=None, pitch=0.0, roll=0.0, yaw=0.0, head=0.0, pincer=0.0, fins=None, sweep=0.0, tail_pitch=None,
-              tail_yaw=None):
+              tail_yaw=None, mouth=None):
     """fins: {(side, chain): [three angles]} in radians, up positive (each relative to its parent bone);
-    sweep: fins swept back (radians); tail_pitch/tail_yaw: five angles each, up / to the right positive."""
+    sweep: fins swept back (radians); tail_pitch/tail_yaw: five angles each, up / to the right positive;
+    mouth: how far the lower lip drops (round 49A; by default it follows the lobes' `pincer` flare)."""
+    if mouth is None:
+        mouth = MOUTH_REST + 0.8 * pincer
     specs = {
         "Root": {"rot": []},
         "Body": {"rot": [(Z, yaw), (Yv, roll), (X, pitch)], "loc": loc if loc is not None else Vector()},
         "Head": {"rot": [(X, head)]},
+        "Jaw": {"rot": [(X, mouth)]},
     }
     for side, sx in SIDES:
         specs[f"Pincer_{side}"] = {"rot": [(Z, sx * pincer)]}
@@ -228,6 +273,10 @@ def specs_for(loc=None, pitch=0.0, roll=0.0, yaw=0.0, head=0.0, pincer=0.0, fins
     for i, n in enumerate(TAIL_BONES):
         specs[n] = {"rot": [(Z, -ty[i]), (X, tp[i])]}
     return specs
+
+
+# The mouth stands a little open at rest, so the teeth show from the play camera.
+MOUTH_REST = math.radians(5)
 
 
 def wave_fins(w, amp_a, amp_b, span_lag=0.55, chord_lag=0.9, offset=(0.0, 0.0, 0.0), harmonic=1):
@@ -322,7 +371,7 @@ def dive_spec(poser):
 CLIPS = {"Fly": fly_spec, "Idle": idle_spec, "Hit": hit_spec, "Death": death_spec, "Dive": dive_spec}
 # LOD1: the trailing chains fold into the leading ones (the fins still wave root to tip, without the chord lag),
 # pincers into the head, the tail into three bones. 12 bones.
-LOD_DROP = {"Pincer_L": "Head", "Pincer_R": "Head", "Tail_2": "Tail_1", "Tail_4": "Tail_3",
+LOD_DROP = {"Pincer_L": "Head", "Pincer_R": "Head", "Jaw": "Head", "Tail_2": "Tail_1", "Tail_4": "Tail_3",
             **{f"Fin_{s}_B{i}": f"Fin_{s}_A{i}" for s, _ in SIDES for i in (1, 2, 3)}}
 LOD_AIMS = {"Tail_1": ("Tail_1", "Tail_2"), "Tail_3": ("Tail_3", "Tail_4")}
 
@@ -455,7 +504,10 @@ def main():
     C.save_blend(NAME)
     if not C.cli_args().get("norender"):
         previews(arm, asset.low, actions, lod, out, asset)
-    # Round 46: the close-up detail (wet eyes under brow folds, pincer teeth, fin-tip talons, stinger barbs) as extra parts, exported again with the body.
+    # Round 46: the close-up detail (wet eyes under brow folds, mouth teeth, fin-tip talons, spade barbs) as extra
+    # parts, exported again with the body. `--nodetail` (round 49A) stops after the body.
+    if C.cli_args().get("nodetail"):
+        return
     import skyray_detail
     skyray_detail.run(norender=bool(C.cli_args().get("norender")))
 

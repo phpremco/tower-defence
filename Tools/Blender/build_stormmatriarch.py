@@ -4,7 +4,10 @@ The Skyray as a brood mother of the air: broad sickle fins with a glowing leadin
 a smaller aft fin pair behind them, a crowned ram prow (three backward horns, big barbed pincers, six eye pits) and
 two long charge horns sweeping back from it with glowing node rings. On the back, two armoured hatch plates on
 their own bones cover a glowing brood chamber: in the Release clip they open like beetle elytra and snap shut, and
-the small flyers come out of the back. A long barbed tail ends in a trident with charge nodes.
+the small flyers come out of the back. Round 49A (Remco on the rays: the teeth are not logical, no tail to see): a broad manta head with rolled cephalic
+lobes (Pincer bones, no teeth) beside a wide mouth across the front edge (lower lip on a new Jaw bone, teeth in the
+Face part), and the Skyray's new whip tail at her size (build_skyray.tail_parts): thick, a lit dorsal line, hooks,
+a big barbed spade with two charge nodes at its root (the tail laser is Unity VFX from Tail_5).
 
 The palette is one parameter (PALETTES at the top): `--palette cool` (default, the Skyray's colours) or
 `--palette warm` (Remco's open question; a warm variant bakes into the preview folder, never into Exports).
@@ -25,6 +28,7 @@ from mathutils import Vector  # noqa: E402
 
 import boss_kit as B  # noqa: E402
 import chitin as H  # noqa: E402
+import build_skyray as SR  # noqa: E402
 import common as C  # noqa: E402
 from common import G  # noqa: E402
 
@@ -151,13 +155,21 @@ def aft_uv(points):
     return u, v
 
 
-TAIL = [P(0, 0.0, -0.34), P(0, 0.006, -0.6), P(0, 0.0, -0.86), P(0, -0.014, -1.12), P(0, -0.028, -1.36),
-        P(0, -0.04, -1.56)]
+# Round 49A (Remco on the rays: "I see no tail"): the Skyray's new whip and spade, longer, at the boss's size.
+TAIL = [P(0, 0.0, -0.34), P(0, 0.008, -0.6), P(0, 0.004, -0.87), P(0, -0.01, -1.14), P(0, -0.024, -1.4),
+        P(0, -0.036, -1.64)]
 TAIL_BONES = [f"Tail_{i + 1}" for i in range(5)]
 
 
 def pincer_points(sx):
-    return [P(0.085 * sx, 0.0, 0.38), P(0.13 * sx, 0.005, 0.49), P(0.108 * sx, 0.01, 0.6), P(0.04 * sx, 0.002, 0.66)]
+    """Round 49A: the Pincer bones carry the cephalic lobes (rolled head fins either side of the mouth), no teeth."""
+    return [P(0.086 * sx, 0.0, 0.44), P(0.12 * sx, -0.004, 0.55), P(0.106 * sx, -0.024, 0.635), P(0.074 * sx, -0.044, 0.67)]
+
+
+# The mouth across the blunt front edge; the lower lip plate hinges on its own bone (Jaw, new in round 49A).
+MOUTH_FWD = 0.57
+JAW = (P(0, -0.034, 0.38), P(0, -0.046, 0.585))
+MOUTH_REST = math.radians(5)
 
 
 def horn_points(sx):
@@ -198,20 +210,19 @@ def build_parts():
                 style=H.membrane_sac(BROOD, k, bands=2, plate_line=1.5, cells=34, cell_size=0.16, glow=1.0, seed=73, plate_glow=0.0))
 
     def head_deform(v):
+        # Round 49A: a broad, blunt front edge with the mouth across it, not a pointed ram.
         front = max(0.0, -v.y)
-        return Vector((v.x * (1 - 0.6 * front), v.y * (1 + 0.15 * front), v.z * (1 - 0.45 * front)))
-    b.ellipsoid("Head", P(0, 0.014, 0.35), R(0.13, 0.22, 0.052), bone="Head", segments=(48, 24), deform=head_deform,
+        return Vector((v.x * (1 - 0.3 * front), v.y * (1 - 0.08 * front), v.z * (1 - 0.35 * front)))
+    b.ellipsoid("Head", P(0, 0.014, 0.35), R(0.135, 0.22, 0.052), bone="Head", segments=(48, 24), deform=head_deform,
                 style=H.crest(PAL, k, ribs=9, height=0.004))
+    b.ellipsoid("Maw", P(0, -0.026, MOUTH_FWD - 0.072), R(0.08, 0.042, 0.021), bone="Head", style=H.inner_glow(SR.MAW, 0.5),
+                segments=(28, 14))
+    b.ellipsoid("LowerLip", P(0, -0.05, MOUTH_FWD - 0.095), R(0.093, 0.09, 0.017), bone="Jaw", segments=(36, 18),
+                style=H.band_plates(PAL, k, 3, height=0.002))
     for side, sx in SIDES:
-        for i, (x, f) in enumerate(((0.044, 0.39), (0.067, 0.335), (0.09, 0.28))):
-            b.ellipsoid("Eye", P(x * sx, 0.047 - 0.004 * i, f), R(0.018, 0.018, 0.013), bone="Head",
-                        style=H.eye(PAL, k, 1.0), segments=(12, 6))
         pp = pincer_points(sx)
-        b.tube("Pincer", pp, [R(0.036), R(0.032), R(0.02), R(0.002)], sides=10, chain=[f"Pincer_{side}"],
-               style=H.blade(PAL, k, glow=1.0, teeth=4), flatten=0.45)
-        barb = pp[1] + P(0.012 * sx, 0.004, 0.0)
-        b.tube("PincerBarb", [barb, barb + P(0.03 * sx, 0.004, -0.02), barb + P(0.05 * sx, 0.0, -0.055)],
-               [R(0.012), R(0.007), R(0.001)], sides=8, chain=[f"Pincer_{side}"], style=H.hook(PAL, k, glow=0.6))
+        b.tube("Pincer", pp, [R(0.03), R(0.032), R(0.024), R(0.011)], sides=10, chain=[f"Pincer_{side}"],
+               style=H.tube(PAL, k, PAL.top, PAL.side, tip_glow=1.0, glow_from=0.65, rough=0.6), flatten=0.4)
         # Charge horns: chitin rods with glowing node rings, the storm organ.
         hp = horn_points(sx)
         b.tube("Horn", hp, [R(0.022), R(0.02), R(0.015), R(0.002)], sides=10, chain=["Head"],
@@ -261,22 +272,12 @@ def build_parts():
         b.tube("Hook", [base, base + P(0, length * 0.7, -length * 0.2), base + P(0, length * 0.9, -length * 0.85)],
                [R(0.02 + length * 0.12), R(0.011), R(0.001)], sides=10, chain=["Body"], style=H.hook(PAL, k, glow=0.8, glow_from=0.78))
 
-    b.tube("Tail", TAIL, [R(0.055), R(0.036), R(0.027), R(0.02), R(0.015), R(0.011)], sides=12, chain=TAIL_BONES,
-           style=H.tube(PAL, k, PAL.top * 0.85, PAL.dark, rings=(0.12, 0.25, 0.38, 0.51, 0.64, 0.77, 0.9), rough=0.6))
-    for i in range(1, 5):
-        scale = 1 - 0.14 * (i - 1)
-        for sx in (-1, 1):
-            base = TAIL[i] + P(0.013 * sx, 0.009, 0)
-            b.tube("Barb", [base, base + P(0.034 * sx, 0.022, -0.02) * scale, base + P(0.058 * sx, 0.034, -0.065) * scale],
-                   [R(0.013 * scale), R(0.008 * scale), R(0.001)], sides=8, chain=[TAIL_BONES[i]], style=H.hook(PAL, k, glow=0.6))
-    end = TAIL[-1]
-    b.tube("Prong", [end, end + P(0, 0.004, -0.08), end + P(0, 0.0, -0.18)], [R(0.025), R(0.017), R(0.001)], sides=10,
-           chain=["Tail_5"], style=H.blade(PAL, k, glow=1.0), flatten=0.4)
+    SR.tail_parts(b, k, TAIL, TAIL_BONES, P, s=M, pal=PAL)
+    # The tail laser's charge nodes at the root of the spade (the beam is Unity VFX from Tail_5).
+    d = (TAIL[-1] - TAIL[-2]).normalized()
     for sx in (-1, 1):
-        b.tube("Prong", [end, end + P(0.05 * sx, 0.0, -0.045), end + P(0.09 * sx, 0.004, -0.13)], [R(0.021), R(0.014), R(0.001)],
-               sides=10, chain=["Tail_5"], style=H.blade(PAL, k, glow=1.0), flatten=0.4)
-        b.ellipsoid("TailNode", end + P(0.03 * sx, 0.004, -0.02), (R(0.02),) * 3, bone="Tail_5", style=H.eye(PAL, k, 1.0),
-                    segments=(14, 7))
+        b.ellipsoid("TailNode", TAIL[-1] - d * R(0.03) + P(0.03 * sx, 0.012, 0), (R(0.02),) * 3, bone="Tail_5",
+                    style=H.eye(PAL, k, 1.0), segments=(14, 7))
     return b
 
 
@@ -285,6 +286,8 @@ def bones():
         ("Root", P(0, -0.5, 0), P(0, -0.5, 0.2), None, True),
         ("Body", P(0, 0, -0.3), P(0, 0, 0.17), "Root", True),
         ("Head", P(0, 0, 0.17), P(0, 0.01, 0.54), "Body", True),
+        # Round 49A: new bone, the lower lip of the mouth.
+        ("Jaw", JAW[0], JAW[1], "Head", True),
     ]
     for side, sx in SIDES:
         pts = pincer_points(sx)
@@ -311,12 +314,16 @@ def bones():
 # ------------------------------------------------------------------------------------------------------------
 
 def specs_for(loc=None, pitch=0.0, roll=0.0, yaw=0.0, head=0.0, pincer=0.0, fins=None, sweep=0.0, tail_pitch=None,
-              tail_yaw=None, aft=0.0, hatch=0.0):
-    """As the Skyray's, plus aft: the aft fins' beat (rad, up positive) and hatch: how far the hatches open (rad)."""
+              tail_yaw=None, aft=0.0, hatch=0.0, mouth=None):
+    """As the Skyray's, plus aft: the aft fins' beat (rad, up positive) and hatch: how far the hatches open (rad);
+    mouth (round 49A): the lower lip's drop, by default following the lobes' `pincer` flare."""
+    if mouth is None:
+        mouth = MOUTH_REST + 0.8 * pincer
     specs = {
         "Root": {"rot": []},
         "Body": {"rot": [(Z, yaw), (Yv, roll), (X, pitch)], "loc": loc if loc is not None else Vector()},
         "Head": {"rot": [(X, head)]},
+        "Jaw": {"rot": [(X, mouth)]},
     }
     for side, sx in SIDES:
         specs[f"Pincer_{side}"] = {"rot": [(Z, sx * pincer)]}
@@ -439,7 +446,7 @@ def release_spec(poser):
 
 CLIPS = {"Fly": fly_spec, "Idle": idle_spec, "Hit": hit_spec, "Death": death_spec, "Release": release_spec}
 # LOD1: trailing fin chains fold into the leading ones, pincers into the head, the tail into three bones. 16 bones.
-LOD_DROP = {"Pincer_L": "Head", "Pincer_R": "Head", "Tail_2": "Tail_1", "Tail_4": "Tail_3",
+LOD_DROP = {"Pincer_L": "Head", "Pincer_R": "Head", "Jaw": "Head", "Tail_2": "Tail_1", "Tail_4": "Tail_3",
             **{f"Fin_{s}_B{i}": f"Fin_{s}_A{i}" for s, _ in SIDES for i in (1, 2, 3)}}
 LOD_AIMS = {"Tail_1": ("Tail_1", "Tail_2"), "Tail_3": ("Tail_3", "Tail_4")}
 TARGET = (0.0, 0.35, 0.0)
@@ -479,6 +486,8 @@ def main():
                           "pivot": "body centre (flight height)", "unity_scale": GAME_SCALE,
                           "lod1": {"fbx": LOD_NAME + ".fbx", "tris": C.tri_count(lod[1]), "bones": len(lod[0].data.bones)}})
     C.save_blend(NAME)
+    if C.cli_args().get("nodetail"):
+        return
     if C.cli_args().get("norender"):
         detail(norender=True)
         return

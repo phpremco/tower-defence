@@ -3013,3 +3013,72 @@ Remco on the in-game crack: square-cut ends, hard right-angle bends, overlaps. A
   ortho camera.
 - **The pebbles are icosahedra** (20 tris). At play zoom they read as grit; up close they are simple.
 - **LOD1 joins** match each other but not LOD0.
+
+# Round 49B: Remco's verdicts on six creatures (2026-11-12)
+
+Verdicts: Cragback "ugly, the spikes are not logical and neither is the single eye; maybe lightly smoking, the lava
+glowing"; Cinder Matriarch "the head may be scarier"; Knitback, Slagstrider, Siftjaw "ugly" (redo from scratch);
+Surgefin "somewhat more finished". Bones, clip names, frame counts, events and part names stay (see Docs/STATUS.md,
+round 49B); the round-46 Face/Claws parts are refitted to every new body.
+
+## Cragback: a walking lava field
+
+- **The shell is cooled crust.** Twenty floes of chilled basalt lie on a dome over the molten core (bones
+  Plate_L/Plate_R); every gap between them glows. The crust language is the lava itself, not armour stuck on rock.
+- **Logical spikes.** The only spikes are columns of basalt standing in the open fissure down the spine (bone
+  Plate_C): columnar jointing is what lava does when it cools along a crack. Flat broken tops, uneven heights, a hot
+  seam at their roots. No crystal needles.
+- **It smokes.** Three squat vent cones on the rear half with ragged crater rims and white-hot lava pools; sockets
+  `Smoke_1..3` sit in the crater mouths for Unity's smoke and ember emitters.
+- **A readable face.** A broad stone skull pushed out in front of the shell, a V-shaped brow ram (two slabs meeting
+  low over the snout) with two stub basalt horns, **two pairs of eyes** in glowing sockets (a big front pair, a
+  small pair behind), slanted narrow almonds under heavy lids; a dropped jaw over a molten throat, basalt fangs.
+- Lava drips under the belly, a molten belly crust, six columnar legs with glowing drum seams.
+
+## Cinder Matriarch: a scarier head
+
+Same body, sac, legs and clips. The skull is broader and heavier; two brow ridges meet low in a V over deep glowing
+sockets (three eyes per side sit in them); a flared slag hood with a fan of ember shards behind the skull; longer
+back-swept great horns and a pair of brow horns hooked forward; a heavy underjaw with a chin spike; rows of
+obsidian cheek spikes; a wider molten maw, longer hooked mandibles (`mandible_points`, shared with the Teeth
+part) and two sabre fangs from the upper lip.
+
+## Knitback: a thorn cage round a glowing heart
+
+A low, long stalker on four tall root legs whose burled, thorned knees stand above its back. Heartwood ribs rise from
+the flanks and curl over the three sap pods (`Pod_1..3`, the regrowth organs) with their tips hooked back out, so from
+above it is a star of thorns round a glowing heart (healing is visible). A long low skull with a narrow split bark
+mask, brow ridges over two pairs of amber eyes, thorn tusks hooked in like pincers, branching antlers swept back over
+a splintered bark collar, bark shingles on the flanks, two thorned root tendrils. Camouflage stays two-value bark
+and moss; the pods, the sap in the rib splits and the eyes are the only light.
+
+## Slagstrider: a walking crucible
+
+A teardrop of hot rock under keel and flank rows of slag plates hangs between four long stilts: each thigh is a flat
+obsidian blade serrated along its top that rises to a glowing knee with a spike, high above the back; each shin
+drops to a pointed heat-proof cone of slag drums. Furnace chimneys with white-hot mouths and a crest of obsidian
+spines run down the spine; a crusted molten sac and a drip spout under the belly (bone `Drip`, the burning trail).
+A long armoured wedge head with a keel, a glowing slit jaw underneath, two blade mandibles hooked in under the snout,
+a crown of back spikes and three small ember eyes per side in pits. From above: a glowing teardrop in a wide X.
+
+## Siftjaw: an armoured arrowhead
+
+A flat shovel scoop with a keel, five red eyes in sockets on its crown, and two great **sickle jaws** (Jaw_L/Jaw_R)
+serrated on the inner edge that hook in front of the scoop like a pincer ring and flare when they open. A broad
+thorax shield with a forward chevron whose rim runs out into back-raked umber side spikes; shingled abdomen plates
+with side and dorsal spines tapering into a fluted, twisted drill. Heavy digging arms with toothed spades, short
+rear legs tucked in, limbs a step darker than the sand plates so the wedge reads from above.
+
+## Surgefin: finishing pass
+
+Same body and rig. Five taller, ragged sails with spines running on past the rim; a ridge of bony scutes; a pale
+ribbed belly; a lateral line of glowing photophores; brow ridges and back-swept cheek spines; coral-lit external gill
+fronds behind the jaw (a crown from above); a hooded lure bulb; a split double tail fin; rougher, less glossy skin.
+
+## Honest weak points
+
+- The Cragback's floes are chiselled ellipsoids: up close a few read as stacked pebbles rather than one cracked
+  crust. A real crust would need a shell cut into Voronoi plates.
+- Knitback's ribs read as bars from the side view; from the play camera they read as intended.
+- Siftjaw stays a low, crab-like body plan (it must burrow); the sickle jaws and the arrowhead carry its identity.
+- The corrupted skins of the five species were re-baked on the new UVs (texture-only, as before).

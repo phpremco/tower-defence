@@ -1,7 +1,7 @@
 {
   "asset": "Prowler",
-  "game_tris": 3895,
-  "source_tris": 415016,
+  "game_tris": 3904,
+  "source_tris": 422472,
   "bones": 22,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -12,11 +12,11 @@
     "Mask"
   ],
   "uv": {
-    "islands": 86,
-    "folded_fallback_faces": 207,
-    "mirrored_faces": 1893,
-    "uv_coverage": 0.563,
-    "world_per_uv": 1.135582979278021
+    "islands": 118,
+    "folded_fallback_faces": 12,
+    "mirrored_faces": 1931,
+    "uv_coverage": 0.564,
+    "world_per_uv": 1.1331233045366205
   },
   "detail": {
     "chitin": {
@@ -38,7 +38,7 @@
     "Pounce": 26,
     "Strike": 24
   },
-  "run_distance_per_loop": 1.19,
+  "run_distance_per_loop": 1.429,
   "lod1": {
     "fbx": "Prowler_LOD1.fbx",
     "tris": 1700,
@@ -69,14 +69,14 @@
       "feet_planted": true,
       "mesh": {
         "rest": {
-          "tip_forward": 0.823,
-          "top": 0.643,
-          "bottom": -0.012
+          "tip_forward": 0.757,
+          "top": 0.886,
+          "bottom": -0.002
         },
         "impact": {
-          "tip_forward": 0.874,
-          "top": 0.615,
-          "bottom": -0.012
+          "tip_forward": 0.876,
+          "top": 0.758,
+          "bottom": -0.002
         }
       },
       "new_clip": true,
@@ -90,45 +90,45 @@
         "object": "Prowler_Face",
         "material": "Prowler_Face_Mat",
         "maps": "Prowler_Face_*.png (1024, Low 512)",
-        "tris": 312,
+        "tris": 350,
         "lod1_object": "Prowler_Face_LOD1",
-        "lod1_tris": 88,
-        "source_tris": 25456,
+        "lod1_tris": 86,
+        "source_tris": 18924,
         "uv": {
-          "islands": 14,
-          "closed_islands_cut": 0,
-          "folded_fallback_faces": 29,
-          "mirrored_faces": 156,
-          "uv_coverage": 0.686,
-          "world_per_uv": 0.14803201293179144
+          "islands": 23,
+          "closed_islands_cut": 4,
+          "folded_fallback_faces": 6,
+          "mirrored_faces": 175,
+          "uv_coverage": 0.692,
+          "world_per_uv": 0.12907354012620662
         },
-        "symmetry_error": 0.001369
+        "symmetry_error": 0.004861
       },
       "Claws": {
         "object": "Prowler_Claws",
         "material": "Prowler_Claws_Mat",
         "maps": "Prowler_Claws_*.png (1024, Low 512)",
-        "tris": 204,
+        "tris": 176,
         "lod1_object": "Prowler_Claws_LOD1",
         "lod1_tris": 76,
-        "source_tris": 18896,
+        "source_tris": 16352,
         "uv": {
-          "islands": 4,
+          "islands": 8,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 102,
-          "uv_coverage": 0.641,
-          "world_per_uv": 0.133606956566604
+          "mirrored_faces": 88,
+          "uv_coverage": 0.429,
+          "world_per_uv": 0.14658069573991564
         },
         "symmetry_error": 0.0
       }
     },
-    "body_tris": 3895,
-    "extra_tris": 516,
-    "extra_share": 0.132,
+    "body_tris": 3904,
+    "extra_tris": 526,
+    "extra_share": 0.135,
     "body_lod1_tris": 1700,
-    "extra_lod1_tris": 164,
-    "extra_lod1_share": 0.096,
+    "extra_lod1_tris": 162,
+    "extra_lod1_share": 0.095,
     "clips": [
       "Death",
       "Hit",
@@ -139,6 +139,6 @@
     ],
     "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Prowler_<Part> (+ _LOD1 in Prowler_LOD1.fbx), maps Prowler_<Part>_*.png (+ Low/)",
     "body_maps": "unchanged",
-    "note": "round 46: wet red eyes under brow folds, shear-jaw fangs, toe talons; bones, clips and events unchanged"
+    "note": "round 49A: four wet red eyes under the brow ridge, upper and split-jaw fangs, paw talons (round 46 parts re-fitted to the alien-wolf body)"
   }
 }

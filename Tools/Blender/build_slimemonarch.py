@@ -164,6 +164,8 @@ def main():
                           "model_scale_from_oozer_units": M,
                           "lod1": {"fbx": LOD_NAME + ".fbx", "tris": C.tri_count(lod[1]), "bones": len(lod[0].data.bones)}})
     C.save_blend(NAME)
+    if C.cli_args().get("nodetail"):
+        return
     if C.cli_args().get("norender"):
         detail(norender=True)
         return

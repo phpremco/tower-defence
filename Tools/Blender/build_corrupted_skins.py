@@ -243,8 +243,15 @@ def main():
             shipped, corrupted = render_pair(name, mesh, arm, textures, out)
             renders.append(corrupted)
             pairs += [shipped, corrupted]
-    with open(os.path.join(C.EXPORTS, "Corrupted_skins_report.json"), "w", encoding="utf-8") as f:
-        json.dump(report, f, indent=2)
+    # Round 49B: merge into the shared report, so an --only run keeps the other species' entries.
+    path = os.path.join(C.EXPORTS, "Corrupted_skins_report.json")
+    merged = {}
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            merged = json.load(f)
+    merged.update(report)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(merged, f, indent=2)
     # Never save: reopen an empty scene so nothing writes back into a species .blend.
     bpy.ops.wm.read_factory_settings(use_empty=True)
     if renders:

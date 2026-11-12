@@ -1,0 +1,37 @@
+{
+  "Death": {
+    "frames": 40,
+    "max_step_deg": 10.6,
+    "bone": "Leg_RF_Upper",
+    "frame": 26,
+    "ratio_to_median": 3.8
+  },
+  "Hit": {
+    "frames": 14,
+    "max_step_deg": 16.6,
+    "bone": "Tail_3",
+    "frame": 1,
+    "ratio_to_median": 11.1
+  },
+  "Howl": {
+    "frames": 54,
+    "max_step_deg": 14.6,
+    "bone": "Leg_LF_Upper",
+    "frame": 48,
+    "ratio_to_median": 29.1
+  },
+  "Idle": {
+    "frames": 72,
+    "max_step_deg": 8.5,
+    "bone": "Jaw_L",
+    "frame": 3,
+    "ratio_to_median": 7.1
+  },
+  "Run": {
+    "frames": 20,
+    "max_step_deg": 32.7,
+    "bone": "Leg_LH_Upper",
+    "frame": 14,
+    "ratio_to_median": 2.0
+  }
+}
