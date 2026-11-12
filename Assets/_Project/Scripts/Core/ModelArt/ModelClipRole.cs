@@ -111,7 +111,11 @@ namespace Game.Core
         /// <summary>The travel cycle of an enraged boss. Loops; its speed follows the ground speed.</summary>
         EnragedMove = 35,
 
-        /// <summary>A boss breaking into its next phase (shells blown off), matched to the phase by its trigger, played once.</summary>
+        /// <summary>
+        /// A boss breaking into its next phase (shells blown off), matched to the phase by its trigger, played once. Only
+        /// the Shattered's export has it, and its fight does not play it: Split and the rejoined look carry the plates off
+        /// (round 53, see the Shattered row of BlenderArtCatalog).
+        /// </summary>
         PhaseBreak = 36,
 
         /// <summary>A creature bursting all its shed parts at once (a full shatter), played once.</summary>

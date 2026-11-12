@@ -284,6 +284,9 @@ so the HUD bar keeps telling the truth. At 33 % the survivors play Rejoin and fl
 nearest the base stands (a flyer leader forms it on the nearest road cell), with what they have at that moment less 30 % per
 dead shard (`ShardSplit.RejoinHealth`); its phase-3 look holds the shells at 0, the crystals at 1.35 and a dead shard's spire
 at 0.35 (`BoneScaleView`). A shard that reached the base is gone without a penalty; if every shard dies the giant dies.
+Round 53: the export's `PhaseBreak1/2` clips (round 16) are not played: Split and the rejoined look carry the plates off, so no
+phase threshold is left for them (documented on the catalog row). Its world bar clears the three shard spires as the
+looking-down camera draws them (`BlenderArtEntry.BarCrestBones`), and stays at that height in every phase.
 
 **The Sealed One as built.** "The map comes to it", done in light (no terrain change, see MODEL_TODO): hidden at the open cell
 nearest the field's middle where its body is clear of towers, the ground rumbles and six violet cracks open for 2.5 s, then
@@ -365,6 +368,8 @@ maps and the dampened overlay; the drill wreck goes on `ColonyRigDefinition.Wrec
   before the rejoin (`FlipbookFx`).
 - Ruin gate (`RuinGateView`): the Shattered's entrance stands the gate facing the camera; closed and breathing, rumble 0.8 s,
   Open (seal shards at 30, light and a point light from 38), the giant appears in the flash and walks out when it is open.
+  Its threshold is kept clear: no nest within `GroundEntranceRules.ThresholdCells` (3) of a ground entrance (validator;
+  the generator drops such nests from the ruins copy, round 53).
 - Seal crystals (`SealCrystalsView`): five round the rift on open ground, rising out of it, dormant lilac, the learned
   weapon's colour x 2 (round 7; was x 2.4), white at the release.
 - Old road sinks (`RecognitionSignature.SinkOldRoad`): a `RoadSink` strip over the old road nearest the rift while the new

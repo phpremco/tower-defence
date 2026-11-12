@@ -8160,3 +8160,203 @@ fraction as a third field (default 0.3 unchanged).
    is not in that level's data; only `BossArena` holds it), so the arch stood over the `SpawnGate_0` mound with a nearby CinderEgg
    under it. Seen at 3x: stepped block edges, a dark seam at the keystone, petal slabs beside the pillars that read as loose
    boulders. Not fixed.
+
+## Round 53 (Unity): the Shattered's bar over its crest, PhaseBreak documented, the ruin gate's threshold (2026-11-12)
+
+Not committed. No generator run; `ArtSource/` and `Tools/Blender/` untouched (the two Blender agents' exports not synced).
+Save `progress.json` **2eca347e** copied to the scratchpad before each of the four Play Mode runs, restored and verified after.
+
+### 1. The bar inside the crest (round 52 open point 1)
+
+- **The diagnosis was a probe bug, not the clips.** In play the crystals stand at 0.25 like in the clips (no phase look runs
+  before the rejoin), and the drawn top is **2.77**, 0.25 under the bar (3.02). `BakeMesh(useScale: true)` returns the
+  renderer's *local* vertices; `position + rotation * v` drops the boss's 0.8 parent scale, so `r49s3_bar_probe.cs` (and
+  round 52) read the top at its unscaled size (3.35..3.47). Proof: `r53_bake_scale.cs` (same pose at root scale 1 and 0.8:
+  bounds 2.771, old formula 3.464). `CreatureBarHeight.BakedTop` now uses the renderer's whole matrix (no height changes:
+  the builder measures at scale 1); `r49s3_bar_probe.cs`, `r49s3_height_scan.cs` fixed the same way.
+- **The real read:** at 3x the shard spires still cross the bar when the giant walks towards or away from the camera
+  (`r53_bar_0/180/walk` before the fix): the camera looks down 44 degrees, so a spire leaning away stands higher in the
+  picture than its height. Side on (90) it was clear.
+- **Fix (data-driven):** `BlenderArtEntry.BarCrestBones` names crown bones; `CreatureBarHeight` then measures those parts
+  as the play camera projects them (height + depth away x tan 44) at four headings, covered share 0.75 as before
+  (`PlayCameraPitchDegrees` = 44, a test keeps every level's camera on it). Shattered row: `Core_Air`, `Core_Road`,
+  `Core_Land`. Height **3.464 -> 4.197** (bar 3.02 -> **3.61** world; written by `r53_remeasure.cs`, no rebuild; the next
+  import writes the same through the builder).
+- **Other phase-scaled bosses** (`r53_held_top.cs`): the Shattered's rejoined look (crystals 1.35, shells 0) changes the
+  top by 0.001; the Frost Warden's rage icicles at full scale give 5.109 under its stored 5.134 (calm 0.2: 4.80). Both bars
+  already are the max over their phase states.
+- **Bar per phase:** kept fixed. The only looks that lower the crown are a dead shard's spire at 0.35 (rejoined top 3.06,
+  bar then ~0.3 m higher than needed) and the Warden's calm icicles; neither reads detached, and a fixed bar never dips
+  into a crest that grows back.
+
+### 2. PhaseBreak1/2
+
+No runtime code plays `ModelClipRole.PhaseBreak`. The README round-28 design supersedes them ("superseded by Split/Rejoin;
+keep them as a heavy damage stagger or drop them"): at 66 % the giant bursts and hides, and it reforms already bare, so no
+phase threshold is left for a plate break. Documented on the catalog row, on `ModelClipRole.PhaseBreak` and in BOSSES.md;
+the clips stay declared (export parity, clip and floating checks). Balance untouched.
+
+### 3. The ruin gate in real play
+
+- The Shattered is in no campaign level's data; it is fought only in `BossArena` on `Arena_Ruins` (Fault Line copy), whose
+  boss wave brings it in through the level's ground entrance (37, 18). There the arch does **not** stand over a route gate
+  or spawn mound (round 52's overlap came from spawning it at Level_C1_01's gate), but the copied level's **nest (37, 16)**
+  stood two cells in front of the threshold: the giant walked out over its mound (`r53_gate_probe.cs` footprint x
+  14.7..20.6, z 6.5..9.7; nest at z 5.5).
+- **Fix:** `GroundEntranceRules` (Levels): no nest within 3 cells of a ground entrance. `LevelValidator` reports one;
+  `ProjectGenerator.CreateArenaLevel` drops such nests from the ruins copy (`ClearRuinThreshold`; the arena's waves use no
+  nests). The gate cell is not moved, so the boss's route and the finale numbers stay. Applied to the existing asset by
+  `r53_clear_ruin_threshold.cs` (nests 3 -> 2; Unity also wrote the default `_balanceTargetScale: [1]`).
+- Seen in play: the arch's threshold is clear (the giant steps out onto open ground); the two glow pools under it are
+  decor. The gate stands close to the base on screen (the generator puts it near 12 % of the snaking main road). The arch model itself is being rebuilt in Blender; its look was not judged.
+
+### Stills (`ArtSource/Previews/QA/r53_*`, Arena_Ruins, plain game light, play camera angle, fixed 1/30 s frames)
+
+`gate_overview` (zoom 1.3), `gate_shut|seal|breakout|opening|open` (2.4), crops `gate_breakout_threshold_x2`,
+`gate_open_threshold_x3`; `bar_walk` and `bar_0|90|180|270` (turned to the camera at 0..270 degrees), crops
+`bar_*_crest_x3`: the bar clears the spires at every heading; side on it stands 0.59 m higher than before (0.85 over the true top).
+(`r53_ruingate_*` are the Blender agent's, not these.) Tools: `r53_headings.sh` (the real entrance via `r19_step_until.cs`),
+`r53_arena.sh`, `r53_crest_probe.cs`, `r53_pose_compare.cs`, `r53_view.cs`, `r53_crop.cs`, `r53_crys_scales.cs`,
+`r53_crest_bones.cs`.
+
+### Tests
+
+- `CreatureArtTests.BossBars_ClearTheBodyInEveryPhaseLook`, `BakedTop_FollowsTheParentScale`,
+  `CrestRows_BarClearsTheCrestAsTheCameraSeesIt`, `EveryLevelCamera_LooksDownAtTheBarMeasurePitch`;
+  `GroundEntranceRulesTests` (3). `CreatureBarHeight.CycleTops` takes held bone scales and crest bones.
+- EditMode suite on w6: **860 tests, 808 passed, 52 skipped, 0 failed** (was 853; +7). A first run failed only
+  `BakedTop_FollowsTheParentScale` on a bounds check (an unposed instance keeps its import bounds), dropped. Recompile: 0 errors, 0 warnings. Consoles of all play runs: 0 errors,
+  0 warnings.
+
+### Open points (round 53)
+
+1. When the Blender agents' Shattered (shell bones) is imported, check the crest bones still carry the spires (the test fails
+   if they change nothing) and that the height stays near 4.2.
+2. The arena's ruin gate stands a few metres (screen) from the base; that is the generator's pick (`RuinRoadShare` 0.12
+   of a snaking road), unchanged here because moving it would move the boss's route and the finale numbers.
+
+## Round 53 (Blender): the RuinGate rebuilt as one arch, the Shattered's plates on their own bones (2026-11-12)
+
+Blender only. Nothing under `Assets/` was touched, Unity was not run and nothing is committed. The Sealed One was not touched.
+Backups of both exports and both .blend files from before this round are in `ArtSource/Exports/_backup_r53/RuinGate|Shattered/`
+(gitignored).
+
+### 1. RuinGate (`Tools/Blender/build_ruingate53.py`, new)
+
+Remco: "this doesn't look right, that gate". The round-29 gate had several faults:
+- It was built from eleven separate voussoir slabs with 7 cm gaps between them. Each slab had its own depth and width, which gave the
+  hard steps and the seam at the keystone that showed light.
+- The faces towards the opening had no light and read black.
+- When opened, the iris petals stood in the opening: each swung 98 degrees back on its rim, and the floor petal lay in the threshold.
+- The two buttress boulders with crystals stood apart from the pillars.
+
+The new gate:
+- **Arch:** one band of stone, swept from foot to foot. It has straight jambs and a pointed head made of two concentric arcs.
+  - Its section is a rounded, chamfered rectangle. The wear and the chipped notches come from noise. The pillars flare and
+    deepen towards their feet.
+  - At the apex the band rises into a pointed crest, with three overcharged crystal horns rooted 0.45 m deep.
+  - The joints are tight zig-zag hairline grooves that stay dark. The light comes only from three long cracks, a few small
+    ones and the worn glyph bands, all in the Shattered's magenta-white.
+- **Faces towards the opening:** paler stone, a glowing slot down the middle (the seat the seal withdraws into) and two rows
+  of glyph dashes.
+- **Side elements:** two stone roots per pillar grow out of the pillar's outer face and run down into the plinth. Crystal
+  clusters break out of a pillar on each side and out of one shoulder, rooted 0.3 m inside the stone.
+- **Plinth:** a worn, flat-topped dais (8.7 x 3.5 m, top 0.2 m). Its rounded rim meets the ground, and the seal sigil is
+  carved into its top.
+- **The seal:**
+  - The same five black-glass petals and the crystal knot. The petals' rims run 9 cm into the jambs, and the floor petals
+    run into the plinth.
+  - On `Open`, each petal withdraws into the stone: it shrinks onto a pivot 0.15 m inside the arch, slides out 0.3 m and
+    turns 28 degrees, bottom petal first.
+  - In `Opened_Idle` the opening is clear.
+
+Build notes:
+- Each bone's parts are remeshed on their own (the arch, each petal, the knot, each seal shard), and every island is then
+  made wholly one bone's. Specks under 8 vertices are dropped.
+- The vertex AO and the map bake are done with the iris and seal lifted out of the way. Two earlier faults caused this:
+  - the closed iris shaded the faces towards the opening;
+  - the petal feet baked their outline into the threshold as dark dashes.
+- The band is UV-cut by facet angle. As one closed piece, the minimum-stretch unwrap collapsed half of it.
+- `build_bosses29_props.py --only RuinGate` now calls this builder; `--old-gate` still builds the round-29 gate.
+
+**Unity contract (`RuinGateView`, `BlenderBossFxBuilder`):**
+- Unchanged:
+  - asset `RuinGate`, one material with 4 maps (1024, Low 512), 6400 tris;
+  - bones Root, Seal, Seal_1..4, Petal_1..5 (Unity finds `Seal` for the shard burst);
+  - clips Closed_Idle 72, Open 160, Opened_Idle 72;
+  - Open moments: seal crack 30, first light 38, petals start 52, fully open 130;
+  - pivot: the centre of the threshold on the ground, facing -Y in Blender, which is +Z in Unity.
+- Changed:
+  - the Petal bones are now scale-keyed (`scale_keyed_bones` gains Petal_1..5);
+  - size 8.97 x 3.55 x 8.74 m (was 8.68 x 2.18 x 7.77);
+  - opening 4.0 x 4.83 m (was 4.0 x 4.3).
+- At `RuinGateScale` 0.65 it stands about 5.7 m tall in play. Check that it does not hide too much of the road. If it does,
+  0.58 matches the old height.
+- Import: sync `ArtSource/Exports/RuinGate` (FBX, 4 maps, Low/, report) and run `BlenderBossFxBuilder`. No code change is needed.
+
+**Checks:**
+- `check_clip_parity.py --base-dir ArtSource/Exports/_backup_r53/{name}`: RuinGate OK (`clip_parity_r53_ruingate.json`). The only
+  note is the scale-keyed petals.
+- Strict floating check (`check_floating_49g.py --only RuinGate --lods 0 --exempt Seal`, every frame of all 3 clips):
+  - **0 floating**;
+  - 5 Seal islands exempted: the knot and its 4 shards are rooted in the iris, not in the stone, by design;
+  - the petals are checked strictly and touch the stone in every frame;
+  - the old gate had 22 floating islands, worst 6.2 m.
+
+**Previews (bright light):**
+- `ArtSource/Previews/QA/r53_ruingate_after|before_game.png` (shut / opening / open from the play camera);
+- `_game_open.png` (1920x1080);
+- `_close.png` (low 3/4 front, the right jamb's inner face, the crest, 3/4 back);
+- `_rise.png` (the Open clip at 0, 24, 34, 44, 60, 76, 92, 112, 130 + Opened_Idle);
+- `_rise_game.png`;
+- crops `r53_ruingate_after_game_open_<threshold|keystone|leftfoot|rightjamb>_x3.png`.
+
+Tool: `r53_ruingate_views.py`.
+
+### 2. Shattered: each shell plate on its own bone (round 52, open point 2)
+
+**Cause.** Round 49G remeshed all plates together. Touching plates welded into shared islands:
+- Shell_1 with the Shell_5 pair;
+- Shell_3/4 with the Shell_7 pair.
+
+The purity pass then gave each merged island to whichever bone weighted it most, and that differed between LOD0 and LOD1.
+
+**Fix** (`build_shattered2.separate_shell_fuse`):
+- Each Shell bone's plates, spikes and straps are remeshed on their own.
+- The purity pass picks an island's bone by the plate parts it was built from (nearest source surface, majority vote),
+  not by its weights.
+- Rebuilt with `build_shattered2.py` and then `build_shattered_mech.py --skip-shards`.
+
+**Result:**
+- **Islands per bone, identical in LOD0 and LOD1:** Shell_1, 2, 3, 4 and 8 carry one plate each, and Shell_5, 6 and 7 carry
+  two (left and right). Every island is 100 % on its bone.
+- New `Tools/Blender/r53_shell_throw.py` measures the exported FBX (`r53_shell_throw_after|before.json`):
+  - PhaseBreak1 throws Shell_1..4 (frames 15-21) and keeps 5..7. Shell_8 also shows there because it rides the rearing
+    head, not because it is thrown.
+  - PhaseBreak2 throws Shell_5..8 (frames 17-21).
+  - Split throws all eight.
+  - Before, LOD1 threw the Shell_1 plate in PhaseBreak1 on Shell_5 and kept it, and the Shell_3/4 hump plates went with the
+    Shell_7 flanks.
+- The spikes on the middle of the hump plates are separate islands on their plate's bone (as before). LOD1's decimation
+  splits one Shell_2 spike in two.
+- **Strict floating check** (`--burst Split,Rejoin,PhaseBreak1,PhaseBreak2,Death`): **LOD0 0 / LOD1 0 floating outside burst
+  clips** (burst_only 19 / 17).
+- **Clip parity:** Shattered OK (`clip_parity_r53.json`). No bone, clip or event change.
+- **Report:** tris 24087 / LOD1 9485 (was 24106 / 9483). The body and the detail maps were re-baked and the body UVs changed;
+  the crystal maps are byte-identical.
+- **Look:** unchanged. The same parts, palette and shapes; only the remesh grouping changed. Where two plates meet they now
+  overlap instead of welding.
+- **Loose sheets** `ArtSource/Previews/QA/r49g_shattered_r53_loose_<clip>.png`, all 15 clips. I looked at Walk, PhaseBreak1
+  and PhaseBreak2: nothing hangs off the body, and the plates leave in the order above.
+- No corrupted skin (the Shattered has none). Import: RebuildOnly **Shattered** (FBX, LOD1, report, all maps incl. `Low/`).
+  The round-52 tests `ScaledOffParts_ArePureIslands_InBothRigs` should still pass.
+
+### Open points (round 53)
+
+1. **RuinGate, shut:**
+   - The petal at the upper right shows a soft fold where its spiral meets the pointed apex.
+   - While the petals part (frames 44-60), their seam walls show pale grey.
+   - In mid-withdrawal (around frame 92) a shrinking petal reads as a dark lump at the left shoulder for a few frames.
+2. **RuinGate in play:** check its height at scale 0.65, the emission ramp (the slot is bright at 1.6) and the OpeningLight
+   height (1.8; the opening is now 4.83 high).
+3. **RuinGate:** the interlocking joint grooves are faint at the play camera. The cracks and glyph bands carry the read.

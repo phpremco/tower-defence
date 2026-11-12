@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Core;
 using Game.Editor;
 using Game.Enemies;
@@ -719,6 +720,130 @@ namespace Game.Tests
 
                 float covered = CreatureBarHeight.Covered(tops);
                 Assert.GreaterOrEqual(art.Height, covered * (1f - BarHeightTolerance), $"{enemy.name}: the bar sits inside the body for more than a quarter of its cycles");
+            }
+        }
+
+        // Round 53: a boss's phase look holds bones over its clips in play (the Shattered's rejoined crystals at 1.35 and bare
+        // shells, the Frost Warden's rage icicles at full size). The bar, measured over the clips, must clear those looks too:
+        // it is the max over the phase states, so a look that grows the crest never pushes the body through the bar.
+        [Test]
+        public void BossBars_ClearTheBodyInEveryPhaseLook()
+        {
+            int looks = 0;
+            foreach (string guid in AssetDatabase.FindAssets("t:EnemyDefinition", new[] { EnemyFolder }))
+            {
+                var enemy = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(AssetDatabase.GUIDToAssetPath(guid));
+                ModelArtDefinition art = enemy.Art;
+                if (art == null || art.Model == null || enemy.Boss == null)
+                {
+                    continue;
+                }
+
+                foreach (Dictionary<string, float> look in PhaseLooks(enemy.Boss))
+                {
+                    looks++;
+                    float covered = CreatureBarHeight.Covered(CreatureBarHeight.CycleTops(art.Model, art, look));
+                    Assert.GreaterOrEqual(art.Height, covered * (1f - BarHeightTolerance), $"{enemy.name}: a phase look stands through the bar");
+                }
+            }
+
+            Assert.Greater(looks, 0, "no boss with a phase look was checked");
+        }
+
+        // Round 53: round 52 read the Shattered's top in play 0.6 m too high because its probe turned the baked mesh into world
+        // space with position and rotation only; under the boss's 0.8 scale that is its unscaled size. The measure takes the
+        // renderer's whole matrix, so the same pose under a scaled parent reads scaled.
+        [Test]
+        public void BakedTop_FollowsTheParentScale()
+        {
+            const float parentScale = 0.8f;
+            const float tolerance = 0.002f;
+            var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>("Assets/_Project/Data/Art/Shattered.asset");
+            Assert.IsNotNull(art, "no Shattered art");
+            var holder = new GameObject("BarScaleProbe");
+            var baked = new Mesh();
+            try
+            {
+                GameObject model = Object.Instantiate(art.Model, holder.transform, false);
+                SkinnedMeshRenderer[] renderers = model.GetComponentsInChildren<SkinnedMeshRenderer>();
+                float full = CreatureBarHeight.BakedTop(renderers, baked);
+                holder.transform.localScale = Vector3.one * parentScale;
+                float scaled = CreatureBarHeight.BakedTop(renderers, baked);
+                Assert.AreEqual(full * parentScale, scaled, tolerance, "the baked top ignores the parent's scale");
+            }
+            finally
+            {
+                Object.DestroyImmediate(baked);
+                Object.DestroyImmediate(holder);
+            }
+        }
+
+        // Round 53: the Shattered's spires fan out of its crown to the front and back and crossed the bar in the picture when
+        // it walked towards or away from the camera. Every row that names crest bones has a bar that clears them as the
+        // looking-down camera draws them, and stands higher than a plain height measure would put it.
+        [Test]
+        public void CrestRows_BarClearsTheCrestAsTheCameraSeesIt()
+        {
+            int rows = 0;
+            foreach (BlenderArtEntry entry in BlenderArtCatalog.Creatures)
+            {
+                if (entry.BarCrestBones.Length == 0)
+                {
+                    continue;
+                }
+
+                var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"Assets/_Project/Data/Art/{entry.Id}.asset");
+                Assert.IsNotNull(art, $"{entry.Id}: no art");
+                rows++;
+                float projected = CreatureBarHeight.Covered(CreatureBarHeight.CycleTops(art.Model, art, null, entry.BarCrestBones));
+                float plain = CreatureBarHeight.Covered(CreatureBarHeight.CycleTops(art.Model, art));
+                Assert.GreaterOrEqual(art.Height, projected * (1f - BarHeightTolerance), $"{entry.Id}: the crest crosses the bar on screen");
+                Assert.Greater(projected, plain, $"{entry.Id}: its crest bones change nothing (wrong bone names?)");
+            }
+
+            Assert.Greater(rows, 0, "no row names crest bones");
+        }
+
+        // The crest measure projects with one camera pitch: every level's play camera must look down at that angle.
+        [Test]
+        public void EveryLevelCamera_LooksDownAtTheBarMeasurePitch()
+        {
+            const float tolerance = 0.01f;
+            foreach (string guid in AssetDatabase.FindAssets("t:LevelDefinition", new[] { "Assets/_Project/Data/Levels" }))
+            {
+                var level = AssetDatabase.LoadAssetAtPath<Game.Levels.LevelDefinition>(AssetDatabase.GUIDToAssetPath(guid));
+                Assert.AreEqual(CreatureBarHeight.PlayCameraPitchDegrees, level.Camera.PitchDegrees, tolerance, $"{level.name}: its camera pitch differs from the bar measure's");
+            }
+        }
+
+        // The bone looks a boss's signature holds over its clips, at their largest runtime scale.
+        private static IEnumerable<Dictionary<string, float>> PhaseLooks(BossDefinition boss)
+        {
+            if (boss.Signature == BossSignature.Splitting && boss.Split != null)
+            {
+                var rejoined = new Dictionary<string, float>();
+                foreach (string bone in boss.Split.ShellBones)
+                {
+                    rejoined[bone] = 0f;
+                }
+
+                foreach (string bone in boss.Split.CrystalBones)
+                {
+                    rejoined[bone] = boss.Split.RejoinedCrystalScale;
+                }
+
+                yield return rejoined;
+            }
+
+            if (boss.Signature == BossSignature.GateBreaker && boss.GateBreaker != null)
+            {
+                var rage = new Dictionary<string, float>();
+                foreach (string bone in boss.GateBreaker.RageBones)
+                {
+                    rage[bone] = boss.GateBreaker.RageScale.y;
+                }
+
+                yield return rage;
             }
         }
 

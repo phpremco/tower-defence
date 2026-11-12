@@ -24,9 +24,8 @@ foreach (string guid in UnityEditor.AssetDatabase.FindAssets("t:EnemyDefinition"
             foreach (var r in renderers)
             {
                 r.BakeMesh(baked, true);
-                var rot = r.transform.rotation;
-                var pos = r.transform.position;
-                foreach (var v in baked.vertices) { best = UnityEngine.Mathf.Max(best, (pos + rot * v).y); }
+                var toWorld = r.transform.localToWorldMatrix; // round 53: the whole matrix, scale included
+                foreach (var v in baked.vertices) { best = UnityEngine.Mathf.Max(best, toWorld.MultiplyPoint3x4(v).y); }
             }
 
             return best - probe.transform.position.y;

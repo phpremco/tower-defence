@@ -72,6 +72,12 @@ namespace Game.Editor
         /// <summary>The bones a boss's beam and bolts leave from, in order of preference (the first the rig has wins); empty for none.</summary>
         public string[] BeamSockets { get; set; } = new string[0];
 
+        /// <summary>
+        /// Bones of a crown that fans towards and away from the camera (spires, a crest): the health bar clears them as the
+        /// looking-down play camera draws them, not only by their height (<see cref="CreatureBarHeight"/>); empty for none.
+        /// </summary>
+        public string[] BarCrestBones { get; set; } = new string[0];
+
         public BlenderClipSpec[] Clips { get; set; } = new BlenderClipSpec[0];
 
         /// <summary>The second material's name in the export (<c>Crystal</c> for <c>&lt;Asset&gt;_Crystal_*.png</c>), or null for one material.</summary>
@@ -138,6 +144,7 @@ namespace Game.Editor
                 Vents = Vents,
                 Bleeds = Bleeds,
                 BeamSockets = BeamSockets,
+                BarCrestBones = BarCrestBones,
                 Clips = Clips,
                 SecondMaterial = SecondMaterial,
                 ExtraParts = ExtraParts,

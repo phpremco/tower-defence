@@ -593,7 +593,21 @@ namespace Game.Levels
                         errors.Add($"Boss entrance names ground cell {entrance.Cell}, which is off the grid, on the road or liquid.");
                     }
 
+                    CheckEntranceThreshold(level, entrance.Cell, errors);
                     break;
+            }
+        }
+
+        // A giant breaks out of the ground through a sealed ruin gate (RuinGateView, about six cells wide) and walks out of
+        // its threshold: a nest mound there stands in the arch's mouth (round 53, Arena_Ruins), so nests keep their distance.
+        private static void CheckEntranceThreshold(LevelDefinition level, Vector2Int entrance, List<string> errors)
+        {
+            foreach (ElementNest nest in level.Nests)
+            {
+                if (GroundEntranceRules.CrowdsThreshold(entrance, nest.Cell))
+                {
+                    errors.Add($"The {nest.Element} nest at {nest.Cell} stands in the threshold of the ground boss entrance at {entrance}.");
+                }
             }
         }
 

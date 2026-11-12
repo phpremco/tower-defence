@@ -261,7 +261,7 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
             // The bar height samples the written clips: wing beats and curled tails lift some bodies above the rest pose.
             var bar = new SerializedObject(art);
-            bar.FindProperty("_height").floatValue = CreatureBarHeight.Measure(model, art);
+            bar.FindProperty("_height").floatValue = CreatureBarHeight.Measure(model, art, entry.BarCrestBones);
             bar.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(art);
             return art;

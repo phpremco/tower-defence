@@ -24,9 +24,8 @@ foreach (var view in UnityEngine.Object.FindObjectsByType<Game.Enemies.EnemyView
         if (root == null) { root = renderer.transform.parent; }
         boundsTop = UnityEngine.Mathf.Max(boundsTop, renderer.bounds.max.y);
         renderer.BakeMesh(baked, true);
-        var rot = renderer.transform.rotation;
-        var pos = renderer.transform.position;
-        foreach (var v in baked.vertices) { top = UnityEngine.Mathf.Max(top, (pos + rot * v).y); }
+        var toWorld = renderer.transform.localToWorldMatrix; // round 53: the whole matrix, scale included
+        foreach (var v in baked.vertices) { top = UnityEngine.Mathf.Max(top, toWorld.MultiplyPoint3x4(v).y); }
     }
 
     UnityEngine.Object.Destroy(baked);

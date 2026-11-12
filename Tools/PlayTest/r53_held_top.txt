@@ -1,0 +1,5 @@
+Shattered 1.35=Crys_* 0=Shell_*
+Shattered 1.35=Crys_* 0=Shell_* 0.35=Core_Air,Core_Road
+Shattered 1.35=Crys_* 0=Shell_* 0.35=Core_Air,Core_Road,Core_Land
+FrostWarden 0.2=Icicle_*
+FrostWarden 1=Icicle_*

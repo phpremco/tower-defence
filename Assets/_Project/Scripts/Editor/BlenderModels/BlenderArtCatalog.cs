@@ -444,8 +444,16 @@ namespace Game.Editor
                     // The crystals burst at frame 46 and are gone by 54: the glow dies with them.
                     DeathFadeFrom = 46,
                     DeathFadeTo = 54,
+                    // Round 53: its three shard spires fan out of the crown to the front and back; from the looking-down
+                    // camera they crossed the bar when it walked towards or away from it.
+                    BarCrestBones = new[] { "Core_Air", "Core_Road", "Core_Land" },
                     Clips = new[]
                     {
+                        // Round 16's phase breaks, kept but not played (round 53): the round-28 design (README "Phases") moved
+                        // its plates off through Split (66 %) and the rejoined look (shells 0, crystals 1.35), so no phase
+                        // threshold is left for them: at the split the giant bursts and hides, and it reforms already bare.
+                        // Kept as declared for parity with the export (the clip and floating checks read them); a heavy hit
+                        // stagger could use them later (README round 28 leaves that open).
                         new BlenderClipSpec("PhaseBreak1", ModelClipRole.PhaseBreak, 12, "2"),
                         new BlenderClipSpec("PhaseBreak2", ModelClipRole.PhaseBreak, 14, "3"),
                         // Round 28: Splitting (burst at 28, formed at 30) and the shared body's climbs and dives.

@@ -588,12 +588,28 @@ namespace Game.Editor
             {
                 SerializedProperty entrance = so.FindProperty("_bossEntrance");
                 entrance.FindPropertyRelative("Kind").intValue = (int)EntranceKind.Ground;
-                entrance.FindPropertyRelative("Cell").vector2IntValue = RuinGateCell(original);
+                Vector2Int gate = RuinGateCell(original);
+                entrance.FindPropertyRelative("Cell").vector2IntValue = gate;
+                ClearRuinThreshold(nests, gate);
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(level);
             return level;
+        }
+
+        // Round 53: the copied level's nest mound stood in the ruin gate's mouth (Arena_Ruins: two cells in front of the
+        // threshold, the giant walked out over it). The arena's waves use no nests, so the ones in the threshold go; the gate's
+        // cell stays where it is, so the boss's route (and the finale numbers set on it) does not move.
+        internal static void ClearRuinThreshold(SerializedProperty nests, Vector2Int gate)
+        {
+            for (int i = nests.arraySize - 1; i >= 0; i--)
+            {
+                if (GroundEntranceRules.CrowdsThreshold(gate, nests.GetArrayElementAtIndex(i).FindPropertyRelative("Cell").vector2IntValue))
+                {
+                    nests.DeleteArrayElementAtIndex(i);
+                }
+            }
         }
 
         // The sealed ruin gate: open ground a few cells off the main road near its start, clear of the road, pools and the
