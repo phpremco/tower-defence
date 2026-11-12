@@ -5,7 +5,7 @@
     25501,
     8986
   ],
-  "source_tris": 3005548,
+  "source_tris": 2950728,
   "bones": 33,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -21,44 +21,44 @@
   ],
   "uv": {
     "SealedOne": {
-      "islands": 188,
+      "islands": 207,
       "closed_islands_cut": 2,
       "folded_fallback_faces": 0,
-      "mirrored_faces": 12506,
-      "uv_coverage": 0.568,
-      "world_per_uv": 10.230357252153944
+      "mirrored_faces": 12406,
+      "uv_coverage": 0.545,
+      "world_per_uv": 10.295023816924184
     },
     "SealedOne_Seal": {
-      "islands": 102,
+      "islands": 103,
       "closed_islands_cut": 3,
       "folded_fallback_faces": 79,
       "mirrored_faces": 4270,
-      "uv_coverage": 0.65,
-      "world_per_uv": 6.5376824015562125
+      "uv_coverage": 0.66,
+      "world_per_uv": 6.4882854551783
     }
   },
   "detail": {
     "SealedOne": {
       "rock": {
         "map": "Detail_Rock_Normal.png",
-        "tiling": 18.9,
+        "tiling": 19.1,
         "mask": "B"
       },
       "membrane": {
         "map": "Detail_Membrane_Normal.png",
-        "tiling": 28.4,
+        "tiling": 28.6,
         "mask": "A"
       }
     },
     "SealedOne_Seal": {
       "rock": {
         "map": "Detail_Rock_Normal.png",
-        "tiling": 20.2,
+        "tiling": 20.0,
         "mask": "B"
       },
       "crystal": {
         "map": "Detail_Crystal_Normal.png",
-        "tiling": 34.6,
+        "tiling": 34.3,
         "mask": "A"
       }
     }
@@ -95,7 +95,7 @@
   ],
   "lod1": {
     "fbx": "SealedOne_LOD1.fbx",
-    "tris": 13999,
+    "tris": 14000,
     "bones": 30
   },
   "pivot": "ground at the centre of the seal; the body extends ~0.7 below the ground (hidden by terrain)",
@@ -252,11 +252,11 @@
     },
     "tris_before": {
       "lod0": 34487,
-      "lod1": 13999
+      "lod1": 14000
     },
     "tris_after": {
       "lod0": 39350,
-      "lod1": 15494
+      "lod1": 15495
     },
     "increase": {
       "lod0": 0.141,

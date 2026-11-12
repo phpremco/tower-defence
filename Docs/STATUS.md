@@ -8514,6 +8514,45 @@ Row to rebuild (`BlenderArtBuilder.RebuildOnly`): **SealedOne** only. It has no 
    (0.72) is one constant in `halo_glyphs`.
 6. The lower body (the waist tendrils) is unchanged and is meant to sit under the terrain, as before.
 
+### Round 52b: cracked stone arms with violet light (Remco's "Bijna": "the stone arms could use cracks with a purple glow")
+
+Only the arms changed. Head, maw, halo, bones and clips are unchanged.
+
+- **`build_sealedone.cracked(base, ...)`** wraps the stone styles of the upper arms, forearms, elbows, shoulders,
+  stone mantles, hands and fingers. Its fracture field is shared in world space (`CRACK_SEEDS`), so cracks run on
+  across the joins between parts. It adds:
+  - **Deep fissures**: borders of a noise-warped Voronoi field (~0.5 m cells). They open and close along their length,
+    so they branch and stop instead of drawing closed cells. Their width varies from 4 mm to 2.2 cm.
+  - **Wider, hotter fissures near the elbows and shoulders.**
+  - **Chipped edges**: pale fresh stone and small breaks along the open fissures.
+  - **Hairlines** from a finer field: dark, dry cracks. They glow only where they branch off an open fissure.
+- **Glow**: violet (the throat's colour), varying along each crack: 0.2 to 1.0 x in the fissures, about 0.4 x in the
+  branches, near zero in the hairlines.
+- **Old veins toned down**: the stone's own violet seams on the arm pillars are lowered (glow 0.15 -> 0.05) and the
+  slab veins on shoulders and mantles likewise.
+- **Glow brightening with the maw**: per clip it is not possible, because emission is constant per clip. But the crack
+  light is violet, so the existing phase emission sets (`SealedOne_Phase2..4_Emission`, `_Release_Emission`, re-made
+  from this bake) already lift it with the rest of the entity (gain 1.35 / 1.6 / 1.5 / 2.2, tinted). Release turns it
+  white.
+- **Rubble ring**: stones within 18-66 degrees of the front are left out. Two stones touched the fingers, fused into
+  the hand and stayed visible in every clip once `split_rubble` no longer moved them.
+
+**Unity import**: the same single row, SealedOne. Triangles 39350 / 15495 with parts (body 25501 + Seal 8986 / LOD1
+14000). The body and Seal maps and all phase emission sets are re-baked; UVs changed. Bones, clips, events, sockets and
+`ExtraParts` are unchanged.
+
+**Checks after the re-bake**:
+- Clip parity against 2e4fc688: **OK** (`Jaw` is the only new bone, as before).
+- Strict float check, every frame of all 17 clips, both LODs: **0 floating, 0 burst_only** (only the seal stones and
+  rubble are exempt).
+
+**Previews**: `r52_sealedone_after_game|close|move.png` (re-rendered), `r52_sealedone_after_arms.png` (3/4 of the right
+arm and shoulder) and `r52_sealedone_after_arms_x3.png` (3x centre crop: glowing fissures, chipped pale edges, dark
+hairlines).
+
+**Open**: from the play camera the glow reads mostly on the upper arms and shoulders. On the forearms the cracks are
+mostly dark, which keeps the hands calm; more forearm glow is one constant (`open_` threshold in `cracked`).
+
 ## Round 54 import: the one-arch RuinGate and the Shattered's own-bone plates in the game (2026-11-12)
 
 Not committed. No generator run; `ArtSource/Exports` and `Tools/Blender/` untouched (stills written to `ArtSource/Previews/QA`);

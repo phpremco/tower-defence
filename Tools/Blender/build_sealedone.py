@@ -314,6 +314,81 @@ def hood_style(seed=0):
     return S.slab(HOOD, K * 0.5, strata=18, veins=0.35, fault=0.2, seed=seed, rim=-2.0)
 
 
+def _crack_seeds(count, seed, lo, hi):
+    rng = np.random.default_rng(seed)
+    return rng.uniform(np.array(lo), np.array(hi), size=(count, 3))
+
+
+# Round 52b (Remco on the arms: "the stone arms could use cracks with a purple glow"): one world-space fracture field
+# shared by every arm part, so the cracks run on across the joins between upper arm, elbow, forearm and hand.
+_CRACK_LO, _CRACK_HI = (-2.7, -2.9, -0.4), (2.7, 1.0, 3.8)          # Blender space (x, -fwd, up) round the arms
+CRACK_SEEDS = {"big": _crack_seeds(650, 521, _CRACK_LO, _CRACK_HI), "fine": _crack_seeds(7000, 522, _CRACK_LO, _CRACK_HI)}
+
+
+def _edge(points, seeds, pad):
+    """voronoi_edge over the seeds near `points` only (the field is global; a part needs just its neighbourhood)."""
+    lo, hi = points.min(axis=0) - pad, points.max(axis=0) + pad
+    near = seeds[np.all((seeds >= lo) & (seeds <= hi), axis=1)]
+    if len(near) < 2:
+        return np.full(len(points), 1.0)
+    return C.voronoi_edge(points, near)
+
+
+def crack_hot_spots():
+    """Where the seal strains most (wider fissures): the elbows and shoulders of the planted arms."""
+    out = []
+    for side, lg in lower_arms().items():
+        sh, el, wr = lg.rest_points
+        out += [(np.array(el), 0.6), (np.array(sh), 0.75)]
+    return out
+
+
+def cracked(base, seed=0, scale=1.0, fine=1.0):
+    """Wraps a stone style with a fracture network leaking violet core light (round 52b):
+    - deep fissures: borders of a noise-warped Voronoi field (~0.3 m cells), opened in some places and closed in
+      others so they branch and stop instead of drawing closed cells; wider and hotter near elbows and shoulders;
+    - hairlines: a finer warped field, faint and patchy;
+    - chipped edges: pale fresh stone and small breaks along the deep fissures.
+    Glow varies along every crack (brightest deep in the fissures, faint in the hairlines). The light is the
+    throat's violet, so the phase emission sets (Phase2..4, Release) brighten it with the rest of the entity."""
+    hot = crack_hot_spots()
+    violet = np.array(VIOLET)
+
+    def style(s, idx, part):
+        base(s, idx, part)
+        p = s.p[idx]
+        warp = np.stack([C.value_noise(p, 2.2 / scale, seed + 30 + i) for i in range(3)], axis=1)
+        q = p + warp * 0.07 * scale
+        e_big = _edge(q, CRACK_SEEDS["big"], 0.8)
+        e_fine = _edge(q + warp * 0.05, CRACK_SEEDS["fine"], 0.5)
+        heat = np.zeros(len(idx))
+        for c, r in hot:
+            heat = np.maximum(heat, 1 - C.smoothstep(0.2 * r, r, np.linalg.norm(p - c, axis=1)))
+        # Width varies along a crack; some stretches close up (the network branches and stops).
+        open_ = C.smoothstep(-0.12, 0.28, C.value_noise(p, 1.3 / scale, seed + 41))
+        width = (0.004 + 0.018 * C.smoothstep(-0.2, 0.9, C.value_noise(p, 2.6 / scale, seed + 42)) ** 1.5
+                 + 0.02 * heat)
+        gate = np.maximum(open_, 0.7 * heat * C.smoothstep(-0.3, 0.2, C.value_noise(p, 1.9 / scale, seed + 46)))
+        fissure = (1 - C.smoothstep(width * 0.35, width, e_big)) * gate
+        chip = (1 - C.smoothstep(width, width * 2.6, e_big)) * gate * (1 - fissure)
+        chip *= C.smoothstep(-0.1, 0.4, C.value_noise(p, 14.0 / scale, seed + 43))
+        hair = (1 - C.smoothstep(0.0015, 0.005, e_fine)) * C.smoothstep(0.0, 0.5, C.value_noise(p, 2.4 / scale, seed + 44))
+        hair *= (1 - fissure) * fine
+        pulse = 0.2 + 0.8 * C.smoothstep(-0.5, 0.8, C.value_noise(p, 2.0 / scale, seed + 45))
+        # Hairlines glow only where they branch off an open fissure; elsewhere they are dark dry cracks.
+        branch = hair * (1 - C.smoothstep(0.03, 0.16, e_big)) * gate
+        glow = fissure * pulse * (0.62 + 0.3 * heat) + branch * 0.45 * pulse + hair * 0.04
+        col = s.albedo[idx]
+        col = C.lerp3(col, PAL.bone * 0.95, chip * 0.5)
+        col = C.lerp3(col, PAL.seam, hair * 0.6)
+        col = C.lerp3(col, violet * 0.45, fissure)
+        s.albedo[idx] = col
+        s.emit[idx] = np.maximum(s.emit[idx], violet[None, :] * np.clip(glow, 0, 1)[:, None])
+        s.disp[idx] = s.disp[idx] - 0.006 * K * fissure * (0.6 + 0.6 * heat) - 0.0012 * K * hair + 0.001 * K * chip
+        s.rough[idx] = np.clip(s.rough[idx] - 0.3 * fissure, 0.1, 0.95)
+    return style
+
+
 # ------------------------------------------------------------------------------------------------------------
 # Parts
 # ------------------------------------------------------------------------------------------------------------
@@ -368,11 +443,12 @@ def torso_parts(b, k):
     for side, sx in SIDES:
         b.ellipsoid("Shoulder", G(1.12 * sx, 2.85, 0.05), (0.62, 0.55, 0.46), T.rot(roll=-25 * sx), bone="Chest",
                     segments=(32, 16), deform=C.chiselled(16, 24, 0.07, squash=(0.8, 1.0)),
-                    style=S.slab(PAL, k * 0.5, strata=24, veins=0.5, fault=0.6, seed=25))
+                    style=cracked(S.slab(PAL, k * 0.5, strata=24, veins=0.15, fault=0.3, seed=25), seed=1))
         # The mantle: a broken slab of sealed stone over each shoulder (dark, a gold seal glyph on top: seal_extra).
         b.ellipsoid("Mantle", G(1.2 * sx, 3.18, -0.02), (0.6, 0.5, 0.17), T.rot(roll=-32 * sx, pitch=-8), bone="Chest",
                     segments=(28, 14), deform=C.chiselled(11, 26 + (sx > 0), 0.14, squash=(0.7, 1.0)),
-                    style=S.slab(HOOD, k * 0.5, strata=20, veins=0.5, fault=0.3, seed=27, rim=-0.5))
+                    style=cracked(S.slab(HOOD, k * 0.5, strata=20, veins=0.2, fault=0.3, seed=27, rim=-0.5), seed=2,
+                                  fine=0.6))
     b.tube("Neck", [G(0, 2.65, 0.1), G(0, 2.98, 0.2), G(0, 3.25, 0.25)], [0.55, 0.5, 0.42], sides=16,
            chain=["Neck", "Chest"], style=S.pillar(PAL, k * 0.4, drums=4, seed=30, glow=0.6))
 
@@ -457,11 +533,11 @@ def arm_parts(b, k):
         sx = -1 if side == "L" else 1
         sh, el, wr = lg.rest_points
         b.tube("LUpper", [sh, sh.lerp(el, 0.5) + G(0.05 * sx, 0.12, 0), el], [0.62, 0.52, 0.42], sides=18,
-               chain=[lg.names[0]], style=S.pillar(PAL, k * 0.5, drums=2, seed=40, glow=0.15))
+               chain=[lg.names[0]], style=cracked(S.pillar(PAL, k * 0.5, drums=2, seed=40, glow=0.05), seed=3))
         b.tube("LFore", [el, el.lerp(wr, 0.5), wr], [0.44, 0.4, 0.33], sides=18, chain=[lg.names[1]],
-               style=S.pillar(PAL, k * 0.5, drums=2, seed=41, glow=0.15))
+               style=cracked(S.pillar(PAL, k * 0.5, drums=2, seed=41, glow=0.05), seed=4))
         b.ellipsoid("Elbow", el, (0.5, 0.5, 0.45), bone=lg.names[0], segments=(20, 10), deform=C.chiselled(10, 42, 0.1),
-                    style=S.slab(PAL, k * 0.4, seed=43))
+                    style=cracked(S.slab(PAL, k * 0.4, veins=0.1, fault=0.2, seed=43), seed=5))
         b.parts[-1].chain = [lg.names[0], lg.names[1]]
         # The shackle: a heavy cuff of sealed stone round the forearm above the wrist.
         axis = (wr - el).normalized()
@@ -472,12 +548,13 @@ def arm_parts(b, k):
         chain_stub(b, cuff, axis, sx, lg.names[1])
         hand = hand_centre(side)
         b.ellipsoid("Hand", hand, (0.56, 0.2, 0.56), T.rot(yaw=-15 * sx), bone=f"LArm_{side}_Hand", segments=(24, 12),
-                    deform=C.chiselled(10, 44, 0.08), style=S.slab(PAL, k * 0.4, seed=45))
+                    deform=C.chiselled(10, 44, 0.08),
+                    style=cracked(S.slab(PAL, k * 0.4, veins=0.1, fault=0.2, seed=45), seed=6, scale=0.7))
         for d in finger_dirs(sx):
             r0 = hand + d * 0.34
             pts = [r0, r0 + d * 0.45 + G(0, 0.1, 0), r0 + d * 0.88 - G(0, 0.05, 0), r0 + d * 1.2 - G(0, 0.16, 0)]
             b.tube("Finger", pts, [0.16, 0.125, 0.08, 0.01], sides=10, chain=[f"LArm_{side}_Hand"],
-                   style=H.blade(PAL, k * 0.35, glow=0.8, teeth=0))
+                   style=cracked(H.blade(PAL, k * 0.35, glow=0.4, teeth=0), seed=7, scale=0.5, fine=0.5))
 
 
 def chain_stub(b, cuff, axis, sx, bone):
@@ -506,8 +583,8 @@ def ground_parts(b, k):
                sides=12, chain=["Body"], style=S.pillar(PAL, k * 0.4, drums=4, seed=55 + j, glow=0.9))
     for j in range(13):
         a = math.radians(-165 + 330 * j / 12)
-        if 30 < abs(math.degrees(a)) < 62:
-            continue  # the planted arms and hands come down here
+        if 18 < abs(math.degrees(a)) < 66:
+            continue  # the planted arms, hands and fingers come down here (a touching stone would fuse to a hand)
         r = 2.15 + 0.15 * math.sin(j * 2.3)
         c = G(math.sin(a) * r, 0.08, math.cos(a) * r * 0.95)
         b.ellipsoid("Rubble", c, (0.5, 0.36, 0.24), T.rot(yaw=math.degrees(a), roll=20), bone="Root", segments=(16, 8),
