@@ -1,0 +1,19 @@
+{
+ "creature": "Bulwark",
+ "threshold": 0.00619,
+ "poses_checked": 37,
+ "mixed": [],
+ "clips": "all",
+ "islands_per_object": {
+  "Bulwark": 1,
+  "Bulwark_Claws": 14,
+  "Bulwark_Face": 8
+ },
+ "specks_under_min_verts": {
+  "Bulwark": 0,
+  "Bulwark_Claws": 12,
+  "Bulwark_Face": 0
+ },
+ "floating": [],
+ "separate_by_design": []
+}

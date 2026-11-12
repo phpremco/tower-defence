@@ -41,7 +41,7 @@ namespace Game.Bosses
             view._light.type = LightType.Point;
             view._light.range = LightRange;
             view._light.shadows = LightShadows.None;
-            view._mist = ParticleKit.Create(go.transform, "Haze", Vector3.up * 0.4f, Color.white, 1.2f, 2.4f, 0.35f, 0.8f, 0.05f, 0.25f, -0.05f, 40, 0.9f);
+            view._mist = ParticleKit.UseSmoke(ParticleKit.Create(go.transform, "Haze", Vector3.up * 0.4f, Color.white, 1.2f, 2.4f, 0.35f, 0.8f, 0.05f, 0.25f, -0.05f, 40, 0.9f));
             ParticleKit.SetRate(view._mist, 0f);
             go.SetActive(false);
             return view;

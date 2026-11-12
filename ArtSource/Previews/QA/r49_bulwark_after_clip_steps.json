@@ -1,0 +1,44 @@
+{
+  "Block": {
+    "frames": 24,
+    "max_step_deg": 21.4,
+    "bone": "ForeArm_L",
+    "frame": 4,
+    "ratio_to_median": 31.5
+  },
+  "Death": {
+    "frames": 44,
+    "max_step_deg": 7.2,
+    "bone": "UpperArm_R",
+    "frame": 24,
+    "ratio_to_median": 3.1
+  },
+  "Hit": {
+    "frames": 14,
+    "max_step_deg": 27.3,
+    "bone": "Jaw",
+    "frame": 2,
+    "ratio_to_median": 4.9
+  },
+  "Idle": {
+    "frames": 72,
+    "max_step_deg": 3.1,
+    "bone": "Jaw",
+    "frame": 33,
+    "ratio_to_median": 2.8
+  },
+  "Strike": {
+    "frames": 24,
+    "max_step_deg": 38.9,
+    "bone": "ForeArm_R",
+    "frame": 8,
+    "ratio_to_median": 8.6
+  },
+  "Walk": {
+    "frames": 32,
+    "max_step_deg": 9.0,
+    "bone": "Leg_L_Shin",
+    "frame": 28,
+    "ratio_to_median": 2.6
+  }
+}

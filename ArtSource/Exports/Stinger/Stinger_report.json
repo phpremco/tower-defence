@@ -1,7 +1,7 @@
 {
   "asset": "Stinger",
-  "game_tris": 3961,
-  "source_tris": 390560,
+  "game_tris": 3952,
+  "source_tris": 408776,
   "bones": 25,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -12,21 +12,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 95,
-    "folded_fallback_faces": 12,
-    "mirrored_faces": 1968,
-    "uv_coverage": 0.637,
-    "world_per_uv": 1.0984928846861355
+    "islands": 105,
+    "folded_fallback_faces": 92,
+    "mirrored_faces": 1966,
+    "uv_coverage": 0.624,
+    "world_per_uv": 1.1383305294178196
   },
   "detail": {
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 18.3,
+      "tiling": 19.0,
       "mask": "B"
     },
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 13.7,
+      "tiling": 14.2,
       "mask": "A"
     }
   },
@@ -43,8 +43,65 @@
   "pivot": "ground, body centre",
   "lod1": {
     "fbx": "Stinger_LOD1.fbx",
-    "tris": 1697,
+    "tris": 1700,
     "bones": 14
+  },
+  "r46_body_maps_edited": true,
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Stinger_Face",
+        "material": "Stinger_Face_Mat",
+        "maps": "Stinger_Face_*.png (1024, Low 512)",
+        "tris": 334,
+        "lod1_object": "Stinger_Face_LOD1",
+        "lod1_tris": 82,
+        "source_tris": 20940,
+        "uv": {
+          "islands": 14,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 34,
+          "mirrored_faces": 166,
+          "uv_coverage": 0.767,
+          "world_per_uv": 0.11694024836312486
+        },
+        "symmetry_error": 0.005629
+      },
+      "Claws": {
+        "object": "Stinger_Claws",
+        "material": "Stinger_Claws_Mat",
+        "maps": "Stinger_Claws_*.png (1024, Low 512)",
+        "tris": 208,
+        "lod1_object": "Stinger_Claws_LOD1",
+        "lod1_tris": 78,
+        "source_tris": 13252,
+        "uv": {
+          "islands": 8,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 8,
+          "mirrored_faces": 104,
+          "uv_coverage": 0.583,
+          "world_per_uv": 0.10051989868102519
+        },
+        "symmetry_error": 0.000966
+      }
+    },
+    "body_tris": 3952,
+    "extra_tris": 542,
+    "extra_share": 0.137,
+    "body_lod1_tris": 1700,
+    "extra_lod1_tris": 160,
+    "extra_lod1_share": 0.094,
+    "clips": [
+      "Death",
+      "Hit",
+      "Idle",
+      "Strike",
+      "Walk"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Stinger_<Part> (+ _LOD1 in Stinger_LOD1.fbx), maps Stinger_<Part>_*.png (+ Low/)",
+    "body_maps": "round-10 bead eyes' glow removed from Stinger_Albedo/Emission (8784 texels this run)",
+    "note": "round 46: six wet magenta eyes under brow folds, chelicera fangs, trap-claw saws and points; bones, clips and events unchanged"
   },
   "round36": {
     "Strike": {
@@ -83,62 +140,5 @@
       }
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
-  },
-  "r46_body_maps_edited": true,
-  "r46_detail": {
-    "parts": {
-      "Face": {
-        "object": "Stinger_Face",
-        "material": "Stinger_Face_Mat",
-        "maps": "Stinger_Face_*.png (1024, Low 512)",
-        "tris": 326,
-        "lod1_object": "Stinger_Face_LOD1",
-        "lod1_tris": 82,
-        "source_tris": 14600,
-        "uv": {
-          "islands": 9,
-          "closed_islands_cut": 0,
-          "folded_fallback_faces": 0,
-          "mirrored_faces": 163,
-          "uv_coverage": 0.595,
-          "world_per_uv": 0.11142984949073712
-        },
-        "symmetry_error": 0.004605
-      },
-      "Claws": {
-        "object": "Stinger_Claws",
-        "material": "Stinger_Claws_Mat",
-        "maps": "Stinger_Claws_*.png (1024, Low 512)",
-        "tris": 208,
-        "lod1_object": "Stinger_Claws_LOD1",
-        "lod1_tris": 78,
-        "source_tris": 13252,
-        "uv": {
-          "islands": 8,
-          "closed_islands_cut": 0,
-          "folded_fallback_faces": 8,
-          "mirrored_faces": 104,
-          "uv_coverage": 0.583,
-          "world_per_uv": 0.10051989868102519
-        },
-        "symmetry_error": 0.000966
-      }
-    },
-    "body_tris": 3961,
-    "extra_tris": 534,
-    "extra_share": 0.135,
-    "body_lod1_tris": 1697,
-    "extra_lod1_tris": 160,
-    "extra_lod1_share": 0.094,
-    "clips": [
-      "Death",
-      "Hit",
-      "Idle",
-      "Strike",
-      "Walk"
-    ],
-    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Stinger_<Part> (+ _LOD1 in Stinger_LOD1.fbx), maps Stinger_<Part>_*.png (+ Low/)",
-    "body_maps": "round-10 bead eyes' glow removed from Stinger_Albedo/Emission (0 texels this run)",
-    "note": "round 46: six wet magenta eyes under brow folds, chelicera fangs, trap-claw saws and points; bones, clips and events unchanged"
   }
 }

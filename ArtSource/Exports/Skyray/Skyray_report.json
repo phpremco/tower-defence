@@ -1,7 +1,7 @@
 {
   "asset": "Skyray",
-  "game_tris": 3832,
-  "source_tris": 476176,
+  "game_tris": 3873,
+  "source_tris": 469408,
   "bones": 23,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -12,11 +12,11 @@
     "Mask"
   ],
   "uv": {
-    "islands": 48,
-    "folded_fallback_faces": 105,
-    "mirrored_faces": 1839,
-    "uv_coverage": 0.647,
-    "world_per_uv": 1.3876369434091038
+    "islands": 64,
+    "folded_fallback_faces": 111,
+    "mirrored_faces": 1818,
+    "uv_coverage": 0.656,
+    "world_per_uv": 1.3781301313525336
   },
   "detail": {
     "membrane": {
@@ -26,7 +26,7 @@
     },
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 17.8,
+      "tiling": 17.7,
       "mask": "A"
     }
   },
@@ -45,89 +45,51 @@
     "tris": 1699,
     "bones": 12
   },
-  "round36": {
-    "Dive": {
-      "frames": 24,
-      "loop": false,
-      "impact_frame": 10,
-      "anticipation_frames": [
-        0,
-        5
-      ],
-      "contact_frames": [
-        10,
-        12
-      ],
-      "settled_by_frame": 23,
-      "starts_and_ends_on": "Idle frame 0",
-      "body_bone": "Body",
-      "body_travel_at_impact": {
-        "forward": 0.14,
-        "up": -0.11
-      },
-      "body_travel_max": 0.178,
-      "root_moves": false,
-      "feet_planted": false,
-      "mesh": {
-        "rest": {
-          "tip_forward": 0.637,
-          "top": 0.14,
-          "bottom": -0.26
-        },
-        "impact": {
-          "tip_forward": 0.673,
-          "top": 0.036,
-          "bottom": -0.525
-        }
-      }
-    },
-    "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
-  },
   "r46_detail": {
     "parts": {
       "Face": {
         "object": "Skyray_Face",
         "material": "Skyray_Face_Mat",
         "maps": "Skyray_Face_*.png (1024, Low 512)",
-        "tris": 337,
+        "tris": 348,
         "lod1_object": "Skyray_Face_LOD1",
-        "lod1_tris": 81,
-        "source_tris": 24604,
+        "lod1_tris": 82,
+        "source_tris": 22000,
         "uv": {
           "islands": 22,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 19,
-          "mirrored_faces": 168,
-          "uv_coverage": 0.677,
-          "world_per_uv": 0.14805895422525134
+          "folded_fallback_faces": 20,
+          "mirrored_faces": 174,
+          "uv_coverage": 0.628,
+          "world_per_uv": 0.14553877672869758
         },
-        "symmetry_error": 0.004118
+        "symmetry_error": 0.007875
       },
       "Claws": {
         "object": "Skyray_Claws",
         "material": "Skyray_Claws_Mat",
         "maps": "Skyray_Claws_*.png (1024, Low 512)",
-        "tris": 188,
+        "tris": 192,
         "lod1_object": "Skyray_Claws_LOD1",
         "lod1_tris": 76,
         "source_tris": 11064,
         "uv": {
-          "islands": 8,
+          "islands": 7,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 26,
-          "mirrored_faces": 76,
-          "uv_coverage": 0.621,
-          "world_per_uv": 0.11220201670988576
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 81,
+          "uv_coverage": 0.608,
+          "world_per_uv": 0.1118764598883887
         },
         "symmetry_error": 0.00307
       }
     },
-    "body_tris": 3832,
-    "extra_tris": 525,
-    "extra_share": 0.137,
+    "body_tris": 3873,
+    "extra_tris": 540,
+    "extra_share": 0.139,
     "body_lod1_tris": 1699,
-    "extra_lod1_tris": 157,
-    "extra_lod1_share": 0.092,
+    "extra_lod1_tris": 158,
+    "extra_lod1_share": 0.093,
     "clips": [
       "Death",
       "Dive",

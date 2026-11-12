@@ -6941,3 +6941,230 @@ Cinder Matriarch and Knitback stay as they were (back to Blender). No generator 
    nothing in these stills; worth checking whether the tower damage smoke is visible in play.
 3. Slagstrider/Siftjaw/Surgefin have no enemy yet, so no in-game stills; the Slagstrider's stilts vs its bar height wait for
    its first enemy.
+
+## Round 49E (Blender): the wolves rebuilt from the muscles out, a mouth cut into the rays, the acid vat, no loose spikes (2026-11-12)
+
+Blender only; nothing under `Assets/` touched, Unity not run, not committed. Second pass on rounds 49A/49B (Remco's
+verdicts on the `r49_<name>_after*` previews). Backups of every overwritten export and `.blend`:
+`ArtSource/Exports/_backup_r49/<Name>_49E/` (gitignored) for Prowler, PackAlpha, Skyray, StormMatriarch, SlimeMonarch,
+CinderMatriarch and Knitback; the shared corrupted-skin report before this round is
+`_backup_r49/Corrupted_skins_report_49E.json`.
+
+### What changed (per verdict)
+
+- **Prowler + PackAlpha (Opnieuw: "smooth as if made of metal, a children's robot dog")**: `Tools/Blender/wolf_kit.py`
+  rewritten. Same wolf idea, new execution: a gaunt, starved predator (deep narrow rib cage with ribs showing, the
+  waist tucked up to the spine, hip bones, shoulder-blade spines and lumbar vertebrae under the skin); limbs as one
+  tapered muscle profile per segment (bulging behind the bone, thinning to tendon-corded wrists and hocks, no stacked
+  balls or rings), the thigh growing out of the croup; pale but hide-stained bone only where it pushes out (elbow
+  spur, hooked hock spur, knee cap); big splayed paws. Shaggy quill-fur in clumps of tapered, bent locks: a hanging
+  throat ruff, a mane down the neck and spine, cheek tufts, shoulder and haunch tufts, feathering behind the elbows
+  and down the forearms, a ragged brush tail. A low head on a thick neck: broad cranium with a sagittal crest and a
+  heavy brow, a blunt long muzzle wrinkled in a snarl, the upper lip lifted off dark gums, laid-back ears (and the
+  small second pair), the split lower jaw kept. Materials are matte (specular 0.15, roughness 0.84-0.92): dark back,
+  rust (Prowler) or soot-brown (Alpha) flanks, dull pale belly, big dark mottles, fur striation that follows the body,
+  broken dark stripes with a thin glowing seam in some, raised pale scars; near-black locks with rust tips.
+  Glow only in the eyes, the throat and the thin stripe seams. The detail parts are re-fitted
+  (`wolf_kit.Wolf.eye_points / upper_teeth / lower_teeth`): eyes in sockets under the brow, the upper teeth rooted
+  in the gum line under the snarl (canine in front, carnassials, incisors), lower fangs on the jaw halves.
+  **PackAlpha** ("I liked the black back spikes better, now it's mostly red"): the same species x1.65, heavier in front,
+  a dominant crest of long, uneven near-black spikes with pale tips down the neck and back, a collar of black spikes on
+  the Mane bones (flares on the howl), pale bone horns, a bone chevron, more scars; the hide is charcoal and soot, red
+  is left to scars, seams and eyes. Several unbaked looks (`r49_quick.py`) and three baked passes before keeping it.
+- **Skyray + ray boss (StormMatriarch export) (Opnieuw: "the mouth isn't attached, a pink water balloon")**: the tail
+  is untouched. The mouth is now cut into the head (`build_skyray.Mouth`, `head_with_mouth`, shared): the head's own
+  front underside is flattened into the upper lip and palate, a lower-jaw ellipsoid on the `Jaw` bone is the lower lip
+  (its front top flattened below the palate), and the two overlap behind the slit and at its corners, so the remesh
+  fuses them into one skin round a down-turned crescent slit. The inside is painted dark and matte (a glossy inside
+  mirrored the sky as a silver band), a gum band runs along both lip edges, a dark throat closes the back. The Maw and
+  LowerLip balls are gone. The teeth (`skyray_detail.mouth_teeth`, used by both) are rooted in the gum line just behind
+  the lip edges, uneven, ivory with dark stained roots (the pale blue read as a chrome grille); the Skyray has fewer,
+  bigger teeth. At rest the slit stands a little open (MOUTH_REST 5 degrees, unchanged) and opens with the lobes' flare.
+- **SlimeMonarch (Opnieuw, only the "watermelons")**: the two brood sacs are replaced by one **acid vat** on the back:
+  a bag of thin, wet, veined membrane grown out of the mantle (a fleshy collar at its root, raised veins down its
+  sides), painted as if you look through it (glowing acid with darker clots below the acid level, a darker meniscus
+  band, dark empty membrane above), open at the top under a lumpy lip with three cartilage hoops arching over the
+  opening, filled with glowing, bubbling acid slime. The acid's surface is on a new bone **`Slosh`** (child of
+  `Body_2`, pivot at the acid level, scale-keyed): every clip keys it from a damped-spring slosh driven by the vat's own
+  motion (natural frequency 0.9 Hz, damping 0.3, clamp 22 degrees), so it lags, tilts and rings out: Crawl about
+  +-6 degrees, Idle 2, Hit and Flood slam up to 22 per axis, then settles. Two short fleshy spouts with glowing acid in
+  their mouths sit exactly on the **`Sac_L`/`Sac_R`** heads (names and positions unchanged: young oozers still come out
+  there); the Sac scale keys now make the spouts swell and spit on Spawn. The opaque game shader is enough (no
+  transparent material needed): the "transparency" is painted, the slosh is real geometry seen through the opening.
+  Also: the back blisters sit 0.014 deeper (`build_oozer` cfg `blister_sink`, SlimeMonarch only; the Oozer is
+  unchanged), because one came loose when the front rears in Flood.
+- **CinderMatriarch (Bijna: "some spikes are no longer attached")**: the outer hood shard on each side was rooted past
+  the hood's thin rim, 0.13 model units in the air at rest and up to 0.22 in the clips; it now grows out of the hood
+  plate (and is a little longer, so its silhouette stays). Everything else unchanged; all 18 clips re-keyed
+  identically by `build_cindermatriarch.py --skip-larva` + `build_cindermatriarch_mech.py --skip-props`.
+- **Knitback (Bijna: "the head has loose floating parts")**: the thorn tusks started in the air beside the skull
+  (0.027 gap at rest): they now grow out of it. The two root tendrils came loose from the rump in Walk (0.025): they
+  now start inside it. Bones, clips, events unchanged.
+- **New tool `Tools/Blender/check_floating_parts.py`**: splits every skinned mesh of a creature (body + Face/Claws/Eyes/
+  Teeth parts) into connected islands and reports islands whose gap to the body (or to an attached island) exceeds a
+  threshold (default 0.4 % of the body size), in the rest pose and at N frames of every clip; a cap or sheath that
+  encloses a spike's end and points inside the surface (ray parity) count as attached. Writes
+  `ArtSource/Previews/QA/r49e_floating_<name>.json`. Run:
+  `blender -b --factory-startup --python Tools/Blender/check_floating_parts.py -- --only CinderMatriarch,Knitback [--frames 7] [--thr 0.004]`.
+
+### Floating-part check, all seven (poses = rest + 5-7 frames of every clip)
+
+| Creature | Poses | Before this round | After |
+| --- | --- | --- | --- |
+| CinderMatriarch | 127 | 2 hood shards (0.13 at rest, up to 0.22) | none |
+| Knitback | 46 | 2 tusks (0.027 at rest), 2 tendrils (0.025 in Walk) | none |
+| SlimeMonarch | 43 | (new body) 1 blister in Flood (0.023) | none |
+| Prowler | 36 | n/a (new body) | none |
+| PackAlpha | 36 | n/a (new body) | 2 decimation crumbs of 4 vertices near the neck, 0.015 apart only in the Howl peak (boss units; invisible) |
+| Skyray | 36 | not touched | the round-46 fin-tip talons stand 0.037 off the curled fin tip in Dive frame 8 (pre-existing, the fin skin bends away from the rigid A3 talons) |
+| StormMatriarch | 36 | not touched | the same for her fin talons in the last Death frame (0.05, a crumpled fin) |
+
+### Unity import list (exact)
+
+Rows to rebuild (`BlenderArtBuilder.RebuildOnly`): **Prowler, PackAlpha, Skyray, RayBoss (export StormMatriarch),
+SlimeMonarch, CinderMatriarch, Knitback**, plus the corrupted-skin rows of **Prowler, PackAlpha, Skyray,
+StormMatriarch, SlimeMonarch, Knitback** (`Skins/Corrupted` re-baked on the new UVs and merged into
+`ArtSource/Exports/Corrupted_skins_report.json`). CinderMatriarch has no corrupted skin; its larva and egg were not
+re-exported. Oozer, Cragback, Slagstrider, Siftjaw, Surgefin were not touched.
+
+| Export | Tris LOD0 / LOD1 | Bones LOD0 / LOD1 | Clips (names, frames, events) | Parts (tris LOD0/LOD1) | Detail families (B, A) | Other |
+| --- | --- | --- | --- | --- | --- | --- |
+| Prowler | 3519 / 1697 (was 3904 / 1700) | 22 / 14, same names; rest positions of Pelvis, Chest, Neck, Head, Jaw_L/R, Tail_1..3 moved (low head) | unchanged: Run 16, Idle 60, Hit 12, Death 36, Pounce 26 | Face 314/86, Claws 156/76 | **membrane, chitin** (was chitin, membrane) | `run_distance_per_loop` 1.429 unchanged; head lower, shoulder height about the same: re-measure `_height` |
+| PackAlpha | 14184 / 5999 (was 14430 / 5998) | 24 / 18, same names (Mane_L/R moved with the neck) | unchanged: Run 20, Idle 72, Hit 14, Death 40, Howl 54 (peak 22) | Face 1798/558, Claws 908/318 | **membrane, chitin** (was chitin, membrane) | `run_distance_per_loop` 2.2 unchanged; spikes stand higher: re-measure `_height` |
+| Skyray | 3873 / 1699 | 23 / 12 unchanged | unchanged: Fly 42, Idle 60, Hit 12, Death 40, Dive 24 (impact 10) | Face 348/82, Claws 192/76 | membrane, chitin (unchanged) | Maw and LowerLip mesh parts gone (internal, no Unity names) |
+| StormMatriarch (RayBoss) | 13391 / 5997 | 27 / 16 unchanged | unchanged: Fly 56, Idle 72, Hit 14, Death 48, Release 54 (frame 30) | Face 2150/558, Claws 344/128 | membrane, chitin (unchanged) | tail laser still from Tail_5 |
+| SlimeMonarch | 12998 / 6000 | **14 / 12 (new `Slosh`, child of Body_2, scale-keyed)** | unchanged names/lengths: Crawl 40, Idle 72, Hit 12, Death 40, Flood 44 (slam 24), Spawn 48 (release 30); every clip also keys Slosh | Face 2488/849 | membrane, chitin (unchanged) | `spawn_point_bones` Sac_L/Sac_R unchanged (now the spouts); `scale_keyed_bones` + Slosh; Unity code does not need Slosh |
+| CinderMatriarch | 23136 / 9000 | 30 / 25 unchanged | all 18 unchanged (incl. round-28 mechanics and round-33 gate clips) | Eyes 1300/360, Teeth 1486/460, Claws 1519/497 | per material, unchanged | only the two hood shards moved |
+| Knitback | 3912 / 1700 | 18 / 12 unchanged | unchanged: Walk 40, Idle 72, Hit 14, Death 44, Regrow 48 | Face 336/84, Claws 196/68 | chitin, membrane (unchanged) | |
+
+- `ExtraParts` names unchanged everywhere (Face+Claws; Face only for SlimeMonarch; Eyes+Teeth+Claws for the Cinder
+  Matriarch). Every body and part map of the seven exports re-baked (and Low/); UV layouts changed.
+- Per-frame clip steps (`r49e_<name>_after_clip_steps.json`): the wolves' largest steps are identical to round 49A
+  (same clip code; Run 37.9 deg at x1.8 median for the Prowler); SlimeMonarch: no new snaps, Slosh's largest step is
+  10.3 deg in the Death jerk (a spring, not a snap).
+
+### Previews (`ArtSource/Previews/QA/`)
+
+`r49e_<key>_after_game.png`, `_after_close.png`, `_after_move.png`, `_after_front.png`, `_after_mouth.png` and the
+sheet `r49e_<key>_after.png` for prowler, packalpha, skyray, stormmatriarch, slimemonarch, cindermatriarch, knitback
+(bright light, the 49A angles: `Tools/Blender/r49_views.py -- --prefix r49e`, which now also knows CinderMatriarch and
+Knitback); clip sheets `r49e_{prowler,packalpha,slimemonarch}_after_clips.png` with `_clip_steps.json`; floating
+reports `r49e_floating_<name>.json`.
+
+### Honest assessment and open points (round 49E)
+
+1. **Prowler / PackAlpha**: now read as a gaunt, dark, shaggy predator with a snarl and fangs, not a toy; the Alpha's
+   black spike crest is back and dominant. Weak points: at 3519 tris the Prowler's head and fur locks are faceted in
+   close-ups (the locks eat budget; the game view is fine), the eye lids read as small rolls, the teeth are a little
+   glossy, and the legs stay lean on purpose (wolf). The palette (`build_prowler.PAL`, `build_packalpha.PAL`) is one
+   place to push value contrast further if the hide reads too uniform in game.
+2. **Rays**: the mouth is part of the head now and the teeth sit in the gums; from the straight top-down camera the slit
+   is a thin dark line (it shows best from the front-oblique view, as before).
+3. **SlimeMonarch**: the vat reads as a glowing bag from the play camera; the slosh is visible as the acid surface
+   tilting in the opening (best in Hit and Flood). Real translucency would need a transparent material for a separate
+   part (not done: the importer's creature materials are opaque).
+4. **Cinder Matriarch / Knitback**: no floating islands left in any pose (checked); visually the spikes and tusks sit
+   on the body.
+5. Not fixed (outside the brief, noted by the new check): the Skyray's and StormMatriarch's round-46 fin-tip talons
+   separate from the fin tip in extreme poses (Dive frame 8, last Death frame). Weighting the talons to both fin
+   chains (or seating them deeper) would fix it.
+
+## Round 49 import (set 2): the bats, the bat boss, the scorpions, the Frost Warden's teeth, the Brood Mother and the Hive Queen in the game; smoke material fix (2026-11-12)
+
+Not committed. Only the 49C/49D rows Remco approved: Bat, Bat_Moss/Dust/Tide/Frost, BatBoss (export SkySovereign, worn by
+the Storm Matriarch), Stinger, AcidEmpress, FrostWarden, BroodMother, HiveQueen (export Queen). Not synced: SealedOne, Shardback,
+Bulwark, CrystalWarlord, Shattered, the ray boss (export StormMatriarch) and everything the two Blender agents are working on. No
+generator run, nothing under `ArtSource/` exports or `Tools/Blender/` touched. Save `progress.json` **2eca347e** copied aside
+before every Play Mode run and verified after each.
+
+### 1. Import (`Tools/PlayTest/Scripts/ApplyRedesign49Set2.cs`, `BlenderArtBuilder.RebuildOnly`)
+
+- 17 rows rebuilt (the 11 plus the corrupted rows of Bat, BatBoss, Stinger, AcidEmpress, BroodMother and Queen; the Frost Warden
+  has a second material, so no corrupted row), worn by 12 enemies. Seven exports synced (FBX, LOD1, body/part maps, Low/,
+  `Skins/Corrupted/`, report); 34 materials changed (detail scales from the new reports only). `ApplyRedesign49Set2.Report`
+  prints the same description without rebuilding (used for the before state).
+- Renderers match the 49C/49D tables: Bat 3899/1697 (Face 316/84, Claws 200/78), SkySovereign 12639/5999 (Face 1498/518),
+  Stinger 3952/1700 (Face 334/82), AcidEmpress 14341/5997 (Face 1660/518, Claws 1026/358), FrostWarden Teeth 1688/460 (body
+  unchanged), BroodMother 14500/6000 (Face 1844/558, Claws 940/320), Queen 14500 with no LOD1 as before (Face 1833, Claws 932).
+  Bone counts unchanged.
+- Moved rest positions arrived: bat `Head` z -0.100 -> -0.165 (the neck), `Jaw` -0.120 -> -0.185; bat boss `Head` z -0.150 ->
+  -0.247, `Jaw` -0.180 -> -0.286. Power sockets did not move: BatBoss `Emitter` (0, -0.06, 0.99), AcidEmpress `Gland`
+  (0, 1.672, 0.352), BroodMother `Vent` (0, 0.298, 1.645), FrostWarden `Socket_Breath` (0, 2.32, -2.62), in both rigs where they
+  were before (the Brood Mother's far rig never had the vent).
+- `Data/Art/*.asset`: only `_height` (re-measured from the model by the builder): BatBoss 0.318 -> 0.338 (ears), Queen 2.782 ->
+  2.871 (crown crystals), BroodMother 1.053 -> 1.056, bats 0.199 -> 0.200; Stinger 0.917, AcidEmpress 2.228 and FrostWarden 5.134
+  unchanged. Plus the default-valued round-47/49 fields (`_turnSeconds`, `_blendSeconds`, `_vents`) written out the first time
+  these assets were saved since; no behaviour change.
+- Element bat part glow (round 46) still applies: Moss green and Dust pale on the parts, Tide/Frost the ember glow
+  (`ElementBatParts_TakeTheirSkinsGlow` passes; green part glow on the Mossbat still).
+- Low (Switch) on the unmirrored Brood Mother and Queen: Low maps are 512 (High 1024), UV coverage 0.51/0.58. At the play zoom
+  (ortho 7 at 720p, about 51 px per unit) the Queen is about 220 px long and the Brood Mother about 130 px, roughly 2 texels per
+  screen pixel on the visible side, so Low holds at the default zoom; at the deepest zoom (x4.5) a Low Queen goes soft (well
+  under one texel per pixel). No change made; a 1024 Low body map for these two bosses would be the fix (Blender side).
+
+### 2. Stills (`r49_shots.sh`, Level_C1_01, no waves, 1920x1080, inspection light x1.8)
+
+`ArtSource/Previews/QA/r49_ingame_<Name>.png`, `_side` and `_game` for Emberbat, Mossbat, Tidebat, StormMatriarch, Stinger,
+AcidEmpress, FrostWarden, BroodMother, HiveQueen. Seen: the bats' heads sit forward on a short neck ahead of the shoulders and
+the wings grow from the shoulder mounds (no wing out of the head in the side view); green part glow on the Mossbat, ember on the
+Tidebat; the Storm Matriarch's big head with its two ears, one wing pair and the amber tail lens hanging below; the Stinger and
+the Acid Empress with the armoured head capsule between the claws (the Empress's crown on it) and the acid gland bulb on the tail
+tip; the Frost Warden's bigger ivory fangs; the Brood Mother's lopsided crown and its brood released at the abdomen (vent); the
+Queen's crown crystals on the head. No floating parts, no pink materials. Console 0 errors, 0 warnings.
+
+### 3. Smoke material fix (Remco's extra task)
+
+- Cause: `GraphicsSettings.currentRenderPipeline.defaultParticleMaterial` (URP's default particle material) drew nothing in this
+  project's game view (a damaged tower's 8 live smoke particles showed nothing: `r49_smokebefore_TowerDamageSmoke.png`), and in a
+  player build URP returns **null** for it (`UniversalRenderPipelineAsset.GetMaterial` is editor-only), so every effect on it
+  would vanish in a Steam build as well.
+- `ParticleKit` (Core): `Create` now dresses every system in the atlas's glowing soft mote (sparks, embers, thrusters, glints);
+  new `UseSmoke` dresses smoke, dust, steam and mist in the ragged vapour puff (`SpriteKit.Puff`) drawn covering, one shared
+  material per quality (the atlas mote read as small glowing dots at smoke size); new `SpriteMaterial(sprite)` builds a covering
+  material (alpha-blended like the old default) from the atlas's; `FallbackMaterial` is the only place left that reads the URP
+  default, used only when no art is registered (bare EditMode tests). `UseCell` takes the fallback only when a renderer has none.
+- Effects fixed (systems that drew with the default material):
+  - vapour puff: tower damage smoke, gate (blockade) smoke, hero smoke and dust (both hero views), hero ability dust, base
+    structure smoke and wreck smoke, base destruction smoke, enemy death puff, drone dust, rocket smoke, crack-line dust, the
+    Frost Warden's cold mist, tower aura haze, tower toss dust, water mist, opening-cutscene hatch steam, landing dust, retro dust
+    and shiver dust;
+  - glowing mote: tower sparks, gate sparks and fire, hero sparks, thrusters, jet motes, weld sparks and reload glint, base
+    sparks, shuttle lift jets and engine glow, boss pulse and beam sparks, enemy bolt sparks, ricochet sparks, drone sparks, base
+    destruction fireball and sparks, cutscene weld, sparks and retro jets, lava embers and sparks, bog bubbles, rift dust;
+  - other atlas cells: lava trail embers (Ember), boss spores (Spore), frost shot (FrostMote), corpse splash and death splash
+    (Drip), crack grit, wake bubbles, slime bubbles, emergence dirt and slam impact (covering mote);
+  - liquid life (lava bubbles and pops, lava smoke, water rings and glints, bog steam, sand dust and sinks, frost mist and
+    glints): `SpriteMaterial` with their own sprites instead of copies of the default;
+  - impact effects (`VfxParticles`): a part without a sheet in its `ImpactVfxDefinition` is switched off instead of drawing with
+    the default (it showed nothing before either);
+  - the redundant default assignments before `UseCell` (ambient motes, starfield, hive spores, prop sparks, chrono motes, menu
+    starfield and spores) are gone; the crack-line rubble meshes keep their own material with the sheet animation off.
+- Damage smoke tuned to read once drawn (picked from live variants with `r49_smoke_variant.cs`): tower, gate, hero and base smoke
+  `(0.5, 0.48, 0.46, 0.95)` (was dark 0.2 at alpha 0.35) and broader (tower 0.36-0.8, gate 0.45-0.9, hero 0.36-0.72, base
+  0.36-0.9); wreck smoke `(0.36, 0.33, 0.31, 0.95)`. Particle counts, rates and the Low share untouched.
+- Verified: `r49_particle_probe.cs` (every particle renderer and its material) flags **0** default or missing materials in
+  Level_C1_01 (was 42 renderers); stills `r49_ingame_TowerDamageSmoke.png` / `_game` (a grey plume rising off the tower at 20%
+  health) and `r49_ingame_HeroDownSmoke.png` / `_game` (hero knocked down; its smoke is drawn, 7 particles, but still thin at that
+  moment); before-stills `r49_smokebefore_*`. Tools: `r49_smoke_shots.sh`, `r49_smoke_tower.cs`, `r49_zoom_hero.cs`,
+  `r49_smoke_particles.cs`, `r49_smoke_variant.cs`. Console 0 errors, 0 warnings.
+
+### 4. Tests
+
+- `CreatureArtTests.Redesign49Set2Rows_ShareTheNewModel_AndKeepTheirPowerSockets` (six corrupted rows share model, far model,
+  parts and height; the four element bats share the ember bat's model and height; Emitter, Gland and Socket_Breath in both rigs,
+  Vent in the near rig); the set-1 test now uses the same helper.
+- `ParticleMaterialTests`: kit systems wear the atlas (glowing mote by default, covering mote for dust, the vapour puff for
+  smoke, never the default), and no script that builds its own particle system reads `defaultParticleMaterial`.
+- EditMode suite on w6: **831 tests, 779 passed, 52 skipped, 0 failed** (was 828; +3). The first run caught the Queen having no far model (a fake-null reference per asset), so the corrupted-row helper compares far models with Unity equality. Recompile: 0 errors; only the known CS0618 in `BalanceProbeTests.cs:601`.
+
+### Open points (round 49 import, set 2)
+
+1. The smoke look is a first pass: thicker or darker damage smoke is `SmokeColor` and the size pair in `TowerView`, `GateView`,
+   `HeroView`, `HeroArtView` and `BaseArtView`.
+2. Build risk left (not particle systems, outside this task): line and trail renderers (projectile trails, hero bolts, the sword
+   trail, boss ability lines, the recon trail) still use the URP default particle material, and `SpaceKit`, `ModelPreview` and
+   `TerrainLiquidBuilder` copy URP default materials with `new Material(...)`, which throws in a player build where they are
+   null. They need the same treatment before the first Steam build.
+3. Impact parts without a sheet (for example the boss pulse's sparks) stay invisible as before; give them a sheet in their
+   `ImpactVfxDefinition` if they should show.
+4. Low maps of the unmirrored Brood Mother and Queen go soft at the deepest zoom (section 1).

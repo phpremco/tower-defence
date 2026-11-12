@@ -1,7 +1,7 @@
 {
   "asset": "Knitback",
-  "game_tris": 3886,
-  "source_tris": 710584,
+  "game_tris": 3912,
+  "source_tris": 713024,
   "bones": 18,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -12,21 +12,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 65,
+    "islands": 60,
     "folded_fallback_faces": 0,
-    "mirrored_faces": 1932,
-    "uv_coverage": 0.585,
-    "world_per_uv": 1.5483348768398109
+    "mirrored_faces": 1944,
+    "uv_coverage": 0.541,
+    "world_per_uv": 1.6257222808303218
   },
   "detail": {
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 25.8,
+      "tiling": 27.1,
       "mask": "B"
     },
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 19.4,
+      "tiling": 20.3,
       "mask": "A"
     }
   },
@@ -65,14 +65,14 @@
         "tris": 336,
         "lod1_object": "Knitback_Face_LOD1",
         "lod1_tris": 84,
-        "source_tris": 19944,
+        "source_tris": 19928,
         "uv": {
           "islands": 10,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 10,
+          "folded_fallback_faces": 8,
           "mirrored_faces": 168,
-          "uv_coverage": 0.654,
-          "world_per_uv": 0.13664977432634048
+          "uv_coverage": 0.653,
+          "world_per_uv": 0.13653532497262014
         },
         "symmetry_error": 0.00307
       },
@@ -95,9 +95,9 @@
         "symmetry_error": 0.0
       }
     },
-    "body_tris": 3886,
+    "body_tris": 3912,
     "extra_tris": 532,
-    "extra_share": 0.137,
+    "extra_share": 0.136,
     "body_lod1_tris": 1700,
     "extra_lod1_tris": 152,
     "extra_lod1_share": 0.089,

@@ -7,6 +7,13 @@ long glowing plates on the Mane bones that flares on the howl, two pale bone hor
 bone chevron over the withers, healed claw scars glowing on the flanks, three eyes per side (Face part). Same bones,
 clips and the howl peak frame.
 
+Round 49E (Remco: the same "robot dog" verdict as the Prowler, plus "I liked the black back spikes better before,
+now it's mostly red"): the rebuilt alien wolf of wolf_kit.py (gaunt, muscled, shaggy, a snarling low head) at 1.65
+times the Prowler, heavier in front, scarred all over, with a dominant crest of long near-black spikes down the neck
+and back (the old black spikes' role), a collar of black spikes on the Mane bones that fans out on the howl, pale
+bone horns and a bone chevron on the withers. The hide is charcoal and soot; red is left to the scars, the stripe
+seams and the eyes.
+
 Clips: Run (loop), Idle (loop), Hit, Death, Howl (the power). Also exports PackAlpha_LOD1.
 
 Run: blender --background --python Tools/Blender/build_packalpha.py -- [--preview <dir>] [--norender]
@@ -35,16 +42,18 @@ DETAIL_K = 1.4
 GAME_TRIS = 14500
 LOD_TRIS = 6000
 TEX, LOW_TEX = 1024, 512
-FAMILIES = ("chitin", "membrane", "crystal")
+FAMILIES = ("membrane", "chitin", "crystal")  # round 49E: hide first, spikes and bone second
 GAME_SCALE = 1.3 * 0.6
 PROWLER_SCALE = 0.62
 
 # The PackAlpha's data colours: a deeper blood red than the Prowler (0.6, 0.15, 0.1), red-orange sensors, orange glow.
-PAL = H.Palette(top=(0.62, 0.13, 0.07), side=(0.17, 0.035, 0.025), belly=(0.05, 0.02, 0.016), seam=(0.035, 0.012, 0.01),
-                dark=(0.1, 0.028, 0.02), glow=(1.0, 0.52, 0.14), eye=(1.0, 0.3, 0.12), membrane=(0.3, 0.06, 0.025),
-                bone=(0.92, 0.8, 0.62))
-LEGP = H.Palette(top=(0.48, 0.1, 0.055), side=(0.2, 0.045, 0.03), belly=(0.045, 0.018, 0.014), seam=(0.03, 0.01, 0.008),
-                 dark=(0.08, 0.025, 0.018), glow=PAL.glow, eye=PAL.eye, bone=PAL.bone)
+# Round 49E (Remco: "mostly red"): a charcoal-and-soot hide with only a red-brown cast on the flanks; the red lives in
+# the scars (membrane), the stripe seams and the eyes; the spikes are near-black (dark) with pale bone tips.
+PAL = H.Palette(top=(0.035, 0.028, 0.026), side=(0.2, 0.1, 0.075), belly=(0.3, 0.24, 0.2), seam=(0.022, 0.014, 0.012),
+                dark=(0.025, 0.02, 0.02), glow=(1.0, 0.45, 0.12), eye=(1.0, 0.3, 0.12), membrane=(0.6, 0.12, 0.07),
+                bone=(0.86, 0.78, 0.64))
+LEGP = H.Palette(top=(0.05, 0.035, 0.03), side=(0.15, 0.08, 0.06), belly=(0.24, 0.18, 0.15), seam=PAL.seam,
+                 dark=PAL.dark, glow=PAL.glow, eye=PAL.eye, membrane=PAL.membrane, bone=PAL.bone)
 
 SIDES = (("L", -1), ("R", 1))
 X = Vector((1, 0, 0))
@@ -80,15 +89,8 @@ def build_parts():
 
 
 def scar_cuts():
-    """Three healed claw slashes across each flank and one across each shoulder (Blender space)."""
-    cuts = []
-    for sx in (-1, 1):
-        out = Vector((sx, 0, 0.25))
-        for i in range(3):
-            o = i * 0.05
-            cuts.append((P(0.125 * sx, 0.6 - o * 0.4, 0.2 - o), P(0.105 * sx, 0.42 - o * 0.4, 0.02 - o), out))
-        cuts.append((P(0.12 * sx, 0.63, 0.25), P(0.135 * sx, 0.5, 0.12), Vector((sx, 0, 0.6))))
-    return cuts
+    """Round 49E: the healed claw slashes live in wolf_kit (Wolf.scar_cuts, painted by its hide style)."""
+    return WOLF.scar_cuts()
 
 
 def bones():
@@ -264,10 +266,10 @@ def main():
     C.reset_scene()
     out = C.preview_dir()
     builder = build_parts()
-    extra = B.chain_extras(H.weathering(K, markings=PAL.dark, marking_amount=0.7, seed=63),
-                           B.scars(scar_cuts(), PAL.glow, 1.0, width=R(0.02), depth=R(0.004)))
+    # Round 49E: the scars are part of wolf_kit.hide (raised, pale-red, a faint glow), not a separate glowing cut.
+    extra = H.weathering(K, scratches=0.5, dust=0.35, markings=PAL.seam, marking_amount=0.4, seed=63)
     asset = C.build_mesh_asset(NAME, builder, voxel=0.0048, target_tris=GAME_TRIS, tex_size=TEX, ao_distance=0.13,
-                               extrusion=0.02, ray=0.06, emission_strength=2.5, extra=extra, specular=0.3,
+                               extrusion=0.02, ray=0.06, emission_strength=2.5, extra=extra, specular=0.15,
                                mirror=True, k=DETAIL_K, families=FAMILIES, low_size=LOW_TEX)
     bone_list = bones()
     arm = C.build_armature(NAME + "_Rig", bone_list)

@@ -13,11 +13,11 @@
   },
   "Prowler": {
     "folder": "ArtSource/Exports/Prowler/Skins/Corrupted",
-    "vein_coverage": 0.247
+    "vein_coverage": 0.045
   },
   "Skyray": {
     "folder": "ArtSource/Exports/Skyray/Skins/Corrupted",
-    "vein_coverage": 0.026
+    "vein_coverage": 0.03
   },
   "Shalebat": {
     "folder": "ArtSource/Exports/Shalebat/Skins/Corrupted",
@@ -29,7 +29,7 @@
   },
   "Stinger": {
     "folder": "ArtSource/Exports/Stinger/Skins/Corrupted",
-    "vein_coverage": 0.131
+    "vein_coverage": 0.126
   },
   "Bat": {
     "folder": "ArtSource/Exports/Bat/Skins/Corrupted",
@@ -37,7 +37,7 @@
   },
   "Bulwark": {
     "folder": "ArtSource/Exports/Bulwark/Skins/Corrupted",
-    "vein_coverage": 0.102
+    "vein_coverage": 0.104
   },
   "Oozer": {
     "folder": "ArtSource/Exports/Oozer/Skins/Corrupted",
@@ -45,7 +45,7 @@
   },
   "Shardback": {
     "folder": "ArtSource/Exports/Shardback/Skins/Corrupted",
-    "vein_coverage": 0.027
+    "vein_coverage": 0.038
   },
   "Mireleech": {
     "folder": "ArtSource/Exports/Mireleech/Skins/Corrupted",
@@ -53,7 +53,7 @@
   },
   "Knitback": {
     "folder": "ArtSource/Exports/Knitback/Skins/Corrupted",
-    "vein_coverage": 0.062
+    "vein_coverage": 0.058
   },
   "Slagstrider": {
     "folder": "ArtSource/Exports/Slagstrider/Skins/Corrupted",
@@ -69,19 +69,19 @@
   },
   "Queen": {
     "folder": "ArtSource/Exports/Queen/Skins/Corrupted",
-    "vein_coverage": 0.106
+    "vein_coverage": 0.095
   },
   "BroodMother": {
     "folder": "ArtSource/Exports/BroodMother/Skins/Corrupted",
-    "vein_coverage": 0.034
+    "vein_coverage": 0.035
   },
   "PackAlpha": {
     "folder": "ArtSource/Exports/PackAlpha/Skins/Corrupted",
-    "vein_coverage": 0.117
+    "vein_coverage": 0.022
   },
   "StormMatriarch": {
     "folder": "ArtSource/Exports/StormMatriarch/Skins/Corrupted",
-    "vein_coverage": 0.026
+    "vein_coverage": 0.022
   },
   "CoreWisp": {
     "folder": "ArtSource/Exports/CoreWisp/Skins/Corrupted",
@@ -89,7 +89,7 @@
   },
   "AcidEmpress": {
     "folder": "ArtSource/Exports/AcidEmpress/Skins/Corrupted",
-    "vein_coverage": 0.185
+    "vein_coverage": 0.181
   },
   "CrystalWarlord": {
     "folder": "ArtSource/Exports/CrystalWarlord/Skins/Corrupted",
@@ -97,11 +97,11 @@
   },
   "SkySovereign": {
     "folder": "ArtSource/Exports/SkySovereign/Skins/Corrupted",
-    "vein_coverage": 0.034
+    "vein_coverage": 0.028
   },
   "SlimeMonarch": {
     "folder": "ArtSource/Exports/SlimeMonarch/Skins/Corrupted",
-    "vein_coverage": 0.05
+    "vein_coverage": 0.035
   },
   "RollerKing": {
     "folder": "ArtSource/Exports/RollerKing/Skins/Corrupted",

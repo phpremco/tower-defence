@@ -433,14 +433,7 @@ namespace Game.Tests
         {
             foreach (string id in Redesign49Rows)
             {
-                var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}.asset");
-                var corrupted = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}{BlenderArtCatalog.CorruptedSuffix}.asset");
-                Assert.IsNotNull(art, $"{id}: no art definition");
-                Assert.IsNotNull(corrupted, $"{id}: no corrupted art definition");
-                Assert.AreSame(art.Model, corrupted.Model, $"{id}: the corrupted row wears another model");
-                Assert.AreSame(art.Lod1, corrupted.Lod1, $"{id}: the corrupted row wears another far model");
-                Assert.AreEqual(art.Parts.Length, corrupted.Parts.Length, $"{id}: the corrupted row has other parts");
-                Assert.AreEqual(art.Height, corrupted.Height, 1e-4f, $"{id}: the corrupted row measures another height");
+                AssertCorruptedRowSharesModel(id);
             }
 
             var cragback = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/Cragback.asset");
@@ -451,6 +444,59 @@ namespace Game.Tests
                     Assert.IsTrue(HasNode(model.transform, socket), $"{model.name}: no {socket} socket");
                 }
             }
+        }
+
+        // Round 49 (approved set 2): the bats, the bat boss, the scorpions, the Frost Warden, the Brood Mother and the Hive
+        // Queen are in with their corrupted skins; the element bats still share the ember bat's model, and every power
+        // socket a boss effect hangs on survived the moved rest poses (in the far rig too where the boss has one there).
+        private static readonly string[] Redesign49Set2CorruptedRows = { "Bat", "BatBoss", "Stinger", "AcidEmpress", "BroodMother", "Queen" };
+        private static readonly string[] ElementBatRows = { "Bat_Moss", "Bat_Dust", "Bat_Tide", "Bat_Frost" };
+        private static readonly (string Id, string Socket, bool InFarRig)[] Redesign49Set2Sockets =
+        {
+            ("BatBoss", "Emitter", true), ("AcidEmpress", "Gland", true), ("FrostWarden", "Socket_Breath", true),
+            ("BroodMother", "Vent", false),
+        };
+
+        [Test]
+        public void Redesign49Set2Rows_ShareTheNewModel_AndKeepTheirPowerSockets()
+        {
+            foreach (string id in Redesign49Set2CorruptedRows)
+            {
+                AssertCorruptedRowSharesModel(id);
+            }
+
+            var bat = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/Bat.asset");
+            foreach (string id in ElementBatRows)
+            {
+                var element = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}.asset");
+                Assert.IsNotNull(element, $"{id}: no art definition");
+                Assert.AreSame(bat.Model, element.Model, $"{id}: wears another model than the ember bat");
+                Assert.AreSame(bat.Lod1, element.Lod1, $"{id}: wears another far model than the ember bat");
+                Assert.AreEqual(bat.Height, element.Height, 1e-4f, $"{id}: measures another height than the ember bat");
+            }
+
+            foreach ((string id, string socket, bool inFarRig) in Redesign49Set2Sockets)
+            {
+                var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}.asset");
+                Assert.IsTrue(HasNode(art.Model.transform, socket), $"{id}: no {socket} socket");
+                if (inFarRig)
+                {
+                    Assert.IsTrue(HasNode(art.Lod1.transform, socket), $"{id}: no {socket} socket in the far rig");
+                }
+            }
+        }
+
+        private static void AssertCorruptedRowSharesModel(string id)
+        {
+            var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}.asset");
+            var corrupted = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}{BlenderArtCatalog.CorruptedSuffix}.asset");
+            Assert.IsNotNull(art, $"{id}: no art definition");
+            Assert.IsNotNull(corrupted, $"{id}: no corrupted art definition");
+            Assert.AreSame(art.Model, corrupted.Model, $"{id}: the corrupted row wears another model");
+            // Unity equality: a row without a far model (the Queen) holds a fake-null reference on each asset.
+            Assert.IsTrue(art.Lod1 == corrupted.Lod1, $"{id}: the corrupted row wears another far model");
+            Assert.AreEqual(art.Parts.Length, corrupted.Parts.Length, $"{id}: the corrupted row has other parts");
+            Assert.AreEqual(art.Height, corrupted.Height, 1e-4f, $"{id}: the corrupted row measures another height");
         }
 
         // The Cragback's craters smoke from data: its art (and its corrupted skin's) names a sound vent definition, the

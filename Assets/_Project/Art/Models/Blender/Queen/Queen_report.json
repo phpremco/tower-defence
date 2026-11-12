@@ -1,7 +1,7 @@
 {
   "asset": "Queen",
-  "game_tris": 14490,
-  "source_tris": 526788,
+  "game_tris": 14500,
+  "source_tris": 531928,
   "bones": 26,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -12,21 +12,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 91,
-    "folded_fallback_faces": 0,
-    "mirrored_faces": 7065,
-    "uv_coverage": 0.658,
-    "world_per_uv": 4.353032501078052
+    "islands": 394,
+    "folded_fallback_faces": 52,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.578,
+    "world_per_uv": 6.577129549588327
   },
   "detail": {
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 24.2,
+      "tiling": 36.5,
       "mask": "B"
     },
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 18.1,
+      "tiling": 27.4,
       "mask": "A"
     }
   },
@@ -35,50 +35,51 @@
     "Idle",
     "Scream"
   ],
+  "r45_body_maps_edited": true,
   "r45_detail": {
     "parts": {
       "Face": {
         "object": "Queen_Face",
         "material": "Queen_Face_Mat",
         "maps": "Queen_Face_*.png (1024, Low 512)",
-        "tris": 1828,
+        "tris": 1833,
         "lod1_object": null,
         "lod1_tris": 0,
-        "source_tris": 171848,
+        "source_tris": 172152,
         "uv": {
-          "islands": 82,
+          "islands": 85,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 22,
-          "mirrored_faces": 912,
-          "uv_coverage": 0.644,
-          "world_per_uv": 0.6635537401002213
+          "folded_fallback_faces": 24,
+          "mirrored_faces": 916,
+          "uv_coverage": 0.682,
+          "world_per_uv": 0.6423629029773708
         },
-        "symmetry_error": 0.011283
+        "symmetry_error": 0.029739
       },
       "Claws": {
         "object": "Queen_Claws",
         "material": "Queen_Claws_Mat",
         "maps": "Queen_Claws_*.png (1024, Low 512)",
-        "tris": 900,
+        "tris": 932,
         "lod1_object": null,
         "lod1_tris": 0,
-        "source_tris": 135364,
+        "source_tris": 135480,
         "uv": {
-          "islands": 17,
+          "islands": 19,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 14,
-          "mirrored_faces": 430,
-          "uv_coverage": 0.65,
-          "world_per_uv": 0.5810985413920022
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 436,
+          "uv_coverage": 0.644,
+          "world_per_uv": 0.5874467483109831
         },
-        "symmetry_error": 0.010234
+        "symmetry_error": 0.031484
       }
     },
-    "body_tris": 14490,
-    "extra_tris": 2728,
-    "extra_share": 0.188,
+    "body_tris": 14500,
+    "extra_tris": 2765,
+    "extra_share": 0.191,
     "lod1": "none (the Queen has no LOD1 export)",
-    "body_maps": "old bead eyes' glow removed from Queen_Albedo/Emission (3485 texels this run)",
+    "body_maps": "old bead eyes' glow removed from Queen_Albedo/Emission (6618 texels this run)",
     "clips": [
       "Idle",
       "Scream",
@@ -86,6 +87,5 @@
     ],
     "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Queen_Face / Queen_Claws, maps Queen_Face_*.png and Queen_Claws_*.png (+ Low/)",
     "note": "round 45: brow of wet eyes, compound eyes, petal teeth, talon feet, scythe saw teeth and tips; bones, clips and events unchanged"
-  },
-  "r45_body_maps_edited": true
+  }
 }

@@ -168,7 +168,7 @@ namespace Game.Enemies
         {
             if (_splash == null)
             {
-                _splash = ParticleKit.Create(transform, "Splash", Vector3.zero, Color.white, 0.45f, 0.9f, 0.05f, 0.13f, 1.5f, 3.5f, 1.6f, 80, 0.2f);
+                _splash = ParticleKit.UseCell(ParticleKit.Create(transform, "Splash", Vector3.zero, Color.white, 0.45f, 0.9f, 0.05f, 0.13f, 1.5f, 3.5f, 1.6f, 80, 0.2f), MarkerArt.ParticleCell.Drip);
             }
 
             ParticleSystem.MainModule main = _splash.main;

@@ -52,7 +52,7 @@ namespace Game.Towers
         private const float DamagedSparkInterval = 0.12f;
         private const int DamagedSparkBurst = 3;
         private static readonly Color WreckColor = new Color(0.1f, 0.1f, 0.11f);
-        private static readonly Color SmokeColor = new Color(0.2f, 0.19f, 0.18f, 0.35f);
+        private static readonly Color SmokeColor = new Color(0.5f, 0.48f, 0.46f, 0.95f);
         private static readonly Color FireColor = new Color(1f, 0.5f, 0.15f);
         private static readonly Color FlashColor = new Color(1f, 0.85f, 0.6f);
         private static readonly Color EmberColor = new Color(1f, 0.45f, 0.1f);
@@ -151,9 +151,9 @@ namespace Game.Towers
             FieldSheet("Sheet", new Vector3(0f, fieldCentre, 0f), Quaternion.identity, new Vector3(fieldWidth, FieldHeight, 1f));
             FieldSheet("Floor", new Vector3(0f, FieldFloorHeight, 0f), Quaternion.Euler(90f, 0f, 0f), new Vector3(fieldWidth, FieldFloorDepth, 1f));
 
-            _sparks = Burst("Sparks", Color.Lerp(_colour, Color.white, 0.5f) * 2f, 0.3f, 0.8f, 0.03f, 0.07f, 2.5f, 6f, 1.5f, 160);
-            _fire = Burst("Fire", FireColor * 2.2f, 0.35f, 0.8f, 0.2f, 0.45f, 1f, 3.5f, -0.4f, 80);
-            _smoke = Burst("Smoke", SmokeColor, 1.2f, 2.2f, 0.25f, 0.5f, 0.3f, 0.7f, -0.12f, 30);
+            _sparks = Burst("Sparks", Color.Lerp(_colour, Color.white, 0.5f) * 2f, 0.3f, 0.8f, 0.03f, 0.07f, 2.5f, 6f, 1.5f, 160, false);
+            _fire = Burst("Fire", FireColor * 2.2f, 0.35f, 0.8f, 0.2f, 0.45f, 1f, 3.5f, -0.4f, 80, false);
+            _smoke = Burst("Smoke", SmokeColor, 1.2f, 2.2f, 0.45f, 0.9f, 0.3f, 0.7f, -0.12f, 30, true);
 
             _flash = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, FlashColor, transform, new Vector3(0f, FieldTop * 0.6f, 0f), Vector3.one * FlashStartScale, FlashEmission).transform;
             _flash.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
@@ -438,7 +438,7 @@ namespace Game.Towers
             _beam.localRotation = Quaternion.Euler(0f, 0f, BeamTiltDegrees * fall);
         }
 
-        private ParticleSystem Burst(string name, Color color, float minLife, float maxLife, float minSize, float maxSize, float minSpeed, float maxSpeed, float gravity, int max)
+        private ParticleSystem Burst(string name, Color color, float minLife, float maxLife, float minSize, float maxSize, float minSpeed, float maxSpeed, float gravity, int max, bool smoke)
         {
             var go = new GameObject(name);
             go.transform.SetParent(transform, false);
@@ -475,10 +475,8 @@ namespace Game.Towers
                 new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.8f, 0.5f), new GradientAlphaKey(0f, 1f) });
             fade.color = gradient;
 
-            var renderer = go.GetComponent<ParticleSystemRenderer>();
-            renderer.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
-            renderer.renderMode = ParticleSystemRenderMode.Billboard;
-            return system;
+            go.GetComponent<ParticleSystemRenderer>().renderMode = ParticleSystemRenderMode.Billboard;
+            return smoke ? ParticleKit.UseSmoke(system) : ParticleKit.UseCell(system, MarkerArt.ParticleCell.Mote);
         }
     }
 }

@@ -1,0 +1,4908 @@
+{
+ "creature": "CrystalWarlord",
+ "threshold": 0.01501,
+ "objects": {
+  "CrystalWarlord": 39,
+  "CrystalWarlord_Claws": 16,
+  "CrystalWarlord_Eyes": 2,
+  "CrystalWarlord_Teeth": 16
+ },
+ "poses": {
+  "rest@0": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5439,
+     -0.6738,
+     1.4892
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4813,
+     -0.1209,
+     1.8454
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.2149,
+     -0.3521,
+     1.9233
+    ],
+    "gap": 0.01786
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.0961,
+     -0.6491,
+     2.0487
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5725,
+     0.0347,
+     1.9575
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.1038,
+     -0.7354,
+     2.0691
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2165,
+     -0.3302,
+     1.9216
+    ],
+    "gap": 0.0189
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1241,
+     -0.2887,
+     2.0659
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1207,
+     -0.5303,
+     2.068
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0164,
+     0.4307,
+     1.5151
+    ],
+    "gap": 0.07633
+   }
+  ],
+  "Block@0": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5495,
+     -0.6415,
+     1.6035
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4944,
+     -0.1593,
+     1.7639
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.2149,
+     -0.4159,
+     1.8235
+    ],
+    "gap": 0.01786
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.0961,
+     -0.7191,
+     1.9331
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5912,
+     0.0044,
+     1.8583
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.1038,
+     -0.8063,
+     1.9491
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2165,
+     -0.394,
+     1.823
+    ],
+    "gap": 0.0189
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1241,
+     -0.3601,
+     1.9692
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1207,
+     -0.6015,
+     1.9586
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0164,
+     0.396,
+     1.4852
+    ],
+    "gap": 0.06437
+   }
+  ],
+  "Block@5": [
+   {
+    "object": "CrystalWarlord",
+    "island": 0,
+    "verts": 2324,
+    "centre": [
+     -0.5669,
+     -0.4757,
+     1.4232
+    ],
+    "gap": 0.02853
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 5,
+    "verts": 11,
+    "centre": [
+     -0.5571,
+     -0.2293,
+     1.6097
+    ],
+    "gap": 0.35147
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.4635,
+     -0.174,
+     1.7955
+    ],
+    "gap": 0.33937
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4276,
+     -0.1365,
+     1.6424
+    ],
+    "gap": 0.2621
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.1003,
+     -0.4516,
+     1.7066
+    ],
+    "gap": 0.0178
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     0.081,
+     -0.7131,
+     1.8305
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5656,
+     0.0235,
+     1.6211
+    ],
+    "gap": 0.35184
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.2951,
+     -0.7528,
+     1.8513
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.3155,
+     -0.3345,
+     1.7053
+    ],
+    "gap": 0.01693
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.2157,
+     -0.3128,
+     1.8464
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.266,
+     -0.5491,
+     1.8493
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     -0.0435,
+     0.3958,
+     1.4248
+    ],
+    "gap": 0.05671
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 7,
+    "verts": 37,
+    "centre": [
+     0.2813,
+     -1.0149,
+     1.5627
+    ],
+    "gap": 0.0255
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 14,
+    "verts": 37,
+    "centre": [
+     0.2186,
+     -1.0291,
+     1.5627
+    ],
+    "gap": 0.02006
+   }
+  ],
+  "Block@10": [
+   {
+    "object": "CrystalWarlord",
+    "island": 0,
+    "verts": 2324,
+    "centre": [
+     -0.5234,
+     -0.5004,
+     1.4376
+    ],
+    "gap": 0.03459
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 5,
+    "verts": 11,
+    "centre": [
+     -0.5352,
+     -0.2483,
+     1.5701
+    ],
+    "gap": 0.34559
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.4964,
+     -0.0621,
+     1.6565
+    ],
+    "gap": 0.32426
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4172,
+     -0.137,
+     1.583
+    ],
+    "gap": 0.24631
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.0627,
+     -0.4565,
+     1.6663
+    ],
+    "gap": 0.01778
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     0.135,
+     -0.7034,
+     1.7937
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5711,
+     -0.001,
+     1.5287
+    ],
+    "gap": 0.3325
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.3511,
+     -0.7285,
+     1.8157
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.3443,
+     -0.312,
+     1.6649
+    ],
+    "gap": 0.01645
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.2427,
+     -0.2948,
+     1.8047
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.3086,
+     -0.5272,
+     1.8109
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     -0.0588,
+     0.393,
+     1.3986
+    ],
+    "gap": 0.05519
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 7,
+    "verts": 37,
+    "centre": [
+     0.3559,
+     -0.9947,
+     1.5307
+    ],
+    "gap": 0.02448
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 14,
+    "verts": 37,
+    "centre": [
+     0.2943,
+     -1.0131,
+     1.5307
+    ],
+    "gap": 0.02555
+   }
+  ],
+  "Block@14": [
+   {
+    "object": "CrystalWarlord",
+    "island": 0,
+    "verts": 2324,
+    "centre": [
+     -0.5312,
+     -0.4961,
+     1.4432
+    ],
+    "gap": 0.03421
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 5,
+    "verts": 11,
+    "centre": [
+     -0.5383,
+     -0.2441,
+     1.5832
+    ],
+    "gap": 0.34643
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.4888,
+     -0.0733,
+     1.6879
+    ],
+    "gap": 0.33071
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.418,
+     -0.1355,
+     1.5982
+    ],
+    "gap": 0.24827
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.0698,
+     -0.4556,
+     1.6772
+    ],
+    "gap": 0.01778
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     0.1246,
+     -0.7051,
+     1.8045
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5698,
+     0.005,
+     1.5497
+    ],
+    "gap": 0.33568
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.3404,
+     -0.733,
+     1.8265
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.3391,
+     -0.3166,
+     1.6758
+    ],
+    "gap": 0.01645
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.2377,
+     -0.298,
+     1.8155
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.3005,
+     -0.5312,
+     1.8218
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     -0.0554,
+     0.3938,
+     1.4095
+    ],
+    "gap": 0.05507
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 7,
+    "verts": 37,
+    "centre": [
+     0.3416,
+     -0.9993,
+     1.5415
+    ],
+    "gap": 0.02448
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 14,
+    "verts": 37,
+    "centre": [
+     0.2798,
+     -1.0169,
+     1.5415
+    ],
+    "gap": 0.02555
+   }
+  ],
+  "Block@19": [
+   {
+    "object": "CrystalWarlord",
+    "island": 0,
+    "verts": 2324,
+    "centre": [
+     -0.5298,
+     -0.4969,
+     1.4441
+    ],
+    "gap": 0.03428
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 5,
+    "verts": 11,
+    "centre": [
+     -0.5377,
+     -0.2448,
+     1.5828
+    ],
+    "gap": 0.34628
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.4901,
+     -0.0713,
+     1.6844
+    ],
+    "gap": 0.32965
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4179,
+     -0.1357,
+     1.5974
+    ],
+    "gap": 0.24793
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.0686,
+     -0.4558,
+     1.6772
+    ],
+    "gap": 0.01778
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     0.1264,
+     -0.7048,
+     1.8045
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.57,
+     0.004,
+     1.5479
+    ],
+    "gap": 0.33513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.3423,
+     -0.7322,
+     1.8265
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.34,
+     -0.3158,
+     1.6758
+    ],
+    "gap": 0.01645
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.2386,
+     -0.2975,
+     1.8155
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.3019,
+     -0.5305,
+     1.8218
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     -0.056,
+     0.3937,
+     1.4095
+    ],
+    "gap": 0.05509
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 7,
+    "verts": 37,
+    "centre": [
+     0.3441,
+     -0.9985,
+     1.5415
+    ],
+    "gap": 0.02448
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 14,
+    "verts": 37,
+    "centre": [
+     0.2824,
+     -1.0162,
+     1.5415
+    ],
+    "gap": 0.02555
+   }
+  ],
+  "Block@24": [
+   {
+    "object": "CrystalWarlord",
+    "island": 0,
+    "verts": 2324,
+    "centre": [
+     -0.53,
+     -0.4968,
+     1.444
+    ],
+    "gap": 0.03427
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 5,
+    "verts": 11,
+    "centre": [
+     -0.5378,
+     -0.2447,
+     1.5828
+    ],
+    "gap": 0.3463
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.4899,
+     -0.0715,
+     1.6848
+    ],
+    "gap": 0.32979
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4179,
+     -0.1357,
+     1.5975
+    ],
+    "gap": 0.24797
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.0688,
+     -0.4558,
+     1.6772
+    ],
+    "gap": 0.01778
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     0.1262,
+     -0.7049,
+     1.8045
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.57,
+     0.0041,
+     1.5482
+    ],
+    "gap": 0.33519
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.342,
+     -0.7323,
+     1.8265
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.3399,
+     -0.3159,
+     1.6758
+    ],
+    "gap": 0.01645
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.2385,
+     -0.2975,
+     1.8155
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.3018,
+     -0.5306,
+     1.8218
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     -0.0559,
+     0.3937,
+     1.4095
+    ],
+    "gap": 0.05509
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 7,
+    "verts": 37,
+    "centre": [
+     0.3438,
+     -0.9986,
+     1.5415
+    ],
+    "gap": 0.02448
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 14,
+    "verts": 37,
+    "centre": [
+     0.2821,
+     -1.0163,
+     1.5415
+    ],
+    "gap": 0.02555
+   }
+  ],
+  "Death@0": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5439,
+     -0.7368,
+     1.4545
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4813,
+     -0.2065,
+     1.7529
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.2149,
+     -0.4795,
+     1.7802
+    ],
+    "gap": 0.01786
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.0961,
+     -0.7938,
+     1.8521
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5725,
+     -0.0509,
+     1.8649
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.1038,
+     -0.8823,
+     1.8573
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2165,
+     -0.4576,
+     1.7824
+    ],
+    "gap": 0.0189
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 29,
+    "verts": 1277,
+    "centre": [
+     0.5947,
+     -0.6983,
+     0.7067
+    ],
+    "gap": 0.05878
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1241,
+     -0.4419,
+     1.9317
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1207,
+     -0.6802,
+     1.8917
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0164,
+     0.3711,
+     1.5051
+    ],
+    "gap": 0.0569
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 38,
+    "verts": 51,
+    "centre": [
+     0.6552,
+     -0.138,
+     1.741
+    ],
+    "gap": 0.33703
+   }
+  ],
+  "Death@9": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5439,
+     -0.7892,
+     1.2052
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4813,
+     -0.3209,
+     1.5937
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.2149,
+     -0.5944,
+     1.5717
+    ],
+    "gap": 0.01786
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.0961,
+     -0.9164,
+     1.5861
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5725,
+     -0.1878,
+     1.7318
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.1038,
+     -1.0044,
+     1.5753
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2165,
+     -0.5732,
+     1.5777
+    ],
+    "gap": 0.0189
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1241,
+     -0.5845,
+     1.7274
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1207,
+     -0.8117,
+     1.6454
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0164,
+     0.3009,
+     1.4442
+    ],
+    "gap": 0.03954
+   }
+  ],
+  "Death@18": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.3358,
+     -0.7969,
+     0.9436
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.2039,
+     -0.4661,
+     1.4409
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     0.0568,
+     -0.7312,
+     1.3027
+    ],
+    "gap": 0.01789
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     0.1585,
+     -1.0419,
+     1.1936
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.2722,
+     -0.3755,
+     1.6205
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.349,
+     -1.1217,
+     1.1215
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.484,
+     -0.7129,
+     1.2417
+    ],
+    "gap": 0.02005
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 29,
+    "verts": 1277,
+    "centre": [
+     0.6279,
+     -0.4967,
+     0.126
+    ],
+    "gap": 0.05537
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.4165,
+     -0.7739,
+     1.3943
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.3875,
+     -0.9622,
+     1.2457
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.3019,
+     0.1903,
+     1.3635
+    ],
+    "gap": 0.02302
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 38,
+    "verts": 51,
+    "centre": [
+     0.9424,
+     -0.3776,
+     1.2609
+    ],
+    "gap": 0.33863
+   }
+  ],
+  "Death@26": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     0.6228,
+     -0.7119,
+     0.9642
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     1.0105,
+     -0.4724,
+     1.3722
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     1.1528,
+     -0.7667,
+     1.0595
+    ],
+    "gap": 0.018
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     1.0938,
+     -1.0424,
+     0.8539
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     1.041,
+     -0.3926,
+     1.5667
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     1.1765,
+     -1.1068,
+     0.662
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     1.4443,
+     -0.7519,
+     0.7411
+    ],
+    "gap": 0.02479
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     1.4733,
+     -0.8593,
+     0.8868
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     1.3178,
+     -0.9934,
+     0.7595
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     1.4175,
+     0.1903,
+     0.9807
+    ],
+    "gap": 0.02302
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 7,
+    "verts": 37,
+    "centre": [
+     0.8487,
+     -1.0026,
+     0.4782
+    ],
+    "gap": 0.01931
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 14,
+    "verts": 37,
+    "centre": [
+     0.8072,
+     -1.0026,
+     0.5272
+    ],
+    "gap": 0.01964
+   }
+  ],
+  "Death@35": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     1.25,
+     -0.6532,
+     0.5403
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     1.7701,
+     -0.4697,
+     0.8048
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     1.7413,
+     -0.7877,
+     0.4372
+    ],
+    "gap": 0.01805
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     1.5297,
+     -1.0203,
+     0.2792
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     1.8676,
+     -0.3946,
+     0.9779
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     1.4916,
+     -1.0691,
+     0.0694
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     1.835,
+     -0.7763,
+     0.0157
+    ],
+    "gap": 0.02839
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     1.9073,
+     -0.9132,
+     0.1223
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     1.6838,
+     -0.9978,
+     0.0863
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     1.9739,
+     0.1903,
+     0.2435
+    ],
+    "gap": 0.02302
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 7,
+    "verts": 37,
+    "centre": [
+     1.1489,
+     -0.8832,
+     0.0817
+    ],
+    "gap": 0.03853
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 14,
+    "verts": 37,
+    "centre": [
+     1.1377,
+     -0.8832,
+     0.145
+    ],
+    "gap": 0.02894
+   }
+  ],
+  "Death@44": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     1.2503,
+     -0.6531,
+     0.5399
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     1.7705,
+     -0.4697,
+     0.8043
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     1.7415,
+     -0.7877,
+     0.4367
+    ],
+    "gap": 0.01805
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     1.5299,
+     -1.0203,
+     0.2788
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     1.868,
+     -0.3946,
+     0.9774
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     1.4917,
+     -1.0691,
+     0.069
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     1.8351,
+     -0.7763,
+     0.0152
+    ],
+    "gap": 0.0284
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     1.9074,
+     -0.9133,
+     0.1218
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     1.6839,
+     -0.9978,
+     0.0858
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     1.9741,
+     0.1903,
+     0.2429
+    ],
+    "gap": 0.02302
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 7,
+    "verts": 37,
+    "centre": [
+     1.149,
+     -0.8831,
+     0.0814
+    ],
+    "gap": 0.03887
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 14,
+    "verts": 37,
+    "centre": [
+     1.1379,
+     -0.8831,
+     0.1447
+    ],
+    "gap": 0.02918
+   }
+  ],
+  "Hit@0": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5495,
+     -0.6415,
+     1.6035
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4944,
+     -0.1593,
+     1.7639
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.2149,
+     -0.4159,
+     1.8235
+    ],
+    "gap": 0.01786
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.0961,
+     -0.7191,
+     1.9331
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5912,
+     0.0044,
+     1.8583
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.1038,
+     -0.8063,
+     1.9491
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2165,
+     -0.394,
+     1.823
+    ],
+    "gap": 0.0189
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1241,
+     -0.3601,
+     1.9692
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1207,
+     -0.6015,
+     1.9586
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0164,
+     0.396,
+     1.4852
+    ],
+    "gap": 0.06437
+   }
+  ],
+  "Hit@3": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.3956,
+     -0.4815,
+     1.8435
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4061,
+     0.028,
+     1.8036
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.092,
+     -0.1472,
+     1.8919
+    ],
+    "gap": 0.01766
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     0.0721,
+     -0.3265,
+     2.1258
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5229,
+     0.2024,
+     1.8361
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.2832,
+     -0.3643,
+     2.1685
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.2331,
+     0.0224,
+     1.9496
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.2677,
+     -0.1856,
+     2.0676
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0159,
+     0.5275,
+     1.3869
+    ],
+    "gap": 0.09214
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 7,
+    "verts": 37,
+    "centre": [
+     0.2498,
+     -0.7318,
+     2.0424
+    ],
+    "gap": 0.03035
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 14,
+    "verts": 37,
+    "centre": [
+     0.1863,
+     -0.7404,
+     2.0477
+    ],
+    "gap": 0.02768
+   }
+  ],
+  "Hit@6": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5348,
+     -0.6302,
+     1.6295
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4842,
+     -0.1415,
+     1.7706
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.2011,
+     -0.3775,
+     1.8353
+    ],
+    "gap": 0.0178
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.0775,
+     -0.6605,
+     1.981
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5823,
+     0.0247,
+     1.8593
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.1238,
+     -0.7422,
+     2.0069
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2299,
+     -0.3502,
+     1.8289
+    ],
+    "gap": 0.01693
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1379,
+     -0.2971,
+     1.9669
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1378,
+     -0.5377,
+     1.9888
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0177,
+     0.4099,
+     1.4762
+    ],
+    "gap": 0.06683
+   }
+  ],
+  "Hit@8": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5725,
+     -0.6575,
+     1.5614
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.511,
+     -0.1872,
+     1.752
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.2375,
+     -0.4523,
+     1.8055
+    ],
+    "gap": 0.01788
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.1263,
+     -0.7652,
+     1.896
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.6062,
+     -0.0278,
+     1.855
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.0716,
+     -0.8574,
+     1.9084
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.1942,
+     -0.4392,
+     1.8119
+    ],
+    "gap": 0.0195
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1003,
+     -0.4142,
+     1.9599
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.0923,
+     -0.6541,
+     1.9324
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0135,
+     0.3737,
+     1.499
+    ],
+    "gap": 0.06056
+   }
+  ],
+  "Hit@11": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5574,
+     -0.6472,
+     1.5894
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4999,
+     -0.1688,
+     1.7601
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.2225,
+     -0.4318,
+     1.817
+    ],
+    "gap": 0.01788
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.1063,
+     -0.7408,
+     1.9143
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5962,
+     -0.0064,
+     1.8574
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.093,
+     -0.83,
+     1.9272
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.209,
+     -0.4128,
+     1.8191
+    ],
+    "gap": 0.01947
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1162,
+     -0.3853,
+     1.9672
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1112,
+     -0.6259,
+     1.9459
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0155,
+     0.3885,
+     1.4899
+    ],
+    "gap": 0.06307
+   }
+  ],
+  "Hit@14": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5459,
+     -0.6389,
+     1.6099
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4919,
+     -0.155,
+     1.7656
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.2114,
+     -0.4101,
+     1.8261
+    ],
+    "gap": 0.01786
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.0915,
+     -0.7116,
+     1.9388
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.589,
+     0.0094,
+     1.8586
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.1087,
+     -0.798,
+     1.9553
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2199,
+     -0.3868,
+     1.8245
+    ],
+    "gap": 0.0188
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1276,
+     -0.3515,
+     1.9704
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.125,
+     -0.593,
+     1.9625
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0167,
+     0.3994,
+     1.483
+    ],
+    "gap": 0.06496
+   }
+  ],
+  "Idle@0": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5457,
+     -0.6285,
+     1.6198
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4895,
+     -0.1593,
+     1.7639
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.21,
+     -0.4186,
+     1.828
+    ],
+    "gap": 0.01791
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.0912,
+     -0.7275,
+     1.9261
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5863,
+     0.0044,
+     1.8583
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.1087,
+     -0.8153,
+     1.9382
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2214,
+     -0.3966,
+     1.828
+    ],
+    "gap": 0.02048
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.129,
+     -0.3704,
+     1.978
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1256,
+     -0.6111,
+     1.9567
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0213,
+     0.396,
+     1.4852
+    ],
+    "gap": 0.06437
+   }
+  ],
+  "Idle@14": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5184,
+     -0.638,
+     1.6289
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4585,
+     -0.1706,
+     1.7804
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.1741,
+     -0.4747,
+     1.8242
+    ],
+    "gap": 0.01797
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     0.0141,
+     -0.7484,
+     1.93
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5529,
+     -0.0084,
+     1.8799
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.2298,
+     -0.7816,
+     1.9438
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2425,
+     -0.3629,
+     1.8191
+    ],
+    "gap": 0.01598
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1355,
+     -0.3451,
+     1.9662
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1938,
+     -0.5793,
+     1.9543
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0454,
+     0.3901,
+     1.4976
+    ],
+    "gap": 0.06253
+   }
+  ],
+  "Idle@29": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5344,
+     -0.6347,
+     1.6091
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4774,
+     -0.1427,
+     1.7641
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.1951,
+     -0.4336,
+     1.8238
+    ],
+    "gap": 0.01795
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.0224,
+     -0.7112,
+     1.9417
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5729,
+     0.0233,
+     1.8559
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.191,
+     -0.7563,
+     1.9584
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2266,
+     -0.3418,
+     1.8178
+    ],
+    "gap": 0.01669
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1221,
+     -0.3146,
+     1.9634
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1668,
+     -0.552,
+     1.9609
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0289,
+     0.4045,
+     1.4656
+    ],
+    "gap": 0.06709
+   }
+  ],
+  "Idle@43": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5701,
+     -0.6683,
+     1.5698
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.5191,
+     -0.1758,
+     1.7631
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.2374,
+     -0.4085,
+     1.8275
+    ],
+    "gap": 0.01782
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.1655,
+     -0.729,
+     1.9188
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.6174,
+     -0.0144,
+     1.86
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.0174,
+     -0.8485,
+     1.9284
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.1923,
+     -0.4441,
+     1.8288
+    ],
+    "gap": 0.02233
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1098,
+     -0.414,
+     1.9786
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.0673,
+     -0.6503,
+     1.9518
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     -0.0044,
+     0.3874,
+     1.5044
+    ],
+    "gap": 0.06169
+   }
+  ],
+  "Idle@58": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5778,
+     -0.6362,
+     1.5888
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.5268,
+     -0.148,
+     1.7467
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.2472,
+     -0.3834,
+     1.8121
+    ],
+    "gap": 0.01775
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.1587,
+     -0.6839,
+     1.9421
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.6259,
+     0.0173,
+     1.8358
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.0311,
+     -0.7894,
+     1.9686
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.1841,
+     -0.3969,
+     1.8209
+    ],
+    "gap": 0.01813
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.0962,
+     -0.3472,
+     1.9596
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.0685,
+     -0.5871,
+     1.9649
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     -0.0091,
+     0.4018,
+     1.4722
+    ],
+    "gap": 0.06623
+   }
+  ],
+  "Idle@72": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5457,
+     -0.6285,
+     1.6198
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4895,
+     -0.1593,
+     1.7639
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.21,
+     -0.4186,
+     1.828
+    ],
+    "gap": 0.01791
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.0912,
+     -0.7275,
+     1.9261
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5863,
+     0.0044,
+     1.8583
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.1087,
+     -0.8153,
+     1.9382
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2214,
+     -0.3966,
+     1.828
+    ],
+    "gap": 0.02048
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.129,
+     -0.3704,
+     1.978
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1256,
+     -0.6111,
+     1.9567
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0213,
+     0.396,
+     1.4852
+    ],
+    "gap": 0.06437
+   }
+  ],
+  "Sweep@0": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5495,
+     -0.659,
+     1.5793
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4944,
+     -0.1827,
+     1.7565
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.2149,
+     -0.4364,
+     1.8099
+    ],
+    "gap": 0.01786
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.0961,
+     -0.7415,
+     1.9143
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5912,
+     -0.0223,
+     1.8565
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.1038,
+     -0.8289,
+     1.9287
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2165,
+     -0.4144,
+     1.8098
+    ],
+    "gap": 0.0189
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1241,
+     -0.3832,
+     1.9566
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1207,
+     -0.6243,
+     1.9418
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0164,
+     0.3837,
+     1.4954
+    ],
+    "gap": 0.06058
+   }
+  ],
+  "Sweep@8": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.2678,
+     -0.7229,
+     1.657
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.3509,
+     -0.3362,
+     1.6919
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     0.0237,
+     -0.4474,
+     1.7283
+    ],
+    "gap": 0.01769
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     0.2075,
+     -0.7081,
+     1.8361
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5059,
+     -0.2129,
+     1.7686
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.4211,
+     -0.7545,
+     1.8426
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.4371,
+     -0.3281,
+     1.7031
+    ],
+    "gap": 0.01933
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.3552,
+     -0.3123,
+     1.8503
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.3983,
+     -0.55,
+     1.846
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     -0.0577,
+     0.3676,
+     1.4215
+    ],
+    "gap": 0.06341
+   }
+  ],
+  "Sweep@16": [
+   {
+    "object": "CrystalWarlord",
+    "island": 0,
+    "verts": 2324,
+    "centre": [
+     -0.3809,
+     -0.5288,
+     1.2229
+    ],
+    "gap": 0.03799
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 5,
+    "verts": 11,
+    "centre": [
+     -0.4291,
+     -0.4338,
+     1.5753
+    ],
+    "gap": 0.35872
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.2228,
+     -0.7171,
+     1.6639
+    ],
+    "gap": 0.31848
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.3173,
+     -0.3632,
+     1.6702
+    ],
+    "gap": 0.31399
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     0.0708,
+     -0.4426,
+     1.7023
+    ],
+    "gap": 0.01765
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     0.2659,
+     -0.6927,
+     1.8104
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.4823,
+     -0.2498,
+     1.7409
+    ],
+    "gap": 0.424
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.4812,
+     -0.7306,
+     1.8156
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.4777,
+     -0.3046,
+     1.6729
+    ],
+    "gap": 0.01937
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.398,
+     -0.2913,
+     1.8197
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.4504,
+     -0.5272,
+     1.8172
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     -0.0708,
+     0.3586,
+     1.4031
+    ],
+    "gap": 0.06407
+   }
+  ],
+  "Sweep@24": [
+   {
+    "object": "CrystalWarlord",
+    "island": 0,
+    "verts": 2324,
+    "centre": [
+     -0.7317,
+     -0.0095,
+     1.169
+    ],
+    "gap": 0.04988
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 5,
+    "verts": 11,
+    "centre": [
+     -0.7272,
+     0.0628,
+     1.5453
+    ],
+    "gap": 0.36602
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.824,
+     -0.334,
+     1.5536
+    ],
+    "gap": 0.32007
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.6097,
+     0.0173,
+     1.6482
+    ],
+    "gap": 0.3149
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.4613,
+     -0.3847,
+     1.6889
+    ],
+    "gap": 0.01792
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.421,
+     -0.7137,
+     1.7899
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.6406,
+     0.2097,
+     1.7326
+    ],
+    "gap": 0.43484
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     -0.2442,
+     -0.8399,
+     1.8159
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     -0.0385,
+     -0.4658,
+     1.7186
+    ],
+    "gap": 0.01566
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     -0.1373,
+     -0.4077,
+     1.8577
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     -0.1878,
+     -0.643,
+     1.8359
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0838,
+     0.3351,
+     1.4564
+    ],
+    "gap": 0.05648
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 7,
+    "verts": 37,
+    "centre": [
+     -0.3375,
+     -1.0472,
+     1.499
+    ],
+    "gap": 0.02627
+   },
+   {
+    "object": "CrystalWarlord_Teeth",
+    "island": 14,
+    "verts": 37,
+    "centre": [
+     -0.4002,
+     -1.0343,
+     1.4945
+    ],
+    "gap": 0.02076
+   }
+  ],
+  "Sweep@32": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.639,
+     -0.5817,
+     1.5766
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.5342,
+     -0.1311,
+     1.7276
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.2832,
+     -0.4305,
+     1.7791
+    ],
+    "gap": 0.01788
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.1854,
+     -0.744,
+     1.883
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.6149,
+     0.0409,
+     1.8225
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.009,
+     -0.8427,
+     1.9006
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.1486,
+     -0.4372,
+     1.7868
+    ],
+    "gap": 0.01801
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 29,
+    "verts": 1277,
+    "centre": [
+     0.293,
+     -0.8581,
+     0.788
+    ],
+    "gap": 0.02387
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.0537,
+     -0.3989,
+     1.9317
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.0371,
+     -0.6394,
+     1.9153
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.038,
+     0.3744,
+     1.4839
+    ],
+    "gap": 0.05926
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 38,
+    "verts": 51,
+    "centre": [
+     0.6606,
+     -0.1708,
+     1.6536
+    ],
+    "gap": 0.32461
+   }
+  ],
+  "Sweep@40": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.5495,
+     -0.659,
+     1.5793
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4944,
+     -0.1827,
+     1.7565
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.2149,
+     -0.4364,
+     1.8099
+    ],
+    "gap": 0.01786
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.0961,
+     -0.7415,
+     1.9143
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5912,
+     -0.0223,
+     1.8565
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.1038,
+     -0.8289,
+     1.9287
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2165,
+     -0.4144,
+     1.8098
+    ],
+    "gap": 0.0189
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1241,
+     -0.3832,
+     1.9566
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1207,
+     -0.6243,
+     1.9418
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0164,
+     0.3837,
+     1.4954
+    ],
+    "gap": 0.06058
+   }
+  ],
+  "Walk@0": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.4968,
+     -0.7057,
+     1.4998
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4549,
+     -0.2196,
+     1.7273
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.1673,
+     -0.4613,
+     1.7703
+    ],
+    "gap": 0.01784
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.027,
+     -0.7546,
+     1.8803
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5547,
+     -0.0675,
+     1.8368
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.1787,
+     -0.8274,
+     1.894
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2619,
+     -0.4126,
+     1.7624
+    ],
+    "gap": 0.01726
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1682,
+     -0.3807,
+     1.9079
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1814,
+     -0.6218,
+     1.9006
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.035,
+     0.3726,
+     1.4657
+    ],
+    "gap": 0.05889
+   }
+  ],
+  "Walk@6": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.6259,
+     -0.64,
+     1.5561
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.5693,
+     -0.1639,
+     1.7263
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.2967,
+     -0.4302,
+     1.7905
+    ],
+    "gap": 0.01789
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.1978,
+     -0.7481,
+     1.8777
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.6675,
+     -0.0002,
+     1.8194
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     -0.0035,
+     -0.8473,
+     1.8935
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.1347,
+     -0.429,
+     1.8099
+    ],
+    "gap": 0.02083
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.0385,
+     -0.4067,
+     1.9568
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.0233,
+     -0.6455,
+     1.9232
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     -0.043,
+     0.3916,
+     1.4931
+    ],
+    "gap": 0.06048
+   }
+  ],
+  "Walk@13": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.6518,
+     -0.6162,
+     1.5891
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.5794,
+     -0.1571,
+     1.712
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.3125,
+     -0.4108,
+     1.7805
+    ],
+    "gap": 0.01779
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.2302,
+     -0.7152,
+     1.9095
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.6727,
+     0.0135,
+     1.7975
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     -0.0418,
+     -0.8223,
+     1.9392
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.1184,
+     -0.4301,
+     1.7994
+    ],
+    "gap": 0.0183
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.0263,
+     -0.3804,
+     1.9374
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     -0.003,
+     -0.6202,
+     1.939
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     -0.0385,
+     0.374,
+     1.4693
+    ],
+    "gap": 0.06251
+   }
+  ],
+  "Walk@19": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.535,
+     -0.6489,
+     1.5643
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4723,
+     -0.1874,
+     1.7354
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.1941,
+     -0.451,
+     1.7749
+    ],
+    "gap": 0.01787
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.0766,
+     -0.7623,
+     1.8615
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5661,
+     -0.0283,
+     1.8403
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.1227,
+     -0.8522,
+     1.868
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2374,
+     -0.4327,
+     1.7687
+    ],
+    "gap": 0.01919
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1477,
+     -0.4087,
+     1.9189
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1417,
+     -0.6487,
+     1.8915
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.041,
+     0.3816,
+     1.4792
+    ],
+    "gap": 0.05773
+   }
+  ],
+  "Walk@26": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.4331,
+     -0.6909,
+     1.5699
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.388,
+     -0.2026,
+     1.7821
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.0953,
+     -0.4443,
+     1.8268
+    ],
+    "gap": 0.01791
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     0.0601,
+     -0.7354,
+     1.929
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.4852,
+     -0.0495,
+     1.8928
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.2689,
+     -0.8003,
+     1.9333
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.3313,
+     -0.3809,
+     1.8013
+    ],
+    "gap": 0.01862
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.2418,
+     -0.3545,
+     1.9534
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.264,
+     -0.5948,
+     1.9424
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.0888,
+     0.3861,
+     1.4829
+    ],
+    "gap": 0.06372
+   }
+  ],
+  "Walk@32": [
+   {
+    "object": "CrystalWarlord",
+    "island": 7,
+    "verts": 20,
+    "centre": [
+     -0.4968,
+     -0.7057,
+     1.4998
+    ],
+    "gap": 0.04513
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 8,
+    "verts": 6,
+    "centre": [
+     -0.4549,
+     -0.2196,
+     1.7273
+    ],
+    "gap": 0.01531
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 10,
+    "verts": 34,
+    "centre": [
+     -0.1673,
+     -0.4613,
+     1.7703
+    ],
+    "gap": 0.01784
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 11,
+    "verts": 11,
+    "centre": [
+     -0.027,
+     -0.7546,
+     1.8803
+    ],
+    "gap": 0.02285
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 15,
+    "verts": 12,
+    "centre": [
+     -0.5547,
+     -0.0675,
+     1.8368
+    ],
+    "gap": 0.0709
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 22,
+    "verts": 8,
+    "centre": [
+     0.1787,
+     -0.8274,
+     1.894
+    ],
+    "gap": 0.05973
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 27,
+    "verts": 40,
+    "centre": [
+     0.2619,
+     -0.4126,
+     1.7624
+    ],
+    "gap": 0.01726
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 31,
+    "verts": 22,
+    "centre": [
+     0.1682,
+     -0.3807,
+     1.9079
+    ],
+    "gap": 0.04854
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 33,
+    "verts": 17,
+    "centre": [
+     0.1814,
+     -0.6218,
+     1.9006
+    ],
+    "gap": 0.02952
+   },
+   {
+    "object": "CrystalWarlord",
+    "island": 35,
+    "verts": 91,
+    "centre": [
+     0.035,
+     0.3726,
+     1.4657
+    ],
+    "gap": 0.05889
+   }
+  ]
+ },
+ "floating": [
+  {
+   "object": "CrystalWarlord",
+   "island": 15,
+   "verts": 12,
+   "gap": 0.43484,
+   "pose": "Sweep@24",
+   "bone": "UpperArm_L",
+   "centre": [
+    -0.6406,
+    0.2097,
+    1.7326
+   ]
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 5,
+   "verts": 11,
+   "gap": 0.36602,
+   "pose": "Sweep@24",
+   "bone": "UpperArm_L",
+   "centre": [
+    -0.7272,
+    0.0628,
+    1.5453
+   ]
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 7,
+   "verts": 20,
+   "gap": 0.33937,
+   "pose": "Block@5",
+   "bone": "ForeArm_L",
+   "centre": [
+    -0.4635,
+    -0.174,
+    1.7955
+   ]
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 38,
+   "verts": 51,
+   "gap": 0.33863,
+   "pose": "Death@18",
+   "bone": "UpperArm_R",
+   "centre": [
+    0.9424,
+    -0.3776,
+    1.2609
+   ]
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 8,
+   "verts": 6,
+   "gap": 0.3149,
+   "pose": "Sweep@24",
+   "bone": "UpperArm_L",
+   "centre": [
+    -0.6097,
+    0.0173,
+    1.6482
+   ]
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 35,
+   "verts": 91,
+   "gap": 0.09214,
+   "pose": "Hit@3",
+   "bone": "Spine",
+   "centre": [
+    0.0159,
+    0.5275,
+    1.3869
+   ]
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 22,
+   "verts": 8,
+   "gap": 0.05973,
+   "pose": "Walk@32",
+   "bone": "Head",
+   "centre": [
+    0.1787,
+    -0.8274,
+    1.894
+   ]
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 29,
+   "verts": 1277,
+   "gap": 0.05878,
+   "pose": "Death@0",
+   "bone": "ForeArm_R",
+   "centre": [
+    0.5947,
+    -0.6983,
+    0.7067
+   ]
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 0,
+   "verts": 2324,
+   "gap": 0.04988,
+   "pose": "Sweep@24",
+   "bone": "ForeArm_L",
+   "centre": [
+    -0.7317,
+    -0.0095,
+    1.169
+   ]
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 31,
+   "verts": 22,
+   "gap": 0.04854,
+   "pose": "Walk@32",
+   "bone": "Head",
+   "centre": [
+    0.1682,
+    -0.3807,
+    1.9079
+   ]
+  },
+  {
+   "object": "CrystalWarlord_Teeth",
+   "island": 7,
+   "verts": 37,
+   "gap": 0.03887,
+   "pose": "Death@44",
+   "bone": "Head",
+   "centre": [
+    1.149,
+    -0.8831,
+    0.0814
+   ]
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 33,
+   "verts": 17,
+   "gap": 0.02952,
+   "pose": "rest@0",
+   "bone": "Head",
+   "centre": [
+    0.1207,
+    -0.5303,
+    2.068
+   ]
+  },
+  {
+   "object": "CrystalWarlord_Teeth",
+   "island": 14,
+   "verts": 37,
+   "gap": 0.02918,
+   "pose": "Death@44",
+   "bone": "Head",
+   "centre": [
+    1.1379,
+    -0.8831,
+    0.1447
+   ]
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 27,
+   "verts": 40,
+   "gap": 0.0284,
+   "pose": "Death@44",
+   "bone": "Head",
+   "centre": [
+    1.8351,
+    -0.7763,
+    0.0152
+   ]
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 11,
+   "verts": 11,
+   "gap": 0.02285,
+   "pose": "rest@0",
+   "bone": "Head",
+   "centre": [
+    -0.0961,
+    -0.6491,
+    2.0487
+   ]
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 10,
+   "verts": 34,
+   "gap": 0.01805,
+   "pose": "Death@35",
+   "bone": "Head",
+   "centre": [
+    1.7413,
+    -0.7877,
+    0.4372
+   ]
+  }
+ ],
+ "poses_checked": 37,
+ "rest_floating": [
+  {
+   "object": "CrystalWarlord",
+   "island": 7,
+   "verts": 20,
+   "centre": [
+    -0.5439,
+    -0.6738,
+    1.4892
+   ],
+   "gap": 0.04513
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 8,
+   "verts": 6,
+   "centre": [
+    -0.4813,
+    -0.1209,
+    1.8454
+   ],
+   "gap": 0.01531
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 10,
+   "verts": 34,
+   "centre": [
+    -0.2149,
+    -0.3521,
+    1.9233
+   ],
+   "gap": 0.01786
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 11,
+   "verts": 11,
+   "centre": [
+    -0.0961,
+    -0.6491,
+    2.0487
+   ],
+   "gap": 0.02285
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 15,
+   "verts": 12,
+   "centre": [
+    -0.5725,
+    0.0347,
+    1.9575
+   ],
+   "gap": 0.0709
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 22,
+   "verts": 8,
+   "centre": [
+    0.1038,
+    -0.7354,
+    2.0691
+   ],
+   "gap": 0.05973
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 27,
+   "verts": 40,
+   "centre": [
+    0.2165,
+    -0.3302,
+    1.9216
+   ],
+   "gap": 0.0189
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 31,
+   "verts": 22,
+   "centre": [
+    0.1241,
+    -0.2887,
+    2.0659
+   ],
+   "gap": 0.04854
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 33,
+   "verts": 17,
+   "centre": [
+    0.1207,
+    -0.5303,
+    2.068
+   ],
+   "gap": 0.02952
+  },
+  {
+   "object": "CrystalWarlord",
+   "island": 35,
+   "verts": 91,
+   "centre": [
+    0.0164,
+    0.4307,
+    1.5151
+   ],
+   "gap": 0.07633
+  }
+ ]
+}

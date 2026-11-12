@@ -1,0 +1,44 @@
+{
+  "Death": {
+    "frames": 40,
+    "max_step_deg": 19.5,
+    "bone": "Gland",
+    "frame": 12,
+    "ratio_to_median": 3.5
+  },
+  "Hit": {
+    "frames": 12,
+    "max_step_deg": 34.8,
+    "bone": "Finger_L",
+    "frame": 1,
+    "ratio_to_median": 22.9
+  },
+  "Idle": {
+    "frames": 60,
+    "max_step_deg": 8.7,
+    "bone": "Finger_R",
+    "frame": 39,
+    "ratio_to_median": 10.2
+  },
+  "Spray": {
+    "frames": 48,
+    "max_step_deg": 12.8,
+    "bone": "Sting",
+    "frame": 44,
+    "ratio_to_median": 2.7
+  },
+  "Strike": {
+    "frames": 24,
+    "max_step_deg": 34.9,
+    "bone": "Tail_1",
+    "frame": 8,
+    "ratio_to_median": 5.4
+  },
+  "Walk": {
+    "frames": 28,
+    "max_step_deg": 5.1,
+    "bone": "Sting",
+    "frame": 7,
+    "ratio_to_median": 1.4
+  }
+}

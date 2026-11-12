@@ -8,6 +8,8 @@ the small flyers come out of the back. Round 49A (Remco on the rays: the teeth a
 lobes (Pincer bones, no teeth) beside a wide mouth across the front edge (lower lip on a new Jaw bone, teeth in the
 Face part), and the Skyray's new whip tail at her size (build_skyray.tail_parts): thick, a lit dorsal line, hooks,
 a big barbed spade with two charge nodes at its root (the tail laser is Unity VFX from Tail_5).
+Round 49E (Remco: "the mouth isn't attached"): the Skyray's slit mouth cut into the head (build_skyray.Mouth) at her
+size; the maw and lip balls are gone.
 
 The palette is one parameter (PALETTES at the top): `--palette cool` (default, the Skyray's colours) or
 `--palette warm` (Remco's open question; a warm variant bakes into the preview folder, never into Exports).
@@ -167,9 +169,10 @@ def pincer_points(sx):
 
 
 # The mouth across the blunt front edge; the lower lip plate hinges on its own bone (Jaw, new in round 49A).
-MOUTH_FWD = 0.57
 JAW = (P(0, -0.034, 0.38), P(0, -0.046, 0.585))
 MOUTH_REST = math.radians(5)
+# Round 49E: the slit mouth cut into the head (build_skyray.Mouth), at the boss's size.
+MOUTH = SR.Mouth(M, (0.0, 0.014, 0.35), (0.135, 0.22, 0.052), start=0.45, palate=0.007, gap=0.016, frown=0.02)
 
 
 def horn_points(sx):
@@ -209,16 +212,9 @@ def build_parts():
     b.ellipsoid("Brood", P(0, 0.03, -0.035), R(0.14, 0.2, 0.065), bone="Body", segments=(40, 20),
                 style=H.membrane_sac(BROOD, k, bands=2, plate_line=1.5, cells=34, cell_size=0.16, glow=1.0, seed=73, plate_glow=0.0))
 
-    def head_deform(v):
-        # Round 49A: a broad, blunt front edge with the mouth across it, not a pointed ram.
-        front = max(0.0, -v.y)
-        return Vector((v.x * (1 - 0.3 * front), v.y * (1 - 0.08 * front), v.z * (1 - 0.35 * front)))
-    b.ellipsoid("Head", P(0, 0.014, 0.35), R(0.135, 0.22, 0.052), bone="Head", segments=(48, 24), deform=head_deform,
-                style=H.crest(PAL, k, ribs=9, height=0.004))
-    b.ellipsoid("Maw", P(0, -0.026, MOUTH_FWD - 0.072), R(0.08, 0.042, 0.021), bone="Head", style=H.inner_glow(SR.MAW, 0.5),
-                segments=(28, 14))
-    b.ellipsoid("LowerLip", P(0, -0.05, MOUTH_FWD - 0.095), R(0.093, 0.09, 0.017), bone="Jaw", segments=(36, 18),
-                style=H.band_plates(PAL, k, 3, height=0.002))
+    # Round 49E: the head split by the mouth (build_skyray.head_with_mouth), no separate maw or lip balls.
+    SR.head_with_mouth(b, k, P, MOUTH, H.crest(PAL, k, ribs=9, height=0.004), H.band_plates(PAL, k, 3, height=0.002),
+                       SR.MOUTH_PAL, segments=(56, 28))
     for side, sx in SIDES:
         pp = pincer_points(sx)
         b.tube("Pincer", pp, [R(0.03), R(0.032), R(0.024), R(0.011)], sides=10, chain=[f"Pincer_{side}"],

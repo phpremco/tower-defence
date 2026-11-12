@@ -1,0 +1,13 @@
+{
+ "creature": "Prowler",
+ "threshold": 0.00596,
+ "objects": {
+  "Prowler": 265,
+  "Prowler_Claws": 20,
+  "Prowler_Face": 19
+ },
+ "poses": {},
+ "floating": [],
+ "poses_checked": 36,
+ "rest_floating": []
+}

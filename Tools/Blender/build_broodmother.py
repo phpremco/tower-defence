@@ -24,6 +24,8 @@ import boss_kit as B  # noqa: E402
 import chitin as H  # noqa: E402
 import common as C  # noqa: E402
 import crysium as Y  # noqa: E402
+import crystal_growth as G49  # noqa: E402
+import uvlayout  # noqa: E402
 from common import G  # noqa: E402
 
 NAME = "BroodMother"
@@ -64,6 +66,11 @@ def P(x, up, fwd):
 
 def R(*r):
     return tuple(v * M for v in r) if len(r) > 1 else r[0] * M
+
+
+def crystal(seed, strength=1.0):
+    """Crysium whose light comes in pockets and differs per shard (round 49D, crystal_growth.uneven_glow)."""
+    return G49.uneven_glow(Y.shard_style("pink", strength, seed=seed), seed, 0.35, 1.3)
 
 
 LEG_SPECS = {
@@ -159,12 +166,16 @@ def build_parts():
                style=H.tube(PAL, k, PAL.dark, PAL.bone * 0.8, tip_glow=1.0, glow_from=0.7), flatten=0.6)
     b.ellipsoid("Throat", P(0, 0.135, 0.4), R(0.032, 0.03, 0.03), bone="Head", style=H.inner_glow(PAL, 1.0))
 
-    # Crown: five twisted Crysium shards from the back edge of the hood, pointing up and back.
-    for i in range(5):
-        a = (i - 2) / 2.0
-        base = P(0.075 * a, 0.3 - 0.01 * abs(a), 0.11 - 0.025 * abs(a))
-        b.shard("Crown", base, G(0.55 * a, 1.0, -0.6), R(0.026 - 0.004 * abs(a)), R(0.24 - 0.07 * abs(a)), sides=8,
-                twist=2.4 * (1 if a >= 0 else -1), flute=0.45, bone="Head", style=Y.shard_style("pink", 1.1, seed=40 + i))
+    # Crown (round 49D, Remco: "crystals too perfect"): Crysium bursting from the back edge of the hood as one
+    # lopsided growth on a mound of fused chitin: fractured, bent and spiralling shards of every size, two fragments
+    # hovering over it, and a smaller second cluster off to the left.
+    flesh = H.glow_flesh(PAL, k, glow=0.7, flank=(0.0, 0.6), folds=7.0)
+    G49.growth_cluster(b, P(0.01, 0.3, 0.1), G(-0.1, 1.0, -0.6), R(0.26), 4980, bone="Head", style=crystal(40, 1.1),
+                       count=7, spread=0.4, lean=(0.12, 0.8), sideways=G(0.15, 0.0, -0.2), floating=2, spiral=1,
+                       bent=2, radius_ratio=0.12, name="Crown", root=(flesh, R(0.045), R(0.018)))
+    G49.growth_cluster(b, P(-0.06, 0.29, 0.085), G(-0.7, 1.0, -0.5), R(0.12), 4981, bone="Head", style=crystal(45, 1.0),
+                       count=3, spread=0.4, lean=(0.15, 0.6), floating=0, spiral=0, bent=1, radius_ratio=0.13,
+                       name="Crown")
 
     for side, sx in SIDES:
         shoulder, elbow, blade = blade_points(sx)
@@ -177,9 +188,11 @@ def build_parts():
             root = curve[int(t * (len(curve) - 1))]
             b.tube("Barb", [root, root + P(-0.034 * sx, 0.005, -0.03)], [R(0.01), R(0.0012)], sides=8,
                    chain=[f"Blade_{side}_2"], style=H.hook(PAL, k, glow=0.6))
-        # Crysium grown into the thorax, as on every Skitter, but larger.
-        b.shard("Crysium", P(0.07 * sx, 0.3, 0.03), G(0.6 * sx, 1.0, -0.4), R(0.024), R(0.15), sides=8, twist=2.0,
-                flute=0.4, bone="Thorax", style=Y.shard_style("pink", 1.0, seed=3))
+        # Crysium grown into the thorax, as on every Skitter, but larger, and different on each side.
+        G49.growth_cluster(b, P(0.07 * sx, 0.3, 0.03), G(0.6 * sx, 1.0, -0.4), R(0.17 if sx < 0 else 0.13),
+                           4990 + (sx > 0), bone="Thorax", style=crystal(3 + (sx > 0), 1.0), count=3 if sx < 0 else 2,
+                           spread=0.35, lean=(0.1, 0.55), floating=0, spiral=int(sx > 0), bent=int(sx < 0),
+                           radius_ratio=0.14, name="Crysium")
 
     # The brood sac: a translucent membrane over amber eggs, shingled plates with glowing gaps on top.
     b.ellipsoid("Abdomen", P(*SAC_CENTRE), R(*SAC_RADII), pitch(5), bone="Abdomen_1",
@@ -232,9 +245,12 @@ def build_parts():
                style=H.leg(LEGP, k, "Tibia", spines=2))
         b.tube("Spur", [kn, kn + Vector((0, 0, R(0.075))) - yaw * R(0.018)], [R(0.016), R(0.0012)], sides=8,
                chain=[lg.names[1]], style=H.hook(PAL, k, glow=0.5))
-        # A Crysium spur at each knee repeats the crown down the legs.
-        b.shard("KneeCrysium", kn - (kn - c).normalized() * R(0.01), Vector((0, 0, 1)) + (kn - c).normalized() * 0.5,
-                R(0.016), R(0.09), sides=8, twist=2.0, flute=0.4, bone=lg.names[1], style=Y.shard_style("pink", 0.9, seed=50 + i))
+        # Crysium breaking out at each knee, different on every leg.
+        kd = (Vector((0, 0, 1)) + (kn - c).normalized() * 0.5).normalized()
+        G49.growth_cluster(b, kn - (kn - c).normalized() * R(0.01), kd, R(0.08 + 0.025 * ((i * 3 + (side == "L")) % 3)),
+                           4995 + i * 2 + (side == "L"), bone=lg.names[1], style=crystal(50 + i, 0.9),
+                           count=1 + (i + (side == "L")) % 3, spread=0.3, lean=(0.1, 0.5), floating=0, spiral=0,
+                           bent=int((i + (side == "R")) % 2), radius_ratio=0.15, name="KneeCrysium")
     return b
 
 
@@ -424,13 +440,16 @@ TARGET = (0.0, 0.12, 0.38)
 
 
 def main():
+    # Round 49D: the irregular crystal is not mirror-symmetric (whole-body UVs, plain decimation), and its clusters
+    # cut the body into many small islands.
+    uvlayout.SPARSE_FIX = True
     C.reset_scene()
     out = C.preview_dir()
     builder = build_parts()
     asset = C.build_mesh_asset(NAME, builder, voxel=0.0052, target_tris=GAME_TRIS, tex_size=TEX, ao_distance=0.14,
                                extrusion=0.02, ray=0.06, emission_strength=2.5,
                                extra=H.weathering(K, markings=PAL.dark, marking_amount=0.65, seed=61), specular=0.3,
-                               mirror=True, k=DETAIL_K, families=FAMILIES, low_size=LOW_TEX)
+                               mirror=False, symmetric=False, k=DETAIL_K, families=FAMILIES, low_size=LOW_TEX)
     bone_list = bones()
     arm = C.build_armature(NAME + "_Rig", bone_list)
     C.skin(asset.low, arm, builder, rigid={"VentRing", "VentHook"}, blend=1)

@@ -1,0 +1,104 @@
+{
+ "creature": "Shardback",
+ "threshold": 0.00462,
+ "poses_checked": 31,
+ "mixed": [],
+ "clips": [
+  "Walk",
+  "Idle",
+  "Hit",
+  "Death",
+  "Strike"
+ ],
+ "islands_per_object": {
+  "Shardback": 7,
+  "Shardback_Claws": 22,
+  "Shardback_Face": 16
+ },
+ "specks_under_min_verts": {
+  "Shardback": 0,
+  "Shardback_Claws": 16,
+  "Shardback_Face": 4
+ },
+ "floating": [],
+ "separate_by_design": [
+  {
+   "object": "Shardback",
+   "island": 3,
+   "verts": 58,
+   "gap": 0.01967,
+   "pose": "rest@0",
+   "bone": "Shard_3",
+   "centre": [
+    0.2074,
+    0.1633,
+    0.4595
+   ]
+  },
+  {
+   "object": "Shardback",
+   "island": 5,
+   "verts": 67,
+   "gap": 0.01966,
+   "pose": "rest@0",
+   "bone": "Shard_1",
+   "centre": [
+    0.0174,
+    0.285,
+    0.4886
+   ]
+  },
+  {
+   "object": "Shardback",
+   "island": 2,
+   "verts": 87,
+   "gap": 0.01283,
+   "pose": "rest@0",
+   "bone": "Shard_6",
+   "centre": [
+    0.2421,
+    -0.1276,
+    0.4337
+   ]
+  },
+  {
+   "object": "Shardback",
+   "island": 6,
+   "verts": 165,
+   "gap": 0.01005,
+   "pose": "Walk@48",
+   "bone": "Shard_4",
+   "centre": [
+    -0.0075,
+    0.0225,
+    0.5524
+   ]
+  },
+  {
+   "object": "Shardback",
+   "island": 0,
+   "verts": 90,
+   "gap": 0.00994,
+   "pose": "rest@0",
+   "bone": "Shard_5",
+   "centre": [
+    -0.2323,
+    -0.114,
+    0.4491
+   ]
+  },
+  {
+   "object": "Shardback",
+   "island": 1,
+   "verts": 77,
+   "gap": 0.0097,
+   "pose": "Walk@48",
+   "bone": "Shard_2",
+   "centre": [
+    -0.2262,
+    0.1953,
+    0.4502
+   ]
+  }
+ ]
+}

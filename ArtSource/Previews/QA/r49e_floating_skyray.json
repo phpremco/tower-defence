@@ -1,0 +1,545 @@
+{
+ "creature": "Skyray",
+ "threshold": 0.00946,
+ "objects": {
+  "Skyray": 7,
+  "Skyray_Claws": 16,
+  "Skyray_Face": 23
+ },
+ "poses": {
+  "Death@7": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.687,
+     0.3377,
+     0.6158
+    ],
+    "gap": 0.03434
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.9167,
+     0.3377,
+     -0.1046
+    ],
+    "gap": 0.03434
+   }
+  ],
+  "Death@13": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     0.6424,
+     0.1304,
+     0.5447
+    ],
+    "gap": 0.03564
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.5282,
+     0.1304,
+     -0.656
+    ],
+    "gap": 0.03564
+   }
+  ],
+  "Death@20": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     0.04,
+     -0.0236,
+     -0.7697
+    ],
+    "gap": 0.03568
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     -0.6977,
+     -0.0236,
+     -0.3274
+    ],
+    "gap": 0.03568
+   }
+  ],
+  "Death@27": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.6904,
+     -0.0243,
+     0.342
+    ],
+    "gap": 0.03568
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.0543,
+     -0.0243,
+     0.7685
+    ],
+    "gap": 0.03568
+   }
+  ],
+  "Death@33": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     0.2187,
+     -0.0218,
+     0.7398
+    ],
+    "gap": 0.03568
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.7681,
+     -0.0218,
+     0.0711
+    ],
+    "gap": 0.03568
+   }
+  ],
+  "Death@40": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     0.6388,
+     -0.0222,
+     0.4321
+    ],
+    "gap": 0.03568
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.6388,
+     -0.0222,
+     -0.4321
+    ],
+    "gap": 0.03568
+   }
+  ],
+  "Dive@4": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.7883,
+     0.4889,
+     -0.1812
+    ],
+    "gap": 0.03579
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.7883,
+     0.4889,
+     -0.1812
+    ],
+    "gap": 0.03579
+   }
+  ],
+  "Dive@8": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.6341,
+     0.5862,
+     -0.1841
+    ],
+    "gap": 0.0365
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.6341,
+     0.5862,
+     -0.1841
+    ],
+    "gap": 0.0365
+   }
+  ],
+  "Dive@12": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.6341,
+     0.56,
+     -0.2696
+    ],
+    "gap": 0.0365
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.6341,
+     0.56,
+     -0.2696
+    ],
+    "gap": 0.0365
+   }
+  ],
+  "Dive@16": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.6633,
+     0.5458,
+     -0.2632
+    ],
+    "gap": 0.0365
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.6633,
+     0.5458,
+     -0.2632
+    ],
+    "gap": 0.0365
+   }
+  ],
+  "Dive@20": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.854,
+     0.422,
+     -0.1717
+    ],
+    "gap": 0.03402
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.854,
+     0.422,
+     -0.1717
+    ],
+    "gap": 0.034
+   }
+  ],
+  "Fly@0": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.9153,
+     0.3249,
+     -0.1763
+    ],
+    "gap": 0.02776
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.9153,
+     0.3249,
+     -0.1763
+    ],
+    "gap": 0.02776
+   }
+  ],
+  "Fly@7": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.9489,
+     0.3137,
+     0.1396
+    ],
+    "gap": 0.02573
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.9488,
+     0.3137,
+     0.1396
+    ],
+    "gap": 0.02573
+   }
+  ],
+  "Fly@21": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.964,
+     0.3182,
+     0.0236
+    ],
+    "gap": 0.03519
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.964,
+     0.3182,
+     0.0236
+    ],
+    "gap": 0.03519
+   }
+  ],
+  "Fly@28": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.8844,
+     0.3105,
+     -0.2885
+    ],
+    "gap": 0.03447
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.8844,
+     0.3105,
+     -0.2884
+    ],
+    "gap": 0.03447
+   }
+  ],
+  "Fly@35": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.8192,
+     0.3256,
+     -0.369
+    ],
+    "gap": 0.02458
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.8192,
+     0.3256,
+     -0.369
+    ],
+    "gap": 0.02457
+   }
+  ],
+  "Fly@42": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.9153,
+     0.3249,
+     -0.1763
+    ],
+    "gap": 0.02776
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.9153,
+     0.3249,
+     -0.1763
+    ],
+    "gap": 0.02776
+   }
+  ],
+  "Hit@2": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.7934,
+     0.4067,
+     0.5642
+    ],
+    "gap": 0.03422
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.9507,
+     0.4068,
+     0.1362
+    ],
+    "gap": 0.03422
+   }
+  ],
+  "Hit@4": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.9538,
+     0.3264,
+     0.1295
+    ],
+    "gap": 0.02872
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.9611,
+     0.3264,
+     -0.0118
+    ],
+    "gap": 0.02871
+   }
+  ],
+  "Idle@20": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.9518,
+     0.274,
+     -0.0719
+    ],
+    "gap": 0.03291
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.9423,
+     0.36,
+     -0.1236
+    ],
+    "gap": 0.03291
+   }
+  ],
+  "Idle@50": [
+   {
+    "object": "Skyray_Claws",
+    "island": 7,
+    "verts": 16,
+    "centre": [
+     -0.9423,
+     0.36,
+     -0.1513
+    ],
+    "gap": 0.03291
+   },
+   {
+    "object": "Skyray_Claws",
+    "island": 14,
+    "verts": 16,
+    "centre": [
+     0.9518,
+     0.274,
+     -0.0996
+    ],
+    "gap": 0.03291
+   }
+  ]
+ },
+ "floating": [
+  {
+   "object": "Skyray_Claws",
+   "island": 7,
+   "verts": 16,
+   "gap": 0.0365,
+   "pose": "Dive@8",
+   "bone": "Fin_L_A3",
+   "centre": [
+    -0.6341,
+    0.5862,
+    -0.1841
+   ]
+  },
+  {
+   "object": "Skyray_Claws",
+   "island": 14,
+   "verts": 16,
+   "gap": 0.0365,
+   "pose": "Dive@8",
+   "bone": "Fin_R_A3",
+   "centre": [
+    0.6341,
+    0.5862,
+    -0.1841
+   ]
+  }
+ ],
+ "poses_checked": 36,
+ "rest_floating": []
+}

@@ -1,0 +1,44 @@
+{
+  "Crawl": {
+    "frames": 40,
+    "max_step_deg": 6.1,
+    "bone": "Stalk_R1",
+    "frame": 28,
+    "ratio_to_median": 2.3
+  },
+  "Death": {
+    "frames": 40,
+    "max_step_deg": 10.3,
+    "bone": "Slosh",
+    "frame": 9,
+    "ratio_to_median": 5.0
+  },
+  "Flood": {
+    "frames": 44,
+    "max_step_deg": 39.5,
+    "bone": "Stalk_L2",
+    "frame": 24,
+    "ratio_to_median": 8.5
+  },
+  "Hit": {
+    "frames": 12,
+    "max_step_deg": 24.6,
+    "bone": "Stalk_L2",
+    "frame": 1,
+    "ratio_to_median": 6.2
+  },
+  "Idle": {
+    "frames": 72,
+    "max_step_deg": 8.1,
+    "bone": "Stalk_L2",
+    "frame": 12,
+    "ratio_to_median": 1.5
+  },
+  "Spawn": {
+    "frames": 48,
+    "max_step_deg": 20.7,
+    "bone": "Stalk_R3",
+    "frame": 10,
+    "ratio_to_median": 1.5
+  }
+}

@@ -61,7 +61,7 @@ namespace Game.Hero
         private const float BlinkClosed = 100f;
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
         private static readonly Color SparkColor = new Color(1f, 0.8f, 0.4f);
-        private static readonly Color SmokeColor = new Color(0.25f, 0.24f, 0.24f, 0.4f);
+        private static readonly Color SmokeColor = new Color(0.5f, 0.48f, 0.46f, 0.95f);
         private static readonly Color DustColor = new Color(0.5f, 0.45f, 0.4f, 0.5f);
         private static readonly Color ThrusterColor = new Color(0.5f, 0.9f, 1f);
 
@@ -429,8 +429,8 @@ namespace Game.Hero
             Transform pack = _body.Find(_art.PackBone);
             Transform at = pack != null ? pack : _figure;
             _sparks = ParticleKit.Create(at, "Sparks", Vector3.zero, SparkColor * 2f, 0.3f, 0.7f, 0.025f, 0.06f, 1.5f, 4f, 1.2f, 100, 0.15f);
-            _smoke = ParticleKit.Create(at, "Smoke", Vector3.zero, SmokeColor, 1.2f, 2.2f, 0.2f, 0.4f, 0.3f, 0.6f, -0.12f, 30, 0.15f);
-            _dust = ParticleKit.Create(transform, "Dust", new Vector3(0f, 0.1f, 0f), DustColor, 0.5f, 0.9f, 0.2f, 0.4f, 0.8f, 1.8f, -0.05f, 40, 0.4f);
+            _smoke = ParticleKit.UseSmoke(ParticleKit.Create(at, "Smoke", Vector3.zero, SmokeColor, 1.2f, 2.2f, 0.36f, 0.72f, 0.3f, 0.6f, -0.12f, 30, 0.15f));
+            _dust = ParticleKit.UseSmoke(ParticleKit.Create(transform, "Dust", new Vector3(0f, 0.1f, 0f), DustColor, 0.5f, 0.9f, 0.2f, 0.4f, 0.8f, 1.8f, -0.05f, 40, 0.4f));
             _thrusters = ParticleKit.Create(at, "Thrusters", Vector3.zero, ThrusterColor * 2f, 0.12f, 0.25f, 0.04f, 0.08f, 1.2f, 2f, 0f, 30, 0.06f);
         }
 

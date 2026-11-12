@@ -3082,3 +3082,230 @@ fronds behind the jaw (a crown from above); a hooded lure bulb; a split double t
 - Knitback's ribs read as bars from the side view; from the play camera they read as intended.
 - Siftjaw stays a low, crab-like body plan (it must burrow); the sickle jaws and the arrowhead carry its identity.
 - The corrupted skins of the five species were re-baked on the new UVs (texture-only, as before).
+
+# Round 49C: heads, faces and teeth (Remco's verdicts of 2026-11-12)
+
+Verdicts ("Bijna": refine, do not redesign): element bats "strange to the right of the head in the side view";
+bat boss "I can't see what I'm looking at"; Stinger and Acid Empress "I can't see a clear head"; Sealed One "I can't
+make out where the head is"; Frost Warden "I don't see his teeth". Bones, clip names, frame counts, events and part
+names stay (Docs/STATUS.md, round 49C).
+
+## Element bats: a neck between head and wings
+
+Cause, found by rendering the Fly clip from the in-game side angle (`r49_bat_before_side.png`): the head sat on the
+chest (no neck), the shoulders were right behind it, and the two sensor horns swept out and back over the wing roots.
+From a high three-quarter view the raised near wing therefore started at the side of the head, with a horn crossing
+it. Not a weight or clip problem. Fix (`build_bat.py`): the head moves 0.065 forward on a short darker ringed neck
+(`HEAD_SHIFT`, all head parts and the Head/Jaw bones), the shoulders move 0.025 back onto a raised shoulder mound
+blended into the arm, and the horns sweep straight back along the skull. One mesh for every element, so every skin
+gets it.
+
+## Bat boss (Sky Sovereign export, Storm Matriarch in game): one bat, read from above
+
+- One clear wing pair: the second (aft) wing pair became a bat's tail membrane between the hips, a hind-leg spur and
+  the tail (same Aft bones, a smaller lift in the clips).
+- A bigger head (`head_scale` 1.3) with two broad, forward-facing bat ears with a rose inner side; the five-horn crown
+  and the sensor horns are gone (they made a pale clutter round the head from above).
+- Wings a step lighter than the body (wine membrane, rose underside) with the pale chevrons; a light chevroned mantle
+  over the back; a thick ringed sheath on the tail that glows at the joints, leading to a bigger amber lens.
+
+## Stinger and Acid Empress: a head in front of the carapace
+
+The round carapace had its eye row on top and the mouth under its rim, so there was no head. Now an armoured head
+capsule juts out in front of the carapace between the claw arms (`build_stinger.head_parts`, scaled 1.22 about its
+root): darker limb plum with a pale worn front lip (the carapace stays lighter), a dark collar under the carapace rim,
+two big median eyes on a brow mound and three small eyes round each front corner, two thick hooked chelicerae with
+pale fangs under its front edge and the acid mouth glowing between them. The Acid Empress gets the same head at her
+width; her Crysium crown now stands on the head as a tiara (two shoulder barbs stay on the carapace rim), which makes
+the head the focal point.
+
+## Sealed One: a long skull with a face
+
+The tall smooth egg read as a pod, and the crown ring crossed it like a bar. The head is now a long skull pushed
+forward and tilted nose-down (the two face plates still part on the violet column), over a heavy lower jaw with a
+violet-lit maw; the crown rings ride higher and further back as a halo; the praying hands sit lower, under the jaw.
+The face (sealedone_detail.py): two pairs of violet eyes in dark sockets under heavy bone brows on the face plates
+(they part with the plates), the seam eye as a third eye on the brow, fangs down the plates' front edges over the jaw
+and a row of jaw fangs.
+
+## Frost Warden: teeth you can see
+
+Detail only (frostwarden_detail.py, body untouched): the teeth are about twice as big and bone-ivory instead of cyan
+ice (they vanished against the pale slate head): two sabre fangs that hang past the chin even with the jaw shut, a
+lower row, and two tusks that rise outside the upper lip beside the snout (they read from above). Every clip holds the
+jaw 12 degrees further open, so the teeth and the lit maw show at rest.
+
+## Honest weak points
+
+- The element bats' brow cap is still the round-10 "helmet" shape; the head reads apart now, but up close it stays a
+  little toy-like.
+- The bat boss's ears read as two pink spikes in a pure side view; from the play camera they read as ears.
+
+# Round 49D: crystal and shield creatures (2026-11-12)
+
+Verdicts: Shardback "those circles are too perfect, it doesn't look scary enough"; Brood Mother, Hive Queen, Shattered
+"crystals too perfect"; Crystal Warlord "same as the normal one" plus crystals; Bulwark "shield too perfect and head
+too perfectly round etc., the sword may have serrations, and the animation smoother". Bones, clip names, frame counts,
+events, sockets and part names stay (see Docs/STATUS.md, round 49D).
+
+## Irregular crystal growth (`Tools/Blender/crystal_growth.py`, new, used only by these six)
+
+- **No two shards alike.** `fractured_shard` builds each shard from scratch: 4..7 faces at jittered angles and radii
+  (faces of unequal width, often blade-flat), a flared root where it grew out of the flesh, one or two fracture steps
+  (the radius drops between two rings), chipped notches, and either an off-centre point or a slanted broken face.
+- **Clusters, not fans.** `growth_cluster` grows one dominant shard and satellites of falling size (a power curve: a
+  few big, many small), leaning unevenly, one spiralling (helix) and one or two bent, from a lumpy mound of fused
+  flesh/chitin; small fragments hover off the cluster on the same bone (the alien rule's floating shards).
+- **Uneven inner light.** `uneven_glow` gives every shard its own light level and lets the light come in pockets, so
+  a cluster pulses unevenly instead of glowing as one lamp.
+- `serrated_outline` (uneven, back-raked saw teeth) breaks rims: the Shardback's carapace, sockets and plates, the
+  Bulwark's shield and visor.
+
+## Shardback: a crystal-crusted crab that wants to ram you
+
+The back is a faceted carapace (hewn, not an egg) with a saw-toothed rim and back-raked chitin spikes all round; every
+socket is a torn crater with a ragged outline and broken chitin lips (the ring collars and discs are gone); each of
+the six clusters is irregular growth with a fragment hovering over it. The front is a serrated pronotum with four
+uneven forward hooks, a jagged brow with two horns of different length, a fractured crystal ram horn, a hewn head,
+and longer, hooked mandibles with a barb on each. The clusters still sit a gap above their sockets (own islands, own
+bones), so Unity's scale-0 shedding works as before.
+
+## Bulwark and Crystal Warlord: a grown shield, a hewn head, a serrated blade
+
+- **Shield:** a bone plate grown, not turned: a chipped, lopsided outline drawn into a jagged point at the bottom,
+  three bitten-out notches, warped growth ridges of uneven spacing in the geometry, two scar gouges, faint lime light
+  in a few deep cracks and a dull off-centre knot (no rings, no target). Rim hooks at uneven places and lengths.
+- **Head:** the head and jaw are hewn (chiselled facets) and slightly lopsided; the visor is a jagged, back-swept brow
+  shelf with a broken two-blade keel; two heavy brow ridges meet low over the snout in a V; uneven horns, tusks and
+  cheek spikes, a chin hook.
+- **Sword:** uneven width with a slight hook at the point, raked crystal teeth along the cutting edge (largest mid-
+  blade) and three small barbs on the back.
+- **Crystal Warlord:** the same body (it reuses `build_bulwark.build_parts`), with a lopsided crown cluster (and a
+  smaller second one) bursting from the helm with fragments over it, uneven clusters through both shoulder plates (the
+  shield side larger) and a broken ridge of three clusters down the back.
+- **Smoother clips (Bulwark, and the Warlord's shared clips):** the walk's feet leave and land at ground speed
+  (Hermite swing, sin^2 lift and toe fold) and the hips carry the weight over the stance foot (side shift, roll,
+  counter-twist; head, sword, shield and tail a beat late); the hit eases into its shove and rings out without the
+  shared recoil's jump; the death blends the feet from planted to carried instead of switching them; the block's
+  shield rides past and settles; the Strike's chop (`build_attacks36.bulwark_strike`) cocks lower and falls on a
+  smootherstep, the shield arm tucks on the same curve, and the blade follows through past the target.
+
+## Brood Mother, Hive Queen, Shattered: crystal as growth
+
+- **Queen:** one lopsided crown cluster (8 shards, fractured, bent, two spiralling, three fragments hovering) on a
+  mound of fused chitin at the back of the head; the forebody's ridge carries five uneven clusters alternating side to
+  side instead of matched pairs; every knee breaks out differently (a blade, a pair, a bent horn).
+- **Brood Mother:** a lopsided crown cluster plus a smaller second one off to the left, on a chitin mound with two
+  fragments; the thorax crystals differ left and right; each knee differs.
+- **Shattered:** the crystal material stays mirrored (its titan pipeline symmetrises the mesh), so each growth is
+  grown on the +X side and mirrored: the crest reads as a cracked-open crown, the inner clusters (Crys_1..6, phase
+  scales) as paired eruptions; the fist cleavers are fractured, stepped blades with spurs along the back; the three
+  shard spires keep their spear-fan, wing and claw-ring silhouettes but every shard is fractured and uneven, with a
+  fragment hovering off each.
+- Queen and Brood Mother bodies are no longer mirror-UV'd (asymmetric crystal): whole-body UVs at about half the
+  former texel density.
+
+## Honest weak points
+
+- The floating fragments carry the crystal style's warm/bright root, so a few read as small sparks from far away.
+- At game zoom the Bulwark's sword teeth are small nubs (the 3950-tri budget); they read at the play camera's close
+  zoom and in the normal map.
+- The Shattered's crystals are bilateral by necessity (mirrored material); the irregularity is per growth, not
+  left against right.
+- The Bulwark's painted amber eye slits (round 10) still sit under the round-46 eyes.
+
+# Round 49E: second pass on the wolves, the rays' mouth, the slime vat, loose spikes (2026-11-12)
+
+Verdicts: Prowler and PackAlpha "Opnieuw" ("smooth as if made of metal, a children's robot dog"; the Alpha also "I
+liked the black back spikes better, now it's mostly red"); Skyray and ray boss "Opnieuw" ("the mouth isn't attached,
+a pink water balloon; the tail is better"); SlimeMonarch "Opnieuw, only the watermelons" ("a transparent vat with
+acid-like slime that moves when it moves"); Cinder Matriarch and Knitback "Bijna" (loose spikes and head parts).
+Bones, clip names, lengths, events and part names stay (Docs/STATUS.md, round 49E); new: SlimeMonarch bone `Slosh`.
+
+## The alien wolf, from the muscles out (`wolf_kit.py`)
+
+- **What made it a toy:** every part was a clean primitive (tube limbs, capsule segments with rings, glossy band-plate
+  ellipsoids) in one saturated red. The fix is in three layers: forms, silhouette, surface.
+- **Forms:** a starved predator. Deep narrow keel with ribs showing, waist tucked to the spine, hip bones and shoulder
+  blades under the skin, lumbar vertebrae. Each limb segment is one tapered profile (heavy behind the bone, thin at the
+  joint) instead of stacked muscle eggs; the thigh grows out of the croup. Bone only where it would push out (elbow,
+  hock spur, knee cap), stained with hide, pale only at the tip.
+- **Silhouette:** clumps of tapered, bent quill-fur locks (throat ruff, mane, cheek and shoulder tufts, haunch tufts,
+  elbow and forearm feathering, a ragged brush tail). The head hangs low on a thick neck; broad skull, heavy brow, a
+  blunt muzzle wrinkled in a snarl with the lip lifted off dark gums; laid-back ears.
+- **Surface:** matte and layered: dark back, rust or soot flanks, dull pale belly, big mottles, fur striation along the
+  body, broken stripes with a thin seam of glow, raised scars; near-black locks. Glow only in eyes, throat, seams.
+- **The Alpha:** the same species heavier in front, a dominant crest of long uneven near-black spikes (the old spikes'
+  role), a black spiked collar on the Mane bones, bone horns, scars; charcoal hide, red only in scars, seams and eyes.
+
+## The rays' mouth: cut into the head
+
+The head's own front underside is flattened into the upper lip, a lower-jaw ellipsoid on the Jaw bone is the lower
+lip, and both overlap behind the slit and at the corners, so the voxel remesh makes one skin round a down-turned
+crescent slit (the pipeline only adds volumes; this is how it "cuts"). Dark matte inside, a gum band on the lips, the
+teeth rooted in it (`build_skyray.Mouth`, shared with the ray boss).
+
+## The SlimeMonarch's acid vat
+
+One vat instead of two sacs: a veined membrane bag grown out of the mantle, open under a fleshy lip with cartilage
+hoops, filled with glowing acid. "Transparent" is painted (acid glow with clots below the acid level, dark membrane
+above, a meniscus band), because creature materials are opaque; the motion is real: the acid surface is on its own
+bone (`Slosh`) driven by a damped spring from the vat's own motion. Its frequency sits below the crawl's body wave
+(at 1.5 Hz it resonated and pinned at the limit). The spouts sit on the old Sac sockets, so spawning is unchanged.
+
+## Loose parts
+
+`check_floating_parts.py` finds islands that do not touch the body in the rest pose or any clip frame. The Cinder
+Matriarch's outer hood shards were rooted past the hood's thin rim; the Knitback's tusks started beside the skull and
+its tendrils just outside the rump. Rule of thumb: start every attached spike, tusk or tendril inside the volume it
+grows from (its first point), never on the surface.
+
+# Round 49F: follow-through, loose parts, teeth and a readable maw (2026-11-12)
+
+Verdicts on 49C/49D: Bulwark "Bijna" (tail, neck and head very static), Crystal Warlord "Bijna" (the same, plus
+floating crystals), Shattered "Bijna" (crystal positions; teeth through the lips with the mouth shut), Sealed One
+"Opnieuw" (the mouth is not understandable), Shardback "Opnieuw" (spikes not attached to the body).
+
+## Bulwark and Crystal Warlord: the tail, neck and head follow the body
+
+- `Tools/Blender/follow_through.py` (new): after a clip is solved as authored, the tail (Tail_1..3) and the neck and
+  head (Neck, Head) are damped-spring chains. Each bone's tip chases where the authored pose puts it, softer down the
+  chain, so the chain lags a turn or a lurch, overshoots when the body stops and settles; the lag grows towards the
+  tail tip (a wave runs down it). Loops are solved for their steady state (seamless), one-shots start on the authored
+  frame 0. The root, pelvis, legs and arms are untouched, so feet, events and lengths stay.
+- Authored on top: the head leads. In the Strike it holds the target while the chest winds away and drops into the
+  chop a frame and a half before the blade; in the Sweep it turns into the swing ahead of the sword; in the Block it
+  turns to the shield and ducks behind it before the shield arrives; the Walk nods into every step and swings against
+  the hips; the Idle looks round with a tilt (the old look curve kinked at the loop seam); the Hit snaps the head back
+  and away and whips the tail; in the Death the head lolls to the fall side. The tail swings out against every twist.
+- Loose parts: the Warlord's finer remesh had left both arms as separate pieces beside the chest (they drifted off it
+  in the Sweep) and the shoulder spikes, back spines, cheek spikes, shield hooks and tail keels hovering a hair off the
+  body. Every spike now starts inside the plate it grows from (`build_bulwark.rooted`), a shoulder ball joins arm and
+  chest, the Warlord's crystal clusters sit a little into the body on root mounds with no hovering fragments, and
+  single-triangle specks left at needle tips are deleted after the bake (`drop_specks`). Both bodies are one island.
+
+## Shardback: nothing hovers
+
+The "spikes not attached" were the round-49D hovering fragments, broken-off tips of the crater lips and flank frost
+(4..9-vertex islands) and the clusters standing 4 cm over their craters. Now: no fragments; lips and frost root deeper;
+tips that the remesh still breaks off are deleted after the bake; each cluster sits down in its crater (about 1 cm
+over the sunk floor, under the lips) on a wider root mound, the big midline one a little tighter. Each Shard_n cluster
+is still exactly one island of its own bone (checked), so Unity's scale-0 shedding works as before.
+
+## Shattered: crystals on their bones, teeth that clear the lips
+
+- The crystal mesh is grown on +X and mirrored, but skinning picks each vertex's bone from its nearest part, and the
+  -X half has no parts: the left fist cleaver had taken the jaw teeth's bone and drifted off the fist by up to 0.4 m
+  in Climb_Up and Roar. The crystal weights are now mirrored from +X (with _L/_R swapped). Hovering fragments removed.
+- The lower jaw was wedged into the head core (no gap even shut), so every tooth crossed a lip. It hangs 0.15 lower
+  (a real slot under the head's front rim) and still juts past the head front: upper fangs hang into the slot and stop
+  3.5 cm short of the jaw; lower crystal teeth and fangs rise from the jutting lip in front of the head (underbite).
+
+## Sealed One: one maw you can read
+
+The 49C skull had a pink glowing blob with spikes under it. Now a plain maw under the front of the skull: a bone-stone
+muzzle (upper jaw) and a heavy mandible with a chin keel on a new `Jaw` bone, a wet wine-dark gum along both rims, two
+interlocking rows of ivory fangs rooted in the gums, a near-black palate and tongue and a violet glow deep in the
+gullet. It stands a little open at rest (a dark slot crossed by fangs) and opens with the face plates (roar, summon,
+rise, hit: 0.9 x the plate angle); it never closes past rest, and every fang stops short of the other gum. The skull
+dips 16 degrees instead of 24 so the face meets the play camera. The fangs that hung off the plates' edges are gone.

@@ -437,7 +437,6 @@ namespace Game.Levels
             fade.color = gradient;
 
             var renderer = go.GetComponent<ParticleSystemRenderer>();
-            renderer.sharedMaterial = UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
             ParticleKit.UseCell(system, MarkerArt.ParticleCell.Spore);
             system.Play();
@@ -720,7 +719,6 @@ namespace Game.Levels
             shape.scale = new Vector3(size.x + StarFieldMargin, 0.01f, size.y + StarFieldMargin);
 
             var renderer = go.GetComponent<ParticleSystemRenderer>();
-            renderer.sharedMaterial = UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
 
             ParticleKit.UseCell(system, MarkerArt.ParticleCell.Mote);

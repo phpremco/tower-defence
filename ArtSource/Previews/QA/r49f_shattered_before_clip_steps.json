@@ -1,0 +1,107 @@
+{
+  "Climb_Down": {
+    "frames": 186,
+    "max_step_deg": 26.0,
+    "bone": "Leg_L1_Lower",
+    "frame": 143,
+    "ratio_to_median": 9.9
+  },
+  "Climb_Loop": {
+    "frames": 81,
+    "max_step_deg": 3.1,
+    "bone": "Leg_L1_Upper",
+    "frame": 16,
+    "ratio_to_median": 2.5
+  },
+  "Climb_Up": {
+    "frames": 186,
+    "max_step_deg": 21.6,
+    "bone": "Leg_R1_Upper",
+    "frame": 99,
+    "ratio_to_median": 9.7
+  },
+  "Death": {
+    "frames": 80,
+    "max_step_deg": 5.2,
+    "bone": "Head",
+    "frame": 44,
+    "ratio_to_median": 3.1
+  },
+  "Dive_Into_Liquid": {
+    "frames": 66,
+    "max_step_deg": 10.2,
+    "bone": "Leg_L1_Lower",
+    "frame": 26,
+    "ratio_to_median": 5.1
+  },
+  "Hit": {
+    "frames": 14,
+    "max_step_deg": 20.4,
+    "bone": "Jaw",
+    "frame": 1,
+    "ratio_to_median": 20.3
+  },
+  "Idle": {
+    "frames": 72,
+    "max_step_deg": 1.7,
+    "bone": "Jaw",
+    "frame": 8,
+    "ratio_to_median": 1.7
+  },
+  "PhaseBreak1": {
+    "frames": 40,
+    "max_step_deg": 26.7,
+    "bone": "Shell_1",
+    "frame": 16,
+    "ratio_to_median": 24.7
+  },
+  "PhaseBreak2": {
+    "frames": 44,
+    "max_step_deg": 26.4,
+    "bone": "Shell_5",
+    "frame": 18,
+    "ratio_to_median": 27.7
+  },
+  "Rejoin": {
+    "frames": 80,
+    "max_step_deg": 8.7,
+    "bone": "Jaw",
+    "frame": 53,
+    "ratio_to_median": 17.5
+  },
+  "Roar": {
+    "frames": 70,
+    "max_step_deg": 10.5,
+    "bone": "Leg_L1_Lower",
+    "frame": 61,
+    "ratio_to_median": 20.9
+  },
+  "Split": {
+    "frames": 64,
+    "max_step_deg": 25.7,
+    "bone": "Shell_3",
+    "frame": 36,
+    "ratio_to_median": 35.5
+  },
+  "Submerged_Loop": {
+    "frames": 80,
+    "max_step_deg": 1.8,
+    "bone": "Leg_L1_Upper",
+    "frame": 52,
+    "ratio_to_median": 1.6
+  },
+  "Surface_Burst": {
+    "frames": 64,
+    "max_step_deg": 11.6,
+    "bone": "IK_Leg_L1",
+    "frame": 32,
+    "ratio_to_median": 4.6
+  },
+  "Walk": {
+    "frames": 56,
+    "max_step_deg": 4.6,
+    "bone": "Leg_L1_Upper",
+    "frame": 9,
+    "ratio_to_median": 2.1
+  }
+}

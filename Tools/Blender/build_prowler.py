@@ -7,6 +7,13 @@ with a long muzzle, a split lower jaw (two mandible halves) and two pairs of tal
 tail. Orange glow in the plate seams (tiger stripes) and the throat. Same bone names and clips as before; the jaw
 halves now open downward and the clips' neck angles are taken relative to the raised neck (NECK_BIAS).
 
+Round 49E (Remco on round 49A: "everything is smooth as if made of metal, it looks like a children's robot dog"):
+the wolf idea stays, the execution is rebuilt from the muscles out (wolf_kit.py): a gaunt, starved predator with ribs
+showing, a tucked waist, bony hips and shoulder blades; muscle bellies and tendon-corded lower legs with pale bone
+spurs at elbow and hock; shaggy locks of quill-fur (throat ruff, mane, elbow feathering, ragged brush tail); a low
+head with a long snarling muzzle, laid-back ears and the split jaw; a matte hide (dark back, rust flanks, broken
+dark stripes, pale scars), near-black quills, pale bone; glow only in eyes, throat and thin stripe seams.
+
 Clips: Run (loop, low and flat rotary gallop), Idle, Hit, Death, Pounce. Also exports Prowler_LOD1.
 
 Run: blender --background --python Tools/Blender/build_prowler.py -- [--preview <dir>] [--norender]
@@ -32,15 +39,17 @@ K = 1.0
 GAME_TRIS = 3900
 LOD_TRIS = 1700
 TEX, LOW_TEX = 1024, 512
-FAMILIES = ("chitin", "membrane", "crystal")
+FAMILIES = ("membrane", "chitin", "crystal")  # round 49E: hide first (wrinkles, veins), quills and bone second
 GAME_SCALE = 0.62
 
 # Species colours from ProjectGenerator.Bestiary: red-orange body (0.8, 0.28, 0.15), red sensors, orange accent.
-PAL = H.Palette(top=(0.8, 0.27, 0.12), side=(0.2, 0.05, 0.03), belly=(0.06, 0.025, 0.02), seam=(0.04, 0.014, 0.01),
-                dark=(0.13, 0.04, 0.025), glow=(1.0, 0.55, 0.17), eye=(1.0, 0.28, 0.14), membrane=(0.32, 0.07, 0.03),
-                bone=(0.93, 0.8, 0.62))
-LEGP = H.Palette(top=(0.6, 0.18, 0.08), side=(0.26, 0.065, 0.035), belly=(0.05, 0.02, 0.016), seam=(0.035, 0.012, 0.01),
-                 dark=(0.1, 0.035, 0.022), glow=PAL.glow, eye=PAL.eye, bone=PAL.bone)
+# Round 49E (wolf_kit.hide): top = the dark back, side = the rust flanks, belly = a dull pale underside, seam = the
+# darkest creases and stripes, dark = the quill-fur, membrane = scars and quill tips, bone = pale bone.
+PAL = H.Palette(top=(0.07, 0.035, 0.028), side=(0.4, 0.16, 0.085), belly=(0.5, 0.38, 0.28), seam=(0.035, 0.016, 0.012),
+                dark=(0.045, 0.025, 0.02), glow=(1.0, 0.5, 0.15), eye=(1.0, 0.28, 0.14), membrane=(0.62, 0.3, 0.2),
+                bone=(0.84, 0.76, 0.62))
+LEGP = H.Palette(top=(0.14, 0.06, 0.04), side=(0.3, 0.11, 0.055), belly=(0.36, 0.25, 0.18), seam=PAL.seam,
+                 dark=PAL.dark, glow=PAL.glow, eye=PAL.eye, membrane=PAL.membrane, bone=PAL.bone)
 
 SIDES = (("L", -1), ("R", 1))
 X = Vector((1, 0, 0))
@@ -324,7 +333,8 @@ def main():
     builder = build_parts()
     asset = C.build_mesh_asset(NAME, builder, voxel=0.0032, target_tris=GAME_TRIS, tex_size=TEX, ao_distance=0.08,
                                extrusion=0.012, ray=0.04, emission_strength=2.5,
-                               extra=H.weathering(K, markings=PAL.dark, marking_amount=0.7), specular=0.3,
+                               extra=H.weathering(K, scratches=0.4, dust=0.35, markings=PAL.seam, marking_amount=0.4),
+                               specular=0.15,
                                mirror=True, k=K, families=FAMILIES, low_size=LOW_TEX)
     bone_list = bones()
     arm = C.build_armature(NAME + "_Rig", bone_list)

@@ -108,6 +108,93 @@ SEG_BONES = ["Tail_1", "Tail_1", "Tail_2", "Tail_3", "Sting"]
 
 
 # --------------------------------------------------------------------------------------------------------------
+# Head (round 49C)
+# --------------------------------------------------------------------------------------------------------------
+# Remco: "I can't see a clear head". Round 10 had a round carapace with an eye row on top and a small mouth under its
+# rim. Now a separate head juts out in front of the carapace between the claw arms: a dark capsule under a pale-lipped
+# face shield, a raised eye cluster on its brow (two big median eyes, three small eyes at each front corner), and two
+# thick hooked chelicerae under its front edge with the acid mouth glowing between them. It stays on the Body bone.
+
+HEAD_C = G(0, 0.212, 0.382)
+HEAD_ROOT = G(0, 0.212, 0.31)   # where the head leaves the carapace: the head is scaled about this point
+HEAD_SCALE = 1.22
+
+
+def hs(p):
+    """A point of the head design, scaled up about HEAD_ROOT (the head reads at play zoom)."""
+    return HEAD_ROOT + (p - HEAD_ROOT) * HEAD_SCALE
+
+
+def hx(cfg):
+    """Head width factor: follows the body width (the Acid Empress is wider)."""
+    return cfg["width"] ** 0.6
+
+
+HEAD_RADII = (0.085, 0.09, 0.05)   # capsule radii (x, along, up) before HEAD_SCALE; x also follows the width
+
+
+def head_centre():
+    return hs(HEAD_C)
+
+
+def head_radii(cfg=CFG):
+    w, k = hx(cfg), HEAD_SCALE
+    return Vector((HEAD_RADII[0] * w * k, HEAD_RADII[1] * k, HEAD_RADII[2] * k))
+
+
+def head_point(x, up, fwd, cfg=CFG, out=0.0):
+    """The point of the head capsule's surface in the direction G(x, up, fwd) from its centre, `out` beyond it."""
+    d = G(x, up, fwd).normalized()
+    r = head_radii(cfg)
+    t = 1.0 / math.sqrt((d.x / r.x) ** 2 + (d.y / r.y) ** 2 + (d.z / r.z) ** 2)
+    return head_centre() + d * (t + out)
+
+
+def head_eyes(cfg=CFG):
+    """Right-hand eyes on the capsule: (name, centre, radius); the left ones mirror them. Two big median eyes on the
+    brow, three small ones round each front corner."""
+    k = HEAD_SCALE
+    out = []
+    for name, d, r in (("Main", (0.22, 0.85, 0.5), 0.018), ("Side", (0.55, 0.45, 0.7), 0.012),
+                       ("Side", (0.78, 0.4, 0.45), 0.011), ("Side", (0.92, 0.35, 0.15), 0.01)):
+        out.append((name, head_point(*d, cfg=cfg, out=r * k * 0.25), r * k))
+    return out
+
+
+def chelicera_points(sx, cfg=CFG):
+    w = hx(cfg)
+    return [hs(p) for p in (G(0.026 * sx * w, 0.19, 0.41), G(0.034 * sx * w, 0.178, 0.462),
+                            G(0.026 * sx * w, 0.158, 0.497), G(0.008 * sx * w, 0.145, 0.5))]
+
+
+MOUTH_C = hs(G(0, 0.178, 0.432))
+
+
+def head_parts(b, cfg):
+    k = K
+    w = hx(cfg)
+    z = HEAD_SCALE
+    # One armoured capsule in the darker limb plum (the carapace is lighter), with a pale worn front lip and a hot
+    # rim: a head with its own value, a top and a front edge.
+    b.ellipsoid("Head", head_centre(), tuple(head_radii(cfg)), pitch(-6), bone="Body", segments=(32, 16),
+                style=K2.armour_plate(LEGP, k, rim_glow=0.8, chevron=0.7, lip=1.0, chevron_angle=1.3))
+    # The neck groove under the carapace rim: a dark collar so head and carapace read apart.
+    b.ellipsoid("Collar", G(0, 0.2, 0.31), (0.07 * w, 0.03, 0.04), bone="Body", segments=(20, 10),
+                style=H.band_plates(LEGP, k, 1, height=0.0))
+    main = head_eyes(cfg)[0][1]
+    b.ellipsoid("Mound", Vector((0, main.y, main.z - 0.006)), (0.034 * w * z, 0.026 * z, 0.016 * z), bone="Body",
+                segments=(18, 10), style=H.band_plates(LEGP, k, 1, height=0.0))
+    for sx in (-1, 1):
+        for name, c, r in head_eyes(cfg):
+            b.ellipsoid("Eye", Vector((c.x * sx, c.y, c.z)), (r, r, r * 0.9), bone="Body", style=H.eye(PAL, k, 0.55),
+                        segments=(12, 6))
+        b.tube("Chelicera", chelicera_points(sx, cfg), [0.024 * z, 0.02 * z, 0.012 * z, 0.002], sides=10, chain=["Body"],
+               style=H.blade(PAL, k, glow=1.0, teeth=2), flatten=0.75)
+    b.ellipsoid("Mouth", MOUTH_C, (0.03 * w * z, 0.02 * z, 0.018 * z), bone="Body", style=H.inner_glow(ACID, 0.8),
+                segments=(16, 8))
+
+
+# --------------------------------------------------------------------------------------------------------------
 # Model
 # --------------------------------------------------------------------------------------------------------------
 
@@ -119,17 +206,7 @@ def build_parts(cfg=CFG, b=None):
                 style=H.band_plates(PAL, k, 2, height=0.003), segments=(40, 20))
     b.ellipsoid("Carapace", G(0, 0.245, 0.19), (0.16 * w, 0.165, 0.035), pitch(-6), bone="Body",
                 style=K2.armour_plate(PAL, k, rim_glow=0.9, chevron=0.9, chevron_angle=1.0, cells=14, seed=3), segments=(40, 16))
-    b.ellipsoid("Mound", G(0, 0.275, 0.27), (0.06, 0.05, 0.035), bone="Body", style=H.band_plates(PAL, k, 1, height=0.0),
-                segments=(20, 10))
-    for i in range(cfg["eyes"]):
-        a = math.radians(-70 + 140 * i / max(1, cfg["eyes"] - 1))
-        b.ellipsoid("Eye", G(0.062 * math.sin(a), 0.292 + 0.006 * math.cos(a * 2), 0.27 + 0.048 * math.cos(a)),
-                    (0.017, 0.017, 0.015), bone="Body", style=H.eye(PAL, k, 0.55), segments=(12, 6))
-    b.ellipsoid("Mouth", G(0, 0.16, 0.32), (0.045, 0.03, 0.025), bone="Body", style=H.inner_glow(ACID, 0.7), segments=(16, 8))
-    for side, sx in SIDES:
-        root = G(0.035 * sx, 0.17, 0.32)
-        b.tube("Palp", [root, root + G(0.012 * sx, -0.01, 0.05), root + G(0.0, -0.045, 0.075)], [0.016, 0.012, 0.002],
-               sides=8, chain=["Body"], style=H.hook(PAL, k))
+    head_parts(b, cfg)
 
     b.ellipsoid("Abdomen", G(0, 0.2, -0.12), (0.16 * w, 0.24, 0.075), pitch(3), bone="Abdomen",
                 style=H.glow_flesh(PAL, k, glow=0.6, flank=(0.55, 0.95), folds=12.0), segments=(40, 20))
@@ -373,7 +450,7 @@ def build_asset(name, builder, tris, voxel=0.0034, k=K):
                               mirror=True, k=k, families=FAMILIES, low_size=LOW_TEX)
 
 
-RIGID = {"Carapace", "Plate", "Hand", "Bladder"}
+RIGID = {"Carapace", "Plate", "Hand", "Bladder", "Head", "Mound", "Chelicera"}
 
 
 def main():

@@ -154,7 +154,7 @@ namespace Game.Hero
         private static readonly Color DownColor = new Color(1f, 0.25f, 0.2f);
         private static readonly Color ThrusterColor = new Color(0.5f, 0.9f, 1f);
         private static readonly Color SparkColor = new Color(1f, 0.8f, 0.4f);
-        private static readonly Color SmokeColor = new Color(0.25f, 0.24f, 0.24f, 0.4f);
+        private static readonly Color SmokeColor = new Color(0.5f, 0.48f, 0.46f, 0.95f);
         private static readonly Color DustColor = new Color(0.5f, 0.45f, 0.4f, 0.5f);
 
         private Commander _hero;
@@ -314,8 +314,8 @@ namespace Game.Hero
 
             _thrusters = CreateThrusters(_shell, _parts.Thruster);
             _sparks = ParticleKit.Create(_shell, "Sparks", new Vector3(0f, 1f, -0.3f), SparkColor * 2f, 0.3f, 0.7f, 0.025f, 0.06f, 1.5f, 4f, 1.2f, 100, 0.15f);
-            _smoke = ParticleKit.Create(_shell, "Smoke", new Vector3(0f, 1f, -0.3f), SmokeColor, 1.2f, 2.2f, 0.2f, 0.4f, 0.3f, 0.6f, -0.12f, 30, 0.15f);
-            _dust = ParticleKit.Create(transform, "Dust", new Vector3(0f, 0.1f, 0f), DustColor, 0.5f, 0.9f, 0.2f, 0.4f, 0.8f, 1.8f, -0.05f, 40, 0.4f);
+            _smoke = ParticleKit.UseSmoke(ParticleKit.Create(_shell, "Smoke", new Vector3(0f, 1f, -0.3f), SmokeColor, 1.2f, 2.2f, 0.36f, 0.72f, 0.3f, 0.6f, -0.12f, 30, 0.15f));
+            _dust = ParticleKit.UseSmoke(ParticleKit.Create(transform, "Dust", new Vector3(0f, 0.1f, 0f), DustColor, 0.5f, 0.9f, 0.2f, 0.4f, 0.8f, 1.8f, -0.05f, 40, 0.4f));
         }
 
         private void BuildMarkers()

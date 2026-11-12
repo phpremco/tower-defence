@@ -1,0 +1,12 @@
+{
+ "creature": "SlimeMonarch",
+ "threshold": 0.00788,
+ "objects": {
+  "SlimeMonarch": 7,
+  "SlimeMonarch_Face": 22
+ },
+ "poses": {},
+ "floating": [],
+ "poses_checked": 43,
+ "rest_floating": []
+}

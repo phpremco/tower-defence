@@ -1,11 +1,11 @@
 {
   "asset": "CinderMatriarch",
-  "game_tris": 23107,
+  "game_tris": 23136,
   "tris_per_material": [
     17990,
-    5117
+    5146
   ],
-  "source_tris": 942264,
+  "source_tris": 943092,
   "bones": 30,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -29,12 +29,12 @@
       "world_per_uv": 5.515600294188816
     },
     "CinderMatriarch_Crystal": {
-      "islands": 100,
+      "islands": 110,
       "closed_islands_cut": 0,
-      "folded_fallback_faces": 370,
-      "mirrored_faces": 1824,
-      "uv_coverage": 0.662,
-      "world_per_uv": 1.6059249573979362
+      "folded_fallback_faces": 355,
+      "mirrored_faces": 1886,
+      "uv_coverage": 0.685,
+      "world_per_uv": 1.571378889183599
     }
   },
   "detail": {
@@ -53,12 +53,12 @@
     "CinderMatriarch_Crystal": {
       "crystal": {
         "map": "Detail_Crystal_Normal.png",
-        "tiling": 9.6,
+        "tiling": 9.4,
         "mask": "B"
       },
       "rock": {
         "map": "Detail_Rock_Normal.png",
-        "tiling": 5.6,
+        "tiling": 5.5,
         "mask": "A"
       }
     }
@@ -96,7 +96,7 @@
   ],
   "lod1": {
     "fbx": "CinderMatriarch_LOD1.fbx",
-    "tris": 8998,
+    "tris": 9000,
     "bones": 25
   },
   "walk_distance_per_loop": 1.288,
@@ -130,18 +130,18 @@
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
           "mirrored_faces": 650,
-          "uv_coverage": 0.631,
-          "world_per_uv": 0.8230340912020712
+          "uv_coverage": 0.698,
+          "world_per_uv": 0.7824186768604325
         },
         "detail": {
           "chitin": {
             "map": "Detail_Chitin_Normal.png",
-            "tiling": 11.4,
+            "tiling": 10.9,
             "mask": "B"
           },
           "membrane": {
             "map": "Detail_Membrane_Normal.png",
-            "tiling": 8.6,
+            "tiling": 8.2,
             "mask": "A"
           }
         },
@@ -241,12 +241,12 @@
       }
     },
     "tris_before": {
-      "lod0": 23107,
-      "lod1": 8998
+      "lod0": 23136,
+      "lod1": 9000
     },
     "tris_after": {
-      "lod0": 27412,
-      "lod1": 10315
+      "lod0": 27441,
+      "lod1": 10317
     },
     "increase": {
       "lod0": 0.186,

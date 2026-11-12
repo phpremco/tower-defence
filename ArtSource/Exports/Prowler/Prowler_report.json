@@ -1,7 +1,7 @@
 {
   "asset": "Prowler",
-  "game_tris": 3904,
-  "source_tris": 422472,
+  "game_tris": 3519,
+  "source_tris": 397092,
   "bones": 22,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -12,21 +12,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 118,
-    "folded_fallback_faces": 12,
-    "mirrored_faces": 1931,
-    "uv_coverage": 0.564,
-    "world_per_uv": 1.1331233045366205
+    "islands": 190,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 1742,
+    "uv_coverage": 0.532,
+    "world_per_uv": 1.1221901883259686
   },
   "detail": {
-    "chitin": {
-      "map": "Detail_Chitin_Normal.png",
-      "tiling": 18.9,
-      "mask": "B"
-    },
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 14.2,
+      "tiling": 14.0,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 18.7,
       "mask": "A"
     }
   },
@@ -35,54 +35,13 @@
     "Idle": 60,
     "Hit": 12,
     "Death": 36,
-    "Pounce": 26,
-    "Strike": 24
+    "Pounce": 26
   },
   "run_distance_per_loop": 1.429,
   "lod1": {
     "fbx": "Prowler_LOD1.fbx",
-    "tris": 1700,
+    "tris": 1697,
     "bones": 14
-  },
-  "round36": {
-    "Strike": {
-      "frames": 24,
-      "loop": false,
-      "impact_frame": 10,
-      "anticipation_frames": [
-        0,
-        5
-      ],
-      "contact_frames": [
-        10,
-        12
-      ],
-      "settled_by_frame": 23,
-      "starts_and_ends_on": "Idle frame 0",
-      "body_bone": "Pelvis",
-      "body_travel_at_impact": {
-        "forward": 0.1,
-        "up": -0.01
-      },
-      "body_travel_max": 0.1,
-      "root_moves": false,
-      "feet_planted": true,
-      "mesh": {
-        "rest": {
-          "tip_forward": 0.757,
-          "top": 0.886,
-          "bottom": -0.002
-        },
-        "impact": {
-          "tip_forward": 0.876,
-          "top": 0.758,
-          "bottom": -0.002
-        }
-      },
-      "new_clip": true,
-      "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
-    },
-    "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
   },
   "r46_detail": {
     "parts": {
@@ -90,17 +49,17 @@
         "object": "Prowler_Face",
         "material": "Prowler_Face_Mat",
         "maps": "Prowler_Face_*.png (1024, Low 512)",
-        "tris": 350,
+        "tris": 314,
         "lod1_object": "Prowler_Face_LOD1",
         "lod1_tris": 86,
-        "source_tris": 18924,
+        "source_tris": 20444,
         "uv": {
-          "islands": 23,
-          "closed_islands_cut": 4,
-          "folded_fallback_faces": 6,
-          "mirrored_faces": 175,
-          "uv_coverage": 0.692,
-          "world_per_uv": 0.12907354012620662
+          "islands": 18,
+          "closed_islands_cut": 1,
+          "folded_fallback_faces": 10,
+          "mirrored_faces": 157,
+          "uv_coverage": 0.784,
+          "world_per_uv": 0.12447395889202864
         },
         "symmetry_error": 0.004861
       },
@@ -108,7 +67,7 @@
         "object": "Prowler_Claws",
         "material": "Prowler_Claws_Mat",
         "maps": "Prowler_Claws_*.png (1024, Low 512)",
-        "tris": 176,
+        "tris": 156,
         "lod1_object": "Prowler_Claws_LOD1",
         "lod1_tris": 76,
         "source_tris": 16352,
@@ -116,17 +75,17 @@
           "islands": 8,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 88,
-          "uv_coverage": 0.429,
-          "world_per_uv": 0.14658069573991564
+          "mirrored_faces": 78,
+          "uv_coverage": 0.506,
+          "world_per_uv": 0.13489953963263976
         },
         "symmetry_error": 0.0
       }
     },
-    "body_tris": 3904,
-    "extra_tris": 526,
-    "extra_share": 0.135,
-    "body_lod1_tris": 1700,
+    "body_tris": 3519,
+    "extra_tris": 470,
+    "extra_share": 0.134,
+    "body_lod1_tris": 1697,
     "extra_lod1_tris": 162,
     "extra_lod1_share": 0.095,
     "clips": [
@@ -134,8 +93,7 @@
       "Hit",
       "Idle",
       "Pounce",
-      "Run",
-      "Strike"
+      "Run"
     ],
     "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Prowler_<Part> (+ _LOD1 in Prowler_LOD1.fbx), maps Prowler_<Part>_*.png (+ Low/)",
     "body_maps": "unchanged",

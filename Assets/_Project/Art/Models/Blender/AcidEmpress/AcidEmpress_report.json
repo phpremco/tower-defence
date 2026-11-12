@@ -1,8 +1,8 @@
 {
   "asset": "AcidEmpress",
   "base_species": "Stinger",
-  "game_tris": 14217,
-  "source_tris": 1142440,
+  "game_tris": 14341,
+  "source_tris": 1184536,
   "bones": 28,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -13,16 +13,16 @@
     "Mask"
   ],
   "uv": {
-    "islands": 181,
-    "folded_fallback_faces": 615,
-    "mirrored_faces": 6821,
-    "uv_coverage": 0.527,
-    "world_per_uv": 1.4777807848803888
+    "islands": 185,
+    "folded_fallback_faces": 574,
+    "mirrored_faces": 6913,
+    "uv_coverage": 0.541,
+    "world_per_uv": 1.4801736601068556
   },
   "detail": {
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 24.6,
+      "tiling": 24.7,
       "mask": "B"
     },
     "membrane": {
@@ -50,7 +50,7 @@
   "model_scale_from_stinger_units": 2.2,
   "lod1": {
     "fbx": "AcidEmpress_LOD1.fbx",
-    "tris": 5998,
+    "tris": 5997,
     "bones": 17
   },
   "r45_body_maps_edited": true,
@@ -60,44 +60,44 @@
         "object": "AcidEmpress_Face",
         "material": "AcidEmpress_Face_Mat",
         "maps": "AcidEmpress_Face_*.png (1024, Low 512)",
-        "tris": 1627,
+        "tris": 1660,
         "lod1_object": "AcidEmpress_Face_LOD1",
-        "lod1_tris": 517,
-        "source_tris": 69496,
+        "lod1_tris": 518,
+        "source_tris": 85256,
         "uv": {
-          "islands": 45,
+          "islands": 49,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 813,
-          "uv_coverage": 0.677,
-          "world_per_uv": 0.33497779878513545
+          "mirrored_faces": 830,
+          "uv_coverage": 0.72,
+          "world_per_uv": 0.36132400851710306
         },
-        "symmetry_error": 0.007237
+        "symmetry_error": 0.009091
       },
       "Claws": {
         "object": "AcidEmpress_Claws",
         "material": "AcidEmpress_Claws_Mat",
         "maps": "AcidEmpress_Claws_*.png (1024, Low 512)",
-        "tris": 1078,
+        "tris": 1026,
         "lod1_object": "AcidEmpress_Claws_LOD1",
         "lod1_tris": 358,
-        "source_tris": 60772,
+        "source_tris": 60708,
         "uv": {
-          "islands": 32,
+          "islands": 31,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 443,
-          "uv_coverage": 0.678,
-          "world_per_uv": 0.32057949850950107
+          "mirrored_faces": 428,
+          "uv_coverage": 0.668,
+          "world_per_uv": 0.31843614397084696
         },
         "symmetry_error": 0.0024
       }
     },
-    "body_tris": 14217,
-    "extra_tris": 2705,
-    "extra_share": 0.19,
-    "body_lod1_tris": 5998,
-    "extra_lod1_tris": 875,
+    "body_tris": 14341,
+    "extra_tris": 2686,
+    "extra_share": 0.187,
+    "body_lod1_tris": 5997,
+    "extra_lod1_tris": 876,
     "extra_lod1_share": 0.146,
     "clips": [
       "Death",
@@ -109,6 +109,6 @@
     ],
     "unity": "ExtraParts { \"Face\", \"Claws\" }: objects AcidEmpress_<Part> (+ _LOD1 in AcidEmpress_LOD1.fbx), maps AcidEmpress_<Part>_*.png (+ Low/)",
     "note": "round 45: principal eyes and eye ring, chelicera fangs, lip teeth, crab teeth and finger points, foot claws; bones, clips and events unchanged",
-    "body_maps": "eye-bead bar's glow removed from AcidEmpress_Albedo/Emission (0 texels this run)"
+    "body_maps": "eye-bead bar's glow removed from AcidEmpress_Albedo/Emission (6038 texels this run)"
   }
 }

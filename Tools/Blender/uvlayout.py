@@ -159,6 +159,88 @@ def _clamp_density(bm, uv, islands):
                 l[uv].uv = ((l[uv].uv.x - cx) * s + cx, (l[uv].uv.y - cy) * s + cy)
 
 
+# Round 49D, opt-in (the round-49D builders set it; every other asset unwraps exactly as before): bodies crowded with
+# small fused parts (crystal clusters, lips, spikes) cut into many small islands, some of which unwrap into rings or
+# slivers whose bounding box is mostly empty; the packer then shrinks every island to fit them.
+SPARSE_FIX = False
+
+
+def _uv_islands(bm, uv, active):
+    """Face index lists of the regions connected in UV space (shared vertices with the same UV)."""
+    parent = list(range(len(bm.faces)))
+
+    def find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+    for e in bm.edges:
+        lf = [f for f in e.link_faces if active[f.index]]
+        if len(lf) != 2:
+            continue
+        f1, f2 = lf
+        same = True
+        for v in e.verts:
+            u1 = next(l[uv].uv for l in f1.loops if l.vert == v)
+            u2 = next(l[uv].uv for l in f2.loops if l.vert == v)
+            if (u1 - u2).length > 1e-6:
+                same = False
+                break
+        if same:
+            parent[find(f1.index)] = find(f2.index)
+    groups = {}
+    for f in bm.faces:
+        if active[f.index]:
+            groups.setdefault(find(f.index), []).append(f.index)
+    return list(groups.values())
+
+
+def _fix_sparse(obj, bm, uv, master, margin, fill=0.12, line=0.02):
+    """Islands that fill less than `fill` of their UV box (rings round a fused root, curled strips), that fold over
+    themselves or collapse towards a line are re-cut by a smart projection; what still lies on a line afterwards (UV area under `line` x the
+    square of the longer side: needle triangles of the decimation) is shrunk round their centre to that limit, so the packer no longer
+    scales every island down to fit them."""
+    def rows():
+        out = []
+        for island in _uv_islands(bm, uv, master):
+            auv = sum(abs(_uv_signed_area(bm.faces[fi], uv)) for fi in island)
+            us = [l[uv].uv for fi in island for l in bm.faces[fi].loops]
+            w = max(u.x for u in us) - min(u.x for u in us)
+            h = max(u.y for u in us) - min(u.y for u in us)
+            out.append((island, auv, w * h, max(w, h) ** 2, us))
+        return out
+
+    def finite(*v):
+        return all(math.isfinite(x) for x in v)
+    # Re-cut: sparse in its box, collapsed towards a line, or folded over itself (more UV area than its box).
+    sparse = [fi for island, auv, box, side, _ in rows()
+              if not finite(auv, side) or (len(island) > 4 and box > 0 and (auv < fill * box or auv < line * side
+                                                                              or auv > box)) for fi in island]
+    if sparse:
+        _select(bm, sparse)
+        bmesh.update_edit_mesh(obj.data)
+        bpy.ops.uv.smart_project(angle_limit=math.radians(50), island_margin=margin, scale_to_bounds=False)
+        _select(bm, [i for i in range(len(bm.faces)) if master[i]])
+        bmesh.update_edit_mesh(obj.data)
+        bpy.ops.uv.select_all(action="SELECT")
+        bpy.ops.uv.average_islands_scale()
+        bm = bmesh.from_edit_mesh(obj.data)
+        bm.faces.ensure_lookup_table()
+    uv = bm.loops.layers.uv.active
+    shrunk = 0
+    for island, auv, box, side, us in rows():
+        if finite(auv, side) and side > 0 and auv < line * side:
+            k = math.sqrt(max(auv, 1e-12) / (line * side))
+            cx = sum(u.x for u in us) / len(us)
+            cy = sum(u.y for u in us) / len(us)
+            for fi in island:
+                for l in bm.faces[fi].loops:
+                    l[uv].uv = ((l[uv].uv.x - cx) * k + cx, (l[uv].uv.y - cy) * k + cy)
+            shrunk += 1
+    C.log(obj.name, "uv sparse faces re-cut", len(sparse), "line islands shrunk", shrunk)
+    return bm
+
+
 def _select(bm, faces):
     for f in bm.faces:
         f.select_set(False)
@@ -216,6 +298,15 @@ def unwrap(obj, builder, mirror=False, margin=0.006, smart_parts_angle=66.0):
     bmesh.update_edit_mesh(obj.data)
     bpy.ops.uv.unwrap(method="MINIMUM_STRETCH", fill_holes=True, correct_aspect=True, margin=margin)
     bm = bmesh.from_edit_mesh(obj.data)
+    if SPARSE_FIX:
+        # Round 49D: on bodies crowded with small fused parts the minimum-stretch solver can fail as a whole (every
+        # island collapses to a point); angle-based unwrapping does not.
+        bm.faces.ensure_lookup_table()
+        uv0 = bm.loops.layers.uv.active
+        if sum(abs(_uv_signed_area(bm.faces[i], uv0)) for i in master_faces) < 1e-6:
+            C.log(obj.name, "uv minimum-stretch collapsed: angle-based unwrap")
+            bpy.ops.uv.unwrap(method="ANGLE_BASED", fill_holes=True, correct_aspect=True, margin=margin)
+            bm = bmesh.from_edit_mesh(obj.data)
     bm.faces.ensure_lookup_table()
     uv = bm.loops.layers.uv.active
 
@@ -242,6 +333,9 @@ def unwrap(obj, builder, mirror=False, margin=0.006, smart_parts_angle=66.0):
     bm.faces.ensure_lookup_table()
     uv = bm.loops.layers.uv.active
     _clamp_density(bm, uv, _islands(bm, master))
+    if SPARSE_FIX:
+        bm = _fix_sparse(obj, bm, uv, master, margin)
+        uv = bm.loops.layers.uv.active
     bmesh.update_edit_mesh(obj.data)
     bpy.ops.uv.pack_islands(rotate=True, margin=margin)
     bm = bmesh.from_edit_mesh(obj.data)

@@ -1,0 +1,2931 @@
+{
+ "creature": "Bulwark",
+ "threshold": 0.00619,
+ "objects": {
+  "Bulwark": 16,
+  "Bulwark_Claws": 14,
+  "Bulwark_Face": 8
+ },
+ "poses": {
+  "rest@0": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2787,
+     -0.2667,
+     0.677
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3051,
+     -0.0272,
+     0.8881
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3484,
+     0.0429,
+     0.8772
+    ],
+    "gap": 0.04884
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0091,
+     0.2214,
+     0.7119
+    ],
+    "gap": 0.06898
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1003,
+     -0.1602,
+     0.9155
+    ],
+    "gap": 0.01119
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3172,
+     -0.0068,
+     0.8762
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2879,
+     -0.057,
+     0.8735
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Block@0": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2777,
+     -0.2647,
+     0.7143
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3113,
+     -0.0446,
+     0.842
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3529,
+     0.0247,
+     0.8237
+    ],
+    "gap": 0.01719
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0091,
+     0.2078,
+     0.6972
+    ],
+    "gap": 0.06603
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1003,
+     -0.1906,
+     0.8683
+    ],
+    "gap": 0.01119
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3251,
+     -0.0319,
+     0.8267
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2962,
+     -0.0823,
+     0.8261
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Block@5": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2362,
+     -0.1262,
+     0.8078
+    ],
+    "gap": 0.01246
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     -0.0191,
+     0.2101,
+     0.6682
+    ],
+    "gap": 0.0641
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1482,
+     -0.1628,
+     0.8124
+    ],
+    "gap": 0.01068
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3477,
+     0.0246,
+     0.7625
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.3294,
+     -0.03,
+     0.7544
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Block@10": [
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     -0.0265,
+     0.2094,
+     0.6557
+    ],
+    "gap": 0.06366
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1622,
+     -0.1523,
+     0.7932
+    ],
+    "gap": 0.01056
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3524,
+     0.0443,
+     0.7401
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.3371,
+     -0.011,
+     0.7304
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Block@14": [
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     -0.0249,
+     0.2098,
+     0.6609
+    ],
+    "gap": 0.06364
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1596,
+     -0.1544,
+     0.7984
+    ],
+    "gap": 0.01056
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3524,
+     0.0396,
+     0.7453
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.3364,
+     -0.0154,
+     0.7356
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Block@19": [
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     -0.0252,
+     0.2097,
+     0.6609
+    ],
+    "gap": 0.06364
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1601,
+     -0.154,
+     0.7984
+    ],
+    "gap": 0.01056
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3524,
+     0.0404,
+     0.7453
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.3365,
+     -0.0146,
+     0.7356
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Block@24": [
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     -0.0252,
+     0.2097,
+     0.6609
+    ],
+    "gap": 0.06364
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.16,
+     -0.1541,
+     0.7984
+    ],
+    "gap": 0.01056
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3524,
+     0.0403,
+     0.7453
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.3365,
+     -0.0147,
+     0.7356
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Death@0": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2787,
+     -0.2998,
+     0.6559
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3051,
+     -0.0682,
+     0.844
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3484,
+     0.0018,
+     0.8335
+    ],
+    "gap": 0.03705
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0091,
+     0.1978,
+     0.7065
+    ],
+    "gap": 0.06407
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1003,
+     -0.221,
+     0.8486
+    ],
+    "gap": 0.01119
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3172,
+     -0.0631,
+     0.8366
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2879,
+     -0.112,
+     0.8253
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Death@9": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2787,
+     -0.3189,
+     0.5469
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3051,
+     -0.1248,
+     0.7735
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3484,
+     -0.0541,
+     0.7756
+    ],
+    "gap": 0.03705
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0091,
+     0.1694,
+     0.6777
+    ],
+    "gap": 0.05899
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1003,
+     -0.2759,
+     0.7506
+    ],
+    "gap": 0.01119
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3172,
+     -0.1184,
+     0.767
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2879,
+     -0.1646,
+     0.7471
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Death@18": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.1778,
+     -0.3164,
+     0.4421
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.169,
+     -0.1962,
+     0.7164
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.2066,
+     -0.1275,
+     0.7435
+    ],
+    "gap": 0.03715
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.1437,
+     0.1236,
+     0.6409
+    ],
+    "gap": 0.05204
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.2275,
+     -0.3421,
+     0.5902
+    ],
+    "gap": 0.01148
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.4556,
+     -0.18,
+     0.6071
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.4222,
+     -0.2222,
+     0.5851
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Death@26": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     0.2915,
+     -0.2733,
+     0.462
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     0.4355,
+     -0.1902,
+     0.7116
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     0.4281,
+     -0.1194,
+     0.7541
+    ],
+    "gap": 0.03765
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.6696,
+     0.1236,
+     0.4606
+    ],
+    "gap": 0.05204
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.6843,
+     -0.3602,
+     0.3536
+    ],
+    "gap": 0.01276
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.8752,
+     -0.1411,
+     0.2084
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.8502,
+     -0.1923,
+     0.219
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Death@35": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     0.6001,
+     -0.2453,
+     0.2586
+    ],
+    "gap": 0.0147
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     0.8222,
+     -0.1827,
+     0.4505
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     0.8377,
+     -0.1115,
+     0.49
+    ],
+    "gap": 0.03809
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.9321,
+     0.1236,
+     0.1132
+    ],
+    "gap": 0.05204
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.8708,
+     -0.3713,
+     0.0098
+    ],
+    "gap": 0.01379
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.9602,
+     -0.1116,
+     -0.211
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.9557,
+     -0.1671,
+     -0.1956
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Death@44": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     0.6002,
+     -0.2453,
+     0.2584
+    ],
+    "gap": 0.01466
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     0.8224,
+     -0.1827,
+     0.4503
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     0.8379,
+     -0.1115,
+     0.4898
+    ],
+    "gap": 0.03809
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.9322,
+     0.1236,
+     0.1129
+    ],
+    "gap": 0.05204
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.8709,
+     -0.3714,
+     0.0095
+    ],
+    "gap": 0.01379
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.9602,
+     -0.1115,
+     -0.2113
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.9557,
+     -0.1671,
+     -0.1959
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Hit@0": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2777,
+     -0.2647,
+     0.7143
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3113,
+     -0.0446,
+     0.842
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3529,
+     0.0247,
+     0.8237
+    ],
+    "gap": 0.01719
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0091,
+     0.2078,
+     0.6972
+    ],
+    "gap": 0.06603
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1003,
+     -0.1906,
+     0.8683
+    ],
+    "gap": 0.01119
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3251,
+     -0.0319,
+     0.8267
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2962,
+     -0.0823,
+     0.8261
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Hit@3": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2114,
+     -0.213,
+     0.8182
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.2729,
+     0.0332,
+     0.855
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3245,
+     0.0843,
+     0.8155
+    ],
+    "gap": 0.0171
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0095,
+     0.2642,
+     0.6517
+    ],
+    "gap": 0.07286
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1551,
+     -0.0366,
+     0.8807
+    ],
+    "gap": 0.00976
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3672,
+     0.0984,
+     0.7773
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.3448,
+     0.0456,
+     0.787
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Hit@6": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2715,
+     -0.2614,
+     0.7253
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3069,
+     -0.037,
+     0.8446
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3494,
+     0.0311,
+     0.824
+    ],
+    "gap": 0.01718
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0098,
+     0.2137,
+     0.693
+    ],
+    "gap": 0.0667
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1067,
+     -0.1697,
+     0.8715
+    ],
+    "gap": 0.01068
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3332,
+     -0.022,
+     0.8189
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.3048,
+     -0.0727,
+     0.8185
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Hit@8": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2871,
+     -0.269,
+     0.6967
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3187,
+     -0.0566,
+     0.8372
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3587,
+     0.0145,
+     0.8227
+    ],
+    "gap": 0.0172
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0079,
+     0.1981,
+     0.7037
+    ],
+    "gap": 0.06499
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.0896,
+     -0.2121,
+     0.8628
+    ],
+    "gap": 0.01134
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3169,
+     -0.0528,
+     0.8318
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.287,
+     -0.1025,
+     0.8294
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Hit@11": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2809,
+     -0.2663,
+     0.7084
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3138,
+     -0.0487,
+     0.8405
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3548,
+     0.0213,
+     0.8235
+    ],
+    "gap": 0.0172
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0088,
+     0.2045,
+     0.6994
+    ],
+    "gap": 0.06568
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.0967,
+     -0.1996,
+     0.8664
+    ],
+    "gap": 0.01133
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3216,
+     -0.0382,
+     0.8294
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2924,
+     -0.0884,
+     0.8284
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Hit@14": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2762,
+     -0.2639,
+     0.717
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3102,
+     -0.0427,
+     0.8427
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.352,
+     0.0263,
+     0.8238
+    ],
+    "gap": 0.01719
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0093,
+     0.2092,
+     0.6962
+    ],
+    "gap": 0.0662
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1019,
+     -0.1872,
+     0.8691
+    ],
+    "gap": 0.01116
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3263,
+     -0.0287,
+     0.8258
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2976,
+     -0.0792,
+     0.8255
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Idle@0": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2757,
+     -0.2599,
+     0.7209
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.309,
+     -0.0446,
+     0.842
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3506,
+     0.0247,
+     0.8237
+    ],
+    "gap": 0.01327
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0115,
+     0.2078,
+     0.6972
+    ],
+    "gap": 0.06603
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1026,
+     -0.1919,
+     0.8706
+    ],
+    "gap": 0.0116
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3276,
+     -0.0348,
+     0.8277
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2985,
+     -0.085,
+     0.8255
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Idle@14": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.264,
+     -0.2635,
+     0.7264
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.2942,
+     -0.05,
+     0.8522
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3361,
+     0.0196,
+     0.8362
+    ],
+    "gap": 0.01342
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0227,
+     0.2054,
+     0.703
+    ],
+    "gap": 0.06556
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1133,
+     -0.1763,
+     0.8665
+    ],
+    "gap": 0.01115
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3415,
+     -0.0331,
+     0.8201
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.3128,
+     -0.0836,
+     0.8216
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Idle@29": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2712,
+     -0.262,
+     0.7168
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3032,
+     -0.0367,
+     0.8425
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3451,
+     0.0322,
+     0.8231
+    ],
+    "gap": 0.01955
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.015,
+     0.2111,
+     0.6879
+    ],
+    "gap": 0.06673
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1056,
+     -0.1662,
+     0.866
+    ],
+    "gap": 0.01117
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3326,
+     -0.0191,
+     0.8151
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.304,
+     -0.0695,
+     0.8193
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Idle@43": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2868,
+     -0.2746,
+     0.7006
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3231,
+     -0.0525,
+     0.8412
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3645,
+     0.0173,
+     0.824
+    ],
+    "gap": 0.02343
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     -0.0006,
+     0.2043,
+     0.7063
+    ],
+    "gap": 0.06534
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.0884,
+     -0.2142,
+     0.8709
+    ],
+    "gap": 0.01143
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3135,
+     -0.0401,
+     0.836
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2845,
+     -0.0904,
+     0.8334
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Idle@58": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2899,
+     -0.2626,
+     0.7066
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3268,
+     -0.0392,
+     0.8314
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3679,
+     0.0299,
+     0.8109
+    ],
+    "gap": 0.01854
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     -0.0027,
+     0.2101,
+     0.6911
+    ],
+    "gap": 0.06651
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.0846,
+     -0.1918,
+     0.8674
+    ],
+    "gap": 0.01064
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3101,
+     -0.0327,
+     0.8336
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2809,
+     -0.0828,
+     0.8297
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Idle@72": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2757,
+     -0.2599,
+     0.7209
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.309,
+     -0.0446,
+     0.842
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3506,
+     0.0247,
+     0.8237
+    ],
+    "gap": 0.01327
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0115,
+     0.2078,
+     0.6972
+    ],
+    "gap": 0.06603
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1026,
+     -0.1919,
+     0.8706
+    ],
+    "gap": 0.0116
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3276,
+     -0.0348,
+     0.8277
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2985,
+     -0.085,
+     0.8255
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Strike@0": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2757,
+     -0.2599,
+     0.7209
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.309,
+     -0.0446,
+     0.842
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3506,
+     0.0247,
+     0.8237
+    ],
+    "gap": 0.01327
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0115,
+     0.2078,
+     0.6972
+    ],
+    "gap": 0.06603
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1026,
+     -0.1919,
+     0.8706
+    ],
+    "gap": 0.0116
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3276,
+     -0.0348,
+     0.8277
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2985,
+     -0.085,
+     0.8255
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Strike@5": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.3321,
+     -0.0746,
+     0.8084
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0434,
+     0.221,
+     0.68
+    ],
+    "gap": 0.06722
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.0543,
+     -0.1693,
+     0.8729
+    ],
+    "gap": 0.01119
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3057,
+     -0.0209,
+     0.7108
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2878,
+     -0.0368,
+     0.763
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Strike@10": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.1997,
+     -0.4008,
+     0.6547
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.2783,
+     -0.1997,
+     0.7931
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.334,
+     -0.1403,
+     0.7785
+    ],
+    "gap": 0.01711
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     -0.0158,
+     0.1359,
+     0.6907
+    ],
+    "gap": 0.06115
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1609,
+     -0.2736,
+     0.7909
+    ],
+    "gap": 0.01184
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3322,
+     -0.0252,
+     0.7706
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.3172,
+     -0.0807,
+     0.7784
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Strike@14": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2322,
+     -0.3465,
+     0.6794
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.2945,
+     -0.1428,
+     0.8225
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3454,
+     -0.0788,
+     0.8093
+    ],
+    "gap": 0.01717
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     -0.0081,
+     0.1678,
+     0.7028
+    ],
+    "gap": 0.06304
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1348,
+     -0.2384,
+     0.832
+    ],
+    "gap": 0.01139
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3288,
+     -0.0176,
+     0.7987
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.3088,
+     -0.0713,
+     0.8076
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Strike@19": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2777,
+     -0.2558,
+     0.7202
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3113,
+     -0.0331,
+     0.8433
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3529,
+     0.0359,
+     0.8236
+    ],
+    "gap": 0.01719
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0091,
+     0.2154,
+     0.6942
+    ],
+    "gap": 0.06662
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1003,
+     -0.1785,
+     0.8726
+    ],
+    "gap": 0.01119
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3251,
+     -0.0207,
+     0.8277
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2962,
+     -0.0711,
+     0.8282
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Strike@24": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2757,
+     -0.2599,
+     0.7209
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.309,
+     -0.0446,
+     0.842
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3506,
+     0.0247,
+     0.8237
+    ],
+    "gap": 0.01327
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0115,
+     0.2078,
+     0.6972
+    ],
+    "gap": 0.06603
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1026,
+     -0.1919,
+     0.8706
+    ],
+    "gap": 0.0116
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3276,
+     -0.0348,
+     0.8277
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2985,
+     -0.085,
+     0.8255
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Walk@0": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.255,
+     -0.2898,
+     0.671
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.2934,
+     -0.076,
+     0.8286
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3375,
+     -0.0068,
+     0.8169
+    ],
+    "gap": 0.02536
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0179,
+     0.198,
+     0.6877
+    ],
+    "gap": 0.06468
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1221,
+     -0.1996,
+     0.8395
+    ],
+    "gap": 0.01088
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3398,
+     -0.0395,
+     0.8047
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.3123,
+     -0.0906,
+     0.802
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Walk@6": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.311,
+     -0.2629,
+     0.6917
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3465,
+     -0.0454,
+     0.8212
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3859,
+     0.025,
+     0.8025
+    ],
+    "gap": 0.0165
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     -0.0205,
+     0.2068,
+     0.7009
+    ],
+    "gap": 0.06477
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.0612,
+     -0.2072,
+     0.8617
+    ],
+    "gap": 0.01155
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.2928,
+     -0.0589,
+     0.8354
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2626,
+     -0.1074,
+     0.8245
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Walk@13": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.322,
+     -0.2559,
+     0.7038
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3503,
+     -0.0401,
+     0.8129
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3877,
+     0.0305,
+     0.791
+    ],
+    "gap": 0.01248
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     -0.0177,
+     0.1979,
+     0.6896
+    ],
+    "gap": 0.06532
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.0533,
+     -0.2075,
+     0.8571
+    ],
+    "gap": 0.01081
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.283,
+     -0.0804,
+     0.8371
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.2517,
+     -0.127,
+     0.8215
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Walk@19": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2711,
+     -0.2666,
+     0.6972
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.3005,
+     -0.0575,
+     0.8314
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3417,
+     0.0131,
+     0.8177
+    ],
+    "gap": 0.01362
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0218,
+     0.2025,
+     0.6941
+    ],
+    "gap": 0.0644
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1102,
+     -0.2091,
+     0.8423
+    ],
+    "gap": 0.01126
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3365,
+     -0.0586,
+     0.8079
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.3065,
+     -0.1077,
+     0.7998
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Walk@26": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.2269,
+     -0.2841,
+     0.7039
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.2616,
+     -0.0687,
+     0.8573
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3069,
+     -0.0001,
+     0.8461
+    ],
+    "gap": 0.02431
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.045,
+     0.2033,
+     0.696
+    ],
+    "gap": 0.066
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1553,
+     -0.1847,
+     0.8582
+    ],
+    "gap": 0.01131
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3714,
+     -0.0198,
+     0.8001
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.3451,
+     -0.0714,
+     0.8037
+    ],
+    "gap": 0.01559
+   }
+  ],
+  "Walk@32": [
+   {
+    "object": "Bulwark",
+    "island": 3,
+    "verts": 8,
+    "centre": [
+     -0.255,
+     -0.2898,
+     0.671
+    ],
+    "gap": 0.01734
+   },
+   {
+    "object": "Bulwark",
+    "island": 4,
+    "verts": 34,
+    "centre": [
+     -0.2934,
+     -0.076,
+     0.8286
+    ],
+    "gap": 0.01423
+   },
+   {
+    "object": "Bulwark",
+    "island": 6,
+    "verts": 15,
+    "centre": [
+     -0.3375,
+     -0.0068,
+     0.8169
+    ],
+    "gap": 0.02536
+   },
+   {
+    "object": "Bulwark",
+    "island": 8,
+    "verts": 19,
+    "centre": [
+     0.0179,
+     0.198,
+     0.6877
+    ],
+    "gap": 0.06468
+   },
+   {
+    "object": "Bulwark",
+    "island": 10,
+    "verts": 15,
+    "centre": [
+     0.1221,
+     -0.1996,
+     0.8395
+    ],
+    "gap": 0.01088
+   },
+   {
+    "object": "Bulwark",
+    "island": 12,
+    "verts": 14,
+    "centre": [
+     0.3398,
+     -0.0395,
+     0.8047
+    ],
+    "gap": 0.03492
+   },
+   {
+    "object": "Bulwark",
+    "island": 13,
+    "verts": 14,
+    "centre": [
+     0.3123,
+     -0.0906,
+     0.802
+    ],
+    "gap": 0.01559
+   }
+  ]
+ },
+ "floating": [
+  {
+   "object": "Bulwark",
+   "island": 8,
+   "verts": 19,
+   "gap": 0.07286,
+   "pose": "Hit@3",
+   "bone": "Spine",
+   "centre": [
+    0.0095,
+    0.2642,
+    0.6517
+   ]
+  },
+  {
+   "object": "Bulwark",
+   "island": 6,
+   "verts": 15,
+   "gap": 0.04884,
+   "pose": "rest@0",
+   "bone": "UpperArm_L",
+   "centre": [
+    -0.3484,
+    0.0429,
+    0.8772
+   ]
+  },
+  {
+   "object": "Bulwark",
+   "island": 12,
+   "verts": 14,
+   "gap": 0.03492,
+   "pose": "Walk@32",
+   "bone": "UpperArm_R",
+   "centre": [
+    0.3398,
+    -0.0395,
+    0.8047
+   ]
+  },
+  {
+   "object": "Bulwark",
+   "island": 3,
+   "verts": 8,
+   "gap": 0.01734,
+   "pose": "rest@0",
+   "bone": "ForeArm_L",
+   "centre": [
+    -0.2787,
+    -0.2667,
+    0.677
+   ]
+  },
+  {
+   "object": "Bulwark",
+   "island": 13,
+   "verts": 14,
+   "gap": 0.01559,
+   "pose": "rest@0",
+   "bone": "UpperArm_R",
+   "centre": [
+    0.2879,
+    -0.057,
+    0.8735
+   ]
+  },
+  {
+   "object": "Bulwark",
+   "island": 4,
+   "verts": 34,
+   "gap": 0.01423,
+   "pose": "rest@0",
+   "bone": "UpperArm_L",
+   "centre": [
+    -0.3051,
+    -0.0272,
+    0.8881
+   ]
+  },
+  {
+   "object": "Bulwark",
+   "island": 10,
+   "verts": 15,
+   "gap": 0.01379,
+   "pose": "Death@44",
+   "bone": "Head",
+   "centre": [
+    0.8709,
+    -0.3714,
+    0.0095
+   ]
+  }
+ ],
+ "poses_checked": 37,
+ "rest_floating": [
+  {
+   "object": "Bulwark",
+   "island": 3,
+   "verts": 8,
+   "centre": [
+    -0.2787,
+    -0.2667,
+    0.677
+   ],
+   "gap": 0.01734
+  },
+  {
+   "object": "Bulwark",
+   "island": 4,
+   "verts": 34,
+   "centre": [
+    -0.3051,
+    -0.0272,
+    0.8881
+   ],
+   "gap": 0.01423
+  },
+  {
+   "object": "Bulwark",
+   "island": 6,
+   "verts": 15,
+   "centre": [
+    -0.3484,
+    0.0429,
+    0.8772
+   ],
+   "gap": 0.04884
+  },
+  {
+   "object": "Bulwark",
+   "island": 8,
+   "verts": 19,
+   "centre": [
+    0.0091,
+    0.2214,
+    0.7119
+   ],
+   "gap": 0.06898
+  },
+  {
+   "object": "Bulwark",
+   "island": 10,
+   "verts": 15,
+   "centre": [
+    0.1003,
+    -0.1602,
+    0.9155
+   ],
+   "gap": 0.01119
+  },
+  {
+   "object": "Bulwark",
+   "island": 12,
+   "verts": 14,
+   "centre": [
+    0.3172,
+    -0.0068,
+    0.8762
+   ],
+   "gap": 0.03492
+  },
+  {
+   "object": "Bulwark",
+   "island": 13,
+   "verts": 14,
+   "centre": [
+    0.2879,
+    -0.057,
+    0.8735
+   ],
+   "gap": 0.01559
+  }
+ ]
+}

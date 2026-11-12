@@ -24,7 +24,7 @@ namespace Game.Levels
         private const float SmokeRate = 9f;
         private const float SparkInterval = 0.25f;
         private const int SparkBurst = 4;
-        private static readonly Color SmokeColor = new Color(0.2f, 0.19f, 0.18f, 0.35f);
+        private static readonly Color SmokeColor = new Color(0.5f, 0.48f, 0.46f, 0.95f);
         private static readonly Color SparkColor = new Color(1f, 0.8f, 0.4f) * 2f;
 
         // Where the wreck keeps burning, as shares of its footprint (x across, y towards the road), and how it flickers.
@@ -35,7 +35,7 @@ namespace Game.Levels
         private const float FlickerDepth = 0.35f;
         // Below this the view looks almost straight down and gives the cloth no direction to face.
         private const float MinViewFlatness = 0.01f;
-        private static readonly Color WreckSmokeColor = new Color(0.22f, 0.18f, 0.16f, 0.4f);
+        private static readonly Color WreckSmokeColor = new Color(0.36f, 0.33f, 0.31f, 0.95f);
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
         private static readonly int RimColorId = Shader.PropertyToID("_RimColor");
@@ -250,7 +250,7 @@ namespace Game.Levels
             {
                 if (node.name.StartsWith(SmokePrefix))
                 {
-                    smoke.Add(ParticleKit.Create(node, "Smoke", Vector3.zero, SmokeColor, 1.2f, 2.4f, 0.2f, 0.5f, 0.3f, 0.7f, -0.12f, 30, 0.15f));
+                    smoke.Add(ParticleKit.UseSmoke(ParticleKit.Create(node, "Smoke", Vector3.zero, SmokeColor, 1.2f, 2.4f, 0.36f, 0.9f, 0.3f, 0.7f, -0.12f, 30, 0.15f)));
                 }
             }
 
@@ -334,7 +334,7 @@ namespace Game.Levels
                 var spot = new Vector3(Mathf.Lerp(min.x, max.x, share.x), WreckFireLift, Mathf.Lerp(min.y, max.y, share.y));
                 ParticleSystem embers = ParticleKit.UseCell(ParticleKit.Create(transform, "WreckEmbers", spot, ember, 1.2f, 2.4f, 0.04f, 0.09f, 0.3f, 0.9f, -0.08f, 60, 0.45f), MarkerArt.ParticleCell.Ember);
                 ParticleKit.SetRate(embers, _art.WreckEmberRate);
-                ParticleSystem smoke = ParticleKit.Create(transform, "WreckSmoke", spot, WreckSmokeColor, 2.5f, 4f, 0.5f, 1.1f, 0.3f, 0.6f, -0.1f, 30, 0.35f);
+                ParticleSystem smoke = ParticleKit.UseSmoke(ParticleKit.Create(transform, "WreckSmoke", spot, WreckSmokeColor, 2.5f, 4f, 0.5f, 1.1f, 0.3f, 0.6f, -0.1f, 30, 0.35f));
                 ParticleKit.SetRate(smoke, _art.WreckSmokeRate);
             }
         }

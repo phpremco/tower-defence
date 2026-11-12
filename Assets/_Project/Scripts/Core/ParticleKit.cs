@@ -6,6 +6,18 @@ namespace Game.Core
     /// <summary>Small particle systems built in code for view components: bursts of sparks, puffs of smoke and the like.</summary>
     public static class ParticleKit
     {
+        private const string AtlasFrameKeyword = "_ATLAS_FRAME";
+        private static readonly int MainTexId = Shader.PropertyToID("_MainTex");
+        private static readonly int BaseMapId = Shader.PropertyToID("_BaseMap");
+        private static readonly int CoreColorId = Shader.PropertyToID("_CoreColor");
+        private static readonly int GlowColorId = Shader.PropertyToID("_GlowColor");
+        private static readonly int ThirdColorId = Shader.PropertyToID("_ThirdColor");
+        private static readonly int AtlasFrameId = Shader.PropertyToID("_AtlasFrame");
+        private static readonly int FrameId = Shader.PropertyToID("_Frame");
+
+        private static Material _smoke;
+        private static Material _smokeLow;
+
         /// <summary>
         /// A system that emits nothing on its own; call <see cref="ParticleSystem.Emit(int)"/> for a burst or
         /// <see cref="SetRate"/> for a steady stream. Negative gravity makes particles rise and swell, like smoke.
@@ -48,14 +60,102 @@ namespace Game.Core
             fade.color = gradient;
 
             var renderer = go.GetComponent<ParticleSystemRenderer>();
-            renderer.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            // A glowing soft mote by default (sparks, embers, thrusters); smoke and dust callers redress it covering.
+            return UseCell(system, MarkerArt.ParticleCell.Mote);
+        }
+
+        /// <summary>
+        /// The URP default particle material, only for a renderer the atlas cannot dress (no art registered, as in a bare
+        /// EditMode test). It exists in the editor only: a player build returns null, and in this project's game view it drew
+        /// nothing (round 49), so every game effect is dressed from the atlas instead.
+        /// </summary>
+        public static Material FallbackMaterial => GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
+
+        /// <summary>
+        /// Dresses a smoke, dust, steam or mist system in the ragged vapour puff (<see cref="SpriteKit.Puff"/>), drawn covering:
+        /// the atlas's soft mote is a small bright point and read as glowing dots at smoke size (round 49). One material per
+        /// quality is shared by every smoke; without registered art the system keeps its look.
+        /// </summary>
+        public static ParticleSystem UseSmoke(ParticleSystem system)
+        {
+            Material material = SmokeMaterial();
+            if (material == null)
+            {
+                return UseCell(system, MarkerArt.ParticleCell.Mote, null);
+            }
+
+            system.GetComponent<ParticleSystemRenderer>().sharedMaterial = material;
+            ParticleSystem.TextureSheetAnimationModule sheet = system.textureSheetAnimation;
+            sheet.enabled = false;
             return system;
+        }
+
+        private static Material SmokeMaterial()
+        {
+            if (MarkerArt.Active == null)
+            {
+                return null;
+            }
+
+            bool low = ModelQuality.IsLow;
+            ref Material cached = ref low ? ref _smokeLow : ref _smoke;
+            if (cached == null)
+            {
+                cached = SpriteMaterial(SpriteKit.Puff());
+                cached.name = low ? "Particles_Smoke_Low" : "Particles_Smoke";
+            }
+
+            return cached;
+        }
+
+        /// <summary>
+        /// A new covering material (alpha-blended, like the old default) for a system that draws its own white sprite
+        /// without the atlas's sheet animation: the sprite plain, or without one the atlas's soft mote as a fixed cell. Built
+        /// from the atlas's covering material; the default material only without registered art; null when neither exists.
+        /// </summary>
+        public static Material SpriteMaterial(Texture2D sprite)
+        {
+            MarkerArt art = MarkerArt.Active;
+            Material source = art != null ? art.ParticleMaterial(true) : FallbackMaterial;
+            if (source == null)
+            {
+                return null;
+            }
+
+            var material = new Material(source);
+            if (art == null)
+            {
+                if (sprite != null)
+                {
+                    material.SetTexture(BaseMapId, sprite);
+                }
+
+                return material;
+            }
+
+            if (sprite != null)
+            {
+                // A white sprite carries its shape in alpha; its red channel alone lights it, at the particle's colour.
+                material.SetTexture(MainTexId, sprite);
+                material.SetColor(CoreColorId, Color.white);
+                material.SetColor(GlowColorId, Color.clear);
+                material.SetColor(ThirdColorId, Color.clear);
+            }
+            else
+            {
+                material.EnableKeyword(AtlasFrameKeyword);
+                material.SetFloat(AtlasFrameId, 1f);
+                material.SetFloat(FrameId, (float)MarkerArt.ParticleCell.Mote);
+            }
+
+            return material;
         }
 
         /// <summary>
         /// Dresses a system in one cell of the Blender particle atlas (README round 25b): additive for motes, embers, frost and
-        /// chrono motes, covering for drips, splats and goo. Keeps the default look when the art is not registered.
+        /// chrono motes, covering for drips, splats and goo. Without registered art it keeps its material, or takes the
+        /// <see cref="FallbackMaterial"/> when it has none.
         /// </summary>
         public static ParticleSystem UseCell(ParticleSystem system, MarkerArt.ParticleCell cell)
         {
@@ -72,12 +172,18 @@ namespace Game.Core
 
         private static ParticleSystem UseCell(ParticleSystem system, MarkerArt.ParticleCell cell, Material material)
         {
+            var renderer = system.GetComponent<ParticleSystemRenderer>();
             if (material == null)
             {
+                if (renderer.sharedMaterial == null)
+                {
+                    renderer.sharedMaterial = FallbackMaterial;
+                }
+
                 return system;
             }
 
-            system.GetComponent<ParticleSystemRenderer>().sharedMaterial = material;
+            renderer.sharedMaterial = material;
             ParticleSystem.TextureSheetAnimationModule sheet = system.textureSheetAnimation;
             sheet.enabled = true;
             sheet.mode = ParticleSystemAnimationMode.Grid;

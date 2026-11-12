@@ -1,8 +1,8 @@
 """Round 45: the AcidEmpress's close-up detail (eyes, teeth, claws), detail_kit / gravemaw_maw technique.
 
-- AcidEmpress_Face: the eye mound gets a jumping-spider stare: two big principal eyes in front (magenta irises,
-  round black pupils, glossy corneas) and eight wet eyes on the round-10 bead ring; a pair of hooked chelicera fangs
-  with acid-lit tips over the mouth and rows of small teeth on both lips of the glowing mouth.
+- AcidEmpress_Face: a jumping-spider stare: two big principal eyes (magenta irises, cross pupils, glossy corneas) and
+  three wet eyes at each front corner, on the Stinger's head (round 49C: the head in front of the carapace); a hooked
+  fang with an acid-lit tip on each chelicera and rows of small teeth on both lips of the glowing mouth.
 - AcidEmpress_Claws: crab teeth on the facing edges of both trap-claw fingers, keratin points on all four fingers,
   and two small hooked claws on each of the six feet.
 Both have LOD1 versions in AcidEmpress_LOD1.fbx (small teeth left out there). No bone, clip or event changes.
@@ -43,16 +43,17 @@ CLAW = D.Keratin(root=(0.03, 0.01, 0.035), body=(0.18, 0.05, 0.17), tip=(0.95, 0
 FANG = D.Keratin(root=(0.04, 0.012, 0.04), body=(0.2, 0.06, 0.18), tip=(0.85, 1.0, 0.4), glow=(0.78, 1.0, 0.2),
                  stain=(0.06, 0.015, 0.06))
 
-MOUND = G(0, 0.275, 0.27) * M
-MOUTH = G(0, 0.16, 0.32) * M
-FACE_FOCUS = G(0, 0.22, 0.3) * M
+# Round 49C: the face sits on the Stinger's new head in front of the carapace (build_stinger.head_parts).
+MOUND = S.hs(G(0, 0.255, 0.385)) * M
+MOUTH = S.MOUTH_C * M
+FACE_FOCUS = S.hs(G(0, 0.235, 0.39)) * M
 CLAW_FOCUS = G(-0.26, 0.2, 0.79) * M
 FOOT_FOCUS = None   # set from the bones
 
 
-def bead(i):
-    a = math.radians(-70 + 140 * i / (A.CFG["eyes"] - 1))
-    return G(0.062 * math.sin(a), 0.292 + 0.006 * math.cos(a * 2), 0.27 + 0.048 * math.cos(a)) * M
+def eye_beads():
+    """The body's eye beads on the head, both sides: (centre, radius) in model units."""
+    return [(Vector((c.x * sx, c.y, c.z)) * M, r * M) for sx in (1, -1) for _, c, r in S.head_eyes(A.CFG)]
 
 
 def face_parts(boss):
@@ -60,37 +61,33 @@ def face_parts(boss):
     sock = D.socket_style(SOCKET, seed=5)
     small = [D.eye_style(EYE, pupil="slit", iris_size=0.46, pupil_size=0.22, glow=0.75, seed=s) for s in range(4)]
     big = D.eye_style(EYE, pupil="cross", iris_size=0.5, pupil_size=0.22, glow=0.6, seed=9)
-    mound_c = MOUND - Vector((0, 0, 0.03))
-    # A jumping spider's stare along the round-10 bead arc (whose glow goes from the body maps): two big principal
-    # eyes in front, two pairs of smaller ones round the sides and a pair on top behind them.
-    arc = ((18, 0.05, big, 0.0), (48, 0.036, small[0], 0.0), (74, 0.03, small[1], 0.0))
-    for deg, r, style, _ in arc:
+    head_c = S.head_centre() * M
+    # A jumping spider's stare on the head (round 49C): two big principal eyes on the brow mound, three smaller ones
+    # at each front corner; the body beads' glow under them goes from the body maps.
+    styles = {"Main": big}
+    for k, (name, c, r0) in enumerate(S.head_eyes(A.CFG)):
+        r = r0 * M * (1.3 if name == "Main" else 1.05)
+        style = styles.get(name, small[k % 2])
         for sx in (-1, 1):
-            a = math.radians(deg) * sx
-            p = G(0.062 * math.sin(a), 0.292 + 0.006 * math.cos(a * 2), 0.27 + 0.048 * math.cos(a)) * M
-            n = (p - mound_c).normalized()
-            n = (n + Vector((0, -0.3 if r > 0.05 else 0.0, 0))).normalized()
-            D.add_eye(b, p - n * r * 0.15, n, r, style, sock, squash=(1.0, 1.0, 0.8), socket=0.16,
+            p = Vector((c.x * sx, c.y, c.z)) * M
+            n = ((p - head_c).normalized() + Vector((0, -0.3, 0.3))).normalized()
+            D.add_eye(b, p, n, r, style, sock, squash=(1.0, 1.0, 0.8), socket=0.16,
                       up=Vector((0, 0, 1)) - n * n.z, bone="Body")
-    for sx in (-1, 1):
-        p, n = boss.out(mound_c, Vector((0.35 * sx, 0.1, 1.0)))
-        D.add_eye(b, p - n * 0.012, n, 0.028, small[2], sock, squash=(1.0, 1.0, 0.8), socket=0.16,
-                  up=Vector((0, -1, 0)), bone="Body")
-    # Chelicerae: the round-10 palps end in hooked fangs, acid-lit at the tips, curling in under the mouth.
+    # Chelicerae: each ends in a hooked fang, acid-lit at the tip, curling in under the mouth.
     fang = D.keratin_style(FANG, glow=1.0, glow_from=0.65, seed=3, wet=0.5)
     for sx in (-1, 1):
-        tip = G(0.035 * sx, 0.125, 0.395) * M
-        d = Vector((-0.35 * sx, -0.35, -1.0)).normalized()
-        D.add_claw(b, tip + Vector((0, 0.01, 0.02)), d, 0.026, 0.13, fang, hook=Vector((-0.3 * sx, 1.0, 0.1)),
+        pts = [Vector((p.x * sx, p.y, p.z)) * M for p in S.chelicera_points(1, A.CFG)]
+        d = Vector((-0.35 * sx, -0.45, -1.0)).normalized()
+        D.add_claw(b, pts[2], d, 0.024, 0.12, fang, hook=Vector((-0.3 * sx, 1.0, 0.1)),
                    hook_amount=0.55, bone="Body", name="Fang")
     # Lips: small teeth on the upper and lower rim of the glowing mouth, pointing in and back.
     tooth = [D.tooth_style(TOOTH, glow=0.35, seed=s) for s in range(3)]
-    rx, rz = 0.075, 0.05
+    rx, rz = 0.072, 0.048
     for k in (-1.5, -0.5, 0.5, 1.5):
         x = rx * k / 2.2
         for up in (1, -1):
             z = up * rz * math.sqrt(max(0.0, 1 - (x / rx) ** 2))
-            base = MOUTH + Vector((x, -0.05, z))
+            base = MOUTH + Vector((x, -0.03, z))
             # Hanging from the lips like fangs (seen in profile from the front), only a little raked back.
             d = (Vector((-0.4 * x, 0, -z)).normalized() * 0.92 + Vector((0, 0.2, 0))).normalized()
             D.add_tooth(b, base, d, 0.012, 0.07 * (1.1 - 0.12 * abs(k)), tooth[int(k + 2) % 3],
@@ -134,7 +131,7 @@ def build(boss, blockout_only=False):
     if blockout_only:
         return {"Face": face, "Claws": claws}
     # The round-10 eye beads fused into one glowing bar: its glow goes, the new eyes sit on the dark ridge.
-    dimmed = D.dim_body(boss, [(bead(i), 0.05) for i in range(A.CFG["eyes"])], emission_keep=0.05,
+    dimmed = D.dim_body(boss, [(c, r * 1.3) for c, r in eye_beads()], emission_keep=0.05,
                         darken=(0.07, 0.02, 0.07), darken_amount=0.55)
     specs = {"Face": (face, FACE_TRIS, FACE_LOD, {"Eye": 1.8, "Fang": 1.3, "LipTooth": 1.4}),
              "Claws": (claws, CLAW_TRIS, CLAW_LOD, {"Saw": 1.4, "FingerTip": 1.3})}

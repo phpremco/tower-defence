@@ -2,8 +2,8 @@
   "asset": "StormMatriarch",
   "base_species": "Skyray",
   "palette": "cool",
-  "game_tris": 13467,
-  "source_tris": 839648,
+  "game_tris": 13391,
+  "source_tris": 829768,
   "bones": 27,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -14,21 +14,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 327,
-    "folded_fallback_faces": 251,
-    "mirrored_faces": 5015,
-    "uv_coverage": 0.563,
-    "world_per_uv": 3.3004111078036726
+    "islands": 338,
+    "folded_fallback_faces": 313,
+    "mirrored_faces": 4843,
+    "uv_coverage": 0.542,
+    "world_per_uv": 3.3793778043254785
   },
   "detail": {
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 21.7,
+      "tiling": 22.2,
       "mask": "B"
     },
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 29.0,
+      "tiling": 29.6,
       "mask": "A"
     }
   },
@@ -46,7 +46,7 @@
   "unity_scale": 0.72,
   "lod1": {
     "fbx": "StormMatriarch_LOD1.fbx",
-    "tris": 5999,
+    "tris": 5997,
     "bones": 16
   },
   "r45_detail": {
@@ -55,19 +55,19 @@
         "object": "StormMatriarch_Face",
         "material": "StormMatriarch_Face_Mat",
         "maps": "StormMatriarch_Face_*.png (1024, Low 512)",
-        "tris": 2151,
+        "tris": 2150,
         "lod1_object": "StormMatriarch_Face_LOD1",
-        "lod1_tris": 557,
-        "source_tris": 63820,
+        "lod1_tris": 558,
+        "source_tris": 58232,
         "uv": {
           "islands": 47,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 1073,
-          "uv_coverage": 0.641,
-          "world_per_uv": 0.3520222310943052
+          "mirrored_faces": 1075,
+          "uv_coverage": 0.654,
+          "world_per_uv": 0.33383691114901515
         },
-        "symmetry_error": 0.008784
+        "symmetry_error": 0.016915
       },
       "Claws": {
         "object": "StormMatriarch_Claws",
@@ -88,11 +88,11 @@
         "symmetry_error": 0.00568
       }
     },
-    "body_tris": 13467,
-    "extra_tris": 2495,
-    "extra_share": 0.185,
-    "body_lod1_tris": 5999,
-    "extra_lod1_tris": 685,
+    "body_tris": 13391,
+    "extra_tris": 2494,
+    "extra_share": 0.186,
+    "body_lod1_tris": 5997,
+    "extra_lod1_tris": 686,
     "extra_lod1_share": 0.114,
     "clips": [
       "Death",

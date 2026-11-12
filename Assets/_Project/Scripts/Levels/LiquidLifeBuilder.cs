@@ -243,10 +243,10 @@ namespace Game.Levels
 
         private static Material ParticleMaterial(Texture2D sprite)
         {
-            var material = new Material(GraphicsSettings.currentRenderPipeline.defaultParticleMaterial) { renderQueue = QueueAfterSheets };
-            if (sprite != null)
+            Material material = ParticleKit.SpriteMaterial(sprite);
+            if (material != null)
             {
-                material.SetTexture("_BaseMap", sprite);
+                material.renderQueue = QueueAfterSheets;
             }
 
             return material;

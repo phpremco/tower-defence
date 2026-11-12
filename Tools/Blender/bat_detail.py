@@ -21,6 +21,7 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from mathutils import Vector  # noqa: E402
 
+import build_bat as BB  # noqa: E402
 import common as C  # noqa: E402
 import detail_kit as D  # noqa: E402
 import detail_kit_small as S  # noqa: E402
@@ -44,11 +45,12 @@ TOOTH = D.Keratin(root=(0.25, 0.15, 0.1), body=(0.85, 0.8, 0.7), tip=(0.98, 0.96
 TALON = D.Keratin(root=(0.04, 0.03, 0.03), body=(0.14, 0.1, 0.09), tip=(0.92, 0.85, 0.72), glow=(1.0, 0.7, 0.4),
                   stain=(0.06, 0.04, 0.03))
 
-HEAD_FOCUS = G(0, 0.03, 0.2)
+# Round 49C: the head sits on a neck, BB.HEAD_SHIFT further forward.
+HEAD_FOCUS = BB.hp(G(0, 0.03, 0.2))
 
 
 def bead(i):
-    return G(0.045 + 0.008 * i, 0.045 - 0.004 * i, 0.215 - 0.025 * i)
+    return BB.eye_bead(i)
 
 
 # ------------------------------------------------------------------------------------------------------------
@@ -59,7 +61,7 @@ def face_parts(c):
     b = C.PartBuilder()
     lid = S.skin_style(LID_DARK, LID_SKIN, LID_WET, seed=14)
     eyes = [D.eye_style(EYE, pupil="slit", iris_size=0.6, pupil_size=0.28, glow=0.75, seed=s) for s in range(2)]
-    head_c = G(0, 0.03, 0.16)
+    head_c = BB.hp(G(0, 0.03, 0.16))
     # One almond eye over each pair of beads (stretched along the head), right side, mirrored.
     for k, (i, r) in enumerate(((0, 0.0155), (2, 0.0135))):
         p = bead(i).lerp(bead(i + 1), 0.5)
@@ -72,7 +74,7 @@ def face_parts(c):
     for rows, up, bone, d, hook in ((((0.012, 0.022), (0.026, 0.018)), -0.003, "Jaw", G(0, 1.0, 0.2), G(0, 0.3, -0.5)),
                                     (((0.016, 0.024), (0.03, 0.018)), 0.016, "Head", G(0, -1.0, 0.2), G(0, -0.3, -0.5))):
         for x, ln in rows:
-            hit = c.hit(G(x, up, 0.6), Vector((0, 1, 0)))
+            hit = c.hit(G(x, up, 0.6) + G(0, BB.HEAD_SHIFT.z, 0), Vector((0, 1, 0)))
             if hit is None:
                 C.log("tooth skipped", bone, x)
                 continue
@@ -126,9 +128,9 @@ def shots(c):
     out = S.standard_shots("Head", HEAD_FOCUS, "Hand_L", G(-0.3, 0.09, 0.12), "Body", G(-0.04, -0.11, 0.01), 0.9,
                            walk="Fly", idle="Glide", face_dist=0.55, claw_dist=0.35, foot_dist=0.3,
                            root_focus=Vector((0, 0, 0)))
-    out[1] = ("face_macro", "Glide", 15, "Head", G(-0.055, 0.045, 0.2), "close", dict(distance=0.18, azimuth=-60,
+    out[1] = ("face_macro", "Glide", 15, "Head", BB.hp(G(-0.055, 0.045, 0.2)), "close", dict(distance=0.18, azimuth=-60,
                                                                                       elevation=10))
-    out.append(("mouth", "Hit", 4, "Head", G(0, 0.0, 0.24), "close", dict(distance=0.3, azimuth=-12, elevation=-4)))
+    out.append(("mouth", "Hit", 4, "Head", BB.hp(G(0, 0.0, 0.24)), "close", dict(distance=0.3, azimuth=-12, elevation=-4)))
     return out
 
 

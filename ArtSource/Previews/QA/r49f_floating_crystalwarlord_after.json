@@ -1,0 +1,61 @@
+{
+ "creature": "CrystalWarlord",
+ "threshold": 0.01501,
+ "poses_checked": 37,
+ "mixed": [],
+ "clips": "all",
+ "islands_per_object": {
+  "CrystalWarlord": 1,
+  "CrystalWarlord_Claws": 16,
+  "CrystalWarlord_Eyes": 2,
+  "CrystalWarlord_Teeth": 14
+ },
+ "specks_under_min_verts": {
+  "CrystalWarlord": 0,
+  "CrystalWarlord_Claws": 12,
+  "CrystalWarlord_Eyes": 0,
+  "CrystalWarlord_Teeth": 6
+ },
+ "floating": [
+  {
+   "object": "CrystalWarlord_Teeth",
+   "island": 7,
+   "verts": 35,
+   "gap": 0.0422,
+   "pose": "Death@44",
+   "bone": "Head",
+   "centre": [
+    1.1872,
+    -0.8687,
+    -0.0375
+   ]
+  },
+  {
+   "object": "CrystalWarlord_Teeth",
+   "island": 4,
+   "verts": 35,
+   "gap": 0.03079,
+   "pose": "Death@44",
+   "bone": "Head",
+   "centre": [
+    1.1657,
+    -0.8864,
+    0.0258
+   ]
+  },
+  {
+   "object": "CrystalWarlord_Teeth",
+   "island": 6,
+   "verts": 32,
+   "gap": 0.0164,
+   "pose": "Death@35",
+   "bone": "Head",
+   "centre": [
+    1.3192,
+    -0.841,
+    0.1699
+   ]
+  }
+ ],
+ "separate_by_design": []
+}

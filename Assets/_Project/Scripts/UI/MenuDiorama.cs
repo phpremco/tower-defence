@@ -484,7 +484,6 @@ namespace Game.UI
             shape.scale = new Vector3(StarFieldSize, 6f, StarFieldSize);
 
             var renderer = go.GetComponent<ParticleSystemRenderer>();
-            renderer.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
             ParticleKit.UseCell(system, MarkerArt.ParticleCell.Mote);
             system.Emit(StarCount);
@@ -537,7 +536,6 @@ namespace Game.UI
             fade.color = gradient;
 
             var renderer = go.GetComponent<ParticleSystemRenderer>();
-            renderer.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
             ParticleKit.UseCell(system, MarkerArt.ParticleCell.Spore);
             system.Play();

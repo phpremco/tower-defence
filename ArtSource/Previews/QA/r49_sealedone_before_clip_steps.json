@@ -1,0 +1,121 @@
+{
+  "Adapt": {
+    "frames": 64,
+    "max_step_deg": 6.7,
+    "bone": "Plate_L",
+    "frame": 28,
+    "ratio_to_median": 4.2
+  },
+  "Climb_Down": {
+    "frames": 132,
+    "max_step_deg": 9.2,
+    "bone": "LArm_L_Upper",
+    "frame": 14,
+    "ratio_to_median": 11.3
+  },
+  "Climb_Loop": {
+    "frames": 100,
+    "max_step_deg": 4.3,
+    "bone": "Ring_1",
+    "frame": 97,
+    "ratio_to_median": 1.2
+  },
+  "Climb_Up": {
+    "frames": 132,
+    "max_step_deg": 6.3,
+    "bone": "LArm_L_Hand",
+    "frame": 111,
+    "ratio_to_median": 3.3
+  },
+  "Death": {
+    "frames": 150,
+    "max_step_deg": 12.3,
+    "bone": "LArm_L_Fore",
+    "frame": 12,
+    "ratio_to_median": 14.1
+  },
+  "Dive_Into_Liquid": {
+    "frames": 90,
+    "max_step_deg": 6.7,
+    "bone": "Ring_1",
+    "frame": 85,
+    "ratio_to_median": 1.7
+  },
+  "Hit": {
+    "frames": 18,
+    "max_step_deg": 11.2,
+    "bone": "Ring_1",
+    "frame": 1,
+    "ratio_to_median": 5.6
+  },
+  "Idle": {
+    "frames": 120,
+    "max_step_deg": 3.5,
+    "bone": "Ring_2",
+    "frame": 49,
+    "ratio_to_median": 1.2
+  },
+  "OnBase_Loop": {
+    "frames": 96,
+    "max_step_deg": 14.8,
+    "bone": "UArm_L_Fore",
+    "frame": 32,
+    "ratio_to_median": 8.9
+  },
+  "Release": {
+    "frames": 170,
+    "max_step_deg": 8.3,
+    "bone": "Ring_2",
+    "frame": 37,
+    "ratio_to_median": 4.6
+  },
+  "Rise": {
+    "frames": 150,
+    "max_step_deg": 10.6,
+    "bone": "LArm_L_Hand",
+    "frame": 90,
+    "ratio_to_median": 21.2
+  },
+  "Rise_OntoBase": {
+    "frames": 130,
+    "max_step_deg": 10.9,
+    "bone": "LArm_L_Upper",
+    "frame": 24,
+    "ratio_to_median": 10.8
+  },
+  "Roar": {
+    "frames": 72,
+    "max_step_deg": 13.3,
+    "bone": "LArm_R_Hand",
+    "frame": 28,
+    "ratio_to_median": 8.8
+  },
+  "Submerged_Loop": {
+    "frames": 96,
+    "max_step_deg": 3.9,
+    "bone": "Ring_3",
+    "frame": 41,
+    "ratio_to_median": 1.1
+  },
+  "Summon": {
+    "frames": 90,
+    "max_step_deg": 9.7,
+    "bone": "UArm_L_Upper",
+    "frame": 76,
+    "ratio_to_median": 6.2
+  },
+  "Surface_Burst": {
+    "frames": 100,
+    "max_step_deg": 18.5,
+    "bone": "LArm_L_Hand",
+    "frame": 16,
+    "ratio_to_median": 10.6
+  },
+  "Walk": {
+    "frames": 80,
+    "max_step_deg": 5.4,
+    "bone": "Ring_1",
+    "frame": 78,
+    "ratio_to_median": 1.2
+  }
+}

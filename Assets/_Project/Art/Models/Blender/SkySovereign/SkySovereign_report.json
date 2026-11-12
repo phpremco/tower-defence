@@ -1,8 +1,8 @@
 {
   "asset": "SkySovereign",
   "base_species": "Bat",
-  "game_tris": 12607,
-  "source_tris": 1143512,
+  "game_tris": 12639,
+  "source_tris": 1207600,
   "bones": 19,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -13,21 +13,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 370,
-    "folded_fallback_faces": 234,
-    "mirrored_faces": 4366,
-    "uv_coverage": 0.429,
-    "world_per_uv": 1.4543771227566387
+    "islands": 337,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 4538,
+    "uv_coverage": 0.479,
+    "world_per_uv": 1.3881117005698902
   },
   "detail": {
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 18.2,
+      "tiling": 17.4,
       "mask": "B"
     },
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 24.2,
+      "tiling": 23.1,
       "mask": "A"
     }
   },
@@ -47,7 +47,7 @@
   "model_scale_from_bat_units": 1.5,
   "lod1": {
     "fbx": "SkySovereign_LOD1.fbx",
-    "tris": 6000,
+    "tris": 5999,
     "bones": 13
   },
   "r45_detail": {
@@ -56,19 +56,19 @@
         "object": "SkySovereign_Face",
         "material": "SkySovereign_Face_Mat",
         "maps": "SkySovereign_Face_*.png (1024, Low 512)",
-        "tris": 1497,
+        "tris": 1498,
         "lod1_object": "SkySovereign_Face_LOD1",
         "lod1_tris": 518,
-        "source_tris": 36280,
+        "source_tris": 60824,
         "uv": {
-          "islands": 49,
+          "islands": 45,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 45,
-          "mirrored_faces": 741,
-          "uv_coverage": 0.695,
-          "world_per_uv": 0.16479109705573702
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 749,
+          "uv_coverage": 0.654,
+          "world_per_uv": 0.2208172312792103
         },
-        "symmetry_error": 0.004094
+        "symmetry_error": 0.005322
       },
       "Claws": {
         "object": "SkySovereign_Claws",
@@ -89,10 +89,10 @@
         "symmetry_error": 0.0
       }
     },
-    "body_tris": 12607,
-    "extra_tris": 2189,
-    "extra_share": 0.174,
-    "body_lod1_tris": 6000,
+    "body_tris": 12639,
+    "extra_tris": 2190,
+    "extra_share": 0.173,
+    "body_lod1_tris": 5999,
     "extra_lod1_tris": 874,
     "extra_lod1_share": 0.146,
     "clips": [

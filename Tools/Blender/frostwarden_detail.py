@@ -7,6 +7,8 @@ Before, the face was three amber marbles on a slate wedge and a cyan slit. Now:
   (round 45 polish: no rings), plus a pair of small side eyes further back; bone Head.
 - `FrostWarden_Teeth` (`FrostWarden_Teeth_Mat`): ice fangs along the maw: a row hanging from the upper lip (Head) and
   a row rising from the jaw (Jaw), dark slate roots, a smooth ramp from dark gum to clear pale-cyan ice to a bright white tip.
+  Round 49C: about twice the size and paler (two sabre fangs past the chin, tusks rising outside the upper lip),
+  and every clip holds the jaw 12 degrees further open (`open_jaw_at_rest`, flagged per action).
 - `FrostWarden_Claws` (`FrostWarden_Claws_Mat`): three hooked black talons with frosted tips curling out of the front
   of each fist maul (Arm_*_Fist) and three over the hind toes (Leg_*_Foot), tips to the ground.
 No bone, clip or event changes; the actions are exported again as they are.
@@ -20,6 +22,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
+import bpy  # noqa: E402
 from mathutils import Vector  # noqa: E402
 
 import common as C  # noqa: E402
@@ -37,7 +40,8 @@ SINK = 0.05
 # The build's three amber balls (build_frostwarden.body_parts): cut out of the body under the sunk eyes.
 OLD_EYES = [((0.0, -2.42, 2.9), 0.105), ((0.3, -2.44, 2.76), 0.09), ((-0.3, -2.44, 2.76), 0.09)]
 BROW_ICE = (0.55, 0.72, 0.84)
-ICE_ROOT, ICE_BODY, ICE_TIP = (0.12, 0.05, 0.07), (0.5, 0.74, 0.9), (0.95, 0.98, 1.0)   # dark gum, ice, tip
+# Round 49C: paler teeth (bone-ivory with a cold tint, was cyan ice 0.5, 0.74, 0.9), so they stand out on the slate.
+ICE_ROOT, ICE_BODY, ICE_TIP = (0.16, 0.07, 0.09), (0.86, 0.9, 0.94), (0.97, 0.99, 1.0)   # dark gum, ivory, tip
 ICE_GLOW = (0.42, 0.82, 1.0)
 KER_ROOT, KER_BODY, KER_TIP = (0.04, 0.045, 0.06), (0.12, 0.13, 0.16), (0.8, 0.9, 0.98)
 
@@ -77,20 +81,77 @@ def eye_parts(boss):
 
 def teeth_parts(boss):
     b = C.PartBuilder()
-    fang = D.keratin_style(ICE_ROOT, ICE_BODY, ICE_TIP, glow=ICE_GLOW, glow_at="rise", glow_k=0.55, seed=11, wet=0.12,
-                           translucent=0.15, bands=4, family=(0.0, 0.0, 0.7, 0.0))
-    # Maw slit: centre G(0, 2.34, 2.58), half width 0.28. Sabre fangs hang over the slit from the upper lip (Head),
-    # shorter ones rise from the jaw (Jaw); the roots are found on the lips by probing from the front.
+    # Round 49C (Remco: "I don't see his teeth"): pale bone-ivory teeth with clear ice tips, lit from the root up
+    # (the maw's ice light), about twice the round-45 size, so they read against the slate head from the play camera.
+    fang = D.keratin_style(ICE_ROOT, ICE_BODY, ICE_TIP, glow=ICE_GLOW, glow_at="rise", glow_k=0.45, seed=11, wet=0.2,
+                           translucent=0.1, bands=4, family=(0.0, 0.0, 0.7, 0.0))
+    tusk = D.keratin_style(ICE_ROOT, ICE_BODY, ICE_TIP, glow=ICE_GLOW, glow_at="rise", glow_k=0.4, seed=13, wet=0.22,
+                           translucent=0.1, bands=6, family=(0.0, 0.0, 0.7, 0.0))
+    # Maw slit: centre G(0, 2.34, 2.58), half width 0.28. The roots are found on the lips by probing from the front.
     def lip(x, z):
         p, n = boss.ray(Vector((x, -4.0, z)), Vector((0, 1, 0)))
-        return p - n * 0.025 if p is not None else Vector((x, -2.6, z))
-    for x, ln, r in ((0.06, 0.24, 0.036), (0.15, 0.3, 0.044), (0.24, 0.2, 0.032)):
-        D.fang(b, "UpperFang", lip(x, 2.43), G(0.04, -1.0, 0.32).normalized(), r, ln, "Head", fang,
+        return p - n * 0.03 if p is not None else Vector((x, -2.6, z))
+    # Two sabre fangs from the upper lip hang past the chin (seen even with the jaw shut), a smaller fang between and
+    # beside them; they hook back a little towards the throat.
+    for x, ln, r in ((0.2, 0.72, 0.092), (0.07, 0.36, 0.056), (0.33, 0.34, 0.056)):
+        D.fang(b, "UpperFang", lip(x, 2.43), G(0.03, -1.0, 0.22).normalized(), r, ln, "Head", fang,
+               hook=G(0, 0, -1), hook_k=0.22)
+    # Lower teeth stand on the jaw lip; the outer pair are tusks that rise outside the upper lip beside the snout,
+    # tips curling out and up, so the teeth also read from above.
+    for x, ln, r in ((0.11, 0.3, 0.056), (0.21, 0.32, 0.058)):
+        D.fang(b, "LowerFang", lip(x, 2.25), G(-0.03, 1.0, 0.3).normalized(), r, ln, "Jaw", fang,
                hook=G(0, 0, -1), hook_k=0.2)
-    for x, ln, r in ((0.1, 0.17, 0.032), (0.2, 0.2, 0.036)):
-        D.fang(b, "LowerFang", lip(x, 2.25), G(-0.04, 1.0, 0.35).normalized(), r, ln, "Jaw", fang,
-               hook=G(0, 0, -1), hook_k=0.2)
+    D.fang(b, "Tusk", lip(0.34, 2.24) + G(0.02, 0.0, -0.04), G(0.18, 1.0, 0.3).normalized(), 0.09, 0.62, "Jaw", tusk,
+           hook=G(0.35, 0.2, -1.0), hook_k=0.35)
     return b
+
+
+# Round 49C: the maw hangs a little open at rest (Remco: "I don't see his teeth"), so the teeth and the lit throat
+# show between the lips in every clip. A constant turn of the Jaw bone about its own X axis on top of each clip's
+# keys (the clips' own jaw motion stays as it was); each action is flagged so a rerun never adds it twice.
+JAW_REST_OPEN = 12.0
+JAW_FLAG = "r49c_jaw_rest_open_deg"
+
+
+def open_jaw_at_rest(boss):
+    import math
+    from mathutils import Quaternion
+    import creature_kit2 as K2
+    path = 'pose.bones["Jaw"].rotation_quaternion'
+    done = []
+    for act in bpy.data.actions:
+        # The flag holds the turn already applied, so a rerun (or a changed JAW_REST_OPEN) adds only the difference.
+        delta = JAW_REST_OPEN - float(act.get(JAW_FLAG, 0.0))
+        if abs(delta) < 1e-6:
+            continue
+        for bag in K2._channelbags(act):
+            curves = [bag.fcurves.find(path, index=i) for i in range(4)]
+            if any(c is None for c in curves):
+                continue
+            off = Quaternion((1, 0, 0), math.radians(delta * JAW_SIGN))
+            frames = sorted({k.co[0] for c in curves for k in c.keyframe_points})
+            values = [Quaternion([c.evaluate(f) for c in curves]) @ off for f in frames]
+            for c, i in zip(curves, range(4)):
+                # Keys stay where they are (same frames, same interpolation); only the values and handles move.
+                by_frame = {k.co[0]: k for k in c.keyframe_points}
+                for f, q in zip(frames, values):
+                    k = by_frame.get(f)
+                    if k is None:
+                        k = c.keyframe_points.insert(f, q[i])
+                        continue
+                    dv = q[i] - k.co[1]
+                    k.co[1] += dv
+                    k.handle_left[1] += dv
+                    k.handle_right[1] += dv
+                c.update()
+            act[JAW_FLAG] = JAW_REST_OPEN
+            done.append(act.name)
+    boss.facts["jaw_rest_open"] = {"degrees": JAW_REST_OPEN, "actions": done}
+    C.log(boss.name, "jaw open at rest", JAW_REST_OPEN, len(done), "actions")
+
+
+# +1 if a positive turn about the Jaw bone's local X drops the jaw (checked in prep from the rest bone).
+JAW_SIGN = 1.0
 
 
 def claw_parts(boss):
@@ -117,8 +178,9 @@ def claw_parts(boss):
 
 MAKERS = [("Eyes", eye_parts, dict(tris=1200, lod_tris=340, voxel=0.0045, families=("chitin", "membrane"),
                                   emission_strength=2.5, specular=0.6, note="three amber cross-pupil eyes + side pair")),
-          ("Teeth", teeth_parts, dict(tris=1100, lod_tris=340, voxel=0.004, families=("crystal", "chitin"),
-                                      emission_strength=2.5, specular=0.6, note="ice fangs in the maw")),
+          ("Teeth", teeth_parts, dict(tris=1700, lod_tris=460, voxel=0.004, families=("crystal", "chitin"),
+                                      emission_strength=2.5, specular=0.6,
+                                      note="round 49C: big pale sabre fangs, lower teeth and tusks; jaw 12 deg open at rest")),
           ("Claws", claw_parts, dict(tris=1800, lod_tris=560, voxel=0.006, families=("chitin", "crystal"),
                                      emission_strength=2.5, specular=0.5, note="fist talons + toe talons"))]
 
@@ -129,8 +191,22 @@ def after_qa(boss):
     D.qa_lod(boss, FACE_BONE, FACE, DIST)
 
 
+def jaw_sign(boss):
+    """+1 if a positive turn about the Jaw bone's local X axis moves its tip down (opens the maw)."""
+    from mathutils import Matrix
+    import math
+    bone = boss.arm.data.bones["Jaw"]
+    m = bone.matrix_local
+    tail = m.inverted() @ bone.tail_local
+    turned = m @ (Matrix.Rotation(math.radians(10), 4, "X") @ tail)
+    return 1.0 if turned.z < bone.tail_local.z else -1.0
+
+
 def prep(boss):
+    global JAW_SIGN
     D.cut_spheres(boss, OLD_EYES)
+    JAW_SIGN = jaw_sign(boss)
+    open_jaw_at_rest(boss)
 
 
 def attach(mboss):

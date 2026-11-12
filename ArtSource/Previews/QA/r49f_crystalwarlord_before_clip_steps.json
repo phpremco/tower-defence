@@ -1,0 +1,56 @@
+{
+  "Block": {
+    "frames": 24,
+    "max_step_deg": 21.4,
+    "bone": "ForeArm_L",
+    "frame": 4,
+    "ratio_to_median": 31.5,
+    "head_vs_chest_deg": 10.0,
+    "tail_tip_vs_pelvis_deg": 16.8
+  },
+  "Death": {
+    "frames": 44,
+    "max_step_deg": 7.2,
+    "bone": "UpperArm_R",
+    "frame": 24,
+    "ratio_to_median": 3.1,
+    "head_vs_chest_deg": 35.0,
+    "tail_tip_vs_pelvis_deg": 21.5
+  },
+  "Hit": {
+    "frames": 14,
+    "max_step_deg": 27.3,
+    "bone": "Jaw",
+    "frame": 2,
+    "ratio_to_median": 4.9,
+    "head_vs_chest_deg": 22.0,
+    "tail_tip_vs_pelvis_deg": 23.1
+  },
+  "Idle": {
+    "frames": 72,
+    "max_step_deg": 3.1,
+    "bone": "Jaw",
+    "frame": 33,
+    "ratio_to_median": 2.8,
+    "head_vs_chest_deg": 30.1,
+    "tail_tip_vs_pelvis_deg": 30.6
+  },
+  "Sweep": {
+    "frames": 40,
+    "max_step_deg": 28.0,
+    "bone": "ForeArm_R",
+    "frame": 19,
+    "ratio_to_median": 5.3,
+    "head_vs_chest_deg": 26.9,
+    "tail_tip_vs_pelvis_deg": 12.7
+  },
+  "Walk": {
+    "frames": 32,
+    "max_step_deg": 9.0,
+    "bone": "Leg_L_Shin",
+    "frame": 28,
+    "ratio_to_median": 2.6,
+    "head_vs_chest_deg": 9.6,
+    "tail_tip_vs_pelvis_deg": 38.0
+  }
+}

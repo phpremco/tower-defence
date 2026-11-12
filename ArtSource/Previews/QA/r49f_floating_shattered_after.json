@@ -1,0 +1,190 @@
+{
+ "creature": "Shattered",
+ "threshold": 0.01934,
+ "poses_checked": 43,
+ "mixed": [
+  {
+   "object": "Shattered",
+   "island": 2,
+   "verts": 8153,
+   "allowed_bones": [
+    "Shell_1",
+    "Shell_3",
+    "Shell_4",
+    "Shell_5",
+    "Shell_6",
+    "Shell_7",
+    "Shell_8"
+   ],
+   "other_bones": 12
+  }
+ ],
+ "clips": [
+  "Idle",
+  "Walk",
+  "Hit",
+  "Roar",
+  "Climb_Up",
+  "Climb_Loop",
+  "Death"
+ ],
+ "islands_per_object": {
+  "Shattered": 117,
+  "Shattered_Claws": 26,
+  "Shattered_Eyes": 1,
+  "Shattered_Teeth": 10
+ },
+ "specks_under_min_verts": {
+  "Shattered": 81,
+  "Shattered_Claws": 18,
+  "Shattered_Eyes": 0,
+  "Shattered_Teeth": 0
+ },
+ "floating": [
+  {
+   "object": "Shattered",
+   "island": 63,
+   "verts": 15,
+   "gap": 0.39302,
+   "pose": "Death@48",
+   "bone": "Crys_2",
+   "centre": [
+    0.8701,
+    0.5207,
+    3.057
+   ]
+  },
+  {
+   "object": "Shattered",
+   "island": 109,
+   "verts": 15,
+   "gap": 0.39302,
+   "pose": "Death@48",
+   "bone": "Crys_2",
+   "centre": [
+    -0.8195,
+    0.5207,
+    3.0776
+   ]
+  },
+  {
+   "object": "Shattered",
+   "island": 14,
+   "verts": 51,
+   "gap": 0.20713,
+   "pose": "Death@80",
+   "bone": "Head",
+   "centre": [
+    0.0526,
+    -2.2674,
+    0.7241
+   ]
+  },
+  {
+   "object": "Shattered",
+   "island": 97,
+   "verts": 30,
+   "gap": 0.16921,
+   "pose": "Death@48",
+   "bone": "Crys_6",
+   "centre": [
+    -0.1774,
+    1.2399,
+    2.2907
+   ]
+  },
+  {
+   "object": "Shattered",
+   "island": 53,
+   "verts": 30,
+   "gap": 0.16919,
+   "pose": "Death@48",
+   "bone": "Crys_6",
+   "centre": [
+    0.209,
+    1.2399,
+    2.286
+   ]
+  },
+  {
+   "object": "Shattered",
+   "island": 106,
+   "verts": 214,
+   "gap": 0.09842,
+   "pose": "Death@32",
+   "bone": "Core_Air",
+   "centre": [
+    -0.0444,
+    0.7629,
+    2.8548
+   ]
+  },
+  {
+   "object": "Shattered",
+   "island": 89,
+   "verts": 12,
+   "gap": 0.05685,
+   "pose": "Roar@56",
+   "bone": "Crys_6",
+   "centre": [
+    -0.1135,
+    1.4617,
+    1.7789
+   ]
+  },
+  {
+   "object": "Shattered",
+   "island": 45,
+   "verts": 12,
+   "gap": 0.05685,
+   "pose": "Walk@56",
+   "bone": "Crys_6",
+   "centre": [
+    0.1135,
+    1.1749,
+    1.3491
+   ]
+  },
+  {
+   "object": "Shattered",
+   "island": 113,
+   "verts": 175,
+   "gap": 0.04297,
+   "pose": "Death@48",
+   "bone": "Core_Land",
+   "centre": [
+    0.0112,
+    1.4163,
+    1.9123
+   ]
+  },
+  {
+   "object": "Shattered",
+   "island": 93,
+   "verts": 36,
+   "gap": 0.03857,
+   "pose": "Climb_Loop@81",
+   "bone": "Crys_6",
+   "centre": [
+    0.0,
+    1.1035,
+    1.2188
+   ]
+  }
+ ],
+ "separate_by_design": [
+  {
+   "object": "Shattered",
+   "island": 1,
+   "verts": 585,
+   "gap": 0.0536,
+   "pose": "Climb_Loop@81",
+   "bone": "Shell_2",
+   "centre": [
+    -0.0,
+    0.3429,
+    2.6114
+   ]
+  }
+ ]
+}

@@ -1,0 +1,13 @@
+{
+ "creature": "Knitback",
+ "threshold": 0.00606,
+ "objects": {
+  "Knitback": 45,
+  "Knitback_Claws": 22,
+  "Knitback_Face": 12
+ },
+ "poses": {},
+ "floating": [],
+ "poses_checked": 46,
+ "rest_floating": []
+}

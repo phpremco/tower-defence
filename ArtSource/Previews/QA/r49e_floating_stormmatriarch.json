@@ -1,0 +1,545 @@
+{
+ "creature": "StormMatriarch",
+ "threshold": 0.01885,
+ "objects": {
+  "StormMatriarch": 20,
+  "StormMatriarch_Claws": 22,
+  "StormMatriarch_Face": 29
+ },
+ "poses": {
+  "Death@8": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.8186,
+     0.7295,
+     -0.3291
+    ],
+    "gap": 0.04958
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.6345,
+     0.7293,
+     0.8644
+    ],
+    "gap": 0.04958
+   }
+  ],
+  "Death@16": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.1116,
+     0.3853,
+     -1.2861
+    ],
+    "gap": 0.0513
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     1.0769,
+     0.3847,
+     1.3161
+    ],
+    "gap": 0.0513
+   }
+  ],
+  "Death@24": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     -1.1768,
+     0.1424,
+     -1.0948
+    ],
+    "gap": 0.05154
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     0.8526,
+     0.1416,
+     -1.3631
+    ],
+    "gap": 0.05154
+   }
+  ],
+  "Death@32": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     -0.8585,
+     0.1283,
+     1.3546
+    ],
+    "gap": 0.05155
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.5076,
+     0.1275,
+     -0.5482
+    ],
+    "gap": 0.05155
+   }
+  ],
+  "Death@40": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.1634,
+     0.123,
+     1.1018
+    ],
+    "gap": 0.05155
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -0.8134,
+     0.1222,
+     1.381
+    ],
+    "gap": 0.05155
+   }
+  ],
+  "Death@48": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.5697,
+     0.1219,
+     0.3199
+    ],
+    "gap": 0.05155
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     0.0431,
+     0.1211,
+     1.6019
+    ],
+    "gap": 0.05155
+   }
+  ],
+  "Fly@0": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.8471,
+     0.6357,
+     -0.3199
+    ],
+    "gap": 0.04591
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.8482,
+     0.6355,
+     -0.3197
+    ],
+    "gap": 0.04591
+   }
+  ],
+  "Fly@9": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.9092,
+     0.6197,
+     0.2234
+    ],
+    "gap": 0.04101
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.9101,
+     0.6196,
+     0.2242
+    ],
+    "gap": 0.04089
+   }
+  ],
+  "Fly@28": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.9298,
+     0.6261,
+     0.045
+    ],
+    "gap": 0.05143
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.9307,
+     0.6259,
+     0.0458
+    ],
+    "gap": 0.05143
+   }
+  ],
+  "Fly@37": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.8089,
+     0.6147,
+     -0.4949
+    ],
+    "gap": 0.05103
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.81,
+     0.6145,
+     -0.4947
+    ],
+    "gap": 0.05103
+   }
+  ],
+  "Fly@47": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.695,
+     0.6373,
+     -0.6594
+    ],
+    "gap": 0.03012
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.6961,
+     0.6371,
+     -0.6595
+    ],
+    "gap": 0.02775
+   }
+  ],
+  "Fly@56": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.8471,
+     0.6357,
+     -0.3199
+    ],
+    "gap": 0.04591
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.8482,
+     0.6355,
+     -0.3197
+    ],
+    "gap": 0.04591
+   }
+  ],
+  "Hit@2": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.9095,
+     0.7599,
+     0.2828
+    ],
+    "gap": 0.0499
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.7178,
+     0.76,
+     0.9216
+    ],
+    "gap": 0.0499
+   }
+  ],
+  "Hit@5": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.9214,
+     0.6332,
+     -0.0475
+    ],
+    "gap": 0.04666
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.9212,
+     0.633,
+     0.1006
+    ],
+    "gap": 0.04556
+   }
+  ],
+  "Idle@24": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.8908,
+     0.7103,
+     -0.232
+    ],
+    "gap": 0.04932
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.9093,
+     0.5377,
+     -0.1278
+    ],
+    "gap": 0.04932
+   }
+  ],
+  "Idle@60": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.9083,
+     0.5379,
+     -0.1796
+    ],
+    "gap": 0.04932
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.8918,
+     0.7102,
+     -0.2828
+    ],
+    "gap": 0.04932
+   }
+  ],
+  "Release@9": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.9216,
+     0.6556,
+     0.2487
+    ],
+    "gap": 0.04887
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.9225,
+     0.6556,
+     0.2495
+    ],
+    "gap": 0.04887
+   }
+  ],
+  "Release@18": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.8823,
+     0.7428,
+     0.5142
+    ],
+    "gap": 0.04941
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.8829,
+     0.743,
+     0.5151
+    ],
+    "gap": 0.04941
+   }
+  ],
+  "Release@27": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.9112,
+     0.7026,
+     0.3136
+    ],
+    "gap": 0.04915
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.9119,
+     0.7027,
+     0.3145
+    ],
+    "gap": 0.04915
+   }
+  ],
+  "Release@36": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.8836,
+     0.7414,
+     0.5068
+    ],
+    "gap": 0.0494
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.8842,
+     0.7415,
+     0.5078
+    ],
+    "gap": 0.0494
+   }
+  ],
+  "Release@45": [
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 17,
+    "verts": 31,
+    "centre": [
+     1.9115,
+     0.6825,
+     0.3517
+    ],
+    "gap": 0.04906
+   },
+   {
+    "object": "StormMatriarch_Claws",
+    "island": 19,
+    "verts": 29,
+    "centre": [
+     -1.9123,
+     0.6825,
+     0.3526
+    ],
+    "gap": 0.04906
+   }
+  ]
+ },
+ "floating": [
+  {
+   "object": "StormMatriarch_Claws",
+   "island": 17,
+   "verts": 31,
+   "gap": 0.05155,
+   "pose": "Death@48",
+   "bone": "Fin_R_A3",
+   "centre": [
+    1.5697,
+    0.1219,
+    0.3199
+   ]
+  },
+  {
+   "object": "StormMatriarch_Claws",
+   "island": 19,
+   "verts": 29,
+   "gap": 0.05155,
+   "pose": "Death@48",
+   "bone": "Fin_L_A3",
+   "centre": [
+    0.0431,
+    0.1211,
+    1.6019
+   ]
+  }
+ ],
+ "poses_checked": 36,
+ "rest_floating": []
+}

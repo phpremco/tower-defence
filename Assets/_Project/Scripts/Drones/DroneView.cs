@@ -146,7 +146,7 @@ namespace Game.Drones
                     _sparks = ParticleKit.Create(_art.Tool, "Sparks", Vector3.zero, SparkColor, 0.15f, 0.4f, 0.015f, 0.035f, 1.5f, 3.5f, 1.2f, 60, 0.02f);
                     break;
                 case DroneKind.Harvest:
-                    _dust = ParticleKit.Create(transform.parent, "Dust", Vector3.zero, DustColor, 0.6f, 1.2f, 0.08f, 0.18f, 0.3f, 0.9f, -0.03f, 40, 0.25f);
+                    _dust = ParticleKit.UseSmoke(ParticleKit.Create(transform.parent, "Dust", Vector3.zero, DustColor, 0.6f, 1.2f, 0.08f, 0.18f, 0.3f, 0.9f, -0.03f, 40, 0.25f));
                     break;
             }
 
@@ -179,7 +179,7 @@ namespace Game.Drones
                     _sparks = ParticleKit.Create(_rig.Root.transform, "Sparks", _rig.Tool, SparkColor, 0.15f, 0.4f, 0.015f, 0.035f, 1.5f, 3.5f, 1.2f, 60, 0.02f);
                     break;
                 case DroneKind.Harvest:
-                    _dust = ParticleKit.Create(transform.parent, "Dust", Vector3.zero, DustColor, 0.6f, 1.2f, 0.08f, 0.18f, 0.3f, 0.9f, -0.03f, 40, 0.25f);
+                    _dust = ParticleKit.UseSmoke(ParticleKit.Create(transform.parent, "Dust", Vector3.zero, DustColor, 0.6f, 1.2f, 0.08f, 0.18f, 0.3f, 0.9f, -0.03f, 40, 0.25f));
                     break;
             }
 

@@ -659,7 +659,7 @@ namespace Game.Enemies
         {
             if (_emergence == null)
             {
-                _emergence = _attachments.Track(ParticleKit.Create(transform.parent, "Emergence", Vector3.zero, Color.white, 0.5f, 1.1f, 0.05f, 0.14f, 1f, 3f, 0.9f, EmergeBurst * BossEmergeMultiplier * 2, 0.35f));
+                _emergence = _attachments.Track(ParticleKit.UseCoveringCell(ParticleKit.Create(transform.parent, "Emergence", Vector3.zero, Color.white, 0.5f, 1.1f, 0.05f, 0.14f, 1f, 3f, 0.9f, EmergeBurst * BossEmergeMultiplier * 2, 0.35f), MarkerArt.ParticleCell.Mote));
             }
 
             Color color;
@@ -857,7 +857,7 @@ namespace Game.Enemies
             _rush = _attachments.Track(ParticleKit.UseCell(ParticleKit.Create(transform.parent, "Rush", Vector3.zero, rush, 0.25f, 0.45f, 0.02f, 0.05f, 0.1f, 0.4f, 0f, 40, 0.15f), MarkerArt.ParticleCell.Mote));
             _frost = _attachments.Track(ParticleKit.UseCell(ParticleKit.Create(transform.parent, "Frost", Vector3.zero, FrostColor, 0.5f, 1f, 0.03f, 0.07f, 0.15f, 0.5f, -0.1f, 40, 0.2f), MarkerArt.ParticleCell.FrostMote));
             // Sparks in the creature's colour where its blow lands, or a ring of dust when it slams the ground.
-            _impact = _attachments.Track(ParticleKit.Create(transform.parent, "Impact", Vector3.zero, rush, 0.25f, 0.5f, 0.03f, 0.07f, 0.6f, 1.8f, 0.6f, SlamDustBurst * 2, 0.1f));
+            _impact = _attachments.Track(ParticleKit.UseCoveringCell(ParticleKit.Create(transform.parent, "Impact", Vector3.zero, rush, 0.25f, 0.5f, 0.03f, 0.07f, 0.6f, 1.8f, 0.6f, SlamDustBurst * 2, 0.1f), MarkerArt.ParticleCell.Mote));
             if (definition.HasArmor)
             {
                 // Armour from data, never a species: hot sparks glance off while a hit works on the armour, a burst when it breaks.

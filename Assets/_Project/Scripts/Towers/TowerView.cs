@@ -41,7 +41,9 @@ namespace Game.Towers
         private static readonly Color DamagedColor = new Color(1f, 0.55f, 0.2f);
         private static readonly Color WreckColor = new Color(0.12f, 0.12f, 0.13f);
         // A hurt tower smokes and throws sparks in proportion to the damage; a wreck only smoulders.
-        private static readonly Color SmokeColor = new Color(0.2f, 0.19f, 0.18f, 0.35f);
+        // Mid grey, dense and broad, as the hero, gate and base smoke: in the vapour puff the old faint dark smoke
+        // stayed unseen (round 49).
+        private static readonly Color SmokeColor = new Color(0.5f, 0.48f, 0.46f, 0.95f);
         private static readonly Color SparkColor = new Color(1f, 0.8f, 0.4f) * 2f;
         private const float SmokeBelow = 0.75f;
         private const float SmokeRate = 5f;
@@ -93,7 +95,7 @@ namespace Game.Towers
             _tower.Fired += OnFired;
             // A boss can fling the tower or weigh down the gate; that look lives in its own view.
             gameObject.AddComponent<TowerDisplacementView>();
-            _smoke = ParticleKit.Create(transform, "Smoke", Vector3.up * ParticleHeight, SmokeColor, 1.2f, 2.2f, 0.2f, 0.45f, 0.3f, 0.7f, -0.12f, 30, 0.25f);
+            _smoke = ParticleKit.UseSmoke(ParticleKit.Create(transform, "Smoke", Vector3.up * ParticleHeight, SmokeColor, 1.2f, 2.2f, 0.36f, 0.8f, 0.3f, 0.7f, -0.12f, 30, 0.25f));
             _sparks = ParticleKit.Create(transform, "Sparks", Vector3.up * ParticleHeight, SparkColor, 0.3f, 0.7f, 0.03f, 0.06f, 2f, 5f, 1.5f, 60, 0.2f);
             SetRate(_smoke, 0f);
             SetRate(_sparks, 0f);

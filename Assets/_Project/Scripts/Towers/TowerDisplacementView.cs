@@ -140,7 +140,7 @@ namespace Game.Towers
         {
             if (_dust == null)
             {
-                _dust = ParticleKit.Create(transform, "TossDust", Vector3.up * 0.1f, DustColour, 0.6f, 1.3f, 0.25f, 0.6f, 1.2f, 2.6f, 0.2f, 60, 0.5f);
+                _dust = ParticleKit.UseSmoke(ParticleKit.Create(transform, "TossDust", Vector3.up * 0.1f, DustColour, 0.6f, 1.3f, 0.25f, 0.6f, 1.2f, 2.6f, 0.2f, 60, 0.5f));
                 ParticleKit.SetRate(_dust, 0f);
             }
 

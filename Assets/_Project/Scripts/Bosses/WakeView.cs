@@ -31,7 +31,7 @@ namespace Game.Bosses
             go.transform.SetParent(parent, false);
             var view = go.AddComponent<WakeView>();
             view._glow = GlowDecal.PlacePool(go.transform, glow, GlowRadius, 0.05f);
-            view._bubbles = ParticleKit.Create(go.transform, "Bubbles", Vector3.up * 0.02f, bubbles, 0.5f, 1.1f, 0.05f, 0.16f, 0.4f, 1.1f, -0.3f, 120, BubbleSpread);
+            view._bubbles = ParticleKit.UseCoveringCell(ParticleKit.Create(go.transform, "Bubbles", Vector3.up * 0.02f, bubbles, 0.5f, 1.1f, 0.05f, 0.16f, 0.4f, 1.1f, -0.3f, 120, BubbleSpread), MarkerArt.ParticleCell.Mote);
             view.Show(false, Vector3.zero);
             return view;
         }

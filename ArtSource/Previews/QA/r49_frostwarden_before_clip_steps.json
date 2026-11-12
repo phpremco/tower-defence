@@ -1,0 +1,114 @@
+{
+  "Armour_Break": {
+    "frames": 56,
+    "max_step_deg": 28.6,
+    "bone": "Armour_6",
+    "frame": 27,
+    "ratio_to_median": 11.4
+  },
+  "Climb_Down": {
+    "frames": 210,
+    "max_step_deg": 26.7,
+    "bone": "Leg_R_Upper",
+    "frame": 175,
+    "ratio_to_median": 18.1
+  },
+  "Climb_Loop": {
+    "frames": 93,
+    "max_step_deg": 2.8,
+    "bone": "Leg_R_Lower",
+    "frame": 38,
+    "ratio_to_median": 5.4
+  },
+  "Climb_Up": {
+    "frames": 210,
+    "max_step_deg": 25.3,
+    "bone": "Leg_L_Lower",
+    "frame": 123,
+    "ratio_to_median": 33.0
+  },
+  "Death": {
+    "frames": 84,
+    "max_step_deg": 5.8,
+    "bone": "Jaw",
+    "frame": 6,
+    "ratio_to_median": 7.7
+  },
+  "Dive_Into_Liquid": {
+    "frames": 70,
+    "max_step_deg": 76.6,
+    "bone": "Arm_L_Fist",
+    "frame": 17,
+    "ratio_to_median": 153.2
+  },
+  "Enrage": {
+    "frames": 48,
+    "max_step_deg": 68.0,
+    "bone": "Arm_R_Fist",
+    "frame": 19,
+    "ratio_to_median": 133.8
+  },
+  "Freeze_Gate": {
+    "frames": 64,
+    "max_step_deg": 35.3,
+    "bone": "Arm_L_Upper",
+    "frame": 28,
+    "ratio_to_median": 33.2
+  },
+  "FreezePulse": {
+    "frames": 64,
+    "max_step_deg": 60.8,
+    "bone": "IK_Arm_L",
+    "frame": 26,
+    "ratio_to_median": 65.0
+  },
+  "Hit": {
+    "frames": 16,
+    "max_step_deg": 18.0,
+    "bone": "Arm_L_Upper",
+    "frame": 2,
+    "ratio_to_median": 20.8
+  },
+  "Idle": {
+    "frames": 120,
+    "max_step_deg": 1.3,
+    "bone": "Head",
+    "frame": 110,
+    "ratio_to_median": 1.4
+  },
+  "Shatter_Through": {
+    "frames": 100,
+    "max_step_deg": 84.3,
+    "bone": "IK_Arm_L",
+    "frame": 33,
+    "ratio_to_median": 89.5
+  },
+  "Submerged_Loop": {
+    "frames": 96,
+    "max_step_deg": 0.9,
+    "bone": "Armour_7",
+    "frame": 27,
+    "ratio_to_median": 1.4
+  },
+  "Surface_Burst": {
+    "frames": 64,
+    "max_step_deg": 10.0,
+    "bone": "Armour_2",
+    "frame": 34,
+    "ratio_to_median": 2.5
+  },
+  "Walk": {
+    "frames": 64,
+    "max_step_deg": 5.0,
+    "bone": "Arm_L_Upper",
+    "frame": 16,
+    "ratio_to_median": 3.8
+  },
+  "WalkEnraged": {
+    "frames": 40,
+    "max_step_deg": 10.1,
+    "bone": "Leg_L_Lower",
+    "frame": 36,
+    "ratio_to_median": 4.7
+  }
+}

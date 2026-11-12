@@ -73,7 +73,8 @@ namespace Game.Combat
             renderer.receiveShadows = false;
             renderer.lightProbeUsage = LightProbeUsage.Off;
             renderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
-            renderer.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
+            // Drawn only once a sheet gives it a material (Use): an effect without that sheet shows nothing.
+            renderer.enabled = false;
             renderer.SetActiveVertexStreams(Streams);
             return system;
         }
@@ -88,11 +89,12 @@ namespace Game.Combat
             return gradient;
         }
 
-        /// <summary>Points a system at a sheet; without a sheet it keeps the plain particle material and no atlas.</summary>
+        /// <summary>Points a system at a sheet; without a sheet (the effect has no such part) it draws nothing.</summary>
         public static void Use(ParticleSystem system, VfxSheet sheet, bool low, Frames frames = Frames.OverLife)
         {
             var renderer = system.GetComponent<ParticleSystemRenderer>();
             ParticleSystem.TextureSheetAnimationModule animation = system.textureSheetAnimation;
+            renderer.enabled = sheet != null;
             if (sheet == null)
             {
                 animation.enabled = false;

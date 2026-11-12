@@ -136,8 +136,11 @@ def build_parts(b=None):
         b.ellipsoid("BrowRidge", K3.gp((0.082, 0.322, 0.53), sx), (0.022, 0.075, 0.013), rot(yaw=-12 * sx, roll=30 * sx, pitch=8),
                     bone="Head", segments=(16, 8), deform=C.chiselled(7, 90, depth=0.15),
                     style=K3.bark(PAL, k, grain=40, splits=0.3, moss=0.1, seed=8))
-        tusk = [K3.gp(q, sx) for q in ((0.07, 0.21, 0.58), (0.1, 0.2, 0.66), (0.075, 0.19, 0.74), (0.025, 0.2, 0.78))]
-        b.tube("Tusk", tusk, [0.022, 0.016, 0.009, 0.001], sides=8, chain=["Head"], style=thorn)
+        # Round 49E (Remco: "the head has loose floating parts"): the tusks grow out of the skull (their first point
+        # lies inside the Head ellipsoid) instead of starting in the air beside it.
+        tusk = [K3.gp(q, sx) for q in ((0.045, 0.235, 0.53), (0.07, 0.21, 0.58), (0.1, 0.2, 0.66), (0.075, 0.19, 0.74),
+                                       (0.025, 0.2, 0.78))]
+        b.tube("Tusk", tusk, [0.026, 0.022, 0.016, 0.009, 0.001], sides=8, chain=["Head"], style=thorn)
         for f in (0.33, 0.27):
             base = K3.gp((0.12, 0.38, f), sx)
             b.tube("CollarThorn", [base, base + K3.gp((0.05, 0.06, -0.04), sx), base + K3.gp((0.08, 0.09, -0.1), sx)],
@@ -153,7 +156,9 @@ def build_parts(b=None):
                    chain=["Head"], style=thorn)
         # Root tendrils trailing from the rear, thorned.
         pts = [K3.gp(q, sx) for q in TENDRILS]
-        b.tube("Tendril", pts, [0.026, 0.016, 0.003], sides=8, chain=[f"Tendril_{side}1", f"Tendril_{side}2"],
+        # Round 49E: the tendril starts inside the rump (an extra first point), so it stays rooted while it swings.
+        b.tube("Tendril", [K3.gp((0.03, 0.3, -0.26), sx)] + pts, [0.03, 0.026, 0.016, 0.003], sides=8,
+               chain=[f"Tendril_{side}1", f"Tendril_{side}2"],
                style=K3.bark(PAL, k, grain=16, splits=0.3, moss=0.5, glow=0.4, seed=11))
         thorn_row(b, pts, [f"Tendril_{side}1", f"Tendril_{side}2"], thorn, 3, 0.035, G(sx, 0.6, 0.0), seed=3)
     for (side, i), lg in legs().items():

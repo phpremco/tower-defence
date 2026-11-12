@@ -1,8 +1,8 @@
 {
   "asset": "BroodMother",
   "base_species": "Skitter",
-  "game_tris": 14506,
-  "source_tris": 865036,
+  "game_tris": 14500,
+  "source_tris": 859868,
   "bones": 29,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -13,21 +13,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 136,
-    "folded_fallback_faces": 27,
-    "mirrored_faces": 6829,
-    "uv_coverage": 0.616,
-    "world_per_uv": 2.5379476516571957
+    "islands": 464,
+    "folded_fallback_faces": 16,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.508,
+    "world_per_uv": 3.8935399001768007
   },
   "detail": {
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 28.2,
+      "tiling": 43.3,
       "mask": "B"
     },
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 21.1,
+      "tiling": 32.4,
       "mask": "A"
     }
   },
@@ -58,44 +58,44 @@
         "object": "BroodMother_Face",
         "material": "BroodMother_Face_Mat",
         "maps": "BroodMother_Face_*.png (1024, Low 512)",
-        "tris": 1852,
+        "tris": 1844,
         "lod1_object": "BroodMother_Face_LOD1",
-        "lod1_tris": 559,
-        "source_tris": 118840,
+        "lod1_tris": 558,
+        "source_tris": 118792,
         "uv": {
-          "islands": 64,
+          "islands": 71,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 45,
-          "mirrored_faces": 925,
-          "uv_coverage": 0.655,
-          "world_per_uv": 0.40602962802841575
+          "folded_fallback_faces": 48,
+          "mirrored_faces": 921,
+          "uv_coverage": 0.658,
+          "world_per_uv": 0.40537536452847445
         },
-        "symmetry_error": 0.008725
+        "symmetry_error": 0.036785
       },
       "Claws": {
         "object": "BroodMother_Claws",
         "material": "BroodMother_Claws_Mat",
         "maps": "BroodMother_Claws_*.png (1024, Low 512)",
-        "tris": 948,
+        "tris": 940,
         "lod1_object": "BroodMother_Claws_LOD1",
         "lod1_tris": 320,
-        "source_tris": 54532,
+        "source_tris": 54744,
         "uv": {
-          "islands": 14,
+          "islands": 15,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
           "mirrored_faces": 453,
-          "uv_coverage": 0.593,
-          "world_per_uv": 0.2860212292537881
+          "uv_coverage": 0.582,
+          "world_per_uv": 0.2894544745303655
         },
-        "symmetry_error": 0.002254
+        "symmetry_error": 0.024952
       }
     },
-    "body_tris": 14506,
-    "extra_tris": 2800,
-    "extra_share": 0.193,
+    "body_tris": 14500,
+    "extra_tris": 2784,
+    "extra_share": 0.192,
     "body_lod1_tris": 6000,
-    "extra_lod1_tris": 879,
+    "extra_lod1_tris": 878,
     "extra_lod1_share": 0.146,
     "clips": [
       "Death",

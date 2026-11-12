@@ -30,7 +30,12 @@ VIEWS = {
     "StormMatriarch": ("Fly", 14, "Idle", True),
     "Oozer": ("Crawl", 10, "Idle", False),
     "SlimeMonarch": ("Crawl", 10, "Idle", False),
+    # Round 49E: the two "Bijna" creatures checked for loose parts.
+    "CinderMatriarch": ("Walk", 14, "Idle", False),
+    "Knitback": ("Walk", 10, "Idle", False),
 }
+# Round 49E: `--prefix r49e` writes r49e_<name>_<tag>_<panel>.png (default r49, the round-49A names).
+PREFIX = "r49"
 
 
 def bright_scene(size, ground_z):
@@ -105,7 +110,7 @@ def run(name, tag):
 
     def shot(panel, act, frame, camera):
         C.set_action(arm, bpy.data.actions[act], frame)
-        path = os.path.join(QA, f"r49_{low}_{tag}_{panel}.png")
+        path = os.path.join(QA, f"{PREFIX}_{low}_{tag}_{panel}.png")
         out.append(C.render(camera, path, 1280, 720))
 
     shot("game", move, mframe, cam("game", centre, size * 1.25))
@@ -118,7 +123,7 @@ def run(name, tag):
     # A close look at the mouth from the play camera's side of the head (front, from above), standing clip.
     tip = arm.matrix_world @ arm.pose.bones["Head"].tail
     shot("mouth", stand, 15, cam("close", face.lerp(tip, 0.6), size, -25, 30 if not flyer else 20, size * 0.42))
-    C.contact_sheet(out, os.path.join(QA, f"r49_{low}_{tag}.png"), 2, 640)
+    C.contact_sheet(out, os.path.join(QA, f"{PREFIX}_{low}_{tag}.png"), 2, 640)
     C.log(name, tag, "views", len(out))
 
 
@@ -166,7 +171,7 @@ def clips_sheet(name, tag):
         elif o.type == "MESH" and o not in meshes:
             o.hide_render = True
     steps = clip_steps(arm)
-    with open(os.path.join(QA, f"r49_{name.lower()}_{tag}_clip_steps.json"), "w", encoding="utf-8") as fh:
+    with open(os.path.join(QA, f"{PREFIX}_{name.lower()}_{tag}_clip_steps.json"), "w", encoding="utf-8") as fh:
         json.dump(steps, fh, indent=2)
     C.set_action(arm, bpy.data.actions[stand], 0)
     lo, hi = bounds(meshes)
@@ -182,13 +187,15 @@ def clips_sheet(name, tag):
             C.set_action(arm, act, f)
             camera = cam("close", centre, size, -60, 14, size * 1.7)
             paths.append(C.render(camera, os.path.join(QA, "_r49_tmp", f"{name}_{clip}_{i}.png"), 640, 360, samples=16))
-    C.contact_sheet(paths, os.path.join(QA, f"r49_{name.lower()}_{tag}_clips.png"), 4, 400)
+    C.contact_sheet(paths, os.path.join(QA, f"{PREFIX}_{name.lower()}_{tag}_clips.png"), 4, 400)
     C.log(name, json.dumps(steps))
 
 
 def main():
+    global PREFIX
     args = C.cli_args()
     tag = args.get("tag") or "after"
+    PREFIX = args.get("prefix") or PREFIX
     for name in (args.get("only") or ",".join(VIEWS)).split(","):
         if name:
             if args.get("clips"):

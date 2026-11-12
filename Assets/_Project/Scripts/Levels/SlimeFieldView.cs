@@ -33,7 +33,7 @@ namespace Game.Levels
         public void Initialize(SlimeField field)
         {
             _field = field;
-            _bubbles = ParticleKit.Create(transform, "SlimeBubbles", Vector3.zero, Color.white, 0.6f, 1.2f, 0.03f, 0.07f, 0.15f, 0.4f, -0.05f, 60, 0.3f);
+            _bubbles = ParticleKit.UseCoveringCell(ParticleKit.Create(transform, "SlimeBubbles", Vector3.zero, Color.white, 0.6f, 1.2f, 0.03f, 0.07f, 0.15f, 0.4f, -0.05f, 60, 0.3f), MarkerArt.ParticleCell.Mote);
         }
 
         private void LateUpdate()

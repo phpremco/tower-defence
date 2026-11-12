@@ -121,7 +121,7 @@ namespace Game.Bosses
                 view.BuildPools(hot, radius);
             }
 
-            view._embers = ParticleKit.Create(go.transform, "Embers", Vector3.zero, ember, 0.6f, 1.2f, 0.04f, 0.1f, 0.4f, 1f, -0.4f, 80, radius);
+            view._embers = ParticleKit.UseCell(ParticleKit.Create(go.transform, "Embers", Vector3.zero, ember, 0.6f, 1.2f, 0.04f, 0.1f, 0.4f, 1f, -0.4f, 80, radius), MarkerArt.ParticleCell.Ember);
             ParticleKit.SetRate(view._embers, 0f);
             trail.Laid += view.OnLaid;
             return view;

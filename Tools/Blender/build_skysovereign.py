@@ -1,9 +1,10 @@
 """SkySovereign: the bat boss of the air: a tail laser swept across the field (round 10, see
 ArtSource/DESIGN_NOTES.md).
 
-The element bat's body plan (build_bat.py) grown into a sovereign: a wider span, a second smaller wing pair behind
-the first (its own bones), a crown of five backward horns over the brow, and a long tail that ends in a lens organ
-(the laser emitter, on its own bone `Emitter`) between two hooked prongs. Its own warm palette (wine body, magenta
+The element bat's body plan (build_bat.py) grown into a sovereign: a wider span, a tail membrane between the hips and
+the tail (bones Aft_L/R; round 10 had a second wing pair there), a bigger head with two broad ears
+(round 49C; round 10 had a crown of five horns), a light mantle over the back, and a long ringed tail that ends in a
+lens organ (the laser emitter, on its own bone `Emitter`) between two hooked prongs. Its own warm palette (wine body, magenta
 glow, amber-white lens), not an element. Built in Bat units, then scaled as a whole (creature_kit2.scale_rig).
 
 Clips: Fly, Glide, Hit, Death (from the Bat, with the aft wings and the tail), Laser (the power: it rears, the tail
@@ -43,8 +44,10 @@ BAT_SCALE = 0.65
 X, Yv, Z = Vector((1, 0, 0)), Vector((0, 1, 0)), Vector((0, 0, 1))
 SIDES = BT.SIDES
 
-SKIN = BT.skin(top=(0.38, 0.08, 0.16), side=(0.13, 0.03, 0.07), belly=(0.04, 0.015, 0.025), glow=(1.0, 0.32, 0.62),
-               eye=(1.0, 0.8, 0.45), membrane=(0.36, 0.06, 0.14), under=(0.45, 0.16, 0.22), flush=(0.55, 0.1, 0.2),
+# Round 49C (Remco: "I can't see what I'm looking at"): the wings a step lighter than the body (wine membrane with a
+# rose underside), so body, head and wings separate from above.
+SKIN = BT.skin(top=(0.5, 0.11, 0.2), side=(0.13, 0.03, 0.07), belly=(0.04, 0.015, 0.025), glow=(1.0, 0.32, 0.62),
+               eye=(1.0, 0.8, 0.45), membrane=(0.5, 0.1, 0.2), under=(0.62, 0.24, 0.32), flush=(0.6, 0.12, 0.22),
                bone=(0.95, 0.85, 0.7))
 LENS = H.Palette(top=SKIN["pal"].top, side=SKIN["pal"].side, belly=SKIN["pal"].belly, seam=SKIN["pal"].seam,
                  dark=SKIN["pal"].dark, glow=(1.0, 0.78, 0.4), eye=(1.0, 0.85, 0.5), membrane=(0.6, 0.3, 0.1),
@@ -52,15 +55,19 @@ LENS = H.Palette(top=SKIN["pal"].top, side=SKIN["pal"].side, belly=SKIN["pal"].b
 
 CFG = dict(BT.CFG)
 CFG.update({
-    "shoulder": (0.08, 0.04, 0.03),
+    "head_scale": 1.3,
+    "shoulder": (0.08, 0.045, 0.005),
     "wrist": (0.36, 0.1, 0.09),
     "tips": ((0.92, 0.07, 0.02), (0.82, 0.02, -0.22), (0.5, 0.0, -0.36)),
     "flank": (0.075, 0.0, -0.15),
     "tail": [G(0, 0.0, -0.14), G(0, -0.02, -0.4), G(0, -0.04, -0.66)],
 })
 EMITTER = (G(0, -0.04, -0.66), G(0, -0.05, -0.8))
-AFT_ROOT = ((0.06, 0.0, -0.05), (0.05, 0.0, -0.15))
-AFT_TIPS = ((0.42, 0.0, -0.2), (0.24, -0.01, -0.36))
+# Round 49C: the second wing pair became a bat's tail membrane (bones Aft_L/R kept): from the hips to a hind-leg
+# spur and back to the tail, so from above there is one clear pair of wings.
+AFT_ROOT = ((0.055, -0.01, -0.07), (0.025, -0.015, -0.22))
+AFT_TIPS = ((0.17, -0.02, -0.22), (0.035, -0.03, -0.4))
+HS = CFG["head_scale"]
 
 
 def gp(p, sx):
@@ -78,39 +85,86 @@ def aft_point(sx, u, v, side):
 def aft_uv(points):
     x = np.abs(points[:, 0])
     f = -points[:, 1]
-    u = np.clip((x - 0.05) / 0.37, 0, 1)
-    lead = np.interp(x, [0.06, 0.42], [-0.05, -0.2])
-    trail = np.interp(x, [0.05, 0.24, 0.42], [-0.15, -0.36, -0.22])
+    u = np.clip((x - 0.025) / 0.145, 0, 1)
+    lead = np.interp(x, [0.03, 0.17], [-0.09, -0.22])
+    trail = np.interp(x, [0.03, 0.17], [-0.38, -0.22])
     v = np.clip((lead - f) / np.maximum(lead - trail, 0.02), 0, 1)
     return u, v
 
 
+# The ears in Bat head units (x, up, forward): front root, back root, tip; BT.hp moves and scales them with the head.
+# The ear faces forward: its base runs across the skull (inner and outer root side by side), its tip up and out.
+EAR = ((0.022, 0.078, 0.125), (0.075, 0.048, 0.115), (0.1, 0.18, 0.08))
+
+
+def ear_corners(sx):
+    return [BT.hp(G(x * sx, up, f), HS) for x, up, f in EAR]
+
+
+def ear_point(sx, u, v, side):
+    """The ear: a broad pointed membrane on the back of the skull, facing forward and cupped (its middle sits back);
+    u base -> tip, v inner -> outer edge."""
+    a, b, t = ear_corners(sx)
+    p = a.lerp(b, v).lerp(t, u ** 0.8)
+    n = (b - a).cross(t - a).normalized()
+    if n.y > 0:
+        n = -n
+    p = p - n * 0.02 * HS * math.sin(math.pi * v) * (1 - 0.7 * u)
+    return p + n * side * (0.0025 + 0.003 * (1 - u)) * HS
+
+
+def ear_uv_fn(sx):
+    a, b, t = ear_corners(sx)
+    base = min(a.z, b.z)
+
+    def fn(points):
+        z = points[:, 2]
+        x = np.abs(points[:, 0])
+        u = np.clip((z - base) / max(t.z - base, 1e-3), 0, 1)
+        inner = abs(a.x) + (abs(t.x) - abs(a.x)) * u
+        outer = abs(b.x) + (abs(t.x) - abs(b.x)) * u
+        v = np.clip((x - inner) / np.maximum(outer - inner, 0.004), 0, 1)
+        return u, v
+    return fn
+
+
 def build_parts():
-    b = BT.build_parts(SKIN, CFG)
+    # Round 49C: no bat sensor horns and no five-horn crown (they cluttered the head from above); a bigger head
+    # (head_scale) with two broad bat ears instead: a bat's face at a glance.
+    b = BT.build_parts(SKIN, CFG, horns=False)
     k = BT.K
     pal = SKIN["pal"]
-    # The crown: five horns over the brow, the middle one tallest, sweeping back.
-    for i, (x, h) in enumerate(((0.0, 0.11), (0.045, 0.09))):
-        for sx in ((1,) if x == 0 else (-1, 1)):
-            root = G(x * sx, 0.08, 0.15 - 0.015 * i)
-            b.tube("Crown", [root, root + G(0.02 * sx, h * 0.4, -h * 0.5), root + G(0.05 * sx, h * 0.55, -h * 1.4)],
-                   [0.017, 0.011, 0.0015], sides=8, chain=["Head"], style=H.hook(LENS, k, glow=1.0, glow_from=0.4))
-    # The aft wings.
     for side, sx in SIDES:
-        fin = H.fin_sheet(pal, k, aft_uv, SKIN["under"], rays=2, chevrons=2, chevron_width=0.17, lead_glow=1.0,
+        ear = H.fin_sheet(pal, k, ear_uv_fn(sx), SKIN["under"], rays=3, chevrons=1, chevron_width=0.1, lead_glow=0.7,
+                          lead_width=0.1, flush=SKIN["flush"])
+        for name, upper, lower in (("Ear", 1.0, 0.0), ("EarBack", 0.0, -1.0)):
+            b.slab(name, lambda u, v, sx=sx, h=upper: ear_point(sx, u, v, h),
+                   lambda u, v, sx=sx, h=lower: ear_point(sx, u, v, h), 10, 8, chain=["Head"], style=ear)
+    # A broad mantle over the back: a light, chevroned body between the wings.
+    b.ellipsoid("Mantle", G(0, 0.068, -0.02), (0.088, 0.15, 0.03), BT.head_rot(4), bone="Body", segments=(32, 14),
+                style=K2.armour_plate(pal, k, rim_glow=0.8, chevron=1.0, chevron_angle=1.1, lip=0.8))
+    # The tail membrane (on the Aft bones) with a hind-leg spur along its outer edge, ending in a talon.
+    for side, sx in SIDES:
+        fin = H.fin_sheet(pal, k, aft_uv, SKIN["under"], rays=2, chevrons=1, chevron_width=0.17, lead_glow=0.6,
                           lead_width=0.13, flush=SKIN["flush"])
         for name, upper, lower in (("AftSkin", 1.0, 0.0), ("AftSkinUnder", 0.0, -1.0)):
             b.slab(name, lambda u, v, sx=sx, h=upper: aft_point(sx, u, v, h),
-                   lambda u, v, sx=sx, h=lower: aft_point(sx, u, v, h), 14, 16, chain=[f"Aft_{side}"], style=fin)
+                   lambda u, v, sx=sx, h=lower: aft_point(sx, u, v, h), 12, 14, chain=[f"Aft_{side}"], style=fin)
         root = gp(AFT_ROOT[0], sx)
         tip = gp(AFT_TIPS[0], sx)
-        b.tube("AftSpine", [root, root.lerp(tip, 0.5) + Vector((0, 0, 0.01)), tip, tip + gp((0.03, -0.02, -0.02), sx)],
-               [0.014, 0.01, 0.005, 0.001], sides=8, chain=[f"Aft_{side}"], style=H.tube(pal, k, pal.side, pal.bone))
+        b.tube("AftSpine", [root, root.lerp(tip, 0.5) + Vector((0, 0, 0.008)), tip, tip + gp((0.02, -0.025, -0.03), sx)],
+               [0.016, 0.012, 0.007, 0.001], sides=8, chain=[f"Aft_{side}"], style=H.tube(pal, k, pal.side, pal.bone))
+    # A thick ringed sheath over the tail: the laser organ's power line reads from above, glowing at the joints.
+    tail = CFG["tail"]
+    b.tube("TailSheath", [tail[0] + G(0, 0.004, -0.02), tail[1], tail[2]], [0.034, 0.028, 0.026], sides=10,
+           chain=["Tail_1", "Tail_2"], style=K2.ring_segment(LENS, k, joint_glow=0.7, base=pal.side, tip=pal.top,
+                                                             rings=5, joint_width=0.06))
     # The lens organ between two hooked prongs at the tail's end.
     a, c = EMITTER
     b.tube("EmitterStalk", [a, a.lerp(c, 0.5), c], [0.026, 0.034, 0.036], sides=10, chain=["Emitter"],
            style=K2.ring_segment(LENS, k, joint_glow=0.5, base=pal.side, tip=pal.top, rings=3, joint_width=0.08))
-    b.ellipsoid("Lens", c + G(0, 0, -0.02), (0.04, 0.03, 0.04), bone="Emitter", style=H.eye(LENS, k, 1.0), segments=(20, 10))
+    b.ellipsoid("Lens", c + G(0, 0, -0.022), (0.052, 0.04, 0.052), bone="Emitter", style=H.eye(LENS, k, 1.0),
+                segments=(20, 10))
     for sx in (-1, 1):
         b.tube("Prong", [a.lerp(c, 0.6) + G(0.025 * sx, 0, 0), c + G(0.06 * sx, 0.0, -0.04), c + G(0.04 * sx, 0.0, -0.1)],
                [0.016, 0.011, 0.0015], sides=8, chain=["Emitter"], style=H.hook(pal, k, glow=0.8, glow_from=0.6))
@@ -165,8 +219,9 @@ def laser_spec(poser):
 
 
 def flap_aft(t):
+    # Round 49C: a tail membrane follows the beat with a smaller lift than the old aft wings (30 degrees).
     w = 2 * math.pi * t
-    return (math.radians(30) * math.sin(w - 0.8), math.radians(6) * math.cos(w))
+    return (math.radians(12) * math.sin(w - 0.8), math.radians(4) * math.cos(w))
 
 
 CLIPS = {
@@ -181,7 +236,7 @@ CLIPS = {
 }
 LOD_DROP = dict(BT.LOD_DROP)
 LOD_AIMS = dict(BT.LOD_AIMS)
-RIGID = BT.RIGID | {"Crown", "Lens", "Prong"}
+RIGID = BT.RIGID | {"Lens", "Prong", "Ear", "EarBack", "Mantle"}
 
 
 def main():
@@ -220,7 +275,7 @@ def main():
         move=("Fly", 3), power=("Laser", 40), idle="Glide",
         strips=[("Fly", "front", range(0, BT.FLY_FRAMES, 2)), ("Laser", "close", range(0, LASER_FRAMES, 9)),
                 ("Death", "close", range(0, 37, 6))],
-        macros=[("wing", G(-0.5, 0.06, -0.06) * M, 0.5 * M, -40, 45), ("crown", G(0.0, 0.1, 0.16) * M, 0.4 * M, -30, 25),
+        macros=[("wing", G(-0.5, 0.06, -0.06) * M, 0.5 * M, -40, 45), ("crown", BT.hp(G(0.0, 0.1, 0.16), HS) * M, 0.4 * M, -30, 25),
                 ("lens", G(0, -0.05, -0.78) * M, 0.35 * M, -150, 20)],
         rig_scale=1.8, lift=0.9 * M, game_lift=h, game_target=(0, 0.3, 0.9),
         minions=[(-1.6, 1.0, 0.2, 2), (-1.1, -0.8, -0.1, 7), (1.5, 0.9, 0.3, 10), (1.8, -0.5, 0.0, 5)],

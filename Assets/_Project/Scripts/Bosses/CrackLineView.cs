@@ -533,12 +533,12 @@ namespace Game.Bosses
             _head = new GameObject("Head").transform;
             _head.SetParent(transform, false);
             GlowDecal.PlacePool(_head, _style.HeadGlow, _style.HeadRadius);
-            _grit = ParticleKit.Create(_head, "Grit", Vector3.up * 0.05f, _style.Grit, 0.4f, 0.9f, 0.04f, 0.12f, 1.2f, 2.8f, 1.2f, 80, 0.3f);
+            _grit = ParticleKit.UseCoveringCell(ParticleKit.Create(_head, "Grit", Vector3.up * 0.05f, _style.Grit, 0.4f, 0.9f, 0.04f, 0.12f, 1.2f, 2.8f, 1.2f, 80, 0.3f), MarkerArt.ParticleCell.Mote);
             ParticleKit.SetRate(_grit, 0f);
             if (IsMark && _style.Chunks > 0)
             {
                 // The front of a tearing fissure: dust thrown up and sparks off the molten core.
-                _dust = ParticleKit.Create(_head, "Dust", Vector3.up * 0.1f, Dust, 0.9f, 1.8f, 0.35f, 0.8f, 0.3f, 1.1f, -0.04f, 90, 0.6f);
+                _dust = ParticleKit.UseSmoke(ParticleKit.Create(_head, "Dust", Vector3.up * 0.1f, Dust, 0.9f, 1.8f, 0.35f, 0.8f, 0.3f, 1.1f, -0.04f, 90, 0.6f));
                 ParticleKit.SetRate(_dust, 0f);
                 _sparks = ParticleKit.UseCell(ParticleKit.Create(_head, "Sparks", Vector3.up * 0.05f, Sparks, 0.35f, 0.8f, 0.05f, 0.12f, 1.5f, 3.5f, 1.4f, 80, 0.25f), MarkerArt.ParticleCell.Ember);
                 ParticleKit.SetRate(_sparks, 0f);
@@ -876,6 +876,9 @@ namespace Game.Bosses
             }
 
             ParticleSystem system = ParticleKit.Create(head, "Rubble", Vector3.up * 0.1f, Color.white, 0.7f, 1.3f, RubbleMinSize, RubbleMaxSize, 2.2f, 4.2f, 1.6f, 48, 0.5f);
+            // Rock meshes in their own material: the atlas cell the kit dresses a particle in would remap their UVs.
+            ParticleSystem.TextureSheetAnimationModule sheet = system.textureSheetAnimation;
+            sheet.enabled = false;
             ParticleSystem.MainModule main = system.main;
             main.startRotation3D = true;
             main.startRotationX = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);

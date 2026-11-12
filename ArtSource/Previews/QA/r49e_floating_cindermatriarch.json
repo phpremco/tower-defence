@@ -1,0 +1,14 @@
+{
+ "creature": "CinderMatriarch",
+ "threshold": 0.02352,
+ "objects": {
+  "CinderMatriarch": 51,
+  "CinderMatriarch_Claws": 52,
+  "CinderMatriarch_Eyes": 6,
+  "CinderMatriarch_Teeth": 60
+ },
+ "poses": {},
+ "floating": [],
+ "poses_checked": 127,
+ "rest_floating": []
+}

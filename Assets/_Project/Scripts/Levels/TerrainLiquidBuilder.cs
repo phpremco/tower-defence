@@ -543,8 +543,8 @@ namespace Game.Levels
             switch (kind)
             {
                 case TerrainKind.Lava:
-                    Motes(parent, "LavaEmbers", emitter, surface, theme.LavaColor * 2.2f, 1f, area * 2.5f * particleScale, 1.2f, 2.4f, 0.03f, 0.08f, 0.3f, 0.9f, -0.05f, 0.25f, 0.15f);
-                    Motes(parent, "LavaSparks", emitter, surface, Color.Lerp(theme.LavaColor, Color.white, 0.4f) * 2.5f, 1f, area * 0.5f * particleScale, 0.5f, 0.9f, 0.03f, 0.05f, 1.6f, 3f, 1f, 0f, 0.1f);
+                    Motes(parent, "LavaEmbers", emitter, surface, theme.LavaColor * 2.2f, 1f, area * 2.5f * particleScale, 1.2f, 2.4f, 0.03f, 0.08f, 0.3f, 0.9f, -0.05f, 0.25f, 0.15f, false);
+                    Motes(parent, "LavaSparks", emitter, surface, Color.Lerp(theme.LavaColor, Color.white, 0.4f) * 2.5f, 1f, area * 0.5f * particleScale, 0.5f, 0.9f, 0.03f, 0.05f, 1.6f, 3f, 1f, 0f, 0.1f, false);
                     break;
                 case TerrainKind.Quicksand:
                     break;
@@ -554,16 +554,16 @@ namespace Game.Levels
                     // Sparse dust hanging in the fissure; the Low profile goes without.
                     if (particleScale >= 1f)
                     {
-                        Motes(parent, "RiftDust", emitter, surface, new Color(0.75f, 0.68f, 0.58f, 0.6f), 0.35f, area * 0.15f * particleScale, 3f, 5f, 0.03f, 0.06f, 0.03f, 0.08f, -0.01f, 0.2f, 0.4f);
+                        Motes(parent, "RiftDust", emitter, surface, new Color(0.75f, 0.68f, 0.58f, 0.6f), 0.35f, area * 0.15f * particleScale, 3f, 5f, 0.03f, 0.06f, 0.03f, 0.08f, -0.01f, 0.2f, 0.4f, false);
                     }
 
                     break;
                 case TerrainKind.Bog:
                     // Marsh gas: dim green bubbles rising slowly and wisps of vapour hanging over the mire.
-                    Motes(parent, "BogBubbles", emitter, surface, Color.Lerp(theme.BogColor, theme.AccentColor, 0.6f) * 1.4f, 0.8f, area * 0.6f * particleScale, 1.2f, 2.2f, 0.03f, 0.07f, 0.1f, 0.25f, 0f, 0.05f, 0.3f);
+                    Motes(parent, "BogBubbles", emitter, surface, Color.Lerp(theme.BogColor, theme.AccentColor, 0.6f) * 1.4f, 0.8f, area * 0.6f * particleScale, 1.2f, 2.2f, 0.03f, 0.07f, 0.1f, 0.25f, 0f, 0.05f, 0.3f, false);
                     break;
                 default:
-                    Motes(parent, "WaterMist", emitter, surface, Color.Lerp(theme.WaterColor, Color.white, 0.5f), 0.12f, area * 0.3f * particleScale, 3f, 5f, 0.4f, 0.8f, 0.04f, 0.08f, 0f, 0.1f, 1.6f);
+                    Motes(parent, "WaterMist", emitter, surface, Color.Lerp(theme.WaterColor, Color.white, 0.5f), 0.12f, area * 0.3f * particleScale, 3f, 5f, 0.4f, 0.8f, 0.04f, 0.08f, 0f, 0.1f, 1.6f, true);
                     break;
             }
 
@@ -602,7 +602,7 @@ namespace Game.Levels
 
         private static void Motes(
             Transform parent, string name, Mesh emitter, float surface, Color color, float alpha, float rate,
-            float minLife, float maxLife, float minSize, float maxSize, float minRise, float maxRise, float gravity, float drift, float endSize)
+            float minLife, float maxLife, float minSize, float maxSize, float minRise, float maxRise, float gravity, float drift, float endSize, bool mist)
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
@@ -651,8 +651,17 @@ namespace Game.Levels
             fade.color = gradient;
 
             var renderer = go.GetComponent<ParticleSystemRenderer>();
-            renderer.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            // Mist is vapour that covers what lies behind it; embers, sparks, bubbles and the fine rift dust are glowing motes.
+            if (mist)
+            {
+                ParticleKit.UseSmoke(system);
+            }
+            else
+            {
+                ParticleKit.UseCell(system, MarkerArt.ParticleCell.Mote);
+            }
+
             system.Play();
         }
     }

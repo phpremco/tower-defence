@@ -20,6 +20,8 @@ from mathutils import Matrix, Vector  # noqa: E402
 import chitin as H  # noqa: E402
 import common as C  # noqa: E402
 import crysium as Y  # noqa: E402
+import crystal_growth as G49  # noqa: E402
+import uvlayout  # noqa: E402
 from common import G  # noqa: E402
 
 NAME = "Queen"
@@ -87,6 +89,11 @@ def sac_top(x, fwd):
     return cy + rz * math.sqrt(max(0.0, q))
 
 
+def crystal(seed, strength=1.0):
+    """Crysium whose light comes in pockets and differs per shard (round 49D, crystal_growth.uneven_glow)."""
+    return G49.uneven_glow(Y.shard_style("pink", strength, seed=seed), seed, 0.35, 1.3)
+
+
 def chest_back(t, out=0.22):
     """A point on the back ridge of the raised forebody, t 0 (low) .. 1 (neck)."""
     low, high = Vector((0.0, 1.15, 0.2)), Vector((0.0, 1.9, 0.55))  # (x, up, forward)
@@ -130,18 +137,19 @@ def build_parts():
             b.tube("Barb", [root, root + G(-0.14 * sx, 0.04, -0.08)], [0.045, 0.003], sides=8,
                    chain=[f"Arm_{side}_2"], style=H.hook(PAL, k, glow=0.6))
 
-    # Crown: twisted Crysium fused into the back of the head and down the ridge of the forebody.
-    for i in range(5):
-        a = (i - 2) / 2.0
-        base = G(0.13 * a, 2.1 - 0.03 * abs(a), 0.58 - 0.04 * abs(a))
-        b.shard("Crown", base, G(0.5 * a, 1.0, -0.45), 0.075 - 0.012 * abs(a), 0.85 - 0.25 * abs(a), sides=8,
-                twist=2.6 * (1 if a >= 0 else -1), flute=0.45, bone="Head", style=Y.shard_style("pink", 1.1, seed=i))
-    for j, (t, length) in enumerate(((0.75, 0.55), (0.45, 0.45), (0.15, 0.36))):
-        for sx in (-1, 1):
-            base, back = chest_back(t)
-            base = base + G(0.09 * sx, 0, 0)
-            b.shard("Ridge", base, back + G(0.35 * sx, 0.25, 0), 0.055, length, sides=8, twist=2.2 * sx, flute=0.45,
-                    bone="Chest", style=Y.shard_style("pink", 1.0, seed=10 + j))
+    # Crown (round 49D, Remco: "crystals too perfect"): Crysium bursting irregularly out of the back of the head, a
+    # lopsided cluster of fractured, bent and spiralling shards on a mound of fused chitin, fragments hovering over
+    # it; down the forebody's ridge, uneven clusters alternate from side to side instead of matched pairs.
+    flesh = H.glow_flesh(PAL, k, glow=0.7, flank=(0.0, 0.6), folds=7.0)
+    G49.growth_cluster(b, G(0.02, 2.09, 0.54), G(0.12, 1.0, -0.45), 0.95, 4950, bone="Head", style=crystal(0, 1.1),
+                       count=8, spread=0.38, lean=(0.12, 0.8), sideways=G(0.2, 0.0, -0.2), floating=3, spiral=2, bent=2,
+                       radius_ratio=0.11, name="Crown", root=(flesh, 0.17, 0.07))
+    for j, (t, length, sx) in enumerate(((0.78, 0.6, 1), (0.6, 0.42, -1), (0.42, 0.5, 1), (0.2, 0.36, -1),
+                                         (0.08, 0.26, 1))):
+        base, back = chest_back(t)
+        G49.growth_cluster(b, base + G(0.07 * sx, 0, 0), back + G(0.3 * sx, 0.2, 0), length, 4960 + j, bone="Chest",
+                           style=crystal(10 + j, 1.0), count=3 + (j % 2), spread=0.35, lean=(0.15, 0.7),
+                           floating=int(j == 0), spiral=int(j == 2), bent=1, radius_ratio=0.12, name="Ridge")
 
     def sac_deform(v):
         # Knobbly egg lobes break the smooth spider-abdomen ellipse.
@@ -171,9 +179,12 @@ def build_parts():
                style=H.leg(LEG, k, "Tibia", spines=3))
         b.tube("Spur", [kink, kink - yaw * 0.06 + Vector((0, 0, 0.22))], [0.04, 0.003], sides=8, chain=[lg.names[2]],
                style=H.hook(LEG, k))
-        # A hooked Crysium spur at each knee repeats the crown down the legs.
-        b.shard("KneeCrysium", kn - (kn - c).normalized() * 0.04, Vector((0, 0, 1)) + (kn - c).normalized() * 0.6,
-                0.05, 0.34, sides=8, twist=2.0, flute=0.4, bone=lg.names[1], style=Y.shard_style("pink", 0.9, seed=20 + i))
+        # Crysium breaking out at each knee, different on every leg (a blade, a pair, a bent horn).
+        kd = (Vector((0, 0, 1)) + (kn - c).normalized() * 0.6).normalized()
+        G49.growth_cluster(b, kn - (kn - c).normalized() * 0.04, kd, 0.3 + 0.08 * ((i * 3 + (side == "L")) % 3),
+                           4970 + i * 2 + (side == "L"), bone=lg.names[1], style=crystal(20 + i, 0.9),
+                           count=1 + (i + (side == "L")) % 3, spread=0.3, lean=(0.1, 0.5), floating=0, spiral=0,
+                           bent=int((i + (side == "R")) % 2), radius_ratio=0.14, name="KneeCrysium")
     return b
 
 
@@ -343,13 +354,16 @@ def previews(arm, mesh, actions, out, asset):
 
 
 def main():
+    # Round 49D: the irregular crystal is not mirror-symmetric (whole-body UVs, plain decimation), and its clusters
+    # cut the body into many small islands.
+    uvlayout.SPARSE_FIX = True
     C.reset_scene()
     out = C.preview_dir()
     builder = build_parts()
     asset = C.build_mesh_asset(NAME, builder, voxel=0.012, target_tris=GAME_TRIS, tex_size=TEX, ao_distance=0.35,
                                extrusion=0.05, ray=0.15, emission_strength=2.5,
                                extra=H.weathering(K, markings=PAL.dark, marking_amount=0.6), specular=0.3,
-                               mirror=True, k=DETAIL_K, families=FAMILIES, low_size=LOW_TEX)
+                               mirror=False, symmetric=False, k=DETAIL_K, families=FAMILIES, low_size=LOW_TEX)
     arm = C.build_armature(NAME + "_Rig", bones())
     C.skin(asset.low, arm, builder)
     poser = C.Poser(arm)

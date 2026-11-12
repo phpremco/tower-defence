@@ -153,7 +153,10 @@ def build_parts(cfg=CFG, b=None):
     # Soft glowing blisters of different sizes down the back (they replace the round-10 spine row).
     for i in range(cfg["spines"]):
         f, dx, r = BLISTERS[i % len(BLISTERS)]
-        b.ellipsoid("Blister", G(dx, 0.26 - 0.1 * abs(f + 0.05), f), (r, r * 1.2, r * 0.7), bone="Body_2" if f < -0.05 else "Body_3",
+        # `blister_sink` (round 49E, SlimeMonarch only; 0 keeps the Oozer as exported): seats the blisters deeper so
+        # none comes loose when the front rears up.
+        up = 0.26 - 0.1 * abs(f + 0.05) - cfg.get("blister_sink", 0.0)
+        b.ellipsoid("Blister", G(dx, up, f), (r, r * 1.2, r * 0.7), bone="Body_2" if f < -0.05 else "Body_3",
                     segments=(16, 8), deform=lumpy(seed0 + 50 + i, amp=0.2, sag=0.5, folds=0.0),
                     style=K2.bladder(PAL, k, cells=8, seed=60 + i, glow=0.9, plate=0.0))
     for side, sx in SIDES:

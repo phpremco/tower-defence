@@ -1,6 +1,5 @@
 using Game.Core;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Game.Levels
 {
@@ -72,7 +71,6 @@ namespace Game.Levels
             fade.color = gradient;
 
             var renderer = go.GetComponent<ParticleSystemRenderer>();
-            renderer.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
             ParticleKit.UseCell(system, MarkerArt.ParticleCell.Mote);
             system.Play();

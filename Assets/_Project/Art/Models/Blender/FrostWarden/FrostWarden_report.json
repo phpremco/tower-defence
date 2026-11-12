@@ -278,8 +278,45 @@
   "round45_detail": {
     "parts": {
       "body_cut_tris": {
-        "FrostWarden": 140,
-        "FrostWarden_LOD1": 60
+        "FrostWarden": 0,
+        "FrostWarden_LOD1": 0
+      },
+      "jaw_rest_open": {
+        "degrees": 12.0,
+        "actions": [
+          "Armour_Break",
+          "Armour_Break_LOD",
+          "Climb_Down",
+          "Climb_Down_LOD",
+          "Climb_Loop",
+          "Climb_Loop_LOD",
+          "Climb_Up",
+          "Climb_Up_LOD",
+          "Death",
+          "Death_LOD",
+          "Dive_Into_Liquid",
+          "Dive_Into_Liquid_LOD",
+          "Enrage",
+          "Enrage_LOD",
+          "Freeze_Gate",
+          "Freeze_Gate_LOD",
+          "FreezePulse",
+          "FreezePulse_LOD",
+          "Hit",
+          "Hit_LOD",
+          "Idle",
+          "Idle_LOD",
+          "Shatter_Through",
+          "Shatter_Through_LOD",
+          "Submerged_Loop",
+          "Submerged_Loop_LOD",
+          "Surface_Burst",
+          "Surface_Burst_LOD",
+          "Walk",
+          "Walk_LOD",
+          "WalkEnraged",
+          "WalkEnraged_LOD"
+        ]
       },
       "Eyes": {
         "object": "FrostWarden_Eyes",
@@ -322,25 +359,25 @@
         "object": "FrostWarden_Teeth",
         "material": "FrostWarden_Teeth_Mat",
         "maps": "FrostWarden_Teeth_*.png (1024, Low 512)",
-        "tris": 1100,
-        "source_tris": 49572,
+        "tris": 1688,
+        "source_tris": 226800,
         "uv": {
-          "islands": 5,
+          "islands": 6,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 550,
-          "uv_coverage": 0.516,
-          "world_per_uv": 0.5125597020575678
+          "mirrored_faces": 844,
+          "uv_coverage": 0.558,
+          "world_per_uv": 1.0665610274007757
         },
         "detail": {
           "crystal": {
             "map": "Detail_Crystal_Normal.png",
-            "tiling": 6.1,
+            "tiling": 12.7,
             "mask": "B"
           },
           "chitin": {
             "map": "Detail_Chitin_Normal.png",
-            "tiling": 7.1,
+            "tiling": 14.8,
             "mask": "A"
           }
         },
@@ -352,9 +389,9 @@
           "Head",
           "Jaw"
         ],
-        "note": "ice fangs in the maw",
+        "note": "round 49C: big pale sabre fangs, lower teeth and tusks; jaw 12 deg open at rest",
         "lod1_object": "FrostWarden_Teeth_LOD1",
-        "lod1_tris": 340
+        "lod1_tris": 460
       },
       "Claws": {
         "object": "FrostWarden_Claws",
@@ -402,12 +439,12 @@
       "lod1": 11200
     },
     "tris_after": {
-      "lod0": 31691,
-      "lod1": 12378
+      "lod0": 32279,
+      "lod1": 12498
     },
     "increase": {
-      "lod0": 0.146,
-      "lod1": 0.111
+      "lod0": 0.167,
+      "lod1": 0.121
     },
     "extra_objects": [
       "FrostWarden_Eyes",

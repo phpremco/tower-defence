@@ -465,7 +465,7 @@ namespace Game.UI
         private void BuildHatch(Vector3 hinge)
         {
             Vector3 local = _capsule.InverseTransformPoint(hinge);
-            _hatchSteam = ParticleKit.Create(_capsule, "HatchSteam", local + new Vector3(0f, 0.35f, 0.1f), SteamColour, 0.8f, 1.6f, 0.25f, 0.6f, 0.3f, 0.9f, -0.03f, _context.Scaled(160), 0.3f);
+            _hatchSteam = ParticleKit.UseSmoke(ParticleKit.Create(_capsule, "HatchSteam", local + new Vector3(0f, 0.35f, 0.1f), SteamColour, 0.8f, 1.6f, 0.25f, 0.6f, 0.3f, 0.9f, -0.03f, _context.Scaled(160), 0.3f));
             ParticleKit.SetRate(_hatchSteam, 0f);
             var go = new GameObject("HatchLight");
             go.transform.SetParent(_capsule, false);
@@ -1127,9 +1127,9 @@ namespace Game.UI
             _sparks = ParticleKit.Create(_capsule, "Sparks", Vector3.up * 0.4f, SparkColour * 3f, 0.3f, 0.9f, 0.05f, 0.14f, 1f, 4f, 0.4f, _context.Scaled(300), 0.4f);
             _retro = ParticleKit.Create(_capsule, "Retro", Vector3.up * 0.2f, new Color(0.6f, 0.85f, 1f) * 2.5f, 0.15f, 0.35f, 0.12f, 0.3f, 3f, 6f, 1.5f, _context.Scaled(200), 0.15f);
             BuildRetroPlumes(root);
-            _landingDust = ParticleKit.Create(root, "LandingDust", _layout.Landing + Vector3.up * 0.2f, DustColour, 1.2f, 2.6f, 0.5f, 1.2f, 1.5f, 4.5f, -0.03f, _context.Scaled(200), 1f);
+            _landingDust = ParticleKit.UseSmoke(ParticleKit.Create(root, "LandingDust", _layout.Landing + Vector3.up * 0.2f, DustColour, 1.2f, 2.6f, 0.5f, 1.2f, 1.5f, 4.5f, -0.03f, _context.Scaled(200), 1f));
             // The jets' blast lifting the dust off the landing ground before the touchdown.
-            _retroDust = ParticleKit.Create(root, "RetroDust", _layout.Landing + Vector3.up * 0.15f, DustColour, 0.9f, 1.8f, 0.4f, 1f, 2f, 5f, -0.02f, _context.Scaled(220), 1.4f);
+            _retroDust = ParticleKit.UseSmoke(ParticleKit.Create(root, "RetroDust", _layout.Landing + Vector3.up * 0.15f, DustColour, 0.9f, 1.8f, 0.4f, 1f, 2f, 5f, -0.02f, _context.Scaled(220), 1.4f));
             ParticleKit.SetRate(_retroDust, 0f);
         }
 
@@ -1200,7 +1200,7 @@ namespace Game.UI
 
         private void BuildShiver(Transform root)
         {
-            _shiverDust = ParticleKit.Create(root, "ShiverDust", _layout.DigSite + Vector3.up * 0.1f, DustColour, 0.8f, 1.6f, 0.2f, 0.5f, 0.2f, 0.8f, -0.02f, _context.Scaled(120), 1.6f);
+            _shiverDust = ParticleKit.UseSmoke(ParticleKit.Create(root, "ShiverDust", _layout.DigSite + Vector3.up * 0.1f, DustColour, 0.8f, 1.6f, 0.2f, 0.5f, 0.2f, 0.8f, -0.02f, _context.Scaled(120), 1.6f));
             for (int i = 0; i < Pebbles; i++)
             {
                 float angle = i / (float)Pebbles * Mathf.PI * 2f + CutsceneMath.Hash(i, 41);

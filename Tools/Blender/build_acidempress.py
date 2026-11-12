@@ -2,7 +2,7 @@
 ArtSource/DESIGN_NOTES.md).
 
 The Stinger's body plan (build_stinger.py) grown wide, low and old: seven glowing armour plates, bigger trap claws,
-a crown of magenta Crysium spikes on the carapace, eight eye beads, two short side tails flanking the main one, and
+a crown of magenta Crysium spikes (round 49C: on the head's face shield), the Stinger's head and eyes, two short side tails flanking the main one, and
 the tail ends in a big ribbed acid spray gland on its own bone (bone scale: it swells and squeezes) with three
 nozzles that point up and forward. Built in Stinger units, then scaled as a whole (creature_kit2.scale_rig).
 
@@ -68,12 +68,18 @@ def gp(p, sx):
 def build_parts():
     b = S.build_parts(CFG)
     k = S.K
-    # The crown: magenta Crysium spikes along the carapace rim, tallest at the back, leaning back (barbs of an
-    # arrowhead from above).
-    for i, (x, f, h) in enumerate(((0.0, 0.3, 0.09), (0.07, 0.26, 0.11), (0.12, 0.2, 0.13), (0.15, 0.13, 0.12))):
-        for sx in ((1,) if x == 0 else (-1, 1)):
-            b.shard("Crown", G(x * sx, 0.255, f), G(0.35 * sx * (x > 0), 1.0, -0.45), 0.02, h, sides=8, twist=2.0, flute=0.4,
-                    bone="Body", style=Y.shard_style("rose", 1.0, seed=40 + i))
+    # Round 49C: the crown sits on the new head (build_stinger.head_parts): a tiara of magenta Crysium spikes on the
+    # back of the head capsule, leaning back, so the head is the focal point; two barbs stay on the carapace rim
+    # at the shoulders (an arrowhead from above).
+    for i, (d, h) in enumerate((((0.0, 1.0, -0.35), 0.085), ((0.38, 0.95, -0.4), 0.068), ((0.7, 0.75, -0.45), 0.05))):
+        for sx in ((1,) if d[0] == 0 else (-1, 1)):
+            root = S.head_point(d[0] * sx, d[1], d[2], cfg=CFG, out=-0.006)
+            b.shard("Crown", root, G(0.4 * sx * (d[0] > 0), 1.0, -0.55), 0.016, h, sides=8, twist=2.0,
+                    flute=0.4, bone="Body", style=Y.shard_style("rose", 1.0, seed=40 + i))
+    for i, (x, f, h) in enumerate(((0.12, 0.2, 0.13), (0.15, 0.13, 0.12))):
+        for sx in (-1, 1):
+            b.shard("Crown", G(x * sx, 0.255, f), G(0.35 * sx, 1.0, -0.45), 0.02, h, sides=8, twist=2.0, flute=0.4,
+                    bone="Body", style=Y.shard_style("rose", 1.0, seed=43 + i))
     # The spray gland on the sting, with three nozzles pointing up and forward.
     centre, radii = GLAND
     b.ellipsoid("Gland", centre, radii, Matrix.Rotation(math.radians(-35), 3, "X"), bone="Gland",

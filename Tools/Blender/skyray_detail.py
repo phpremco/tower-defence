@@ -4,7 +4,8 @@ Two extra skinned parts (detail_kit / detail_kit_small), exported in Skyray.fbx 
 - Skyray_Face (Skyray_Face_Mat): six wet cyan eyes with slit pupils on top of the head, sunk under chitin brow
   folds, and (round 49A, Remco: "the teeth are not logical") the teeth where a ray's mouth is: a row hanging from
   the upper lip across the front edge of the head and a row standing on the lower lip (Jaw bone), so the mouth
-  between the cephalic lobes shows its teeth from the play camera and opens with the dive.
+  between the cephalic lobes shows its teeth from the play camera and opens with the dive. Round 49E: the mouth is a
+  slit cut into the head (build_skyray.Mouth); the teeth are rooted in its gum line (mouth_teeth).
 - Skyray_Claws (Skyray_Claws_Mat): a grappling hook of two keratin talons under each fin tip (the fin's own claw
   is their thumb), and (round 49A) serrations along both edges of the tail's spade.
 
@@ -12,6 +13,7 @@ Run after build_skyray.py (which calls run() itself at the end of a rebuild):
   blender -b --factory-startup --python Tools/Blender/skyray_detail.py -- [--before | --blockout | --qa] [--norender]
 """
 
+import math
 import os
 import sys
 
@@ -34,8 +36,9 @@ SIDES = (("L", -1), ("R", 1))
 EYE = D.Eye(lens=(0.006, 0.02, 0.035), iris=(0.35, 0.95, 1.0), rim=(0.02, 0.15, 0.3), pupil=(0.0, 0.004, 0.01),
             glow=(0.4, 0.95, 1.0), vein=(0.05, 0.12, 0.3))
 LID_DARK, LID_SKIN, LID_WET = (0.03, 0.035, 0.09), (0.22, 0.3, 0.6), (0.05, 0.1, 0.2)
-TOOTH = D.Keratin(root=(0.06, 0.08, 0.2), body=(0.6, 0.7, 0.85), tip=(0.92, 0.97, 1.0), glow=(0.4, 0.95, 1.0),
-                  stain=(0.05, 0.08, 0.2))
+# Round 49E: ivory teeth with dark gum-stained roots (the round-49A pale blue read as a chrome grille).
+TOOTH = D.Keratin(root=(0.2, 0.05, 0.1), body=(0.82, 0.8, 0.74), tip=(0.96, 0.95, 0.9), glow=(0.4, 0.95, 1.0),
+                  stain=(0.3, 0.08, 0.12))
 TALON = D.Keratin(root=(0.03, 0.035, 0.09), body=(0.12, 0.15, 0.32), tip=(0.85, 0.95, 1.0), glow=(0.4, 0.95, 1.0),
                   stain=(0.03, 0.04, 0.1))
 
@@ -64,27 +67,32 @@ def face_parts(c):
             S.organic_eye(b, S.flip(p - n * r * 0.15, sx), S.flip(n, sx), r, eyes[i], lid,
                           up=S.flip(Vector((0.4, 1.0, 0.0)), sx), bone="Head", lod=i == 0, squash=(1.0, 0.8, 0.6),
                           brow=(1.35, 0.62, 0.6), lower=(1.2, 0.4, 0.45), segments=(18, 9), lid_segments=(12, 6))
-    mouth_teeth(c, b, TOOTH, 1.0)
+    import build_skyray
+    mouth_teeth(c, b, TOOTH, build_skyray.MOUTH, upper=(0.0, 0.03, 0.058), lower=(0.015, 0.045), length=1.15)
     return b
 
 
-def mouth_teeth(c, b, pal, s, upper=(0.0, 0.022, 0.044, 0.064), lower=(0.011, 0.033, 0.054), length=1.0, upper_ray=(0.004, 0.45),
-                lower_ray=(-0.05, 0.3)):
-    """Round 49A: teeth in the mouth slit across the front edge (`s` the model's size against the Skyray). The
-    upper row hangs from the head's front edge (Head bone), the lower row stands on the lip plate (Jaw bone); both
-    point a little back into the maw, the middle teeth longest."""
-    tooth = D.tooth_style(pal, glow=0.4, seed=5)
-    # Rays from inside the head (forward and a little down: the lip's under edge) and inside the lip plate (forward
-    # and a little up: its top edge), so the rows stand on the lips, not in the throat behind them.
-    for xs, z, ray, bone, d in ((upper, upper_ray[0], FWD - UP * upper_ray[1], "Head", Vector((0, 0.2, -1))),
-                                (lower, lower_ray[0], FWD + UP * lower_ray[1], "Jaw", Vector((0, 0.15, 1)))):
+def mouth_teeth(c, b, pal, mouth, upper=(0.0, 0.022, 0.044, 0.064), lower=(0.011, 0.033, 0.054), length=1.0):
+    """Round 49E: teeth rooted in the gum line of the slit mouth cut into the head (build_skyray.Mouth; Remco: the
+    round-49A mouth "isn't attached"). The upper row hangs from the upper lip's edge (Head bone), the lower row
+    stands on the lower lip's edge (Jaw bone), both just behind the lip so their roots sit in the gum band; they
+    point a little back into the mouth, the middle teeth longest, and interleave."""
+    tooth = D.tooth_style(pal, glow=0.35, seed=5)
+    s = mouth.s
+    for xs, upper_row in ((upper, True), (lower, False)):
+        bone = "Head" if upper_row else "Jaw"
         for i, x in enumerate(xs):
             for sx in ((1, -1) if x else (1,)):
-                p, n = c.out(G(x * sx * s, z * s, 0.4 * s), ray)
-                base = p - n * 0.004 * s + d.normalized() * -0.004 * s
+                lip = mouth.palate_up(x) if upper_row else mouth.ceiling(x)
+                # The lip edge at this x: where a ray just inside the lip, running forward, leaves the skin.
+                inner = lip + (0.003 if upper_row else -0.003)
+                p, _ = c.out(G(x * sx * s, inner * s, mouth.start * s), FWD)
+                root = Vector((p.x, p.y, lip * s)) - FWD * 0.008 * s + UP * (0.003 if upper_row else -0.003) * s
+                d = Vector((0, 0.22, -1 if upper_row else 1)).normalized()
                 k = 1.0 - 0.35 * (x / 0.07)
-                ln = (0.05 if bone == "Head" else 0.04) * length
-                D.add_tooth(b, base, d.normalized(), 0.0078 * s * k, ln * s * k, tooth, hook=-FWD, hook_amount=0.2,
+                # Uneven teeth (a grown row, not a comb).
+                ln = (0.03 if upper_row else 0.024) * length * (1.0 + 0.16 * math.sin(i * 2.3 + sx * 1.1))
+                D.add_tooth(b, root, d, 0.0085 * s * k, ln * s * k, tooth, hook=-FWD, hook_amount=0.25,
                             bone=bone, lod=i < 2, name="Tooth")
 
 

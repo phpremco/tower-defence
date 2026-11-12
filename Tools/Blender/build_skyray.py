@@ -7,6 +7,10 @@ Round 49A (Remco: "the teeth are not logical, and it is a stingray-like but I se
 manta head with two rolled cephalic lobes (on the old Pincer bones, no teeth) either side of a wide mouth across
 its front edge; the lower lip hinges on a new Jaw bone and the teeth sit in the mouth (Face part). The tail is a
 long, thick whip with a lit dorsal line, rows of backward hooks and a big barbed spade at the end.
+Round 49E (Remco: "the mouth isn't attached, it looks like a pink water balloon with some little teeth in front; the
+tail is better"): the mouth is cut into the head (Mouth, head_with_mouth): the head's own front underside is the upper
+lip and palate, a lower-jaw ellipsoid on the Jaw bone is the lower lip, both fused into one skin round a down-turned
+crescent slit; a dark, matte mouth inside, a gum band on the lip edges, the teeth rooted in it. No maw or lip balls.
 
 The fin wave is in the bones: each fin has a leading and a trailing chain of three bones along the span, keyed
 as a wave that travels from root to tip and from the leading to the trailing edge (Unity's shader wave can be
@@ -50,6 +54,9 @@ UNDER = (0.5, 0.56, 0.68)
 # (a cyan glow there read as a lamp).
 MAW = H.Palette(top=(0.1, 0.03, 0.08), side=(0.05, 0.015, 0.04), belly=(0.03, 0.01, 0.02), seam=(0.02, 0.005, 0.01),
                 dark=(0.03, 0.01, 0.02), glow=(0.42, 0.08, 0.3), eye=(0.4, 0.9, 1.0))
+# Round 49E: the dark inside of the mouth (darker than the round-49A maw, no pink).
+MOUTH_PAL = H.Palette(top=(0.09, 0.025, 0.06), side=(0.04, 0.012, 0.03), belly=(0.015, 0.005, 0.012),
+                      seam=(0.01, 0.003, 0.006), dark=(0.02, 0.006, 0.014), glow=(0.3, 0.05, 0.2), eye=(0.4, 0.9, 1.0))
 FLUSH = (0.3, 0.14, 0.4)
 
 SIDES = (("L", -1), ("R", 1))
@@ -121,8 +128,125 @@ def pincer_points(sx):
 
 
 # The mouth: a wide slit across the front edge of the head; the lower lip plate hinges on its own bone (Jaw).
-MOUTH_FWD = 0.535
 JAW = (G(0, -0.034, 0.36), G(0, -0.046, 0.55))
+
+
+# ------------------------------------------------------------------------------------------------------------
+# Round 49E: the mouth cut into the head (Remco: "the mouth isn't attached, it looks like a pink water balloon with
+# some little teeth in front"). No separate maw or lip balls any more: the head itself is the upper lip (its front
+# underside is flattened into a palate), a lower jaw ellipsoid on the Jaw bone is the lower lip (its front top is
+# flattened below the palate), and the two overlap behind the slit and at its corners, so the remesh fuses them
+# into one skin with a crescent slit across the front edge. The surfaces inside the slit are painted as a dark
+# wet mouth with a gum band at the lip edges; a dark throat closes the back of the slit; the teeth (Face part) are
+# rooted in the gum line (skyray_detail.mouth_teeth reads the same geometry).
+# ------------------------------------------------------------------------------------------------------------
+
+def _smooth(e0, e1, x):
+    t = min(1.0, max(0.0, (x - e0) / (e1 - e0)))
+    return t * t * (3 - 2 * t)
+
+
+class Mouth:
+    """The slit's geometry in Skyray units (x, up, fwd), scaled by `s` to model units on use.
+    head_c / head_r: the head ellipsoid (centre, radii side/length/height); start: where the slit begins (fwd);
+    palate: height of the upper lip's underside on the midline; gap: the slit's height on the midline at rest;
+    frown: how much lower the corners sit (a down-turned crescent)."""
+
+    def __init__(self, s, head_c, head_r, start, palate, gap, frown, ramp=0.035, width=0.84):
+        self.s = s
+        self.c, self.r = head_c, head_r
+        self.start, self.ramp = start, ramp
+        self.palate, self.gap, self.frown, self.width = palate, gap, frown, width
+        # The lower jaw: narrower, shorter (an overbite), its centre below the head's.
+        self.jaw_c = (0.0, head_c[1] - 0.6 * head_r[2], head_c[2] + 0.004)
+        self.jaw_r = (head_r[0] * 0.9, head_r[1] * 0.93, head_r[2] * 0.7)
+
+    # -- in Skyray units --------------------------------------------------------------------------------------
+    def palate_up(self, x):
+        return self.palate - self.frown * min(1.0, (x / self.r[0]) ** 2)
+
+    def ceiling(self, x):
+        """The lower lip's top: the palate minus the slit, closing (below zero gap) at the corners."""
+        q = (x / (self.width * self.r[0])) ** 2
+        return self.palate_up(x) - self.gap * (1 - q)
+
+    def inside(self, fwd):
+        return _smooth(self.start, self.start + self.ramp, fwd)
+
+    # -- deforms for PartBuilder.ellipsoid (unit sphere: x side, -y forward, z up) ------------------------------
+    @staticmethod
+    def _blunt(v):
+        front = max(0.0, -v.y)
+        return Vector((v.x * (1 - 0.3 * front), v.y * (1 - 0.08 * front), v.z * (1 - 0.35 * front)))
+
+    def upper_deform(self, v):
+        v = self._blunt(v)
+        (cx, cu, cf), (rx, rf, ru) = self.c, self.r
+        x, fwd, up = v.x * rx, cf - v.y * rf, cu + v.z * ru
+        floor = self.palate_up(x)
+        if up < floor:
+            up += (floor - up) * self.inside(fwd)
+        return Vector((v.x, v.y, (up - cu) / ru))
+
+    def jaw_deform(self, v):
+        v = self._blunt(v)
+        (cx, cu, cf), (rx, rf, ru) = self.jaw_c, self.jaw_r
+        x, fwd, up = v.x * rx, cf - v.y * rf, cu + v.z * ru
+        top = self.ceiling(x)
+        if up > top:
+            up -= (up - top) * self.inside(fwd)
+        return Vector((v.x, v.y, (up - cu) / ru))
+
+    # -- the mouth paint ---------------------------------------------------------------------------------------
+    def style(self, base, maw, upper):
+        """`base` outside the mouth; inside the slit a dark, wet mouth (`maw` palette) with a gum band at the edge
+        and soft ridges across the palate."""
+        s_ = self.s
+
+        def style(s, idx, part):
+            base(s, idx, part)
+            p, n = s.p[idx] / s_, s.n[idx]
+            x, fwd, up = p[:, 0], -p[:, 1], p[:, 2]
+            t = C.smoothstep(self.start - 0.01, self.start + self.ramp * 0.6, fwd)
+            limit = np.array([self.palate_up(v) for v in x]) if upper else np.array([self.ceiling(v) for v in x])
+            if upper:
+                near = 1 - C.smoothstep(0.002, 0.006, up - limit)
+                facing = C.smoothstep(-0.05, -0.45, n[:, 2])
+            else:
+                near = 1 - C.smoothstep(0.002, 0.006, limit - up)
+                facing = C.smoothstep(0.05, 0.45, n[:, 2])
+            slit = C.smoothstep(self.width * self.r[0] * 1.05, self.width * self.r[0] * 0.8, np.abs(x))
+            w = np.clip(t * near * facing * slit, 0, 1)
+            # The gum band: where the inner surface turns over the lip edge to the outside (normal swings forward).
+            lip = C.smoothstep(0.0, 0.5, -n[:, 1]) * near * slit * t
+            ridge = 0.5 + 0.5 * np.sin(fwd * 900.0 * (1.0 if upper else 0.7))
+            inner = C.lerp3(maw.top * (0.8 + 0.4 * ridge)[:, None], maw.belly, C.smoothstep(self.start + 0.04, self.start, fwd))
+            col = C.lerp3(s.albedo[idx], inner, w)
+            s.albedo[idx] = C.lerp3(col, GUM, np.clip(lip * 0.75, 0, 1))
+            s.emit[idx] = s.emit[idx] * (1 - w)[:, None] + maw.glow[None, :] * (w * 0.18 * (1 - ridge * 0.5))[:, None]
+            # Matte: a glossy inside mirrored the sky as a silver band in the slit.
+            s.rough[idx] = s.rough[idx] * (1 - w) + 0.6 * w
+            s.disp[idx] = s.disp[idx] * (1 - w) + 0.0008 * s_ * ridge * w
+        return style
+
+
+GUM = np.array((0.32, 0.07, 0.12))
+
+
+def head_with_mouth(b, k, P, mouth, head_style, jaw_style, maw, segments=(48, 24)):
+    """The head (upper lip and skull), the lower jaw (Jaw bone) and the dark throat behind the slit."""
+    s = mouth.s
+    b.ellipsoid("Head", P(*mouth.c), tuple(r * s for r in mouth.r), bone="Head", segments=segments,
+                deform=mouth.upper_deform, style=mouth.style(head_style, maw, True))
+    b.ellipsoid("LowerJaw", P(*mouth.jaw_c), tuple(r * s for r in mouth.jaw_r), bone="Jaw", segments=segments,
+                deform=mouth.jaw_deform, style=mouth.style(jaw_style, maw, False))
+    b.parts[-1].chain = ["Jaw"]
+    mid = 0.5 * (mouth.palate_up(0.0) + mouth.ceiling(0.0))
+    b.ellipsoid("Throat", P(0.0, mid, mouth.start + 0.012), tuple(r * s for r in (0.068, 0.026, 0.009)), bone="Head",
+                segments=(24, 12), style=H.inner_glow(maw, 0.2))
+
+
+MOUTH = Mouth(1.0, (0.0, 0.012, 0.33), (0.13, 0.205, 0.048), start=0.42, palate=0.006, gap=0.015, frown=0.018)
 
 
 def body_top(fwd):
@@ -139,17 +263,9 @@ def build_parts():
     b.ellipsoid("Belly", G(0, -0.022, -0.03), (0.185, 0.33, 0.055), bone="Body", segments=(40, 20),
                 style=H.gill_belly(PAL, k, UNDER, slits=4, start=-0.32, spacing=0.13, width=0.03, side=(0.2, 0.8)))
 
-    def head_deform(v):
-        # Round 49A: a broad, blunt front edge (the mouth runs across it), not a pointed ram.
-        front = max(0.0, -v.y)
-        return Vector((v.x * (1 - 0.3 * front), v.y * (1 - 0.08 * front), v.z * (1 - 0.35 * front)))
-    b.ellipsoid("Head", G(0, 0.012, 0.33), (0.13, 0.205, 0.048), bone="Head", segments=(40, 20), deform=head_deform,
-                style=H.crest(PAL, k, ribs=7, height=0.004))
-    # The maw behind the lips (a dim cyan throat) and the lower lip plate on the Jaw bone.
-    b.ellipsoid("Maw", G(0, -0.026, MOUTH_FWD - 0.07), (0.075, 0.04, 0.02), bone="Head", style=H.inner_glow(MAW, 0.5),
-                segments=(24, 12))
-    b.ellipsoid("LowerLip", G(0, -0.05, MOUTH_FWD - 0.09), (0.088, 0.085, 0.016), bone="Jaw", segments=(32, 16),
-                style=H.band_plates(PAL, k, 3, height=0.002))
+    # Round 49E: a broad, blunt head whose front edge is split by the mouth (Mouth, head_with_mouth).
+    head_with_mouth(b, k, G, MOUTH, H.crest(PAL, k, ribs=7, height=0.004), H.band_plates(PAL, k, 3, height=0.002),
+                    MOUTH_PAL, segments=(48, 24))
     for side, sx in SIDES:
         b.tube("Pincer", pincer_points(sx), [0.028, 0.03, 0.022, 0.01], sides=10, chain=[f"Pincer_{side}"],
                style=H.tube(PAL, k, PAL.top, PAL.side, tip_glow=0.9, glow_from=0.7, rough=0.6), flatten=0.4)

@@ -146,8 +146,8 @@ namespace Game.Combat
             _beamGlowFade = _beamGlow.GetComponent<BeamFade>();
 
             _flame = ParticleKit.Create(_visual, "Flame", Vector3.zero, Color.white, 0.12f, 0.25f, 0.08f, 0.16f, 0.2f, 0.6f, 0f, 60, 0.03f);
-            _frost = ParticleKit.Create(_visual, "Frost", Vector3.zero, Color.white, 0.3f, 0.6f, 0.04f, 0.09f, 0.3f, 0.9f, 0.3f, 60, 0.08f);
-            _smoke = ParticleKit.Create(_visual, "Smoke", Vector3.zero, new Color(0.3f, 0.3f, 0.3f, 0.3f), 0.5f, 0.9f, 0.12f, 0.22f, 0.1f, 0.3f, -0.08f, 40, 0.05f);
+            _frost = ParticleKit.UseCell(ParticleKit.Create(_visual, "Frost", Vector3.zero, Color.white, 0.3f, 0.6f, 0.04f, 0.09f, 0.3f, 0.9f, 0.3f, 60, 0.08f), MarkerArt.ParticleCell.FrostMote);
+            _smoke = ParticleKit.UseSmoke(ParticleKit.Create(_visual, "Smoke", Vector3.zero, new Color(0.3f, 0.3f, 0.3f, 0.3f), 0.5f, 0.9f, 0.12f, 0.22f, 0.1f, 0.3f, -0.08f, 40, 0.05f));
         }
 
         // A white ribbon that thins to nothing at its tail; the weapon colour comes from the material tint.

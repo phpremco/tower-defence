@@ -1,6 +1,7 @@
 """Round 45: the PackAlpha's close-up detail (eyes, teeth, claws), detail_kit / gravemaw_maw technique.
 
-- PackAlpha_Face (round 49A, re-fitted to the alien-wolf skull of wolf_kit.py): three slanted wet eyes per side in a
+- PackAlpha_Face (round 49A, re-fitted to the alien-wolf skull of wolf_kit.py; round 49E: to the rebuilt skull, teeth
+  in the gum line under the snarl): three slanted wet eyes per side in a
   row under the brow ridge (the Prowler has two: the leader has one pair more), long upper canines and a row of
   teeth under the muzzle, lower fangs on both halves of the split jaw (they open with it on the howl).
 - PackAlpha_Claws: a keratin talon on each of the four toes of every paw (dark root to a pale hooked point).
@@ -18,6 +19,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from mathutils import Vector  # noqa: E402
 
 import build_packalpha as A  # noqa: E402
+import wolf_kit as W  # noqa: E402
 import common as C  # noqa: E402
 import detail_kit as D  # noqa: E402
 from common import G  # noqa: E402
@@ -34,12 +36,12 @@ SIDES = A.SIDES
 EYE = D.Eye(lens=(0.04, 0.01, 0.006), iris=(1.0, 0.48, 0.12), rim=(0.3, 0.05, 0.02), pupil=(0.004, 0.0, 0.0),
             glow=(1.0, 0.4, 0.1), vein=(0.3, 0.05, 0.03))
 SOCKET = D.Flesh(dark=(0.03, 0.01, 0.008), flesh=(0.3, 0.06, 0.035))
-TOOTH = D.Keratin(root=(0.32, 0.1, 0.05), body=(0.86, 0.76, 0.6), tip=(0.97, 0.94, 0.86), glow=(1.0, 0.52, 0.14),
-                  stain=(0.3, 0.05, 0.03))
-CLAW = D.Keratin(root=(0.04, 0.015, 0.01), body=(0.2, 0.06, 0.035), tip=(0.95, 0.86, 0.66), glow=(1.0, 0.52, 0.14),
-                 stain=(0.08, 0.02, 0.012))
+TOOTH = D.Keratin(root=(0.3, 0.08, 0.06), body=(0.8, 0.72, 0.58), tip=(0.95, 0.92, 0.84), glow=(1.0, 0.52, 0.14),
+                  stain=(0.35, 0.16, 0.1))
+CLAW = D.Keratin(root=(0.03, 0.02, 0.018), body=(0.08, 0.05, 0.045), tip=(0.9, 0.84, 0.7), glow=(1.0, 0.52, 0.14),
+                 stain=(0.06, 0.03, 0.02))
 
-FACE_FOCUS = P(0, 0.74, 0.64)
+FACE_FOCUS = P(0, 0.58, 0.64)
 UP = Vector((0, 0, 1))
 FWD = G(0, 0, 1)
 
@@ -50,37 +52,30 @@ def direction(az, el):
 
 
 def face_parts(boss):
+    """Round 49E (the rebuilt wolf skull, wolf_kit): three slanted wet eyes per side under the heavy brow (the
+    Prowler has two: the leader has one pair more), the upper teeth rooted in the gum line under the snarling lip
+    (long canines in front), lower fangs on both halves of the split jaw (they open with it on the howl)."""
     b = C.PartBuilder()
     sock = D.socket_style(SOCKET, seed=6)
     eyes = [D.eye_style(EYE, pupil="slit", iris_size=0.5, pupil_size=0.2, glow=1.0, seed=s) for s in range(3)]
+    wolf = A.WOLF
+    spots = wolf.eye_points() + [(P(*W.EYES[1]) + P(0.012, 0.018, -0.045), A.R(0.011))]
+    looks = ((1.0, -0.55, 0.12), (1.0, -0.25, 0.2), (1.0, -0.05, 0.3))
     for side, sx in SIDES:
-        # Three slanted eyes per side in a row under the brow ridge, biggest in front.
-        for k, (x, up, fwd, r, look) in enumerate(((0.03, 0.768, 0.6, 0.02, (1.0, -0.9, 0.25)),
-                                                   (0.04, 0.782, 0.556, 0.016, (1.0, -0.45, 0.4)),
-                                                   (0.046, 0.79, 0.515, 0.013, (1.0, -0.1, 0.5)))):
+        for k, ((centre, r), look) in enumerate(zip(spots, looks)):
             look = Vector((look[0] * sx, look[1], look[2])).normalized()
-            p, n = boss.out(P(x * 0.3 * sx, up, fwd), look)
+            p, n = boss.out(Vector((centre.x * 0.3 * sx, centre.y, centre.z)), look)
             n = (n * 0.5 + look * 0.5).normalized()
-            D.add_eye(b, p - n * A.R(r) * 0.4, n, A.R(r), eyes[k], sock, squash=(0.8, 1.3, 0.8), socket=0.2,
+            D.add_eye(b, p - n * r * 0.45, n, r, eyes[k], sock, squash=(0.8, 1.3, 0.8), socket=0.2,
                       up=(Vector((0, -1, 0.35)) - n * n.y).normalized(), bone="Head", lod=k < 2)
-    tooth = [D.tooth_style(TOOTH, glow=0.35, seed=s) for s in range(3)]
+    tooth = [D.tooth_style(TOOTH, glow=0.3, seed=s) for s in range(3)]
     for side, sx in SIDES:
-        # Upper row under the muzzle: a long canine in front, shorter teeth behind it.
-        for j, (f, length, rad, lod) in enumerate(((0.715, 0.056, 0.011, True), (0.68, 0.028, 0.007, False),
-                                                   (0.645, 0.026, 0.0065, False), (0.61, 0.024, 0.006, False))):
-            p, n = boss.out(P(0.0, 0.71, f), Vector((sx * 0.55, 0, -1)))
-            d = (Vector((0, 0, -1)) * 0.85 + FWD * 0.15).normalized()
-            D.add_tooth(b, p - n * A.R(rad) * 0.6, d, A.R(rad), A.R(length), tooth[j % 3], hook=-FWD, hook_amount=0.25,
+        for j, (base, d, length, rad, lod) in enumerate(wolf.upper_teeth(sx)):
+            D.add_tooth(b, base, d, rad, length * (1.1 if j == 1 else 1.0), tooth[j % 3], hook=-FWD, hook_amount=0.22,
                         bone="Head", lod=lod, name="Tooth")
-        # Lower fangs on the mandible half.
-        crv = D.curve_points(A.jaw_points(sx), 30)
-        for j, (t, length, rad, lod) in enumerate(((0.86, 0.042, 0.0095, True), (0.68, 0.024, 0.0062, False),
-                                                   (0.52, 0.022, 0.0058, False), (0.36, 0.02, 0.0052, False))):
-            c = crv[int(t * (len(crv) - 1))]
-            base = c + UP * A.R(0.012) + Vector((-sx * A.R(0.004), 0, 0))
-            d = (UP * 0.9 + FWD * 0.1 + Vector((-sx * 0.1, 0, 0))).normalized()
-            D.add_tooth(b, base, d, A.R(rad), A.R(length), tooth[j % 3], hook=-FWD, hook_amount=0.25, bone=f"Jaw_{side}",
-                        lod=lod, name="Tooth")
+        for j, (base, d, length, rad, lod) in enumerate(wolf.lower_teeth(sx)):
+            D.add_tooth(b, base, d, rad, length, tooth[j % 3], hook=-FWD, hook_amount=0.22, bone=f"Jaw_{side}", lod=lod,
+                        name="Tooth")
     return b
 
 

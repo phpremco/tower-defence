@@ -59,7 +59,7 @@ namespace Game.Bosses
             _creep = TowerAuraView.Create(brain.Field.Effects, "FrostCreep");
             _frost = FrostCreepView.Create(brain.Field.Effects);
             // Cold rolls off it: a low mist round its feet and a pale light on its chest, so it reads as ice from above.
-            _chill = ParticleKit.Create(brain.transform, "ColdMist", Vector3.up * ChillMistHeight, ChillMist, 1.6f, 2.6f, 0.7f, 1.4f, 0.05f, 0.25f, -0.01f, 90, ChillMistRadius);
+            _chill = ParticleKit.UseSmoke(ParticleKit.Create(brain.transform, "ColdMist", Vector3.up * ChillMistHeight, ChillMist, 1.6f, 2.6f, 0.7f, 1.4f, 0.05f, 0.25f, -0.01f, 90, ChillMistRadius));
             ParticleKit.SetRate(_chill, ChillMistRate);
             var glow = new GameObject("ColdLight");
             glow.transform.SetParent(brain.transform, false);

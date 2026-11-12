@@ -89,7 +89,7 @@ namespace Game.Levels
 
             ParticleSystem fire = ParticleKit.Create(transform, "Fireball", Vector3.up * 0.8f, FireColor, 0.5f, 1.1f, 0.7f, 1.8f, 1.5f, 5f, -0.6f, FireballCount, 0.7f);
             ParticleSystem sparks = ParticleKit.Create(transform, "Sparks", Vector3.up * 0.9f, SparkColor, 0.5f, 1.4f, 0.06f, 0.14f, 5f, 11f, 9f, SparkCount, 0.3f);
-            ParticleSystem smoke = ParticleKit.Create(transform, "Smoke", Vector3.up * 1f, SmokeColor, 2.5f, 4.5f, 0.8f, 1.8f, 0.6f, 1.4f, -0.25f, 160, 0.8f);
+            ParticleSystem smoke = ParticleKit.UseSmoke(ParticleKit.Create(transform, "Smoke", Vector3.up * 1f, SmokeColor, 2.5f, 4.5f, 0.8f, 1.8f, 0.6f, 1.4f, -0.25f, 160, 0.8f));
             fire.Emit(FireballCount);
             sparks.Emit(SparkCount);
             ParticleKit.SetRate(smoke, SmokeRate);

@@ -68,8 +68,14 @@ X = Vector((1, 0, 0))
 Yv = Vector((0, 1, 0))
 Z = Vector((0, 0, 1))
 
+# Round 49C (Remco: in the side view "something strange right of the head"): the head sat on the chest with the
+# shoulders right behind it, so in flight the near wing seemed to sprout from the head. The head now sits on a short
+# neck HEAD_SHIFT further forward, the shoulders are a little further back on a raised shoulder mound, and the sensor
+# horns sweep back along the skull instead of out over the wing roots.
+HEAD_SHIFT = G(0, -0.005, 0.065)
+
 CFG = {
-    "shoulder": (0.075, 0.04, 0.03),
+    "shoulder": (0.075, 0.045, 0.005),
     "wrist": (0.3, 0.09, 0.08),
     "tips": ((0.74, 0.06, 0.03), (0.66, 0.02, -0.17), (0.42, 0.0, -0.3)),
     "flank": (0.07, 0.0, -0.14),
@@ -123,30 +129,63 @@ def head_rot(deg):
     return Matrix.Rotation(math.radians(deg), 3, "X")
 
 
-def build_parts(sk, cfg=CFG, b=None):
+HEAD_PIVOT = G(0, 0.03, 0.1)   # the Head bone's root before HEAD_SHIFT
+
+
+def hp(p, s=1.0):
+    """A head-part position moved onto the neck (HEAD_SHIFT), the head scaled by `s` about its pivot (the boss's
+    bigger head: cfg "head_scale")."""
+    return HEAD_PIVOT + HEAD_SHIFT + (p - HEAD_PIVOT) * s
+
+
+def hr(radii, s=1.0):
+    return tuple(r * s for r in radii)
+
+
+def eye_bead(i, sx=1, s=1.0):
+    """The round-10 eye beads (bat_detail sets its eyes over them)."""
+    return hp(G((0.045 + 0.008 * i) * sx, 0.045 - 0.004 * i, 0.215 - 0.025 * i), s)
+
+
+def horn_points(sx, s=1.0):
+    root = hp(G(0.028 * sx, 0.065, 0.13), s)
+    return [root, root + G(0.012 * sx, 0.045, -0.05) * s, root + G(0.03 * sx, 0.065, -0.115) * s]
+
+
+def build_parts(sk, cfg=CFG, b=None, horns=True):
     b = b or C.PartBuilder()
     k = K
     pal = sk["pal"]
+    hs = cfg.get("head_scale", 1.0)
     b.ellipsoid("Body", G(0, 0.0, 0.0), (0.085, 0.14, 0.075), bone="Body", segments=(32, 16),
                 style=H.gill_belly(pal, k, sk["under"], slits=3, start=-0.3, spacing=0.16, width=0.03, side=(0.25, 0.7), glow=0.8))
     b.ellipsoid("Back", G(0, 0.055, -0.01), (0.07, 0.125, 0.03), head_rot(4), bone="Body", segments=(32, 14),
                 style=K2.armour_plate(pal, k, rim_glow=0.6, chevron=1.0, chevron_angle=1.1, lip=0.5))
     b.ellipsoid("Gland", G(0, -0.05, 0.06), (0.05, 0.07, 0.042), bone="Body", segments=(28, 14),
                 style=K2.ribbed_bladder(pal, k, ribs=6, seed=11, plate=0.0))
-    b.ellipsoid("Head", G(0, 0.03, 0.16), (0.06, 0.085, 0.048), head_rot(-8), bone="Head", segments=(28, 14),
-                style=H.wedge_head(pal, k, slits=2, slit_width=0.04))
-    b.ellipsoid("Brow", G(0, 0.065, 0.16), (0.065, 0.07, 0.022), head_rot(-18), bone="Head", segments=(24, 10),
-                style=H.crest(pal, k, ribs=5))
-    b.ellipsoid("Jaw", G(0, -0.01, 0.18), (0.045, 0.07, 0.022), head_rot(10), bone="Jaw", segments=(20, 10),
-                style=H.band_plates(pal, k, 2, height=0.002))
-    b.ellipsoid("Throat", G(0, 0.008, 0.19), (0.018, 0.045, 0.01), bone="Head", style=H.inner_glow(pal, 0.8), segments=(16, 8))
+    # The neck: a short, darker, ringed stalk from the chest to the back of the skull, so the head reads apart from
+    # the shoulders and wing roots behind it.
+    b.tube("Neck", [G(0, 0.02, 0.08), G(0, 0.028, 0.125), hp(G(0, 0.03, 0.105), hs)], hr((0.05, 0.04, 0.036), hs ** 0.5),
+           sides=12, chain=["Body", "Head"], style=H.tube(pal, k, pal.side, pal.dark, rings=(0.35, 0.6, 0.85)))
+    b.ellipsoid("Head", hp(G(0, 0.03, 0.16), hs), hr((0.06, 0.085, 0.048), hs), head_rot(-8), bone="Head",
+                segments=(28, 14), style=H.wedge_head(pal, k, slits=2, slit_width=0.04))
+    b.ellipsoid("Brow", hp(G(0, 0.065, 0.16), hs), hr((0.065, 0.07, 0.022), hs), head_rot(-18), bone="Head",
+                segments=(24, 10), style=H.crest(pal, k, ribs=5))
+    b.ellipsoid("Jaw", hp(G(0, -0.01, 0.18), hs), hr((0.045, 0.07, 0.022), hs), head_rot(10), bone="Jaw",
+                segments=(20, 10), style=H.band_plates(pal, k, 2, height=0.002))
+    b.ellipsoid("Throat", hp(G(0, 0.008, 0.19), hs), hr((0.018, 0.045, 0.01), hs), bone="Head",
+                style=H.inner_glow(pal, 0.8), segments=(16, 8))
     for side, sx in SIDES:
         for i in range(4):
-            b.ellipsoid("Eye", G((0.045 + 0.008 * i) * sx, 0.045 - 0.004 * i, 0.215 - 0.025 * i), (0.008, 0.008, 0.007),
-                        bone="Head", style=H.eye(pal, k, 0.45), segments=(10, 6))
-        root = G(0.03 * sx, 0.07, 0.13)
-        b.tube("Horn", [root, root + G(0.03 * sx, 0.05, -0.06), root + G(0.065 * sx, 0.06, -0.16)], [0.016, 0.011, 0.0015],
-               sides=8, chain=["Head"], style=H.hook(pal, k, glow=0.7, glow_from=0.7))
+            b.ellipsoid("Eye", eye_bead(i, sx, hs), hr((0.008, 0.008, 0.007), hs), bone="Head",
+                        style=H.eye(pal, k, 0.45), segments=(10, 6))
+        if horns:
+            b.tube("Horn", horn_points(sx, hs), hr((0.016, 0.011, 0.0015), hs), sides=8, chain=["Head"],
+                   style=H.hook(pal, k, glow=0.7, glow_from=0.7))
+        # A raised shoulder mound over each wing root (blended into the arm), so the wing grows from the shoulder.
+        b.ellipsoid("ShoulderMound", gp(cfg["shoulder"], sx) + G(0.004 * sx, 0.012, -0.004), (0.036, 0.04, 0.03),
+                    bone="Body", segments=(16, 8), style=K2.armour_plate(pal, k, rim_glow=0.3, chevron=0.0, lip=0.4))
+        b.parts[-1].chain = ["Body", f"Arm_{side}"]
         root = G(0.04 * sx, -0.055, -0.03)
         b.tube("Talon", [root, root + G(0.005 * sx, -0.045, 0.0), root + G(0.0, -0.06, 0.04)], [0.014, 0.009, 0.0015],
                sides=8, chain=["Body"], style=H.hook(pal, k))
@@ -184,11 +223,12 @@ def build_parts(sk, cfg=CFG, b=None):
 
 def bones(cfg=CFG):
     tail = cfg["tail"]
+    hs = cfg.get("head_scale", 1.0)
     out = [
         ("Root", G(0, -0.5, 0), G(0, -0.5, 0.2), None, True),
         ("Body", G(0, 0.0, -0.13), G(0, 0.02, 0.1), "Root", True),
-        ("Head", G(0, 0.03, 0.1), G(0, 0.03, 0.26), "Body", True),
-        ("Jaw", G(0, 0.0, 0.12), G(0, -0.015, 0.25), "Head", True),
+        ("Head", hp(G(0, 0.03, 0.1), hs), hp(G(0, 0.03, 0.26), hs), "Body", True),
+        ("Jaw", hp(G(0, 0.0, 0.12), hs), hp(G(0, -0.015, 0.25), hs), "Head", True),
         ("Tail_1", tail[0], tail[1], "Body", True),
         ("Tail_2", tail[1], tail[2], "Tail_1", True),
     ]

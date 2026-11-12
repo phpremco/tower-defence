@@ -35,8 +35,9 @@ SIDES = SM.SIDES
 EYE = D.Eye(lens=(0.01, 0.02, 0.045), iris=(0.45, 0.95, 1.0), rim=(0.04, 0.12, 0.3), pupil=(0.0, 0.002, 0.008),
             glow=(0.4, 0.95, 1.0), vein=(0.12, 0.08, 0.3))
 SOCKET = D.Flesh(dark=(0.012, 0.016, 0.04), flesh=(0.1, 0.13, 0.32))
-TOOTH = D.Keratin(root=(0.4, 0.45, 0.6), body=(0.8, 0.86, 0.95), tip=(0.95, 0.98, 1.0), glow=(0.4, 0.95, 1.0),
-                  stain=(0.2, 0.15, 0.35))
+# Round 49E: ivory teeth with dark gum-stained roots, as the Skyray's.
+TOOTH = D.Keratin(root=(0.2, 0.05, 0.1), body=(0.82, 0.8, 0.74), tip=(0.96, 0.95, 0.9), glow=(0.4, 0.95, 1.0),
+                  stain=(0.3, 0.08, 0.12))
 CLAW = D.Keratin(root=(0.02, 0.025, 0.06), body=(0.1, 0.13, 0.3), tip=(0.85, 0.95, 1.0), glow=(0.4, 0.95, 1.0),
                  stain=(0.04, 0.04, 0.1))
 
@@ -57,8 +58,8 @@ def face_parts(boss):
             # The round-6 eye pit is a bead of radius 0.033 round p: the eye stands out of it and covers it.
             D.add_eye(b, p + n * 0.012, n, (0.037, 0.032, 0.028)[i], eyes[i], sock, squash=(0.92, 1.2, 0.8),
                       socket=0.2, up=Vector((0, -1, 0)), bone="Head")
-    SD.mouth_teeth(boss, b, TOOTH, SM.M, upper=(0.0, 0.02, 0.04, 0.06, 0.078), lower=(0.01, 0.03, 0.05, 0.068), length=1.35,
-                   upper_ray=(0.012, 0.15), lower_ray=(-0.05, 0.75))
+    SD.mouth_teeth(boss, b, TOOTH, SM.MOUTH, upper=(0.0, 0.02, 0.04, 0.06, 0.078), lower=(0.01, 0.03, 0.05, 0.068),
+                   length=1.3)
     return b
 
 

@@ -1,7 +1,7 @@
 {
   "asset": "Bat",
-  "game_tris": 3896,
-  "source_tris": 342392,
+  "game_tris": 3899,
+  "source_tris": 345020,
   "bones": 16,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -12,21 +12,21 @@
     "Mask"
   ],
   "uv": {
-    "islands": 42,
-    "folded_fallback_faces": 138,
-    "mirrored_faces": 1911,
-    "uv_coverage": 0.628,
-    "world_per_uv": 0.8758196719698892
+    "islands": 55,
+    "folded_fallback_faces": 132,
+    "mirrored_faces": 1895,
+    "uv_coverage": 0.629,
+    "world_per_uv": 0.880412548130031
   },
   "detail": {
     "membrane": {
       "map": "Detail_Membrane_Normal.png",
-      "tiling": 10.9,
+      "tiling": 11.0,
       "mask": "B"
     },
     "chitin": {
       "map": "Detail_Chitin_Normal.png",
-      "tiling": 14.6,
+      "tiling": 14.7,
       "mask": "A"
     }
   },
@@ -55,8 +55,63 @@
   },
   "lod1": {
     "fbx": "Bat_LOD1.fbx",
-    "tris": 1698,
+    "tris": 1697,
     "bones": 10
+  },
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Bat_Face",
+        "material": "Bat_Face_Mat",
+        "maps": "Bat_Face_*.png (1024, Low 512)",
+        "tris": 316,
+        "lod1_object": "Bat_Face_LOD1",
+        "lod1_tris": 84,
+        "source_tris": 23220,
+        "uv": {
+          "islands": 10,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 158,
+          "uv_coverage": 0.51,
+          "world_per_uv": 0.11882973966139766
+        },
+        "symmetry_error": 0.002303
+      },
+      "Claws": {
+        "object": "Bat_Claws",
+        "material": "Bat_Claws_Mat",
+        "maps": "Bat_Claws_*.png (1024, Low 512)",
+        "tris": 200,
+        "lod1_object": "Bat_Claws_LOD1",
+        "lod1_tris": 78,
+        "source_tris": 13384,
+        "uv": {
+          "islands": 11,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 68,
+          "uv_coverage": 0.536,
+          "world_per_uv": 0.09423274557077718
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 3899,
+    "extra_tris": 516,
+    "extra_share": 0.132,
+    "body_lod1_tris": 1697,
+    "extra_lod1_tris": 162,
+    "extra_lod1_share": 0.095,
+    "clips": [
+      "Death",
+      "Fly",
+      "Glide",
+      "Hit"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Bat_<Part> (+ _LOD1 in Bat_LOD1.fbx), maps Bat_<Part>_*.png (+ Low/)",
+    "body_maps": "unchanged",
+    "note": "round 46: element-neutral wet eyes under brow folds, needle teeth, keratin talons and hooks (skins tint them); bones, clips and events unchanged"
   },
   "round36": {
     "Strike": {
@@ -83,75 +138,19 @@
       "feet_planted": false,
       "mesh": {
         "rest": {
-          "tip_forward": 0.244,
+          "tip_forward": 0.309,
           "top": 0.166,
           "bottom": -0.115
         },
         "impact": {
-          "tip_forward": 0.35,
-          "top": 0.035,
-          "bottom": -0.484
+          "tip_forward": 0.408,
+          "top": -0.003,
+          "bottom": -0.483
         }
       },
       "new_clip": true,
       "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
-  },
-  "r46_detail": {
-    "parts": {
-      "Face": {
-        "object": "Bat_Face",
-        "material": "Bat_Face_Mat",
-        "maps": "Bat_Face_*.png (1024, Low 512)",
-        "tris": 318,
-        "lod1_object": "Bat_Face_LOD1",
-        "lod1_tris": 84,
-        "source_tris": 23056,
-        "uv": {
-          "islands": 11,
-          "closed_islands_cut": 0,
-          "folded_fallback_faces": 0,
-          "mirrored_faces": 159,
-          "uv_coverage": 0.517,
-          "world_per_uv": 0.11769763620518718
-        },
-        "symmetry_error": 0.002303
-      },
-      "Claws": {
-        "object": "Bat_Claws",
-        "material": "Bat_Claws_Mat",
-        "maps": "Bat_Claws_*.png (1024, Low 512)",
-        "tris": 200,
-        "lod1_object": "Bat_Claws_LOD1",
-        "lod1_tris": 78,
-        "source_tris": 13384,
-        "uv": {
-          "islands": 11,
-          "closed_islands_cut": 0,
-          "folded_fallback_faces": 0,
-          "mirrored_faces": 68,
-          "uv_coverage": 0.536,
-          "world_per_uv": 0.09423274557077718
-        },
-        "symmetry_error": 0.0
-      }
-    },
-    "body_tris": 3896,
-    "extra_tris": 518,
-    "extra_share": 0.133,
-    "body_lod1_tris": 1698,
-    "extra_lod1_tris": 162,
-    "extra_lod1_share": 0.095,
-    "clips": [
-      "Death",
-      "Fly",
-      "Glide",
-      "Hit",
-      "Strike"
-    ],
-    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Bat_<Part> (+ _LOD1 in Bat_LOD1.fbx), maps Bat_<Part>_*.png (+ Low/)",
-    "body_maps": "unchanged",
-    "note": "round 46: element-neutral wet eyes under brow folds, needle teeth, keratin talons and hooks (skins tint them); bones, clips and events unchanged"
   }
 }

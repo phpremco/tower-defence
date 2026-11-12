@@ -212,8 +212,10 @@ def crystal_parts():
                 twist=0.9 * sx, bone="Head", style=Y.shard_style("ember", 0.85, seed=101))
         b.shard("BrowHorn", G(0.3 * sx, 1.74, 1.86), G(0.35 * sx, 0.9, 0.45), 0.07, 0.5, sides=6, flute=0.4,
                 twist=0.7 * sx, bend=G(0, -0.05, 0.22), bone="Head", style=Y.shard_style("ember", 0.9, seed=102))
-        for j, (x, u, f) in enumerate(((0.62, 1.66, 1.16), (0.45, 1.96, 1.08))):
-            b.shard("HoodShard", G(x * sx, u, f), G(0.6 * sx, 0.7, -0.5), 0.05, 0.36 - 0.05 * j, sides=6, flute=0.4,
+        # Round 49E (Remco: "some spikes are no longer attached to the body"): the outer hood shard was rooted past
+        # the thin rim of the hood (0.13 model units in the air); it now grows out of the hood plate, a little longer.
+        for j, (x, u, f, ln) in enumerate(((0.48, 1.78, 1.28, 0.44), (0.45, 1.96, 1.08, 0.31))):
+            b.shard("HoodShard", G(x * sx, u, f), G(0.6 * sx, 0.7, -0.5), 0.05, ln, sides=6, flute=0.4,
                     twist=0.8 * sx, bone="Head", style=Y.shard_style("ember", 0.85, seed=103 + j))
     # Spine ridge on the mantle, tallest at the front, swept back.
     for i, (f, h, r, l) in enumerate(((0.62, 1.98, 0.09, 0.6), (0.2, 2.02, 0.085, 0.52), (-0.24, 1.96, 0.075, 0.44))):

@@ -476,10 +476,9 @@ namespace Game.Enemies
                 new[] { new GradientAlphaKey(soft ? 0.7f : 1f, 0f), new GradientAlphaKey(soft ? 0.4f : 1f, 0.6f), new GradientAlphaKey(0f, 1f) });
             fade.color = gradient;
 
-            var renderer = go.GetComponent<ParticleSystemRenderer>();
-            renderer.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
-            renderer.renderMode = ParticleSystemRenderMode.Billboard;
-            return system;
+            go.GetComponent<ParticleSystemRenderer>().renderMode = ParticleSystemRenderMode.Billboard;
+            // The soft puff is smoke over the body; the splash is the creature's ichor.
+            return soft ? ParticleKit.UseSmoke(system) : ParticleKit.UseCell(system, MarkerArt.ParticleCell.Drip);
         }
     }
 }
