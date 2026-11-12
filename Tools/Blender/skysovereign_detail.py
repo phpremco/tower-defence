@@ -18,6 +18,7 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from mathutils import Vector  # noqa: E402
 
+import build_bat as BT  # noqa: E402
 import build_skysovereign as SS  # noqa: E402
 import common as C  # noqa: E402
 import detail_kit as D  # noqa: E402
@@ -40,20 +41,22 @@ TOOTH = D.Keratin(root=(0.55, 0.3, 0.32), body=(0.9, 0.82, 0.74), tip=(0.98, 0.9
 CLAW = D.Keratin(root=(0.04, 0.012, 0.02), body=(0.2, 0.05, 0.09), tip=(0.95, 0.85, 0.72), glow=(1.0, 0.32, 0.62),
                  stain=(0.08, 0.02, 0.04))
 
-FACE_FOCUS = G(0, 0.02, 0.2) * M
+# Round 49C: the head sits on a neck and is bigger (BT.hp with the boss's head scale SS.HS).
+HS = SS.HS
+FACE_FOCUS = BT.hp(G(0, 0.02, 0.2), HS) * M
 
 
 def bead(i, sx):
-    return G((0.045 + 0.008 * i) * sx, 0.045 - 0.004 * i, 0.215 - 0.025 * i) * M
+    return BT.eye_bead(i, sx, HS) * M
 
 
 def face_parts(boss):
     b = C.PartBuilder()
     sock = D.socket_style(SOCKET, seed=9)
     eyes = [D.eye_style(EYE, pupil="slit", iris_size=0.5, pupil_size=0.22, glow=1.0, seed=s) for s in range(4)]
-    head_c = G(0, 0.03, 0.15) * M
+    head_c = BT.hp(G(0, 0.03, 0.15), HS) * M
     for side, sx in SIDES:
-        for i, r in enumerate((0.018, 0.016, 0.0145, 0.013)):
+        for i, r in enumerate((0.018 * HS, 0.016 * HS, 0.0145 * HS, 0.013 * HS)):
             p = bead(i, sx)
             n = (p - head_c).normalized()
             D.add_eye(b, p + n * 0.002, n, r, eyes[i], sock, squash=(1.0, 1.0, 0.85), socket=0.2,
@@ -66,19 +69,19 @@ def face_parts(boss):
                                             (0.042, 0.215, 0.04, 0.008, tooth[0], "Tooth"),
                                             (0.008, 0.245, 0.032, 0.007, tooth[1], "Tooth")):
         for sx in (-1, 1):
-            p, n = boss.nearest(G(x * sx, 0.005, f) * M)
+            p, n = boss.nearest(BT.hp(G(x * sx, 0.005, f), HS) * M)
             d = Vector((0, -0.18, -1)).normalized()
             if name == "Fang":
-                D.add_claw(b, p + Vector((0, 0, 0.004)), d, rad, length, style, hook=Vector((0, 1, 0)),
+                D.add_claw(b, p + Vector((0, 0, 0.004)), d, rad * HS, length * HS, style, hook=Vector((0, 1, 0)),
                            hook_amount=0.4, bone="Head", name=name)
             else:
-                D.add_tooth(b, p + Vector((0, 0, 0.003)), d, rad, length, style, hook=Vector((0, 1, 0)),
+                D.add_tooth(b, p + Vector((0, 0, 0.003)), d, rad * HS, length * HS, style, hook=Vector((0, 1, 0)),
                             bone="Head", lod=False, name=name)
     # Lower teeth along the jaw, pointing up.
     for x, f, length in ((0.03, 0.22, 0.03), (0.018, 0.235, 0.034), (0.038, 0.205, 0.026)):
         for sx in (-1, 1):
-            p, n = boss.nearest(G(x * sx, 0.0, f) * M + Vector((0, 0, -0.02)))
-            D.add_tooth(b, p - n * 0.003, Vector((0, -0.1, 1)).normalized(), 0.007, length, tooth[2],
+            p, n = boss.nearest(BT.hp(G(x * sx, 0.0, f), HS) * M + Vector((0, 0, -0.02)))
+            D.add_tooth(b, p - n * 0.003, Vector((0, -0.1, 1)).normalized(), 0.007 * HS, length * HS, tooth[2],
                         hook=Vector((0, 1, 0)), bone="Jaw", lod=False, name="JawTooth")
     return b
 

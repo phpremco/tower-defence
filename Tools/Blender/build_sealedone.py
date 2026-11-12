@@ -2,8 +2,8 @@
 ArtSource/DESIGN_NOTES.md).
 
 Only its upper body has broken out: a ribcage torso of ash-ivory bone-stone with violet light between the ribs and
-violet corruption crystals through shoulders and spine, a tall eyeless head whose two face plates (bones Plate_L/R)
-part to show a column of violet light, a crown of three broken rings carved with seal glyphs (bones Ring_1..3), two
+violet corruption crystals through shoulders and spine, a long skull whose two face plates (bones Plate_L/R)
+part to show a column of violet light, over a heavy lower jaw (round 49C; round 16 had a tall eyeless egg), a crown of three broken rings carved with seal glyphs (bones Ring_1..3), two
 vast lower arms planted on the ground and two thin upper arms folded in prayer, palms carrying the glyph. Round it
 seven broken seal stones (bones Seal_1..7), carved with the glyph in amber-gold, lean outwards where the seal burst;
 in Death they close over it again. A ring of heaved ground rubble marks the fissure.
@@ -57,15 +57,37 @@ STONE_ANGLES = [180.0, 180 - 51.43, 180 + 51.43, 180 - 102.86, 180 + 102.86, 180
 STONE_SIZE = [(0.7, 0.26, 1.45), (0.62, 0.25, 1.35), (0.62, 0.25, 1.35), (0.6, 0.25, 1.25), (0.6, 0.25, 1.25),
               (0.5, 0.24, 1.0), (0.5, 0.24, 1.0)]
 STONE_TILT = 18.0
-HEAD_C = G(0, 4.05, 0.25)
-HEAD_R = (0.42, 0.62, 1.05)
-HEAD_ROT = T.rot(pitch=18)
-CROWN_C = G(0, 4.35, -0.25)
+# Round 49C (Remco: "I can't make out where the head is"): the tall egg became a long skull pushed forward and tilted
+# nose-down over the chest (the two face plates still part on the violet column); a heavy lower jaw hangs under its
+# front; the crown rings ride higher and further back as a halo over the skull instead of across the face; the
+# praying hands sit lower. The face (eye sockets with brows on the plates, the seam eye, fangs) is in
+# sealedone_detail.py.
+HEAD_C = G(0, 4.15, 0.3)
+HEAD_R = (0.5, 0.86, 0.64)
+# Round 49F: the skull dips 16 degrees (was 24) so the face and the maw under it face the play camera.
+HEAD_ROT = T.rot(pitch=16)
+CROWN_C = G(0, 4.85, -0.3)
+
+# Round 49F (Remco on 49C: "I don't understand the mouth"): one plain maw under the front of the skull. A bone-stone
+# muzzle is the upper jaw, a heavy mandible on its own bone (Jaw, hinged under the back of the skull) the lower jaw;
+# both rims carry a wet wine-dark gum with the teeth rooted in it (sealedone_detail.py), and behind them a dark palate,
+# a dark tongue and a violet glow deep in the gullet. The mouth stands a little open at rest (a dark slot crossed by
+# interlocking fangs: the teeth never reach the other gum, so they never cut a lip) and opens wider with the face
+# plates (roar, summon, rise) and when hit. Gum lines run from the left corner of the mouth round the front to the
+# right one; the gap between the two gums is GAP_CORNER at the corners and GAP_FRONT at the front.
+JAW_HINGE = G(0, 3.66, 0.18)
+JAW_TIP = G(0, 3.42, 1.06)
+LOWER_GUM_UP = 3.47
+GAP_FRONT, GAP_CORNER = 0.38, 0.22
+GUM_R = 0.06
+GUM_U = [(-0.37, 0.42), (-0.34, 0.72), (-0.2, 0.95), (0.0, 1.03), (0.2, 0.95), (0.34, 0.72), (0.37, 0.42)]
+MOUTH_FRONT = (0.42, 1.03)  # forward range of the gum line (corner to front)
+JAW_REST_OPEN = 0.0  # radians of extra jaw opening at rest (the clips add theirs on top)
 RINGS = [("Ring_1", 1.0, G(0, 0.5, -1).normalized(), 0.07), ("Ring_2", 1.35, G(0, 1, 0.12).normalized(), 0.08),
          ("Ring_3", 1.75, G(0, 0.75, 1).normalized(), 0.09)]
 RING_NAMES = [r[0] for r in RINGS]
 LOWER = {"shoulder": (1.05, 2.6, 0.15), "hand": (1.75, 0.12, 1.75), "lengths": (1.6, 1.75)}
-UPPER = {"shoulder": (0.62, 3.05, 0.3), "elbow": (1.05, 3.05, 0.85), "wrist": (0.16, 3.25, 1.05)}
+UPPER = {"shoulder": (0.62, 3.05, 0.3), "elbow": (1.05, 2.8, 0.8), "wrist": (0.16, 2.72, 1.08)}
 SCALE_BONES = RING_NAMES
 
 
@@ -83,6 +105,64 @@ def stone_rot(i):
     d = stone_dir(i)
     yaw = math.atan2(d.x, -d.y)
     return (Matrix.Rotation(yaw, 3, "Z") @ Matrix.Rotation(math.radians(STONE_TILT), 3, "X"))
+
+
+def mouth_gap(fwd):
+    """The gap between the gum lines at a forward position (corner .. front)."""
+    u = min(1.0, max(0.0, (fwd - MOUTH_FRONT[0]) / (MOUTH_FRONT[1] - MOUTH_FRONT[0])))
+    u = u * u * (3 - 2 * u)
+    return GAP_CORNER + (GAP_FRONT - GAP_CORNER) * u
+
+
+def gum_path(upper):
+    """The gum line (game G points) from the left mouth corner round the front to the right one. The lower gum rises a
+    little towards the corners (the jaw line climbs to the hinge); the upper one sits the gap above it."""
+    out = []
+    for x, f in GUM_U:
+        u = (f - MOUTH_FRONT[0]) / (MOUTH_FRONT[1] - MOUTH_FRONT[0])
+        lo = LOWER_GUM_UP + 0.06 * (1.0 - u)
+        out.append(G(x, lo + (mouth_gap(f) if upper else 0.0), f))
+    return out
+
+
+def gum_style(seed=0):
+    """Wet wine-dark gum (violet blood under bone-stone lips): dark folds, glossy, faint violet in the creases."""
+    deep, flesh = np.array((0.09, 0.02, 0.07)), np.array((0.36, 0.08, 0.18))
+
+    def style(s, idx, part):
+        p = s.p[idx]
+        fold = C.smoothstep(-0.3, 0.6, C.value_noise(p, 9.0 / K, seed))
+        crease = 1 - C.smoothstep(0.0, 0.08, np.abs(C.value_noise(p, 5.0 / K, seed + 1)))
+        s.albedo[idx] = C.lerp3(np.tile(deep, (len(idx), 1)), flesh, fold * 0.8)
+        s.emit[idx] = np.array(VIOLET)[None, :] * (0.12 * crease)[:, None]
+        s.rough[idx] = 0.28
+        s.disp[idx] = 0.004 * K * (fold - 0.5)
+        H.family(s, idx, membrane=1.0, flow=p[:, 2])
+    return style
+
+
+def throat_style(glow=0.0, seed=0):
+    """The inside of the mouth: near-black wet flesh (it reads as a hole from the play camera); `glow` lights it
+    violet (the gullet)."""
+    dark = np.array((0.025, 0.01, 0.035))
+
+    def style(s, idx, part):
+        p = s.p[idx]
+        n = C.smoothstep(-0.4, 0.8, C.value_noise(p, 7.0 / K, seed))
+        s.albedo[idx] = np.tile(dark, (len(idx), 1)) * (0.7 + 0.6 * n)[:, None]
+        s.emit[idx] = np.array(VIOLET)[None, :] * (glow * (0.6 + 0.4 * n))[:, None]
+        s.rough[idx] = 0.3
+        H.family(s, idx, membrane=1.0, flow=p[:, 2])
+    return style
+
+
+def head_surface(unit):
+    """(point, outward normal) on the head ellipsoid for a head-space direction `unit` (x, y, z; -y is the front)."""
+    u = Vector(unit).normalized()
+    rad = Vector(HEAD_R)
+    p = Vector((u.x * rad.x, u.y * rad.y, u.z * rad.z))
+    n = Vector((u.x / rad.x, u.y / rad.y, u.z / rad.z)).normalized()
+    return HEAD_C + HEAD_ROT @ p, (HEAD_ROT @ n).normalized()
 
 
 def lower_arms():
@@ -122,15 +202,18 @@ def body_parts():
         b.ellipsoid("Shoulder", G(0.95 * sx, 3.05, 0.0), (0.5, 0.5, 0.38), T.rot(roll=-25 * sx), bone="Chest",
                     segments=(32, 16), deform=C.chiselled(16, 24, 0.07, squash=(0.8, 1.0)),
                     style=S.slab(PAL, k * 0.5, strata=24, veins=0.5, fault=0.6, seed=25))
-    # Neck and head: an eyeless crest of two face plates over a column of violet light.
+    # Neck and head: a long skull of two face plates over a column of violet light, with a heavy lower jaw.
     b.tube("Neck", [G(0, 3.1, 0.05), G(0, 3.35, 0.12), G(0, 3.6, 0.2)], [0.32, 0.28, 0.26], sides=14, chain=["Neck"],
            style=S.pillar(PAL, k * 0.4, drums=4, seed=30, glow=0.6))
-    b.ellipsoid("HeadCore", HEAD_C, (HEAD_R[0] * 0.8, HEAD_R[1] * 0.86, HEAD_R[2] * 0.9), HEAD_ROT, bone="Head",
+    # Round 49F: the core sits higher and ends above the maw (it used to fill the mouth's place with violet light).
+    b.ellipsoid("HeadCore", HEAD_C + G(0, 0.2, 0), (HEAD_R[0] * 0.8, HEAD_R[1] * 0.86, HEAD_R[2] * 0.75), HEAD_ROT,
+                bone="Head",
                 segments=(32, 16), style=T.solid_glow(VIOLET, 1.0, 0.5))
     for side, sx in SIDES:
         T.ellipsoid_patch(b, "FacePlate", HEAD_C, HEAD_R, HEAD_ROT, (1, 2), (-0.84, 0.97), (-0.95, 0.97), sx, 0.04, 0.09,
                           f"Plate_{side}", T.shell_plate(PAL, k * 0.4, (1, 2), (-0.84, 0.97), (-0.95, 0.97), crack=0.5,
                                                          rim_glow=1.0, seed=31), nu=16, nv=16, bulge=0.05, keel=0.0)
+    mouth_parts(b, k)
     # Lower arms (planted), with three long-clawed fingers on each hand.
     for side, lg in lower_arms().items():
         sx = -1 if side == "L" else 1
@@ -177,6 +260,35 @@ def body_parts():
     return b
 
 
+def mouth_parts(b, k):
+    """Round 49F: the maw (see GUM_U): muzzle and upper gum on Head, mandible, chin and lower gum on Jaw, a dark palate
+    and tongue, a throat closing the mouth behind the teeth, and the gullet's violet glow deep at the back."""
+    stone = S.slab(PAL, k * 0.4, strata=22, veins=0.5, fault=0.4, seed=33)
+    up_gum, lo_gum = gum_path(True), gum_path(False)
+    gum_radii = [GUM_R * 0.9] + [GUM_R] * (len(GUM_U) - 2) + [GUM_R * 0.9]
+    # Upper jaw: a bone-stone muzzle whose flat underside is the upper lip, just over the upper gum.
+    b.ellipsoid("Muzzle", G(0, up_gum[3].z + 0.1, 0.7), (0.41, 0.43, 0.13), T.rot(pitch=-6), bone="Head",
+                segments=(32, 16), deform=C.chiselled(12, 34, 0.06, squash=(0.8, 1.0)), style=stone)
+    b.tube("UpperGum", up_gum, gum_radii, sides=14, chain=["Head"], style=gum_style(1))
+    b.ellipsoid("Palate", G(0, up_gum[3].z, 0.6), (0.3, 0.36, 0.05), bone="Head", segments=(24, 12),
+                style=throat_style(0.0, 2))
+    b.ellipsoid("Gullet", G(0, 3.64, 0.3), (0.2, 0.16, 0.13), bone="Head", segments=(20, 10), style=throat_style(0.35, 3))
+    # The throat closes the mouth behind the teeth (without it the slot showed the violet chest core through the
+    # head): dark flesh from palate to tongue, skinned between Head and Jaw so it stretches as the jaw drops.
+    mid = LOWER_GUM_UP + 0.5 * mouth_gap(0.5)
+    b.ellipsoid("Throat", G(0, mid, 0.5), (0.31, 0.34, 0.5 * mouth_gap(0.5)), bone="Jaw", segments=(28, 14),
+                style=throat_style(0.06, 6))
+    b.parts[-1].chain = ["Jaw", "Head"]
+    # Lower jaw: a heavy mandible with a chin keel; its top rim carries the lower gum, inside lies a dark tongue.
+    b.ellipsoid("Jaw", G(0, LOWER_GUM_UP - 0.11, 0.68), (0.4, 0.44, 0.11), T.rot(pitch=6), bone="Jaw",
+                segments=(32, 16), deform=C.chiselled(12, 33, 0.07, squash=(0.8, 1.0)), style=stone)
+    b.ellipsoid("Chin", G(0, LOWER_GUM_UP - 0.15, 0.97), (0.2, 0.13, 0.12), bone="Jaw", segments=(20, 10),
+                deform=C.chiselled(8, 35, 0.1), style=stone)
+    b.tube("LowerGum", lo_gum, gum_radii, sides=14, chain=["Jaw"], style=gum_style(4))
+    b.ellipsoid("Tongue", G(0, LOWER_GUM_UP + 0.02, 0.62), (0.27, 0.34, 0.05), T.rot(pitch=-4), bone="Jaw",
+                segments=(24, 12), style=throat_style(0.05, 5))
+
+
 def seal_parts():
     b = C.PartBuilder()
     k = K
@@ -219,7 +331,8 @@ def bones():
            ("Body", G(0, -0.6, 0.0), G(0, 1.7, 0.0), "Root", True),
            ("Chest", G(0, 1.7, 0.0), G(0, 3.1, 0.05), "Body", True),
            ("Neck", G(0, 3.1, 0.05), G(0, 3.6, 0.2), "Chest", True),
-           ("Head", G(0, 3.6, 0.2), G(0, 4.7, 0.4), "Neck", True)]
+           ("Head", G(0, 3.6, 0.2), G(0, 4.7, 0.4), "Neck", True),
+           ("Jaw", JAW_HINGE, JAW_TIP, "Head", True)]
     for side, sx in SIDES:
         out.append((f"Plate_{side}", G(0.12 * sx, 3.75, -0.45), G(0.12 * sx, 4.6, -0.25), "Head", True))
     for name, radius, normal, tube in RINGS:
@@ -248,9 +361,11 @@ def stone_axis(i):
 
 
 def specs(sink=0.0, lean=0.0, roll=0.0, yaw=0.0, chest=0.0, head=0.0, head_yaw=0.0, plates=0.0, rings=1.0,
-          spin=(0.0, 0.0, 0.0), uarm_up=0.0, uarm_out=0.0, uelbow=0.0, seal=0.0, seal_lift=0.0):
+          spin=(0.0, 0.0, 0.0), uarm_up=0.0, uarm_out=0.0, uelbow=0.0, seal=0.0, seal_lift=0.0, jaw=None):
     """Hinge specs (radians). `sink` lowers the whole body (metres, positive down); `plates` > 0 parts the face plates;
-    `seal` > 0 closes the seal stones (inward tilt), `seal_lift` raises them."""
+    `seal` > 0 closes the seal stones (inward tilt), `seal_lift` raises them. `jaw` > 0 opens the maw (round 49F);
+    left out, the maw opens with the plates (0.9 x their angle), so every clip that parts the plates (roar, summon,
+    rise, hit) also opens its mouth. The jaw never closes past its rest pose (the teeth would reach the gums)."""
     out = {"Root": {"rot": []},
            "Body": {"rot": [(Z, yaw), (Yv, roll), (X, lean * 0.4)], "loc": Vector((0, 0, -sink))},
            "Chest": {"rot": [(X, lean * 0.6 + chest)]},
@@ -258,6 +373,7 @@ def specs(sink=0.0, lean=0.0, roll=0.0, yaw=0.0, chest=0.0, head=0.0, head_yaw=0
            "Head": {"rot": [(Z, head_yaw * 0.5), (X, head * 0.5)]}}
     for side, sx in SIDES:
         out[f"Plate_{side}"] = {"rot": [(Z, -plates * sx), (Yv, plates * 0.4 * sx)]}
+    out["Jaw"] = {"rot": [(X, max(0.0, JAW_REST_OPEN + (0.9 * plates if jaw is None else jaw)))]}
     rs = rings if isinstance(rings, (list, tuple)) else (rings,) * 3
     for (name, radius, normal, tube), s, a in zip(RINGS, rs, spin):
         out[name] = {"rot": [(normal, a)], "scale": max(s, 0.001)}
@@ -384,7 +500,8 @@ def death_spec(poser):
 
 
 CLIPS = {"Idle": idle_spec, "Rise": rise_spec, "Summon": summon_spec, "Hit": hit_spec, "Death": death_spec}
-BODY_RIGID = {"Tendril", "Sternum", "Shoulder", "FacePlate", "HeadCore", "Hand", "Finger", "Palm", "Rubble", "Elbow"}
+BODY_RIGID = {"Tendril", "Sternum", "Shoulder", "FacePlate", "HeadCore", "Hand", "Finger", "Palm", "Rubble", "Elbow",
+              "Jaw", "Chin", "Muzzle", "UpperGum", "LowerGum", "Palate", "Tongue", "Gullet"}
 SEAL_RIGID = {"SealStone", "Ring", "RingKnot", "Corruption"}
 LOD_DROP = {"Neck": "Chest", **{f"UArm_{s}_Hand": f"UArm_{s}_Fore" for s, _ in SIDES}}
 
@@ -458,7 +575,7 @@ def main():
                       ("rise", "close", "Rise", 70), ("dying", "close", "Death", 100), ("sealed", "close", "Death", DEATH_FRAMES)],
                strips=[("Rise", "close", range(0, RISE_FRAMES + 1, 12)), ("Summon", "close", range(0, SUMMON_FRAMES + 1, 10)),
                        ("Death", "close", range(0, DEATH_FRAMES + 1, 12)), ("Idle", "front", range(0, IDLE_FRAMES, 15))],
-               macros=[("head", G(0, 4.1, 0.6), 7.0, -25, 10, "Summon", SUMMON_PEAK),
+               macros=[("head", G(0, 4.0, 0.8), 7.0, -25, 10, "Summon", SUMMON_PEAK),
                        ("stone", stone_base(5) + G(0, 0.9, 0), 6.0, -20, 15, "Idle", 20),
                        ("chest", G(0.3, 2.4, 0.8), 7.0, -35, 15, "Idle", 20)],
                game_clip=("Idle", 20))

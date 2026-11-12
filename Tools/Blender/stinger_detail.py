@@ -1,9 +1,9 @@
 """Round 46: the Stinger's close-up detail (Remco: "do the same for the small enemies").
 
 Two extra skinned parts (detail_kit / detail_kit_small), exported in Stinger.fbx and Stinger_LOD1.fbx:
-- Stinger_Face (Stinger_Face_Mat): the six magenta eye beads on the mound become wet magenta eyes with slit pupils
-  under plum brow folds (the round-10 beads' glow goes from the body maps), and a pair of hooked chelicera fangs
-  with smaller teeth beside them over the acid mouth.
+- Stinger_Face (Stinger_Face_Mat): wet magenta eyes with slit pupils under plum brow folds over the body's eye beads
+  (their glow goes from the body maps), and a hooked pale fang with a small tooth on each chelicera. Round 49C: they
+  sit on the new head in front of the carapace (two big median eyes, three small ones at each front corner).
 - Stinger_Claws (Stinger_Claws_Mat): saw teeth down the cutting edges of both trap-claw fingers (the hook finger's
   teeth close with it) and a hooked keratin point on every finger.
 No bone, clip or event changes; the actions are exported again as they are. build_acidempress.py reuses
@@ -13,13 +13,13 @@ Run after build_stinger.py (which calls run() itself at the end of a rebuild):
   blender -b --factory-startup --python Tools/Blender/stinger_detail.py -- [--before | --blockout | --qa] [--norender]
 """
 
-import math
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 from mathutils import Vector  # noqa: E402
 
+import build_stinger as BS  # noqa: E402
 import common as C  # noqa: E402
 import detail_kit as D  # noqa: E402
 import detail_kit_small as S  # noqa: E402
@@ -40,8 +40,9 @@ FANG = D.Keratin(root=(0.18, 0.05, 0.16), body=(0.7, 0.62, 0.66), tip=(0.95, 1.0
 CLAW = D.Keratin(root=(0.05, 0.02, 0.05), body=(0.18, 0.07, 0.17), tip=(1.0, 0.75, 0.95), glow=(1.0, 0.35, 0.85),
                  stain=(0.08, 0.02, 0.07))
 
-HEAD_FOCUS = G(0, 0.24, 0.3)
-MOUND = G(0, 0.275, 0.27)
+# Round 49C: the eyes and fangs sit on the new head in front of the carapace (build_stinger.head_parts).
+HEAD_FOCUS = BS.hs(G(0, 0.235, 0.39))
+MOUND = BS.hs(G(0, 0.255, 0.385))
 
 
 def claw_points(sx):
@@ -54,9 +55,13 @@ def claw_points(sx):
     return hand, fixed, moving
 
 
-def bead(i):
-    a = math.radians(-70 + 140 * i / 5)
-    return G(0.062 * math.sin(a), 0.292 + 0.006 * math.cos(a * 2), 0.27 + 0.048 * math.cos(a))
+def eye_beads():
+    """The body's eye beads on the head (right side first, then mirrored): (centre, radius)."""
+    out = []
+    for sx in (1, -1):
+        for _, c, r in BS.head_eyes():
+            out.append((Vector((c.x * sx, c.y, c.z)), r))
+    return out
 
 
 # ------------------------------------------------------------------------------------------------------------
@@ -66,24 +71,25 @@ def bead(i):
 def face_parts(c):
     b = C.PartBuilder()
     lid = S.skin_style(LID_DARK, LID_SKIN, LID_WET, seed=9)
-    eyes = [D.eye_style(EYE, pupil="slit", iris_size=0.62, pupil_size=0.26, glow=1.0, seed=s) for s in range(3)]
-    for k, i in enumerate((3, 4, 5)):                      # right-hand beads, front to side; mirrored
-        p = bead(i)
-        n = ((p - MOUND).normalized() + Vector((0, 0, 0.5))).normalized()
-        # The beads touch: the eyes are smaller than them (the middle pair smallest) so the brows stay apart.
-        r = (0.0155, 0.012, 0.0135)[k]
-        push = (0.007, 0.011, 0.008)[k]
+    eyes = [D.eye_style(EYE, pupil="slit", iris_size=0.62, pupil_size=0.26, glow=1.0, seed=s) for s in range(4)]
+    # Two big median eyes on the brow mound and three small ones at each front corner of the head (round 49C).
+    for k, (name, p, r_bead) in enumerate(BS.head_eyes()):
+        n = ((p - BS.head_centre()).normalized() + Vector((0, -0.2, 0.25))).normalized()
+        r = r_bead * (0.95 if name == "Main" else 0.9)
         for sx in (1, -1):
-            S.organic_eye(b, S.flip(p + n * push, sx), S.flip(n, sx), r, eyes[k], lid, up=Vector((0, 0.3, 1)),
-                          bone="Body", lod=k == 0, brow=(1.05, 0.55, 0.5), lower=None, brow_lift=0.55,
+            S.organic_eye(b, S.flip(p, sx), S.flip(n, sx), r, eyes[k], lid, up=Vector((0, 0.3, 1)),
+                          bone="Body", lod=k < 2, brow=(1.05, 0.55, 0.5), lower=None, brow_lift=0.55,
                           segments=(20, 10), lid_segments=(12, 6))
-    fang = [D.tooth_style(FANG, glow=0.45, seed=s) for s in range(2)]
+    fang = [D.tooth_style(FANG, glow=0.55, seed=s) for s in range(2)]
     for sx in (1, -1):
-        # Chelicera fangs: hooked down and back from over the mouth; smaller teeth outside them.
-        D.add_tooth(b, G(0.022 * sx, 0.172, 0.35), G(0.15 * sx, -1.0, 0.35).normalized(), 0.009, 0.06, fang[0],
-                    hook=G(-0.3 * sx, 0, -1), hook_amount=0.4, bone="Body", name="Fang")
-        D.add_tooth(b, G(0.042 * sx, 0.165, 0.335), G(0.3 * sx, -1.0, 0.25).normalized(), 0.006, 0.032, fang[1],
-                    hook=G(-0.3 * sx, 0, -1), hook_amount=0.3, bone="Body", lod=False, name="Tooth")
+        # A pale fang at the tip of each chelicera, hooked in and down; smaller teeth on the inner edge behind it.
+        pts = BS.chelicera_points(1)
+        tip, before = pts[2], pts[1]
+        D.add_tooth(b, S.flip(tip, sx), S.flip(G(-0.35, -1.0, 0.45).normalized(), sx), 0.011, 0.06, fang[0],
+                    hook=S.flip(G(-1.0, -0.2, -0.3), sx), hook_amount=0.4, bone="Body", name="Fang")
+        D.add_tooth(b, S.flip(before.lerp(tip, 0.4) + G(-0.012, -0.004, 0), sx), S.flip(G(-1.0, -0.5, 0.1).normalized(), sx),
+                    0.006, 0.026, fang[1], hook=S.flip(G(0, -1, 0), sx), hook_amount=0.3, bone="Body", lod=False,
+                    name="Tooth")
     return b
 
 
@@ -114,7 +120,7 @@ def claw_parts(c):
 # Run
 # ------------------------------------------------------------------------------------------------------------
 
-OLD_EYES = [(bead(i), 0.022) for i in range(6)]
+OLD_EYES = [(c, r * 1.3) for c, r in eye_beads()]
 
 
 def build(c, blockout_only=False):
@@ -135,9 +141,9 @@ def shots(c):
     hand, fixed, _ = claw_points(-1)
     out = S.standard_shots("Body", HEAD_FOCUS, "Claw_L", fixed[1], "Claw_L", fixed[2], 1.2, face_dist=0.9,
                            claw_dist=0.45, foot_dist=0.35)
-    out[1] = ("face_macro", "Idle", 15, "Body", G(-0.03, 0.29, 0.31), "close", dict(distance=0.28, azimuth=-30,
+    out[1] = ("face_macro", "Idle", 15, "Body", BS.hs(G(-0.03, 0.27, 0.41)), "close", dict(distance=0.28, azimuth=-30,
                                                                                     elevation=30))
-    out[5] = ("mouth", "Idle", 15, "Body", G(0, 0.16, 0.34), "close", dict(distance=0.3, azimuth=-10, elevation=-2))
+    out[5] = ("mouth", "Idle", 15, "Body", BS.MOUTH_C, "close", dict(distance=0.3, azimuth=-10, elevation=-2))
     return out
 
 

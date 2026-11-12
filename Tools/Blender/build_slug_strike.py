@@ -53,9 +53,11 @@ ASSETS = {
     # unit: model scale against Oozer units (the SlimeMonarch rig was scaled by 2 after keying).
     "Oozer": {"unit": 1.0, "stalks": [f"Stalk_{s}{n}" for s in SIDES for n in (1, 2)], "sacs": [],
               "original": ["Crawl", "Idle", "Hit", "Death"], "game_scale": 0.7, "strike_slow": 1.0},
+    # Round 49E: the SlimeMonarch's acid vat has its own bone, Slosh (build_slimemonarch); the new clips key it with the
+    # same damped-spring slosh as the species' own clips, driven by the stretched body.
     "SlimeMonarch": {"unit": 2.0, "stalks": [f"Stalk_{s}{n}" for s in SIDES for n in (1, 2, 3)],
                      "sacs": ["Sac_L", "Sac_R"], "original": ["Crawl", "Idle", "Hit", "Death", "Spawn"],
-                     "game_scale": 0.9, "strike_slow": 1.25},
+                     "game_scale": 0.9, "strike_slow": 1.25, "slosh": True},
 }
 
 
@@ -205,6 +207,19 @@ def flood_clip(sp):
 # One slug
 # ---------------------------------------------------------------------------------------------------------------
 
+def with_slosh(poser, frames, spec, loop):
+    """Adds the SlimeMonarch's acid slosh (bone Slosh) to a clip spec (build_slimemonarch.slosh_track)."""
+    import build_slimemonarch as SM
+    track = SM.slosh_track(poser, frames, spec, loop)
+
+    def full(t, f):
+        specs = spec(t, f)
+        pitch, roll, bulge = track[min(len(track) - 1, max(0, int(round(f))))]
+        specs["Slosh"] = {"rot": [(SM.X, pitch), (SM.Yv, roll)], "scale": bulge}
+        return specs
+    return full
+
+
 class Slug:
     def __init__(self, name):
         self.name = name
@@ -214,7 +229,8 @@ class Slug:
         self.mesh = bpy.data.objects[name]
         self.lod_arm = bpy.data.objects[name + "_LOD1_Rig"]
         self.lod_mesh = bpy.data.objects[name + "_LOD1"]
-        scale_bones = CHAIN + self.cfg["stalks"] + self.cfg["sacs"]
+        scale_bones = CHAIN + self.cfg["stalks"] + self.cfg["sacs"] + (["Slosh"] if self.cfg.get("slosh") else [])
+        self.scale_bones = scale_bones
         self.poser = B.ScalePoser(self.arm, scale_bones)
         lod_names = {b.name for b in self.lod_arm.data.bones}
         self.lod_poser = B.ScalePoser(self.lod_arm, [n for n in scale_bones if n in lod_names])
@@ -227,6 +243,8 @@ class Slug:
             if act is not None:
                 bpy.data.actions.remove(act)
         frames, spec, loop = fn(self.pose)
+        if self.cfg.get("slosh"):
+            spec = with_slosh(self.poser, frames, spec, loop)
         self.new[clip] = self.poser.action(clip, frames, spec, loop=loop)
         self.new_lod[clip] = C.lod_action(self.poser, self.lod_poser, clip + "_LOD", frames, spec, loop, {})
         self.frames[clip] = frames
@@ -259,7 +277,7 @@ class Slug:
         with open(path, encoding="utf-8") as fh:
             rep = json.load(fh)
         rep["actions"] = {n: int(round(a.frame_range[1])) for n, a in self.actions().items()}
-        rep["scale_keyed_bones"] = CHAIN + self.cfg["stalks"] + self.cfg["sacs"]
+        rep["scale_keyed_bones"] = self.scale_bones
         rep["round31"] = facts
         with open(path, "w", encoding="utf-8") as fh:
             json.dump(rep, fh, indent=2)

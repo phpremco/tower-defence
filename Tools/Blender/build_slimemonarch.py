@@ -232,8 +232,9 @@ SLOSH_MAX = math.radians(22)
 FPS, SUB = 30, 4
 
 
-def _vat_state(poser, spec, t):
-    pose = poser.solve(spec(t, int(round(t * 1000))))
+def _vat_state(poser, spec, t, frames):
+    # The frame argument is t in frames (fractional between keys): build_slug_strike's clips run on frames.
+    pose = poser.solve(spec(t, t * frames))
     m = pose["Body_2"] @ poser.rest["Body_2"].inverted()
     up = m.to_3x3() @ Z
     centre = m @ G(VAT_C[0], SLIME_LEVEL, VAT_C[1])
@@ -248,7 +249,7 @@ def slosh_track(poser, frames, spec, loop):
     samples = []
     for i in range(n * cycles + 1):
         t = (i % n) / n if loop else min(1.0, i / n)
-        samples.append(_vat_state(poser, spec, t))
+        samples.append(_vat_state(poser, spec, t, frames))
     pos = [c for _, _, c in samples]
     w0 = 2 * math.pi * SLOSH_HZ
     th = [samples[0][0], samples[0][1]]
