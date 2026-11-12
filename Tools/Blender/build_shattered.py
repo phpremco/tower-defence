@@ -62,7 +62,48 @@ PELVIS_ROT = T.rot(pitch=6)
 HEAD_C = G(0, 1.32, 1.42)
 HEAD_R = (0.5, 0.5, 0.3)
 HEAD_ROT = T.rot(pitch=10)
+# Round 49F (Remco: "the teeth when the mouth is closed seem to go through the lips"): the lower jaw sat wedged into
+# the head core (no gap even with the jaw shut), so every tooth crossed a lip. It now hangs JAW_DROP lower: a real
+# slot under the head's front rim for the short upper fangs, and the jaw's front lip still juts out past the head
+# (an underbite) so the long lower fangs rise outside the upper lip. Jaw ellipsoid: centre, radii, pitch.
+JAW_DROP = 0.2  # round 49G: 0.15 -> 0.2, so the gums of the new mouth leave a slot between them
+JAW_C = G(0, 1.05 - JAW_DROP, 1.62)
+JAW_R = (0.34, 0.36, 0.14)
+JAW_ROT = T.rot(pitch=-10)
 GAP, THICK = 0.05, 0.1
+
+# Round 49G (Remco on 49F: "the jaw seems not attached, and the teeth are glued against the head"): the jaw plate hung
+# under the round head core with nothing joining them, and the upper fangs grew from inside the dark sphere along its
+# curve. Now the head has an upper jaw (a plated muzzle jutting from the lower front of the core, its flat underside the
+# upper lip), the jaw hinges visibly (on each side a jaw branch, JawRamus, rises from the back of the jaw plate under a
+# cheek plate on the head, right at the jaw bone's pivot, so it stays tucked in at every opening), and a gum runs along
+# both lips (mouth49g.py) with the teeth (shattered_detail.py) rooted in it, pointing into the mouth.
+MUZZLE_C = G(0, 1.2, 1.66)
+MUZZLE_R = (0.42, 0.36, 0.1)
+MUZZLE_ROT = T.rot(pitch=-4)
+
+
+def muzzle_shape(b, style=None, k=1.0):
+    b.ellipsoid("HeadCore", HEAD_C, HEAD_R, HEAD_ROT, bone="Head", segments=(36, 18), style=style)
+    return b.ellipsoid("Muzzle", MUZZLE_C, MUZZLE_R, MUZZLE_ROT, bone="Head", segments=(40, 16),
+                       deform=C.chiselled(12, 33, 0.08), style=style)
+
+
+def jaw_shape(b, style=None):
+    return b.ellipsoid("Jaw", JAW_C, JAW_R, JAW_ROT, bone="Jaw", segments=(32, 16), deform=C.chiselled(12, 30, 0.07),
+                       style=style)
+
+
+def _mouth():
+    import mouth49g as MO
+    return MO.Mouth(u=[(-0.27, 1.5), (-0.25, 1.62), (-0.2, 1.74), (-0.12, 1.84), (0.0, 1.89), (0.12, 1.84),
+                       (0.2, 1.74), (0.25, 1.62), (0.27, 1.5)],
+                    upper_fn=muzzle_shape, lower_fn=jaw_shape, gum_r=0.035, gum_sink=0.015, ray_from=(0.3, 2.2),
+                    lower_inset=0.92, clearance=0.02, upper_teeth=7, lower_teeth=6, tooth_r=0.045, canine=1.35,
+                    out_upper=0.15, out_lower=-0.1)
+
+
+MOUTH = _mouth()
 
 ARM_TABLE = [((0.82, 1.95, 0.72), (1.35, 0.0, 1.5), (1.25, 1.25))]
 LEG_TABLE = [((0.6, 1.15, -1.25), (1.0, 0.0, -1.55), (0.72, 0.78))]
@@ -135,6 +176,24 @@ def patch_point(entry, a, bb, off, sx=None):
     return Vector(c) + rot_m @ Vector((unit.x * r[0], unit.y * r[1], unit.z * r[2])) + n * off, n
 
 
+# Round 49G (curator, strict loose-part check: "Shell_2 ... a 5-6 cm armour gap"): every shell plate is tied to the core
+# by sinew straps that cross the gap (on the plate's own bone, so they fly off with it). The plates are remeshed apart
+# from the core (build_shattered2.separate_shell_fuse) so each stays its own island for the scale-0 phase breaks.
+STRAP_SPOTS = ((0.22, 0.28), (0.78, 0.28), (0.22, 0.72), (0.78, 0.72), (0.5, 0.5))
+SHELL_PARTS = ("Shell", "Spike", "ShellStrap")
+
+
+def add_straps(b, entry, k):
+    name, mirrored = entry[0], entry[6]
+    style = H.glow_flesh(CORE, k * 0.4, glow=0.5, flank=(0.3, 0.9), folds=8.0)
+    for sx in ((-1, 1) if mirrored else (None,)):
+        for a, bb in STRAP_SPOTS:
+            outer, n = patch_point(entry, a, bb, GAP + THICK * 0.5, sx)
+            inner, _ = patch_point(entry, a, bb, -0.12, sx)
+            b.tube("ShellStrap", [outer, outer.lerp(inner, 0.5), inner], [0.075, 0.06, 0.1], sides=10, chain=[name],
+                   style=style)
+
+
 def add_spikes(b, entry, k):
     """Hooked spikes on the rear edge of the hump plates (they fly off with the plate)."""
     name = entry[0]
@@ -146,6 +205,38 @@ def add_spikes(b, entry, k):
         tip = base + n * (0.42 if a == 0.5 else 0.28) + back * 0.25
         b.tube("Spike", [base - n * 0.05, base.lerp(tip, 0.5) + n * 0.04, tip], [0.09 if a == 0.5 else 0.065, 0.05, 0.006],
                sides=10, chain=[name], style=H.hook(PAL, k * 0.4, glow=0.6, glow_from=0.75))
+
+
+def mouth_parts(b, k):
+    """Round 49G: the muzzle (upper jaw), the jaw hinge (cheek plates and jaw branches), the gums, a dark palate and
+    tongue and the overcharge glow deep in the throat."""
+    import mouth49g as MO
+    b.ellipsoid("Muzzle", MUZZLE_C, MUZZLE_R, MUZZLE_ROT, bone="Head", segments=(40, 16),
+                deform=C.chiselled(12, 33, 0.08),
+                style=K2.armour_plate(PAL, k * 0.4, rim_glow=0.7, chevron=0.6, chevron_angle=1.1, lip=0.8, cells=8,
+                                      seed=35))
+    hinge = G(0, 1.12, 1.3)  # the Jaw bone's head: points near it barely move when the jaw opens
+    for side, sx in SIDES:
+        # Round 49G follow-up (curator: "the jaw still reads as a separate grey slab"): bigger cheek plates standing
+        # proud of the head's sides and thick jaw branches running up the outside of the face into them.
+        b.ellipsoid("Cheek", hinge + G(0.4 * sx, 0.02, 0.04), (0.22, 0.26, 0.21), T.rot(yaw=12 * sx), bone="Head",
+                    segments=(24, 12), deform=C.chiselled(10, 37 + (sx > 0), 0.1),
+                    style=K2.armour_plate(PAL, k * 0.4, rim_glow=0.6, chevron=0.0, lip=0.8, cells=6, seed=37))
+        b.tube("JawRamus", [G(0.27 * sx, 0.84, 1.55), G(0.36 * sx, 0.95, 1.4), hinge + G(0.4 * sx, 0.0, 0.02)],
+               [0.17, 0.16, 0.14], sides=12, chain=["Jaw"], flatten=0.75,
+               style=K2.armour_plate(PAL, k * 0.4, rim_glow=0.8, chevron=0.0, lip=0.6, cells=6, seed=39))
+    up, lo = MO.gum_path(MOUTH, True), MO.gum_path(MOUTH, False)
+    radii = [MOUTH.gum_r * 0.8] + [MOUTH.gum_r] * (len(up) - 2) + [MOUTH.gum_r * 0.8]
+    gum = MO.gum_style(1, flesh=(0.3, 0.06, 0.2), deep=(0.06, 0.01, 0.06), glow=(1.0, 0.42, 0.78), glow_k=0.15)
+    b.tube("UpperGum", up, radii, sides=12, chain=["Head"], style=gum)
+    b.tube("LowerGum", lo, radii, sides=12, chain=["Jaw"], style=gum)
+    mid_up = sum((v.z for v in up), 0.0) / len(up)
+    mid_lo = sum((v.z for v in lo), 0.0) / len(lo)
+    flesh = MO.gum_style(7, flesh=(0.2, 0.04, 0.14), deep=(0.04, 0.01, 0.04))
+    b.ellipsoid("Palate", G(0, mid_up + 0.01, 1.68), (0.24, 0.2, 0.03), bone="Head", segments=(24, 10), style=flesh)
+    b.ellipsoid("Tongue", G(0, mid_lo - 0.01, 1.66), (0.2, 0.2, 0.035), bone="Jaw", segments=(24, 10), style=flesh)
+    b.ellipsoid("Throat", G(0, (mid_up + mid_lo) * 0.5, 1.5), (0.16, 0.12, 0.05), bone="Head", segments=(16, 8),
+                style=H.inner_glow(CORE, 0.3))
 
 
 def body_parts():
@@ -170,12 +261,13 @@ def body_parts():
             T.ellipsoid_patch(b, "Shell", c, r, rot_m, axes, ar, br, sign, GAP, THICK, name, style, bulge=0.06,
                               keel=0.0 if name == "Shell_8" else 0.28)
         add_spikes(b, entry, k)
+        add_straps(b, entry, k)
     # Jaw: a cracked lower jaw with the core showing; eyes.
-    b.ellipsoid("Jaw", G(0, 1.05, 1.62), (0.34, 0.36, 0.14), T.rot(pitch=-10), bone="Jaw", segments=(32, 16),
-                deform=C.chiselled(12, 30, 0.07), style=K2.armour_plate(PAL, k * 0.4, rim_glow=0.8, chevron=0.0, lip=0.8,
-                                                                         cells=10, seed=31))
+    plate = K2.armour_plate(PAL, k * 0.4, rim_glow=0.8, chevron=0.0, lip=0.8, cells=10, seed=31)
+    jaw_shape(b, plate)
+    mouth_parts(b, k)
     for side, sx in SIDES:
-        root = G(0.28 * sx, 1.02, 1.7)
+        root = G(0.28 * sx, 1.02 - JAW_DROP, 1.7)
         b.tube("Tusk", [root, root + G(0.18 * sx, 0.12, 0.28), root + G(0.22 * sx, 0.45, 0.42)], [0.08, 0.06, 0.008],
                sides=10, chain=["Jaw"], style=H.hook(PAL, k * 0.4, glow=0.5, glow_from=0.8))
     for sx in (-1, 1):
@@ -395,7 +487,8 @@ def death_spec(poser):
 
 CLIPS = {"Walk": walk_spec, "Idle": idle_spec, "Hit": hit_spec, "PhaseBreak1": break1_spec,
          "PhaseBreak2": break2_spec, "Death": death_spec}
-BODY_RIGID = {"Shell", "Spike", "Jaw", "Tusk", "Fist"}
+BODY_RIGID = {"Shell", "Spike", "Jaw", "Tusk", "Fist", "Muzzle", "Cheek", "JawRamus", "UpperGum", "LowerGum",
+              "Palate", "Tongue", "Throat"}
 CRYSTAL_RIGID = {"Cluster", "Tooth"}
 LOD_DROP = {"Jaw": "Head"}
 

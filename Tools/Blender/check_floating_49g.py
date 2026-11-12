@@ -100,16 +100,17 @@ def inside(tree, p, normal_hit):
 
 
 def surface_gap(ipts, itree, bpts_near, btree, early=0.0):
-    """Surface distance between an island and the body (0 when they cross)."""
+    """Surface distance between an island and the body (0 when they cross or when the island lies inside the body).
+    Insideness is a ray-parity majority on the island's centre and a few of its vertices: the nearest-face normal is
+    no guide deep inside a concave body (the Shattered's phase-1 crystals sit 0.6 m deep in its core)."""
     best = 1e9
     for q in ipts:
-        p = Vector(q)
-        hit = btree.find_nearest(p)
-        if hit[0] is None:
-            continue
-        if hit[3] < best:
+        hit = btree.find_nearest(Vector(q))
+        if hit[0] is not None and hit[3] < best:
             best = hit[3]
-        if inside(btree, p, hit):
+    probes = [ipts.mean(axis=0)] + list(ipts[np.linspace(0, len(ipts) - 1, min(8, len(ipts))).astype(int)])
+    for q in probes:
+        if sum(_parity(btree, Vector(q), d) for d in RAYS) >= 4:
             return 0.0
     if itree is not None:
         for q in bpts_near:

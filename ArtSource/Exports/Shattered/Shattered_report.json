@@ -1,11 +1,11 @@
 {
   "asset": "Shattered",
-  "game_tris": 24025,
+  "game_tris": 24106,
   "tris_per_material": [
-    17493,
-    6532
+    17543,
+    6567
   ],
-  "source_tris": 1686600,
+  "source_tris": 1979536,
   "bones": 34,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -21,44 +21,44 @@
   ],
   "uv": {
     "Shattered": {
-      "islands": 47,
+      "islands": 129,
       "closed_islands_cut": 0,
-      "folded_fallback_faces": 156,
-      "mirrored_faces": 8663,
-      "uv_coverage": 0.654,
-      "world_per_uv": 6.385107388041355
+      "folded_fallback_faces": 53,
+      "mirrored_faces": 8725,
+      "uv_coverage": 0.677,
+      "world_per_uv": 6.882196205910769
     },
     "Shattered_Crystal": {
-      "islands": 66,
+      "islands": 89,
       "closed_islands_cut": 0,
-      "folded_fallback_faces": 73,
-      "mirrored_faces": 3180,
-      "uv_coverage": 0.535,
-      "world_per_uv": 3.830053219454505
+      "folded_fallback_faces": 26,
+      "mirrored_faces": 3247,
+      "uv_coverage": 0.615,
+      "world_per_uv": 4.625476931536586
     }
   },
   "detail": {
     "Shattered": {
       "chitin": {
         "map": "Detail_Chitin_Normal.png",
-        "tiling": 26.6,
+        "tiling": 28.7,
         "mask": "B"
       },
       "membrane": {
         "map": "Detail_Membrane_Normal.png",
-        "tiling": 20.0,
+        "tiling": 21.5,
         "mask": "A"
       }
     },
     "Shattered_Crystal": {
       "crystal": {
         "map": "Detail_Crystal_Normal.png",
-        "tiling": 22.8,
+        "tiling": 27.5,
         "mask": "B"
       },
       "rock": {
         "map": "Detail_Rock_Normal.png",
-        "tiling": 13.3,
+        "tiling": 16.1,
         "mask": "A"
       }
     }
@@ -82,8 +82,8 @@
   },
   "size_m": [
     3.428,
-    5.253,
-    3.639
+    5.403,
+    3.566
   ],
   "unity_scale": 1.0,
   "scale_keyed_bones": [
@@ -107,7 +107,7 @@
   ],
   "lod1": {
     "fbx": "Shattered_LOD1.fbx",
-    "tris": 9499,
+    "tris": 9483,
     "bones": 33
   },
   "walk_distance_per_loop": 1.452,
@@ -276,7 +276,7 @@
         "loop": false
       },
       "Submerged_Loop": {
-        "depth_m": 4.695727777481079,
+        "depth_m": 3.660744857788086,
         "note": "pivot on the liquid surface; everything stays under it; in place",
         "frames": 80,
         "loop": true,
@@ -284,7 +284,7 @@
       },
       "Dive_Into_Liquid": {
         "end_offset_forward_m": 2.8,
-        "depth_m": 4.696,
+        "depth_m": 3.661,
         "takeoff_frame": 20,
         "splash_frame": 28,
         "under_frame": 52,
@@ -293,7 +293,7 @@
         "loop": false
       },
       "Surface_Burst": {
-        "start_depth_m": 4.696,
+        "start_depth_m": 3.661,
         "end_offset_forward_m": 2.8,
         "breach_frame": 16,
         "land_frame": 32,
@@ -308,10 +308,17 @@
       "IK_Leg_L1",
       "IK_Leg_R1"
     ],
-    "extra_objects": [],
+    "extra_objects": [
+      "Shattered_Eyes",
+      "Shattered_Teeth",
+      "Shattered_Claws",
+      "Shattered_Eyes_LOD1",
+      "Shattered_Teeth_LOD1",
+      "Shattered_Claws_LOD1"
+    ],
     "climb_height_m": 1.5,
     "liquid": "water (any pool)",
-    "submerged_depth_m": 4.696,
+    "submerged_depth_m": 3.661,
     "foot_markers": "IK_<limb> bones at the rest foot contacts (deform flag on, no weights)",
     "shards": {
       "ShardRunner": "../ShardRunner/ShardRunner.fbx",
@@ -334,32 +341,32 @@
   "round45_detail": {
     "parts": {
       "body_cut_tris": {
-        "Shattered": 0,
-        "Shattered_LOD1": 0
+        "Shattered": 10,
+        "Shattered_LOD1": 6
       },
       "Eyes": {
         "object": "Shattered_Eyes",
         "material": "Shattered_Eyes_Mat",
         "maps": "Shattered_Eyes_*.png (1024, Low 512)",
-        "tris": 1194,
-        "source_tris": 128084,
+        "tris": 1198,
+        "source_tris": 128744,
         "uv": {
-          "islands": 10,
+          "islands": 11,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 597,
-          "uv_coverage": 0.677,
-          "world_per_uv": 0.798900860089194
+          "mirrored_faces": 599,
+          "uv_coverage": 0.622,
+          "world_per_uv": 0.8335128559521193
         },
         "detail": {
           "chitin": {
             "map": "Detail_Chitin_Normal.png",
-            "tiling": 11.1,
+            "tiling": 11.6,
             "mask": "B"
           },
           "membrane": {
             "map": "Detail_Membrane_Normal.png",
-            "tiling": 8.3,
+            "tiling": 8.7,
             "mask": "A"
           }
         },
@@ -378,25 +385,25 @@
         "object": "Shattered_Teeth",
         "material": "Shattered_Teeth_Mat",
         "maps": "Shattered_Teeth_*.png (1024, Low 512)",
-        "tris": 1100,
-        "source_tris": 40216,
+        "tris": 1098,
+        "source_tris": 55952,
         "uv": {
-          "islands": 8,
+          "islands": 7,
           "closed_islands_cut": 0,
           "folded_fallback_faces": 0,
-          "mirrored_faces": 550,
-          "uv_coverage": 0.51,
-          "world_per_uv": 0.462078451142013
+          "mirrored_faces": 549,
+          "uv_coverage": 0.593,
+          "world_per_uv": 0.5079029552115039
         },
         "detail": {
           "crystal": {
             "map": "Detail_Crystal_Normal.png",
-            "tiling": 5.5,
+            "tiling": 6.0,
             "mask": "B"
           },
           "chitin": {
             "map": "Detail_Chitin_Normal.png",
-            "tiling": 6.4,
+            "tiling": 7.1,
             "mask": "A"
           }
         },
@@ -408,7 +415,7 @@
           "Head",
           "Jaw"
         ],
-        "note": "crystal fangs on the head rim + jaw",
+        "note": "round 49G: teeth rooted in the gums",
         "lod1_object": "Shattered_Teeth_LOD1",
         "lod1_tris": 340
       },
@@ -416,25 +423,25 @@
         "object": "Shattered_Claws",
         "material": "Shattered_Claws_Mat",
         "maps": "Shattered_Claws_*.png (1024, Low 512)",
-        "tris": 1724,
-        "source_tris": 98416,
+        "tris": 1738,
+        "source_tris": 115120,
         "uv": {
-          "islands": 17,
+          "islands": 12,
           "closed_islands_cut": 0,
-          "folded_fallback_faces": 11,
-          "mirrored_faces": 796,
-          "uv_coverage": 0.112,
-          "world_per_uv": 2.322966460828572
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 836,
+          "uv_coverage": 0.61,
+          "world_per_uv": 1.0568741294000126
         },
         "detail": {
           "chitin": {
             "map": "Detail_Chitin_Normal.png",
-            "tiling": 32.3,
+            "tiling": 14.7,
             "mask": "B"
           },
           "crystal": {
             "map": "Detail_Crystal_Normal.png",
-            "tiling": 27.7,
+            "tiling": 12.6,
             "mask": "A"
           }
         },
@@ -454,16 +461,16 @@
       }
     },
     "tris_before": {
-      "lod0": 24025,
-      "lod1": 9499
+      "lod0": 24106,
+      "lod1": 9483
     },
     "tris_after": {
-      "lod0": 28023,
-      "lod1": 10731
+      "lod0": 28130,
+      "lod1": 10717
     },
     "increase": {
-      "lod0": 0.166,
-      "lod1": 0.13
+      "lod0": 0.167,
+      "lod1": 0.131
     },
     "extra_objects": [
       "Shattered_Eyes",

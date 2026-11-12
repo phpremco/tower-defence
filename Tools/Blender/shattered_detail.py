@@ -84,26 +84,20 @@ def eye_parts(boss):
     return b
 
 
-def teeth_parts(boss):
-    b = C.PartBuilder()
-    fang = D.keratin_style(CRY_ROOT, CRY_BODY, CRY_TIP, glow=PINK, glow_at="body", glow_k=0.55, seed=11, wet=0.1,
-                           translucent=0.1, bands=3, family=(0.0, 0.0, 0.8, 0.0))
 
-    def front(x, z):
-        p, n = boss.ray(Vector((x, -4.0, z)), Vector((0, 1, 0)))
-        return (p - n * 0.03) if p is not None else None
-    # Upper row: jagged crystal fangs hanging from the rim of the head core (Head), over the jaw.
-    for x, ln, r in ((0.05, 0.22, 0.036), (0.14, 0.27, 0.042), (0.23, 0.2, 0.034), (0.31, 0.15, 0.028)):
-        p = front(x, 1.16)
-        if p is not None:
-            D.fang(b, "UpperFang", p, G(0.06, -1.0, 0.35).normalized(), r, ln, "Head", fang, hook=G(0, 0, -1),
-                   hook_k=0.15, sides=6, flute=0.3, twist=0.6)
-    # Lower row: rising from the front lip of the cracked jaw (Jaw).
-    for x, ln, r in ((0.09, 0.18, 0.034), (0.2, 0.22, 0.038)):
-        p = front(x, 1.1)
-        if p is not None:
-            D.fang(b, "LowerFang", p, G(-0.05, 1.0, 0.4).normalized(), r, ln, "Jaw", fang, hook=G(0, 0, -1),
-                   hook_k=0.15, sides=6, flute=0.3, twist=0.6)
+
+def teeth_parts(boss):
+    """Round 49G (Remco: "the teeth are glued against the head"): two interlocking rows of teeth rooted in the gums of
+    the new mouth (build_shattered.MOUTH, mouth49g.add_teeth): upper on Head under the muzzle pointing down into the
+    slot, lower on Jaw pointing up; each stops short of the other gum with the jaw at rest. Pale bone with a faint
+    pink stain at the root (the overcharge in its blood), matte, not glassy."""
+    import build_shattered as BSH
+    import mouth49g as MO
+    b = C.PartBuilder()
+    style = MO.ivory_style(11, stain=(0.32, 0.08, 0.26), root=(0.2, 0.08, 0.16), body=(0.8, 0.72, 0.7),
+                           tip=(0.93, 0.88, 0.88))
+    placed = MO.add_teeth(b, BSH.MOUTH, 1.0, style, lambda part, bone, p: None, name="Fang")
+    C.log("shattered teeth", placed)
     return b
 
 
@@ -112,14 +106,14 @@ def claw_parts(boss):
     talon = D.keratin_style(KER_ROOT, KER_BODY, KER_TIP, glow=PINK, glow_at="tip", glow_k=0.8, seed=21, wet=0.3,
                             bands=8)
     # Spade fists: three hooked talons curling down from the front of each fist (Arm_*1_Lower).
+    # Round 49G (strict loose-part check): a ray from in front hit the crystal cleaver first, so the talons sat on the
+    # blade 0.56 m in front of the fist. They now start inside the front of the fist ellipsoid
+    # (build_shattered: wr + 0.2 up, radii 0.36 / 0.4 / 0.24) and grow out of its knuckles.
     el, wr = boss.bone("Arm_R1_Lower")
     for k, dx in enumerate((-0.2, 0.0, 0.2)):
-        probe = wr + Vector((dx, 0, 0.2))
-        p, n = boss.ray(probe + Vector((0, -2, 0)), Vector((0, 1, 0)))
-        if p is None:
-            continue
-        D.claw(b, "FistTalon", p + Vector((0, 0.03, 0)), Vector((dx * 0.5, -1.0, -0.35)).normalized(), 0.075,
-               0.4 if k == 1 else 0.34, "Arm_R1_Lower", talon, hook=Vector((0, 0.3, -1)), hook_k=0.7)
+        base = wr + Vector((dx, -0.24, 0.12))
+        D.claw(b, "FistTalon", base, Vector((dx * 0.5, -1.0, -0.35)).normalized(), 0.075,
+               0.52 if k == 1 else 0.46, "Arm_R1_Lower", talon, hook=Vector((0, 0.3, -1)), hook_k=0.7)
     # Hind feet: three talons splayed round each foot (Leg_*1_Lower), tips to the ground.
     kn, ft = boss.bone("Leg_R1_Lower")
     for k, deg in enumerate((-60.0, 0.0, 55.0)):
@@ -134,7 +128,7 @@ def claw_parts(boss):
 MAKERS = [("Eyes", eye_parts, dict(tris=1200, lod_tris=340, voxel=0.0045, families=("chitin", "membrane"),
                                   emission_strength=2.5, specular=0.6, note="compound overcharge eyes (three pairs)")),
           ("Teeth", teeth_parts, dict(tris=1100, lod_tris=340, voxel=0.004, families=("crystal", "chitin"),
-                                      emission_strength=2.5, specular=0.6, note="crystal fangs on the head rim + jaw")),
+                                      emission_strength=2.5, specular=0.6, note="round 49G: teeth rooted in the gums")),
           ("Claws", claw_parts, dict(tris=1800, lod_tris=560, voxel=0.006, families=("chitin", "crystal"),
                                      emission_strength=2.5, specular=0.5, note="fist talons + hind-foot talons"))]
 
