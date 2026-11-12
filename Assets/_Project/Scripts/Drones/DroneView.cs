@@ -237,8 +237,7 @@ namespace Game.Drones
         {
             var trail = thruster.gameObject.AddComponent<TrailRenderer>();
             trail.time = TrailSeconds;
-            trail.startWidth = TrailWidth;
-            trail.endWidth = 0f;
+            trail.widthMultiplier = TrailWidth;
             trail.minVertexDistance = 0.05f;
             LineKit.UseBeam(trail);
             var gradient = new Gradient();

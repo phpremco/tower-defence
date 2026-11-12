@@ -16,6 +16,10 @@ namespace Game.UI
         private const float SpaceReflection = 0.12f;
         private const float SunBoost = 3f;
         private const int DotSize = 64;
+        private static readonly int SpriteCoverageId = Shader.PropertyToID("_SpriteCoverage");
+        private static readonly int CoreColorId = Shader.PropertyToID("_CoreColor");
+        private static readonly int GlowColorId = Shader.PropertyToID("_GlowColor");
+        private static readonly int ThirdColorId = Shader.PropertyToID("_ThirdColor");
 
         private static Texture2D _softDot;
         private static Texture2D _softBand;
@@ -84,7 +88,22 @@ namespace Game.UI
         public static Texture2D SoftDotTexture => SoftDot();
 
         // Built from the Blender particle atlas's additive material: the URP default particle material is null in a player build.
-        private static Material Additive(Texture2D texture, Color colour) => ParticleKit.AdditiveSprite(texture, colour);
+        // The cutscene sprites carry their brightness in both colour and alpha; the unlit material they were made for lit them by
+        // colour alone and ignored every alpha, so they do here too (round 51: since round 50 their edges and trails faded too fast).
+        private static Material Additive(Texture2D texture, Color colour)
+        {
+            Material material = ParticleKit.AdditiveSprite(texture, colour);
+            material.SetFloat(SpriteCoverageId, 0f);
+            // That material also lit every channel of a painted sprite in the tint, not only its red: each channel lights its own
+            // primary here, so a tinted sprite keeps its colours. It also took the tint as a gamma colour, so an intensity of 2
+            // lit about 4.6 times as bright; the atlas material takes its colours as they are (measured in the round-51 lab), so
+            // the tint is turned linear first.
+            Color linear = colour.linear;
+            material.SetColor(CoreColorId, new Color(linear.r, 0f, 0f));
+            material.SetColor(GlowColorId, new Color(0f, linear.g, 0f));
+            material.SetColor(ThirdColorId, new Color(0f, 0f, linear.b));
+            return material;
+        }
 
         // Bright in the middle and gone at the edge, round for glows.
         private static Texture2D SoftDot()

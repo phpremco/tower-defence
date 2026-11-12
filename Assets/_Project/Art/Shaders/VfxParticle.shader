@@ -15,6 +15,7 @@ Shader "Game/VfxParticle"
         [HDR] _Tint ("Weapon tint on the glow", Color) = (1, 1, 1, 1)
         _Intensity ("Intensity", Float) = 1
         _Opacity ("Opacity (0 additive, 1 covering)", Range(0, 1)) = 0
+        _SpriteCoverage ("Coverage from the sprite and vertex alpha (0: the colour alone shapes it)", Range(0, 1)) = 1
         _Grid ("Atlas columns, rows", Vector) = (1, 1, 0, 0)
         _Frame ("Atlas cell (lines and quads)", Float) = 0
         _SoftDistance ("Soft particle distance", Float) = 0.4
@@ -62,6 +63,7 @@ Shader "Game/VfxParticle"
             half4 _Tint;
             half _Intensity;
             half _Opacity;
+            half _SpriteCoverage;
             float4 _Grid;
             float _Frame;
             float _SoftDistance;
@@ -127,7 +129,9 @@ Shader "Game/VfxParticle"
                 half crackle = SAMPLE_TEXTURE2D(_NoiseTex, sampler_NoiseTex, noiseUv * 1.7 + _NoiseScroll.zw * _Time.y).g;
                 light *= lerp(1.0h, 0.35h + 1.3h * strands * (0.5h + crackle), _NoiseStrength);
 #endif
-                half coverage = texel.a * input.color.a;
+                // A painted cutscene glow whose alpha repeats its brightness is shaped by its colour alone (_SpriteCoverage 0), so
+                // its edge falls off once and not twice; like the unlit material it was made for, it ignores the vertex alpha too.
+                half coverage = lerp(1.0h, texel.a * input.color.a, _SpriteCoverage);
 #if defined(_SOFT_PARTICLES)
                 coverage *= VfxSoftFade(input.screenPos, input.eyeDepth, _SoftDistance);
 #endif

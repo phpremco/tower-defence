@@ -32,6 +32,12 @@ namespace Game.Hero
         [Header("Weapons")]
         [Tooltip("The pistol's muzzle in its grip space.")]
         [SerializeField] private Vector3 _muzzle = new Vector3(0f, 0.062f, 0.192f);
+        [Tooltip("The barrel's direction in grip space as the pistol lies after import: the bolt and the muzzle flash leave the muzzle along it.")]
+        [SerializeField] private Vector3 _barrelAxis = Vector3.forward;
+        [Tooltip("The bone that swings the gun arm onto the target after the clips (the shoulder), so the barrel points where the bolt goes.")]
+        [SerializeField] private string _gunArmBone = "UpperArm_R";
+        [Tooltip("The most the gun arm turns from the clip's aim to lay the barrel on the target, in degrees.")]
+        [SerializeField] [Range(0f, 90f)] private float _gunArmMaxDegrees = 60f;
         [Tooltip("Scale of the pistol model in the hand and the holster, so it reads from the game camera.")]
         [SerializeField] [Range(0.5f, 2.5f)] private float _pistolScale = 1.35f;
         [Tooltip("Where the light strip on top of the pistol starts, in grip space; it runs to the muzzle.")]
@@ -93,6 +99,9 @@ namespace Game.Hero
         public string[] AimBones => _aimBones;
         public string PackBone => _packBone;
         public Vector3 Muzzle => _muzzle;
+        public Vector3 BarrelAxis => _barrelAxis.sqrMagnitude > 0f ? _barrelAxis.normalized : Vector3.forward;
+        public string GunArmBone => _gunArmBone;
+        public float GunArmMaxDegrees => _gunArmMaxDegrees;
         public float WalkBelow => _walkBelow;
         public string[] JetSockets => _jetSockets;
         public Color ThrustColor => _thrustColor;
@@ -158,6 +167,11 @@ namespace Game.Hero
             else if (_body.IndexOf(ModelClipRole.Idle) < 0)
             {
                 Debug.LogWarning($"HeroArtDefinition '{name}' has a body without an Idle clip.", this);
+            }
+
+            if (_barrelAxis.sqrMagnitude < 0.0001f)
+            {
+                Debug.LogWarning($"HeroArtDefinition '{name}' has no barrel axis: the bolt would leave the muzzle in no direction.", this);
             }
 
             if (_blinkEvery.y < _blinkEvery.x || _blinkEvery.x <= _blinkSeconds)

@@ -129,6 +129,7 @@ namespace Game.Combat
             _trail.shadowCastingMode = ShadowCastingMode.Off;
             _trail.sharedMaterial = _plainTrail;
             _trail.textureMode = LineTextureMode.Stretch;
+            LineKit.ShapeEnds(_trail);
 
             var smokeTrail = new GameObject("SmokeTrail");
             smokeTrail.transform.SetParent(transform, false);
@@ -137,6 +138,7 @@ namespace Game.Combat
             _smokeTrail.shadowCastingMode = ShadowCastingMode.Off;
             _smokeTrail.textureMode = LineTextureMode.Tile;
             _smokeTrail.colorGradient = FadingGradient(0.8f);
+            LineKit.ShapeEnds(_smokeTrail);
             _smokeTrail.emitting = false;
             _smokeTrail.enabled = false;
 
@@ -355,7 +357,6 @@ namespace Game.Combat
                 // One painted line carries core and glow; a painted arc spans the whole way and swaps its picture.
                 _beamFade.Show(_weapon.BeamWidth);
                 _beamGlowFade.Hide();
-                _beam.positionCount = 2;
                 // Stretched: the painted core fades out at both ends of its strip, so tiling it would dash the beam.
                 _beam.textureMode = LineTextureMode.Stretch;
                 _beam.sharedMaterial = sheet.MaterialFor(_low);
@@ -371,8 +372,12 @@ namespace Game.Combat
 
             _beamFade.Show(BeamWidth);
             _beamGlowFade.Show(BeamGlowWidth);
-            _beam.positionCount = style == ProjectileStyle.Lightning ? ArcPoints : 2;
-            _beamGlow.positionCount = _beam.positionCount;
+            if (style == ProjectileStyle.Lightning)
+            {
+                _beam.positionCount = ArcPoints;
+                _beamGlow.positionCount = ArcPoints;
+            }
+
             _beam.textureMode = LineTextureMode.Stretch;
             _beam.SetPropertyBlock(null);
             // A white-hot core inside the soft halo line; both wear the beam profile, so neither ends in a hard flat strip.
@@ -492,10 +497,8 @@ namespace Game.Combat
             Vector3 from = _projectile.Origin;
             if (!jagged || _arcCard)
             {
-                _beam.SetPosition(0, from);
-                _beam.SetPosition(1, to);
-                _beamGlow.SetPosition(0, from);
-                _beamGlow.SetPosition(1, to);
+                LineKit.Straight(_beam, from, to);
+                LineKit.Straight(_beamGlow, from, to);
                 if (_arcCard)
                 {
                     Flicker();
@@ -512,6 +515,9 @@ namespace Game.Combat
 
             _flicker = ArcFlickerSeconds;
             Vector3 side = Vector3.Cross((to - from).normalized, Vector3.up);
+            float length = Vector3.Distance(from, to);
+            LineKit.FitEnds(_beam, length);
+            LineKit.FitEnds(_beamGlow, length);
             for (int i = 0; i < ArcPoints; i++)
             {
                 float t = i / (float)(ArcPoints - 1);

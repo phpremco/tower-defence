@@ -68,7 +68,8 @@ namespace Game.Tests
                     Assert.AreEqual(0f, weapon.Yaw, $"{weapon.name}: a weapon is modelled in grip space and stays unturned");
                 }
 
-                Assert.Greater(art.Muzzle.z, 0f, "the muzzle lies along the barrel (+Z)");
+                // Round 51: the imported pistol's barrel runs along -Z of its socket; the muzzle lies out along the art's barrel axis.
+                Assert.Greater(Vector3.Dot(art.Muzzle, art.BarrelAxis), 0f, "the muzzle lies out along the barrel");
                 Assert.IsNotNull(art.Bust, $"{hero.name}: no portrait bust");
             }
 

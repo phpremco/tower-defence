@@ -344,6 +344,7 @@ namespace Game.Levels
             trail.minVertexDistance = 0.1f;
             trail.textureMode = LineTextureMode.Stretch;
             trail.sharedMaterial = art.Material(MarkerKind.ScoutTrail);
+            LineKit.ShapeEnds(trail);
             trail.shadowCastingMode = ShadowCastingMode.Off;
             var gradient = new Gradient();
             gradient.SetKeys(

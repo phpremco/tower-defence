@@ -43,7 +43,6 @@ namespace Game.UI
         private readonly Material _outerMaterial;
         private readonly Material _coreMaterial;
         private readonly Material _flareMaterial;
-        private readonly Color _flareColour;
         private readonly float _intensity;
 
         /// <param name="core">The white-hot colour at the mouth (HDR).</param>
@@ -56,8 +55,8 @@ namespace Game.UI
             _coreMaterial = PlumeMaterial(core, Color.Lerp(core, edge, 0.4f), 3.2f, 2.4f, 0.7f, 0.9f);
             _outer = Cone(parent, name + "Plume", _outerMaterial);
             _core = Cone(parent, name + "Core", _coreMaterial);
-            _flareColour = Color.Lerp(core, edge, 0.5f);
-            _flare = SpaceKit.Glow(parent, name + "Flare", _flareColour, CutsceneSprite.EngineGlow);
+            Color flareColour = Color.Lerp(core, edge, 0.5f);
+            _flare = SpaceKit.Glow(parent, name + "Flare", flareColour, CutsceneSprite.EngineGlow);
             _flareMaterial = _flare.GetComponent<MeshRenderer>().sharedMaterial;
             if (shimmer)
             {
@@ -94,7 +93,9 @@ namespace Game.UI
             _coreMaterial.SetFloat(ClockId, clock + 0.37f);
             _flare.SetPositionAndRotation(mouth + along * (radius * 0.2f), view.rotation);
             _flare.localScale = Vector3.one * (radius * FlareSize * (0.6f + 0.4f * throttle) * flicker);
-            _flareMaterial.SetColor("_BaseColor", _flareColour * throttle);
+            // The flare wears the atlas shader (round 50), whose colour is set once; the throttle dims it through its intensity,
+            // turned linear as the old material turned the throttled colour (SpaceKit.Additive).
+            _flareMaterial.SetFloat(IntensityId, Mathf.GammaToLinearSpace(throttle));
             if (_shimmer != null)
             {
                 // A long quad down the plume, turned about the plume's axis to face the camera.

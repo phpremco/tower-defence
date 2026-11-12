@@ -182,14 +182,21 @@ namespace Game.Editor
             List<float> muzzle = weapons.Numbers("muzzle");
             if (muzzle.Count == 3)
             {
-                so.FindProperty("_muzzle").vector3Value = new Vector3(muzzle[0], muzzle[1], muzzle[2]);
+                so.FindProperty("_muzzle").vector3Value = ImportedGrip(new Vector3(muzzle[0], muzzle[1], muzzle[2]));
             }
+
+            so.FindProperty("_barrelAxis").vector3Value = ImportedGrip(Vector3.forward);
 
             so.FindProperty("_bust").objectReferenceValue = BuildBust(BlenderStoryCatalog.HeroBust, body);
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(art);
             return art;
         }
+
+        // The report gives the muzzle in Blender's grip space (+Z the barrel). The import turns a weapon half a turn about Y:
+        // measured in play (round 51), the pistol mesh runs from z -0.274 (the barrel's mouth) to 0.072 in its socket, so the
+        // muzzle and the barrel axis are turned the same way.
+        private static Vector3 ImportedGrip(Vector3 blenderGrip) => new Vector3(-blenderGrip.x, blenderGrip.y, -blenderGrip.z);
 
         private static ModelArtDefinition Weapon(string folder, string name, Material high, Material low)
         {

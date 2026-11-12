@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Combat;
 using Game.Core;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -16,13 +17,22 @@ namespace Game.Enemies
         private const float BeamGlowWidth = 0.95f;
         private const float BeamGlowAlpha = 0.45f;
         private const float BeamCoreWhiteness = 0.5f;
-        // The beam's points (origin, bend, end) and how far it runs along the aimed socket before it bends to the target: at most
-        // this many world units, and never more than this share of the whole beam.
-        private const int BeamPoints = 3;
+        // How far the beam runs along the aimed socket before it curves to the target: at most this many world units, and never
+        // more than this share of the whole beam. The curve is a smooth Bézier (LineKit.Curve), so the bend has no kink.
         private const float BeamLeadLength = 0.9f;
         private const float BeamLeadShare = 0.3f;
-        private const float BeamTipSize = 0.5f;
-        private const float BeamTipEmission = 3f;
+        // A quadratic Bézier only gets about half way to its control point, so the control point lies this many leads out.
+        private const float BendControlReach = 2f;
+        // Below this share of the spade's axis across the screen the beam leaves straight for the target instead.
+        private const float MinScreenLead = 0.3f;
+        // How well the spade must point at the target (cosine of the angle on screen) before the beam follows it at all: a wide
+        // strip bent through a sharper turn folds over its inner edge.
+        private const float MinLeadAlignment = 0.5f;
+        // The soft glows where the beam leaves the socket and where it strikes, as multiples of the halo width, and how bright.
+        private const float SourceFlareScale = 1.2f;
+        private const float ImpactFlareScale = 1.6f;
+        private const float SourceFlareStrength = 0.9f;
+        private const float ImpactFlareStrength = 0.7f;
         private const float BeamSparkRate = 70f;
         private const string EmitterName = "Orb";
         private const float EmitterFiringScale = 1.5f;
@@ -45,8 +55,8 @@ namespace Game.Enemies
         private readonly EnemyAttachments _attachments = new EnemyAttachments();
         private LineRenderer _beam;
         private LineRenderer _beamGlow;
-        private Transform _beamTip;
-        private Renderer _beamTipRenderer;
+        private BeamFlare _sourceFlare;
+        private BeamFlare _impactFlare;
         private Transform _ring;
         private Material _ringMaterial;
         private Color _ringColour = Color.white;
@@ -56,6 +66,7 @@ namespace Game.Enemies
         private ParticleSystem _sparks;
         private ParticleSystem _beamSparks;
         private EnemyView _view;
+        private Camera _eye;
         private Transform _socket;
         private bool _socketSearched;
         private Transform _emitter;
@@ -82,7 +93,8 @@ namespace Game.Enemies
             _abilities.Warded += OnWarded;
             _beam = _attachments.Track(Line("BossBeam", BeamWidth));
             _beamGlow = _attachments.Track(Line("BossBeamGlow", BeamGlowWidth));
-            _beamTip = BuildTip();
+            _sourceFlare = Flare("BeamSource");
+            _impactFlare = Flare("BeamImpact");
             _ring = BuildRing();
             _sparks = _attachments.Track(ParticleKit.Create(transform.parent, "PulseSparks", Vector3.zero, Color.white, 0.4f, 0.8f, 0.05f, 0.12f, 2f, 5f, 0.6f, PulseSparks * 2, 0.3f));
             _beamSparks = _attachments.Track(ParticleKit.Create(transform.parent, "BeamSparks", Vector3.zero, Color.white, 0.25f, 0.5f, 0.04f, 0.09f, 0.8f, 2.5f, 1f, 80, 0.2f));
@@ -141,10 +153,12 @@ namespace Game.Enemies
                 Vector3 origin = BeamOrigin(_abilities.LaserOrigin);
                 Vector3 end = _abilities.LaserEnd;
                 Vector3 bend = BeamBend(origin, end);
-                SetBeam(_beam, origin, bend, end);
-                SetBeam(_beamGlow, origin, bend, end);
-                _beamTip.position = end;
-                _beamTipRenderer.sharedMaterial = PlaceholderVisuals.MaterialFor(Color.Lerp(color, Color.white, 0.4f), BeamTipEmission);
+                LineKit.Curve(_beam, origin, bend, end, LineKit.FlaredEndWidth);
+                LineKit.Curve(_beamGlow, origin, bend, end, LineKit.FlaredEndWidth);
+                // The beam starts and ends at half width under glows that cover its tapers, so it grows out of the glow on the socket
+                // and into the one where it strikes, with no cut edge and no dark gap between glow and beam.
+                _sourceFlare.Show(origin, BeamGlowWidth * SourceFlareScale, color, SourceFlareStrength);
+                _impactFlare.Show(end, BeamGlowWidth * ImpactFlareScale, color, ImpactFlareStrength);
                 _beamSparks.transform.position = end;
                 ParticleSystem.MainModule main = _beamSparks.main;
                 Color spark = color * 2f;
@@ -156,7 +170,12 @@ namespace Game.Enemies
             {
                 _beam.enabled = laser;
                 _beamGlow.enabled = laser;
-                _beamTip.gameObject.SetActive(laser);
+                if (!laser)
+                {
+                    _sourceFlare.Hide();
+                    _impactFlare.Hide();
+                }
+
                 ParticleKit.SetRate(_beamSparks, laser ? BeamSparkRate : 0f);
                 if (Emitter() != null)
                 {
@@ -254,9 +273,9 @@ namespace Game.Enemies
             _sparks.Emit(RegrowSparks);
         }
 
-        // While the model holds its aim (the ray boss's tail over its back) the beam first runs out along the socket's up axis,
-        // the way the spade points, and then bends to the target: it visibly leaves the tip forward and down even when the
-        // target lies off that line. Otherwise the middle point sits halfway and the beam is straight.
+        // While the model holds its aim (the ray boss's tail over its back) the beam leaves the socket along its up axis, the way
+        // the spade points, and curves to the target: the returned point is the control point of the beam's Bézier, so the beam
+        // starts along that axis and bends without a kink. Otherwise the control point sits halfway and the beam is straight.
         private Vector3 BeamBend(Vector3 origin, Vector3 end)
         {
             Vector3 straight = Vector3.Lerp(origin, end, 0.5f);
@@ -265,15 +284,38 @@ namespace Game.Enemies
                 return straight;
             }
 
-            float lead = Mathf.Min(BeamLeadLength, Vector3.Distance(origin, end) * BeamLeadShare);
-            return origin + _socket.up * lead;
+            // Only the part of the spade's axis that crosses the screen: a lead towards or away from the camera folds the start
+            // of the beam into a few pixels, where the camera-facing strip twists and the beam reads as a zigzag (round 51).
+            Vector3 axis = _socket.up;
+            Vector3 toEnd = end - origin;
+            Camera eye = Eye();
+            if (eye != null)
+            {
+                Vector3 view = eye.transform.forward;
+                axis -= Vector3.Dot(axis, view) * view;
+                toEnd -= Vector3.Dot(toEnd, view) * view;
+            }
+
+            if (axis.sqrMagnitude < MinScreenLead * MinScreenLead || toEnd.sqrMagnitude < 0.0001f)
+            {
+                return straight;
+            }
+
+            // A spade pointing away from the target would send the beam out and back in a hairpin, which folds the strip over
+            // itself: the lead shrinks as the spade turns from the target and is gone once it points 60 degrees or more off.
+            float towards = Mathf.InverseLerp(MinLeadAlignment, 1f, Vector3.Dot(axis.normalized, toEnd.normalized));
+            float lead = Mathf.Min(BeamLeadLength, Vector3.Distance(origin, end) * BeamLeadShare) * towards;
+            return Vector3.Lerp(straight, origin + axis.normalized * (lead * BendControlReach), towards);
         }
 
-        private static void SetBeam(LineRenderer line, Vector3 origin, Vector3 bend, Vector3 end)
+        private Camera Eye()
         {
-            line.SetPosition(0, origin);
-            line.SetPosition(1, bend);
-            line.SetPosition(2, end);
+            if (_eye == null)
+            {
+                _eye = Camera.main;
+            }
+
+            return _eye;
         }
 
         // Where a beam or a volley leaves the body this frame: the bone the art names for it (the ray boss's tail, the bat
@@ -322,22 +364,17 @@ namespace Game.Enemies
             var line = go.AddComponent<LineRenderer>();
             line.useWorldSpace = true;
             line.widthMultiplier = width;
-            line.positionCount = BeamPoints;
             line.shadowCastingMode = ShadowCastingMode.Off;
-            LineKit.UseBeam(line);
+            LineKit.UseFlaredBeam(line);
             line.enabled = false;
             return line;
         }
 
-        private Transform BuildTip()
+        private BeamFlare Flare(string name)
         {
-            GameObject tip = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, Color.white, transform.parent, Vector3.zero, Vector3.one * BeamTipSize, BeamTipEmission);
-            tip.name = "BeamTip";
-            _beamTipRenderer = tip.GetComponent<Renderer>();
-            _beamTipRenderer.shadowCastingMode = ShadowCastingMode.Off;
-            _attachments.Track(tip);
-            tip.SetActive(false);
-            return tip.transform;
+            BeamFlare flare = BeamFlare.Create(transform.parent, name);
+            _attachments.Track(flare.GameObject);
+            return flare;
         }
 
         // The painted ring fades through its tint's alpha; the plain one through its colour and keeps its emission.

@@ -7635,3 +7635,460 @@ Not committed. No generator run. `ArtSource/` and `Tools/Blender/` untouched; th
    sprite's alpha once more, so their edges fall off a little faster than before. Check the opening cutscene by eye.
 4. The first shot or blow of an engagement now waits the draw (0.6 s blaster, 0.733 s sword). Steady DPS is unchanged.
    The probe bot (PlayMode) was not re-run.
+
+## Round 49I (Blender): the bats and the Skyray keep beating their wings through the strike (2026-11-12)
+
+Not committed. Blender only (no Unity run, nothing under `Assets/`). Only the **Bat** and **Skyray** exports were touched;
+the ray boss (`StormMatriarch`, 49H `Release`) and the 49G creatures were left alone. Backups of the exports, reports and
+`.blend` files: `ArtSource/Exports/_backup_r49/Bat_49I/` and `Skyray_49I/` (gitignored).
+
+Remco: "when the bats are attacking they should still be flying, they seem to stop flying as they attack". Round 50
+keeps Fly running under the strike in Unity, but the strike plays at full weight, so its own wing keys won: the bat
+`Strike` flicked the wings up once and then held them still at the bottom (frames 10-12 identical), and the Skyray
+`Dive` swept the fins down and held them (frames 10-12 identical too).
+
+### What changed (`Tools/Blender/build_attacks36.py`, round-49I block)
+
+- A `wing_beat` entry on the Bat and Skyray species. Every wing bone (bats `Arm_*`, `Hand_*`, `Finger_*`; rays
+  `Fin_*_A/B1-3`) now comes straight from the species' own **Fly** spec, time-warped (`wing_phase`) so the clip holds a
+  whole number of beats. It leaves Fly frame 0 at Fly's own rate, runs a little faster through the middle (spread with a
+  smootherstep) and lands on Fly frame 0 again at Fly's rate. Both seams with the Fly cycle match in pose (measured 0.00
+  degrees on every bone, full rig and LOD1) and in speed.
+  - **Bat** `Strike`: 2 beats in 24 frames (Fly is 13 frames = 0.43 s per beat at the seams; the fastest beat mid-clip is
+    0.375 s). The wings are up at frame 3 (the coil), and the first downstroke bottoms out at frame 9, one frame before
+    the impact (frame 10), so the hard downbeat throws it into the spit. The second beat carries it back up.
+  - **Skyray** `Dive`: 1 beat in 24 frames (Fly is 42 frames = 1.4 s per beat at the seams; the fastest point mid-clip is
+    0.58 s per beat). A whole Fly beat at Fly's rate does not fit in the 0.8 s clip, and half a beat cannot end on Fly
+    frame 0, so the beat speeds up in the middle. The fins top out around frame 7 (the climb), sweep down through the
+    impact (frame 10, the fastest part of the stroke) and bottom out at about frame 16.
+- **Downbeat push** (a stronger downbeat, never a hold): an eased extra push on top of the Fly beat. Bat: Arm 12 degrees
+  and Hand 6 degrees down over frames 4-14, peaking at frame 9. Skyray: fin roots 8 degrees and middles 5 degrees down
+  over frames 7-18, peaking at frame 13.
+- **The strike itself** is unchanged on every other bone (Body, Head, Jaw, Tail, the Skyray's Pincer lobes). It is the
+  same round-36 attack (coil, lunge or dive, held contact, spring back), now blended from and back to the *beating* Fly
+  pose instead of a still Glide (bat) or Idle (ray) frame 0. The Dive's old fin sweep-back went with the other wing keys.
+  The Shalebat shares the bat strike function; it got the same treatment in the follow-up below.
+- Rebuild: only `build_attacks36.py -- --only Bat,Skyray --norender` was run, on the existing `.blend` files. Mesh, UVs,
+  detail parts (Face, Claws) and every other clip are the same, so no species build, detail pass or skin bake was needed.
+  The element skins (Moss, Dust, Tide, Frost) and the Corrupted skins are unchanged.
+
+### Unity import notes
+
+Rows to re-import (`BlenderArtBuilder.RebuildOnly`): **Bat, Bat_Moss, Bat_Dust, Bat_Tide, Bat_Frost, the Bat corrupted
+row, Skyray, Skyray_Corrupted**. Only `<Name>.fbx`, `<Name>_LOD1.fbx` and `<Name>_report.json` changed; no maps.
+
+| Export | Clips and lengths (unchanged) | Changed clip | Event (unchanged) | Bones |
+| --- | --- | --- | --- | --- |
+| Bat | Fly 13, Glide 48, Hit 12, Death 36, Strike 24 | `Strike` (and its LOD1 copy) | impact 10 (`round36.Strike.impact_frame`) | 16 (LOD1 10), same names |
+| Skyray | Fly 42, Idle 60, Hit 12, Death 40, Dive 24 | `Dive` (and its LOD1 copy) | impact 10 (`round36.Dive.impact_frame`) | same names (incl. the 49A `Jaw`) |
+
+- Report: `round36.<clip>.starts_and_ends_on` is now `"Fly frame 0"` (was Glide or Idle frame 0). A new
+  `round36.<clip>.wing_beat` block lists the wing bones in each rig, the beats in the clip, the Fly cycle frames, the beat
+  seconds at the seams and at the fastest point, the Fly phase at the impact and the downbeat push.
+- Unity: the clip's first and last frames equal Fly frame 0. If `ClipMixer` starts the strike while Fly is mid-beat, the
+  crossfade still covers a phase jump of the wings. Starting the strike on a Fly loop boundary (or resetting Fly's time to
+  0 when the strike starts) would make it fully seamless. After the strike, Fly can carry on from its frame 0.
+
+### Checks (`ArtSource/Previews/QA/`)
+
+- `check_clip_parity.py --only Bat,Skyray --base-dir ArtSource/Exports/_backup_r49/{name}_49I --tag r49i`: **OK, OK**
+  (no notes). Against round 48 (`--tag r49i_vs_r48`): **OK, OK** (the only note is the Skyray's known 49A `Jaw` bone).
+- Wing beat and per-frame bone turn (`Tools/Blender/r49i_wings.py`, `r49i_<bat|skyray>_<before|after>.json`). The wing tip's
+  height is measured in the Body bone's frame, so the dive itself does not count. A snap is a step over 6 degrees that is
+  1.8 times larger than both its neighbours.
+
+| | Wing gap to Fly frame 0 at both ends | Frozen wing frames | Strokes (turns) | Worst step in the clip | Snaps |
+| --- | --- | --- | --- | --- | --- |
+| Bat Strike before | 41.7 deg (LOD1 22.4) | 10-12 | a flick, then a hold | 85.0 deg, `Finger_R1`, frame 6 | frame 6 on all 10 wing bones and `Tail_2` |
+| Bat Strike after | **0.0** (LOD1 0.0) | none | 4 (two full beats) | 43.6 deg, `Finger_R1` (Fly itself: 33.8) | only `Tail_2` at frame 6 (round 36, unchanged) |
+| Skyray Dive before | 10.2 deg (LOD1 3.8) | 10-12 | a sweep, then a hold | 41.2 deg, `Tail_5` | `Tail_3-5` at frame 6 (the round-36 whip) |
+| Skyray Dive after | **0.0** (LOD1 0.0) | none | 2 (one full beat, as wide as Fly's) | 41.2 deg, `Tail_5` | the same tail whip only; no fin snaps |
+
+  All other clips (Fly, Glide, Idle, Hit, Death) have the same keys as before and the same worst steps. The authored Hit
+  spring kink at frame 3 and the Death kinks at frames 3 and 6 were there before.
+- Floating parts (`check_floating_49g.py --step 1`: the exported FBX, every frame of every clip, LOD0 and LOD1;
+  `r49g_floating_<bat|skyray>_r49i_<before|after>.json`): nothing new. Bat LOD0 is clean. Bat LOD1 has the same 2 claw
+  slivers as before (0.0098, in every pose including the rest pose). Skyray LOD0 has the same 7 islands as before (the
+  known fin-tip talons at 0.036 and the spade barbs, from 49A and 49H). Skyray LOD1 is clean.
+
+### Previews
+
+- `r49i_bat_strike_sheet.png` / `r49i_bat_strike_sheet_before.png` and `r49i_skyray_dive_sheet.png` /
+  `r49i_skyray_dive_sheet_before.png`: frames 0, 3, 6, 9, 10 (impact), 13, 17 and 21, with the side view on top and the
+  play camera below. After the fix, the bat's wings go up (3), down hard into the spit (9-10), up again (13-17) and down
+  (21). The Skyray's fins rise through the climb, sweep down through the tail lash (10-13) and come back up as it levels
+  out.
+
+### Open points (round 49I)
+
+1. The Skyray's beat runs up to 2.4 times Fly's speed in the middle of the Dive (0.58 s per beat against 1.4 s). In the
+   sheets it reads as a power stroke. If it looks frantic in play, the Dive would need to be longer (for example 42
+   frames, one Fly beat at Fly's rate), which would change its length and the round-36 timing.
+2. ~~The Shalebat keeps the wing hold~~: done in the follow-up below.
+3. The bat boss's `Laser` (SkySovereign) was not touched. Round 50 found that it already beats twice.
+
+### Follow-up (curator: "it must always be smooth"): the Shalebat, and no frame-6 snaps
+
+- **Shalebat** gets the same `wing_beat` entry: 2 beats in its 24-frame `Strike` (Fly is 16 frames = 0.53 s per beat at
+  the seams; the fastest beat mid-clip is 0.33 s). The downstroke bottoms out at about frame 9.5, just before the impact
+  (frame 10). It uses the same `bat_downbeat` push (Arm 12 degrees, Hand 6). Backup: `_backup_r49/Shalebat_49I/`.
+- **Frame-6 snaps.** The cause was the round-36 launch out of the coil. The coil eased to a stop on frame 5, and the
+  lunge started on the next frame at its top speed. The coil terms (for example the bat tail's 14 degrees over a quarter
+  of the reach) collapsed in that one frame, so the tail jumped 16 degrees in one step. The fix is a new
+  `Beat(release=...)` option, used only by these three flyers (`release=5`; no other species changes):
+  - The lunge from the coil to the contact now eases in and out (smootherstep). It is as fast as before in the middle
+    (the Skyray's tail tip turns about 15-17 degrees per frame over frames 8-11), but it builds up over 2-3 frames.
+  - The coil lets go over its own 5 frames, overlapping the lunge.
+  - The spring back after the held contact (frames 10-12) now leaves from rest (`g*g/(g+1.5)`) instead of at full speed.
+    It keeps its one eased overshoot, and everything still settles by frame 23.
+  - The impact frame (10), the contact hold (10-12) and the clip lengths are unchanged.
+- Backups of the first 49I pass: `_backup_r49/Bat_49I2/` and `Skyray_49I2/`. The plain `_49I` folders hold the
+  pre-49I originals.
+
+**Unity import (replaces the list above):** **Bat, Bat_Moss, Bat_Dust, Bat_Tide, Bat_Frost, the Bat corrupted row,
+Skyray, Skyray_Corrupted, Shalebat and the Shalebat corrupted row** (its only skin). Only `<Name>.fbx`, `<Name>_LOD1.fbx`
+and `<Name>_report.json` changed; no maps.
+
+| Export | Clips and lengths (unchanged) | Changed clip | Event (unchanged) | Bones |
+| --- | --- | --- | --- | --- |
+| Shalebat | Fly 16, Glide 48, Hit 12, Death 36, Strike 24 | `Strike` (and its LOD1 copy) | impact 10 (`round36.Strike.impact_frame`) | same names; wing bones 10 (LOD1 6) |
+
+The Shalebat report has the same `starts_and_ends_on: "Fly frame 0"` and `wing_beat` block as the Bat. If Unity has no
+`Strike` catalog row for the Shalebat yet, it needs `BlenderClipSpec("Strike", ModelClipRole.Attack, 10)`, as the
+round-36 report says.
+
+**Checks after the follow-up** (all three rebuilt with `build_attacks36.py -- --only Bat,Skyray,Shalebat --norender`):
+
+| Clip | Worst step (full / LOD1) | Snaps | Gap to Fly frame 0 at both ends | Frozen wing frames |
+| --- | --- | --- | --- | --- |
+| Bat Strike | 46.1 deg, `Finger_R1` (the beat; Fly itself 33.8) | **none** (was frame 6 on 11 bones) | 0.0 | none |
+| Skyray Dive | 18.5 deg, `Tail_5` frame 3 (the coil; was 41.2 at the whip) | **none** (was `Tail_3-5` on frame 6) | 0.0 | none |
+| Shalebat Strike | 44.3 deg, `Finger_R1` (Fly itself 24.5) | **none** (was frame 6 on 11 bones, worst 85.0) | 0.0 (was 39.0, LOD1 19.9) | none (was 3 frames) |
+
+- Tail steps per frame, frames 6-11: bat `Tail_2` 0.3, 5.0, 14.1, 10.4, 2.4, 0.0 (was a 16-degree jump on frame 6);
+  Skyray `Tail_5` 1.2, 7.0, 15.1, 17.4, 14.7, 14.7 (the whip arrives tip last, then 10.2 and an eased spring).
+- The other clips (Fly, Glide, Idle, Hit, Death) are unchanged in both rigs, with the same worst steps and the same
+  pre-existing authored kinks.
+- `check_clip_parity.py --only Bat,Skyray,Shalebat`: **OK, OK, OK** against the pre-49I backups (`clip_parity_r49i.json`,
+  no notes). Against round 48 it is also OK for all three (`clip_parity_r49i_vs_r48.json`; the only note is the Skyray's
+  49A `Jaw`).
+- Floating parts (`check_floating_49g.py --step 1`): nothing new. Bat and Skyray are as listed above. Shalebat LOD0 and
+  LOD1 are clean, before and after (`r49g_floating_shalebat_r49i_<before|after>.json`).
+- Sheets (re-rendered): `r49i_bat_strike_sheet.png`, `r49i_skyray_dive_sheet.png`, and the new
+  `r49i_shalebat_strike_sheet.png` / `r49i_shalebat_strike_sheet_before.png`. The `_before` sheets of the Bat and the
+  Skyray are still the pre-49I originals.
+
+## Round 49G (Blender): a real mouth for the Bulwark and the Warlord, a hinged jaw for the Shattered, a Shardback with nothing floating, three Sealed One concepts (2026-11-12)
+
+Blender only; nothing under `Assets/` touched, Unity not run, not committed. Backups of the four exports and .blend files
+before this round: `ArtSource/Exports/_backup_r49/<Name>_49G/` (gitignored); the corrupted-skin report before this
+round: `_backup_r49/Corrupted_skins_report_49G.json`.
+
+### Why the 49F floating check passed floating spikes (Shardback)
+
+`check_floating_49f.py` chained attachment (an island counted as attached when it touched the body or any island
+already attached), scaled its threshold with the body (3..9 mm), never counted the "separate by design" Shard clusters
+(1..2 cm over their craters) and sampled 6 frames per clip of the .blend. The bigger miss: the spikes Remco saw were
+**not separate islands at all**. Rim spikes, flank frost and crater lips were placed from the ideal ellipsoid
+(`surface()`), but the built carapace has a saw-toothed rim and 7 % facets; many started in the air beside a receding
+tooth or under the rim and touched the shell only through a thin remesh bridge, so they were one island with the body
+and no island check could see them. From the side they read as hovering thorns.
+
+New `Tools/Blender/check_floating_49g.py`: imports the exported FBX and LOD1 FBX (what Unity gets), every frame of every
+clip plus rest, true surface-to-surface distance (both directions, 0 when the surfaces cross) from every island to the
+body's main island only (no chaining), threshold 0.5 cm in game metres and never looser than 0.5 cm in model units;
+`--burst` names clips that throw parts off on purpose (reported apart as `burst_only`), each entry lists the clips it
+floats in. Json: `ArtSource/Previews/QA/r49g_floating_<name>_before|after.json`. The thin-bridge case is now prevented
+at build time: `build_shardback.Shell` places every spike on the shell as built (a ray finds where its line leaves the
+volume), starts it at least 2.2 cm inside and swells a lumpy chitin mound round its foot (65 spikes, min root depth
+2.8 cm; report block `round49g`).
+
+| Creature | Strict check before (LOD0 / LOD1, floating outside burst clips) | After |
+| --- | --- | --- |
+| Shardback | 6 / 6 (all six clusters 1..2 cm over their craters in every clip; the bridged spikes were invisible to any island check) | **0 / 0**; the 6 clusters float only in Shatter (by design) |
+| Bulwark | 0 / 0 | 0 / 0 |
+| Crystal Warlord | 4 / 0 (snout fangs up to 4.3 cm off in Death) | **0 / 0** |
+| Shattered | 27 / 24 incl. burst clips (fist talons 56 cm off at rest; crystal islands; Shell_2) | 16 / 15 (talons fixed; the rest see open point 1) |
+
+### What changed
+
+- **Bulwark (mouth)**: `build_bulwark.py`, new `Tools/Blender/mouth49g.py`, `bulwark_detail.py`. The 49F teeth stood ON
+  the front of the snout (a ray from in front placed them; there was no mouth, the jaw sat wedged in the head), glassy
+  with a translucent band, flattened to tiles by the decimation. Now the jaw hangs `JAW_DROP` = 0.05 lower and is a
+  little narrower, so a slot opens under the head; wet dark gums run along both rims from corner to corner (found by
+  rays on the shapes as built), a dark palate, tongue and the glowing throat fill the slot; 6 upper + 5 lower conical,
+  hooked, matte-ivory teeth with dark roots are rooted in the gums and interlock, each stopping 3 mm short of the other
+  gum with the jaw at rest (no clip closes it further); the tusks are lower canines grown from a bony boss on each front
+  corner of the jaw, ivory, rising outside the upper lip. The 49F follow-through clips and attachment fixes stay.
+- **Crystal Warlord**: the same mouth (it shares `build_bulwark`); its teeth at boss scale in `crystalwarlord_detail.py`,
+  matte ivory with a faint pink-violet root stain instead of glassy Crysium fangs.
+- **Shattered**: `build_shattered.py`, `build_shattered2.py`, `shattered_detail.py`. A plated muzzle (the upper jaw) juts
+  from the lower front of the head core; the jaw hinges visibly: jaw branches (`JawRamus`, on Jaw) rise from the back of
+  the jaw plate to cheek plates on the head at the Jaw bone's pivot, so they stay tucked in at any opening; `JAW_DROP`
+  0.15 -> 0.2; gums on both lips with 7 upper + 6 lower bone-pale teeth rooted in them, pointing into the slot; the
+  crystal teeth that grew from the jaw lip are gone; the throat glows dimly. Fist talons start inside the fist (a ray had
+  put them on the crystal cleaver, 56 cm in front of it).
+- **Shardback**: `build_shardback.py`, `crystal_growth.py`. Every rim spike, front hook, brow horn, ram horn, flank
+  frost and crater lip grows out of the shell on a mound (above); the flank frost breaks out of the rim's upper outer
+  face (it poked out from under the rim: the "pale-blue spikes off the lower rear flank"); knee spurs point out and back
+  from a knee mound (they pointed up into the gap under the rim); each cluster's root and every shard start inside the
+  crater floor (`CLUSTER_SEAT`, `CLUSTER_SINK`; new optional `sink` in `crystal_growth.growth_cluster`, default 0 =
+  unchanged for every other creature). To keep each cluster its own island for scale-0 shedding although it now passes
+  into the floor, the clusters are remeshed apart from the body and joined (`separate_cluster_fuse`), and after every
+  skinning each island is made pure (a Shard_n island wholly on its bone, no Shard weight on the body:
+  `cluster_weights`). Still 6 cluster islands + 1 body island (LOD0 and LOD1).
+- **Sealed One**: not built or exported (three concepts below).
+- Tools: `r49f_views.py` got a `PREFIX`/`BACKUP_SUFFIX` (default unchanged); new `r49g_views.py`.
+
+### Unity import list (exact)
+
+Rows to rebuild (`BlenderArtBuilder.RebuildOnly`): **Bulwark, CrystalWarlord, Shardback, Shattered**, plus the
+corrupted-skin rows of **Bulwark, CrystalWarlord, Shardback** (`Skins/Corrupted` re-baked on the new UVs, merged into
+`ArtSource/Exports/Corrupted_skins_report.json`, 27 entries; vein coverage Bulwark 0.106, CrystalWarlord 0.034,
+Shardback 0.023). **SealedOne: no change.** The Shattered's shards (ShardRunner/Flyer/Crawler) were not re-exported.
+
+| Export | Tris LOD0 / LOD1 | Bones (LOD1) | Clips (names, frames, events) | Parts | Maps / UVs |
+| --- | --- | --- | --- | --- | --- |
+| Bulwark | 3950 / 1700 | 19 (16), unchanged | unchanged: Walk 32, Idle 72, Hit 14, Death 44, Block 24 (up 7), Strike 24 (impact 10) | Face (eyes + 11 teeth), Claws | body + parts re-baked (+ Low/, Corrupted); UVs changed |
+| CrystalWarlord | 14000 / 6000 | 19 (16), unchanged | unchanged: Walk 32, Idle 72, Hit 14, Death 44, Block 24 (up 7), Sweep 40 (hit 20) | Eyes, Teeth (11 ivory teeth), Claws | body + parts re-baked (+ Corrupted); UVs changed |
+| Shardback | 3948 / 1700 | 23 (15), unchanged | unchanged: Walk 48, Idle 72, Hit 12, Death 40, Shatter 40 (bursts 3/8/13/18/23/28), Strike 24 (impact 10) | Face, Claws | all re-baked (+ Corrupted); UVs changed (coverage 0.22) |
+| Shattered | 23982 / 9496 | 34 (33), unchanged | all 15 unchanged (names, lengths, phase/burst/split frames) | Eyes, Teeth (13 teeth), Claws | all re-baked; mirrored as before |
+
+- `check_clip_parity.py --base-dir ArtSource/Exports/_backup_r49/{name}_49G`: **Bulwark OK, CrystalWarlord OK,
+  Shardback OK, Shattered OK** (`clip_parity_r49g.json`, `clip_parity_r49g_shattered.json`). No bone, socket, clip,
+  event or part-name change; `ExtraParts` unchanged; `walk_distance_per_loop` unchanged.
+- Check in Unity: the Shardback clusters still hide by scale (pure islands verified in Blender); the health-bar
+  `_height` may move slightly on the Bulwark/Warlord (lower jaw) and the Shattered (muzzle).
+
+### Previews (`ArtSource/Previews/QA/`, bright lighting; tool `Tools/Blender/r49g_views.py`)
+
+`r49g_<key>_after_game|close|move|mouth.png` and the 2x2 `r49g_<key>_after.png` for bulwark, crystalwarlord, shattered,
+shardback (+ `r49g_shardback_after_shed.png`); `r49g_<key>_after_mouth_clips.png` (each clip at its most closed and most
+open jaw frame, two angles; Bulwark, Warlord, Shattered); loose-part sheets `r49g_<key>_loose_<clip>.png` (4 frames x 4
+angles, long lens) for every clip of all four (Shattered Idle/Walk/Roar re-rendered after the talon fix).
+
+### Sealed One: three concepts (`Tools/Blender/sealedone_concepts49g.py`, quick unbaked blockouts, rest pose)
+
+`r49g_sealedone_concept_A|B|C_game.png` (play camera) and `_close.png`:
+- **A, Warden skull**: a ribcage torso with two vast planted arms and one long, heavy, eyeless skull thrust forward with
+  a single wide mouth across its front, and a broken halo standing upright behind the shoulders, clear of the head.
+- **B, The opening seal**: a hunched torso under a hooded skull whose face is the mouth: three jaw petals meeting in a
+  snout that part on rows of teeth round a violet throat (the old face plates turned into the jaws).
+- **C, Rising leviathan**: a long arched neck rising out of the fissure between two huge gripping forelimbs, a long
+  narrow head with a deep lower jaw and one row of fangs per jaw, a collar of three glyph plates at the neck's base.
+Remco picks one; nothing was built or exported.
+
+### Open points (round 49G)
+
+1. Shattered, strict check: small Crys_4/5/6 crystal islands (phase-scaled clusters and satellites) measure 0.3..0.6 m
+   from the body in some Walk/Idle/Hit/Roar/Climb/Dive frames, the head crest island up to 0.17 m in the Dive clips,
+   Shell_2 (armour lifted 5..6 cm off the core by design) and the Core_Air spire in the Dive clips. They were the same
+   before this round and are not fixed (the crystal mesh is a separate mirrored material; phase 1 holds the clusters at
+   scale 0.25). Look at the loose sheets before importing.
+2. The Bulwark teeth are 1.3..3 cm long: clear up close, a few pixels at the play camera; the tusks carry the read.
+3. The Sealed One concepts are coarse blockouts (vertex colour, no bake); in A and C the mouth is still small from the
+   play camera and must grow in the real build; B's petals read better up close than from above.
+
+### Round 49G follow-up (curator): the Shattered to 0 floating outside burst clips
+
+Not committed; Blender only. Supersedes open point 1 of the section above and the Shattered row of its checker table.
+
+**What the 16 were.**
+- **Crys_4/5/6:** checker false positives. At the phase-1 scale (0.25) these clusters sit 0.5..0.6 m deep inside the
+  core. The 49G inside test needed the nearest face's normal to point away, and that fails deep in a concave body;
+  the core also has small holes where the old eye dots are cut out. `check_floating_49g.surface_gap` now decides
+  "inside" by a ray-parity majority (7 rays, at least 4 odd) on the island's centre and up to 8 of its vertices.
+- **Real fixes:**
+  - The crystal clusters and the crest start deeper (`growth_cluster` `sink` 0.25; crest 0.35, spread 0.32 -> 0.2).
+    A front crest satellite stood over the face, 0.28 m off the head at rest.
+  - The three shard spires start `SPIRE_SINK` = 0.5 deeper, inside the core instead of on the shell that phase 2
+    strips away.
+  - Every shell plate (Shell_1..8) is tied to the core by five sinew straps (`ShellStrap`, glowing core flesh, on the
+    plate's own bone) that cross the 5 cm gap and root 12 cm into the core.
+  - The plates (with their spikes and straps) are remeshed apart from the core and joined
+    (`build_shattered2.separate_shell_fuse`), so each plate stays its own island for the phase breaks. After every
+    skinning a purity pass gives a Shell_n island wholly to its bone and strips Shell_n weights from everything else.
+  - Islands under 8 vertices (3-vertex specks the symmetrise and decimate left on Core_Land) are deleted before
+    skinning.
+  - The jaw hinge reads better: the cheek plates are bigger (0.22 x 0.26 x 0.21, standing proud of the head's sides)
+    and the jaw branches are thicker (0.17..0.14), running up the outside of the face into the cheeks.
+
+**Strict check now** (`r49g_floating_shattered_after.json`, every frame of all 15 clips, both LODs; burst = Split,
+Rejoin, PhaseBreak1/2, Death):
+
+| LOD | Before 49G (old test) | After the follow-up |
+| --- | --- | --- |
+| LOD0 | 27 | **0** floating outside burst clips (14 burst_only: plates and clusters thrown off in their own clips) |
+| LOD1 | 24 | **0** (12 burst_only) |
+
+- **Bulwark, Crystal Warlord and Shardback re-checked with the new test:** still 0 / 0. The 6 Shardback clusters still
+  appear only as burst_only (Shatter).
+- **Clip parity (`clip_parity_r49g.json`):** Bulwark, CrystalWarlord, Shardback and Shattered all OK.
+- **Unity row unchanged:** Shattered 34 (33) bones, all 15 clips with the same names, lengths and events. Body and
+  crystal maps re-baked; UVs changed. It is still in the RebuildOnly list above.
+- **Previews regenerated:** `r49g_shattered_after_game|close|move|mouth.png`, `r49g_shattered_after.png`,
+  `r49g_shattered_after_mouth_clips.png`, and `r49g_shattered_loose_<clip>.png` for all 15 clips.
+- **Still open (Shattered):**
+  - The straps show as dark sinew in the gaps between the plates. That is intended, but it is a visible change to the
+    armour.
+  - From straight above the jaw hinge is mostly hidden under the muzzle; it reads from the side and 3/4 views.
+
+## Round 51: beam ends and a critical visual pass (2026-11-12)
+
+Not committed. No generator run. `ArtSource/` exports and `Tools/Blender/` untouched (the Blender agents' files in the tree
+are theirs). Save `progress.json` **2eca347e** copied aside before every Play Mode run and verified after each.
+
+New rule (Remco): no effect may start or end with a hard edge; every beam, trail, line and glow tapers, flares or fades at both
+ends and joins its source.
+
+### 1. Line ends (`Game.Core.LineKit`, every user)
+
+- **Width curve:** `UseBeam` and the new `ShapeEnds` give every line and trail a curve that grows from 0 at the source and
+  falls back to 0 at the far end, eased (`2s - s²`, no corner at full width). Trails: 12 % head, 45 % tail.
+- **Lines are laid through the kit:** `LineKit.Straight(line, from, to)` and `LineKit.Curve(line, from, control, to)` (a
+  quadratic Bézier) lay 32 points, 6 of them inside each taper. The tapers are sized from the line's width (1.2 widths at the
+  source, 1.5 at the far end), not from its length. A line renderer samples its width only at its points, so the old
+  two-point lines could not taper at all. No allocation per frame (one scratch curve, `FitEnds`).
+- **Round caps** (6 vertices). **No corner vertices:** the line lab (`r51_line_lab.cs`) showed the corner fans of a wide strip
+  sticking out as teeth where it bends.
+- **Profile fades along its length:** `SpriteKit.Beam` fades in and out over the first and last 3 % of U (8 % at first; that
+  left a visible gap between the hero's muzzle and his bolt).
+- **Flares:** new `Game.Combat.BeamFlare`, a camera-facing card in `LineKit.Flare()` (`SpriteKit.Glow`: a Gaussian white-hot
+  point in a Gaussian glow that is eased to nothing before the card's rim), sized from the beam's width.
+- **Users:** boss beam and halo (`BossAbilityView`), projectile beams, arcs and trails including the painted ones and the smoke
+  ribbon (`ProjectileView`; the jagged arc fits its tapers with `FitEnds`), hero bolt (`HeroArtView`, `BlasterRig`), repair beam
+  (`HeroAbilityView`, now from the `Weapon_L` fist when the figure has it), sword trail (`SwordRig`), recon trails (both,
+  `ReconView`), drone thruster trails (`DroneView`: `startWidth/endWidth` replaced by `widthMultiplier`, or the kit's curve
+  was overwritten).
+
+### 2. Ray boss beam
+
+- The opaque emissive sphere at the beam's end (`BeamTip`, 0.5 across at emission 3) was the "huge white disc" on the gate in
+  `r50_laser_fire_side.png`. It is gone; the beam now ends in a soft impact flare 1.4 halo widths across and starts in a source
+  flare 0.8 halo widths across, centred on the socket point itself.
+- The three-point bend is now the Bézier's control point: the beam leaves the spade along its axis and curves to the target.
+  Two fixes after looking at 4x crops:
+  - only the part of the spade's axis that crosses the screen is used (a lead towards the camera folded the start of the strip
+    into a few pixels);
+  - the lead fades out as the spade turns away from the target and is gone at 60 degrees or more (`MinLeadAlignment`): a
+    hairpin folded the 0.95-wide halo over itself (seen in the line lab). `r51_beam_points.cs` now shows turns of 0-1 degree per
+    point on screen.
+- Seen in the stills, not changed: the boss is hit while firing, and the covering impact puffs (`Gameplay/Impact`) sometimes sit
+  over the beam's start. When the harness forces a laser without the Release clip, the beam runs straight from the tail through
+  the body (round 50 open point 2 still stands for that case).
+
+### 3. Spencer's bolt (Remco's second crop)
+
+- **The muzzle was behind the gun.** Measured in play (`r51_pistol_probe.cs`): the imported pistol runs from z -0.274 (the
+  barrel's mouth) to 0.072 in its socket, so the report's muzzle (0, 0.062, 0.192) sat 0.26 behind the grip. The painted flash
+  pointed back at his face from there, and the light strip ran from the gun's middle backwards.
+  - `HeroArtDefinition._muzzle` is now (0, 0.062, -0.192); the new `_barrelAxis` (0, 0, -1) gives the muzzle transform its
+    rotation, so the flash, the bolt and the aim follow the barrel. `BlenderStoryBuilder` writes both through `ImportedGrip`
+    (half a turn about Y). Data written with `r51_set_muzzle.cs` (no generator run).
+- **The barrel did not point at the target:** the Shoot clip holds the gun level. `HeroArtView.AimGun` (LateUpdate, after the
+  spine's yaw) swings `UpperArm_R` (`_gunArmBone`, limit `_gunArmMaxDegrees` 60) in two passes until the barrel points at the
+  aim point. It eases in after the draw and is held fully on the bolt while one is lit. Probe: 0.2-0.4 degrees between barrel
+  and bolt on the shot frame, 4.5 degrees one frame later (the kick).
+- **The bolt lagged a frame:** it was placed in `Update`, before the clips and the aim posed the gun. It is now laid in
+  `LateUpdate` with `LineKit.Straight`, like the pistol light strip; `MuzzleFlashView` runs after the views
+  (`DefaultExecutionOrder` 100). Probe: bolt start to muzzle 0.000, flash card to muzzle 0.000.
+- A source glow sits on the muzzle while the bolt is lit (it follows the kick) and a fading impact glow marks the struck point.
+- The round-50 draw wait already covers the aim: the first shot falls after `Draw_Pistol` ends in the aim, and the arm
+  correction is forced to full on the shot frame.
+
+### 4. The other things in `r50_hero_fire.png`
+
+- **Thin golden vertical line above his head:** the hero beacon (`HeroView`, the painted `HeroBeacon` column from 1.7 to 3.0 with
+  the crest on top), found with `r51_screen_probe.cs`. At the QA close-up (half height 1.6) the crest is out of frame, so the
+  column reads as a stray line. It now fades out between camera half heights 4.5 and 3 (`BeaconShowOrthoSize`,
+  `BeaconHideOrthoSize`); the play zoom (7) keeps it at full strength.
+- **Pale translucent "shafts" around his ring:** the hero post marker (`HeroSpot`, flat painted strips on the ground, 0.9 x 1.9)
+  seen at a slant, plus the gate's own field floor. Intended; left as they are.
+
+### 5. Opening cutscene glows and lines (`SpaceKit`)
+
+- Round 50 moved them onto the atlas shader. Measured in an edit-mode lab (`r51_space_lab.cs`: the same plasma-trail line in both
+  materials), the round-49 material lit by the sprite's colour alone (its alpha was not applied again), ignored the vertex alpha,
+  lit every channel of the sprite in the tint, and took the tint as a gamma colour (an intensity of 2 lit 4.6 times as bright;
+  the atlas material takes its colours as given).
+- New shader switch `_SpriteCoverage` on `Game/VfxParticle` (default 1, unchanged for every other material). `SpaceKit.Additive`
+  sets it to 0 and lights each channel in its own primary from `colour.linear`. Lab: round-49 and round-51 brightness are now
+  identical at intensities 0.5, 2 and 4 (near and far half of the line).
+- `ExhaustPlume` still wrote `_BaseColor` on its flare, which the atlas shader does not have, so since round 50 the flare no
+  longer followed the throttle. It now sets `_Intensity` (turned linear, as the old colour was).
+- Stills `r51_cut_<shot>_<r49|r50|r51>.png` (shots 2 0.3, 3 0.5, 4 0.5; `r51_cut.sh` renders each frame in all three looks via
+  `r51_space_variant.cs`), stacked sheets `r51_cut_*_compare.png` and `r51_cut_3_0p5_capsule_x2.png`. The capsule's plasma trail
+  is back to its round-49 length (149 reddish pixels in the far part of the crop, round 50: 11).
+
+### 6. Stills (`ArtSource/Previews/QA/r51_*`, Level_C1_01, 1920x1080, inspection light x1.8, `_game` in the plain light)
+
+- `r51_laser_windup/fire/hold/recover` (+ `_game`, `_side`); crops `r51_laser_hold_source_x4`, `r51_laser_hold_game_source_x4`,
+  `r51_laser_recover_source_x4`, `r51_laser_recover_impact_x3`, `r51_laser_hold_impact_x3`.
+- `r51_hero_draw_start/draw_mid/aim/fire/fire_b/fire_c/fire_next`, `r51_hero_fire_game`; crops `r51_hero_fire_muzzle_x4`,
+  `r51_hero_fire_b_muzzle_x4`, `r51_hero_fire_game_muzzle_x4`, `r51_hero_fire_impact_x4`.
+- `r51_trail_trail` (+ `_game`), a railgun shot; crops `r51_trail_head_x4`, `r51_trail_tail_x4`, `r51_trail_game_head_x4`.
+- `r51_repair_repair` (+ `_game`, `_late`); crops `r51_repair_source_x4`, `r51_repair_impact_x4`.
+- Earlier runs left `r51_trail_Skitter*`, `r51_trail_rail_Skitter*` and `r51_trail_laser_Skitter*` (the probe tower near the
+  spawn never fired; there is no trail in them).
+- Tools: `r51_hero.sh`, `r51_repair.sh`, `r51_trail.sh`, `r51_cut.sh`, `r51_crop.py` (nearest-neighbour zoomed crops); probes
+  `r51_screen_probe.cs` (which renderers cover a region of a still), `r51_pistol_probe.cs`, `r51_beam_points.cs`,
+  `r51_trail_find.cs`; labs `r51_line_lab.cs`, `r51_space_lab.cs`; triggers and writers `r51_repair_beam.cs`,
+  `r51_tower_near.cs`, `r51_set_muzzle.cs`, `r51_space_variant.cs`. `r50_laser_seq.sh` now also prints `r51_beam_points.cs` and,
+  with `R51_REGION`, `r51_screen_probe.cs`.
+
+### 7. Tests
+
+- New `LineEndsTests` (5): the ends curve starts and ends at 0 and is full between; kit lines and trails taper at both ends with
+  round caps; a `Straight` line baked to a mesh has no width at either end and is still narrow halfway into its source taper (the
+  width curve is read along the length); the beam profile fades out along U and the flare sprite is empty at its rim; every
+  runtime script that adds a line or trail goes through `LineKit` (the range ring and the cutscene lines are exempt).
+- `StoryArtTests.Hero_WearsMercer_WithHisClipsSocketsAndWeapons`: the muzzle must lie out along the art's barrel axis (it
+  checked +Z, which was the bug).
+- EditMode suite on w6: **850 tests, 798 passed, 52 skipped, 0 failed** (was 845; +5).
+- Recompile: 0 errors; the only warning is the known CS0618 in `BalanceProbeTests.cs:601` on a full recompile. Play-run
+  consoles: 0 errors, 0 warnings. Save `progress.json` MD5 2eca347eb0270fc1566d26e302abf525 after the last run.
+
+### Open points (round 51)
+
+1. The repair beam was shown through the view only (the Repair clip did not play), so its source sat in the left fist at the
+   hip. In play the Repair clip aims that fist at the gate; check it once by eye.
+2. The sword trail (`SwordRig`) belongs to the procedural hero only; the Blender Spencer has no trail, so no still was taken.
+3. The drone repair beam is a painted cone mesh, not a line; it was not part of this pass.
+4. Round 50 open point 2 (the beam through the body when the laser fires without the Release clip) only showed with the
+   harness's forced laser.
+
+### Round 51 follow-up (curator, from the crops): no gap between glow and beam, soft muzzle flash, 49I import
+
+- **Dark neck between the source glow and the beam** (`r51_laser_hold_game_source_x4`): the beam faded in a glow-width away
+  from the glow (zero width plus the texture's start fade). Beams whose ends sit under glows now use `LineKit.UseFlaredBeam`
+  and are laid with `LineKit.FlaredEndWidth` (0.5):
+  - the width curve starts and ends at half width and rises along the same dome over a taper shortened by the same share;
+  - they wear `Lines_FlaredBeam` (`SpriteKit.FlaredBeam`): the profile starts at half strength and is full after 1.5 % of the
+    line, so the cut end does not show through the glow and nothing goes dark after it;
+  - the ray boss's source glow is 1.2 halo widths across (was 0.8) and its impact glow 1.6 (was 1.4), so both cover the
+    tapers. Users: the boss beam and halo, the hero bolt, the repair beam. Trails and other lines keep the full taper to 0.
+- **Hard-edged wedges of the muzzle flash** (`r51_hero_fire_game_muzzle_x4`): the hero no longer uses the painted pulse-weapon
+  flash card (nor its placeholder sphere). His flash is the bolt's soft source glow, 9 bolt widths across on the shot frame,
+  shrinking to 5 while the bolt is lit, a little brighter at first. The impact glow keeps at least 60 % strength while the
+  bolt is lit, because the bolt now ends at half width under it.
+- Crops looked at: `r51_laser_hold_source_x4`, `r51_laser_hold_game_source_x4` (the beam grows out of the glow on the spade
+  tip, brightest at the tip, no gap and no visible cut end), `r51_laser_hold_game_impact_x3` (it runs into the gate's field
+  with no disc), `r51_hero_fire_muzzle_x4`, `r51_hero_fire_game_muzzle_x4`, `r51_hero_fire_next_muzzle_x4` (a round soft
+  flash on the muzzle cap with the bolt coming straight out of it, no wedges), `r51_hero_fire_next_impact_x4` (the bolt ends in
+  its soft glow). In `r51_hero_fire_b` of this run the bolt had already gone out (the frame came 0.1 s after the shot); its
+  crop shows only the muzzle ring's own glow.
+- **49I import** (`r51_import_49i.cs`, `BlenderArtBuilder.RebuildOnly`): Bat, Bat_Moss, Bat_Dust, Bat_Tide, Bat_Frost,
+  Bat_Corrupted, Skyray, Skyray_Corrupted, Shalebat, Shalebat_Corrupted; 8 enemies wear them. Only `<Name>.fbx`, `_LOD1.fbx`
+  and `_report.json` changed under `Assets/_Project/Art/Models/Blender/` (no maps). The Shalebat already had its `Strike`
+  catalog spec (it shares the bat clips: `BlenderClipSpec("Strike", ModelClipRole.Attack, 10)`).
+  - Clip and event parity (`r51_clips_49i.cs` before and after): identical roles, lengths and events on all 10 rows (bats:
+    Strike 0.800 s with its event at 0.333 s, Fly 0.433 s, Shalebat Fly 0.533 s; Skyray Dive 0.800 s with its event at 0.333 s,
+    Fly 1.400 s) and identical bone counts. The art assets gained only the serialized defaults of newer fields.
+  - Stills `r51_49i_Emberbat`, `r51_49i_Shalebat`, `r51_49i_Skyray` (+ `_game`, `_side`) and `r51_49i_strike_sheet.png`: each
+    caught mid-strike at its gate (Strike at 0.32 s and 0.36 s, Dive at 0.28 s) with Fly running beneath. The bat's wings are
+    on the hard downbeat just before the impact and the Skyray's fins are up from the climb. One frame per creature does not
+    show the beat itself; the clips carry two beats (bats) and one beat (Skyray) per the 49I report.
+- New test `LineEndsTests.FlaredBeam_StartsAtHalfWidth_AtFullStrength_UnderItsGlows`. EditMode suite on w6: **851 tests, 799 passed, 52
+  skipped, 0 failed**. Recompile: 0 errors (only the known CS0618). Play-run consoles: 0 errors, 0 warnings. Save MD5
+  2eca347eb0270fc1566d26e302abf525 after every run (one run aborted on an unset variable in `r51_hero.sh`, now fixed; Play
+  Mode was stopped and the save restored from its copy and verified).

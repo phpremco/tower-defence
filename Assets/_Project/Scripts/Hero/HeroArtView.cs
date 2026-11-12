@@ -38,9 +38,20 @@ namespace Game.Hero
         private const float ReloadRateMax = 2f;
         private const float BoltSeconds = 0.09f;
         private const float BoltWidth = 0.06f;
-        private const float FlashSize = 0.14f;
-        private const float MuzzleWhiteness = 0.4f;
-        private const float FlashEmission = 5f;
+        // The soft glow where the bolt strikes, as a multiple of the bolt's width.
+        private const float BoltImpactFlareScale = 5f;
+        // The muzzle glow: this many bolt widths across on the shot frame (the flash), shrinking to the steady size while the bolt
+        // is lit; both overlap the bolt's first stretch, so the bolt grows out of the glow.
+        private const float BoltFlashScale = 9f;
+        private const float BoltSourceFlareScale = 5f;
+        private const float BoltFlashStrength = 1.4f;
+        private const float BoltSourceFlareStrength = 0.9f;
+        private const float BoltImpactFlareStrength = 1.2f;
+        private const float BoltImpactFadeFloor = 0.6f;
+        // How fast the gun arm swings onto the target (share of the full correction per second) and how many passes lay the
+        // barrel on it: turning the arm at the shoulder also moves the muzzle, so a second pass takes up what the first left.
+        private const float GunAimSpeed = 6f;
+        private const int GunAimPasses = 2;
         private const float BladeEmission = 3f;
         // The blade mesh is a thin core; the glow is drawn wider than it so it reads as a blade at the play zoom.
         private const float BladeGlowWidth = 2.5f;
@@ -100,6 +111,10 @@ namespace Game.Hero
         private Transform _holster;
         private Transform _back;
         private Transform[] _aimBones = new Transform[0];
+        private Transform _gunArm;
+        private float _gunAim;
+        private BeamFlare _boltSource;
+        private BeamFlare _boltImpact;
         private ArtModel _pistol;
         private ArtModel _hilt;
         private ArtModel _blade;
@@ -107,10 +122,8 @@ namespace Game.Hero
         private Color _bladeColour;
         private Transform _muzzle;
         private LineRenderer _bolt;
-        private Transform _flash;
 
         // The painted flash of the effect library (the pulse weapons' row), or null: then the glowing sphere stands in.
-        private MuzzleFlashView _paintedFlash;
         private ParticleSystem _sparks;
         private ParticleSystem _smoke;
         private ParticleSystem _dust;
@@ -191,6 +204,7 @@ namespace Game.Hero
             _holster = _body.Find(art.HolsterSocket);
             _back = _body.Find(art.BackSocket);
             _aimBones = Bones(art.AimBones);
+            _gunArm = _body.Find(art.GunArmBone);
             BuildWeapons(hero.Definition);
             BuildParticles();
             BuildJets();
@@ -348,6 +362,8 @@ namespace Game.Hero
                 _muzzle = new GameObject("Muzzle").transform;
                 _muzzle.SetParent(_pistol.Root, false);
                 _muzzle.localPosition = _art.Muzzle;
+                // Its +Z is the barrel: the bolt, the painted flash and the gun arm's aim all go along it.
+                _muzzle.localRotation = Quaternion.LookRotation(_art.BarrelAxis, Vector3.up);
                 BuildBolt(definition.RangedWeapon.Color);
                 _pistolGlow = PistolGlow.Create(transform, _pistol.Root, _art, definition.RangedWeapon.Color);
             }
@@ -383,42 +399,18 @@ namespace Game.Hero
             }
         }
 
-        // The pistol fires pulse bolts, so it wears the pulse weapons' painted flash in its own colour.
-        private MuzzleFlashView PaintedFlash(Color colour)
-        {
-            if (!Services.TryGet(out VfxLibrary library))
-            {
-                return null;
-            }
-
-            var view = new GameObject("MuzzleFlash").AddComponent<MuzzleFlashView>();
-            view.transform.SetParent(transform, false);
-            if (view.Initialize(library.WeaponFor(ProjectileStyle.Bolt), Color.Lerp(colour, Color.white, MuzzleWhiteness), ModelQuality.IsLow, Camera.main))
-            {
-                return view;
-            }
-
-            Destroy(view.gameObject);
-            return null;
-        }
-
+        // Round 51: the muzzle flash is the bolt's soft source glow, swollen on the shot frame and shrinking back to the bolt's
+        // own size; the painted pulse-weapon flash card showed hard-edged wedges this close to the camera.
         private void BuildBolt(Color colour)
         {
-            _paintedFlash = PaintedFlash(colour);
-            if (_paintedFlash == null)
-            {
-                _flash = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, Color.Lerp(colour, Color.white, 0.5f), _muzzle, Vector3.zero, Vector3.one * FlashSize, FlashEmission).transform;
-                _flash.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
-                _flash.gameObject.SetActive(false);
-            }
-
             var boltGo = new GameObject("Bolt");
             boltGo.transform.SetParent(transform, false);
             _bolt = boltGo.AddComponent<LineRenderer>();
-            _bolt.positionCount = 2;
             _bolt.useWorldSpace = true;
             _bolt.widthMultiplier = BoltWidth;
-            LineKit.UseBeam(_bolt);
+            LineKit.UseFlaredBeam(_bolt);
+            _boltSource = BeamFlare.Create(transform, "BoltSource");
+            _boltImpact = BeamFlare.Create(transform, "BoltImpact");
             _bolt.startColor = Color.Lerp(colour, Color.white, 0.6f);
             _bolt.endColor = colour;
             _bolt.shadowCastingMode = ShadowCastingMode.Off;
@@ -488,7 +480,6 @@ namespace Game.Hero
                 _player.PlayUpper(_shoot, 0f, hold: true);
                 _boltAge = 0f;
                 _boltTarget = target + Vector3.up * AimHeight;
-                _paintedFlash?.Flash(_muzzle, Vector3.forward);
                 return;
             }
 
@@ -814,7 +805,6 @@ namespace Game.Hero
             Blink(deltaTime);
             _player.Tick(deltaTime);
             _jets?.Tick(deltaTime);
-            _pistolGlow?.Tick(_pistol.Root.gameObject.activeInHierarchy);
         }
 
         // The jetpack flight to another gate (Spencer pass 4): the take-off on the spot, the flight cycle while the
@@ -977,9 +967,29 @@ namespace Game.Hero
             }
         }
 
+        // After the clips have posed the body: the spine turns towards the target, the gun arm lays the barrel on it, and only
+        // then is the bolt drawn, from the muzzle where it is this frame.
         private void LateUpdate()
         {
-            if (_isDown || _aimBones.Length == 0)
+            if (_player == null)
+            {
+                return;
+            }
+
+            if (!_isDown)
+            {
+                AimSpine();
+                AimGun();
+            }
+
+            // The light strip and the bolt follow the gun as the aim left it.
+            _pistolGlow?.Tick(_pistol.Root.gameObject.activeInHierarchy);
+            PlaceBolt();
+        }
+
+        private void AimSpine()
+        {
+            if (_aimBones.Length == 0)
             {
                 return;
             }
@@ -1005,6 +1015,60 @@ namespace Game.Hero
             {
                 bone.rotation = share * bone.rotation;
             }
+        }
+
+        // Round 51: the Shoot clip holds the gun at one height whatever the target, so the barrel pointed over it while the
+        // bolt ran down to the target from below the gun. The shoulder now swings the arm until the barrel points at the
+        // aim point (the struck point while a bolt is lit), eased in after the draw and clamped by the art's limit.
+        private void AimGun()
+        {
+            ITargetable target = _hero.Target;
+            bool aiming = _gunArm != null && _muzzle != null && _drawn == Hand.Ranged && _switchClip < 0 && target != null && target.IsAlive;
+            _gunAim = Mathf.MoveTowards(_gunAim, aiming ? 1f : 0f, GunAimSpeed * Time.deltaTime);
+            if (aiming && _boltAge < BoltSeconds)
+            {
+                // While a bolt is lit the barrel lies on it fully, even if the shot came before the ease had settled.
+                _gunAim = 1f;
+            }
+
+            if (_gunAim <= 0f || _muzzle == null || _gunArm == null)
+            {
+                return;
+            }
+
+            Vector3 aimPoint = _boltAge >= BoltSeconds && target != null ? target.Position + Vector3.up * AimHeight : _boltTarget;
+            float limit = _art.GunArmMaxDegrees;
+            for (int pass = 0; pass < GunAimPasses; pass++)
+            {
+                Vector3 wanted = aimPoint - _muzzle.position;
+                if (wanted.sqrMagnitude < 0.0001f)
+                {
+                    return;
+                }
+
+                Quaternion turn = Quaternion.RotateTowards(Quaternion.identity, Quaternion.FromToRotation(_muzzle.forward, wanted), limit);
+                _gunArm.rotation = Quaternion.Slerp(Quaternion.identity, turn, _gunAim) * _gunArm.rotation;
+            }
+        }
+
+        // The bolt flicks from the muzzle as it is posed this frame to the struck point, half width at both ends under soft glows: the
+        // muzzle glow is the flash on the shot frame and follows the gun's kick, so the bolt grows out of the gun; the other
+        // marks where it lands.
+        private void PlaceBolt()
+        {
+            if (_bolt == null || !_bolt.enabled)
+            {
+                _boltSource?.Hide();
+                _boltImpact?.Hide();
+                return;
+            }
+
+            LineKit.Straight(_bolt, _muzzle.position, _boltTarget, LineKit.FlaredEndWidth);
+            float age = Mathf.Clamp01(_boltAge / BoltSeconds);
+            float size = BoltWidth * Mathf.Lerp(BoltFlashScale, BoltSourceFlareScale, age);
+            _boltSource.Show(_muzzle.position, size, _bolt.startColor, Mathf.Lerp(BoltFlashStrength, BoltSourceFlareStrength, age));
+            // The bolt ends at half width under this glow, so it dims but never goes out while the bolt is lit.
+            _boltImpact.Show(_boltTarget, BoltWidth * BoltImpactFlareScale, _bolt.endColor, BoltImpactFlareStrength * Mathf.Lerp(1f, BoltImpactFadeFloor, age));
         }
 
         private void TrackSpeed(float deltaTime)
@@ -1093,7 +1157,7 @@ namespace Game.Hero
             }
         }
 
-        // The bolt flicks from the muzzle to the target and the muzzle flashes for a moment after each shot.
+        // The bolt stays lit for a moment after each shot; it and its glows are laid out in LateUpdate.
         private void Shot(float deltaTime)
         {
             if (_bolt == null)
@@ -1104,19 +1168,6 @@ namespace Game.Hero
             _boltAge += deltaTime;
             bool lit = _boltAge < BoltSeconds;
             _bolt.enabled = lit;
-            _flash?.gameObject.SetActive(lit);
-            if (!lit)
-            {
-                return;
-            }
-
-            if (_flash != null)
-            {
-                _flash.localScale = Vector3.one * (FlashSize * (1.3f - _boltAge / BoltSeconds));
-            }
-
-            _bolt.SetPosition(0, _muzzle.position);
-            _bolt.SetPosition(1, _boltTarget);
         }
     }
 }

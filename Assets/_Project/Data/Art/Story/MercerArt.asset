@@ -27,7 +27,10 @@ MonoBehaviour:
   - Spine1
   - Spine2
   _packBone: Spine2
-  _muzzle: {x: 0, y: 0.062, z: 0.192}
+  _muzzle: {x: 0, y: 0.062, z: -0.192}
+  _barrelAxis: {x: 0, y: 0, z: -1}
+  _gunArmBone: UpperArm_R
+  _gunArmMaxDegrees: 60
   _pistolScale: 1.35
   _pistolStripStart: {x: 0, y: 0.07, z: -0.02}
   _pistolStripWidth: 0.14

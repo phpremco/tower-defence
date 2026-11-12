@@ -23,7 +23,7 @@ still() { echo "$2" > Tools/PlayTest/r49_light.txt; echo "$3" > Tools/PlayTest/r
 shoot() {
   echo "${ZOOM:-3.2}" > Tools/PlayTest/zoom_size.txt
   echo "== $1"; echo "  $(run r45_zoom.cs)"; step "1 hold"
-  echo "  probe: $(run r50_beam_probe.cs)"; echo "  clips: $(run r50_clip_state.cs)"
+  echo "  probe: $(run r50_beam_probe.cs)"; echo "  clips: $(run r50_clip_state.cs)"; echo "  points: $(run r51_beam_points.cs)"; if [ -n "${R51_REGION:-}" ]; then echo "$R51_REGION" | tr "," " " > Tools/PlayTest/r51_region.txt; echo "  region: $(run r51_screen_probe.cs)"; fi
   still "$1" "${LIGHT:-1.8}" "0"; still "$1_game" 1 "0"; still "$1_side" "${LIGHT:-1.8}" "${SIDE:-70 22 1.2}"
   run resume.cs >/dev/null
 }

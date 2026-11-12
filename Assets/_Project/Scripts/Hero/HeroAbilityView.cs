@@ -1,3 +1,4 @@
+using Game.Combat;
 using Game.Core;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -15,6 +16,11 @@ namespace Game.Hero
         private const float BeamWidth = 0.07f;
         private const float BeamHeight = 0.9f;
         private const float BeamFlicker = 22f;
+        // README (rig): in Repair the left fist aims the beam, so the beam leaves this socket when the figure has it.
+        private const string BeamSocket = "Weapon_L";
+        // The soft glows at the fist and on the gate, as multiples of the beam's width.
+        private const float SourceFlareScale = 4f;
+        private const float ImpactFlareScale = 6f;
         private const int DustCount = 36;
         private const int WeldCount = 4;
         private const float WeldInterval = 0.12f;
@@ -30,6 +36,10 @@ namespace Game.Hero
         private ParticleSystem _weld;
         private ParticleSystem _glint;
         private LineRenderer _beam;
+        private BeamFlare _source;
+        private BeamFlare _impact;
+        private Transform _fist;
+        private bool _fistSearched;
         private float _beamLeft;
         private float _nextWeld;
         private Color _beamColor;
@@ -44,12 +54,13 @@ namespace Game.Hero
             var beamGo = new GameObject("RepairBeam");
             beamGo.transform.SetParent(transform, false);
             _beam = beamGo.AddComponent<LineRenderer>();
-            _beam.positionCount = 2;
             _beam.useWorldSpace = true;
             _beam.widthMultiplier = BeamWidth;
-            LineKit.UseBeam(_beam);
+            LineKit.UseFlaredBeam(_beam);
             _beam.shadowCastingMode = ShadowCastingMode.Off;
             _beam.enabled = false;
+            _source = BeamFlare.Create(transform, "RepairSource");
+            _impact = BeamFlare.Create(transform, "RepairImpact");
 
             _hero.AbilityUsed += OnAbilityUsed;
             _hero.Reloading += OnReloading;
@@ -122,19 +133,23 @@ namespace Game.Hero
             {
                 _beamLeft = 0f;
                 _beam.enabled = false;
+                _source.Hide();
+                _impact.Hide();
                 return;
             }
 
-            Vector3 from = _hero.transform.position + Vector3.up * BeamHeight;
+            Transform fist = Fist();
+            Vector3 from = fist != null ? fist.position : _hero.transform.position + Vector3.up * BeamHeight;
             Vector3 to = _hero.GuardedPosition + Vector3.up * BeamHeight;
-            _beam.SetPosition(0, from);
-            _beam.SetPosition(1, to);
+            LineKit.Straight(_beam, from, to, LineKit.FlaredEndWidth);
             float flicker = 0.75f + 0.25f * Mathf.Sin(Time.time * BeamFlicker);
             float fade = Mathf.Clamp01(_beamLeft / 0.3f);
             Color colour = _beamColor * flicker;
             colour.a = fade;
             _beam.startColor = colour;
             _beam.endColor = colour;
+            _source.Show(from, BeamWidth * SourceFlareScale, colour, fade);
+            _impact.Show(to, BeamWidth * ImpactFlareScale, colour, fade);
 
             _nextWeld -= Time.deltaTime;
             if (_nextWeld <= 0f)
@@ -143,6 +158,25 @@ namespace Game.Hero
                 _weld.transform.position = to;
                 _weld.Emit(WeldCount);
             }
+        }
+
+        // The figure is built after this view, so the fist is looked up the first time a beam needs it.
+        private Transform Fist()
+        {
+            if (!_fistSearched)
+            {
+                _fistSearched = true;
+                foreach (Transform child in _hero.GetComponentsInChildren<Transform>())
+                {
+                    if (child.name == BeamSocket)
+                    {
+                        _fist = child;
+                        break;
+                    }
+                }
+            }
+
+            return _fist;
         }
     }
 }

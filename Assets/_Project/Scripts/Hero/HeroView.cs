@@ -140,6 +140,10 @@ namespace Game.Hero
         private const float BeaconWidth = 0.07f;
         private const float BeaconAlpha = 0.3f;
         private const float BeaconEmission = 2.5f;
+        // Round 51: the beacon and its crest find the hero at the play zoom; zoomed in close (camera half height below these)
+        // the hero is unmistakable and the column, its crest cut off by the frame, read as a stray line, so it fades out.
+        private const float BeaconShowOrthoSize = 4.5f;
+        private const float BeaconHideOrthoSize = 3f;
         private const float EmblemSize = 0.22f;
         private const float EmblemEmission = 3f;
         private const float EmblemSpin = 90f;
@@ -188,6 +192,9 @@ namespace Game.Hero
         private Material _beaconDownMaterial;
         private Material _emblemMaterial;
         private Material _emblemDownMaterial;
+        private bool _paintedBeacon;
+        private float _beaconFade = 1f;
+        private Camera _camera;
         private Renderer _beaconRenderer;
         private Renderer _emblemRenderer;
         private WorldBar _worldBar;
@@ -381,6 +388,7 @@ namespace Game.Hero
             _emblemDownMaterial = Tinted(emblem.sharedMaterial, DownColor);
             _emblemRenderer.sharedMaterial = _emblemMaterial;
             _emblem = emblem.transform;
+            _paintedBeacon = true;
         }
 
         // The beacon and crest swap their whole material when the hero goes down, so each colour gets its own copy.
@@ -907,10 +915,51 @@ namespace Game.Hero
 
         private void Beacon()
         {
+            FadeBeaconByZoom();
             float spin = _down ? EmblemSpin * 0.4f : EmblemSpin;
             _emblem.Rotate(0f, spin * Time.deltaTime, 0f, Space.World);
             float bob = _down ? Mathf.Sin(Time.time * DownBeaconPulse) * EmblemBobHeight * 0.5f : Mathf.Sin(Time.time * EmblemBobSpeed) * EmblemBobHeight;
             _emblem.localPosition = new Vector3(0f, BeaconTop + bob, 0f);
+        }
+
+        private void FadeBeaconByZoom()
+        {
+            if (!_paintedBeacon)
+            {
+                return;
+            }
+
+            if (_camera == null)
+            {
+                _camera = Camera.main;
+                if (_camera == null)
+                {
+                    return;
+                }
+            }
+
+            float fade = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(BeaconHideOrthoSize, BeaconShowOrthoSize, _camera.orthographicSize));
+            if (Mathf.Approximately(fade, _beaconFade))
+            {
+                return;
+            }
+
+            _beaconFade = fade;
+            SetStrength(_beaconMaterial, fade);
+            SetStrength(_beaconDownMaterial, fade);
+            SetStrength(_emblemMaterial, fade);
+            SetStrength(_emblemDownMaterial, fade);
+            bool shown = fade > 0f;
+            _beaconRenderer.enabled = shown;
+            _emblemRenderer.enabled = shown;
+        }
+
+        // The painted marker's tint alpha is its strength.
+        private static void SetStrength(Material material, float strength)
+        {
+            Color tint = material.GetColor(MarkerArt.Tint);
+            tint.a = strength;
+            material.SetColor(MarkerArt.Tint, tint);
         }
     }
 }

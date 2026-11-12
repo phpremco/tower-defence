@@ -45,7 +45,6 @@ namespace Game.Hero
             var boltGo = new GameObject("Bolt");
             boltGo.transform.SetParent(Weapon, false);
             _bolt = boltGo.AddComponent<LineRenderer>();
-            _bolt.positionCount = 2;
             _bolt.useWorldSpace = true;
             _bolt.widthMultiplier = BoltWidth;
             LineKit.UseBeam(_bolt);
@@ -92,8 +91,7 @@ namespace Game.Hero
             _bolt.enabled = lit;
             if (lit)
             {
-                _bolt.SetPosition(0, Tip.position);
-                _bolt.SetPosition(1, _target);
+                LineKit.Straight(_bolt, Tip.position, _target);
             }
 
             return new Pose

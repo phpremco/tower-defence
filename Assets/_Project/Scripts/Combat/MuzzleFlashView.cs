@@ -8,8 +8,12 @@ namespace Game.Combat
     /// turned to the camera, showing a random variant of the weapon's row for a frame or three per shot, glowing in the
     /// tower's colour. One per gun, built once; a shot only moves it and sets a few properties. View only.
     /// </summary>
+    [DefaultExecutionOrder(MuzzleFlashView.LateOrder)]
     public sealed class MuzzleFlashView : MonoBehaviour
     {
+        // Placed after the views that pose the gun in their own LateUpdate (the hero's aim), so the card sits on the muzzle
+        // where it is drawn this frame.
+        public const int LateOrder = 100;
         private static readonly int FrameId = Shader.PropertyToID("_Frame");
         private static readonly int TintId = Shader.PropertyToID("_Tint");
         private static readonly int IntensityId = Shader.PropertyToID("_Intensity");
