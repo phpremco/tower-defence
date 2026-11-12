@@ -34,14 +34,16 @@ MonoBehaviour:
   _scale: 0.6
   _yaw: 180
   _bodyCentrePivot: 0
-  _height: 1.7161803
+  _height: 1.7457094
   _lodScreenHeight: 0.09
   _upperBodyBone: 
   _displayExposure: 1
+  _turnSeconds: 0.08
   _deathFade: {x: 0.3, y: 1.0200001}
   _embers: 0
   _bleeds: 0
   _shedBones: []
+  _vents: {fileID: 0}
   _emissionSets: []
   _deathEmissionSet: 
   _clips:
@@ -60,6 +62,7 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 0
     _clip: {fileID: -8478630277253143945, guid: fc42ea4fa51032946b7c40431d63d88c, type: 3}
     _farClip: {fileID: 4618388639301247452, guid: 3e7476fc2571a1542b79b02caaa8c959, type: 3}
@@ -75,6 +78,7 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 5
     _clip: {fileID: 3040659094681575283, guid: fc42ea4fa51032946b7c40431d63d88c, type: 3}
     _farClip: {fileID: 1253212250406761606, guid: 3e7476fc2571a1542b79b02caaa8c959, type: 3}
@@ -90,6 +94,7 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 10
     _clip: {fileID: -4534652137675048829, guid: fc42ea4fa51032946b7c40431d63d88c, type: 3}
     _farClip: {fileID: 1385682848234194200, guid: 3e7476fc2571a1542b79b02caaa8c959, type: 3}
@@ -105,6 +110,7 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 2
     _clip: {fileID: 8340970849559789471, guid: fc42ea4fa51032946b7c40431d63d88c, type: 3}
     _farClip: {fileID: 4792827312450853002, guid: 3e7476fc2571a1542b79b02caaa8c959, type: 3}
@@ -120,6 +126,7 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 9
     _clip: {fileID: 7101080571360264118, guid: fc42ea4fa51032946b7c40431d63d88c, type: 3}
     _farClip: {fileID: 347072756720830365, guid: 3e7476fc2571a1542b79b02caaa8c959, type: 3}
@@ -135,3 +142,4 @@ MonoBehaviour:
     _momentSeconds: []
     _burden: []
     _footfallSeconds: []
+    _blendSeconds: 0

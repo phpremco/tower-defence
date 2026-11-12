@@ -6,7 +6,8 @@
 # light. A fourth field "death" then kills the creature and renders the corpse a moment after the death and later (vents
 # fading), with r49_vent_probe.cs reporting the vent emitters before, during and after. Copies the save aside first,
 # restores and verifies it at the end.
-# PROBE=<file.cs> (optional) runs one more eval probe from Tools/PlayTest per creature, after the zoom and pose.
+# PROBE=<file.cs> (optional) runs one more eval probe from Tools/PlayTest per creature, after the zoom and pose; PREP=<file.cs>
+# (optional) runs one before the zoom (damage_enemies.cs, so the health bar shows).
 # Usage: [STEPS=n] [LIGHT=f] [PROBE=f] r49_shots.sh <output dir> <prefix> <level index> <Enemy[:half height[:ClipRole[:death]]]> ...
 set -u
 cd "$(dirname "$0")/../.." || exit 1
@@ -34,6 +35,7 @@ for spec in "$@"; do
   IFS=: read -r name zoom pose death <<< "$spec"; zoom=${zoom:-2.2}
   echo "$name" > Tools/PlayTest/enemy_arg.txt
   echo "$(run spawn_enemy.cs)"; step "${STEPS:-90}"
+  if [ -n "${PREP:-}" ]; then echo "  prep: $(run "$PREP")"; step 2; fi
   run r16_dialogue_skip.cs >/dev/null
   echo "$zoom" > Tools/PlayTest/zoom_size.txt
   echo "  $(run r45_zoom.cs)"; step 2

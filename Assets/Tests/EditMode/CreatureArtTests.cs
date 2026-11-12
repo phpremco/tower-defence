@@ -520,6 +520,79 @@ namespace Game.Tests
             Assert.GreaterOrEqual(spawn, 0, "SlimeMonarch: no spawn clip on the Sac_L spout");
         }
 
+        // The 49E exports first came in without the Prowler's and the Slime Monarch's Strike (the builder skips a declared
+        // clip the FBX lacks, silently): every clip the catalog declares for a set-3 row must be in its art, and the three
+        // that attack must carry an Attack clip with its impact moment.
+        private static readonly string[] Redesign49Set3Rows = { "Prowler", "PackAlpha", "Skyray", "RayBoss", "SlimeMonarch", "CinderMatriarch", "Knitback" };
+        private static readonly string[] Redesign49Set3Attackers = { "Prowler", "Skyray", "SlimeMonarch" };
+
+        [Test]
+        public void Redesign49Set3Rows_CarryEveryDeclaredClip_AndTheAttackersStrike()
+        {
+            foreach (BlenderArtEntry entry in BlenderArtCatalog.Creatures)
+            {
+                string row = entry.Id.Replace(BlenderArtCatalog.CorruptedSuffix, string.Empty);
+                if (System.Array.IndexOf(Redesign49Set3Rows, row) < 0)
+                {
+                    continue;
+                }
+
+                var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{entry.Id}.asset");
+                foreach (BlenderClipSpec spec in entry.Clips)
+                {
+                    Assert.IsTrue(HasClip(art, spec), $"{entry.Id}: no {spec.Clip} clip as {spec.Role}");
+                }
+
+                if (System.Array.IndexOf(Redesign49Set3Attackers, row) >= 0)
+                {
+                    int attack = art.IndexOf(ModelClipRole.Attack);
+                    Assert.GreaterOrEqual(attack, 0, $"{entry.Id}: no Attack clip");
+                    Assert.Greater(art.Clips[attack].EventSeconds, 0f, $"{entry.Id}: the Attack clip has no impact moment");
+                }
+            }
+        }
+
+        // Round 49 (set 3b): a bar height measured at rest alone sat inside wing beats and rearing bodies. Every enemy's bar
+        // clears its body for the covered share of its travel and idle cycles (a small tolerance for rows built before the
+        // cycle-aware measure whose cycles barely lift them).
+        private const float BarHeightTolerance = 0.02f;
+
+        [Test]
+        public void EnemyBars_ClearTheBodyOverItsCycles()
+        {
+            foreach (string guid in AssetDatabase.FindAssets("t:EnemyDefinition", new[] { EnemyFolder }))
+            {
+                var enemy = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(AssetDatabase.GUIDToAssetPath(guid));
+                ModelArtDefinition art = enemy.Art;
+                if (art == null || art.Model == null)
+                {
+                    continue;
+                }
+
+                var tops = CreatureBarHeight.CycleTops(art.Model, art);
+                if (tops.Count == 0)
+                {
+                    continue;
+                }
+
+                float covered = CreatureBarHeight.Covered(tops);
+                Assert.GreaterOrEqual(art.Height, covered * (1f - BarHeightTolerance), $"{enemy.name}: the bar sits inside the body for more than a quarter of its cycles");
+            }
+        }
+
+        private static bool HasClip(ModelArtDefinition art, BlenderClipSpec spec)
+        {
+            foreach (ModelClip clip in art.Clips)
+            {
+                if (clip.Role == spec.Role && clip.Clip != null && clip.Clip.name == spec.Clip)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private static void AssertCorruptedRowSharesModel(string id)
         {
             var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{id}.asset");

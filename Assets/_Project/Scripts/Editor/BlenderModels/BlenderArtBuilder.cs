@@ -244,7 +244,6 @@ namespace Game.Editor
             so.FindProperty("_bodyCentrePivot").boolValue = entry.BodyCentrePivot;
             // Every creature export faces -Z once imported (heads at -Z, 2026-11-04): turned half round to walk head first.
             so.FindProperty("_yaw").floatValue = CreatureExportYaw;
-            so.FindProperty("_height").floatValue = ModelTop(model);
             so.FindProperty("_lodScreenHeight").floatValue = entry.Scale < BlenderArtEntry.SpeciesScale ? BossLodScreenHeight : CreatureLodScreenHeight;
             so.FindProperty("_deathFade").vector2Value = DeathFade(entry, clips);
             so.FindProperty("_embers").boolValue = entry.Embers;
@@ -257,6 +256,10 @@ namespace Game.Editor
             WriteEmissionSets(so.FindProperty("_emissionSets"), EmissionSetsOf(entry, folder));
             so.FindProperty("_deathEmissionSet").stringValue = entry.DeathEmissionSet ?? string.Empty;
             so.ApplyModifiedPropertiesWithoutUndo();
+            // The bar height samples the written clips: wing beats and curled tails lift some bodies above the rest pose.
+            var bar = new SerializedObject(art);
+            bar.FindProperty("_height").floatValue = CreatureBarHeight.Measure(model, art);
+            bar.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(art);
             return art;
         }

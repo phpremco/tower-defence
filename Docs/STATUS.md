@@ -7069,6 +7069,37 @@ reports `r49e_floating_<name>.json`.
    separate from the fin tip in extreme poses (Dive frame 8, last Death frame). Weighting the talons to both fin
    chains (or seating them deeper) would fix it.
 
+### Follow-up: attack clips restored, clip-parity audit (after the set-3 import)
+
+The Unity import found that the 49E Prowler and SlimeMonarch exports had lost their `Strike` clip. Cause: a species
+build script exports only its own clips; the attack passes (`build_attacks36.py`, `build_slug_strike.py`) must run
+after every rebuild, and in 49E they did not. The audit also found the Skyray's round-36 `Dive` replaced by the
+build script's older Dive (same name and length, but the round-36 report block and its smoother keys were gone), and
+the SlimeMonarch's round-31 stretch `Flood` replaced by the build script's older Flood.
+
+- Re-run: `build_attacks36.py -- --only Prowler,Skyray --norender` (Prowler `Strike` 24, impact 10, settled by 23;
+  Skyray round-36 `Dive` 24, impact 10) and `build_slug_strike.py -- --only SlimeMonarch --norender` (`Strike` 30,
+  impact 13; round-31 `Flood` 44, slam 24). `build_slug_strike.py` now keys the SlimeMonarch's `Slosh` bone in the new
+  clips too (same spring, `build_slimemonarch.slosh_track`; Strike up to 23 deg, Flood 16) and lists it in
+  `scale_keyed_bones`. Only the FBX files and reports changed (mesh, UVs and maps untouched), so the corrupted skins
+  stand.
+- Floating-part check including the new clips: Prowler (43 poses) and SlimeMonarch (50 poses) clean; Skyray: only the
+  pre-existing fin-tip talons in Dive (0.036).
+- New tool `Tools/Blender/check_clip_parity.py`: imports the current <Name>.fbx and _LOD1.fbx and those of a base
+  revision (default `2e4fc688`, round 48; Git LFS smudged) or a backup folder (`--base-dir`), and compares clip sets,
+  clip lengths, bone names (sockets) and every event frame and socket list in the report. Writes
+  `ArtSource/Previews/QA/clip_parity_<tag>.json` (`clip_parity_before.json`, `clip_parity_after.json`).
+
+| Export | Before the fix | After |
+| --- | --- | --- |
+| Prowler | FAIL: Strike (24) missing in FBX and LOD1, round36 Strike events missing | OK |
+| Skyray | FAIL: round36 Dive events missing (older Dive keys) | OK (new bone Jaw, round 49A) |
+| SlimeMonarch | FAIL: Strike (30) missing in FBX and LOD1, round31 Strike/Flood events missing | OK (new bone Slosh, also scale-keyed) |
+| Oozer, Cragback, Slagstrider, Siftjaw, Surgefin, PackAlpha, StormMatriarch, CinderMatriarch, Knitback, Bat, SkySovereign, Stinger, AcidEmpress, FrostWarden, BroodMother, Queen | OK | OK (notes: Cragback Smoke_1..3, StormMatriarch Jaw are additions) |
+
+Unity re-import: **Prowler, Skyray, SlimeMonarch** (FBX + LOD1 + report only). Bulwark, CrystalWarlord, Shattered,
+SealedOne and Shardback were left to 49F.
+
 ## Round 49 import (set 2): the bats, the bat boss, the scorpions, the Frost Warden's teeth, the Brood Mother and the Hive Queen in the game; smoke material fix (2026-11-12)
 
 Not committed. Only the 49C/49D rows Remco approved: Bat, Bat_Moss/Dust/Tide/Frost, BatBoss (export SkySovereign, worn by
@@ -7238,3 +7269,152 @@ not visible in the stills; its height did not change in this import (0.336 -> 0.
    bar margin) would fix it.
 3. The cycle-rate readout in `r49s3_bar_probe.cs` reads 1.00 while time is frozen for the stills; the gait numbers above come
    from the data (`r47_gait_table.cs`).
+
+## Round 49F (Blender): follow-through on the Bulwark and the Warlord, no loose spikes, teeth clear of the lips, a readable maw for the Sealed One (2026-11-12)
+
+Blender only; nothing under `Assets/` touched, Unity not run, not committed. Backups of the five exports and .blend
+files before this round: `ArtSource/Exports/_backup_r49/<Name>_49F/` (gitignored; the merged corrupted-skin report:
+`_backup_r49/Corrupted_skins_report_49F.json`). Design reasoning: `ArtSource/DESIGN_NOTES.md`, "Round 49F".
+
+### What changed (per verdict)
+
+- **Bulwark (Bijna: tail, neck, head static)**: `Tools/Blender/follow_through.py` (new) runs the tail (Tail_1..3)
+  and the neck and head (Neck, Head) as damped-spring chains after each clip is solved: they lag turns and lurches,
+  overshoot and settle, the lag grows down the tail. Authored on top: the head leads (Strike: holds the target while
+  the chest winds up, drops into the chop 1.5 frames before the blade; Block: turns to the shield and ducks before it
+  arrives; Walk: nods into each step, swings against the hips; Idle: looks round with a tilt; Hit: snaps back and
+  away, the tail whips; Death: lolls to the fall side). Loose parts fixed (spikes rooted into their plates, a shoulder
+  ball, single-triangle specks deleted after the bake): the body is one island (was 16).
+- **Crystal Warlord (Bijna + floating crystals)**: the same clips and fixes (it reuses the Bulwark), the Sweep with
+  the head leading the swing; the arms were separate pieces that drifted off the chest in the Sweep (now joined); no
+  hovering fragments; crown, shoulder and back clusters sit into the body on root mounds. One body island (was 39).
+- **Shardback (Opnieuw: spikes not attached)**: no hovering fragments; lips and flank frost rooted deeper; broken-off
+  needle tips deleted after the bake; each cluster sits down in its crater (1..2 cm over the sunk floor, under the
+  lips) and is still exactly one island of its own Shard_n bone (checked: no mixed islands), so scale-0 shedding works.
+- **Shattered (Bijna: crystal positions, teeth through lips)**: the -X half of the mirrored crystal mesh took its
+  bones from the nearest +X part: the left fist cleaver followed the Jaw and drifted off the fist by up to 0.43 m
+  (Climb_Up, Roar). Crystal weights are now mirrored from +X with _L/_R swapped. Hovering fragments removed. The jaw
+  hangs 0.15 lower (`build_shattered.JAW_DROP`): a slot under the head rim for the upper fangs (they stop 5 cm short
+  of the jaw); the lower crystal teeth and fangs rise from the jutting lip in front of the head (underbite).
+- **Sealed One (Opnieuw: mouth)**: one maw under the skull front: bone-stone muzzle (upper jaw), a heavy mandible with
+  a chin keel on a **new `Jaw` bone** (child of Head, head at G(0, 3.66, 0.18), tail G(0, 3.42, 1.06)), wet wine-dark
+  gums, two interlocking rows of ivory fangs rooted in the gums (upper on Head, lower on Jaw), a near-black palate,
+  tongue and throat, a faint violet glow deep in the gullet. The jaw opens with the face plates (0.9 x the plate
+  angle, never closing past rest), so Roar, Summon, Rise, Hit, Adapt, Release etc. open the mouth with no clip edits.
+  The skull dips 16 degrees (was 24); the head core sits 0.2 higher and ends above the maw (it used to fill it with
+  violet). The plate-edge fangs of 49C are gone.
+
+### Unity import list (exact)
+
+Rows to rebuild (`BlenderArtBuilder.RebuildOnly`): **Bulwark, CrystalWarlord, Shardback, Shattered, SealedOne**, plus
+the corrupted-skin rows of **Bulwark, CrystalWarlord and Shardback** (`Skins/Corrupted` re-baked on the new UVs and
+merged into `ArtSource/Exports/Corrupted_skins_report.json`, 27 entries; vein coverage Bulwark 0.104, CrystalWarlord
+0.035, Shardback 0.038). The Shattered's shards (ShardRunner/Flyer/Crawler) were **not** re-exported.
+
+| Export | Tris LOD0 / LOD1 | Bones (LOD1) | Clips (names, frames, events) | Parts (tris LOD0) | Maps / UVs |
+| --- | --- | --- | --- | --- | --- |
+| Bulwark | 3950 / 1700 | 19 (16), unchanged | same names/lengths/events: Walk 32, Idle 72, Hit 14, Death 44, Block 24 (up 7), Strike 24 (impact 10); all re-keyed (follow-through) | Face 352, Claws 196 | all re-baked + Low/ + Corrupted; unmirrored (0.443) |
+| CrystalWarlord | 14000 / 6000 | 19 (16), unchanged | same: Walk 32, Idle 72, Hit 14, Death 44, Block 24 (up 7), Sweep 40 (hit 20); all re-keyed | Eyes 788, Teeth 688, Claws 880 | all re-baked + Corrupted; unmirrored (0.314) |
+| Shardback | 3948 / 1700 | 23 (15), unchanged | unchanged: Walk 48, Idle 72, Hit 12, Death 40, Shatter 40 (bursts 3/8/13/18/23/28), Strike 24 (impact 10) | Face 312, Claws 192 | all re-baked + Corrupted; unmirrored (0.345) |
+| Shattered | 24015 (17489 + 6526) / 9498 | 34 (33), unchanged | all 15 unchanged (names, lengths, phase/burst/split frames) | Eyes 1198, Teeth 1080, Claws 1736 | all re-baked; mirrored as before |
+| SealedOne | 34515 (25515 + 9000) / 13997 | **33 (30): new `Jaw`** (was 32 / 29) | all 17 unchanged names/lengths/events (Rise 150, Summon 90 peak 44, Release 170, ...); every clip now keys Jaw | Eyes 1702, Teeth 1506, Claws 1724 | body, Seal and all Phase1-4/Release emission sets re-baked |
+
+- No other bone, clip, event, socket or part-name changes; `ExtraParts` unchanged (Face+Claws; Eyes+Teeth+Claws).
+- `walk_distance_per_loop` unchanged on all five. Body UV layouts changed on all five (re-baked).
+- Check in Unity: the Sealed One's new `Jaw` bone (any bone whitelist or retarget map needs it; the Summon socket is
+  still `Head`), the health-bar `_height` of the Sealed One (skull lower in front), and that the Shardback's clusters
+  still hide by scale.
+
+### Checks (`ArtSource/Previews/QA/`)
+
+- Floating parts (`Tools/Blender/check_floating_49f.py`, on 49E's `check_floating_parts.py`; json
+  `r49f_floating_<name>_before|after.json`): Bulwark 7 floating islands -> 0 (one body island); Crystal Warlord 16
+  -> 3 (detail snout fangs in the last frames of Death only, 1.6..4.2 cm at boss scale; 2.9..3.9 cm before);
+  Shardback 23 rest-pose floating islands (6 fragments 16..27 cm off, 11 lip/frost tips, 6 clusters) -> 0 floating, 6
+  clusters separate by design (1.0..2.0 cm, one island each, 0 mixed); Shattered 9 rest-pose fragments plus the left
+  cleaver drifting 43 cm -> 0 at rest, left: small Crys_6 satellites (5.7 cm in Walk/Climb, phase-scaled) and the
+  Death blast; Sealed One: seal stones and crown rings are separate by design, two corner fangs open 5 cm off the gum
+  at the Summon peak.
+- Teeth through lips (`Tools/Blender/check_teeth_49f.py`, json `r49f_teeth_<name>_before|after.json`: the tip third
+  of each tooth inside the body at rest and at the three most-closed jaw frames of every clip): Shattered 9 of 9 teeth
+  through (up to 19 sampled vertices) -> 4 of 14 grazing by 1..2 vertices (the crystal teeth tips). Sealed One: the
+  check is inconclusive on the new maw (16 of 17 flagged, also with the mouth open; the nearest-surface test is
+  confused by the gum tubes and the face-plate shells round the mouth); the renders show every fang clear of the
+  other gum (`r49f_sealedone_after_mouth.png`).
+- Clip steps (`r49f_<key>_before|after_clip_steps.json`): no clip's largest per-frame bone turn grew by more than 1.3
+  degrees (Bulwark Death 7.2 -> 8.5 on Head; Strike 38.9, Sweep 28.0, Block 21.4 unchanged); loops seamless.
+  Head swing against the chest (peak-to-peak degrees): Walk 9.6 -> 28.2, Idle 30.1 -> 40.8, Hit 22.0 -> 46.9, Strike
+  10.9 -> 48.2, Sweep 26.9 -> 49.9, Block 10.0 -> 23.7, Death 35.0 -> 57.7; tail tip against the pelvis: Walk 38 ->
+  60, Idle 31 -> 50, Strike 43 -> 50, Death 22 -> 35. Sealed One: all 17 clips unchanged within 0.1 degree.
+
+### Previews
+
+`r49f_<key>_before|after_game/close/move/mouth.png` and the 2x2 sheets `r49f_<key>_before|after.png` for bulwark,
+crystalwarlord, shattered, sealedone, shardback; `r49f_bulwark_before|after_clips.png` and
+`r49f_crystalwarlord_before|after_clips.png` (each clip at six frames, rows Block, Death, Hit, Idle, Strike/Sweep,
+Walk); `r49f_shardback_after_shed.png` (Shard_1..3 at scale 0). Tool: `Tools/Blender/r49f_views.py`.
+
+### Shared-kit changes (no effect on other creatures)
+
+- `build_attacks36.bulwark_strike` only (the head lead and the follow-through); no other attack changed.
+- New files: `follow_through.py`, `check_floating_49f.py`, `check_teeth_49f.py`, `r49f_views.py`.
+- `crystal_growth.py`, `creature_kit3.py`, `common.py`, `titan_kit.py` untouched (the speck removal and the Shattered's
+  weight mirror are wrappers inside the builders' own processes).
+
+### Open points (round 49F)
+
+1. The Sealed One's maw reads clearly up close; at the play camera it is still small under the eyes and partly behind
+   the praying hands (it could grow again, or the hands sit lower).
+2. The Bulwark's Death ends with the sword partly under the body (as before); the Warlord's snout fangs part 2..4 cm
+   from the snout in the last Death frames (as before, slightly more with the lolling head).
+3. The Shardback clusters still stand 1..2 cm over their crater floors (they must stay separate islands for the scale
+   shedding); the lips hide most of it from the play camera.
+
+### Set 3b (after a771754c): attack clips back, cycle-aware health-bar height
+
+Not committed. Save `progress.json` **2eca347e** copied aside before each of the three Play Mode runs and verified after each.
+
+**Attack clips.** Blender restored the Prowler `Strike`, the Skyray's round-36 `Dive` events and the Slime Monarch's `Strike` and
+`Flood` (FBX, LOD1 FBX, report only). `ApplyRedesign49Set3.RunClipFix` rebuilt just Prowler, Skyray, SlimeMonarch and their
+corrupted rows (6 rows, 3 enemies). Now: Prowler Attack `Strike` 0.800 s, impact 0.333 s (frame 10); Skyray Attack `Dive`
+0.800 s, impact 0.333 s (frame 10); SlimeMonarch Attack `Strike` 1.000 s, impact 0.433 s (frame 13), Power `Flood` slam 0.800 s
+(frame 24), Power `Spawn` 1.000 s on `Sac_L` (frame 30). The corrupted rows match. Every clip the catalog declares for a set-3
+row is in its art (`r49s3_clip_check.cs`). Section 2's regression is fixed.
+
+**Health bar: what was wrong.** The "0.74 below the top" from the first pass was a probe artefact: `r49s3_bar_probe.cs` read
+`SkinnedMeshRenderer.bounds`, which is a stale AABB (the import bounds moved with the root bone), not the drawn pose. Baking the
+skinned meshes in play shows the Sky Sovereign's bar 0.15-0.19 above its real body; it was missing from the stills because a
+bar only shows when the creature is hurt (or armoured), `EnemyView` line ~1996. The probe now bakes the meshes and reports
+whether the bar is shown; `r49_shots.sh` gained `PREP=<file.cs>` (e.g. `damage_enemies.cs`) so the bars show in stills.
+
+**The measurement was still rest-pose only.** `BlenderArtBuilder.ModelTop` takes the top of the renderer bounds of the model at
+rest. A full scan (`r49s3_height_scan.cs`, every enemy art, baked surface over 12-16 poses of its travel and idle cycles) shows
+flapping and rearing bodies rise well above that: bats 0.20 stored vs 0.70 at the top of a wing beat, the bat boss 0.34 vs
+1.30, ShardFlyer 0.29 vs 0.77, Skyray 0.14 vs 0.34, ray boss 0.34 vs 0.61, SlimeMonarch 0.94 vs 1.12, Oozer 0.43 vs 0.54.
+Walkers and the other bosses stay within a few percent (their rest bounds are generous).
+
+**Fix (general).** New `Game.Editor.CreatureBarHeight`: samples the Move and Idle clips (16 poses each), bakes the skinned
+surface, and takes the height that clears `CoverShare` = 0.75 of those poses, never below the rest measure. Using the very
+highest pose would float a bat's bar a full wing span above its body, so a wing tip may still flick past at the top of a beat.
+`BlenderArtBuilder.Build` now writes `_height` with it after the clips. `ApplyRedesign49Set3.RemeasureBars` re-measured only
+`_height` of the existing rows (no rebuild; 49F's five skipped); 32 rows changed: Skyray 0.140 -> 0.160, Shalebat 0.250 -> 0.253,
+Wisp 0.772 -> 0.795, Oozer 0.431 -> 0.495, Bat and the four element bats 0.200 -> 0.208, CoreWisp 1.716 -> 1.746, SlimeMonarch
+0.937 -> 1.048, RollerKing 1.269 -> 1.278, BatBoss 0.338 -> 0.374, RayBoss 0.335 -> 0.342, Mireleech 0.228 -> 0.265, Slagstrider
+0.753 -> 0.801, FireLarva 0.220 -> 0.252, CinderEgg 0.548 -> 0.553, ShardFlyer 0.285 -> 0.587, ShardCrawler 1.198 -> 1.213, plus
+the corrupted twins. Bosses checked: AcidEmpress, BroodMother, CinderMatriarch, CrystalWarlord, FrostWarden, Gravemaw, HiveQueen,
+PackAlpha, Rotbloom, SealedOne, Shattered unchanged (cycle top within their rest measure); CoreWisp, RollerKing, RayBoss raised
+1-2 %, SlimeMonarch 12 %, the bat boss 11 % (its wing tips still pass the bar at the top of a beat, by design of CoverShare).
+
+**In play (baked probe, bar minus body top, hurt 40 %):** Prowler mid-Strike +0.27, Sky Sovereign +0.19, Storm Matriarch +0.03,
+Slime Monarch +0.15 (bar 1.09 -> 1.19), Skyray in Dive +0.34; all shown.
+
+**Stills.** `r49_ingame_Prowler_strike(_side).png` (posed at 30 % of Strike: head down, forelegs reaching, bar above),
+`r49_ingame_SkySovereign_bar(_side).png` (bar over the body, the tail laser firing), `r49_ingame_StormMatriarch_bar.png`,
+`r49_ingame_SlimeMonarch_bar.png`, `r49_ingame_Skyray_dive_side.png`. No pink, nothing loose. Console 0 errors, 0 warnings.
+
+**Tests.** `Redesign49Set3Rows_CarryEveryDeclaredClip_AndTheAttackersStrike` (every catalog clip of the set-3 rows and their
+corrupted rows is in the art; Prowler, Skyray and SlimeMonarch have an Attack clip with an impact moment) and
+`EnemyBars_ClearTheBodyOverItsCycles` (every enemy's stored height clears `CoverShare` of its cycles, 2 % tolerance for rows not
+yet rebuilt, e.g. 49F's Shattered and Shardback at +0.3/+0.5 %). PackAlpha, the ray boss and the Cinder Matriarch have no attack
+clip in the catalog (never had), so the Attack assertion covers the three that attack.
+EditMode suite on w6: **834 tests, 782 passed, 52 skipped, 0 failed** (was 832; +2). Recompile: 0 errors, 0 warnings.

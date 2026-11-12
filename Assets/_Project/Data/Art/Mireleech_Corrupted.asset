@@ -26,7 +26,7 @@ MonoBehaviour:
   _scale: 1.4
   _yaw: 180
   _bodyCentrePivot: 0
-  _height: 0.22765881
+  _height: 0.26492676
   _lodScreenHeight: 0.05
   _upperBodyBone: 
   _displayExposure: 1
@@ -35,6 +35,7 @@ MonoBehaviour:
   _embers: 0
   _bleeds: 1
   _shedBones: []
+  _vents: {fileID: 0}
   _emissionSets: []
   _deathEmissionSet: 
   _clips:

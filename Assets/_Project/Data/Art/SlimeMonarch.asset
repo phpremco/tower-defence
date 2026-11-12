@@ -26,7 +26,7 @@ MonoBehaviour:
   _scale: 0.6
   _yaw: 180
   _bodyCentrePivot: 0
-  _height: 0.93697524
+  _height: 1.0480785
   _lodScreenHeight: 0.09
   _upperBodyBone: 
   _displayExposure: 1
@@ -124,6 +124,22 @@ MonoBehaviour:
     _farClip: {fileID: 396645236596994646, guid: 09aeff5f28a231043a989a184559dc4c, type: 3}
     _distancePerLoop: 0.6
     _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
+  - _role: 4
+    _clip: {fileID: -2287294676821967423, guid: 3db3570153ab7954eb6fc358fa755be1, type: 3}
+    _farClip: {fileID: -4191472581902497829, guid: 09aeff5f28a231043a989a184559dc4c, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0.43333334
     _trigger: 
     _socket: 
     _weight: 1

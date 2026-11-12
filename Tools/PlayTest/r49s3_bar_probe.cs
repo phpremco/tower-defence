@@ -1,40 +1,42 @@
 // Round 49 import (set 3): for the first living enemy named in Tools/PlayTest/enemy_arg.txt, where its health bar sits
-// against the top of its drawn body (near-LOD skinned renderers) and its head bone, and the travel cycle's playback rate
-// (CreatureClips' clamp is 0.15-6; a rate pinned at either end means the feet slide).
+// against the real top of its drawn body (near-LOD skinned renderers, baked vertices in the current pose) and its head
+// bone, whether the bar is shown, and the body's tilt (a flyer banks and pitches as it steers).
 string wanted = System.IO.File.ReadAllText("Tools/PlayTest/enemy_arg.txt").Trim().Split(' ')[0];
-var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
 foreach (var view in UnityEngine.Object.FindObjectsByType<Game.Enemies.EnemyView>(UnityEngine.FindObjectsSortMode.None))
 {
     var enemy = view.GetComponent<Game.Enemies.Enemy>();
     if (enemy == null || !enemy.IsAlive || enemy.Definition.name != wanted) { continue; }
     float barY = float.NaN;
+    bool barShown = false;
     foreach (var node in view.GetComponentsInChildren<UnityEngine.Transform>(true))
     {
-        if (node.name == "HealthBar") { barY = node.position.y; break; }
+        if (node.name == "HealthBar") { barY = node.position.y; barShown = node.gameObject.activeInHierarchy; break; }
     }
+
     float top = float.MinValue;
+    float boundsTop = float.MinValue;
     float headY = float.NaN;
+    UnityEngine.Transform root = null;
+    var baked = new UnityEngine.Mesh();
     foreach (var renderer in view.GetComponentsInChildren<UnityEngine.SkinnedMeshRenderer>())
     {
         if (!renderer.enabled || renderer.name.EndsWith("_Far")) { continue; }
-        top = UnityEngine.Mathf.Max(top, renderer.bounds.max.y);
+        if (root == null) { root = renderer.transform.parent; }
+        boundsTop = UnityEngine.Mathf.Max(boundsTop, renderer.bounds.max.y);
+        renderer.BakeMesh(baked, true);
+        var rot = renderer.transform.rotation;
+        var pos = renderer.transform.position;
+        foreach (var v in baked.vertices) { top = UnityEngine.Mathf.Max(top, (pos + rot * v).y); }
     }
 
+    UnityEngine.Object.Destroy(baked);
     foreach (var node in view.GetComponentsInChildren<UnityEngine.Transform>())
     {
         if (node.name == "Head" && float.IsNaN(headY)) { headY = node.position.y; }
     }
 
-    var clips = typeof(Game.Enemies.EnemyView).GetField("_clips", flags).GetValue(view);
-    string rate = "n/a";
-    if (clips != null)
-    {
-        var player = clips.GetType().GetField("_player", flags).GetValue(clips);
-        var cycle = player.GetType().GetProperty("CycleRate");
-        if (cycle != null) { rate = ((float)cycle.GetValue(player)).ToString("0.00"); }
-    }
-
-    return $"{wanted}: ground {view.transform.position.y:0.00} bar {barY:0.00} bodyTop {top:0.00} head {headY:0.00} barAboveTop {barY - top:0.00} cycleRate {rate}";
+    string tilt = root != null ? root.rotation.eulerAngles.ToString("0") : "-";
+    return $"{wanted}: ground {view.transform.position.y:0.00} bar {barY:0.00} shown {barShown} bodyTop {top:0.00} boundsTop {boundsTop:0.00} head {headY:0.00} barAboveTop {barY - top:0.00} tilt {tilt}";
 }
 
 return "no living " + wanted;

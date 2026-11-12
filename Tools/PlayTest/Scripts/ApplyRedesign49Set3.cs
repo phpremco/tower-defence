@@ -28,12 +28,21 @@ public static class ApplyRedesign49Set3
         "Sac_L", "Sac_R", "Slosh", "Mane_L", "Mane_R", "Jaw", "Tail_5", "Vent_1", "Pod_1", "Head", "Pelvis",
     };
 
-    public static string Run()
+    // Set 3b: Blender restored the attack clips the 49E exports had lost (Prowler Strike, the Skyray Dive events, the Slime
+    // Monarch Strike and Flood); only these three exports changed (FBX, LOD1 FBX, report).
+    private static readonly HashSet<string> ClipFixAssets = new HashSet<string> { "Prowler", "Skyray", "SlimeMonarch" };
+
+    public static string Run() => Rebuild(Assets);
+
+    /// <summary>Rebuilds just the three exports whose attack clips came back, and their corrupted rows. Run with --entry ApplyRedesign49Set3.RunClipFix</summary>
+    public static string RunClipFix() => Rebuild(ClipFixAssets);
+
+    private static string Rebuild(HashSet<string> assets)
     {
         var ids = new List<string>();
         foreach (BlenderArtEntry entry in BlenderArtCatalog.Creatures)
         {
-            if (Assets.Contains(entry.Asset))
+            if (assets.Contains(entry.Asset))
             {
                 ids.Add(entry.Id);
             }
@@ -42,6 +51,45 @@ public static class ApplyRedesign49Set3
         int worn = BlenderArtBuilder.RebuildOnly(ids.ToArray());
         AssetDatabase.SaveAssets();
         return $"rows {ids.Count} ({string.Join(",", ids)}), worn by {worn}" + DescribeAll(ids);
+    }
+
+    // Round 49F is still reshaping these in Blender: their art rows stay untouched until their own import.
+    private static readonly HashSet<string> HeldAssets = new HashSet<string>
+    {
+        "Bulwark", "CrystalWarlord", "Shattered", "SealedOne", "Shardback",
+    };
+
+    /// <summary>
+    /// Re-measures the health bar height of every creature art row with the cycle-aware measure (CreatureBarHeight) without
+    /// rebuilding the rows; only <c>_height</c> changes, and only where the measure differs. Run with --entry
+    /// ApplyRedesign49Set3.RemeasureBars
+    /// </summary>
+    public static string RemeasureBars()
+    {
+        string report = string.Empty;
+        foreach (BlenderArtEntry entry in BlenderArtCatalog.Creatures)
+        {
+            var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"Assets/_Project/Data/Art/{entry.Id}.asset");
+            if (art == null || art.Model == null || HeldAssets.Contains(entry.Asset))
+            {
+                continue;
+            }
+
+            float height = CreatureBarHeight.Measure(art.Model, art);
+            if (Mathf.Approximately(height, art.Height))
+            {
+                continue;
+            }
+
+            report += $"\n{entry.Id}: {art.Height:0.000} -> {height:0.000}";
+            var so = new SerializedObject(art);
+            so.FindProperty("_height").floatValue = height;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(art);
+        }
+
+        AssetDatabase.SaveAssets();
+        return report.Length == 0 ? "no change" : report;
     }
 
     /// <summary>The same report without rebuilding: the state before the import, to compare heights and sockets.</summary>
@@ -83,6 +131,11 @@ public static class ApplyRedesign49Set3
         foreach (ModelPart part in art.Parts)
         {
             line += $" {part.Object}({Name(part.MaterialFor(false))}/{Name(part.MaterialFor(true))})";
+        }
+
+        foreach (ModelClip clip in art.Clips)
+        {
+            line += $"\n  clip {clip.Role} {Name(clip.Clip)} {(clip.Clip != null ? clip.Clip.length : 0f):0.000}s event {clip.EventSeconds:0.000}s";
         }
 
         foreach (GameObject model in new[] { art.Model, art.Lod1 })

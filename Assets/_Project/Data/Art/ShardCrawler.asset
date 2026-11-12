@@ -22,14 +22,16 @@ MonoBehaviour:
   _scale: 1
   _yaw: 180
   _bodyCentrePivot: 0
-  _height: 1.1978977
+  _height: 1.2132002
   _lodScreenHeight: 0.09
   _upperBodyBone: 
   _displayExposure: 1
+  _turnSeconds: 0.08
   _deathFade: {x: 0.33333334, y: 1.1333334}
   _embers: 0
   _bleeds: 1
   _shedBones: []
+  _vents: {fileID: 0}
   _emissionSets: []
   _deathEmissionSet: 
   _clips:
@@ -47,6 +49,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 61
     _clip: {fileID: 3011885152339337858, guid: ea5048c344445c6479cad9843a6fa5a8, type: 3}
     _farClip: {fileID: 0}
@@ -61,6 +65,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 1
     _clip: {fileID: 8694472752636900731, guid: ea5048c344445c6479cad9843a6fa5a8, type: 3}
     _farClip: {fileID: 0}
@@ -75,6 +81,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 40
     _clip: {fileID: 6200921524344779084, guid: ea5048c344445c6479cad9843a6fa5a8, type: 3}
     _farClip: {fileID: 0}
@@ -89,6 +97,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 2
     _clip: {fileID: 6732344900070006014, guid: ea5048c344445c6479cad9843a6fa5a8, type: 3}
     _farClip: {fileID: 0}
@@ -103,6 +113,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 0
     _clip: {fileID: 4595022448956080280, guid: ea5048c344445c6479cad9843a6fa5a8, type: 3}
     _farClip: {fileID: 0}
@@ -117,6 +129,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 43
     _clip: {fileID: -7699409478876694311, guid: ea5048c344445c6479cad9843a6fa5a8, type: 3}
     _farClip: {fileID: 0}
@@ -131,6 +145,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 42
     _clip: {fileID: 386136726384900201, guid: ea5048c344445c6479cad9843a6fa5a8, type: 3}
     _farClip: {fileID: 0}
@@ -145,6 +161,8 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0
   - _role: 41
     _clip: {fileID: 6350489033378090320, guid: ea5048c344445c6479cad9843a6fa5a8, type: 3}
     _farClip: {fileID: 0}
@@ -159,3 +177,5 @@ MonoBehaviour:
     _anchorForward: 0
     _momentSeconds: []
     _burden: []
+    _footfallSeconds: []
+    _blendSeconds: 0

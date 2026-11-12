@@ -36,10 +36,15 @@
     "Idle": 72,
     "Hit": 12,
     "Death": 40,
-    "Flood": 44,
-    "Spawn": 48
+    "Spawn": 48,
+    "Strike": 30,
+    "Flood": 44
   },
   "scale_keyed_bones": [
+    "Body_1",
+    "Body_2",
+    "Body_3",
+    "Head",
     "Stalk_L1",
     "Stalk_L2",
     "Stalk_L3",
@@ -103,5 +108,54 @@
     "unity": "ExtraParts { \"Face\" }: objects SlimeMonarch_<Part> (+ _LOD1 in SlimeMonarch_LOD1.fbx), maps SlimeMonarch_<Part>_*.png (+ Low/)",
     "note": "round 49A: stalk eyes, slime teeth with goo strands and drips in the slack maw (no claws on a slug); bones, clips and events unchanged",
     "body_maps": "stalk bulbs' glow lowered in SlimeMonarch_Emission (24296 texels this run)"
+  },
+  "round31": {
+    "Strike": {
+      "frames": 30,
+      "loop": false,
+      "impact_frame": 13,
+      "impact": {
+        "front_min_z": -0.022,
+        "tip_forward": 1.709,
+        "rear": 0.983,
+        "min_z": -0.022
+      },
+      "rest": {
+        "front_min_z": 0.023,
+        "tip_forward": 1.0,
+        "rear": 0.97,
+        "min_z": -0.01
+      },
+      "snap_back_shortest": {
+        "front_min_z": 0.016,
+        "tip_forward": 0.899,
+        "rear": 0.968,
+        "min_z": -0.012
+      }
+    },
+    "Flood": {
+      "frames": 44,
+      "loop": false,
+      "slam_frame": 24,
+      "top": {
+        "front_min_z": 0.703,
+        "tip_forward": 1.364,
+        "rear": 0.978,
+        "min_z": -0.01
+      },
+      "slam": {
+        "front_min_z": -0.024,
+        "tip_forward": 1.25,
+        "rear": 0.976,
+        "min_z": -0.024
+      }
+    },
+    "chain_scale_bones": [
+      "Body_1",
+      "Body_2",
+      "Body_3",
+      "Head"
+    ],
+    "note": "tail end planted; the chain stretches toward the target (length L, width L^-0.65, height L^-0.35); old clips hold the chain at scale 1"
   }
 }
