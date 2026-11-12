@@ -420,6 +420,9 @@ def main():
                       macros=[("shield", G(-0.38, 0.58, 0.12), 0.5, -80, 10), ("head", G(0.0, 0.92, 0.32), 0.45, -35, 15),
                               ("sword", G(0.32, 0.3, 0.45), 0.5, -10, 20)],
                       rig_scale=1.4, power=("Block", 20))
+    # Round 46: the close-up detail (eyes, fangs, talons) as extra parts, exported again with the body.
+    import bulwark_detail
+    bulwark_detail.run(norender=bool(C.cli_args().get("norender")))
 
 
 if __name__ == "__main__":

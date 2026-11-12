@@ -46,5 +46,60 @@
   "walk_distance_per_loop": 0.387,
   "pivot": "ground, body centre",
   "trail_origin": "bone Drip (under the belly, 0.22 above the ground; LOD1: Body)",
-  "footfalls": "Walk frames 0 (L1, R2) and 18 (R1, L2)"
+  "footfalls": "Walk frames 0 (L1, R2) and 18 (R1, L2)",
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Slagstrider_Face",
+        "material": "Slagstrider_Face_Mat",
+        "maps": "Slagstrider_Face_*.png (1024, Low 512)",
+        "tris": 330,
+        "lod1_object": "Slagstrider_Face_LOD1",
+        "lod1_tris": 84,
+        "source_tris": 13524,
+        "uv": {
+          "islands": 21,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 165,
+          "uv_coverage": 0.571,
+          "world_per_uv": 0.11832382529146127
+        },
+        "symmetry_error": 0.003582
+      },
+      "Claws": {
+        "object": "Slagstrider_Claws",
+        "material": "Slagstrider_Claws_Mat",
+        "maps": "Slagstrider_Claws_*.png (1024, Low 512)",
+        "tris": 196,
+        "lod1_object": "Slagstrider_Claws_LOD1",
+        "lod1_tris": 60,
+        "source_tris": 21840,
+        "uv": {
+          "islands": 6,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 98,
+          "uv_coverage": 0.533,
+          "world_per_uv": 0.1525238684096838
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 3957,
+    "extra_tris": 526,
+    "extra_share": 0.133,
+    "body_lod1_tris": 1699,
+    "extra_lod1_tris": 144,
+    "extra_lod1_share": 0.085,
+    "clips": [
+      "Death",
+      "Hit",
+      "Idle",
+      "Walk"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Slagstrider_<Part> (+ _LOD1 in Slagstrider_LOD1.fbx), maps Slagstrider_<Part>_*.png (+ Low/)",
+    "body_maps": "unchanged",
+    "note": "round 46: deep-set ember eyes, obsidian slit-jaw fangs, foot spurs; bones, clips and events unchanged"
+  }
 }

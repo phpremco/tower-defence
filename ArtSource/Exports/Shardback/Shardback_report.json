@@ -160,5 +160,63 @@
       "slip_share": 0.018
     },
     "note": "planted feet move back at the clip's ground speed (zero world speed); per-step timing, duty, lift and landing jitter; the report's walk_distance_per_loop replaces the catalog MoveDistance"
+  },
+  "r46_body_maps_edited": true,
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Shardback_Face",
+        "material": "Shardback_Face_Mat",
+        "maps": "Shardback_Face_*.png (1024, Low 512)",
+        "tris": 334,
+        "lod1_object": "Shardback_Face_LOD1",
+        "lod1_tris": 84,
+        "source_tris": 15520,
+        "uv": {
+          "islands": 12,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 16,
+          "mirrored_faces": 167,
+          "uv_coverage": 0.598,
+          "world_per_uv": 0.12509197167596164
+        },
+        "symmetry_error": 0.001127
+      },
+      "Claws": {
+        "object": "Shardback_Claws",
+        "material": "Shardback_Claws_Mat",
+        "maps": "Shardback_Claws_*.png (1024, Low 512)",
+        "tris": 196,
+        "lod1_object": "Shardback_Claws_LOD1",
+        "lod1_tris": 78,
+        "source_tris": 13376,
+        "uv": {
+          "islands": 12,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 98,
+          "uv_coverage": 0.534,
+          "world_per_uv": 0.12066367760711656
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 3940,
+    "extra_tris": 530,
+    "extra_share": 0.135,
+    "body_lod1_tris": 1698,
+    "extra_lod1_tris": 162,
+    "extra_lod1_share": 0.095,
+    "clips": [
+      "Death",
+      "Hit",
+      "Idle",
+      "Shatter",
+      "Strike",
+      "Walk"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Shardback_<Part> (+ _LOD1 in Shardback_LOD1.fbx), maps Shardback_<Part>_*.png (+ Low/)",
+    "body_maps": "round-15 bead eyes' glow removed from Shardback_Albedo/Emission (4460 texels this run)",
+    "note": "round 46: four wet amber eyes under lid folds, mandible saw teeth, leg talons; bones, clips and events unchanged"
   }
 }

@@ -485,6 +485,9 @@ def main():
     C.save_blend(NAME)
     if not C.cli_args().get("norender"):
         previews(arm, asset.low, actions, lod, out, [asset])
+    # Round 46: the close-up detail (eyes, jaw teeth, blade saws, talons) as extra parts, exported again with the body.
+    import skitter_detail
+    skitter_detail.run(norender=bool(C.cli_args().get("norender")))
 
 
 main()

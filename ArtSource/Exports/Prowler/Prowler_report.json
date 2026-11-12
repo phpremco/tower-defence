@@ -83,5 +83,62 @@
       "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
+  },
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Prowler_Face",
+        "material": "Prowler_Face_Mat",
+        "maps": "Prowler_Face_*.png (1024, Low 512)",
+        "tris": 312,
+        "lod1_object": "Prowler_Face_LOD1",
+        "lod1_tris": 88,
+        "source_tris": 25456,
+        "uv": {
+          "islands": 14,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 29,
+          "mirrored_faces": 156,
+          "uv_coverage": 0.686,
+          "world_per_uv": 0.14803201293179144
+        },
+        "symmetry_error": 0.001369
+      },
+      "Claws": {
+        "object": "Prowler_Claws",
+        "material": "Prowler_Claws_Mat",
+        "maps": "Prowler_Claws_*.png (1024, Low 512)",
+        "tris": 204,
+        "lod1_object": "Prowler_Claws_LOD1",
+        "lod1_tris": 76,
+        "source_tris": 18896,
+        "uv": {
+          "islands": 4,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 102,
+          "uv_coverage": 0.641,
+          "world_per_uv": 0.133606956566604
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 3895,
+    "extra_tris": 516,
+    "extra_share": 0.132,
+    "body_lod1_tris": 1700,
+    "extra_lod1_tris": 164,
+    "extra_lod1_share": 0.096,
+    "clips": [
+      "Death",
+      "Hit",
+      "Idle",
+      "Pounce",
+      "Run",
+      "Strike"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Prowler_<Part> (+ _LOD1 in Prowler_LOD1.fbx), maps Prowler_<Part>_*.png (+ Low/)",
+    "body_maps": "unchanged",
+    "note": "round 46: wet red eyes under brow folds, shear-jaw fangs, toe talons; bones, clips and events unchanged"
   }
 }

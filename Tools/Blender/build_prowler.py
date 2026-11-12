@@ -451,6 +451,9 @@ def main():
     C.save_blend(NAME)
     if not C.cli_args().get("norender"):
         previews(arm, asset.low, actions, lod, out, asset)
+    # Round 46: the close-up detail (eyes, jaw fangs, toe talons) as extra parts, exported again with the body.
+    import prowler_detail
+    prowler_detail.run(norender=bool(C.cli_args().get("norender")))
 
 
 if __name__ == "__main__":

@@ -52,5 +52,63 @@
     "surface_frame": 10,
     "start_depth": 0.45,
     "start_back": 0.15
+  },
+  "r46_body_maps_edited": true,
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Surgefin_Face",
+        "material": "Surgefin_Face_Mat",
+        "maps": "Surgefin_Face_*.png (1024, Low 512)",
+        "tris": 356,
+        "lod1_object": "Surgefin_Face_LOD1",
+        "lod1_tris": 84,
+        "source_tris": 17752,
+        "uv": {
+          "islands": 15,
+          "closed_islands_cut": 1,
+          "folded_fallback_faces": 18,
+          "mirrored_faces": 178,
+          "uv_coverage": 0.654,
+          "world_per_uv": 0.11418723512771908
+        },
+        "symmetry_error": 0.002149
+      },
+      "Claws": {
+        "object": "Surgefin_Claws",
+        "material": "Surgefin_Claws_Mat",
+        "maps": "Surgefin_Claws_*.png (1024, Low 512)",
+        "tris": 180,
+        "lod1_object": "Surgefin_Claws_LOD1",
+        "lod1_tris": 60,
+        "source_tris": 6120,
+        "uv": {
+          "islands": 6,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 90,
+          "uv_coverage": 0.484,
+          "world_per_uv": 0.07090745010350304
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 3947,
+    "extra_tris": 536,
+    "extra_share": 0.136,
+    "body_lod1_tris": 1699,
+    "extra_lod1_tris": 144,
+    "extra_lod1_share": 0.085,
+    "clips": [
+      "Death",
+      "Emerge",
+      "Hit",
+      "Idle",
+      "Swim",
+      "Walk"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Surgefin_<Part> (+ _LOD1 in Surgefin_LOD1.fbx), maps Surgefin_<Part>_*.png (+ Low/)",
+    "body_maps": "round-15 bead eyes' glow removed from Surgefin_Albedo/Emission (6508 texels this run)",
+    "note": "round 46: four wet coral eyes under lid folds, needle-tooth grin, toe claws; bones, clips and events unchanged"
   }
 }

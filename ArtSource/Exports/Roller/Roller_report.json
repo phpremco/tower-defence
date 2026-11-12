@@ -88,5 +88,64 @@
       "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
+  },
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Roller_Face",
+        "material": "Roller_Face_Mat",
+        "maps": "Roller_Face_*.png (1024, Low 512)",
+        "tris": 326,
+        "lod1_object": "Roller_Face_LOD1",
+        "lod1_tris": 84,
+        "source_tris": 22268,
+        "uv": {
+          "islands": 13,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 163,
+          "uv_coverage": 0.656,
+          "world_per_uv": 0.14226436625756744
+        },
+        "symmetry_error": 0.001046
+      },
+      "Claws": {
+        "object": "Roller_Claws",
+        "material": "Roller_Claws_Mat",
+        "maps": "Roller_Claws_*.png (1024, Low 512)",
+        "tris": 192,
+        "lod1_object": "Roller_Claws_LOD1",
+        "lod1_tris": 80,
+        "source_tris": 16928,
+        "uv": {
+          "islands": 5,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 96,
+          "uv_coverage": 0.561,
+          "world_per_uv": 0.13377376700358534
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 3915,
+    "extra_tris": 518,
+    "extra_share": 0.132,
+    "body_lod1_tris": 1700,
+    "extra_lod1_tris": 164,
+    "extra_lod1_share": 0.096,
+    "clips": [
+      "Curl",
+      "Death",
+      "Hit",
+      "Idle",
+      "Roll",
+      "Strike",
+      "Uncurl",
+      "Walk"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Roller_<Part> (+ _LOD1 in Roller_LOD1.fbx), maps Roller_<Part>_*.png (+ Low/)",
+    "body_maps": "unchanged",
+    "note": "round 46: wet amber eyes under the scoop, mandible saw teeth, keratin digging talons; bones, clips and events unchanged"
   }
 }

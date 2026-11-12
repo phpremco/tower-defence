@@ -56,5 +56,63 @@
     "breach_frame": 8,
     "start_depth": 0.5,
     "start_back": 0.1
+  },
+  "r46_body_maps_edited": true,
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Siftjaw_Face",
+        "material": "Siftjaw_Face_Mat",
+        "maps": "Siftjaw_Face_*.png (1024, Low 512)",
+        "tris": 340,
+        "lod1_object": "Siftjaw_Face_LOD1",
+        "lod1_tris": 58,
+        "source_tris": 14764,
+        "uv": {
+          "islands": 21,
+          "closed_islands_cut": 1,
+          "folded_fallback_faces": 14,
+          "mirrored_faces": 170,
+          "uv_coverage": 0.78,
+          "world_per_uv": 0.09219052299292291
+        },
+        "symmetry_error": 0.00307
+      },
+      "Claws": {
+        "object": "Siftjaw_Claws",
+        "material": "Siftjaw_Claws_Mat",
+        "maps": "Siftjaw_Claws_*.png (1024, Low 512)",
+        "tris": 192,
+        "lod1_object": "Siftjaw_Claws_LOD1",
+        "lod1_tris": 78,
+        "source_tris": 14928,
+        "uv": {
+          "islands": 6,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 96,
+          "uv_coverage": 0.562,
+          "world_per_uv": 0.11199481318895749
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 3950,
+    "extra_tris": 532,
+    "extra_share": 0.135,
+    "body_lod1_tris": 1698,
+    "extra_lod1_tris": 136,
+    "extra_lod1_share": 0.08,
+    "clips": [
+      "Burrow",
+      "Death",
+      "Emerge",
+      "Hit",
+      "Idle",
+      "Walk"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Siftjaw_<Part> (+ _LOD1 in Siftjaw_LOD1.fbx), maps Siftjaw_<Part>_*.png (+ Low/)",
+    "body_maps": "round-15 bead eyes' glow removed from Siftjaw_Albedo/Emission (0 texels this run)",
+    "note": "round 46: five wet red eyes, scoop-jaw and gullet teeth, spade digging claws, leg talons; bones, clips and events unchanged"
   }
 }

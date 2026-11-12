@@ -355,6 +355,9 @@ def main():
                           "skins_baked": {el: f"Skins/{el}/" for el in skins},
                           "lod1": {"fbx": LOD_NAME + ".fbx", "tris": C.tri_count(lod[1]), "bones": len(lod[0].data.bones)}})
     C.save_blend(NAME)
+    # Round 46: the close-up detail (element-neutral eyes, teeth, talons) as extra parts, exported again with the body.
+    import bat_detail
+    bat_detail.run(norender=bool(C.cli_args().get("norender")))
 
 
 if __name__ == "__main__":

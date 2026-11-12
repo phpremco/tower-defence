@@ -86,5 +86,62 @@
       "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
+  },
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Bulwark_Face",
+        "material": "Bulwark_Face_Mat",
+        "maps": "Bulwark_Face_*.png (1024, Low 512)",
+        "tris": 352,
+        "lod1_object": "Bulwark_Face_LOD1",
+        "lod1_tris": 88,
+        "source_tris": 13660,
+        "uv": {
+          "islands": 14,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 176,
+          "uv_coverage": 0.554,
+          "world_per_uv": 0.12452439508943222
+        },
+        "symmetry_error": 0.003326
+      },
+      "Claws": {
+        "object": "Bulwark_Claws",
+        "material": "Bulwark_Claws_Mat",
+        "maps": "Bulwark_Claws_*.png (1024, Low 512)",
+        "tris": 196,
+        "lod1_object": "Bulwark_Claws_LOD1",
+        "lod1_tris": 74,
+        "source_tris": 23968,
+        "uv": {
+          "islands": 3,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 98,
+          "uv_coverage": 0.377,
+          "world_per_uv": 0.1988200069400207
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 3950,
+    "extra_tris": 548,
+    "extra_share": 0.139,
+    "body_lod1_tris": 1700,
+    "extra_lod1_tris": 162,
+    "extra_lod1_share": 0.095,
+    "clips": [
+      "Block",
+      "Death",
+      "Hit",
+      "Idle",
+      "Strike",
+      "Walk"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Bulwark_<Part> (+ _LOD1 in Bulwark_LOD1.fbx), maps Bulwark_<Part>_*.png (+ Low/)",
+    "body_maps": "unchanged",
+    "note": "round 46: wet amber eyes under the visor, jaw fangs, toe talons; bones, clips and events unchanged"
   }
 }

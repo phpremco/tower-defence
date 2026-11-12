@@ -83,5 +83,62 @@
       }
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
+  },
+  "r46_body_maps_edited": true,
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Stinger_Face",
+        "material": "Stinger_Face_Mat",
+        "maps": "Stinger_Face_*.png (1024, Low 512)",
+        "tris": 326,
+        "lod1_object": "Stinger_Face_LOD1",
+        "lod1_tris": 82,
+        "source_tris": 14600,
+        "uv": {
+          "islands": 9,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 163,
+          "uv_coverage": 0.595,
+          "world_per_uv": 0.11142984949073712
+        },
+        "symmetry_error": 0.004605
+      },
+      "Claws": {
+        "object": "Stinger_Claws",
+        "material": "Stinger_Claws_Mat",
+        "maps": "Stinger_Claws_*.png (1024, Low 512)",
+        "tris": 208,
+        "lod1_object": "Stinger_Claws_LOD1",
+        "lod1_tris": 78,
+        "source_tris": 13252,
+        "uv": {
+          "islands": 8,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 8,
+          "mirrored_faces": 104,
+          "uv_coverage": 0.583,
+          "world_per_uv": 0.10051989868102519
+        },
+        "symmetry_error": 0.000966
+      }
+    },
+    "body_tris": 3961,
+    "extra_tris": 534,
+    "extra_share": 0.135,
+    "body_lod1_tris": 1697,
+    "extra_lod1_tris": 160,
+    "extra_lod1_share": 0.094,
+    "clips": [
+      "Death",
+      "Hit",
+      "Idle",
+      "Strike",
+      "Walk"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Stinger_<Part> (+ _LOD1 in Stinger_LOD1.fbx), maps Stinger_<Part>_*.png (+ Low/)",
+    "body_maps": "round-10 bead eyes' glow removed from Stinger_Albedo/Emission (0 texels this run)",
+    "note": "round 46: six wet magenta eyes under brow folds, chelicera fangs, trap-claw saws and points; bones, clips and events unchanged"
   }
 }

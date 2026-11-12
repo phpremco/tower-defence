@@ -254,6 +254,9 @@ def main():
                     report={"crawl_distance_per_loop": CRAWL_DISTANCE, "latch_bite_frame": LATCH_BITE_FRAME,
                             "pivot": "ground, body centre", "trail_origin": "under Seg_1 (the rear sucker), on the ground"},
                     previews=previews)
+    # Round 46: the close-up detail (eyespots, petal teeth, gullet ring) as extra parts, exported again with the body.
+    import mireleech_detail
+    mireleech_detail.run(norender=bool(C.cli_args().get("norender")))
 
 
 if __name__ == "__main__":

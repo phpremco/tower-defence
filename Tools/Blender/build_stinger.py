@@ -408,6 +408,9 @@ def main():
                       macros=[("plates", G(0.06, 0.26, -0.1), 0.45, -50, 40), ("claw", G(-0.2, 0.2, 0.6), 0.45, -40, 25),
                               ("tail", G(0.0, 0.69, -0.1), 0.45, -60, 15)],
                       rig_scale=1.3, power=("Strike", STRIKE_HIT_FRAME))
+    # Round 46: the close-up detail (eyes, chelicera fangs, claw saws and points) as extra parts, exported again with the body.
+    import stinger_detail
+    stinger_detail.run(norender=bool(C.cli_args().get("norender")))
 
 
 if __name__ == "__main__":

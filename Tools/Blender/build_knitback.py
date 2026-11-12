@@ -247,6 +247,9 @@ def main():
                             "camouflage": "two-value bark/moss albedo; fade albedo towards the ground tint and the emission down",
                             "regrow_pod_bones": POD_NAMES},
                     previews=previews)
+    # Round 46: the close-up detail (eyes, thorn teeth, root-claw thorns) as extra parts, exported again with the body.
+    import knitback_detail
+    knitback_detail.run(norender=bool(C.cli_args().get("norender")))
 
 
 if __name__ == "__main__":

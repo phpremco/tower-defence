@@ -87,5 +87,44 @@
       "Head"
     ],
     "note": "tail end planted; the chain stretches toward the target (length L, width L^-0.65, height L^-0.35); old clips hold the chain at scale 1"
+  },
+  "r46_body_maps_edited": true,
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Oozer_Face",
+        "material": "Oozer_Face_Mat",
+        "maps": "Oozer_Face_*.png (1024, Low 512)",
+        "tris": 543,
+        "lod1_object": "Oozer_Face_LOD1",
+        "lod1_tris": 160,
+        "source_tris": 51672,
+        "uv": {
+          "islands": 17,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 26,
+          "mirrored_faces": 271,
+          "uv_coverage": 0.75,
+          "world_per_uv": 0.18601384771264742
+        },
+        "symmetry_error": 0.006212
+      }
+    },
+    "body_tris": 3801,
+    "extra_tris": 543,
+    "extra_share": 0.143,
+    "body_lod1_tris": 1699,
+    "extra_lod1_tris": 160,
+    "extra_lod1_share": 0.094,
+    "clips": [
+      "Crawl",
+      "Death",
+      "Hit",
+      "Idle",
+      "Strike"
+    ],
+    "unity": "ExtraParts { \"Face\" }: objects Oozer_<Part> (+ _LOD1 in Oozer_LOD1.fbx), maps Oozer_<Part>_*.png (+ Low/)",
+    "body_maps": "round-10 stalk bulbs' bead glow dimmed in Oozer_Albedo/Emission (0 texels this run)",
+    "note": "round 46: wet slit eyes on the stalk bulbs, lamprey tooth rings (no limbs: no Claws part); bones, clips and events unchanged"
   }
 }

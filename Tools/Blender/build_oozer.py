@@ -237,6 +237,9 @@ def main():
                       macros=[("glands", G(0.05, 0.28, -0.1), 0.45, -50, 40), ("mouth", G(0.0, 0.12, 0.46), 0.4, -20, 10),
                               ("foot", G(-0.18, 0.04, -0.1), 0.4, -80, 15)],
                       rig_scale=1.1)
+    # Round 46: the close-up detail (stalk eyes, lamprey teeth) as extra parts, exported again with the body.
+    import oozer_detail
+    oozer_detail.run(norender=bool(C.cli_args().get("norender")))
 
 
 if __name__ == "__main__":

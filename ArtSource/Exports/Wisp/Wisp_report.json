@@ -124,5 +124,63 @@
       "new_clip": true,
       "unity": "new clip: catalog row BlenderClipSpec(\"Strike_Ground\", ModelClipRole.Attack, 10)"
     }
+  },
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Wisp_Face",
+        "material": "Wisp_Face_Mat",
+        "maps": "Wisp_Face_*.png (1024, Low 512)",
+        "tris": 260,
+        "lod1_object": "Wisp_Face_LOD1",
+        "lod1_tris": 48,
+        "source_tris": 35064,
+        "uv": {
+          "islands": 16,
+          "closed_islands_cut": 1,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 130,
+          "uv_coverage": 0.708,
+          "world_per_uv": 0.15032911721383102
+        },
+        "symmetry_error": 0.003838
+      },
+      "Claws": {
+        "object": "Wisp_Claws",
+        "material": "Wisp_Claws_Mat",
+        "maps": "Wisp_Claws_*.png (1024, Low 512)",
+        "tris": 96,
+        "lod1_object": "Wisp_Claws_LOD1",
+        "lod1_tris": 38,
+        "source_tris": 5840,
+        "uv": {
+          "islands": 2,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 0,
+          "mirrored_faces": 48,
+          "uv_coverage": 0.593,
+          "world_per_uv": 0.07032631354249327
+        },
+        "symmetry_error": 0.0
+      }
+    },
+    "body_tris": 2415,
+    "extra_tris": 356,
+    "extra_share": 0.147,
+    "body_lod1_tris": 999,
+    "extra_lod1_tris": 86,
+    "extra_lod1_share": 0.086,
+    "clips": [
+      "Death",
+      "Float",
+      "Grounded",
+      "Hit",
+      "Land",
+      "Strike_Float",
+      "Strike_Ground"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Wisp_<Part> (+ _LOD1 in Wisp_LOD1.fbx), maps Wisp_<Part>_*.png (+ Low/)",
+    "body_maps": "unchanged",
+    "note": "round 46: eyes in the bud seams, fly-trap petal teeth, tendril talons; bones, clips and events unchanged"
   }
 }

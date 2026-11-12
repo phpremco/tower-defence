@@ -82,5 +82,62 @@
       }
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
+  },
+  "r46_body_maps_edited": true,
+  "r46_detail": {
+    "parts": {
+      "Face": {
+        "object": "Skyray_Face",
+        "material": "Skyray_Face_Mat",
+        "maps": "Skyray_Face_*.png (1024, Low 512)",
+        "tris": 336,
+        "lod1_object": "Skyray_Face_LOD1",
+        "lod1_tris": 84,
+        "source_tris": 20820,
+        "uv": {
+          "islands": 15,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 8,
+          "mirrored_faces": 168,
+          "uv_coverage": 0.636,
+          "world_per_uv": 0.14066800286970155
+        },
+        "symmetry_error": 0.000966
+      },
+      "Claws": {
+        "object": "Skyray_Claws",
+        "material": "Skyray_Claws_Mat",
+        "maps": "Skyray_Claws_*.png (1024, Low 512)",
+        "tris": 190,
+        "lod1_object": "Skyray_Claws_LOD1",
+        "lod1_tris": 76,
+        "source_tris": 10772,
+        "uv": {
+          "islands": 9,
+          "closed_islands_cut": 0,
+          "folded_fallback_faces": 34,
+          "mirrored_faces": 83,
+          "uv_coverage": 0.682,
+          "world_per_uv": 0.10168946982770853
+        },
+        "symmetry_error": 0.00307
+      }
+    },
+    "body_tris": 3893,
+    "extra_tris": 526,
+    "extra_share": 0.135,
+    "body_lod1_tris": 1697,
+    "extra_lod1_tris": 160,
+    "extra_lod1_share": 0.094,
+    "clips": [
+      "Death",
+      "Dive",
+      "Fly",
+      "Hit",
+      "Idle"
+    ],
+    "unity": "ExtraParts { \"Face\", \"Claws\" }: objects Skyray_<Part> (+ _LOD1 in Skyray_LOD1.fbx), maps Skyray_<Part>_*.png (+ Low/)",
+    "body_maps": "round-5 bead eyes' glow removed from Skyray_Albedo/Emission (0 texels this run)",
+    "note": "round 46: six wet cyan eyes under brow folds, pincer teeth, fin-tip talons, stinger barbs; bones, clips and events unchanged"
   }
 }

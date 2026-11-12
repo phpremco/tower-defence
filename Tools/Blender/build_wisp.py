@@ -403,6 +403,9 @@ def main():
     C.save_blend(NAME)
     if not C.cli_args().get("norender"):
         previews(arm, asset.low, actions, lod, out, asset)
+    # Round 46: the close-up detail (seam eyes, petal teeth, tendril talons) as extra parts, exported again with the body.
+    import wisp_detail
+    wisp_detail.run(norender=bool(C.cli_args().get("norender")))
 
 
 if __name__ == "__main__":

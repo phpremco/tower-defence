@@ -522,8 +522,13 @@ class Species:
 
     def export(self):
         folder = os.path.join(C.EXPORTS, self.name)
-        BMK.export_rig(os.path.join(folder, self.name + ".fbx"), self.arm, [self.mesh], self.actions())
-        BMK.export_rig(os.path.join(folder, self.name + "_LOD1.fbx"), self.lod_arm, [self.lod_mesh], self.actions(True))
+        # Round 46: the close-up detail parts (<Name>_Face/_Claws, saved in the .blend) stay in the exports.
+        extra = [bpy.data.objects.get(f"{self.name}_{p}") for p in ("Face", "Claws")]
+        extra_lod = [bpy.data.objects.get(f"{self.name}_{p}_LOD1") for p in ("Face", "Claws")]
+        BMK.export_rig(os.path.join(folder, self.name + ".fbx"), self.arm, [self.mesh] + [o for o in extra if o],
+                       self.actions())
+        BMK.export_rig(os.path.join(folder, self.name + "_LOD1.fbx"), self.lod_arm,
+                       [self.lod_mesh] + [o for o in extra_lod if o], self.actions(True))
 
     def write_report(self, facts):
         rep = self.rep

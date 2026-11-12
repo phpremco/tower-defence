@@ -300,6 +300,9 @@ def main():
                             "burrow": {"under_frame": BURROW_UNDER_FRAME, "depth": DEPTH, "forward": 0.12},
                             "emerge": {"breach_frame": EMERGE_BREACH_FRAME, "start_depth": DEPTH, "start_back": 0.1}},
                     previews=previews)
+    # Round 46: the close-up detail (eyes, jaw and gullet teeth, digging claws, talons) as extra parts, exported again with the body.
+    import siftjaw_detail
+    siftjaw_detail.run(norender=bool(C.cli_args().get("norender")))
 
 
 if __name__ == "__main__":

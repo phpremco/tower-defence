@@ -206,6 +206,9 @@ def main():
                             "trail_origin": "bone Drip (under the belly, 0.22 above the ground; LOD1: Body)",
                             "footfalls": "Walk frames 0 (L1, R2) and 18 (R1, L2)"},
                     previews=previews)
+    # Round 46: the close-up detail (eyes, slit-jaw fangs, foot spurs) as extra parts, exported again with the body.
+    import slagstrider_detail
+    slagstrider_detail.run(norender=bool(C.cli_args().get("norender")))
 
 
 if __name__ == "__main__":

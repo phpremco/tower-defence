@@ -54,7 +54,8 @@ def check_against_export(low):
     before = set(bpy.data.objects)
     bpy.ops.import_scene.fbx(filepath=os.path.join(REAL_EXPORTS, "Bat", "Bat.fbx"))
     new = [o for o in bpy.data.objects if o not in before]
-    shipped = next(o for o in new if o.type == "MESH")
+    # Round 46: Bat.fbx also carries the detail parts (Bat_Face, Bat_Claws); the body is the other mesh.
+    shipped = next(o for o in new if o.type == "MESH" and not o.name.startswith(("Bat_Face", "Bat_Claws")))
     a, b = mesh_signature(low), mesh_signature(shipped)
     same_counts = a[0] == b[0] and a[1] == b[1]
     uv_diff = float(np.abs(a[2] - b[2]).max()) if same_counts and len(a[2]) == len(b[2]) else 1.0

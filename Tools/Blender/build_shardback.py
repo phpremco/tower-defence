@@ -347,6 +347,9 @@ def main():
         out = C.preview_dir()
         chipped_render(arm, actions, out, set(SHARD_NAMES[:3]), "shardback_chipped.png")
         chipped_render(arm, actions, out, set(SHARD_NAMES), "shardback_bare.png")
+    # Round 46: the close-up detail (eyes, mandible teeth, talons) as extra parts, exported again with the body.
+    import shardback_detail
+    shardback_detail.run(norender=bool(C.cli_args().get("norender")))
 
 
 if __name__ == "__main__":

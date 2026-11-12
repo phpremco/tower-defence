@@ -365,6 +365,9 @@ def main():
     C.save_blend(NAME)
     if not C.cli_args().get("norender"):
         previews(arm, asset.low, actions, lod, out, asset)
+    # Round 46: the close-up detail (eyes under stone lids, fangs, talons) as extra parts, exported again with the body.
+    import cragback_detail
+    cragback_detail.run(norender=bool(C.cli_args().get("norender")))
 
 
 # Slabs and the jaw are stone: they move as one piece and meet their neighbours in a narrow soft crease.

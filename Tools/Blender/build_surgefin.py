@@ -289,6 +289,9 @@ def main():
                             "pivot": "ground (dry) or water surface (swimming: Swim keeps the body 0.03 lower)",
                             "emerge": {"surface_frame": EMERGE_SURFACE_FRAME, "start_depth": EMERGE_DEPTH, "start_back": 0.15}},
                     previews=previews)
+    # Round 46: the close-up detail (eyes, needle teeth, toe claws) as extra parts, exported again with the body.
+    import surgefin_detail
+    surgefin_detail.run(norender=bool(C.cli_args().get("norender")))
 
 
 if __name__ == "__main__":
