@@ -35,7 +35,18 @@ namespace Game.UI
         private const float SinkSpinDegreesPerSecond = 300f;
         private const float BitTop = 0.2f;
         private const float DustRate = 22f;
-        private const float RumbleShare = 0.6f;
+        // Round 60 (Remco: "the drill plays the whole time as an irritating hum"): the run loop at this share while the shot is
+        // the drilling, and this share of it in later shots, and then only as much as the drill is in the picture and near the
+        // lens (Presence), so it fades out with distance and at a cut to a shot without it instead of humming under them all.
+        private const float RumbleShare = 0.42f;
+        private const float AfterShare = 0.3f;
+        // In the picture: full this far inside the frame (a share of it), half on its edge, gone this far outside.
+        private const float ViewMargin = 0.12f;
+        // Near the lens: full up to this distance (metres), gone at this one, eased between.
+        private const float NearDistance = 14f;
+        private const float FarDistance = 34f;
+        // Where the drill is heard from: the middle of its derrick, this high over its root.
+        private const float HearingHeight = 1.5f;
         private const int Strips = 6;
         private const float StripLength = 2.4f;
         private const float StripWidth = 0.42f;
@@ -63,6 +74,7 @@ namespace Game.UI
         private readonly GameObject _deposit;
         private readonly AudioSource _rumble;
         private readonly CutsceneAudio _audio;
+        private readonly CutsceneContext _context;
         private readonly ArtModel _art;
         private readonly Transform _string;
         private readonly Transform _groundPlane;
@@ -72,6 +84,7 @@ namespace Game.UI
         {
             VisualTheme theme = layout.Level.Theme;
             _audio = context.Audio;
+            _context = context;
             bool low = context.ParticleScale < 1f;
             Root = new GameObject("Drill").transform;
             Root.SetParent(parent, false);
@@ -213,7 +226,7 @@ namespace Game.UI
             _deposit.SetActive(crack > 0f);
             bool drilling = depth > ContactShareOfSink;
             ParticleKit.SetRate(_dust, drilling ? DustRate * (loud ? 1f : 0.35f) : 0f);
-            _audio.SetLoopVolume(_rumble, drilling ? RumbleShare * (loud ? 1f : 0.3f) : 0f);
+            _audio.SetLoopVolume(_rumble, drilling ? RumbleShare * (loud ? 1f : AfterShare * PresenceInView()) : 0f);
         }
 
         // While it sinks the Sink clip drives the string (with an extra turn on top); once down, the clip's last frame
@@ -235,6 +248,36 @@ namespace Game.UI
         }
 
         public void Silence() => _audio.SetLoopVolume(_rumble, 0f);
+
+        /// <summary>
+        /// Round 60: how present the drill is to the lens, 0..1: in the picture (<paramref name="viewport"/> is its
+        /// position in the camera's viewport, z its depth) and near (<paramref name="distance"/> metres), eased at the edges.
+        /// </summary>
+        public static float Presence(Vector3 viewport, float distance)
+        {
+            if (viewport.z <= 0f)
+            {
+                return 0f;
+            }
+
+            float inside = Mathf.Min(Mathf.Min(viewport.x, 1f - viewport.x), Mathf.Min(viewport.y, 1f - viewport.y));
+            float framed = CutsceneMath.Smooth(Mathf.Clamp01((inside + ViewMargin) / (2f * ViewMargin)));
+            float near = 1f - CutsceneMath.Smooth(CutsceneMath.Span(distance, NearDistance, FarDistance));
+            return framed * near;
+        }
+
+        // The drill's presence to this frame's camera, measured at the middle of its rig.
+        private float PresenceInView()
+        {
+            Camera camera = _context.Camera;
+            if (camera == null)
+            {
+                return 0f;
+            }
+
+            Vector3 centre = Root.position + Vector3.up * (HearingHeight * Root.lossyScale.y);
+            return Presence(camera.WorldToViewportPoint(centre), Vector3.Distance(camera.transform.position, centre));
+        }
 
         /// <summary>The footing under the deck (round 39), or null without a rig mesh; for probes and tests.</summary>
         public GameObject Footing => _footing;

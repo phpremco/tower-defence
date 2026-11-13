@@ -9206,3 +9206,82 @@ restored and verified after each (MD5 2eca347eb0270fc1566d26e302abf525 at the en
 3. Marker lights read in close-ups; at the orbit lens the cargo capsules read mainly by size, tint and their separate ways.
 4. Spent boosters stay in the frame as small tumbling grey shapes to the end of the shot (five now instead of one).
 5. To judge by ear: the cargo cue levels and swells (`Cargo*` in `ProjectGenerator.CutsceneSounds.cs`) and the cargo burn bed.
+
+## Round 60: Remco's notes after his first full playthrough (2026-11-13)
+
+Not committed (the curator commits). No full generator run: focused steps only (`Tools/Generate/Opening Cutscene Sounds`, a
+forced reimport of the two mothership FBX files, and `Tools/PlayTest/r60_apply_data.cs`, which writes this round's data the way
+the changed generator now would). `ArtSource/Exports` and `Tools/Blender` untouched, no Blender, no packages. Remco's save
+`progress.json` had changed since round 59: its MD5 at the start was **10522349c3c6ea16ba72897a65724cff**; copied aside before
+every Play Mode run and restored after, MD5 verified identical after each; the dev backup untouched.
+
+### 1. Bay doors shut on arrival (`MothershipDoors`, `OrbitSet`, `BlenderModelImporter`)
+- The doors are baked open into the one hull mesh. At build the orbit set now lifts each door's pieces (plate, inner skin, hazard
+  strip: mesh islands found by welding seams, picked by lying on the door's plate per `build_mothership2.py` `bay()`) off the hull
+  (near and far LOD) onto a hinge of their own; the hinge rods stay. The doors are shut through the arrival, swing open over
+  0.15-1.05 s of the launch shot (first release 1.2 s, the bay-door sound starts 0.1 s), and close 1.6 s after Spencer's release
+  over 1.8 s; smoothstep at both ends (test: no frame turns more than 4 % of the swing). No closing sound added.
+- The mothership FBX files are now imported readable (`IsMothership` rule; only their `.meta` changed).
+
+### 2. Build sounds (`FieldBase`, generator, `SfxPlayer`)
+| Sound | Before | After |
+| --- | --- | --- |
+| Base timelapse: module clank | 0.6 | 0.33 |
+| drill burst / hammer hit | 0.45 / 0.5 | 0.25 / 0.28 |
+| hammering loop / drill loop (share) | 0.35 / 0.3 | 0.19 / 0.165 |
+| Drill shot: rig clank cue | 0.45 | 0.25 |
+| In-game tower/path-object build blip | 0.7 | 0.3 |
+All intro build sounds at 0.55 (-5 dB). The in-game build blip was clearly hot: procedural, p90 RMS 0.256 (library target 0.1),
+so 0.7 put it at 0.179 against an upgrade's 0.064; at 0.3 it is 0.077 (`Tools/PlayTest/r60_loudness.cs`). Played run, measured
+source volumes in the timelapse: hammer loop max 0.254 (was ~0.47), drill loop max 0.193.
+
+### 3. Quake rumble held (`CutsceneShot.QuakeHold`, `ShakeSound.Hold`, `CutscenePlayer`, generator)
+New data field `QuakeHold`: the rumble never drops below it in that shot, gliding (smoothstep, 2 s) from the previous shot's hold.
+Cave crystals 0.75, eyes 0.6, both shiver shots 0.85 / 0.75, burrows 0.7; it glides in over the first cave shot's fade from black
+and out over the start of Spencer's reaction. `ShakeRumble` of the quake shots raised (0.8/0.6/0.85/0.6/0.8 -> 1/0.8/1/0.85/1).
+Played run (`r60_loop_rec.cs`, source volume incl. slot gain 0.617; no before-recording was made, round 44 let it follow the
+trembling's flicker at 0.6-0.85 of the shake): shot by shot min/mean/max after the first 2 s: 0.46/0.53/0.62, 0.37/0.38/0.61,
+0.53/0.58/0.62, 0.46/0.51/0.60, 0.43/0.46/0.62; reaction shot fades out from 0.43.
+
+### 4. Drill hum only where the drill is (`FieldDrill.Presence`)
+The run loop drops to 0.42 (was 0.6) in the drilling shot; in later shots it is 0.3 of that times its presence (in the frame, eased
+over a 12 % margin; full within 14 m of the lens, gone at 34 m), so it fades at a cut instead of humming under every field shot
+(before: 0.196 in every field shot to the handoff). Played run: harvest and core shots 0.137 (the drill is in frame there),
+cave and every shot from the shivers on: 0.
+
+### 5. Drone cards say their job (`DroneDefinition.Role/Summary`, `BaseMenuView`, `PointerHover`)
+Each card shows its role across the top in the drone's colour lifted to white ("Repair", "Harvest", "Attack"; `OnValidate` warns
+past 8 letters); the card holding the gamepad/keyboard focus, else the one under the mouse, is described in a box over the panel
+(name + one sentence). Cards 128x124 (was 112x104); the NEW tag moved into the header band (the "Drones" title steps aside while one
+shows). Readable size kept; checked with a real simulated mouse (`r60_hover.sh`) and a focus (`r60_hud.sh`).
+
+### 6. Spawn inside a spawn (`LevelValidator.CheckSpawnProps`, `RoadGenerator.SouthAirStart`, level data)
+Remco's screenshot: Shard Ridge (the first level that sells the rocket; Glass Meadows rewards it). The south air pod hovers 1.6 m
+over its corner (0,0) and the play camera (44 deg) shows it 1.66 m further north, exactly over the second road's mound (0.16 m apart).
+The second road always starts at row 2, so every level with one had it: Shard Ridge, Fault Line, Crysium Vein, Arena_Lava,
+Arena_Ruins. The south air route now starts at (3,0) when a road mouth lies within 3 rows of that corner (generator rule + data);
+the route is 3 cells shorter. New validator check: props (ground gates, air pods projected along the view, nests) may not cover
+one another; all levels pass.
+
+### 7. Swarm death cries (`CreatureVoice.DeathVolume/DeathInterval`, `CreatureChorus`)
+Skitter, Fire Larva (same ant cry) and Rot Spore Pod: death cry at 0.45 of the level (-7 dB, 0.45 -> 0.2 effective) and at most one
+per 0.35 s per species; every species now has at least 0.12 s between two death cries; bosses unchanged.
+
+### 8. Engines off while the ship holds (coordinator's extra item; `OrbitSet.MainEngineThrottle`)
+The rear plumes followed a fixed idle (0.3) once the ship had settled. Now they follow its speed during the arrival (full while
+fast, eased to 0 as it stops) and are out while it holds through the launch; the engine light keeps a 0.05 glow. Test: no frame
+step over 4 % of the throttle.
+
+### Checks
+- Recompile: 0 errors, only the known CS0618 (`BalanceProbeTests.cs:601`).
+- EditMode on w6 (`r34b_editmode_worker.sh 6 "Game.Tests"`): **896 tests, 844 passed, 52 skipped, 0 failed** (887 in round 59; +9 `Round60Tests`).
+- Played run of the whole opening (`r60_play.sh`, HOLD=8): all 17 shots (run twice, the second on the final code with the engine change, Logs/r60_play_final.txt), handed off into the first level, console 0 errors, 0 warnings;
+  launch swells 16/16 from 0. Level stills runs (`r60_nest.sh`, `r60_hud.sh`, `r60_hover.sh`): 0 errors, 0 warnings.
+- Stills `ArtSource/Previews/QA/r60_*`: doors (`r60_doors_1..7`, bay crops x4), engines (`r60_mothership_engines_*`, nozzle crops
+  x3), drone HUD (`r60_drone_hud_*`, x2 crops), nest (`r60_nest_before/after_*`, x2 crops). Work frames in `QA/r60_work/`.
+
+### Open points (round 60)
+1. Balance: the south air route of the five affected levels is 3 cells shorter (about 7 %); the EditMode ledger tests pass, but
+   the as-played probes were not re-run.
+2. The quake levels and the lowered build/drill/death levels are set by measurement, not by ear: please listen.
+3. The doors close silently (no closing sound cued).

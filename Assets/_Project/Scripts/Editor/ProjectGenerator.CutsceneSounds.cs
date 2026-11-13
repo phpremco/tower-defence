@@ -185,7 +185,8 @@ namespace Game.Editor
         private const float RetreatSeconds = 1f;
 
         // Round 44 (Remco: things shook without a rumble): how loud the quake rumble follows each shot's shaking (the kicks, the
-        // lens rumble, the trembling ground and props). Space keeps it low under the engine; the quakes get it full.
+        // lens rumble, the trembling ground and props). Space keeps it low under the engine; the quakes get it full. Round 60
+        // (Remco: the rumble must be more present for as long as the quake lasts): the quake shots raised to the full rumble.
         private static float OpeningShakeRumble(int shot)
         {
             switch (shot)
@@ -198,15 +199,36 @@ namespace Game.Editor
                 case 6:
                     return 0.7f;
                 case 9:
-                case 13:
-                    return 0.8f;
-                case 10:
-                case 12:
-                    return 0.6f;
                 case 11:
+                case 13:
+                    return 1f;
+                case 10:
+                    return 0.8f;
+                case 12:
                     return 0.85f;
                 case 14:
                     return 0.5f;
+                default:
+                    return 0f;
+            }
+        }
+
+        // Round 60: the quake holds the rumble from the cave's trembling crystals (case 9) through the eyes, the two shiver
+        // shots and the burrows tearing open (case 13), so it never dips while the ground still moves; it glides in from
+        // silence over the first cave shot's fade from black and out over the start of Spencer's reaction (ShakeSound.Hold).
+        private static float OpeningQuakeHold(int shot)
+        {
+            switch (shot)
+            {
+                case 9:
+                case 12:
+                    return 0.75f;
+                case 10:
+                    return 0.6f;
+                case 11:
+                    return 0.85f;
+                case 13:
+                    return 0.7f;
                 default:
                     return 0f;
             }
@@ -241,6 +263,7 @@ namespace Game.Editor
                 WriteCues(shot.FindPropertyRelative("Cues"), OpeningCues(i));
                 WriteLayers(shot.FindPropertyRelative("Layers"), OpeningLayers(i));
                 shot.FindPropertyRelative("ShakeRumble").floatValue = OpeningShakeRumble(i);
+                shot.FindPropertyRelative("QuakeHold").floatValue = OpeningQuakeHold(i);
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();
@@ -318,7 +341,7 @@ namespace Game.Editor
                     // As the flock settles beside the finished base, the landing spin-down takes over from the hum.
                     return new[] { Sound(BuildersLand, CutsceneSound.DroneLand, 0.45f) };
                 case 6:
-                    return new[] { Sound(0.3f, CutsceneSound.DrillStart, 0.5f), Sound(0.6f, CutsceneSound.BuildClank, 0.45f), Sound(DrillContactSeconds, CutsceneSound.Earthquake, 0.8f), Shake(DrillContactSeconds, DrillKick) };
+                    return new[] { Sound(0.3f, CutsceneSound.DrillStart, 0.5f), Sound(0.6f, CutsceneSound.BuildClank, 0.25f), Sound(DrillContactSeconds, CutsceneSound.Earthquake, 0.8f), Shake(DrillContactSeconds, DrillKick) };
                 case 7:
                     return new[] { Sound(0.5f, CutsceneSound.DroneHarvest, 0.4f) };
                 case 8:

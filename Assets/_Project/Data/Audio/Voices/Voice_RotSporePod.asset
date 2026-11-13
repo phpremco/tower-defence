@@ -31,6 +31,8 @@ MonoBehaviour:
     _clips: []
     _gain: 1
     _pitch: 1.6
+  _deathVolume: 0.45
+  _deathInterval: 0.35
   _growls:
     _clips: []
     _gain: 1

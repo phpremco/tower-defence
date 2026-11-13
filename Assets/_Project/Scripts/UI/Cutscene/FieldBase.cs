@@ -112,17 +112,18 @@ namespace Game.UI
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
         private static readonly Color DustColour = new Color(0.55f, 0.58f, 0.62f, 0.4f);
         private static readonly Color SparkColour = new Color(1f, 0.85f, 0.45f);
-        private static readonly CutsceneCue Clank = new CutsceneCue { Kind = CueKind.Sound, Sound = CutsceneSound.BuildClank, Strength = 0.6f };
+        private static readonly CutsceneCue Clank = new CutsceneCue { Kind = CueKind.Sound, Sound = CutsceneSound.BuildClank, Strength = 0.33f };
 
         // Round 44: the builders' work as they weld a module (shares of its weld): a drill burst as they bolt it down, then hammer
-        // hits; a quiet hammering loop under any weld, the drill loop under its first part.
+        // hits; a quiet hammering loop under any weld, the drill loop under its first part. Round 60 (Remco: "tone down the
+        // building sounds"): every one of them, and the clank of a module landing, at 0.55 of its round-44 level (-5 dB).
         private static readonly float[] DrillShares = { 0.12f };
         private static readonly float[] HammerShares = { 0.38f, 0.6f, 0.82f };
         private const float DrillLoopShare = 0.45f;
-        private const float HammerLoopLevel = 0.35f;
-        private const float DrillLoopLevel = 0.3f;
-        private static readonly CutsceneCue DrillBurst = new CutsceneCue { Kind = CueKind.Sound, Sound = CutsceneSound.BuildDrill, Strength = 0.45f };
-        private static readonly CutsceneCue HammerHit = new CutsceneCue { Kind = CueKind.Sound, Sound = CutsceneSound.BuildHammer, Strength = 0.5f };
+        private const float HammerLoopLevel = 0.19f;
+        private const float DrillLoopLevel = 0.165f;
+        private static readonly CutsceneCue DrillBurst = new CutsceneCue { Kind = CueKind.Sound, Sound = CutsceneSound.BuildDrill, Strength = 0.25f };
+        private static readonly CutsceneCue HammerHit = new CutsceneCue { Kind = CueKind.Sound, Sound = CutsceneSound.BuildHammer, Strength = 0.28f };
 
         private readonly List<Module> _modules = new List<Module>();
         private readonly List<Builder> _builders = new List<Builder>();

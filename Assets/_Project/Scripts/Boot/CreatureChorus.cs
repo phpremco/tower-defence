@@ -21,6 +21,9 @@ namespace Game.Boot
         private const float StepMinInterval = 0.11f;
         private const float BossStepScale = 1.6f;
         private const float ScreechVolume = 0.45f;
+        // Round 60 (Remco: "the ants that keep dying get irritating"): two death cries of one species are at least this far apart
+        // (a species' voice may ask for more); the deaths in between stay silent, so a crowd dying is a few cries, not a chatter.
+        private const float DeathMinInterval = 0.12f;
         private const float BossScreechVolume = 0.8f;
         private const float AttackVolume = 0.4f;
         private const float BossAttackVolume = 0.7f;
@@ -67,6 +70,9 @@ namespace Game.Boot
             public float MoveWeight;
             public float RollWeight;
             public float LastStep = float.NegativeInfinity;
+            public float DeathVolume = 1f;
+            public float DeathInterval;
+            public float LastDeath = float.NegativeInfinity;
         }
 
         private readonly SfxPlayer _player;
@@ -157,6 +163,8 @@ namespace Game.Boot
                 Roll = LoopVoice.Create(_host, voice.RollLoop),
                 StepSpacing = voice.StepSpacing,
                 Presence = voice.Presence,
+                DeathVolume = voice.DeathVolume,
+                DeathInterval = voice.DeathInterval,
                 IsBoss = enemy.Definition.IsBoss,
             };
             _voicings[voice] = voicing;
@@ -249,11 +257,30 @@ namespace Game.Boot
         {
             Voicing voicing = VoicingFor(enemy);
             bool boss = enemy.Definition.IsBoss;
-            _player.Play(voicing.Screeches, boss ? BossScreechVolume : ScreechVolume, boss ? SfxKind.Priority : SfxKind.Kill);
+            if (!boss && !TakeDeathTurn(voicing, Time.unscaledTime))
+            {
+                return;
+            }
+
+            _player.Play(voicing.Screeches, (boss ? BossScreechVolume : ScreechVolume) * voicing.DeathVolume, boss ? SfxKind.Priority : SfxKind.Kill);
             if (enemy.Definition.Element == Element.Water)
             {
                 _player.Play(_steam, SteamVolume, SfxKind.Kill);
             }
+        }
+
+        /// <summary>Whether a species whose last death cry sounded at <paramref name="last"/> may cry again at <paramref name="now"/>.</summary>
+        public static bool DeathCryDue(float now, float last, float speciesInterval) => now - last >= Mathf.Max(DeathMinInterval, speciesInterval);
+
+        private static bool TakeDeathTurn(Voicing voicing, float now)
+        {
+            if (!DeathCryDue(now, voicing.LastDeath, voicing.DeathInterval))
+            {
+                return false;
+            }
+
+            voicing.LastDeath = now;
+            return true;
         }
 
         /// <summary>Movement loops and steps for this frame. The filler gain already holds zoom, duck and mix.</summary>

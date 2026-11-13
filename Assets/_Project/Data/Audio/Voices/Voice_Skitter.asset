@@ -33,6 +33,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 60a7103b7b1977c478dd6f827fa29621, type: 3}
     _gain: 0.6186514
     _pitch: 1
+  _deathVolume: 0.45
+  _deathInterval: 0.35
   _growls:
     _clips: []
     _gain: 1

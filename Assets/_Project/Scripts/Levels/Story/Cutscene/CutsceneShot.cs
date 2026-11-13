@@ -40,6 +40,13 @@ namespace Game.Levels
         /// </summary>
         [Range(0f, 1f)] public float ShakeRumble;
 
+        /// <summary>
+        /// Round 60 (Remco: "the ground rumble must be more present for as long as it lasts"): the level the quake rumble holds
+        /// through the whole shot whatever shakes (0 for none), so a quake that spans several shots sounds without dips or
+        /// gaps; across a cut it glides from the previous shot's hold (ShakeSound.Hold).
+        /// </summary>
+        [Range(0f, 1f)] public float QuakeHold;
+
         public CutsceneMusic Music;
 
         /// <summary>Seconds of fade from black at the start and to black at the end; zero cuts.</summary>

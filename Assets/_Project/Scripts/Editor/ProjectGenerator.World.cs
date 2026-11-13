@@ -171,11 +171,13 @@ namespace Game.Editor
             return asset;
         }
 
-        private static DroneDefinition CreateDrone(string id, string displayName, DroneKind kind, float speed, float health, int cost, int maxActive, Color color, float repair = 0f, float harvestSeconds = 4f, int harvestValue = 0, float damage = 0f, float fireInterval = 0.5f, float range = 3f, CreatureSkin.Kind skin = CreatureSkin.Kind.Plate, Color accent = default)
+        private static DroneDefinition CreateDrone(string id, string displayName, string role, string summary, DroneKind kind, float speed, float health, int cost, int maxActive, Color color, float repair = 0f, float harvestSeconds = 4f, int harvestValue = 0, float damage = 0f, float fireInterval = 0.5f, float range = 3f, CreatureSkin.Kind skin = CreatureSkin.Kind.Plate, Color accent = default)
         {
             var asset = LoadOrCreate<DroneDefinition>($"{DataRoot}/Drones/{id}.asset");
             var so = new SerializedObject(asset);
             so.FindProperty("_displayName").stringValue = displayName;
+            so.FindProperty("_role").stringValue = role;
+            so.FindProperty("_summary").stringValue = summary;
             so.FindProperty("_kind").enumValueIndex = (int)kind;
             so.FindProperty("_speed").floatValue = speed;
             so.FindProperty("_maxHealth").floatValue = health;
@@ -284,15 +286,20 @@ namespace Game.Editor
             context.GroundDrone = CreatePathObject("GroundDrone", "Ground drone", PathObjectKind.Roller, PathObjectPlacement.Road, TargetLayers.Ground, 80, 1.1f, 0.5f, 30f, 1f, 1.1f, 0f, new Color(0.4f, 0.9f, 1f), PathObjectEffect.Patrol, "Drives down the road at a steady pace and rams every walker it meets, dealing damage as long as it runs.");
         }
 
+        // Round 60 (Remco: "not clear which drone does what"): what each drone's card says while it is focused or pointed at.
+        public const string RepairDroneSummary = "Flies to the most damaged tower, gate or base and repairs it for free.";
+        public const string HarvestDroneSummary = "Mines the crystal nodes on the field and flies the money home.";
+        public const string AttackDroneSummary = "Hunts the creature furthest down the road and shoots it from the air.";
+
         // Three drones, one per job, bought with money in the level, so a drone competes with a tower for the same
         // purse: a harvester earns its price back in a few minutes of trips.
         private static void GenerateDrones(GeneratorContext context)
         {
             // The repair drone's price follows the investment rule (BalanceSheet.RepairDronePrice, round 22d) when the level data exists.
-            context.RepairDrone = CreateDrone("RepairDrone", "Repair drone", DroneKind.Repair, 3.5f, 40f, BalanceSheet.RepairDronePriceFromData(8f, 120), 3, new Color(0.4f, 0.9f, 1f), repair: 8f, skin: CreatureSkin.Kind.Plate, accent: new Color(1f, 0.22f, 0.28f));
-            context.HarvestDrone = CreateDrone("HarvestDrone", "Harvest drone", DroneKind.Harvest, 4f, 30f, 150, 2, new Color(1f, 0.85f, 0.3f), harvestSeconds: 4f, harvestValue: 10, skin: CreatureSkin.Kind.Alloy, accent: new Color(1f, 0.75f, 0.1f));
+            context.RepairDrone = CreateDrone("RepairDrone", "Repair drone", "Repair", RepairDroneSummary, DroneKind.Repair, 3.5f, 40f, BalanceSheet.RepairDronePriceFromData(8f, 120), 3, new Color(0.4f, 0.9f, 1f), repair: 8f, skin: CreatureSkin.Kind.Plate, accent: new Color(1f, 0.22f, 0.28f));
+            context.HarvestDrone = CreateDrone("HarvestDrone", "Harvest drone", "Harvest", HarvestDroneSummary, DroneKind.Harvest, 4f, 30f, 150, 2, new Color(1f, 0.85f, 0.3f), harvestSeconds: 4f, harvestValue: 10, skin: CreatureSkin.Kind.Alloy, accent: new Color(1f, 0.75f, 0.1f));
             // Azure like the model's tail glow (curator decision 2026-11-04: our colours follow the models).
-            context.AttackDrone = CreateDrone("AttackDrone", "Attack drone", DroneKind.Attack, 4.5f, 35f, 180, 3, new Color(0.3f, 0.7f, 1f), damage: 6f, fireInterval: 0.5f, range: 3f, skin: CreatureSkin.Kind.Plate, accent: new Color(0.92f, 0.95f, 1f));
+            context.AttackDrone = CreateDrone("AttackDrone", "Attack drone", "Attack", AttackDroneSummary, DroneKind.Attack, 4.5f, 35f, 180, 3, new Color(0.3f, 0.7f, 1f), damage: 6f, fireInterval: 0.5f, range: 3f, skin: CreatureSkin.Kind.Plate, accent: new Color(0.92f, 0.95f, 1f));
         }
 
         private static void GenerateRecipes(GeneratorContext context)

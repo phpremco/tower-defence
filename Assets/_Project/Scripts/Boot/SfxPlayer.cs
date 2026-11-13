@@ -68,6 +68,9 @@ namespace Game.Boot
         private const float TowerBreakVolume = 1.2f;
         private const float BaseAlertVolume = 0.7f;
         private const float UpgradeVolume = 0.6f;
+        // Round 60 (Remco: "tone down the building sounds"): the procedural build blip is mastered hot (p90 RMS 0.256, 2.5x the
+        // library's target); at 0.7 it sat 9 dB over an upgrade. At 0.3 it lands about level with one.
+        private const float BuildVolume = 0.3f;
         private const float CashVolume = 0.4f;
         private const float ScrapVolume = 0.5f;
         private const float AcidVolume = 0.15f;
@@ -677,7 +680,7 @@ namespace Game.Boot
 
         private void OnWaveStarted() => Play(_horn, WaveDrumsVolume, SfxKind.Priority);
 
-        private void OnBuilt() => Play(_build, 0.7f, SfxKind.Priority);
+        private void OnBuilt() => Play(_build, BuildVolume, SfxKind.Priority);
 
         private void OnUpgraded() => Play(_upgrade, UpgradeVolume, SfxKind.Priority);
 
@@ -703,10 +706,10 @@ namespace Game.Boot
                 case PathObjectEffect.Patrol:
                     _rollers.Add(pathObject);
                     pathObject.Finished += finished => _rollers.Remove(finished);
-                    Play(_build, 0.7f, SfxKind.Priority);
+                    Play(_build, BuildVolume, SfxKind.Priority);
                     break;
                 default:
-                    Play(_build, 0.7f, SfxKind.Priority);
+                    Play(_build, BuildVolume, SfxKind.Priority);
                     break;
             }
         }

@@ -111,6 +111,10 @@ namespace Game.Editor
             public string Steps;
             public float StepSpacing = 0.5f;
             public float Presence = 1f;
+
+            /// <summary>Round 60: the death cry's level next to other species and the least time between two of them (swarms).</summary>
+            public float DeathVolume = 1f;
+            public float DeathInterval;
             public string Roll;
             public string Screech;
             public string Growl;
@@ -128,13 +132,18 @@ namespace Game.Editor
             public float Pitch = 1f;
         }
 
+        // Round 60 (Remco: "the ants that keep dying get irritating"): the swarm species (Skitter ants, the Cinder Matriarch's
+        // fire larvae on the same ant cry, the Rotbloom's spore pods) cry at under half the level, at most about three times a second.
+        public const float SwarmDeathVolume = 0.45f;
+        public const float SwarmDeathInterval = 0.35f;
+
         private const string Special = "Bosses/Special/";
         private const float StoneVoicePitch = 0.85f;
         private const string EnvironmentFolder = "Environment/";
 
         private static readonly VoiceSpec[] Voices =
         {
-            new VoiceSpec { Enemy = "Skitter", Move = "Monsters/Ant/ant_walk_loop", Screech = "Monsters/Ant/ant_screech" },
+            new VoiceSpec { Enemy = "Skitter", DeathVolume = SwarmDeathVolume, DeathInterval = SwarmDeathInterval, Move = "Monsters/Ant/ant_walk_loop", Screech = "Monsters/Ant/ant_screech" },
             new VoiceSpec { Enemy = "Stinger", Move = "Monsters/Scorpion/scorpion_walk_loop", Screech = "Monsters/Scorpion/scorpion_screech", Attack = "Monsters/Scorpion/scorpion_acid_shot", Impact = EnvironmentFolder + "acid_sizzle" },
             Bat("Emberbat", "fire"), Bat("Tidebat", "water"), Bat("Mossbat", "moss"), Bat("Dustbat", "sand"), Bat("Frostbat", "frost"), Bat("Mirebat", "forest"),
             new VoiceSpec { Enemy = "Shardback", Move = "Monsters/IceBeetle/ice_beetle_walk_loop", Screech = "Monsters/IceBeetle/ice_beetle_screech", Attack = "Monsters/IceBeetle/ice_beetle_icicle_shot", Impact = "Monsters/IceBeetle/icicle_impact" },
@@ -196,6 +205,8 @@ namespace Game.Editor
             var voice = LoadOrCreate<CreatureVoice>($"{VoicesFolder}/Voice_{spec.Enemy}.asset");
             var so = new SerializedObject(voice);
             so.FindProperty("_presence").floatValue = spec.Presence;
+            so.FindProperty("_deathVolume").floatValue = spec.DeathVolume;
+            so.FindProperty("_deathInterval").floatValue = spec.DeathInterval;
             FillSet(so.FindProperty("_moveLoop"), ApprovedClips(spec.Move), spec.Pitch);
             FillSet(so.FindProperty("_steps"), ApprovedClips(spec.Steps), spec.Pitch);
             so.FindProperty("_stepSpacing").floatValue = spec.StepSpacing;

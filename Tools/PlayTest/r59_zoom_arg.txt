@@ -1,1 +1,1 @@
-3 bay 12
+0 bay 25 side

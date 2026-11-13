@@ -110,6 +110,9 @@ namespace Game.Editor
         private static bool IsCutsceneFx(string path) => IsOurs(path) && ExportFolder(path) == CutsceneFxFolder;
         private static bool IsSky(string path) => IsOurs(path) && ExportFolder(path) == SkiesFolder;
 
+        // Round 60: the orbit set lifts the mothership's clamshell bay doors off its hull at run time to swing them shut (MothershipDoors).
+        private static bool IsMothership(string path) => IsOurs(path) && ExportFolder(path) == BlenderStoryCatalog.Mothership;
+
         // Round 25b: markers, bars, projectiles, debris, the scout and the particle atlas.
         private static bool IsMarker(string path) => IsOurs(path) && BlenderMarkerCatalog.Contains(ExportFolder(path));
 
@@ -186,6 +189,11 @@ namespace Game.Editor
                 importer.animationType = ModelImporterAnimationType.None;
                 importer.importAnimation = false;
                 // The generator reads the kit meshes (bounds, the mirrored end caps, the flora sway colours).
+                importer.isReadable = true;
+            }
+
+            if (IsMothership(assetPath))
+            {
                 importer.isReadable = true;
             }
         }

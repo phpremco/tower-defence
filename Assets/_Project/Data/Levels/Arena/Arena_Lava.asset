@@ -42,7 +42,7 @@ MonoBehaviour:
   - Name: South air route
     Flying: 1
     Waypoints:
-    - {x: 0, y: 0}
+    - {x: 3, y: 0}
     - {x: 18, y: 1}
     - {x: 41, y: 9}
   - Name: Second road
@@ -317,6 +317,7 @@ MonoBehaviour:
   _bossEntrance:
     Kind: 0
     Cell: {x: 0, y: 0}
+    Footprint: []
   _nests:
   - Cell: {x: 39, y: 18}
     Element: 7
@@ -325,6 +326,8 @@ MonoBehaviour:
   _terrainEmission: {fileID: 2800000, guid: e99f8452afcb2224d8ec193fba632f5b, type: 3}
   _enemyHealthMultiplier: 1
   _expectedUpgradeBonus: 0.1
+  _balanceTargetScale:
+  - 1
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}

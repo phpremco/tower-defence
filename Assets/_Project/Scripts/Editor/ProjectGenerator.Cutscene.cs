@@ -92,6 +92,7 @@ namespace Game.Editor
             public CutsceneCue[] Cues = new CutsceneCue[0];
             public CutsceneLayer[] Layers = new CutsceneLayer[0];
             public float ShakeRumble;
+            public float QuakeHold;
         }
 
         private static void GenerateCutscene(GeneratorContext context)
@@ -498,6 +499,7 @@ namespace Game.Editor
                 shots[i].Cues = OpeningCues(i);
                 shots[i].Layers = OpeningLayers(i);
                 shots[i].ShakeRumble = OpeningShakeRumble(i);
+                shots[i].QuakeHold = OpeningQuakeHold(i);
             }
 
             return shots;
@@ -550,6 +552,7 @@ namespace Game.Editor
                 WriteCues(shot.FindPropertyRelative("Cues"), spec.Cues);
                 WriteLayers(shot.FindPropertyRelative("Layers"), spec.Layers);
                 shot.FindPropertyRelative("ShakeRumble").floatValue = spec.ShakeRumble;
+                shot.FindPropertyRelative("QuakeHold").floatValue = spec.QuakeHold;
             }
         }
 

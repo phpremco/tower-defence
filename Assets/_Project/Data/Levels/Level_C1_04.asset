@@ -42,7 +42,7 @@ MonoBehaviour:
   - Name: South air route
     Flying: 1
     Waypoints:
-    - {x: 0, y: 0}
+    - {x: 3, y: 0}
     - {x: 18, y: 1}
     - {x: 39, y: 8}
   - Name: Second road
@@ -221,6 +221,7 @@ MonoBehaviour:
   _bossEntrance:
     Kind: 0
     Cell: {x: 0, y: 0}
+    Footprint: []
   _nests:
   - Cell: {x: 37, y: 16}
     Element: 7

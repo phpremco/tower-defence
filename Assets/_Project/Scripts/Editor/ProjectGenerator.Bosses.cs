@@ -338,7 +338,7 @@ namespace Game.Editor
                 Color = new Color(0.5f, 0.15f, 0.05f), Eyes = new Color(1f, 0.55f, 0.15f), Accent = new Color(1f, 0.5f, 0.1f), Blood = new Color(1f, 0.55f, 0.15f),
                 Scale = 1f, Shape = EnemyShape.None, Death = DeathStyle.Shatter,
             });
-            CreateVoice(new VoiceSpec { Enemy = "FireLarva", Move = "Monsters/Ant/ant_walk_loop", Screech = "Monsters/Ant/ant_screech", Pitch = 1.35f });
+            CreateVoice(new VoiceSpec { Enemy = "FireLarva", DeathVolume = SwarmDeathVolume, DeathInterval = SwarmDeathInterval, Move = "Monsters/Ant/ant_walk_loop", Screech = "Monsters/Ant/ant_screech", Pitch = 1.35f });
             // The egg never walks: its "move" is the lava bubbling round it.
             CreateVoice(new VoiceSpec { Enemy = "CinderEgg", Move = EnvironmentFolder + "lava_bubbling_loop" });
             foreach (EnemyDefinition brood in new[] { larva, egg })
@@ -372,7 +372,7 @@ namespace Game.Editor
                 Color = new Color(0.45f, 0.6f, 0.2f), Eyes = new Color(0.75f, 1f, 0.35f), Accent = new Color(0.6f, 1f, 0.3f), Blood = new Color(0.6f, 1f, 0.35f),
                 Scale = 1.5f, Shape = EnemyShape.None, Death = DeathStyle.Shatter,
             });
-            CreateVoice(new VoiceSpec { Enemy = "RotSporePod", Move = "Monsters/Flying/wings_flapping_loop", Pitch = 1.6f });
+            CreateVoice(new VoiceSpec { Enemy = "RotSporePod", DeathVolume = SwarmDeathVolume, DeathInterval = SwarmDeathInterval, Move = "Monsters/Flying/wings_flapping_loop", Pitch = 1.6f });
             Wear(pod, "RotSporePod");
             return pod;
         }

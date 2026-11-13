@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: RepairDrone
   m_EditorClassIdentifier: Game.Drones::Game.Drones.DroneDefinition
   _displayName: Repair drone
+  _role: Repair
+  _summary: Flies to the most damaged tower, gate or base and repairs it for free.
   _kind: 0
   _speed: 3.5
   _maxHealth: 40

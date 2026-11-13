@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: AttackDrone
   m_EditorClassIdentifier: Game.Drones::Game.Drones.DroneDefinition
   _displayName: Attack drone
+  _role: Attack
+  _summary: Hunts the creature furthest down the road and shoots it from the air.
   _kind: 2
   _speed: 4.5
   _maxHealth: 35

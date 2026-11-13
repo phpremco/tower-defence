@@ -255,8 +255,23 @@ namespace Game.Balance
         {
             int middle = layout.Width / 2;
             layout.NorthAir = new[] { new Cell(0, layout.Height - 1), new Cell(middle + random.Range(-AirJitter, AirJitter), layout.Height - 2), layout.Base };
-            layout.SouthAir = new[] { new Cell(0, 0), new Cell(middle + random.Range(-AirJitter, AirJitter), 1), layout.Base };
+            layout.SouthAir = new[] { new Cell(SouthAirStart(layout), 0), new Cell(middle + random.Range(-AirJitter, AirJitter), 1), layout.Base };
         }
+
+        // Round 60 (Remco: "looks like a spawn inside a spawn"): the south air pod hovers over its corner, and the play camera,
+        // looking north and down, shows it over the ground a cell and a half further north: right over the mound of a road
+        // that starts there (the second road always does, at SideRoadRow). Such a corner's pod starts a few cells along the
+        // bottom edge instead (LevelValidator.CheckSpawnProps holds the rule).
+        private const int SouthMouthRows = 3;
+        private const int SouthAirShift = 3;
+
+        private static int SouthAirStart(RoadLayout layout)
+        {
+            bool mouthNearCorner = StartsNearSouthCorner(layout.Road) || StartsNearSouthCorner(layout.SecondRoad);
+            return mouthNearCorner ? SouthAirShift : 0;
+        }
+
+        private static bool StartsNearSouthCorner(Cell[] road) => road != null && road.Length > 0 && road[0].X == 0 && road[0].Y <= SouthMouthRows;
 
         // ---- gates ---------------------------------------------------------------------------------------------------
 

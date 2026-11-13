@@ -24,7 +24,17 @@ namespace Game.Drones
     [CreateAssetMenu(menuName = "Game/Drone Definition", fileName = "DroneDefinition")]
     public sealed class DroneDefinition : ScriptableObject
     {
+        /// <summary>The longest role that fits on a card at the readable text size.</summary>
+        public const int MaxRoleLength = 8;
+
         [SerializeField] private string _displayName = "Drone";
+
+        [Tooltip("Round 60: the drone's job in one short word, shown on its card in the level (\"Repair\", \"Harvest\").")]
+        [SerializeField] private string _role = string.Empty;
+
+        [Tooltip("Round 60: what the drone does, in one short sentence, shown while its card is focused or pointed at.")]
+        [SerializeField] [TextArea(2, 3)] private string _summary = string.Empty;
+
         [SerializeField] private DroneKind _kind;
         [SerializeField] [Min(0.5f)] private float _speed = 3.5f;
         [SerializeField] [Min(1f)] private float _maxHealth = 40f;
@@ -63,6 +73,8 @@ namespace Game.Drones
         [SerializeField] private ModelArtDefinition _art;
 
         public string DisplayName => _displayName;
+        public string Role => _role;
+        public string Summary => _summary;
         public DroneKind Kind => _kind;
         public float Speed => _speed;
         public float MaxHealth => _maxHealth;
@@ -85,6 +97,16 @@ namespace Game.Drones
 
         private void OnValidate()
         {
+            if (string.IsNullOrWhiteSpace(_role) || _role.Length > MaxRoleLength)
+            {
+                Debug.LogWarning($"Drone '{name}' needs a role of 1 to {MaxRoleLength} letters for its card, not '{_role}'.", this);
+            }
+
+            if (string.IsNullOrWhiteSpace(_summary))
+            {
+                Debug.LogWarning($"Drone '{name}' has no summary: its card cannot say what it does.", this);
+            }
+
             if (_kind == DroneKind.Attack && _targets == 0)
             {
                 Debug.LogWarning($"Drone '{name}' attacks nothing: no target layers set.", this);

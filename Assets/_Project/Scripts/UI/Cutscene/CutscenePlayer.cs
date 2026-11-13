@@ -54,6 +54,8 @@ namespace Game.UI
         private CutsceneCamera _camera;
         private CutsceneAudio _audio;
         private AudioSource _shakeRumble;
+        // The quake hold of the shot before this one, which the rumble glides from (round 60).
+        private float _quakeHoldBefore;
         private ICutsceneSet _current;
         private CutsceneSet _currentSet;
         private float _finishFade = -1f;
@@ -202,7 +204,8 @@ namespace Game.UI
             _context.Tremble = 0f;
             _current.Tick(time, progress);
             _camera.Apply(CameraPath.Sample(_keys, progress), delta, _context.Rumble, _context.Float);
-            _audio.SetLoopVolume(_shakeRumble, ShakeSound.Level(_camera.Kick, _context.Rumble, _context.Tremble, shot.ShakeRumble));
+            float hold = ShakeSound.Hold(_quakeHoldBefore, shot.QuakeHold, time);
+            _audio.SetLoopVolume(_shakeRumble, ShakeSound.Level(_camera.Kick, _context.Rumble, _context.Tremble, shot.ShakeRumble, hold));
             _audio.PoseLayers(time, delta);
             PoseRig();
             _overlay.SetFade(ShotFade(shot, time));
@@ -241,6 +244,7 @@ namespace Game.UI
         private void OnShotStarted(int index)
         {
             CutsceneShot shot = _request.Cutscene.Shots[index];
+            _quakeHoldBefore = index > 0 ? _request.Cutscene.Shots[index - 1].QuakeHold : 0f;
             ICutsceneSet set = SetFor(shot.Set);
             if (_current != null && _current != set)
             {

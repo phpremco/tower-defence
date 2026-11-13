@@ -7,8 +7,10 @@ using UnityEngine.UI;
 namespace Game.UI
 {
     /// <summary>
-    /// The base panel in the bottom-right corner, always in view: one card per drone kind with its picture, its
-    /// price and how many are out, greyed out when money is short or that kind is at its limit. A click buys.
+    /// The base panel in the bottom-right corner, always in view: one card per drone kind with its job across the top
+    /// (round 60, Remco: "not clear which drone does what"), its picture, its price and how many are out, greyed out when
+    /// money is short or that kind is at its limit. A click buys. The card holding the focus, or else the one under the
+    /// mouse, is described in a box over the panel: the drone's name and what it does.
     /// On a gamepad, confirming on the base's doorstep focuses the panel (the stick then walks the cards, A buys,
     /// B leaves), which is what <see cref="LevelContext.BaseMenuOpen"/> means. Only reads LevelContext.
     /// A level that offers no drones yet shows no panel. While a dialogue that introduces a drone kind plays (and for a
@@ -16,8 +18,8 @@ namespace Game.UI
     /// </summary>
     public sealed class BaseMenuView : MonoBehaviour
     {
-        private const float CardWidth = 112f;
-        private const float CardHeight = 104f;
+        private const float CardWidth = 128f;
+        private const float CardHeight = 124f;
         private const float CardGap = 8f;
         private const float LabelHeight = 46f;
         private const float HeaderHeight = 36f;
@@ -28,6 +30,15 @@ namespace Game.UI
         private const float AboveBottomBar = 164f;
         private const float PictureScale = 2.6f;
         private const float PictureLift = 0.55f;
+        // The job across the top of a card, in the drone's own colour lifted towards white so it reads on the card tint.
+        private const float RoleBand = 34f;
+        private const float RoleInset = 4f;
+        private const float RoleLift = 0.4f;
+        // The description box over the panel: its gap to the panel, its inner padding and the room the text wraps in.
+        private const float DescriptionGap = 8f;
+        private const float DescriptionPadding = 12f;
+        private const float IconInset = 12f;
+        private static readonly Color DescriptionBackdrop = new Color(0.04f, 0.08f, 0.16f, 0.94f);
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
         private static readonly Color HeaderColor = new Color(0.7f, 0.8f, 0.95f);
         private static readonly Color Unavailable = new Color(0.5f, 0.5f, 0.55f);
@@ -53,6 +64,10 @@ namespace Game.UI
         /// <summary>The drones panel in the bottom-right corner, for the HUD keep-out.</summary>
         public RectTransform Panel => _panel;
         private DroneButton[] _buttons;
+        private Text _header;
+        private RectTransform _description;
+        private Text _descriptionText;
+        private int _described = -1;
         private bool _wasFocused;
         private bool _tending;
         private int _openedFrame;
@@ -65,6 +80,8 @@ namespace Game.UI
             public Text Label;
             public Image Highlight;
             public Text NewTag;
+            public Text Role;
+            public PointerHover Hover;
 
             /// <summary>Unscaled time until which the card stays lit; zero when it was never introduced.</summary>
             public float HighlightUntil;
@@ -112,10 +129,11 @@ namespace Game.UI
             _panel.sizeDelta = new Vector2(width, height);
 
             UiKit.CreatePanel(_panel, "Backdrop", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Backdrop);
-            Text header = CreateLabel(new Vector2(0f, 1f), new Vector2(Padding, -Padding - HeaderHeight * 0.5f), TextAnchor.MiddleLeft, new Vector2(width - Padding * 2f, HeaderHeight), Mathf.Max(HeaderSize, UiKit.ReadableSize));
-            header.rectTransform.pivot = new Vector2(0f, 0.5f);
-            header.text = "Drones";
-            header.color = HeaderColor;
+            _header = CreateLabel(new Vector2(0f, 1f), new Vector2(Padding, -Padding - HeaderHeight * 0.5f), TextAnchor.MiddleLeft, new Vector2(width - Padding * 2f, HeaderHeight), Mathf.Max(HeaderSize, UiKit.ReadableSize));
+            _header.rectTransform.pivot = new Vector2(0f, 0.5f);
+            _header.text = "Drones";
+            _header.color = HeaderColor;
+            BuildDescription(width);
 
             _buttons = new DroneButton[drones.Length];
             for (int i = 0; i < drones.Length; i++)
@@ -167,6 +185,8 @@ namespace Game.UI
             // The card shows the drone itself, rendered once from its model like the tower cards.
             var icon = button.transform.Find("Icon").GetComponent<Image>();
             icon.enabled = false;
+            // The picture keeps clear of the job band across the top of the card.
+            icon.rectTransform.offsetMax = new Vector2(-IconInset, -RoleBand);
             ModelIconRenderer.Request(drone, stage => BuildPicture(stage, drone), sprite =>
             {
                 if (icon != null)
@@ -176,9 +196,10 @@ namespace Game.UI
                 }
             });
 
-            var entry = new DroneButton { Drone = drone, Button = button, Highlight = highlight };
+            var entry = new DroneButton { Drone = drone, Button = button, Highlight = highlight, Hover = button.gameObject.AddComponent<PointerHover>() };
+            entry.Role = CreateRole(rect, drone);
             entry.Label = CreateLabel(new Vector2(0f, 0f), new Vector2(x + CardWidth * 0.5f, Padding + LabelHeight * 0.5f), TextAnchor.MiddleCenter, new Vector2(CardWidth + CardGap, LabelHeight), Mathf.Max(LabelSize, UiKit.ReadableSize));
-            entry.NewTag = CreateLabel(new Vector2(0f, 0f), new Vector2(x + CardWidth * 0.5f, Padding + LabelHeight + CardHeight - NewTagHeight * 0.5f), TextAnchor.MiddleCenter, new Vector2(CardWidth, NewTagHeight), Mathf.Max(NewTagSize, UiKit.ReadableSize));
+            entry.NewTag = CreateLabel(new Vector2(0f, 0f), new Vector2(x + CardWidth * 0.5f, Padding + LabelHeight + CardHeight + HeaderHeight * 0.5f), TextAnchor.MiddleCenter, new Vector2(CardWidth, NewTagHeight), Mathf.Max(NewTagSize, UiKit.ReadableSize));
             entry.NewTag.text = NewTagText;
             entry.NewTag.color = HighlightColour;
             entry.NewTag.fontStyle = FontStyle.Bold;
@@ -200,6 +221,7 @@ namespace Game.UI
             DialogueDefinition current = _context.Dialogue != null ? _context.Dialogue.Current : null;
             float now = Time.unscaledTime;
             float pulse = Mathf.Lerp(HighlightMinAlpha, 1f, 0.5f + 0.5f * Mathf.Sin(now * HighlightPulseRate));
+            bool anyLit = false;
             for (int i = 0; i < _buttons.Length; i++)
             {
                 // Lit while the introduction talks about it, then until the player buys one or the linger runs out.
@@ -216,7 +238,12 @@ namespace Game.UI
                 }
 
                 SetHighlight(_buttons[i], lit, pulse);
+                anyLit |= lit;
             }
+
+            // A lit card's NEW tag stands in the header band over it, so the title steps aside while one shows.
+            _header.enabled = !anyLit;
+            Describe(DescribedCard());
         }
 
         private static void SetHighlight(DroneButton entry, bool lit, float pulse)
@@ -233,6 +260,96 @@ namespace Game.UI
                 colour.a = pulse;
                 entry.Highlight.color = colour;
             }
+        }
+
+        // The drone's job in one word across the top band of its card.
+        private Text CreateRole(RectTransform card, DroneDefinition drone)
+        {
+            Text role = UiKit.CreateFixedText(card, drone.Role, UiKit.ReadableSize, TextAnchor.MiddleCenter, new Vector2(0.5f, 1f), new Vector2(0f, -RoleInset), new Vector2(CardWidth - RoleInset * 2f, RoleBand - RoleInset));
+            UiKit.KeepReadable(role);
+            role.rectTransform.pivot = new Vector2(0.5f, 1f);
+            role.color = Color.Lerp(drone.Color, Color.white, RoleLift);
+            role.fontStyle = FontStyle.Bold;
+            role.raycastTarget = false;
+            return role;
+        }
+
+        // The box over the panel that says what the focused or pointed card's drone does; hidden while no card is.
+        private void BuildDescription(float width)
+        {
+            var go = new GameObject("Description", typeof(RectTransform));
+            _description = go.GetComponent<RectTransform>();
+            _description.SetParent(_panel, false);
+            _description.anchorMin = new Vector2(0f, 1f);
+            _description.anchorMax = new Vector2(1f, 1f);
+            _description.pivot = new Vector2(0.5f, 0f);
+            _description.anchoredPosition = new Vector2(0f, DescriptionGap);
+            _description.sizeDelta = Vector2.zero;
+            var backdrop = go.AddComponent<Image>();
+            backdrop.color = DescriptionBackdrop;
+            backdrop.raycastTarget = false;
+            var layout = go.AddComponent<VerticalLayoutGroup>();
+            int padding = Mathf.RoundToInt(DescriptionPadding);
+            layout.padding = new RectOffset(padding, padding, padding, padding);
+            layout.childControlHeight = true;
+            layout.childControlWidth = true;
+            layout.childForceExpandHeight = false;
+            go.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var textGo = new GameObject("Text", typeof(RectTransform));
+            textGo.transform.SetParent(_description, false);
+            _descriptionText = textGo.AddComponent<Text>();
+            _descriptionText.font = UiKit.BodyFont;
+            _descriptionText.fontSize = Mathf.Max(LabelSize, UiKit.ReadableSize);
+            _descriptionText.color = TextColor;
+            _descriptionText.alignment = TextAnchor.UpperLeft;
+            _descriptionText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            _descriptionText.verticalOverflow = VerticalWrapMode.Overflow;
+            _descriptionText.supportRichText = true;
+            _descriptionText.raycastTarget = false;
+            go.SetActive(false);
+        }
+
+        // The card holding the gamepad or keyboard focus, else the one under the mouse; -1 for none.
+        private int DescribedCard()
+        {
+            GameObject selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+            for (int i = 0; i < _buttons.Length; i++)
+            {
+                if (selected == _buttons[i].Button.gameObject)
+                {
+                    return i;
+                }
+            }
+
+            for (int i = 0; i < _buttons.Length; i++)
+            {
+                if (_buttons[i].Hover.Hovered)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        // Rewritten only when another card is described, so a held focus costs nothing per frame.
+        private void Describe(int card)
+        {
+            if (card == _described)
+            {
+                return;
+            }
+
+            _described = card;
+            _description.gameObject.SetActive(card >= 0);
+            if (card < 0)
+            {
+                return;
+            }
+
+            DroneDefinition drone = _buttons[card].Drone;
+            _descriptionText.text = $"<b><color=#{ColorUtility.ToHtmlStringRGB(_buttons[card].Role.color)}>{drone.DisplayName}</color></b>\n{drone.Summary}";
         }
 
         // Drones are small, so the picture blows them up and lifts them into the frame the renderer uses for towers.

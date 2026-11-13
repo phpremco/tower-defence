@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: HarvestDrone
   m_EditorClassIdentifier: Game.Drones::Game.Drones.DroneDefinition
   _displayName: Harvest drone
+  _role: Harvest
+  _summary: Mines the crystal nodes on the field and flies the money home.
   _kind: 1
   _speed: 4
   _maxHealth: 30

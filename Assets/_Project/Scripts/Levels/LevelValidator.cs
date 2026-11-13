@@ -60,6 +60,7 @@ namespace Game.Levels
             CheckBaseFootprint(level, grid, errors);
             CheckBossEntrance(level, grid, errors);
             CheckNests(level, grid, errors);
+            CheckSpawnProps(level, errors);
             CheckDefenceZones(level, grid, errors);
             return errors.Count == 0;
         }
@@ -526,6 +527,82 @@ namespace Game.Levels
             {
                 errors.Add($"{nest.Element} nest at {nest.Cell} joins the road {share:P0} of the way to the base; at most {MaxNestRoadShare:P0} is allowed.");
             }
+        }
+
+        // Round 60 (Remco on Shard Ridge: "looks like a spawn inside a spawn"): the living spawn props (the route gates' mounds
+        // on the ground, their pods at flight height, the nests) seen from the play camera may not cover one another. A pod is
+        // judged where it shows: projected along the camera's view onto the ground, where a hovering pod over a lane's first
+        // cell sits over the mound of a road that starts 1.5 cells beside it.
+        private static void CheckSpawnProps(LevelDefinition level, List<string> errors)
+        {
+            List<SpawnProp> props = SpawnProps(level);
+            for (int a = 0; a < props.Count; a++)
+            {
+                for (int b = a + 1; b < props.Count; b++)
+                {
+                    float apart = Vector2.Distance(props[a].Seen, props[b].Seen);
+                    if (apart < props[a].Radius + props[b].Radius)
+                    {
+                        errors.Add($"{props[a].Name} and {props[b].Name} cover each other from the play camera ({apart:0.00} m apart, need {props[a].Radius + props[b].Radius:0.00}).");
+                    }
+                }
+            }
+        }
+
+        /// <summary>A spawn prop as the play camera sees it: where on the ground it shows and how far round that it reaches.</summary>
+        public readonly struct SpawnProp
+        {
+            public readonly string Name;
+            public readonly Vector2 Seen;
+            public readonly float Radius;
+
+            public SpawnProp(string name, Vector2 seen, float radius)
+            {
+                Name = name;
+                Seen = seen;
+                Radius = radius;
+            }
+        }
+
+        /// <summary>A route gate's footprint across (README round 25b: GateScale 1 keeps the old 1.9).</summary>
+        public const float GateFootprint = 1.9f;
+
+        /// <summary>A living nest's footprint across (the burrow's slabs, about two cells).</summary>
+        public const float NestFootprint = 2.2f;
+
+        /// <summary>The level's living spawn props (none without living spawn art), each placed where the play camera shows it.</summary>
+        public static List<SpawnProp> SpawnProps(LevelDefinition level)
+        {
+            var props = new List<SpawnProp>();
+            SpawnOriginDefinition art = level.SpawnOrigins;
+            if (art == null)
+            {
+                return props;
+            }
+
+            CameraSettings camera = level.Camera;
+            Vector3 view = Quaternion.Euler(camera.PitchDegrees, camera.YawDegrees, 0f) * Vector3.forward;
+            for (int p = 0; p < level.Paths.Length; p++)
+            {
+                bool flying = level.Paths[p].Flying;
+                Vector3 start = level.Road.Route(p)[0] + (flying ? Vector3.up * art.AirGateHeight : Vector3.zero);
+                float scale = art.GateScale * (flying ? art.AirGateScale : 1f);
+                props.Add(new SpawnProp($"{(flying ? "air" : "ground")} gate of '{level.Paths[p].Name}'", SeenOnGround(start, view), GateFootprint * scale * 0.5f));
+            }
+
+            foreach (ElementNest nest in level.Nests)
+            {
+                props.Add(new SpawnProp($"{nest.Element} nest at {nest.Cell}", SeenOnGround(level.Grid.CellToWorld(nest.Cell), view), NestFootprint * 0.5f));
+            }
+
+            return props;
+        }
+
+        /// <summary>Where a point shows on the ground, followed along the camera's view <paramref name="view"/> down to height zero.</summary>
+        public static Vector2 SeenOnGround(Vector3 point, Vector3 view)
+        {
+            float along = view.y < 0f ? point.y / -view.y : 0f;
+            return new Vector2(point.x + view.x * along, point.z + view.z * along);
         }
 
         // A nest lies on the grid, off the road, in terrain that suits its element: water, lava and sand nests in

@@ -65,7 +65,11 @@ namespace Game.UI
         private const float BrakeGain = 1.6f;
         // The braking thrusters sit this share of the ship's half width out from its middle, at its nose.
         private const float BrakeSpread = 0.35f;
-        private const float IdleThrottle = 0.3f;
+        // Round 60: the main engines follow the ship's speed during the arrival (full while fast, eased out as it stops, out
+        // by the time it settles); holding station the engine light keeps this faint glow and the plumes are out.
+        private const float MotionThrottle = 0.6f;
+        private const float MotionGain = 2.2f;
+        private const float HoldGlow = 0.05f;
         private static readonly Vector3 ShipFacing = new Vector3(0.8f, -0.05f, 0.6f);
         // The landing region lies on top of the curve, tipped a little towards the camera.
         private static readonly Vector3 SiteFacing = new Vector3(0f, 1f, -0.35f);
@@ -124,6 +128,7 @@ namespace Game.UI
         private Vector3 _ringCentre;
         private Vector3 _bay;
         private CapsuleDrop _capsules;
+        private MothershipDoors _doors;
         private ArtModel _shipArt;
         private SpaceBackdrop _backdrop;
 
@@ -169,8 +174,9 @@ namespace Game.UI
             Transform view = _context.Camera.transform;
             float pulse = 1f + EnginePulse * Mathf.Sin(time * 11f);
             float brake = arriving ? Brake(time) : 0f;
-            // Cold while braking, warming to an idle as it settles; the old drift burn never comes back now that it holds.
-            float engines = IdleThrottle * (arriving ? CutsceneMath.Smooth(Mathf.Clamp01(1f - brake * 2f)) : 1f);
+            // Round 60 (Remco: "the boosters stay on while it stands still"): the main engines burn with the ship's motion and
+            // ease out to nothing as it settles; holding station only the engine light keeps a faint glow.
+            float engines = arriving ? MainEngineThrottle(time) : 0f;
             Vector3 back = _ship.rotation * Vector3.back;
             for (int i = 0; i < _plumes.Length; i++)
             {
@@ -185,15 +191,27 @@ namespace Game.UI
 
             if (_engineLight != null)
             {
-                _engineLight.intensity = EngineLight * Mathf.Max(engines, brake) * (pulse + 0.06f * Mathf.Sin(time * 37f));
+                _engineLight.intensity = EngineLight * Mathf.Max(Mathf.Max(engines, brake), HoldGlow) * (pulse + 0.06f * Mathf.Sin(time * 37f));
             }
 
             // Before the launch every capsule is still in the bay.
             _capsules.Pose(arriving ? -1f : time);
+            PoseDoors(arriving, time);
             PoseLights(clock, view);
             _depth.Pose(clock, view);
             _context.Rumble = arriving ? 0f : _capsules.Rumble(time);
             _context.Float = CameraFloat;
+        }
+
+        // Round 60: shut while the ship comes in, open over the salvo, shut again once the last capsule is clear.
+        private void PoseDoors(bool arriving, float time)
+        {
+            if (_doors == null)
+            {
+                return;
+            }
+
+            _doors.Pose(arriving || _capsules.Count == 0 ? 0f : MothershipDoors.Opening(time, _capsules.Release(0), _capsules.Release(_capsules.Count - 1)));
         }
 
         /// <summary>Where the ship is during the arrival: along its heading towards its holding point, braking all the way.</summary>
@@ -202,6 +220,14 @@ namespace Game.UI
             float u = Mathf.Clamp01(time / ArrivalSeconds);
             float left = Mathf.Pow(1f - u, ArrivalEase);
             return ShipStart - ShipFacing.normalized * (ArrivalDistance * left);
+        }
+
+        /// <summary>Round 60: the main engines' throttle during the arrival, following the ship's speed and eased to 0 as it stops.</summary>
+        public static float MainEngineThrottle(float time)
+        {
+            float u = Mathf.Clamp01(time / ArrivalSeconds);
+            float speed = Mathf.Pow(1f - u, ArrivalEase - 1f);
+            return MotionThrottle * CutsceneMath.Smooth(Mathf.Clamp01(speed * MotionGain)) * CutsceneMath.Smooth(Mathf.Clamp01(time / BrakeFadeIn));
         }
 
         /// <summary>The forward thrusters' throttle during the arrival: hardest as it comes in, gone as it settles.</summary>
@@ -297,6 +323,7 @@ namespace Game.UI
                 BuildBayLight(bay);
                 BuildRunningLights(_shipArt.Numbered(ShipLight));
                 BuildLivery(_context.Cast != null ? _context.Cast.HullLivery : null);
+                _doors = MothershipDoors.Build(_shipArt.Root);
                 Transform[] found = _shipArt.Numbered(ShipNozzle);
                 if (found.Length > 0)
                 {

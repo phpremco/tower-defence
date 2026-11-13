@@ -30,6 +30,12 @@ namespace Game.Core
         [Tooltip("The cry on dying.")]
         [SerializeField] private SoundSet _screeches = new SoundSet();
 
+        [Tooltip("Round 60: how loud this species' death cry sits next to the others: a swarm that dies by the dozen sits lower.")]
+        [SerializeField] [Range(0f, 1f)] private float _deathVolume = 1f;
+
+        [Tooltip("Round 60: seconds between two death cries of this species at least; deaths in between stay silent, so a swarm dying is a few cries, not a chatter.")]
+        [SerializeField] [Min(0f)] private float _deathInterval;
+
         [Tooltip("A boss announces itself with this when it enters the field.")]
         [SerializeField] private SoundSet _growls = new SoundSet();
 
@@ -55,6 +61,8 @@ namespace Game.Core
         public float Presence => _presence;
         public SoundSet RollLoop => _rollLoop;
         public SoundSet Screeches => _screeches;
+        public float DeathVolume => _deathVolume;
+        public float DeathInterval => _deathInterval;
         public SoundSet Growls => _growls;
         public SoundSet Attacks => _attacks;
         public SoundSet Impacts => _impacts;
