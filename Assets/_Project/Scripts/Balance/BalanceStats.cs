@@ -45,6 +45,12 @@ namespace Game.Balance
         /// <summary>True for a continent boss: its health takes the difficulty's boss share (<see cref="DifficultyStats.BossHealth"/>).</summary>
         public bool IsContinentBoss;
 
+        /// <summary>A continent boss's own health factor per difficulty id, on top of the boss share (BossDefinition.HealthOn); none listed is 1.</summary>
+        public Dictionary<string, float> DifficultyHealth;
+
+        /// <summary>Its own health factor on a difficulty, or 1.</summary>
+        public float HealthOn(string difficulty) => DifficultyHealth != null && DifficultyHealth.TryGetValue(difficulty, out float factor) ? factor : 1f;
+
         /// <summary>
         /// A boss's timed powers for the ledger (round 29): the share of its fight a ward seals it (no hit lands, the field fires
         /// at nothing), and the escorts it sends out of its body per second of the fight: their count, body health and armour
@@ -209,8 +215,8 @@ namespace Game.Balance
         /// <summary>Share of a continent boss's escort call released on this difficulty (round 30).</summary>
         public float BossEscort = 1f;
 
-        /// <summary>The health factor of one creature beyond <see cref="Health"/>: the boss share for a continent boss, else one.</summary>
-        public float ShareFor(EnemyStats enemy) => enemy.IsContinentBoss ? BossHealth : 1f;
+        /// <summary>The health factor of one creature beyond <see cref="Health"/>: the boss share times its own factor here for a continent boss, else one.</summary>
+        public float ShareFor(EnemyStats enemy) => enemy.IsContinentBoss ? BossHealth * enemy.HealthOn(Id) : 1f;
     }
 
     /// <summary>A permanent upgrade bought with research or power between levels.</summary>

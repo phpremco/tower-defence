@@ -285,6 +285,39 @@ namespace Game.Tests
             Object.DestroyImmediate(split);
         }
 
+        // Round 58: the ray boss turns to its beam's target before it fires; the laser then burns the target it turned to, even
+        // when something nearer has come into reach meanwhile, and no aim is given while no laser is due that soon.
+        [Test]
+        public void Boss_LaserAimsAhead_AndFiresAtTheTargetItTurnedTo()
+        {
+            BossAbilityDefinition laser = Ability(BossAbilityKind.Laser, damage: 10f, range: 5f, sweep: 3f);
+            var delay = new SerializedObject(laser);
+            delay.FindProperty("_firstDelay").floatValue = 1f;
+            delay.ApplyModifiedPropertiesWithoutUndo();
+            Configure(speed: 0f, abilities: new[] { laser });
+
+            var structures = new StructureRegistry();
+            var turnedTo = new FakeStructure(new Vector3(3f, 0f, 0f), false);
+            structures.Add(turnedTo);
+            var abilities = _go.AddComponent<BossAbilities>();
+            abilities.Initialize(structures, (d, boss) => { }, (origin, range) => structures.FindNearest(origin, range));
+            Launch(new TargetRegistry(), structures);
+
+            Assert.IsFalse(abilities.TryLaserAim(0.5f, out _), "not due within half a second");
+            Assert.IsTrue(abilities.TryLaserAim(2f, out Vector3 aim), "due within two seconds");
+            Assert.AreEqual(turnedTo.Position, aim);
+
+            var nearer = new FakeStructure(new Vector3(1f, 0f, 0f), false);
+            structures.Add(nearer);
+            abilities.Step(1.1f);
+            Assert.IsTrue(abilities.LaserActive);
+            Assert.AreEqual(turnedTo.Position.x, abilities.LaserEnd.x, 0.001f, "the beam goes where the body turned");
+            Assert.IsTrue(abilities.TryLaserAim(0f, out aim));
+            Assert.AreEqual(turnedTo.Position, aim, "and the aim follows the burning target");
+
+            Object.DestroyImmediate(laser);
+        }
+
         [Test]
         public void RemainingRoute_StartsWhereTheEnemyStandsAndEndsAtTheRouteEnd()
         {

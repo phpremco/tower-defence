@@ -22,5 +22,17 @@ namespace Game.Core
 
             return current + Mathf.DeltaAngle(current, target) * (1f - Mathf.Exp(-deltaTime / seconds));
         }
+
+        /// <summary>
+        /// The same ease with its turn rate capped: a large turn (a boss coming round to the target of its beam) starts at a
+        /// steady rate instead of the exponential's fast first frames, and eases in once it is close.
+        /// </summary>
+        /// <param name="maxDegreesPerSecond">The fastest it may turn, in degrees per second of game time.</param>
+        public static float Step(float current, float target, float deltaTime, float seconds, float maxDegreesPerSecond)
+        {
+            float limit = maxDegreesPerSecond * deltaTime;
+            float turn = Mathf.DeltaAngle(current, Step(current, target, deltaTime, seconds));
+            return current + Mathf.Clamp(turn, -limit, limit);
+        }
     }
 }

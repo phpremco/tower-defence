@@ -860,6 +860,51 @@ namespace Game.Tests
             Assert.Greater(rows, 0, "no row names crest bones");
         }
 
+        // Round 58: the Sealed One's halo flares round the bar in Summon and Roar (round 57 open point 1). Each in-place fight clip
+        // of a crest row carries the bar heights that clear it per camera heading, measured as the builder measures them; the
+        // walk does not lift the bar, and no row without crest bones lifts it at all.
+        [Test]
+        public void CrestRows_FightClipsLiftTheBarOverTheirFlare()
+        {
+            foreach (BlenderArtEntry entry in BlenderArtCatalog.Creatures)
+            {
+                var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"Assets/_Project/Data/Art/{entry.Id}.asset");
+                if (art == null)
+                {
+                    continue;
+                }
+
+                foreach (ModelClip clip in art.Clips)
+                {
+                    bool measured = entry.BarCrestBones.Length > 0 && clip.Clip != null && CreatureBarHeight.FightsInPlace(clip.Role);
+                    if (!measured)
+                    {
+                        Assert.IsFalse(clip.LiftsBar, $"{entry.Id} {clip.Clip?.name}: lifts the bar but is not a measured fight clip of a crest row");
+                        continue;
+                    }
+
+                    float[] tops = CreatureBarHeight.ClipBars(art.Model, clip.Clip, entry.BarCrestBones);
+                    bool over = Mathf.Max(tops) > art.Height;
+                    Assert.AreEqual(over, clip.LiftsBar, $"{entry.Id} {clip.Clip.name}: its bar lift is stale (re-run BlenderArtBuilder.RemeasureBars)");
+                    for (int h = 0; over && h < tops.Length; h++)
+                    {
+                        float heading = h * 360f / tops.Length;
+                        Assert.AreEqual(tops[h], clip.BarTopAt(heading), BarHeightTolerance, $"{entry.Id} {clip.Clip.name}: heading {heading}");
+                    }
+                }
+            }
+
+            var sealedOne = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>("Assets/_Project/Data/Art/SealedOne.asset");
+            foreach (ModelClipRole role in new[] { ModelClipRole.Power, ModelClipRole.Roar })
+            {
+                ModelClip flare = sealedOne.Clips[sealedOne.IndexOf(role)];
+                Assert.IsTrue(flare.LiftsBar, $"SealedOne {flare.Clip.name}: the halo flares round the bar");
+                Assert.Greater(flare.BarTopAt(0f), sealedOne.Height, $"SealedOne {flare.Clip.name}: the lift clears more than the walk's bar");
+            }
+
+            Assert.IsFalse(sealedOne.Clips[sealedOne.IndexOf(ModelClipRole.Move)].LiftsBar, "the walk keeps the bar where it is");
+        }
+
         // The crest measure projects with one camera pitch: every level's play camera must look down at that angle.
         [Test]
         public void EveryLevelCamera_LooksDownAtTheBarMeasurePitch()

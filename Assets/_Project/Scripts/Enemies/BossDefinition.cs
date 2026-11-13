@@ -32,6 +32,8 @@ namespace Game.Enemies
         [SerializeField] [Min(0.5f)] private float _mechanicClipRate = 1.4f;
         [Tooltip("Seconds the victory panel waits after it falls, so its end plays first (the Sealed One's white Release: its death clip's length). 0 shows the panel at once.")]
         [SerializeField] [Min(0f)] private float _resultHoldSeconds;
+        [Tooltip("This boss's own health factor per difficulty (by profile name), on top of the profile's boss share; a difficulty not listed takes 1.")]
+        [SerializeField] private BossDifficultyHealth[] _difficultyHealth = new BossDifficultyHealth[0];
 
         [Header("Codex (plain words, shown once the boss has been seen)")]
         [SerializeField] [TextArea(2, 4)] private string _signatureText = string.Empty;
@@ -53,6 +55,26 @@ namespace Game.Enemies
         public float BodyHalfWidth => _bodyHalfWidth;
         public float MechanicClipRate => _mechanicClipRate;
         public float ResultHoldSeconds => _resultHoldSeconds;
+        public BossDifficultyHealth[] DifficultyHealth => _difficultyHealth ?? new BossDifficultyHealth[0];
+
+        /// <summary>Its own health factor on a difficulty (the profile's asset name), on top of the boss share; 1 when not listed.</summary>
+        public float HealthOn(string difficulty)
+        {
+            if (_difficultyHealth == null)
+            {
+                return 1f;
+            }
+
+            foreach (BossDifficultyHealth entry in _difficultyHealth)
+            {
+                if (entry.Difficulty == difficulty)
+                {
+                    return entry.Factor;
+                }
+            }
+
+            return 1f;
+        }
 
         /// <summary>What its mechanic does, for the Codex.</summary>
         public string SignatureText => _signatureText;
@@ -182,6 +204,22 @@ namespace Game.Enemies
             if (_signature == BossSignature.GateBreaker && _gateBreaker.ExposedPhase >= _phases.Length)
             {
                 Debug.LogWarning($"BossDefinition '{name}': the exposed phase lies past its last phase.", this);
+            }
+
+            for (int i = 0; _difficultyHealth != null && i < _difficultyHealth.Length; i++)
+            {
+                if (string.IsNullOrEmpty(_difficultyHealth[i].Difficulty) || _difficultyHealth[i].Factor <= 0f)
+                {
+                    Debug.LogWarning($"BossDefinition '{name}': difficulty health entry {i} needs a difficulty name and a factor above zero.", this);
+                }
+
+                for (int j = 0; j < i; j++)
+                {
+                    if (_difficultyHealth[j].Difficulty == _difficultyHealth[i].Difficulty)
+                    {
+                        Debug.LogWarning($"BossDefinition '{name}': difficulty {_difficultyHealth[i].Difficulty} has two health factors.", this);
+                    }
+                }
             }
 
             if (string.IsNullOrEmpty(_signatureText) || string.IsNullOrEmpty(_telegraphText) || string.IsNullOrEmpty(_counterText))

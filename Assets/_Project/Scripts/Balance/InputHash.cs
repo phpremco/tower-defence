@@ -32,6 +32,14 @@ namespace Game.Balance
             {
                 EnemyStats e = pair.Value;
                 text.Append(e.Id).Append(e.Layer).Append(F(e.Health)).Append(F(e.Armor)).Append(F(e.Speed)).Append(F(e.FightSpeed)).Append(e.Reward).Append(F(e.BlockadeDamage)).Append(F(e.AttackInterval)).Append(e.IsBoss).Append(F(e.MechanicLossSeconds)).Append(F(e.WardShare)).Append(F(e.SummonsPerSecond)).Append(F(e.SummonHealth)).Append(F(e.SummonArmor));
+                // Only a boss with its own difficulty factors adds them, so every hash made before them stands.
+                if (e.DifficultyHealth != null)
+                {
+                    foreach (KeyValuePair<string, float> factor in Sorted(e.DifficultyHealth))
+                    {
+                        text.Append(factor.Key).Append(F(factor.Value));
+                    }
+                }
             }
 
             foreach (DifficultyStats d in model.Difficulties)

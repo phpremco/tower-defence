@@ -39,9 +39,28 @@ namespace Game.Levels
             if (enemy.Boss != null)
             {
                 AddPowers(stats, enemy.Abilities);
+                stats.DifficultyHealth = DifficultyHealthOf(enemy.Boss);
             }
 
             return stats;
+        }
+
+        // A boss's own health factors per difficulty, or null when it lists none (so every difficulty takes the plain share).
+        private static Dictionary<string, float> DifficultyHealthOf(BossDefinition boss)
+        {
+            BossDifficultyHealth[] entries = boss.DifficultyHealth;
+            if (entries.Length == 0)
+            {
+                return null;
+            }
+
+            var factors = new Dictionary<string, float>(entries.Length);
+            foreach (BossDifficultyHealth entry in entries)
+            {
+                factors[entry.Difficulty] = entry.Factor;
+            }
+
+            return factors;
         }
 
         // The timed powers of a continent boss as the ledger sees them: wards seal it for a share of the fight, spawn powers send

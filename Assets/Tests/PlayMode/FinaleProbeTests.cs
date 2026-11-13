@@ -137,7 +137,8 @@ namespace Game.Tests
                     {
                         Boss = finale.Boss,
                         Difficulty = d,
-                        ShareNow = catalog.Difficulties[d].BossHealthShare,
+                        // The share it carried: the profile's, times the boss's own factor on this difficulty (round 58).
+                        ShareNow = catalog.Difficulties[d].BossHealthShare * boss.Boss.HealthOn(catalog.Difficulties[d].name),
                         HealthNow = boss.MaxHealth,
                     };
 

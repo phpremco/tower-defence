@@ -202,6 +202,9 @@ namespace Game.Enemies
             }
         }
 
+        /// <summary>How long before a power fires its clip starts (the clip's release moment), or zero without a clip.</summary>
+        public float LeadOf(int slot) => _powers[slot] >= 0 ? _art.Clips[_powers[slot]].EventSeconds : 0f;
+
         /// <summary>
         /// Keeps a power's clip on its aim while the power lasts (the ray boss's tail on target while its beam burns): it loops
         /// the clip's sustain stretch, or without one holds the release frame, and plays the rest out once the power ends.

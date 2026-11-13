@@ -28,6 +28,9 @@ namespace Game.Editor
         // The headings a creature shows the fixed camera as it walks the roads: towards, across both ways, away.
         private static readonly float[] Headings = { 0f, 90f, 180f, 270f };
 
+        // The camera headings a fight clip's bar is measured at (every 15 degrees): the view interpolates between them.
+        public const int ClipHeadingCount = 24;
+
         private static readonly ModelClipRole[] Cycles = { ModelClipRole.Move, ModelClipRole.Idle };
 
         /// <summary>The bar height for a creature: the rest-pose top, raised to the cycles' covered top where that is higher.</summary>
@@ -47,6 +50,28 @@ namespace Game.Editor
         /// </summary>
         public static List<float> CycleTops(GameObject model, ModelArtDefinition art, IReadOnlyDictionary<string, float> heldScales = null, IReadOnlyCollection<string> crestBones = null)
         {
+            var clips = new List<AnimationClip>();
+            foreach (ModelClipRole role in Cycles)
+            {
+                int index = art.IndexOf(role);
+                if (index >= 0)
+                {
+                    clips.Add(art.Clips[index].Clip);
+                }
+            }
+
+            return Tops(model, clips, heldScales, crestBones, Headings);
+        }
+
+        /// <summary>
+        /// The baked top of every sampled pose of one clip (round 58: a power that flares a crest past the cycles' bar), one top
+        /// per heading with <paramref name="crestBones"/>, as <see cref="CycleTops"/> measures the cycles.
+        /// </summary>
+        public static List<float> ClipTops(GameObject model, AnimationClip clip, IReadOnlyCollection<string> crestBones, float[] headings) =>
+            Tops(model, new List<AnimationClip> { clip }, null, crestBones, headings);
+
+        private static List<float> Tops(GameObject model, List<AnimationClip> clips, IReadOnlyDictionary<string, float> heldScales, IReadOnlyCollection<string> crestBones, float[] headings)
+        {
             var tops = new List<float>();
             GameObject probe = Object.Instantiate(model);
             var baked = new Mesh();
@@ -55,15 +80,8 @@ namespace Game.Editor
                 SkinnedMeshRenderer[] renderers = probe.GetComponentsInChildren<SkinnedMeshRenderer>();
                 List<(Transform Bone, float Scale)> held = HeldBones(probe, heldScales);
                 bool[][] crest = CrestMasks(renderers, crestBones);
-                foreach (ModelClipRole role in Cycles)
+                foreach (AnimationClip clip in clips)
                 {
-                    int index = art.IndexOf(role);
-                    if (index < 0)
-                    {
-                        continue;
-                    }
-
-                    AnimationClip clip = art.Clips[index].Clip;
                     for (int i = 0; i < SamplesPerCycle; i++)
                     {
                         clip.SampleAnimation(probe, clip.length * i / SamplesPerCycle);
@@ -79,7 +97,7 @@ namespace Game.Editor
                             continue;
                         }
 
-                        foreach (float top in ProjectedTops(renderers, crest, baked, probe.transform.position))
+                        foreach (float top in ProjectedTops(renderers, crest, baked, probe.transform.position, headings))
                         {
                             tops.Add(top - ground);
                         }
@@ -141,14 +159,14 @@ namespace Game.Editor
 
         // One top per heading: the plain height of the body, or a crest vertex's height plus how much higher the looking-down
         // camera draws it for its depth away from the camera at that heading, whichever stands higher in the picture.
-        private static float[] ProjectedTops(SkinnedMeshRenderer[] renderers, bool[][] crest, Mesh baked, Vector3 axis)
+        private static float[] ProjectedTops(SkinnedMeshRenderer[] renderers, bool[][] crest, Mesh baked, Vector3 axis, float[] headings)
         {
             float lean = Mathf.Tan(PlayCameraPitchDegrees * Mathf.Deg2Rad);
-            var away = new Vector3[Headings.Length];
-            var tops = new float[Headings.Length];
-            for (int h = 0; h < Headings.Length; h++)
+            var away = new Vector3[headings.Length];
+            var tops = new float[headings.Length];
+            for (int h = 0; h < headings.Length; h++)
             {
-                away[h] = Quaternion.Euler(0f, Headings[h], 0f) * Vector3.forward;
+                away[h] = Quaternion.Euler(0f, headings[h], 0f) * Vector3.forward;
                 tops[h] = float.MinValue;
             }
 
@@ -163,7 +181,7 @@ namespace Game.Editor
                     Vector3 point = toWorld.MultiplyPoint3x4(vertices[v]);
                     bool crestVertex = v < weights.Length && crest[r][weights[v].boneIndex0];
                     Vector3 flat = new Vector3(point.x - axis.x, 0f, point.z - axis.z);
-                    for (int h = 0; h < Headings.Length; h++)
+                    for (int h = 0; h < headings.Length; h++)
                     {
                         float depth = crestVertex ? Mathf.Max(0f, Vector3.Dot(flat, away[h])) : 0f;
                         tops[h] = Mathf.Max(tops[h], point.y + depth * lean);
@@ -173,6 +191,52 @@ namespace Game.Editor
 
             return tops;
         }
+
+        /// <summary>
+        /// The bar heights that clear one clip played over the cycles (a power, a roar), one per camera heading round the model,
+        /// <see cref="ClipHeadingCount"/> of them evenly from the model's +Z (heading i at i * 360 / count degrees): the highest of
+        /// its sampled tops at each. A power's flare is the reason it is measured and lasts only part of the clip, so no share of
+        /// it is let through. Four headings were too coarse: a flared halo stands highest between them (round 58, the Adapt
+        /// clip 0.6 above its nearest sample at 45 degrees). Without crest bones every heading gets the same top.
+        /// </summary>
+        public static float[] ClipBars(GameObject model, AnimationClip clip, IReadOnlyCollection<string> crestBones)
+        {
+            var headings = new float[ClipHeadingCount];
+            for (int h = 0; h < headings.Length; h++)
+            {
+                headings[h] = h * 360f / ClipHeadingCount;
+            }
+
+            List<float> tops = ClipTops(model, clip, crestBones, headings);
+            // One top per pose, or one per heading of each pose when the crest bones were found in the rig.
+            int perPose = Mathf.Max(1, tops.Count / SamplesPerCycle);
+            var bars = new float[headings.Length];
+            for (int i = 0; i < tops.Count; i++)
+            {
+                for (int h = 0; h < headings.Length; h++)
+                {
+                    if (perPose == 1 || i % perPose == h)
+                    {
+                        bars[h] = Mathf.Max(bars[h], tops[i]);
+                    }
+                }
+            }
+
+            return bars;
+        }
+
+        // The clips a creature plays in place in a fight, on top of its cycles, where a crest may flare over the bar. A flinch is
+        // left out (a boss is hit many times a second; the bar would bob), and so are the mechanics that carry the body itself
+        // (climbs, dives, burrows, the rise onto the base) and the fall (the corpse has no bar).
+        private static readonly ModelClipRole[] InPlaceFightRoles =
+        {
+            ModelClipRole.Attack, ModelClipRole.GroundedAttack, ModelClipRole.Power, ModelClipRole.Roar, ModelClipRole.Enrage,
+            ModelClipRole.Adapt, ModelClipRole.PhaseBreak, ModelClipRole.Split, ModelClipRole.Rejoin, ModelClipRole.Smash,
+            ModelClipRole.SporeVolley, ModelClipRole.LayEggs, ModelClipRole.FreezeGate, ModelClipRole.ArmourBreak,
+        };
+
+        /// <summary>True for a clip played in place over the cycles in a fight (see <see cref="InPlaceFightRoles"/>).</summary>
+        public static bool FightsInPlace(ModelClipRole role) => System.Array.IndexOf(InPlaceFightRoles, role) >= 0;
 
         /// <summary>The height the bar must reach to clear <see cref="CoverShare"/> of the sampled tops.</summary>
         public static float Covered(List<float> tops)

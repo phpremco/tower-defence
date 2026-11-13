@@ -90,6 +90,25 @@ namespace Game.Tests
             Assert.Greater(bossHard, bossMedium * 1.3f, "the share must reach the continent boss's health");
         }
 
+        // Round 58: a continent boss's own factor on one difficulty weighs on that difficulty only, on top of its share.
+        [Test]
+        public void BossDifficultyHealth_ScalesOnlyTheNamedDifficulty()
+        {
+            LevelInput level = Level(Rifle());
+            EnemyStats boss = Walker("ContinentBoss", 400f);
+            boss.IsBoss = true;
+            boss.IsContinentBoss = true;
+            var easy = new DifficultyStats { Id = "Easy", Index = 0 };
+            float plainEasy = Ledger.EvaluateWave(level, Wave(boss, 1), easy, 400, Rules).Pressure;
+            float plainMedium = Ledger.EvaluateWave(level, Wave(boss, 1), Medium, 400, Rules).Pressure;
+
+            boss.DifficultyHealth = new Dictionary<string, float> { { "Easy", 1.3f } };
+            Assert.AreEqual(1.3f, easy.ShareFor(boss), 1e-5f);
+            Assert.AreEqual(1f, Medium.ShareFor(boss), 1e-5f);
+            Assert.Greater(Ledger.EvaluateWave(level, Wave(boss, 1), easy, 400, Rules).Pressure, plainEasy);
+            Assert.AreEqual(plainMedium, Ledger.EvaluateWave(level, Wave(boss, 1), Medium, 400, Rules).Pressure, 1e-4f);
+        }
+
         [Test]
         public void Pressure_RisesWithHealth_AndFallsWithMoney()
         {

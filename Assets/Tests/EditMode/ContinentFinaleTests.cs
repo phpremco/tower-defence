@@ -45,7 +45,7 @@ namespace Game.Tests
                     FinaleLine line = FinaleModel.Judge(setup.Planned, waves, boss, d, setup.Extra, loads);
                     string name = setup.Catalog.Difficulties[d].name;
                     // The finale probe (round 22f) is the judge where it played: a boss the bot beat as the data has it is not too hard.
-                    bool beatenInPlay = BeatenInPlay(probe, finale.Boss, d, setup.BossHealth, setup.Catalog.Difficulties[d].BossHealthShare);
+                    bool beatenInPlay = BeatenInPlay(probe, finale.Boss, d, setup.BossHealth, setup.Catalog.Difficulties[d].BossHealthShare * setup.Boss.HealthOn(name));
                     table.AppendLine($"{finale.Boss,-16} C{finale.Continent + 1} {name,-7} towers {line.Towers} research {line.ResearchEarned,4} money {line.Money,5} "
                         + $"scale {line.PlainScale:0.00} plain {line.PlainTowers:0.00}/{line.PlainHero:0.00} wave {line.BossTowers:0.00}/{line.BossHero:0.00} boss {line.BossAlone:0.00} cap {line.Cap:0.00} "
                         + $"mechanic {line.MechanicShare:0.00} -> {Verdict(line)}{(line.TooHard && beatenInPlay ? $" (the finale probe beat it, holds x{FinaleProbeReport.Find(probe, finale.Boss, d).Holds:0.00})" : string.Empty)}");
@@ -150,6 +150,39 @@ namespace Game.Tests
 
             System.IO.File.WriteAllText(ShareFile, table.ToString());
             Assert.IsEmpty(failures, string.Join("\n", failures) + table);
+        }
+
+        // Round 58: a boss's own difficulty factors name real difficulty profiles, and the Shattered's touches Easy only (its new
+        // entrance made only Easy easier); the ledger reads the factor where the spawner does.
+        [Test]
+        public void BossDifficultyHealth_NamesRealProfiles_AndTheShatteredOnlyEasy()
+        {
+            var catalog = AssetDatabase.LoadAssetAtPath<CampaignCatalog>(CampaignPath);
+            var names = new HashSet<string>();
+            foreach (DifficultyProfile profile in catalog.Difficulties)
+            {
+                names.Add(profile.name);
+            }
+
+            foreach (ContinentFinale finale in BalanceSheet.Finales)
+            {
+                var boss = AssetDatabase.LoadAssetAtPath<EnemyDefinition>($"Assets/_Project/Data/Enemies/{finale.Boss}.asset");
+                foreach (BossDifficultyHealth entry in boss.Boss.DifficultyHealth)
+                {
+                    Assert.IsTrue(names.Contains(entry.Difficulty), $"{finale.Boss}: no difficulty profile named {entry.Difficulty}");
+                }
+            }
+
+            var shattered = AssetDatabase.LoadAssetAtPath<EnemyDefinition>("Assets/_Project/Data/Enemies/Shattered.asset");
+            EnemyStats stats = BalanceLedger.Stats(shattered);
+            for (int d = 0; d < catalog.Difficulties.Count; d++)
+            {
+                DifficultyProfile profile = catalog.Difficulties[d];
+                DifficultyStats difficulty = BalanceLedger.Stats(profile, d);
+                bool easy = profile.name == "Easy";
+                Assert.AreEqual(easy, shattered.Boss.HealthOn(profile.name) > 1f, $"Shattered on {profile.name}");
+                Assert.AreEqual(profile.BossHealthShare * shattered.Boss.HealthOn(profile.name), difficulty.ShareFor(stats), 1e-5f, $"the ledger's share on {profile.name}");
+            }
         }
 
         [Test]

@@ -56,6 +56,9 @@ namespace Game.Core
         [Tooltip("Seconds this clip blends in over what showed before (a cycle's cross-fade, a clip's fade-in on top of the cycle); zero takes the player's default (ClipMixer).")]
         [SerializeField] [Min(0f)] private float _blendSeconds;
 
+        [Tooltip("The health bar height, in model units, that clears this clip where it lifts the body above the art's bar (a crest that flares in a power), per heading of the play camera round the model, evenly from its +Z (heading i at i * 360 / count degrees), measured by the art builder; empty when the art's bar already clears it.")]
+        [SerializeField] private float[] _barTops = System.Array.Empty<float>();
+
         private const float FramesPerSecond = 30f;
 
         public ModelClipRole Role => _role;
@@ -88,6 +91,26 @@ namespace Game.Core
         /// <summary>Model units ahead of the pivot where the clip meets the world (a hole, a bank edge, a ledge face).</summary>
         public float AnchorForward => _anchorForward;
         public float Length => _clip != null ? _clip.length : 0f;
+
+        /// <summary>True when this clip lifts the body above the art's bar from some heading (see <see cref="BarTopAt"/>).</summary>
+        public bool LiftsBar => _barTops != null && _barTops.Length > 0;
+
+        /// <summary>
+        /// The bar height (model units) that clears this clip with the play camera looking along a heading in the model's frame
+        /// (degrees, 0 along its +Z, 90 along +X), between the measured headings; zero when the art's own bar does.
+        /// </summary>
+        public float BarTopAt(float headingDegrees)
+        {
+            if (!LiftsBar)
+            {
+                return 0f;
+            }
+
+            int count = _barTops.Length;
+            float steps = Mathf.Repeat(headingDegrees, 360f) / (360f / count);
+            int below = Mathf.FloorToInt(steps) % count;
+            return Mathf.Lerp(_barTops[below], _barTops[(below + 1) % count], steps - Mathf.Floor(steps));
+        }
 
         /// <summary>Seconds into the clip of each heavy push, in order (empty for most clips).</summary>
         public float[] MomentSeconds => _momentSeconds ?? System.Array.Empty<float>();

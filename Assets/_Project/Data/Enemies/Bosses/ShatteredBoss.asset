@@ -186,6 +186,9 @@ MonoBehaviour:
   _impactKick: 0.35
   _mechanicClipRate: 1.4
   _resultHoldSeconds: 0
+  _difficultyHealth:
+  - Difficulty: Easy
+    Factor: 1.3
   _signatureText: 'A crystal lattice shields it: heavy fire strips it first, and every so often the lattice locks for five seconds and turns every hit away; shard crawlers break off it as it walks. At two thirds of its health it bursts into three shards that each take a different route: one runs its own road, one flies the air route and one takes the second road, each with a third of what it had left. At a third the surviving shards pull back together where the one nearest your base stands. Each shard you killed takes 30% off the giant that forms.'
   _telegraphText: It breaks out of a sealed gate in the old ruins. Near its split point cracks of light pulse on its body, and when it bursts each shard's route lights up briefly.
   _counterText: 'Cover every route: air defence and the second front matter. Kill one shard fast and the rejoined giant is weaker; let them run and it forms closer to your base.'

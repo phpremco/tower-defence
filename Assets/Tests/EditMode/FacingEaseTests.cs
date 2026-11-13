@@ -27,5 +27,23 @@ namespace Game.Tests
             Assert.AreEqual(once, twice, 1e-3f, "the same turn at any frame rate");
             Assert.AreEqual(90f, FacingEase.Step(0f, 90f, Step, 0f), 1e-5f, "zero seconds snaps");
         }
+
+        // Round 58: the ray boss comes round to its beam's target at a capped rate, the short way, and still arrives.
+        [Test]
+        public void FacingEase_CappedTurn_NeverExceedsItsRateAndArrives()
+        {
+            const float cap = 120f;
+            float yaw = 90f;
+            for (int f = 0; f < 180; f++)
+            {
+                float next = FacingEase.Step(yaw, -60f, Step, 0.25f, cap);
+                Assert.LessOrEqual(Mathf.Abs(Mathf.DeltaAngle(yaw, next)), cap * Step + 1e-4f);
+                Assert.LessOrEqual(Mathf.DeltaAngle(yaw, next), 0f, "the short way round");
+                yaw = next;
+            }
+
+            Assert.AreEqual(0f, Mathf.DeltaAngle(yaw, -60f), 0.5f);
+            Assert.AreEqual(FacingEase.Step(10f, 12f, Step, 0.25f), FacingEase.Step(10f, 12f, Step, 0.25f, cap), 1e-5f, "a small turn eases as before");
+        }
     }
 }

@@ -54,6 +54,10 @@ namespace Game.Editor
         private const int RuinEdgeCells = 2;
         private const int RuinRoadMargin = 1;
         private const string BossFxArtPath = DataRoot + "/Vfx/BossFxArt.asset";
+        // The Shattered's own Easy health factor (round 58, Tools/PlayTest/r58_finale_factors.sh): the smallest of the trials
+        // that brings the Easy finale probe back to x1.80 (x1.1 changed nothing, x1.2 to x1.28 held x1.88, x1.3 holds x1.80): the
+        // escorts scale with the probe's multiple but not with this factor, so the boss alone needs more than the 9% the ratio says.
+        private const float ShatteredEasyHealth = 1.3f;
 
         private sealed class BossSpec
         {
@@ -78,6 +82,9 @@ namespace Game.Editor
 
             // The victory panel waits for its death clip (the Sealed One's white Release) when true.
             public bool HoldResultForDeath;
+
+            // Its own health factor per difficulty on top of the profile's boss share (BossDefinition.HealthOn); none listed is 1.
+            public BossDifficultyHealth[] DifficultyHealth = new BossDifficultyHealth[0];
 
             // Remco 2026-11-09 (round 29): the finale player beat every boss at 5-15x its health, so each carries timed powers on
             // top of its signature: a ward that turns every hit away for a few seconds (telegraphed by the ability view), escorts
@@ -193,6 +200,9 @@ namespace Game.Editor
                 BodyHalfWidth = 1.4f,
                 WardSeconds = 5f, WardInterval = 16f,
                 SummonMinion = "ShardCrawler", SummonCount = 3, SummonInterval = 22f,
+                // Round 58: the round-55b entrance gave the Easy finale player a little more time on it (the finale probe held
+                // x1.96 instead of x1.80); this puts the Easy margin back without touching Medium, Hard or Psycho.
+                DifficultyHealth = new[] { new BossDifficultyHealth("Easy", ShatteredEasyHealth) },
                 SignatureText = "A crystal lattice shields it: heavy fire strips it first, and every so often the lattice locks for five seconds and turns every hit away; shard crawlers break off it as it walks. At two thirds of its health it bursts into three shards that each take a different route: one runs its own road, one flies the air route and one takes the second road, each with a third of what it had left. At a third the surviving shards pull back together where the one nearest your base stands. Each shard you killed takes 30% off the giant that forms.",
                 TelegraphText = "It breaks out of a sealed gate in the old ruins. Near its split point cracks of light pulse on its body, and when it bursts each shard's route lights up briefly.",
                 CounterText = "Cover every route: air defence and the second front matter. Kill one shard fast and the rejoined giant is weaker; let them run and it forms closer to your base.",
@@ -468,12 +478,24 @@ namespace Game.Editor
             so.FindProperty("_counterText").stringValue = spec.CounterText;
             so.FindProperty("_overgrowth._clusterRadius").floatValue = spec.ClusterRadius;
             so.FindProperty("_resultHoldSeconds").floatValue = spec.HoldResultForDeath ? DeathSeconds(spec.Id) : 0f;
+            WriteDifficultyHealth(so.FindProperty("_difficultyHealth"), spec.DifficultyHealth);
             // Written with the rest, so the boss validates whole.
             WriteOvergrowth(so, spec.Signature == BossSignature.Overgrowth ? pod : null);
             WriteShards(so, spec.Signature == BossSignature.Splitting ? shards : new ShardSpec[0]);
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(boss);
             return boss;
+        }
+
+        private static void WriteDifficultyHealth(SerializedProperty list, BossDifficultyHealth[] entries)
+        {
+            list.arraySize = entries.Length;
+            for (int i = 0; i < entries.Length; i++)
+            {
+                SerializedProperty entry = list.GetArrayElementAtIndex(i);
+                entry.FindPropertyRelative("Difficulty").stringValue = entries[i].Difficulty;
+                entry.FindPropertyRelative("Factor").floatValue = entries[i].Factor;
+            }
         }
 
         // The Codex lists the continent bosses after the rest; it shows each only once the player has met it.

@@ -8994,3 +8994,116 @@ save's MD5 first, so the waiter fired at once and runs overlapped; those stills 
 4. Mirebat membrane reads red-brown in game (warm rim light on the bog skin); a cooler rim or greener membrane if wanted.
 5. The hero's kick is on the shoulder only (16 degrees); the authored kick also moved forearm and hand. Tune `RecoilDegrees`
    by eye.
+
+## Round 58: Shattered Easy margin, the ray boss turns to its beam, the Sealed One's bar over its flare (2026-11-13)
+
+Not committed. No full generator; `ArtSource/Exports` and `Tools/Blender/` untouched; stills in `ArtSource/Previews/QA/r58_*`.
+Save `progress.json` **2eca347e** backed up before every Play Mode run, restored and verified after each (MD5
+2eca347eb0270fc1566d26e302abf525 at the end; `progress_dev_backup_2026-11-05.json` not touched).
+
+### 1. Shattered on Easy back at x1.80
+
+- No existing lever touched one boss on one difficulty (the boss share is per profile for every boss; the level's health
+  multiplier and the arena waves are per level for every difficulty), so there is a new, data-driven one:
+  **`BossDefinition._difficultyHealth`** (`BossDifficultyHealth`: profile name + factor, on top of the profile's boss share;
+  not listed = 1; `OnValidate` flags empty names, factors <= 0 and doubles). Read by `EnemySpawner` (in play),
+  `EnemyStats.HealthOn` / `DifficultyStats.ShareFor` (ledger, via `BalanceLedger.Stats`) and the finale probe's `ShareNow`.
+  `InputHash` adds the factors only for a boss that has them (no calibration hash changes; the Shattered is in no campaign level).
+- Generator: `BossSpec.DifficultyHealth`, the Shattered's `ShatteredEasyHealth` **1.3** (Easy only), written by
+  `CreateBossData`; the asset set the same way by `Tools/PlayTest/r58_apply.cs` (no generator run).
+- Why 1.3 and not the 9% the ratio suggests: x1.1 changed nothing (identical verdicts), x1.2 to x1.28 held x1.88, x1.3 holds
+  x1.80 (`r58_finale_factors.sh`: four factors on w1..w4 at once). The probe's multiple scales the escorts too, the factor
+  only the boss, so the boss alone has to carry the whole step. Easy's boss now carries a 0.8 x 1.3 = 1.04 share on 0.68
+  health (absolute: 71% of Medium's).
+
+| Finale probe, Shattered (`r55b_finale.sh`) | Easy | Medium | Hard | Psycho |
+|---|---|---|---|---|
+| round 55b, before the entrance move | x1.80 | x1.18 | x1.96 | x1.52 |
+| round 58 before (entrance (34,21), re-run) | x1.96 | x1.18 | x1.96 | x1.52 |
+| Easy factor 1.1 | x1.96 | x1.18 | x1.96 | x1.52 |
+| **Easy factor 1.3 (applied)** | **x1.80** (1.80 won, 1.88 lost) | x1.18 | x1.96 | x1.52 |
+
+Medium, Hard and Psycho: identical verdict sequences in every run.
+
+### 2. The ray boss faces its target while it fires
+
+- `BossAbilities.TryLaserAim(lead, out point)`: while the beam burns, its target; before, once a laser is due within the lead,
+  the target it will lock onto (searched at most every 0.25 s, kept while in reach, measured flat like
+  `StructureRegistry.FindNearest`). `Use` now fires at that kept target while it is in reach, else at the nearest as before,
+  so the beam goes where the body turned.
+- `EnemyView`: from the power clip's lead + `AimTurnLeadSeconds` 0.6 s (1.6 s before the shot with the Release clip) the
+  body's yaw target is the aim point instead of the heading; `FacingEase.Step(..., AimTurnSeconds 0.25,
+  AimTurnDegreesPerSecond 120)` (new capped overload) turns it, and the capped turn stays on for the way back to the road
+  until within 2 degrees. Scripted mechanics still place the body exactly. `CreatureClips.LeadOf(slot)` gives the clip lead.
+- Measured (`r58_laser_seq.sh` = r57's + `r58_aim_probe.cs` every 10 frames; `SIDE_OFFSET` places a probe tower beside the
+  boss with `r58_side_tower.cs`): horizontal angle between the body's forward and the beam (socket to strike point) during
+  the hold:
+
+| Case | before | after |
+|---|---|---|
+| target straight ahead (the gate) | 0.2-3.4 deg | 0.1-4.6 deg |
+| tower beside it (before 74 deg off its heading, after 72 deg) | **87-117 deg** | **0.7-13.5 deg** |
+| tower behind-left (a 132 deg turn) | - | **0.2-9.2 deg** |
+
+  The 132-degree turn runs at the cap (2.4 deg per frame), eases in over the last 25 degrees and is done 0.3 s before the
+  shot; no frame turns faster than the cap. The residual 0-13 degrees is the tail swinging in the Release sustain loop (the
+  socket moves, the body holds still). Beam start on `Emitter`: 0.000 in every sample. The first beam segment still leaves
+  13-48 degrees off the body axis: the round-51 bend that starts the beam along the spade's own axis; the chord is on the axis.
+- Stills: `r58_rayboss_before_side_*` (the old sharp angle: the beam runs back over the body), `r58_rayboss_back_windup|fire|
+  hold|recover` (+ `_game`, `_side`), crops `r58_rayboss_hold_source_x4`, `r58_rayboss_fire_source_x4`,
+  `r58_rayboss_hold_impact_x3`, `r58_rayboss_hold_game_x2`; `r58_rayboss_side_*` (tower north of it: the beam points away
+  from the camera and hides behind the tail in the play view; side crop `r58_rayboss_side_hold_side_x2`). Looked at: the ray
+  faces the tower, the beam grows out of the spade-tip glow (as in round 57), arcs smoothly and fades into the glow on the
+  tower's top; no hard start or end in the crops.
+
+### 3. The Sealed One's bar over its flared halo
+
+- Chosen: **lift the bar while the clip plays**, measured per clip, instead of sampling the power clips into the one bar
+  height. Sampling them would raise the bar over the whole walk by the flare (Summon's top 10.1 against the walk's 8.05 model
+  units: 1.6 m higher all the time); per clip the bar stays snug over the walk and rises only while the clip plays.
+- `ModelClip._barTops` (float[], one per camera heading round the model, 24 every 15 degrees; empty = no lift), `LiftsBar`,
+  `BarTopAt(heading)`. Written by `BlenderArtBuilder.WriteBars` (also reachable through the new `RemeasureBars(ids)`, used
+  here instead of a rebuild) for rows with crest bones, for the clips played in place in a fight
+  (`CreatureBarHeight.FightsInPlace`: attack, power, roar, enrage, adapt, phase break, split, rejoin, smash, volley, eggs,
+  freeze, armour break; not the hit flinch, not climbs, dives, burrows or the rise onto the base, and not the death clip, which
+  plays on the corpse without a bar), from `CreatureBarHeight.ClipBars` (the highest of the clip's 16 samples per heading,
+  crest projected as for the cycles). `EnemyView.LiftBar` eases the bar (0.12 s) to `BarTopAt(camera heading in the model's
+  frame)` while such a clip is on top, and back after.
+- Four headings were tried first and were too coarse: the halo stands highest between them (Adapt 0.6 above its nearest
+  sample at 45 degrees) and in play the bar was still crossed by 12 px at the moment. With 24 headings, written = measured
+  (`r58_heading_tops.cs`).
+- Lifts written: SealedOne Summon (10.10 with the camera on its far side, 7.04 the other way), Roar (9.97), Adapt (9.49 at
+  45 deg); the Shattered (the other crest row, same bug) Roar 5.83, Split 5.02, Rejoin 4.43, PhaseBreak1/2 4.32 (bar 4.197).
+  No other creature's bar moves; the walk bars are unchanged (8.054, 4.197).
+- In play (`r58_summon.sh` + `r58_bar_probe.cs`, Level_C1_01, the Sealed One walking across the camera, 1920x1080 framing):
+  walking, the bar's plate clears the halo by 74-87 px; through Summon the bar rises from 6.69 to 8.27 m and the plate clears
+  the halo by **3-58 px (minimum 3 px at the moment, t 1.40-1.50 s)**, where the walk bar would be **crossed by up to 85 px**.
+  Roar and Adapt were not played in Play Mode (offline measure only).
+- Stills: `r58_SealedOne_summon` (+ `_game`; play camera, not orbited, t 1.64 s), crops `r58_SealedOne_summon_bar_x3` (+
+  `_game_`): the bar and its armour line stand clear above the halo's top rings with a small gap.
+
+### Tests and checks
+
+- New: `FacingEaseTests.FacingEase_CappedTurn_NeverExceedsItsRateAndArrives`,
+  `EnemyBehaviourTests.Boss_LaserAimsAhead_AndFiresAtTheTargetItTurnedTo`,
+  `CreatureArtTests.CrestRows_FightClipsLiftTheBarOverTheirFlare`,
+  `ContinentFinaleTests.BossDifficultyHealth_NamesRealProfiles_AndTheShatteredOnlyEasy`,
+  `BalanceModelTests.BossDifficultyHealth_ScalesOnlyTheNamedDifficulty`. Changed: `ContinentFinaleTests` judges a probe cell
+  against the share times the boss's own factor.
+- EditMode suite on w6 (after the last code change): **877 tests, 825 passed, 52 skipped, 0 failed** (872 + 5). Recompile: 0 errors, no new warnings (only the known CS0618 when the PlayMode test
+  assembly compiles). Play-run consoles: 0 errors, 0 warnings. One error line in the editor log came from the Pipeline CLI
+  itself ("Failed to handle /api/exec request: Thread was being aborted": a recompile request cut by the domain reload).
+- Tools: `r58_finale_factors.sh`, `r58_apply.cs` (+ `r58_easy_factor.txt`), `r58_laser_seq.sh`, `r58_aim_probe.cs`,
+  `r58_side_tower.cs` (+ `r58_side_offset.txt`), `r58_summon.sh`, `r58_bar_probe.cs`, `r58_clip_bars.cs`,
+  `r58_heading_tops.cs`, `r58_unpause.cs`; logs in `Logs/r58/`. Lesson: a per-frame probe loop in a play harness must stay
+  well under its `timeout`; a killed harness leaves the editor in Play Mode with the save not restored (restored and verified
+  by hand here, then `isPaused` cleared with `r58_unpause.cs`).
+
+### Open points (round 58)
+
+1. The lifted bar clears the halo by 3 px at its widest (1080p; the same 0.25 margin as the walk bar). A larger lift margin is
+   one constant if Remco finds it tight.
+2. The ray's beam still bends out of the spade's axis (round 51) before it runs to the target; with the body facing the
+   target this reads as a soft arc. Lower `BeamLeadShare` if a dead-straight beam is wanted.
+3. Easy's Shattered now carries a boss share above Medium's (1.04 vs 1.0, on 0.68 health): fine for the probe, worth a look
+   once continent 5's real finale level exists.

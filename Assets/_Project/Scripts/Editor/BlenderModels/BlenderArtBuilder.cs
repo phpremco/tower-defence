@@ -149,6 +149,53 @@ namespace Game.Editor
             return assigned;
         }
 
+        /// <summary>Round 58: only the bar heights again (the cycles' bar and each clip's lift) for the named rows, no rebuild.</summary>
+        public static int RemeasureBars(params string[] ids)
+        {
+            var wanted = new HashSet<string>(ids);
+            int measured = 0;
+            foreach (BlenderArtEntry entry in BlenderArtCatalog.Creatures)
+            {
+                var art = wanted.Contains(entry.Id) ? AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtDataFolder}/{entry.Id}.asset") : null;
+                if (art != null && art.Model != null)
+                {
+                    WriteBars(art, art.Model, entry);
+                    measured++;
+                }
+            }
+
+            AssetDatabase.SaveAssets();
+            return measured;
+        }
+
+        // The bar height samples the written clips: wing beats and curled tails lift some bodies above the rest pose. A row with
+        // crest bones also gets, per clip it plays in place in a fight, the heights (per camera heading) that clears that clip where it rises above the
+        // bar (round 58: the Sealed One's halo flares round the bar in Summon, Roar and Release); the view lifts the bar to it
+        // while the clip plays. Rows without crest bones keep a still bar (their clips were never seen to cross it).
+        private static void WriteBars(ModelArtDefinition art, GameObject model, BlenderArtEntry entry)
+        {
+            var bar = new SerializedObject(art);
+            float height = CreatureBarHeight.Measure(model, art, entry.BarCrestBones);
+            bar.FindProperty("_height").floatValue = height;
+            SerializedProperty clips = bar.FindProperty("_clips");
+            for (int i = 0; i < art.Clips.Length; i++)
+            {
+                ModelClip clip = art.Clips[i];
+                bool measured = entry.BarCrestBones.Length > 0 && clip.Clip != null && CreatureBarHeight.FightsInPlace(clip.Role);
+                float[] tops = measured ? CreatureBarHeight.ClipBars(model, clip.Clip, entry.BarCrestBones) : new float[0];
+                bool lifts = tops.Length > 0 && Mathf.Max(tops) > height;
+                SerializedProperty written = clips.GetArrayElementAtIndex(i).FindPropertyRelative("_barTops");
+                written.arraySize = lifts ? tops.Length : 0;
+                for (int h = 0; h < written.arraySize; h++)
+                {
+                    written.GetArrayElementAtIndex(h).floatValue = tops[h];
+                }
+            }
+
+            bar.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(art);
+        }
+
         /// <summary>Points every enemy definition at its art (or at none); returns how many wear a model.</summary>
         public static int ApplyToEnemies(IReadOnlyDictionary<string, ModelArtDefinition> art)
         {
@@ -261,11 +308,7 @@ namespace Game.Editor
             WriteEmissionSets(so.FindProperty("_emissionSets"), EmissionSetsOf(entry, folder));
             so.FindProperty("_deathEmissionSet").stringValue = entry.DeathEmissionSet ?? string.Empty;
             so.ApplyModifiedPropertiesWithoutUndo();
-            // The bar height samples the written clips: wing beats and curled tails lift some bodies above the rest pose.
-            var bar = new SerializedObject(art);
-            bar.FindProperty("_height").floatValue = CreatureBarHeight.Measure(model, art, entry.BarCrestBones);
-            bar.ApplyModifiedPropertiesWithoutUndo();
-            EditorUtility.SetDirty(art);
+            WriteBars(art, model, entry);
             return art;
         }
 

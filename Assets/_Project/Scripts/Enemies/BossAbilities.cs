@@ -19,6 +19,8 @@ namespace Game.Enemies
         private const float TargetHeight = 0.5f;
         private const float RetrySeconds = 2f;
         private const float HoldRangeFactor = 1.3f;
+        // How often the target a due laser will lock onto is looked for again while none is in reach.
+        private const float AimSearchSeconds = 0.25f;
 
         private readonly List<IStructure> _volleyTargets = new List<IStructure>(8);
         private readonly List<Vector3> _volleyPoints = new List<Vector3>(8);
@@ -29,6 +31,8 @@ namespace Game.Enemies
         private Func<Vector3, float, IStructure> _findTarget;
         private Action<Enemy, float, float> _rally;
         private IStructure _laserTarget;
+        private IStructure _pendingLaserTarget;
+        private float _aimSearchCooldown;
         private BossAbilityDefinition[] _abilities = new BossAbilityDefinition[0];
         private float[] _timers = new float[0];
         private float[] _splitAt = new float[0];
@@ -102,6 +106,44 @@ namespace Game.Enemies
             return soonest;
         }
 
+        /// <summary>
+        /// Where the laser points, so the view can turn the body to it: the target it burns while the beam is on, and before
+        /// that, once a laser is due within <paramref name="leadSeconds"/>, the one it will lock onto. That target is kept and
+        /// the laser fires at it while it stays in reach, so the beam goes where the body turned. False when no laser is due
+        /// that soon or nothing is in reach.
+        /// </summary>
+        public bool TryLaserAim(float leadSeconds, out Vector3 point)
+        {
+            point = default;
+            if (_laserIndex >= 0)
+            {
+                point = _laserTarget.Position;
+                return true;
+            }
+
+            int due = DueLaser(leadSeconds);
+            if (due < 0)
+            {
+                _pendingLaserTarget = null;
+                return false;
+            }
+
+            _aimSearchCooldown -= Time.deltaTime;
+            if (!InReach(_pendingLaserTarget, _abilities[due].Range) && _aimSearchCooldown <= 0f)
+            {
+                _aimSearchCooldown = AimSearchSeconds;
+                _pendingLaserTarget = _findTarget?.Invoke(_enemy.Position, _abilities[due].Range);
+            }
+
+            if (!InReach(_pendingLaserTarget, _abilities[due].Range))
+            {
+                return false;
+            }
+
+            point = _pendingLaserTarget.Position;
+            return true;
+        }
+
         /// <summary>Scales the damage of every power, so the difficulty profile reaches the boss as well.</summary>
         public void SetDamageMultiplier(float multiplier) => _damageMultiplier = multiplier;
 
@@ -138,6 +180,7 @@ namespace Game.Enemies
                 _splitAt[i] = 1f - _abilities[i].TriggerFraction;
             }
 
+            _pendingLaserTarget = null;
             StopLaser();
         }
 
@@ -197,7 +240,7 @@ namespace Game.Enemies
                     break;
                 case BossAbilityKind.Laser:
                     // Without a target in reach the boss tries again shortly instead of waiting a whole interval.
-                    IStructure target = _laserIndex < 0 ? _findTarget?.Invoke(_enemy.Position, ability.Range) : null;
+                    IStructure target = _laserIndex < 0 ? LaserTargetFor(ability) : null;
                     if (target == null)
                     {
                         _timers[index] = RetrySeconds;
@@ -251,6 +294,42 @@ namespace Game.Enemies
                     ReleaseMinions(ability);
                     break;
             }
+        }
+
+        // The target the body has turned to while it is still in reach, else the nearest one now.
+        private IStructure LaserTargetFor(BossAbilityDefinition ability)
+        {
+            IStructure target = InReach(_pendingLaserTarget, ability.Range) ? _pendingLaserTarget : _findTarget?.Invoke(_enemy.Position, ability.Range);
+            _pendingLaserTarget = null;
+            return target;
+        }
+
+        // Measured flat, as the search (StructureRegistry.FindNearest) measures it, so a flyer's height never drops a target it found.
+        private bool InReach(IStructure target, float range)
+        {
+            if (target == null || !target.IsAlive)
+            {
+                return false;
+            }
+
+            Vector3 way = target.Position - _enemy.Position;
+            way.y = 0f;
+            return way.sqrMagnitude <= range * range;
+        }
+
+        // The timed laser due soonest within the lead, or -1.
+        private int DueLaser(float leadSeconds)
+        {
+            int due = -1;
+            for (int i = 0; i < _abilities.Length; i++)
+            {
+                if (_abilities[i].Kind == BossAbilityKind.Laser && _timers[i] <= leadSeconds && (due < 0 || _timers[i] < _timers[due]))
+                {
+                    due = i;
+                }
+            }
+
+            return due;
         }
 
         // Each time the health falls past the next share, a brood of minions breaks off.

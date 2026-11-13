@@ -23,6 +23,15 @@ namespace Game.Enemies
         private const float MinHeadingSqr = 0.0001f;
         // A procedural body (no imported art) turns like the art default (ModelArtDefinition._turnSeconds).
         private const float ProceduralTurnSeconds = 0.08f;
+        // A laser boss comes round to its beam's target (round 58): it starts this long before its power clip does, so a quarter
+        // turn is done before the release, eases at this time constant, never turns faster than the cap, and keeps the capped
+        // turn on its way back to the road until it is within the settle angle.
+        private const float AimTurnLeadSeconds = 0.6f;
+        private const float AimTurnSeconds = 0.25f;
+        private const float AimTurnDegreesPerSecond = 120f;
+        private const float AimSettledDegrees = 2f;
+        // Time constant of the bar rising over a clip that lifts the body above it (round 58), and settling back after.
+        private const float BarLiftSeconds = 0.12f;
         private const float BarWidth = 0.85f;
         private const float BarHeight = 0.085f;
         private const float PlateWidthScale = 1.1f;
@@ -272,6 +281,8 @@ namespace Game.Enemies
         private float _displayTime = float.PositiveInfinity;
         private int _footSign;
         private float _barHeight;
+        // True when a clip of the art lifts the body above its bar (ModelClip.BarTop): the bar then rises while that clip plays.
+        private bool _barLifts;
         private float _attackTime = float.PositiveInfinity;
         private float _attackSeconds = AttackMinSeconds;
         private bool _boltPending;
@@ -335,6 +346,10 @@ namespace Game.Enemies
         private readonly List<string> _hiddenParts = new List<string>(1);
         private Quaternion _tilt = Quaternion.identity;
         private float _facingYaw;
+        // Where a laser boss aims its beam (valid while _aiming), and whether its turn is still capped on the way back.
+        private Vector3 _aimPoint;
+        private bool _aiming;
+        private bool _aimTurn;
         private float _turnSeconds;
 
         /// <summary>Gives the view the pool its death animation plays from. Without one the enemy simply disappears.</summary>
@@ -630,6 +645,14 @@ namespace Game.Enemies
             _model?.Player.Evaluate();
             _turnSeconds = enemy.Definition.Art != null ? enemy.Definition.Art.TurnSeconds : ProceduralTurnSeconds;
             _facingYaw = HeadingYaw(_facingYaw);
+            _aiming = false;
+            _aimTurn = false;
+            if (_barLifts && _worldBar != null)
+            {
+                _barY = _barHeight;
+                _worldBar.Root.localPosition = new Vector3(0f, _barY, 0f);
+            }
+
             foreach (string part in _hiddenParts)
             {
                 _model?.SetPartVisible(part, true);
@@ -864,6 +887,11 @@ namespace Game.Enemies
             }
 
             _barHeight = art.Height * _creatureScale + BarMargin;
+            _barLifts = false;
+            foreach (ModelClip clip in art.Clips)
+            {
+                _barLifts |= clip.LiftsBar;
+            }
         }
 
         // The field around a creature: embers, drips, the haste trail, frost, sparks where its blows land and its bolts.
@@ -1169,6 +1197,7 @@ namespace Game.Enemies
             _clips.Tick(dt, dt > 0f ? moved / dt : 0f, walking, _enemy.IsRolling, _creatureScale);
             _shed?.Apply();
             PlayClipMoment();
+            LiftBar(dt);
 
             Vector3 forward = Facing(dt);
             Vector3 right = Vector3.Cross(Vector3.up, forward);
@@ -1206,14 +1235,68 @@ namespace Game.Enemies
             }
         }
 
+        // While a clip that lifts the body above the bar plays (the Sealed One's halo flaring in Summon and Roar), the bar
+        // rises to that clip's measured top for the camera's heading and settles back after, eased so it never jumps. It is
+        // measured per clip rather than over every clip, so it stays snug over the walk. The plain-cube fallback (tests without
+        // bar art) stays put.
+        private void LiftBar(float deltaTime)
+        {
+            if (!_barLifts || _worldBar == null)
+            {
+                return;
+            }
+
+            int once = _model.Player.Once;
+            float top = once >= 0 && _model.Art.Clips[once].LiftsBar ? _model.Art.Clips[once].BarTopAt(CameraHeading()) * _creatureScale + BarMargin : 0f;
+            float target = Mathf.Max(_barHeight, top);
+            if (Mathf.Approximately(_barY, target))
+            {
+                return;
+            }
+
+            _barY += (target - _barY) * (1f - Mathf.Exp(-deltaTime / BarLiftSeconds));
+            _worldBar.Root.localPosition = new Vector3(0f, _barY, 0f);
+        }
+
+        // The way the play camera looks, as a heading in the model's own frame (the frame its clip bars were measured in): the bar
+        // faces the camera, so its forward is the camera's.
+        private float CameraHeading()
+        {
+            Vector3 look = _model.Root.InverseTransformDirection(_worldBar.Root.forward);
+            return Mathf.Atan2(look.x, look.z) * Mathf.Rad2Deg;
+        }
+
         // The way the body faces: eased round to the heading (a road corner, a gate it turns to) instead of snapping, in game
         // time so it keeps up with the walk at any game speed. A boss mechanic places and turns its body exactly, so while
         // one runs (scripted) the facing follows the heading at once.
         private Vector3 Facing(float deltaTime)
         {
-            float target = HeadingYaw(_facingYaw);
-            _facingYaw = _scripted ? target : FacingEase.Step(_facingYaw, target, deltaTime, _turnSeconds);
+            bool aiming = _aiming && !_scripted;
+            float target = aiming ? YawTo(_aimPoint, _facingYaw) : HeadingYaw(_facingYaw);
+            if (_scripted)
+            {
+                _facingYaw = target;
+            }
+            else if (aiming || _aimTurn)
+            {
+                // A laser boss turns its body (and the tail over its back) to the beam's target and back to the road at a capped
+                // rate, so the beam leaves along the body's axis and the large turn never reads as a snap.
+                _facingYaw = FacingEase.Step(_facingYaw, target, deltaTime, AimTurnSeconds, AimTurnDegreesPerSecond);
+                _aimTurn = aiming || Mathf.Abs(Mathf.DeltaAngle(_facingYaw, target)) > AimSettledDegrees;
+            }
+            else
+            {
+                _facingYaw = FacingEase.Step(_facingYaw, target, deltaTime, _turnSeconds);
+            }
+
             return Quaternion.Euler(0f, _facingYaw, 0f) * Vector3.forward;
+        }
+
+        private float YawTo(Vector3 point, float fallback)
+        {
+            Vector3 way = point - _enemy.Position;
+            way.y = 0f;
+            return way.sqrMagnitude > MinHeadingSqr ? Mathf.Atan2(way.x, way.z) * Mathf.Rad2Deg : fallback;
         }
 
         private float HeadingYaw(float fallback)
@@ -1232,11 +1315,13 @@ namespace Game.Enemies
             }
 
             bool aiming = false;
+            float aimLead = -1f;
             for (int i = 0; i < _powerKinds.Length; i++)
             {
                 _clips.Anticipate(i, _abilities.SecondsUntil(_powerKinds[i]));
                 if (_powerKinds[i] == BossAbilityKind.Laser)
                 {
+                    aimLead = Mathf.Max(aimLead, _clips.LeadOf(i) + AimTurnLeadSeconds);
                     // The beam burns for seconds: the clip stays on its aim (the tail on target) until it stops.
                     _clips.HoldPower(i, _abilities.LaserActive);
                     aiming |= _clips.IsAiming(i, _abilities.LaserActive);
@@ -1244,6 +1329,7 @@ namespace Game.Enemies
             }
 
             IsAimingBeam = aiming;
+            _aiming = aimLead >= 0f && _abilities.TryLaserAim(aimLead, out _aimPoint);
         }
 
         // The moment inside a clip (a brood leaving the vent, the acid leaving the gland, a sweep passing the front)
