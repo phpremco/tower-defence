@@ -32,7 +32,7 @@ namespace Game.Hero
         // A slash starts this long before its hit frame and a shockwave before its impact frame, so the blow lands just
         // after the damage is dealt (the logic hits at once).
         private const float SlashLeadSeconds = 0.12f;
-        private const float AbilityLeadSeconds = 0.1f;
+        public const float AbilityLeadSeconds = 0.1f;
         private const float HitIntervalSeconds = 0.7f;
         private const float ReloadRateMin = 0.6f;
         private const float ReloadRateMax = 2f;

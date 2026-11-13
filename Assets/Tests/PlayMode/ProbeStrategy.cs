@@ -37,6 +37,9 @@ namespace Game.Tests
         /// <summary>Only the guns that hit both ground and air (the naive air check).</summary>
         public static readonly ProbeStrategy GunOnly = new ProbeStrategy("gun only", t => t.Targets == (TargetLayers.Ground | TargetLayers.Air));
 
+        /// <summary>Every owned gun except the ones made for the sky (round 61: what the flyers do to a player who skips air defence).</summary>
+        public static readonly ProbeStrategy NoSkyGun = new ProbeStrategy("no sky gun", t => t.Targets != TargetLayers.Air);
+
         /// <summary>The ledger-less buyer of whatever is dearest and affordable.</summary>
         public static readonly ProbeStrategy AffordableBot = new ProbeStrategy("affordable", style: PlayStyle.Affordable);
 
@@ -71,8 +74,20 @@ namespace Game.Tests
         /// <summary>The strategy the creative bot executes (round 22e): the reference point for the plain creative bot, a searched one for the replay.</summary>
         public StrategySpec Spec { get; }
 
+        /// <summary>As <see cref="NoSkyGun"/>, but when flyers are over the base it builds the guns it has beside it (the player who patches).</summary>
+        public static readonly ProbeStrategy NoSkyGunGuardsBase = new ProbeStrategy("no sky, guards", t => t.Targets != TargetLayers.Air) { GuardsBase = true };
+
+        /// <summary>Whether the bot puts air-capable guns beside the base while flyers besiege it.</summary>
+        public bool GuardsBase { get; private set; }
+
+        /// <summary>Sky guns the ledger bot stands before the first raid whatever its own judgement of the raid says (0: only when it judges them needed).</summary>
+        public int MinSkyGuns { get; private set; }
+
         /// <summary>True for the obvious family: it reads no balance model.</summary>
         public bool Obvious => Style == PlayStyle.MonoRow || Style == PlayStyle.NearGate || Style == PlayStyle.Affordable;
+
+        /// <summary>The ledger bot with this many sky guns standing before the first raid (round 61: the player who does buy air defence).</summary>
+        public static ProbeStrategy WithSkyGuns(int count) => new ProbeStrategy("sky guns " + count) { MinSkyGuns = count };
 
         /// <summary>One tower type only, placed by its role; hero on, no drones, gadgets or selling (wrecks are scrapped).</summary>
         public static ProbeStrategy Mono(string towerId) => new ProbeStrategy("mono " + towerId, t => t.Id == towerId, roleSpots: true, style: PlayStyle.MonoRow);

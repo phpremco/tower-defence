@@ -309,6 +309,26 @@ namespace Game.Balance
         public float SkyHoldPressure = 1f;
 
         /// <summary>
+        /// "Air is air" (Remco, round 61): a player who owns a gun made for the sky stands one for the first wave that brings
+        /// flyers, whatever the guns that merely reach the air could do. Without it the ledger held small raids with a row of
+        /// all-round guns, never bought the sky gun below <see cref="SkyHoldPressure"/>, and the solver sized every first raid
+        /// against that row: Shard Ridge's first Easy raid came out at 30 health for four flyers.
+        /// </summary>
+        public bool SkyGunForFlyers = true;
+
+        /// <summary>
+        /// The least a raid's health multiplier may be per difficulty, Easy first (round 61; zero: no floor). The solver sizes a
+        /// wave by paper pressure, and the paper rates a sky gun against a packed raid at about a third of what it does in play
+        /// (flyers hang over a gate while they lash it), so on the low pressure Easy asks a raid came out as four flyers of 8
+        /// health that any gun shot down. With the floor a flyer in a raid is about as tough as its Codex entry says, which is
+        /// what makes the sky gun worth its price. Held inside the trim to the human curve (the other waves make room for it, so
+        /// the level as a whole stays on the curve); the hero cap still softens a raid nobody could hold.
+        /// </summary>
+        public float[] RaidHealthFloor = { 0.6f, 0f, 0f, 0f };
+
+        public float RaidHealthFloorFor(int difficulty) => RaidHealthFloor.Length == 0 ? 0f : RaidHealthFloor[System.Math.Min(difficulty, RaidHealthFloor.Length - 1)];
+
+        /// <summary>
         /// The Easy raid rule (the curator, round 22f): on Easy the first air raid comes no earlier than the wave by which the
         /// expected player's kills have paid for the cheapest owned sky gun, plus this many waves; a player who owns no sky gun
         /// gets no raid. <see cref="CampaignModel.EasyRaidFloor"/> derives the floor from the ledger's purse walk at every solve.

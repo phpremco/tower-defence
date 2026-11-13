@@ -945,3 +945,20 @@ console and `Logs/probe_trace.txt`.
 - **Salvo stills and probes:** `CUT_OUT=<dir> bash Tools/PlayTest/r59_cut.sh <prefix> "<shot> <progress>" "z59:<name>|<shot> <progress>|<capsule> <nozzle|body|head|tail|mid|bay> <fov> [side|under]" probe:<file.cs> ...` (n2_cut.sh plus the save kept and restored, MD5 printed at both ends). The launch is shot 3 (11.5 s): progress = seconds / 11.5.
 - **Salvo probe:** `probe:r59_salvo_probe.cs` (shot from `Tools/PlayTest/r59_probe_arg.txt`, default 3): seeks the launch in 1/60 s steps and, per capsule, counts pops (a part switching on or off while 2 px or more of it is seen, hidden by the planet or the hull counted), jumps, axis and path turn rates (snap above 720 deg/s), where each capsule goes behind the rim and at what height, and boosters inside the planet; writes `Logs/r59/salvo_probe.txt` and `.csv`. `probe:r59_end_probe.cs` prints each capsule's end against the lens. `probe:r37_orbit_probe.cs` with `3` in `r37_probe_arg.txt` checks the launch against the hull.
 - **Played run with the sound recorder:** `OUT=Logs/r59 HOLD=8 bash Tools/PlayTest/r59_play.sh` (r43_play.sh plus `r59_sound_rec.cs`: every one-shot start under the cutscene audio with its first three volumes; the report counts the launch shot's swells against its cues).
+
+## Round 61: air defence probe, air raid lab, shockwave stills (added 2026-11-13)
+
+- **Who clears the sky (PlayMode, in the open editor, one run at a time):** `bash Tools/PlayTest/r61_air_probe.sh <label> [levels=2,3 difficulties=0,1 seeds=1,2,3]`
+  runs `AirDefenceProbeTests.Report_SkyGunsAgainstNone_OnTheFirstAirLevels` (three bots a cell and seed: no sky gun, no sky gun but
+  guns beside a besieged base, two sky guns before the first raid), backs the save up and verifies it after, and copies the table
+  to `Tools/PlayTest/r61_air_defence_<label>.txt`. About 35 s a run.
+- **The sky on paper, nothing written:** `unity command run_script --file Tools/PlayTest/Scripts/AirRaidLab.cs --entry AirRaidLab.Run --timeout_ms 900000 --timeout 960`
+  with overrides in `Tools/PlayTest/r61_lab_arg.txt` (`label=`, `levels=C1_03,C1_04`, `air.PulseRifle=0.2`, `rule.SkyHoldPressure=0`,
+  `rule.RaidHealthFloor=0.6,0,0,0`); output `Tools/PlayTest/r61_lab_<label>.txt`. "waves moved against the stored set 0/N" on every
+  level means the stored waves are exactly what the solve gives.
+- **Flyers per wave as stored:** `unity command eval_file --file Tools/PlayTest/r61_air_waves.cs` -> `Tools/PlayTest/r61_air_waves.txt`.
+- **Round 61's data without the generator:** `unity command run_script --file Tools/PlayTest/Scripts/ApplyRound61.cs --entry ApplyRound61.Run --timeout_ms 120000 --timeout 180`
+  (the Gun Turret's air share and the hero's shockwave asset on the effect library), then the solve stage (`ApplyWaves.cs`).
+- **Shockwave stills:** `[LOW=1] [NEAR=1] [PROBE=1] [FRAMES="6 8 11 15 20 26 34 45 60"] bash Tools/PlayTest/r61_shockwave.sh <out dir> <prefix> [level]`
+  (towers by the hero, walkers at his post, the ability through the level's own event, stills of the play camera at stepped
+  frames of 0.02 s; `PROBE=1` prints every part's live state with `r61_shock_probe.cs`). The wave leaves 0.1 s (5 frames) after the request.

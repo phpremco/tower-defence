@@ -459,11 +459,45 @@ namespace Game.Balance
                 }
             }
 
+            Dictionary<(int, int), int> kept = StandSkyGun(options, load, rules, ref money, built, held?.Steps, ref defence);
             Fill(options, load, rules, ref money, cap, built, ref defence);
-            Improve(options, load, rules, ref money, cap, built, held?.Steps, ref defence);
+            Improve(options, load, rules, ref money, cap, built, kept, ref defence);
             after?.Keep(built, options);
             defence.Purchase = Describe(built, options);
             return defence;
+        }
+
+        // BalanceRules.SkyGunForFlyers: when flyers come and no gun made for the sky stands yet, the cheapest one the purse
+        // affords is built before anything else. Returns the towers the improvement pass must leave standing: the held ones
+        // and this one (a swap that trades the sky gun for ground guns would bring the row of all-round guns back).
+        private static Dictionary<(int, int), int> StandSkyGun(List<Option> options, WaveLoad load, BalanceRules rules, ref int money, Dictionary<(int, int), int> built, Dictionary<(int, int), int> held, ref Defence defence)
+        {
+            if (!rules.SkyGunForFlyers || load.AirHealth <= 0f || AirCost(built, options) > 0)
+            {
+                return held;
+            }
+
+            Option cheapest = null;
+            foreach (Option option in options)
+            {
+                if (option.AirOnly && option.Level == 0 && option.Air > 0f && option.Cost > 0 && option.Cost <= money && (cheapest == null || option.Cost < cheapest.Cost))
+                {
+                    cheapest = option;
+                }
+            }
+
+            if (cheapest == null)
+            {
+                return held;
+            }
+
+            money -= cheapest.Cost;
+            defence = Add(defence, options, cheapest);
+            defence.Towers++;
+            built[(cheapest.Tower, 0)] = 1;
+            var kept = held != null ? new Dictionary<(int, int), int>(held) : new Dictionary<(int, int), int>();
+            kept[(cheapest.Tower, 0)] = 1;
+            return kept;
         }
 
         // Round 22d, the purchase flip: the greedy's path can leave a better defence unbought when two steps score within a

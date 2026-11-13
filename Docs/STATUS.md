@@ -9285,3 +9285,123 @@ step over 4 % of the throttle.
    the as-played probes were not re-run.
 2. The quake levels and the lowered build/drill/death levels are set by measurement, not by ear: please listen.
 3. The doors close silently (no closing sound cued).
+
+## Round 61: air needs the sky gun, and a shockwave worth looking at (2026-11-13)
+
+Not committed (the curator commits). No full generator run: `Tools/PlayTest/Scripts/ApplyRound61.cs` (the Gun Turret's air share,
+the shockwave asset on the effect library) and the solve stage (`ApplyWaves.cs`) write what the changed generator now would.
+`ArtSource/Exports` and `Tools/Blender` untouched, no Blender, no packages, the Game view's resolution untouched. Remco's save
+`progress.json` (MD5 **10522349c3c6ea16ba72897a65724cff** at the start) was copied aside before every Play Mode run and restored
+after; verified identical after each run and at the end; the dev backup untouched. Play runs strictly one after another.
+
+### 1. "You don't need air defence on Easy"
+
+**Diagnosis** (`AirDefenceProbeTests`, the ledger bot three ways, seeds 1-3; `Tools/PlayTest/r61_air_defence_before.txt`). Towers
+that hit air: Gun Turret (ground and air, half damage up there), Flak (air only), the base's own turret; the hero's blaster and the
+attack drone also reach up. Cannon and Laser do not.
+
+| Before (seeds 1-3) | no sky gun | two Flaks | who took the flyers' health |
+| --- | --- | --- | --- |
+| Shard Ridge Easy | won 3/3, base 700/700, 11/11 flyers down, 0 base hits | identical | Gun Turret **100 %** without Flak; with it Flak 68-75 %, Gun 25-32 % |
+| Fault Line Easy | won 3/3, base 700/700, all flyers down | identical | Gun Turret **91-93 %** (the rest unattributed, most likely the hero); with Flak 58-65 % Flak |
+| Shard Ridge Medium | lost 3/3 at wave 14 (4/9 down, 117 base hits) | won 3/3, base 658-682 | Flak 90-100 % |
+| Fault Line Medium | lost 3/3 at wave 16 | won 3/3, base 670-700 | Flak 55-65 %, Gun 25-35 % |
+
+So Medium already needed the Flak; Easy never did. The sky per wave (`Tools/PlayTest/r61_air_waves.cs`): Shard Ridge Easy had two
+raids, **four Skyrays of 8 health and seven of 25** (205 health in the whole level, 3.8 % of it); Medium's first raid was four
+Skyrays of 18. The cause is in the paper, not in a number someone typed: the ledger buys a gun that only aims up while the flyers'
+pressure is above one, the solver aims a raid at 0.3-0.8, so the ledger held every small raid with a row of Gun Turrets (thirteen
+of them on Shard Ridge Easy wave 12) and the solver sized the raid against that row. Details in Docs/BALANCE.md "Air needs the sky gun".
+
+**Fix** (the lever is on the cause; a flyer-health or count tweak per level would have been undone by the next solve):
+
+| Lever | Before | After | Why |
+| --- | --- | --- | --- |
+| Gun Turret air share (`TowerDefinition._airDamageFactor`, `ProjectGenerator.GunAirShare`) | 0.5 | **0.2** | the generalist stops doing the Flak's job; the same share light fire has against armour |
+| `BalanceRules.SkyGunForFlyers` (`Ledger.StandSkyGun`) | - | on | the expected player stands a sky gun for the first flyers, so raids are sized against it |
+| `BalanceRules.RaidHealthFloor` (Easy / Medium / Hard / Psycho) | - | **0.6** / 0 / 0 / 0 | Easy's low pressure times the paper's low opinion of a Flak left raids no Flak was needed for; held inside the trim, so the level stays on its curve |
+| `wave_tuning.txt` C1_06 Psycho | 0.57 | 0.52 | the trim could not land between 0.54 and 0.6 (a purchase flip: 1.20x against the curve's 1.31x, the band test failed); 0.52 is on the curve and keeps the level's total health within 2 % of the stored set |
+
+The first two are a data number and a model rule; the rule is code under `Scripts/Balance` (the brief asked for data: the data
+lever alone made the dead-zone raids smaller, see the lab table in BALANCE). C1_01 and C1_02 have no flyers on any difficulty and
+are byte-identical (the lab: 0 waves moved). The waves of C1_03-C1_06 are re-solved on every difficulty. Raids after (flyers x
+health each):
+
+| Raids | Before | After |
+| --- | --- | --- |
+| Shard Ridge Easy | w12 4 x 8, w15 7 x 25 (level 205) | w12 4 x 33, w15 7 x 33 (level 359) |
+| Shard Ridge Medium | w11 4 x 18, w12 5 x 116, w15 9 x 110 | w11 4 x 112, w12 5 x 108, w15 9 x 103 |
+| Fault Line Easy | w10 2 x 45, w13 3 x 88, w16 3 + boss | w10 2 x 34, w13 3 x 72, w16 3 + boss |
+| Fault Line Medium | w3 1 x 34, w6 1 x 34, w9 2 x 113, w12 3 x 141, w15 5 x 199 | w3 1 x 36, w6 1 x 51, w9 2 x 170, w12 3 x 149, w15 5 x 190 |
+
+Paper side effects worth knowing: the ledger now pays for a Flak from the first flyers on, so the ground of the levels with early
+flyers is trimmed lighter to stay on the curve (total health Fault Line Easy 7394 -> 5111, Hard 30607 -> 23321; Shard Ridge Easy
+5325 -> 4971, Fault Line Medium 17385 -> 15991; C1_05 within 4 %, C1_06 Easy -11 %, Medium +7 %, Hard and Psycho within 2 %).
+
+**Verify** (`r61_air_probe.sh`; Easy on the final waves `r61_air_defence_after_easy.txt`, Medium `r61_air_defence_after.txt`):
+
+| After (seeds 1-3) | no sky gun | no sky gun, guns put beside the besieged base | two Flaks before the first raid |
+| --- | --- | --- | --- |
+| Shard Ridge Easy | **lost 3/3** at wave 14 (2/4 flyers down) | won 3/3, **1 star, base 158-273/700**, 96-116 base hits | won 3/3, 3 stars, 700/700, Flak takes about 90 % |
+| Fault Line Easy | lost 1/3, won 2/3 at 700/700 | won 3/3 (base 465, 700, 700) | won 3/3, 3 stars, 700/700 |
+| Shard Ridge Medium | lost 3/3 at wave 13 (0/9 down) | lost 3/3 | won 3/3, 3 stars, base 682-700 |
+| Fault Line Medium | lost 3/3 at wave 12-13 | lost 3/3 at 13-16 | won 3/3: base **39** (1 star), 681, 700 |
+
+Read: with the Flak the first air levels are clean on Easy and Medium; without it Shard Ridge Easy costs the base two thirds of its
+health if the player patches with Gun Turrets, and the level if he does nothing. Flyers that reach the base stay and hit it until
+something kills them, so "a leak" is never a few points: that is why the patching bot exists (`ProbeStrategy.NoSkyGunGuardsBase`).
+
+### 2. The shockwave
+
+It is the hero's first ability. It was a flat translucent cylinder that grew to the radius in 0.45 s (hard rim, cut by the gate)
+plus a ring of 36 dust puffs. Now `ShockwaveView` plays a `ShockwaveVfxDefinition` (`Data/Vfx/Vfx_HeroShockwave.asset`, hung on
+the `VfxLibrary`; generator spec `ShockwaveSpec` in `ProjectGenerator.Vfx.cs`): the painted ring card (bright edge, soft inner
+falloff) racing to the ability's radius in 0.5 s with a cubic ease-out, an echo ring 0.13 s behind it at half strength, a pool of
+light on the ground, the refraction ring (high profile only), an additive flash and a point light at the fist (0.35 s), 40 spark
+streaks skimming outward, 18 glowing shards and 14 unlit dust puffs rolling out behind the front. It leaves 0.1 s after the request,
+with the fist (`HeroArtView.AbilityLeadSeconds`). Colour: the ability's tint (cyan) lifted 35 % to white, blue-grey dust. Every
+ring fades in over 8 % of its run and out from 40 % (smoothstep both ways), tested. Low profile: half the particles, no refraction,
+no light. Build-safe: `VfxParticles` sheets, `ParticleKit` smoke, `GlowDecal`; no URP default material (tested). Without the
+library's art the old plain ring and dust still play.
+
+Stills (`ArtSource/Previews/QA/r61_shockwave_*`, the game's own light, 1920x1080, stepped frames of 0.02 s; `tNN` is the frame after
+the request): `before_t04|t08|t13|t27` + `before_disc_x3`; `after_t06..t60` + `after_sheet`, crops `after_start_x3`, `after_core_x3`,
+`after_rings_x2`, `after_end_x2`; `after_cannon_t08|t15` + `after_cannon_sheet` + `after_cannon_blast_x3` (a Cannon shell bursting
+in the same frame); `low_t15|t20` + `low_sheet` + `low_core_x3`. What I see: the wave now holds its own next to the Cannon's
+fireball instead of reading as a UI disc; the start grows out of the fist's flash and the end thins to nothing, no hard edge in the
+x2/x3 crops. What is still weak: the rings read white-blue rather than clearly cyan; the sparks are short even dashes of one length;
+the dust is grainy at x3; the refraction ring is not in these stills (the off-screen render has no opaque texture), so it was only
+confirmed as switched on (`r61_shock_probe.cs`), not judged by eye; the before stills have no tower shot in frame (the walkers did
+not reach the post in that run). The cannon stills are from the second tuning pass (dust and shards were made visible after it).
+
+### Tests and checks
+
+- New `Round61Tests` (7): the Gun Turret's share and the Flak's worth per coin; the ledger stands a sky gun for every wave with
+  flyers on C1_03/C1_04; the old bug as a guard (Shard Ridge's first Easy raid at its old multiplier, the Gun at 0.5: without the
+  rule four Gun Turrets and no Flak); Easy raids on their floor and the stored waves equal to the solve; the shockwave asset and its
+  parts; the fades and the reach; the Low profile.
+- New PlayMode `AirDefenceProbeTests` (explicit, category Balance) and `ProbeStrategy.NoSkyGun`, `NoSkyGunGuardsBase`,
+  `WithSkyGuns(n)`; `BotRun.AirDealt` / `AirHealth` (who took the flyers' health, per wave).
+- EditMode on w6 (`r34b_editmode_worker.sh 6 "Game.Tests"`): **903 tests, 850 passed, 53 skipped, 0 failed** on the final code (896 in round 60, +7 `Round61Tests`; one more skip than round 60: `PlanSearchTests.Search_WritesPlansForEveryCell` ignores itself on the stale calibration, open point 1). Two earlier runs of the round were red and are fixed: the band test (C1_03 Easy and C1_06 Psycho off the curve, see the levers) and two of the new tests.
+- Recompile: 0 errors; the one known warning (CS0618 in `BalanceProbeTests`, now line 606). Play consoles: 0 errors, 0 warnings
+  in every run (the probe runs and the shockwave runs).
+- Tools: `Tools/PlayTest/Scripts/AirRaidLab.cs`, `ApplyRound61.cs`, `r61_air_probe.sh`, `r61_air_waves.cs`, `r61_shockwave.sh`,
+  `r61_shock_setup.cs`, `r61_shock_probe.cs`; tables `r61_air_defence_before|after|after_easy.txt`, `r61_air_waves.txt`,
+  `r61_lab_baseline|air02|rule|rule_air02|after.txt`; logs in `Logs/r61/`. Docs: BALANCE "Air needs the sky gun", COMMANDS "Round 61".
+
+### Open points (round 61)
+
+1. **The calibration is stale and sixteen cells were not replayed.** The Gun Turret's air share is an input of the calibration hash
+   (0e507ead -> 22954ca8), and every wave of C1_03-C1_06 moved. Only Shard Ridge and Fault Line on Easy and Medium were played
+   (the three bots above). Hard and Psycho of those levels and all of C1_05/C1_06 need the pipeline (`measure fit apply search
+   replay acceptance`); `acceptance.txt` still describes the old waves. Expect the Gun row to stop winning Easy from C1_03 on.
+2. **Easy without a Flak is harsh when nothing is done.** Shard Ridge Easy is lost at wave 14 by a player who neither buys a Flak
+   nor puts a gun by the base; with Gun Turrets by the base it is won on one star. If that is too hard for Easy, lower
+   `RaidHealthFloor` Easy (0.6) or give flyers a limited number of strikes on the base (a new rule, not built).
+3. **Fault Line Easy still lets an upgraded Gun row through on two of three seeds** (its raids are two and three Skyrays). A bigger
+   Easy raid there is one number (`AirRaidScale` Easy in `LevelSpecs.Crystal.cs`), not changed.
+4. **Fault Line Medium with Flaks: one seed won with base 39/700** (the flying boss's wave; the Gun Turrets used to take a third
+   of that wave's flyer health). Three wins of three, but thinner than before.
+5. Tower texts: the Skyray's Codex line already says only anti-air weapons reach it; nothing in the UI tells the player the Gun
+   Turret does a fifth up there.
+6. Shockwave: the weak spots listed above; the colour lean (`_whiteShare` 0.35) and the dust are data.

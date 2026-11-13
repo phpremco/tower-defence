@@ -28,7 +28,7 @@ namespace Game.Editor
         // bot lost every Medium run, at 1.3 it lost two of four (one Skyray through is enough) while the Flak bot held
         // all four untouched. Level 4 keeps its raids: its road joins late, the guns stand where the flight routes meet,
         // and a gun-only bot downed every flyer even at 1.6 and 1.8 times the raid.
-        // Round 21a: Hard adds 1.5, and level 4 gets rising raids too (the Gun Turret does half damage up there now).
+        // Round 21a: Hard adds 1.5, and level 4 gets rising raids too (the Gun Turret does little damage up there: GunAirShare).
         private static readonly float[] RisingRaids = { 1f, 1.3f, 1.5f };
 
         /// <summary>Gun (PulseRifle), Cannon, Laser, Flak (Rocket), Tesla and Railgun; the Acid Sprayer joins in S5.</summary>

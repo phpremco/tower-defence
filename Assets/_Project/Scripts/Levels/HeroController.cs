@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Combat;
 using Game.Core;
 using Game.Economy;
 using Game.Hero;
@@ -75,8 +76,11 @@ namespace Game.Levels
             _hero = go.AddComponent<Commander>();
             _hero.Initialize(definition, context.Targets, posts, 0, context.GlobalModifiers, context.HeroPerks);
             go.AddComponent<HeroView>().Initialize(_hero);
-            float particles = Services.TryGet(out IPlatformSettings platform) ? platform.ParticleScale : 1f;
-            go.AddComponent<HeroAbilityView>().Initialize(_hero, particles);
+            // The same budget the pooled blasts get (LevelBootstrapper): particles, half-size sheets, refraction.
+            VfxQuality quality = Services.TryGet(out IPlatformSettings platform)
+                ? new VfxQuality(platform.ParticleScale, platform.LowDetailModels, platform.DistortionEnabled)
+                : VfxQuality.High;
+            go.AddComponent<HeroAbilityView>().Initialize(_hero, quality);
 
             context.Hero = _hero;
             // In the structure registry the hero is a blocker and a target, like a gate that walks.

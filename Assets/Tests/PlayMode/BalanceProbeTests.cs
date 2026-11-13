@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Game.Combat;
 using Game.Core;
+using Game.Enemies;
 using Game.Hero;
 using Game.Levels;
 using Game.PathObjects;
@@ -401,6 +402,10 @@ namespace Game.Tests
             public Dictionary<(string Tower, string Role), float> RoleDamage = new Dictionary<(string, string), float>();
             public Dictionary<string, float> CoinSeconds = new Dictionary<string, float>();
 
+            /// <summary>Round 61: health taken off flyers per wave and source, and the flyer health each wave brought (see <see cref="BotRun.AirDealt"/>).</summary>
+            public Dictionary<(int Wave, string Source), float> AirDealt = new Dictionary<(int, string), float>();
+            public Dictionary<int, float> AirHealth = new Dictionary<int, float>();
+
             /// <summary>The seed and step of the run, and its wave records for the calibration (<see cref="Game.Balance.CalibrationFit"/>).</summary>
             public int Seed;
             public float Step;
@@ -637,6 +642,8 @@ namespace Game.Tests
                     Moves = run.Moves,
                     RoleDamage = run.RoleDamage,
                     CoinSeconds = run.CoinSeconds,
+                    AirDealt = run.AirDealt,
+                    AirHealth = run.AirHealth,
                     Seed = seed,
                     Step = step,
                     Records = run.Records,
@@ -1143,6 +1150,11 @@ namespace Game.Tests
             }
 
             UseHero(context, gates, watch);
+            if (run.Strategy.GuardsBase && GuardBase(context, spots, towers, owned, run))
+            {
+                return;
+            }
+
             int cheapestStep = CheapestBuild(context, owned, t => !t.IsSupport && !t.BlocksGroundEnemies && (run.Strategy.Allowed == null || run.Strategy.Allowed(t)));
             if (Maintain(context, towers, watch, cheapestStep, run))
             {
@@ -1179,7 +1191,7 @@ namespace Game.Tests
             // first one comes whatever the ground does (Quartz Flats Medium: the Skyrays took the base while the bot kept buying
             // ground guns for a heavy roller wave).
             bool noSkyGun = !towers.Exists(t => AirOnly(t.Definition));
-            int reserve = groundCover >= 1f / ReserveCeiling || noSkyGun ? AirReserve(context, towers, owned, ledger, current) : 0;
+            int reserve = groundCover >= 1f / ReserveCeiling || noSkyGun ? AirReserve(context, towers, owned, ledger, current, run.Strategy.MinSkyGuns) : 0;
             // A new gun goes to the best free spot; the ledger counts every gun as well placed, so a step to a poor spot is
             // worth less than its stats, and upgrading a gun in a good spot can beat it.
             if (reserve > 0 && context.Wallet.CanAfford(reserve) && TryBuy(context, spots, towers, owned, AirOnly, run))
@@ -1542,7 +1554,7 @@ namespace Game.Tests
         // The price of an air gun while flyers are still to come and the standing sky guns cannot hold the next raid (none yet,
         // or the raid grew past them), from the wave on whose income (the ledger's money, kills paid as they really arrive)
         // until that raid covers the price with a margin; 0 otherwise.
-        private static int AirReserve(LevelContext context, List<Tower> towers, List<string> owned, LedgerView ledger, int current)
+        private static int AirReserve(LevelContext context, List<Tower> towers, List<string> owned, LedgerView ledger, int current, int minSky = 0)
         {
             int price = CheapestBuild(context, owned, AirOnly);
             if (price == 0)
@@ -1555,7 +1567,9 @@ namespace Game.Tests
             // waits for a ground gun, and a second one for the ground line of a few guns.
             int ground = towers.FindAll(t => !AirOnly(t.Definition)).Count;
             int sky = towers.Count - ground;
-            if (ground == 0 || (sky > 0 && ground < GroundBeforeSecondSkyGun) || (sky > 0 && sky * SkyPerGround > ground))
+            // A strategy that stands its sky guns whatever the raid looks like (ProbeStrategy.MinSkyGuns) skips the judgement below.
+            bool wanted = sky < minSky;
+            if (ground == 0 || (!wanted && sky > 0 && (ground < GroundBeforeSecondSkyGun || sky * SkyPerGround > ground)))
             {
                 return 0;
             }
@@ -1564,7 +1578,7 @@ namespace Game.Tests
             int raid = -1;
             for (int i = current; i < ledger.Count && raid < 0; i++)
             {
-                if (ledger.Loads[i].AirHealth > 0f && Pressure(ledger, standing, i).Air > AirCeiling)
+                if (ledger.Loads[i].AirHealth > 0f && (wanted || Pressure(ledger, standing, i).Air > AirCeiling))
                 {
                     raid = i;
                 }
@@ -1762,6 +1776,66 @@ namespace Game.Tests
             return false;
         }
 
+        // ---- the player without a sky gun who patches the base (round 61) ------------------------------------------------------
+
+        // Flyers this close to the base are over it; a player who sees them there puts what he has beside the base, a few guns at most.
+        private const float BaseSiegeRadius = 4f;
+        private const int MaxBaseGuards = 3;
+        private static readonly List<ITargetable> OverBase = new List<ITargetable>();
+
+        // True when the money went to a gun beside the base because flyers are on it (ProbeStrategy.GuardsBase).
+        private static bool GuardBase(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run)
+        {
+            if (context.Base == null)
+            {
+                return false;
+            }
+
+            context.Targets.FindInRadius(context.Base.Position, BaseSiegeRadius * context.Level.Grid.CellSize, TargetLayers.Air, OverBase);
+            if (!OverBase.Exists(t => t is Enemy enemy && enemy.Definition.Flies))
+            {
+                return false;
+            }
+
+            TowerDefinition gun = null;
+            foreach (TowerDefinition candidate in context.AllTowers)
+            {
+                bool reaches = !candidate.IsSupport && !candidate.BlocksGroundEnemies && (candidate.Targets & TargetLayers.Air) != 0;
+                if (reaches && owned.Contains(candidate.Id) && context.Wallet.CanAfford(candidate.BuildCost) && (gun == null || candidate.BuildCost < gun.BuildCost))
+                {
+                    gun = candidate;
+                }
+            }
+
+            if (gun == null)
+            {
+                return false;
+            }
+
+            Vector2Int home = context.Level.Grid.WorldToCell(context.Base.Position);
+            float reach = gun.GetLevel(0).Range;
+            int guards = towers.FindAll(t => (t.Definition.Targets & TargetLayers.Air) != 0 && Vector2Int.Distance(context.Level.Grid.WorldToCell(t.Position), home) <= reach).Count;
+            if (guards >= MaxBaseGuards)
+            {
+                return false;
+            }
+
+            var grid = new BuildGrid(context.Level);
+            Vector2Int best = home;
+            float nearest = float.MaxValue;
+            foreach (Vector2Int cell in spots.Ground)
+            {
+                float distance = Vector2Int.Distance(cell, home);
+                if (distance < nearest && grid.CanBuild(cell) && TowerAt(context, towers, cell) == null)
+                {
+                    nearest = distance;
+                    best = cell;
+                }
+            }
+
+            return nearest <= reach && TryBuyAt(context, gun, best, towers, run);
+        }
+
         // ---- the creative player (round 20) ------------------------------------------------------------------------
 
         // What a creative player adds to the towers: the drones the level offers (saved for in Act), mines in the queue before
@@ -1770,7 +1844,7 @@ namespace Game.Tests
         // that this round.
         private static bool Creative(LevelContext context, List<Tower> towers, List<string> owned, LedgerView ledger, int current, BotRun run)
         {
-            if (AirReserve(context, towers, owned, ledger, current) > 0)
+            if (AirReserve(context, towers, owned, ledger, current, run.Strategy.MinSkyGuns) > 0)
             {
                 return false;
             }

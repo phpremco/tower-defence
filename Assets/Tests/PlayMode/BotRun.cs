@@ -87,6 +87,13 @@ namespace Game.Tests
         public readonly Dictionary<(string Tower, string Role), float> RoleDamage = new Dictionary<(string, string), float>();
         public readonly Dictionary<string, float> CoinSeconds = new Dictionary<string, float>();
 
+        /// <summary>
+        /// Round 61, who clears the sky: health really taken off flyers per source (a tower type, the base's own turret, "Hero",
+        /// "Drone", else the source's type), per wave the flyers spawned in, and the flyer health each wave brought.
+        /// </summary>
+        public readonly Dictionary<(int Wave, string Source), float> AirDealt = new Dictionary<(int, string), float>();
+        public readonly Dictionary<int, float> AirHealth = new Dictionary<int, float>();
+
         /// <summary>The wave records in order, for the calibration.</summary>
         public List<WaveRecord> Records
         {
@@ -260,6 +267,25 @@ namespace Game.Tests
             _lastHealth[enemy] = enemy.Health != null ? enemy.Health.Current + enemy.Health.Armor : 0f;
             // A boss's own minions and the like spawn mid-wave and count with the wave they appear in.
             RecordOf(wave).Health += enemy.Health != null ? enemy.Health.Max + enemy.Health.ArmorMax : 0f;
+            if (enemy.Definition.Flies && enemy.Health != null)
+            {
+                AirHealth[wave] = (AirHealth.TryGetValue(wave, out float sky) ? sky : 0f) + enemy.Health.Max + enemy.Health.ArmorMax;
+            }
+        }
+
+        private static string AirSourceOf(object source)
+        {
+            switch (source)
+            {
+                case Tower tower:
+                    return tower.Definition.Id;
+                case Drone _:
+                    return "Drone";
+                case Game.Hero.Commander _:
+                    return "Hero";
+                default:
+                    return source != null ? source.GetType().Name : "unknown";
+            }
         }
 
         private void OnDamaged(Enemy enemy, object source, float amount)
@@ -271,6 +297,12 @@ namespace Game.Tests
             float before = _lastHealth.TryGetValue(enemy, out float last) ? last : enemy.Health.Max + enemy.Health.ArmorMax;
             float dealt = Mathf.Max(0f, before - left);
             _lastHealth[enemy] = left;
+            if (enemy.Definition.Flies)
+            {
+                var sky = (record.Wave, AirSourceOf(source));
+                AirDealt[sky] = (AirDealt.TryGetValue(sky, out float taken) ? taken : 0f) + dealt;
+            }
+
             if (source is Tower tower && !tower.Definition.IsBaseDefence)
             {
                 (float damage, float seconds, float data) = Fire.TryGetValue(tower.Definition.Id, out var known) ? known : (0f, 0f, 0f);

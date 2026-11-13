@@ -27,6 +27,8 @@ namespace Game.Combat
         [SerializeField] private ImpactVfxDefinition _bossDeath;
         [SerializeField] private ImpactVfxDefinition _mine;
         [SerializeField] private ImpactVfxDefinition _bossPulse;
+        [Tooltip("The hero's shockwave: rings, glow, refraction, flash and what the blow kicks up (round 61).")]
+        [SerializeField] private ShockwaveVfxDefinition _shockwave;
         [Tooltip("The gameplay markers, bars, projectiles and debris painted in Blender (registered at boot).")]
         [SerializeField] private MarkerArt _markers;
         [Tooltip("The marks, sheets and props bosses leave on the field (round 29; registered at boot).")]
@@ -37,6 +39,9 @@ namespace Game.Combat
         public ImpactVfxDefinition BossDeath => _bossDeath != null ? _bossDeath : Death;
         public ImpactVfxDefinition Mine => _mine != null ? _mine : _default;
         public ImpactVfxDefinition BossPulse => _bossPulse != null ? _bossPulse : _default;
+
+        /// <summary>The look of a ground shockwave, or null when the library was built without it (the views keep their plain ring).</summary>
+        public ShockwaveVfxDefinition Shockwave => _shockwave;
 
         /// <summary>The round-25b marker art, or null when the library was built without it.</summary>
         public MarkerArt Markers => _markers;

@@ -297,6 +297,7 @@ namespace Game.Balance
             float cap = Rules.HeroCapFor(difficulty);
             var trimmed = (float[])healths.Clone();
             var capped = new bool[healths.Length];
+            float raidFloor = Rules.RaidHealthFloorFor(difficulty);
 
             List<WaveLine> Evaluate(float[] health, BalanceRules rules)
             {
@@ -327,6 +328,14 @@ namespace Game.Balance
                 for (int i = 0; i < trimmed.Length; i++)
                 {
                     trimmed[i] = capped[i] ? start[i] : start[i] * (float)factor;
+                    // BalanceRules.RaidHealthFloor: the flyers of a raid keep their book toughness whatever the trim makes of the
+                    // wave. A raid on its floor is held there, so the next pass trims the other waves around it and the plain mean
+                    // still meets the curve; the cap below may soften a raid no player with the hero could hold.
+                    if (raidFloor > trimmed[i] && WaveComposer.KindOf(script, difficulty, i + 1) == WaveComposer.Kind.Air)
+                    {
+                        trimmed[i] = raidFloor;
+                        capped[i] = true;
+                    }
                 }
 
                 // Waves over the cap, in order (the purse of a wave depends on the leaks before it).

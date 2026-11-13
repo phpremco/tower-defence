@@ -1611,3 +1611,48 @@ spots (the most road behind the gate; the best doorstep spot) to the search's ca
 re-measure): Cannon 0.853, Laser 0.759, PulseRifle 0.878, Rocket 1.041; route fire 4.0, queue guard 0.30, siege 1.19; hold-out
 78 % (mono 90 %), Spearman 0.70; applied by override. In play (STATUS "Round 31"): acceptance 11/24, C1_02 Easy 3/3, C1_05 Hard
 3/3, C1_04 Psycho 3/3; C1_01 Medium still loses the seed whose Cragback takes the rear nest.
+
+## Air needs the sky gun (2026-11-13, round 61)
+
+Remco after his first playthrough: "the first air units, and actually everything on Easy, kill the stingrays; you don't need air
+defence, that's a pity." Measured with `AirDefenceProbeTests` (the ledger bot without any gun made for the sky, the same bot
+patching the base with what it has once flyers are over it, and the bot with two Flaks before the first raid; table in
+`Tools/PlayTest/air_defence.txt`): on Shard Ridge and Fault Line Easy the Gun Turrets took 91 to 100 % of all flyer health, no
+flyer reached the base and the Flak bought nothing.
+
+**Why.** Three things stacked:
+
+1. *The ledger never stood a sky gun below pressure one.* `Ledger.Fill` buys a gun that only aims up while the flyers' pressure is
+   above `BalanceRules.SkyHoldPressure` (1), and the solver aims a raid at 0.3 to 0.8. So the ledger held every small raid with a
+   row of Gun Turrets (Shard Ridge Easy wave 12: thirteen of them) and the solver sized the raid against that row. Where the
+   row's pressure at the smallest health the solver tries already sat between the target and one, the raid stayed at that floor
+   (Shard Ridge Medium wave 11: four Skyrays of 18 health; Fault Line Medium waves 3 and 6).
+2. *Easy asks about a quarter of the paper capacity*, and the paper rates a sky gun against a packed raid at about a third of what
+   it does in play (flyers hang over a gate for three strikes; the ledger only counts the pass). Shard Ridge's Easy raids came out
+   at 30 and 175 health: four Skyrays of 8 and seven of 25.
+3. *The Gun Turret did half damage to flyers* and a level is full of them, so in play a row dealt with any raid the paper could size.
+
+**What changed.**
+
+- `TowerDefinition._airDamageFactor` of the Gun Turret 0.5 -> **0.2** (`ProjectGenerator.GunAirShare`), the share light fire has
+  against armour. It finishes a straggler over the base; a row of them is no air defence.
+- `BalanceRules.SkyGunForFlyers` (`Ledger.StandSkyGun`): when a wave brings flyers and the player owns a gun made for the sky,
+  the ledger builds the cheapest one first and the improvement pass may not swap it away. Raids are now sized against the sky gun.
+- `BalanceRules.RaidHealthFloor` (per difficulty, Easy **0.6**, the others none): the health multiplier of a raid wave is at least
+  this. It is held inside the trim to the human curve (`CampaignModel.CalibrateToHuman`): a raid on its floor is left out of the
+  trim factor and the other waves make room for it, so the level as a whole stays on its curve (Shard Ridge Easy: the walkers
+  about 10 % lighter); the hero cap may still soften it. Easy only, because only Easy's low pressure produced raids no sky gun
+  was needed for. (Applied after the trim instead, the plain mean left the curve by 8 % and the band test failed.)
+- `wave_tuning.txt` C1_06 Psycho 0.57 -> 0.52: with the two changes above the trim could not land between 0.54 and 0.6 (a purchase
+  flip in the human lens; 1.20x against the curve's 1.31x). 0.52 lands on the curve with the level's total health within 2 % of
+  the stored set.
+
+**The lab.** `Tools/PlayTest/Scripts/AirRaidLab.cs` solves every level in memory (4 s, no asset written) with overrides from
+`Tools/PlayTest/r61_lab_arg.txt` (`air.<TowerId>=`, `rule.<Field>=`, `levels=`, `label=`) and prints every wave with flyers: count,
+health, the ledger's pressures, what the ledger bought and the multiplier against the stored one. What it showed: the Gun Turret's
+share alone (0.2) grows the raids where a Flak gets bought but shrinks the ones in the dead zone (Fault Line Medium waves 3 and 6);
+the rule alone removes the dead zone but leaves Easy at 15 to 25 health a flyer; `SkyHoldPressure` 0 changes nothing.
+
+**Not re-measured.** The calibration's input hash is stale (the Gun Turret's air share is an input): the fit was measured with the
+old share and the old waves of C1_03 to C1_06. The Gun Turret's efficiency is fitted on all its damage, of which flyers are a small
+part; the yardstick and the replay of those sixteen cells are the next pipeline run (`measure fit apply search replay acceptance`).

@@ -6,9 +6,10 @@ using UnityEngine.Rendering;
 namespace Game.Hero
 {
     /// <summary>
-    /// What the hero's abilities and reloads look like, apart from the ring the hero view plays: a dust ring kicked up by
-    /// a shockwave, a welding beam from the hero to the gate with green sparks for a repair, and a short glint at the gun
-    /// when it reloads (yellow when a perk makes it fast). Listens to the commander's events only.
+    /// What the hero's abilities and reloads look like: the shockwave from the effect library (rings, glow, refraction,
+    /// sparks, shards and dust; without the library's art a plain dust ring under the hero view's ring), a welding beam from
+    /// the hero to the gate with green sparks for a repair, and a short glint at the gun when it reloads (yellow when a perk
+    /// makes it fast). Listens to the commander's events only.
     /// </summary>
     public sealed class HeroAbilityView : MonoBehaviour
     {
@@ -33,6 +34,8 @@ namespace Game.Hero
 
         private Commander _hero;
         private ParticleSystem _dust;
+        private ShockwaveView _shockwave;
+        private ShockwaveVfxDefinition _shockwaveVfx;
         private ParticleSystem _weld;
         private ParticleSystem _glint;
         private LineRenderer _beam;
@@ -44,10 +47,21 @@ namespace Game.Hero
         private float _nextWeld;
         private Color _beamColor;
 
-        public void Initialize(Commander hero, float particleScale)
+        public void Initialize(Commander hero, VfxQuality quality)
         {
             _hero = hero;
-            _dust = ParticleKit.UseSmoke(ParticleKit.Create(transform, "AbilityDust", new Vector3(0f, 0.1f, 0f), DustColor, 0.6f, 1.1f, 0.12f, 0.3f, 2.5f, 4.5f, -0.05f, Scaled(DustCount * 2, particleScale), 0.3f));
+            float particleScale = quality.ParticleScale;
+            _shockwaveVfx = Services.TryGet(out VfxLibrary library) ? library.Shockwave : null;
+            if (_shockwaveVfx != null)
+            {
+                // Under the level, not the hero: a wave stays where it was struck when he walks on.
+                _shockwave = ShockwaveView.Create(transform.parent, quality);
+            }
+            else
+            {
+                _dust = ParticleKit.UseSmoke(ParticleKit.Create(transform, "AbilityDust", new Vector3(0f, 0.1f, 0f), DustColor, 0.6f, 1.1f, 0.12f, 0.3f, 2.5f, 4.5f, -0.05f, Scaled(DustCount * 2, particleScale), 0.3f));
+            }
+
             _weld = ParticleKit.Create(transform.parent, "WeldSparks", Vector3.zero, WeldColor * 2f, 0.2f, 0.45f, 0.02f, 0.05f, 1f, 2.5f, 1.5f, Scaled(60, particleScale), 0.1f);
             _glint = ParticleKit.Create(transform, "ReloadGlint", new Vector3(0f, GlintHeight, 0f), ReloadColor * 2f, 0.15f, 0.3f, 0.03f, 0.07f, 0.4f, 1.2f, 0f, Scaled(20, particleScale), 0.08f);
 
@@ -80,6 +94,11 @@ namespace Game.Hero
             {
                 Destroy(_weld.gameObject);
             }
+
+            if (_shockwave != null)
+            {
+                Destroy(_shockwave.gameObject);
+            }
         }
 
         private void OnAbilityUsed(int slot, HeroAbilityDefinition ability, Vector3 position)
@@ -87,7 +106,16 @@ namespace Game.Hero
             switch (ability.Kind)
             {
                 case HeroAbilityKind.Shockwave:
-                    EmitRing(_dust, DustCount, ability.Radius * 0.5f);
+                    if (_shockwave != null)
+                    {
+                        // The fist lands a moment after the ability is used (HeroArtView); the wave leaves with it.
+                        _shockwave.Play(position, ability.Radius, ability.Tint, _shockwaveVfx, HeroArtView.AbilityLeadSeconds);
+                    }
+                    else
+                    {
+                        EmitRing(_dust, DustCount, ability.Radius * 0.5f);
+                    }
+
                     break;
                 case HeroAbilityKind.GateRepair:
                     _beamLeft = BeamSeconds;

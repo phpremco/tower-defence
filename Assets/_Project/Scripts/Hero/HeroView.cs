@@ -544,9 +544,19 @@ namespace Game.Hero
             _active.Attack(target);
         }
 
-        // A shockwave rings out to its own radius; any other ability flashes a small ring in its tint at the hero's feet.
-        private void OnAbilityUsed(int slot, HeroAbilityDefinition ability, Vector3 position) =>
-            Pulse(ability.Kind == HeroAbilityKind.Shockwave ? ability.Radius : AbilityRingRadius, ability.Tint, RingSeconds);
+        // An ability flashes a small ring in its tint at the hero's feet. The shockwave is the effect library's to paint
+        // (HeroAbilityView); only without that art does this plain ring run out to its radius.
+        private void OnAbilityUsed(int slot, HeroAbilityDefinition ability, Vector3 position)
+        {
+            if (ability.Kind != HeroAbilityKind.Shockwave)
+            {
+                Pulse(AbilityRingRadius, ability.Tint, RingSeconds);
+            }
+            else if (!Services.TryGet(out VfxLibrary library) || library.Shockwave == null)
+            {
+                Pulse(ability.Radius, ability.Tint, RingSeconds);
+            }
+        }
 
         // Going down: the stagger starts at once; the fall, the impact and the powered-down look follow in Update.
         private void OnDowned()

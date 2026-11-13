@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15f3b010f4f1cd746ac42d1309ae1332, type: 3}
+  m_Name: Vfx_HeroShockwave
+  m_EditorClassIdentifier: Game.Combat::Game.Combat.ShockwaveVfxDefinition
+  _ringSheet: {fileID: 11400000, guid: 29f67317c2eef6d41bb74a7a708a573e, type: 2}
+  _ringSeconds: 0.5
+  _ringIntensity: 2
+  _whiteShare: 0.35
+  _echoDelay: 0.13
+  _echoStrength: 0.5
+  _echoReach: 0.82
+  _glowIntensity: 0.45
+  _glowSeconds: 0.7
+  _distortion: {fileID: 11400000, guid: 75208984f5e0ed04fab654721d915358, type: 2}
+  _distortionStrength: 0.03
+  _flash: {fileID: 11400000, guid: 354a9dfa145f56648b268179d3871a6b, type: 2}
+  _flashSize: 2.4
+  _lightIntensity: 7
+  _lightRange: 6
+  _lightSeconds: 0.35
+  _sparkSheet: {fileID: 11400000, guid: 9448b5a59c12b0041898042fd96bdbbe, type: 2}
+  _sparks: 40
+  _sparkSpeed: 7
+  _debrisSheet: {fileID: 11400000, guid: 4aba1d028133ec041b7f3751720e24ee, type: 2}
+  _shards: 18
+  _shardSpeed: 4.5
+  _dustPuffs: 14
+  _dustSize: 0.7
+  _dustSeconds: 0.9
+  _dustColor: {r: 0.78, g: 0.85, b: 0.95, a: 0.6}

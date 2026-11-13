@@ -173,6 +173,74 @@ namespace Game.Editor
 
         private static readonly (string PathObject, string Vfx)[] PathObjectVfx = { ("Mine", "Mine"), ("ExplosiveBarrel", "Barrel") };
 
+        private const string ShockwaveVfxPath = VfxFolder + "/Vfx_HeroShockwave.asset";
+
+        // The hero's shockwave (round 61, Remco: "boring compared to the rest"): the painted ring races to the ability's
+        // radius with an echo behind it, a pool of light under them, the refraction ring (high profile), a flash and a short
+        // light at the fist, and sparks, shards and dust kicked outward. Its colour is the ability's tint (cool: a player effect).
+        private sealed class ShockwaveSpec
+        {
+            public float RingSeconds = 0.5f, RingIntensity = 2f, WhiteShare = 0.35f, EchoDelay = 0.13f, EchoStrength = 0.5f, EchoReach = 0.82f;
+            public float GlowIntensity = 0.45f, GlowSeconds = 0.7f, DistortionStrength = 0.03f;
+            public float FlashSize = 2.4f, LightIntensity = 7f, LightRange = 6f, LightSeconds = 0.35f;
+            public int Sparks = 40, Shards = 18, DustPuffs = 14;
+            public float SparkSpeed = 7f, ShardSpeed = 4.5f, DustSize = 0.7f, DustSeconds = 0.9f;
+            public Color DustColor = new Color(0.78f, 0.85f, 0.95f, 0.6f);
+            public string Ring = ShockRing, Distortion = ShockDistort, Flash = EnergyImpact, Sparkle = SparkStreaks, Debris = DebrisShards;
+        }
+
+        private static readonly ShockwaveSpec HeroShockwave = new ShockwaveSpec();
+
+        /// <summary>
+        /// Only the hero's shockwave look, from the spec above and the sheets already built, hung on the effect library: the
+        /// targeted step for a round that may not run the whole generator (Tools/PlayTest/Scripts/ApplyRound61.cs).
+        /// </summary>
+        public static ShockwaveVfxDefinition ApplyShockwaveVfx()
+        {
+            ShockwaveVfxDefinition shockwave = WriteShockwave(HeroShockwave, new Dictionary<string, VfxSheet>());
+            var library = AssetDatabase.LoadAssetAtPath<VfxLibrary>(VfxLibraryPath);
+            var lib = new SerializedObject(library);
+            lib.FindProperty("_shockwave").objectReferenceValue = shockwave;
+            lib.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(library);
+            return shockwave;
+        }
+
+        private static ShockwaveVfxDefinition WriteShockwave(ShockwaveSpec spec, IReadOnlyDictionary<string, VfxSheet> sheets)
+        {
+            var vfx = LoadOrCreate<ShockwaveVfxDefinition>(ShockwaveVfxPath);
+            var so = new SerializedObject(vfx);
+            so.FindProperty("_ringSheet").objectReferenceValue = Sheet(sheets, spec.Ring);
+            so.FindProperty("_ringSeconds").floatValue = spec.RingSeconds;
+            so.FindProperty("_ringIntensity").floatValue = spec.RingIntensity;
+            so.FindProperty("_whiteShare").floatValue = spec.WhiteShare;
+            so.FindProperty("_echoDelay").floatValue = spec.EchoDelay;
+            so.FindProperty("_echoStrength").floatValue = spec.EchoStrength;
+            so.FindProperty("_echoReach").floatValue = spec.EchoReach;
+            so.FindProperty("_glowIntensity").floatValue = spec.GlowIntensity;
+            so.FindProperty("_glowSeconds").floatValue = spec.GlowSeconds;
+            so.FindProperty("_distortion").objectReferenceValue = Sheet(sheets, spec.Distortion);
+            so.FindProperty("_distortionStrength").floatValue = spec.DistortionStrength;
+            so.FindProperty("_flash").objectReferenceValue = Sheet(sheets, spec.Flash);
+            so.FindProperty("_flashSize").floatValue = spec.FlashSize;
+            so.FindProperty("_lightIntensity").floatValue = spec.LightIntensity;
+            so.FindProperty("_lightRange").floatValue = spec.LightRange;
+            so.FindProperty("_lightSeconds").floatValue = spec.LightSeconds;
+            so.FindProperty("_sparkSheet").objectReferenceValue = Sheet(sheets, spec.Sparkle);
+            so.FindProperty("_sparks").intValue = spec.Sparks;
+            so.FindProperty("_sparkSpeed").floatValue = spec.SparkSpeed;
+            so.FindProperty("_debrisSheet").objectReferenceValue = Sheet(sheets, spec.Debris);
+            so.FindProperty("_shards").intValue = spec.Shards;
+            so.FindProperty("_shardSpeed").floatValue = spec.ShardSpeed;
+            so.FindProperty("_dustPuffs").intValue = spec.DustPuffs;
+            so.FindProperty("_dustSize").floatValue = spec.DustSize;
+            so.FindProperty("_dustSeconds").floatValue = spec.DustSeconds;
+            so.FindProperty("_dustColor").colorValue = spec.DustColor;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(vfx);
+            return vfx;
+        }
+
         // The generator step: the Blender sheets first, then the recipes that wear them.
         private static void CreateVfxLibrary() => CreateVfxLibraryFrom(BlenderVfxBuilder.SyncAndBuild());
 
@@ -195,6 +263,7 @@ namespace Game.Editor
             lib.FindProperty("_bossDeath").objectReferenceValue = Vfx("BossDeath");
             lib.FindProperty("_mine").objectReferenceValue = Vfx("Mine");
             lib.FindProperty("_bossPulse").objectReferenceValue = Vfx("BossPulse");
+            lib.FindProperty("_shockwave").objectReferenceValue = WriteShockwave(HeroShockwave, sheets);
             SerializedProperty styles = lib.FindProperty("_styles");
             styles.arraySize = WeaponSpecs.Length;
             for (int i = 0; i < WeaponSpecs.Length; i++)

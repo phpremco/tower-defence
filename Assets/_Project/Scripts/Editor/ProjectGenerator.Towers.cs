@@ -11,8 +11,10 @@ namespace Game.Editor
         private const float FlakSplash = 1.1f;
         private const float FlakFuse = 0.6f;
 
-        // The Gun Turret aims up too but its pulses do half damage there, so the sky asks for the Flak (round 21a, Docs/BALANCE.md).
-        private const float GunAirShare = 0.5f;
+        // The Gun Turret aims up too, but its pulses do a fifth of their damage there (half until round 61: a row of them shot
+        // every raid down and the Flak was never needed). The same share light fire has against armour: enough to finish a
+        // straggler over the base, never an air defence (Docs/BALANCE.md "Air needs the sky gun").
+        public const float GunAirShare = 0.2f;
 
         // The Gun Turret's bullets do not turn (Remco 2026-11-06), so they fly fast enough to be near instant: few die with their
         // creature in flight (was 14 cells a second).
