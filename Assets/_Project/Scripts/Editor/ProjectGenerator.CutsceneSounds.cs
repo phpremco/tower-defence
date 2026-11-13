@@ -146,11 +146,24 @@ namespace Game.Editor
         private const float BuildersLand = 16.6f;
         private const float DroneHandover = 0.5f;
 
-        // The launch shot (round 44: one launch): the bay doors open as it begins, the capsule's clamps let go with a puff of
-        // cold gas, the booster lights CapsuleIgnition later and separates CapsuleSeparation after its release; the burn loop
-        // covers that one burn.
+        // The launch shot (round 44: one launch): the bay doors open as it begins, each capsule's clamps let go with a puff of
+        // cold gas, its booster lights CapsuleIgnition later and separates CapsuleSeparation after its release; the burn loop
+        // covers Spencer's burn. Round 59 (the salvo): the cargo capsules before his sound the same clips, quieter and each
+        // swelling in from silence (no hard starts, no second loud hit), with a low burn loop under their burns; the spent
+        // booster fading away is his alone.
         private const float CapsuleSeparation = 3.3f;
         private const float BurnTail = 0.2f;
+        private const float CargoClampsLevel = 0.22f;
+        private const float CargoGasLevel = 0.2f;
+        private const float CargoIgnitionLevel = 0.28f;
+        private const float CargoSeparationLevel = 0.2f;
+        private const float CargoBurnLevel = 0.15f;
+        private const float CargoClampsSwell = 0.08f;
+        private const float CargoGasSwell = 0.12f;
+        private const float CargoIgnitionSwell = 0.2f;
+        private const float CargoSeparationSwell = 0.06f;
+        private const float CargoBurnFadeIn = 0.5f;
+        private const float CargoBurnFadeOut = 0.4f;
 
         // The landing (FieldSet: the fall is the first 0.2 of the 12 s shot, the retro jets fire over its last part and flare at
         // these bursts, the hatch steams from 0.255 and opens at 0.27, Spencer appears at 0.31).
@@ -342,29 +355,39 @@ namespace Game.Editor
             }
         }
 
-        // One launch: the doors, then the capsule's clamps and cold gas, its booster's ignition, the separation and the spent
+        // One launch: the doors, then each cargo capsule's clamps, cold gas, ignition and separation, quiet and swelling in, and
+        // last Spencer's at the round-44 levels: his clamps and cold gas, his booster's ignition, the separation and the spent
         // booster fading away below.
         private static CutsceneCue[] LaunchCues()
         {
             var cues = new List<CutsceneCue> { Sound(0.1f, CutsceneSound.BayDoors, 0.6f) };
-            for (int i = 0; i < OrbitCapsules; i++)
+            for (int i = 0; i < OrbitCapsules - 1; i++)
             {
-                float release = Game.UI.CapsuleDrop.Release(i);
-                cues.Add(Sound(release, CutsceneSound.ClampsRelease, 0.6f));
-                cues.Add(Sound(release, CutsceneSound.ColdGasPuff, 0.5f));
-                cues.Add(Sound(release + CapsuleIgnition, CutsceneSound.BoosterIgnition, 0.7f));
-                cues.Add(Sound(release + CapsuleSeparation, CutsceneSound.StageSeparation, 0.6f));
-                cues.Add(Sound(release + CapsuleSeparation, CutsceneSound.BoosterFade, 0.55f));
+                float cargo = Game.UI.CapsuleDrop.ReleaseAt(i, ReleaseGap);
+                cues.Add(Swell(cargo, CutsceneSound.ClampsRelease, CargoClampsLevel, CargoClampsSwell));
+                cues.Add(Swell(cargo, CutsceneSound.ColdGasPuff, CargoGasLevel, CargoGasSwell));
+                cues.Add(Swell(cargo + CapsuleIgnition, CutsceneSound.BoosterIgnition, CargoIgnitionLevel, CargoIgnitionSwell));
+                cues.Add(Swell(cargo + CapsuleSeparation, CutsceneSound.StageSeparation, CargoSeparationLevel, CargoSeparationSwell));
             }
 
+            float release = PathfinderRelease;
+            cues.Add(Sound(release, CutsceneSound.ClampsRelease, 0.6f));
+            cues.Add(Sound(release, CutsceneSound.ColdGasPuff, 0.5f));
+            cues.Add(Sound(release + CapsuleIgnition, CutsceneSound.BoosterIgnition, 0.7f));
+            cues.Add(Sound(release + CapsuleSeparation, CutsceneSound.StageSeparation, 0.6f));
+            cues.Add(Sound(release + CapsuleSeparation, CutsceneSound.BoosterFade, 0.55f));
             return Join(cues.ToArray());
         }
+
+        private static CutsceneCue Swell(float at, CutsceneSound sound, float strength, float fadeIn) => new CutsceneCue { At = at, Kind = CueKind.Sound, Sound = sound, Strength = strength, FadeIn = fadeIn };
 
         // The sounds each shot holds; a layer the next shot lists again carries on, any other fades out at the cut. The quake
         // rumble is no layer any more: it follows the shaking (CutsceneShot.ShakeRumble).
         private static CutsceneLayer[] OpeningLayers(int shot)
         {
-            float release = Game.UI.CapsuleDrop.Release(0);
+            float release = PathfinderRelease;
+            float firstCargo = Game.UI.CapsuleDrop.ReleaseAt(0, ReleaseGap);
+            float lastCargo = Game.UI.CapsuleDrop.ReleaseAt(OrbitCapsules - 2, ReleaseGap);
             switch (shot)
             {
                 case 0:
@@ -383,6 +406,7 @@ namespace Game.Editor
                     {
                         Hold(CutsceneSound.OrbitBed, 0f, BedLevel), Hold(CutsceneSound.MothershipHum, 0f, HumLevel),
                         Span(CutsceneSound.MothershipAlarm, 0.2f, release + 0.6f, 0.22f, 0.3f, 0.5f),
+                        Span(CutsceneSound.BoosterBurn, firstCargo + CapsuleIgnition, lastCargo + CapsuleSeparation + BurnTail, CargoBurnLevel, CargoBurnFadeIn, CargoBurnFadeOut),
                         Span(CutsceneSound.BoosterBurn, release + CapsuleIgnition, release + CapsuleSeparation + BurnTail, 0.4f, 0.15f, 0.4f),
                         Hold(CutsceneSound.PlasmaRoar, release + CapsuleSeparation + 1f, 0.3f, 2.5f),
                     };

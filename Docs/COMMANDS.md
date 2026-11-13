@@ -938,3 +938,10 @@ console and `Logs/probe_trace.txt`.
 ### Round 46 import (2026-11-12)
 
 - **Small-enemy close-up detail import only:** `unity command run_script --file Tools/PlayTest/Scripts/ApplySmallDetail46.cs --entry ApplySmallDetail46.Run --timeout_ms 900000 --timeout 960` syncs only the seventeen small-species exports (Bat included, so the four element skins too) and rebuilds their 38 art rows (with the corrupted skins) through `RebuildOnly`; same per-row report as round 45. Close-ups of small enemies work with `r45_boss_shots.sh` at an ortho half height of 0.45-0.9 (`Roller:0.8:Idle` to show its face uncurled).
+
+### Round 59 (2026-11-13)
+
+- **Salvo data only:** `ApplyCutsceneShots.cs` (as round 44) writes the cast's salvo (`_capsuleCount`, `_releaseGap`, `_pathfinderFlight`, `_cargoFlights`) and the launch shot's length, cues and layers from `ProjectGenerator.Cutscene.cs` / `.CutsceneSounds.cs`.
+- **Salvo stills and probes:** `CUT_OUT=<dir> bash Tools/PlayTest/r59_cut.sh <prefix> "<shot> <progress>" "z59:<name>|<shot> <progress>|<capsule> <nozzle|body|head|tail|mid|bay> <fov> [side|under]" probe:<file.cs> ...` (n2_cut.sh plus the save kept and restored, MD5 printed at both ends). The launch is shot 3 (11.5 s): progress = seconds / 11.5.
+- **Salvo probe:** `probe:r59_salvo_probe.cs` (shot from `Tools/PlayTest/r59_probe_arg.txt`, default 3): seeks the launch in 1/60 s steps and, per capsule, counts pops (a part switching on or off while 2 px or more of it is seen, hidden by the planet or the hull counted), jumps, axis and path turn rates (snap above 720 deg/s), where each capsule goes behind the rim and at what height, and boosters inside the planet; writes `Logs/r59/salvo_probe.txt` and `.csv`. `probe:r59_end_probe.cs` prints each capsule's end against the lens. `probe:r37_orbit_probe.cs` with `3` in `r37_probe_arg.txt` checks the launch against the hull.
+- **Played run with the sound recorder:** `OUT=Logs/r59 HOLD=8 bash Tools/PlayTest/r59_play.sh` (r43_play.sh plus `r59_sound_rec.cs`: every one-shot start under the cutscene audio with its first three volumes; the report counts the launch shot's swells against its cues).

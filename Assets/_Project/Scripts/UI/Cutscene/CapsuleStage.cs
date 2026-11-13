@@ -25,6 +25,9 @@ namespace Game.UI
         private const float RampSeconds = 0.12f;
         private const float BackDrift = 0.9f;
         private const float KeepShare = 0.55f;
+        // Round 59: the spent booster keeps that share of the capsule's speed at first and falls behind it over this time constant,
+        // so it drifts on in orbit for the rest of the shot instead of following the capsule into the planet.
+        private const float LagSeconds = 2f;
         private const float TumbleDegrees = 95f;
         private const float StrobeSize = 0.55f;
         // The strobe glows sit this share of their size out towards the camera, so the hull does not cut them in half.
@@ -103,7 +106,7 @@ namespace Game.UI
                 Vector3 axis = separationMount.rotation * (CutsceneMath.Hash(_index, 71) < 0.5f ? Vector3.right : Vector3.forward);
                 float t = sinceSeparation;
                 float half = TumbleCentre * scale;
-                Vector3 middle = separationMount.position + up * half + separationVelocity * (KeepShare * t) + up * (BackDrift * t);
+                Vector3 middle = separationMount.position + up * half + separationVelocity * (KeepShare * Lagged(t)) + up * (BackDrift * t);
                 Quaternion turned = Quaternion.AngleAxis(TumbleDegrees * t, axis) * separationMount.rotation;
                 pose = new Pose(middle - turned * Vector3.up * half, turned);
                 if (_art != null)
@@ -122,6 +125,12 @@ namespace Game.UI
             _plume.Pose(mouth, along, NozzleRadius * _scale, PlumeLength, Throttle(sinceIgnition, sinceSeparation, clock), clock, view);
             PoseStrobes(clock, view);
         }
+
+        /// <summary>
+        /// Round 59: how far, in seconds of the capsule's speed at the separation, a spent booster has carried on <paramref name="since"/>
+        /// seconds after it: as far as the time at first, then less and less, never more than <see cref="LagSeconds"/>.
+        /// </summary>
+        public static float Lagged(float since) => since <= 0f ? 0f : LagSeconds * (1f - Mathf.Exp(-since / LagSeconds));
 
         /// <summary>Where the bell's mouth is (for the smoke the owner trails behind it), along the burn.</summary>
         public static Vector3 MouthOf(Pose mount, float scale) => mount.position + mount.rotation * Vector3.up * (NozzleHeight * scale);

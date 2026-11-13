@@ -25,7 +25,7 @@ MonoBehaviour:
   _fieldLevel: {fileID: 0}
   _earthTheme: {fileID: 11400000, guid: 20c7d6fc5e9f2a34883b0bc3cb413318, type: 2}
   _undergroundTheme: {fileID: 11400000, guid: 2483e8d8ccfd4c2489b69988d3a79233, type: 2}
-  _capsuleCount: 1
+  _capsuleCount: 5
   _eyePairs: 300
   _droneCount: 8
   _swarmCount: 5
@@ -95,6 +95,34 @@ MonoBehaviour:
     Gloss: {fileID: 2800000, guid: 469635fe79ea0d841866803dd59036f6, type: 3}
     Emission: {fileID: 2800000, guid: 35ba76c2b34f33148a27a629a1217f97, type: 3}
     Smog: {fileID: 2800000, guid: 5e8306c89313ae44c88311590ee0b221, type: 3}
+  _releaseGap: 0.47
+  _pathfinderFlight:
+    _cargo: Spencer, the pathfinder
+    _aim: {x: -0.08, y: 0.32}
+    _scale: 1
+    _hullTint: {r: 1, g: 1, b: 1, a: 1}
+    _markings: {r: 0, g: 0, b: 0, a: 1}
+  _cargoFlights:
+  - _cargo: Base modules for the landing site
+    _aim: {x: 0.12, y: 0.42}
+    _scale: 0.8
+    _hullTint: {r: 1, g: 0.88, b: 0.66, a: 1}
+    _markings: {r: 1.2, g: 2.55, b: 3, a: 1}
+  - _cargo: Supplies for the western continent
+    _aim: {x: -1.1, y: 0.35}
+    _scale: 0.72
+    _hullTint: {r: 1, g: 0.88, b: 0.66, a: 1}
+    _markings: {r: 3, g: 2.04, b: 0.6, a: 1}
+  - _cargo: Supplies for the eastern continent
+    _aim: {x: 0.95, y: 0.5}
+    _scale: 0.72
+    _hullTint: {r: 1, g: 0.88, b: 0.66, a: 1}
+    _markings: {r: 3, g: 2.04, b: 0.6, a: 1}
+  - _cargo: Supplies for the northern continent
+    _aim: {x: -0.35, y: 0.9}
+    _scale: 0.72
+    _hullTint: {r: 1, g: 0.88, b: 0.66, a: 1}
+    _markings: {r: 3, g: 2.04, b: 0.6, a: 1}
   _flyers:
   - {fileID: 11400000, guid: 2e64d27e5f86a5f44b833ee41cf3e795, type: 2}
   _flyerCount: 1

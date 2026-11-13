@@ -129,15 +129,21 @@ namespace Game.Tests
             Assert.IsNotNull(_cutscene.Shots[arrival].Dialogue, "ORA speaks over the arrival");
             Assert.GreaterOrEqual(_cutscene.Shots[arrival].DialogueDelay, OrbitSet.ArrivalSeconds, "the text comes after the ship has settled");
             Assert.IsNull(_cutscene.Shots[launch].Dialogue, "no text over the launch");
-            Assert.AreEqual(1, _cutscene.Cast.CapsuleCount, "one capsule, one launch");
-
+            // Round 59 (the salvo): one launch of several capsules; the doors open and the spent booster fades once, every
+            // capsule sounds its own release, ignition and separation once (OpeningSalvoTests checks each capsule).
+            int capsules = _cutscene.Cast.CapsuleCount;
             CutsceneShot shot = _cutscene.Shots[launch];
-            foreach (CutsceneSound sound in new[] { CutsceneSound.BayDoors, CutsceneSound.ClampsRelease, CutsceneSound.ColdGasPuff, CutsceneSound.BoosterIgnition, CutsceneSound.StageSeparation, CutsceneSound.BoosterFade })
+            foreach (CutsceneSound sound in new[] { CutsceneSound.BayDoors, CutsceneSound.BoosterFade })
             {
                 Assert.AreEqual(1, Count(shot, sound), $"{sound} must sound exactly once");
             }
 
-            Assert.AreEqual(CapsuleDrop.Release(0), CueAt(shot, CutsceneSound.ClampsRelease), 0.001f, "the clamps let go as the capsule leaves");
+            foreach (CutsceneSound sound in new[] { CutsceneSound.ClampsRelease, CutsceneSound.ColdGasPuff, CutsceneSound.BoosterIgnition, CutsceneSound.StageSeparation })
+            {
+                Assert.AreEqual(capsules, Count(shot, sound), $"{sound} must sound once per capsule");
+            }
+
+            Assert.AreEqual(CapsuleDrop.ReleaseAt(0, _cutscene.Cast.ReleaseGap), CueAt(shot, CutsceneSound.ClampsRelease), 0.001f, "the clamps let go as the first capsule leaves");
         }
 
         [Test]

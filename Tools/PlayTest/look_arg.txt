@@ -1,1 +1,1 @@
-ArtSource\Previews\QA\r57_laser_recover_side.png
+Logs/r59/r39_play_hold.png

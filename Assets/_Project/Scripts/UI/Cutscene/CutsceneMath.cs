@@ -72,6 +72,22 @@ namespace Game.UI
             return Mathf.Max(0f, 1f - Mathf.Abs(at - centre) / (width * 0.5f));
         }
 
+        /// <summary>
+        /// Round 59: the larger of <paramref name="a"/> and <paramref name="b"/>, rounded over <paramref name="blend"/>: exactly the larger
+        /// once they are <paramref name="blend"/> or more apart, never below either, and smooth (no corner) through the crossing,
+        /// so a path pushed up to a floor bends onto it instead of breaking, and a path well above the floor is left as it is.
+        /// </summary>
+        public static float SmoothMax(float a, float b, float blend)
+        {
+            if (blend <= 0f)
+            {
+                return Mathf.Max(a, b);
+            }
+
+            float h = Mathf.Max(blend - Mathf.Abs(a - b), 0f) / blend;
+            return Mathf.Max(a, b) + h * h * blend * 0.25f;
+        }
+
         /// <summary>A stable pseudo-random number in 0..1 for an index, so seeded scatter never changes between runs.</summary>
         public static float Hash(int index, int salt)
         {

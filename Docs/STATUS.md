@@ -1,4 +1,4 @@
-﻿# STATUS.md
+| "Jumps" left (33)| Behind the rim (t, altitude) | 7.53 s 0.7 m, 7.77 s 1.1 m, 7.83 s 0.3 m, 7.92 s 0.5 m, Spencer 9.53 s 0.2 m || Path turn max (deg/s) | 77, 69, 95, 117, 74;| Axis turn max (deg/s) per capsule | 106, 77, 131, 146, 110;﻿# STATUS.md
 
 Working notes for continuing the project (updated 2026-11-02). Read CLAUDE.md and GAME_DESIGN.md first.
 
@@ -9107,3 +9107,102 @@ Medium, Hard and Psycho: identical verdict sequences in every run.
    target this reads as a soft arc. Lower `BeamLeadShare` if a dead-straight beam is wanted.
 3. Easy's Shattered now carries a boss share above Medium's (1.04 vs 1.0, on 0.68 health): fine for the probe, worth a look
    once continent 5's real finale level exists.
+
+## Round 59: the salvo (Remco's choice for round 44's open point 1) (2026-11-13)
+
+Not committed (the curator commits). No balance data touched; no full generator run (only the generator's Cutscene step via
+`ApplyCutsceneShots.cs`, which changed `CutsceneCast.asset` and `Cutscene_Opening.asset` only). `ArtSource/Exports` and
+`Tools/Blender` untouched, no Blender, no packages. Save `progress.json` **2eca347e** copied aside before every Play Mode run,
+restored and verified after each (MD5 2eca347eb0270fc1566d26e302abf525 at the end); the dev backup untouched.
+
+### 1. What happens now
+
+- The mothership launches once, as a **salvo of five capsules** 0.47 s apart: four cargo capsules first, **Spencer's last**.
+  The cargo capsules are the same imported capsule and booster at 0.72-0.8 of his size, in a warm cargo tint, with a slowly
+  breathing marker light (cyan for the base modules, amber for supplies). No new models.
+- In release order: the **base modules** for his landing site (ahead of him, just beyond his lane), then supplies for the
+  **western**, **eastern** and **northern** continents. Each peels off on its own way: one sweeps left to the western rim,
+  one right across the face, one up over the top; Spencer's and the base modules' go over the near rim.
+- **Timing:** Spencer's release moved from 1.2 s to 3.08 s of the launch shot, the shot from 9.5 to **11.38 s (+1.88 s)**.
+  Everything of his after his release (coast, ignition +1.7 s, separation +3.3 s, his cues, burn loop, plasma roar, rumble)
+  is unchanged relative to his release; the dialogue and every other shot are unchanged. The lens move is the same two keys,
+  run over the longer shot.
+
+### 2. Look rules
+
+- **Out of the bay:** each capsule now starts inside the hull (0.9 m higher, eased into the round-37 coast within 0.5 s, so
+  its ignition point and burn are where they were) and slides out from behind the cargo frame instead of appearing under it.
+  Its cold head glow and marker come up once it is out (0.3 s delay, 0.5 s ease); its trail grows in over 0.3 s after ignition.
+- **Out of the picture:** every capsule's path is kept over a floor above the planet (3 % of the radius, sinking 2 m under the
+  ground over the last 10 % of the fall, joined with a C1 smooth max), so a far-side capsule skims over the face to the rim
+  instead of cutting through the planet, and every capsule sinks **behind the rim** (probe: at 0.2-1.1 m altitude, never into
+  the visible face). Head, air glow, trails, sheath and shield glow fade out over the last 1.1 s of each fall.
+- **Spent boosters** no longer vanish when their capsule's fall ends: they drift on, tumbling, for the rest of the shot. They
+  keep the capsule's speed at first and fall behind it (`CapsuleStage.Lagged`, time constant 2 s), so none follows its
+  capsule into the planet (before the fix: 456 probe steps inside the planet).
+- Plumes leave the booster's `Nozzle_1` socket as before; nothing new uses a URP default material (glows and lines through
+  `SpaceKit`, the tint on a copy of the capsule's own material).
+
+### 3. Sound
+
+- Spencer's cues and levels are round 44's, moved with his release. Each cargo capsule sounds its clamps (0.22), cold gas
+  (0.2), ignition (0.28) and separation (0.2), all **swelling in** (0.06-0.2 s fade-ins); the spent-booster fade is his alone.
+  No cargo cue lands within 0.18 s of one of his (0.5 s apart put a cargo separation 0.1 s after his ignition; the test caught it, the gap is now 0.47 s). A low burn bed (0.15) runs under the cargo burns and rises into his (0.4).
+- New `CutsceneCue.FadeIn` (0 = hard start, every other cue unchanged); `CutsceneAudio` plays such cues on eight swell sources
+  of their own (a free one first), the volume eased up from 0 and following the outro.
+
+### 4. Data and code
+
+- New `Game.Levels.CapsuleFlight` (cargo label, aim in planet radii, scale, hull tint, HDR marker colour). `CutsceneCast`:
+  `_capsuleCount` 5 (no longer scaled by the Low profile: the launch sounds are cued per capsule), `_releaseGap` 0.47,
+  `_pathfinderFlight`, `_cargoFlights` (4); `OnValidate` warns when the flights do not match the count.
+- Spencer's aim moved slightly back, (-0.078, 0.251) -> (-0.08, 0.32), so he too sinks behind the rim before his fall ends
+  (otherwise the floor kept him just over it and the probe saw him vanish at 19 px).
+- `CapsuleDrop`: per-capsule flights, `ReleaseAt`/`PathfinderRelease`, `LandingPoint`, `EndFade`, `GlowIn`, the emerge, the
+  floor, the marker, rumble weight 1 for Spencer and 0.3 for cargo. `CapsuleStage.Lagged`. `CutsceneMath.SmoothMax`.
+  `OrbitSet.PlanetCentre`/`PlanetRadius` public. Generator: `ProjectGenerator.Cutscene.cs` (salvo data, shot length from the
+  salvo), `ProjectGenerator.CutsceneSounds.cs` (cargo cues with swells, cargo burn layer, Spencer's cues from his release).
+
+### 5. Checks
+
+| Probe (`r59_salvo_probe.cs`, launch shot sought in 1/60 s steps, all 5 capsules) | Result |
+| --- | --- |
+| Pops (a part switching on/off while >= 2 px of it is seen) | first pass 22, **final 0** |
+| Axis turn max (deg/s) per capsule | 106, 77, 131, 146, 110; snaps (> 720 deg/s) **0** |
+| Path turn max (deg/s) | 77, 70, 99, 120, 73; snaps **0** (an intermediate floor gave 2 per capsule at ignition: a 2.5 cm bias of a first smooth max, fixed) |
+| Behind the rim (t, altitude) | 7.53 s 0.7 m, 7.78 s 1.1 m, 7.88 s 0.3 m, 8.00 s 0.5 m, Spencer 9.65 s 0.2 m |
+| Boosters inside the planet | 456 steps -> **0** |
+| "Jumps" left (32) | capsules sliding out from behind the frame (9-point share) and glow centres crossing the rim; not pops |
+
+- `r37_orbit_probe.cs` on the launch: no plume or sprite hits on the hull; capsule bodies "hit" the hull only on their release
+  step (they start inside the bay by design).
+- Sounds: new `OpeningSalvoTests` (each capsule's launch sounds exactly once at its moments, cargo quieter and swelling, no
+  cargo cue on one of Spencer's, his sequence and the +2 s); `OpeningRound44Tests.TheMothership_FliesIn_ThenLaunchesOnce`
+  updated (doors and booster fade once, the rest once per capsule). Played-run recorder (`r59_sound_rec.cs`): launch shot
+  **16 swell starts (16 cued), each from volume 0.000**, 6 hard starts (6 cued).
+- EditMode suite on w6 (`r34b_editmode_worker.sh 6 "Game.Tests"`): **887 tests, 835 passed, 52 skipped, 0 failed**
+  (includes the 10 new `OpeningSalvoTests`; a first run on the 0.5 s gap failed `NoCargoCue_LandsOnOneOfSpencers`, fixed).
+- **Played run of the whole opening (`r59_play.sh`, HOLD=8), twice (0.5 s gap, then the final 0.47 s): all 17 shots, handed
+  off into the first level, console 0 errors, 0 warnings both times.** Recompile: 0 errors, 0 warnings from this round.
+
+### 6. Stills (`ArtSource/Previews/QA/r59_salvo_*`, 1920x1080)
+
+- `r59_salvo_3_0p2548` (2.9 s: the salvo leaving the bay, four capsules under the ship, the first lit),
+  `_1_leaving_bay_close` (the bay: one capsule still inside, the next out under the frame), `_3_0p4244` (4.83 s: Spencer's
+  ignition, the cargo burning below), `_3_0p4833`, `_3_0p5536` (5.5/6.3 s: trajectories peeling off left, right and over
+  the top while his booster burns), `_3_0p6327` (7.2 s: cargo at the rims, Spencer falling, spent boosters drifting).
+- Close renders: `_2_spencer_ignition_nozzle_x`, `_3_spencer_burn_nozzle_x`, `_4_cargo_burn_nozzle_x` (plume grows out of the
+  bell, soft tip), `_5_cargo_marker_close` (tint and amber marker), `_6_spencer_trail_head_x` (trail joined under the head
+  glow), `_7_spencer_trail_tail_x` (tail fades to nothing), `_8_cargo_trail_mid_x`, `_9_cargo_rim_x` (sinking behind the rim).
+- Pixel crops of game frames: `r59_salvo_crop_spencer_ignition_x4`, `_burns_x3`, `_cargo_trails_x3`, `_rim_x3`. Looked at:
+  plumes attached to their bells, no hard plume or trail ends, nothing detached.
+
+### Open points (round 59)
+
+1. **No field tie-in built.** The landing shot opens from black on a close lens and the base timelapse looks down at the
+   ground, so a cargo streak in the sky would not be seen (tried and removed). A landed cargo pod near the base would tie the
+   modules to the salvo, but it needs a spot clear of decor, Spencer's walk and the builders' parking ring: say if you want it.
+2. ORA still says Spencer "goes down first"; in the picture the base modules go first. A word change is yours.
+3. Marker lights read in close-ups; at the orbit lens the cargo capsules read mainly by size, tint and their separate ways.
+4. Spent boosters stay in the frame as small tumbling grey shapes to the end of the shot (five now instead of one).
+5. To judge by ear: the cargo cue levels and swells (`Cargo*` in `ProjectGenerator.CutsceneSounds.cs`) and the cargo burn bed.

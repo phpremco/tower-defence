@@ -9,12 +9,12 @@ namespace Game.UI
     /// Arrival in orbit: S-69-CRYS fills the lower half of the picture as a wide curve of land, cloud and blue rim. Round 44
     /// (Remco: the ship should fly into the screen, stop, then launch once): in the arrival shot the mothership comes in from
     /// beside the camera nose first, brakes on its forward thrusters and settles over the planet; in the launch shot it holds
-    /// there, its habitat ring turning and its engines idling, and releases the capsule once, which burns down into the
-    /// atmosphere. The cast's <c>Mothership</c> prefab replaces the procedural ship when set. Posed from time alone.
+    /// there, its habitat ring turning and its engines idling, and launches once: a salvo of cargo capsules and Spencer's
+    /// last (round 59), each burning down into the atmosphere on its own way. The cast's <c>Mothership</c> prefab replaces the procedural ship when set. Posed from time alone.
     /// </summary>
     public sealed class OrbitSet : ICutsceneSet
     {
-        private const float PlanetRadius = 60f;
+        public const float PlanetRadius = 60f;
         private const float DegreesPerSecond = 0.35f;
         private const float StartTurn = 4f;
         private const float CloudAlpha = 1f;
@@ -46,7 +46,7 @@ namespace Game.UI
         private const float RunningLightDim = 0.08f;
         // A running light's glow sits this share of its size out towards the camera, so the hull it is mounted on does not cut it in half.
         private const float RunningLightLift = 0.5f;
-        private static readonly Vector3 PlanetCentre = new Vector3(0f, -75f, 70f);
+        public static readonly Vector3 PlanetCentre = new Vector3(0f, -75f, 70f);
         // Where the ship settles and holds for the launch.
         private static readonly Vector3 ShipStart = new Vector3(-9f, 1f, 30f);
 

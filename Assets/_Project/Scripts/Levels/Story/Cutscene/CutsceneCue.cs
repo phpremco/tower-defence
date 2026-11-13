@@ -20,5 +20,11 @@ namespace Game.Levels
 
         /// <summary>Sound: volume. Shake: how hard, one is the hardest hit.</summary>
         [Range(0f, 1f)] public float Strength;
+
+        /// <summary>
+        /// Sound: seconds the sound takes to swell from silence to its volume (round 59: the salvo's quieter launches start soft);
+        /// zero starts it at full volume.
+        /// </summary>
+        [Min(0f)] public float FadeIn;
     }
 }

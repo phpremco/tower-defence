@@ -15,6 +15,9 @@ namespace Game.UI
     {
         private const int OneShotVoices = 8;
         private const int TimedVoices = 4;
+        // Round 59: one-shots that swell in from silence (the salvo's quieter launches), each on a source of its own so the swell
+        // shapes that sound alone.
+        private const int SwellVoices = 8;
         private const float MusicFadeSeconds = 1.6f;
         private const float WonderVolume = 0.5f;
         private const float TensionVolume = 0.42f;
@@ -37,6 +40,10 @@ namespace Game.UI
         // Round 44: one-shots a set starts at a given point of their file (a burrow's close lands on the frame it shuts).
         private AudioSource[] _timed;
         private int _nextTimed;
+        private AudioSource[] _swells;
+        private float[] _swellStart;
+        private float[] _swellSeconds;
+        private float[] _swellEnd;
         private AudioSource[] _voices;
         private int _nextVoice;
         private int _cursor;
@@ -74,6 +81,15 @@ namespace Game.UI
                 _timed[i] = NewSource($"Timed{i}", false);
             }
 
+            _swells = new AudioSource[SwellVoices];
+            _swellStart = new float[SwellVoices];
+            _swellSeconds = new float[SwellVoices];
+            _swellEnd = new float[SwellVoices];
+            for (int i = 0; i < _swells.Length; i++)
+            {
+                _swells[i] = NewSource($"Swell{i}", false);
+            }
+
             _musicA = NewSource("MusicA", true);
             _musicB = NewSource("MusicB", true);
         }
@@ -89,6 +105,12 @@ namespace Game.UI
             CutsceneSoundChannel channel = CutsceneSoundChannel.Effects;
             AudioClip clip = cue.Clip != null ? cue.Clip : Resolve(cue.Sound, true, out gain, out pitch, out channel, out bool _);
             float strength = cue.Strength > 0f ? cue.Strength : 1f;
+            if (cue.FadeIn > 0f)
+            {
+                Swell(clip, strength * gain, pitch, channel, cue.FadeIn);
+                return;
+            }
+
             Play(clip, strength * gain, pitch, channel);
         }
 
@@ -235,6 +257,15 @@ namespace Game.UI
                 }
             }
 
+            if (_swells != null)
+            {
+                for (int i = 0; i < _swells.Length; i++)
+                {
+                    _swells[i].Stop();
+                    _swellEnd[i] = 0f;
+                }
+            }
+
             _snap = true;
             _fadingOut = false;
             _outro = 1f;
@@ -306,6 +337,48 @@ namespace Game.UI
             {
                 FadeAll(Time.unscaledDeltaTime);
             }
+
+            PoseSwells(Time.unscaledTime);
+        }
+
+        // Each swelling one-shot rises from silence over its own fade-in, eased, and follows the outro like every voice.
+        private void PoseSwells(float now)
+        {
+            for (int i = 0; i < _swells.Length; i++)
+            {
+                if (now < _swellEnd[i])
+                {
+                    _swells[i].volume = CutsceneMath.Fade(now - _swellStart[i], _swellSeconds[i]) * _outro;
+                }
+            }
+        }
+
+        // A one-shot that swells in from silence over seconds, on a free swell source (or the one closest to its end).
+        private void Swell(AudioClip clip, float volume, float pitch, CutsceneSoundChannel channel, float seconds)
+        {
+            if (clip == null || _swells == null)
+            {
+                return;
+            }
+
+            float now = Time.unscaledTime;
+            int pick = 0;
+            for (int i = 1; i < _swells.Length; i++)
+            {
+                if (_swellEnd[i] < _swellEnd[pick])
+                {
+                    pick = i;
+                }
+            }
+
+            AudioSource source = _swells[pick];
+            source.Stop();
+            source.pitch = pitch;
+            source.volume = 0f;
+            source.PlayOneShot(clip, Mathf.Clamp(volume, 0f, SoundSet.MaxGain) * ChannelGain(channel));
+            _swellStart[pick] = now;
+            _swellSeconds[pick] = seconds;
+            _swellEnd[pick] = now + clip.length / Mathf.Max(0.01f, Mathf.Abs(pitch));
         }
 
         private void FadeAll(float delta)

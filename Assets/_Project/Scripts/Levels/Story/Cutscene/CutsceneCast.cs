@@ -32,7 +32,7 @@ namespace Game.Levels
         [SerializeField] private VisualTheme _undergroundTheme;
 
         [Header("Counts (scaled down by the Low profile)")]
-        [Tooltip("Round 44 (Remco: the launch must happen once): how many capsules the mothership releases, in one launch.")]
+        [Tooltip("Round 59 (the salvo): how many capsules the mothership releases in its one launch: the cargo capsules first, the pathfinder's (Spencer's) last. Not scaled by the Low profile: the launch sounds are cued per capsule.")]
         [SerializeField] [Min(1)] private int _capsuleCount = 1;
         [SerializeField] [Min(1)] private int _eyePairs = 300;
         [SerializeField] [Min(1)] private int _droneCount = 8;
@@ -72,6 +72,14 @@ namespace Game.Levels
         [Tooltip("The Earth of the prologue painted in Blender; incomplete maps fall back to the painter.")]
         [SerializeField] private EarthMaps _earthMaps = new EarthMaps();
         [SerializeField] private EarthMaps _earthMapsLow = new EarthMaps();
+
+        [Header("Orbit launch (round 59: the salvo)")]
+        [Tooltip("Seconds between two capsules leaving the bay, so each has coasted clear before the next appears.")]
+        [SerializeField] [Min(0.3f)] private float _releaseGap = 0.5f;
+        [Tooltip("Spencer's capsule: it leaves last and the lens follows it down.")]
+        [SerializeField] private CapsuleFlight _pathfinderFlight = new CapsuleFlight();
+        [Tooltip("The cargo capsules in release order, one per capsule before the pathfinder's (capsule count minus one): the base modules for the landing site and supplies for the other continents.")]
+        [SerializeField] private CapsuleFlight[] _cargoFlights = new CapsuleFlight[0];
 
         [Header("Attack")]
         [Tooltip("Flyers that hover over the brood.")]
@@ -130,6 +138,16 @@ namespace Game.Levels
         public VisualTheme EarthTheme => _earthTheme;
         public VisualTheme UndergroundTheme => _undergroundTheme;
         public int CapsuleCount => _capsuleCount;
+
+        /// <summary>Seconds between two capsules leaving the bay.</summary>
+        public float ReleaseGap => _releaseGap;
+
+        /// <summary>Spencer's capsule, released last.</summary>
+        public CapsuleFlight PathfinderFlight => _pathfinderFlight ?? (_pathfinderFlight = new CapsuleFlight());
+
+        /// <summary>The cargo capsules in release order, before the pathfinder's.</summary>
+        public CapsuleFlight[] CargoFlights => _cargoFlights ?? System.Array.Empty<CapsuleFlight>();
+
         public int EyePairs => _eyePairs;
         public int DroneCount => _droneCount;
         public int SwarmCount => _swarmCount;
@@ -174,6 +192,11 @@ namespace Game.Levels
             if (_swarm == null || _swarm.Length == 0)
             {
                 Debug.LogWarning($"Cutscene cast '{name}' has no swarm creatures.", this);
+            }
+
+            if (CargoFlights.Length != _capsuleCount - 1)
+            {
+                Debug.LogWarning($"Cutscene cast '{name}' launches {_capsuleCount} capsules but describes {CargoFlights.Length} cargo flights; it needs one per capsule before the pathfinder's.", this);
             }
 
             foreach (FaceCurve curve in LowerFace)

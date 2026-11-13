@@ -37,13 +37,27 @@ namespace Game.Editor
         private const int BroodWalkers = 5;
         private const int BroodFlyers = 1;
 
-        // Round 44 (Remco: "the launching should only launch once"): the mothership releases one capsule, Spencer's, once
-        // (CapsuleDrop.Release gives the moment).
-        private const int OrbitCapsules = 1;
+        // Round 44 (Remco: "the launching should only launch once"): the mothership launches once. Round 59 (Remco chose the
+        // salvo): in that launch it releases the cargo capsules first, ReleaseGap apart, and Spencer's capsule last
+        // (CapsuleDrop.ReleaseAt gives each moment); his release and everything after it move by the salvo's length.
+        private const int OrbitCapsules = 5;
+        // 0.47 s keeps every cargo cue at least 0.18 s off each of Spencer's (0.5 s put a cargo separation 0.1 s after his ignition).
+        private const float ReleaseGap = 0.47f;
+        // The round-44 launch shot, which released Spencer's capsule first.
+        private const float SingleLaunchSeconds = 9.5f;
+        // The cargo capsules: smaller than Spencer's, a warm cargo livery and a marker light; the base modules for his landing site
+        // carry the colony's cyan, the supplies for the other continents amber. Each aim (planet radii across and away from the
+        // lens) lies behind the planet's rim, so it sinks out of sight; Spencer's is the round-44 lane set a little further back
+        // (round-44 aim -0.078, 0.251), so he too is behind the rim before his fall ends.
+        private static readonly Vector2 PathfinderAim = new Vector2(-0.08f, 0.32f);
+        private const float CargoScale = 0.72f;
+        private const float BaseModulesScale = 0.8f;
+        private static readonly Color CargoHull = new Color(1f, 0.88f, 0.66f);
+        private static readonly Color BaseModulesMarker = new Color(1.2f, 2.55f, 3f);
+        private static readonly Color SuppliesMarker = new Color(3f, 2.04f, 0.6f);
         // The arrival shot: the ship's fly-in, then ORA's lines over it holding still; the launch shot after it has no text.
         private const float ArrivalReadDelay = 0.5f;
         private const float ArrivalCameraTail = 1f;
-        private const float LaunchSeconds = 9.5f;
         // Round 44 (Remco: "the queen is screaming, but he doesn't react to it"): the attack shot cuts to Spencer this long into
         // her scream, so his startle answers it on screen.
         private const float ScreamCut = 0.8f;
@@ -156,6 +170,16 @@ namespace Game.Editor
 
             so.FindProperty("_flyerCount").intValue = BroodFlyers;
             so.FindProperty("_capsuleCount").intValue = OrbitCapsules;
+            so.FindProperty("_releaseGap").floatValue = ReleaseGap;
+            WriteFlight(so.FindProperty("_pathfinderFlight"), new CapsuleFlight("Spencer, the pathfinder", PathfinderAim, 1f, Color.white, Color.black));
+            CapsuleFlight[] cargo = CargoFlights();
+            SerializedProperty flights = so.FindProperty("_cargoFlights");
+            flights.arraySize = cargo.Length;
+            for (int i = 0; i < cargo.Length; i++)
+            {
+                WriteFlight(flights.GetArrayElementAtIndex(i), cargo[i]);
+            }
+
             so.FindProperty("_swarmCount").intValue = BroodWalkers;
             so.FindProperty("_earthTheme").objectReferenceValue = CreateEarthTheme();
             so.FindProperty("_undergroundTheme").objectReferenceValue = CreateUndergroundTheme();
@@ -164,6 +188,30 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
             return cast;
         }
+
+        // The salvo before Spencer's capsule, in release order: the base modules go down first, to his landing site, then the
+        // supplies peel off to the west, the east and the north.
+        private static CapsuleFlight[] CargoFlights() => new[]
+        {
+            new CapsuleFlight("Base modules for the landing site", new Vector2(0.12f, 0.42f), BaseModulesScale, CargoHull, BaseModulesMarker),
+            new CapsuleFlight("Supplies for the western continent", new Vector2(-1.1f, 0.35f), CargoScale, CargoHull, SuppliesMarker),
+            new CapsuleFlight("Supplies for the eastern continent", new Vector2(0.95f, 0.5f), CargoScale, CargoHull, SuppliesMarker),
+            new CapsuleFlight("Supplies for the northern continent", new Vector2(-0.35f, 0.9f), CargoScale, CargoHull, SuppliesMarker),
+        };
+
+        private static void WriteFlight(SerializedProperty property, CapsuleFlight flight)
+        {
+            property.FindPropertyRelative("_cargo").stringValue = flight.Cargo;
+            property.FindPropertyRelative("_aim").vector2Value = flight.Aim;
+            property.FindPropertyRelative("_scale").floatValue = flight.Scale;
+            property.FindPropertyRelative("_hullTint").colorValue = flight.HullTint;
+            property.FindPropertyRelative("_markings").colorValue = flight.Markings;
+        }
+
+        // The launch shot is the round-44 one plus as long as the cargo capsules hold Spencer's release back.
+        private static float PathfinderRelease => Game.UI.CapsuleDrop.PathfinderRelease(OrbitCapsules, ReleaseGap);
+
+        private static float LaunchSeconds => SingleLaunchSeconds + PathfinderRelease - Game.UI.CapsuleDrop.ReleaseAt(0, ReleaseGap);
 
         // The livery texture with mipmaps and anisotropic filtering, so the wordmark stays sharp on the flank seen at an angle.
         private static Texture2D HullLivery()
@@ -297,8 +345,9 @@ namespace Game.Editor
                 },
                 new ShotSpec
                 {
-                    // The launch, once and without text: the capsule leaves the bay, burns, separates and falls into the air.
-                    // Round 36: the lens pushes in a little and tips down into the drop over the shot.
+                    // The launch, once and without text: the capsules leave the bay one after another, burn, separate and fall into
+                    // the air, Spencer's last (round 59: the salvo). Round 36: the lens pushes in a little and tips down into the drop
+                    // over the shot.
                     Set = CutsceneSet.Orbit, Action = CutsceneAction.CapsulesFall, Seconds = LaunchSeconds, FadeOut = 1.5f,
                     Keys = new[] { Key(0f, CameraAnchor.World, new Vector3(0f, 2f, -6f), new Vector3(0f, -9f, 40f), 46f), Key(1f, CameraAnchor.World, new Vector3(1f, 1.2f, -0.5f), new Vector3(-0.5f, -9.4f, 40f), 43f) },
                 },
@@ -595,6 +644,7 @@ namespace Game.Editor
                 cue.FindPropertyRelative("Sound").intValue = (int)cues[i].Sound;
                 cue.FindPropertyRelative("Clip").objectReferenceValue = null;
                 cue.FindPropertyRelative("Strength").floatValue = cues[i].Strength;
+                cue.FindPropertyRelative("FadeIn").floatValue = cues[i].FadeIn;
             }
         }
     }
