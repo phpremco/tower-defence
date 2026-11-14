@@ -100,11 +100,6 @@
             "Weight": 1.7696796655654907
         },
         {
-            "Threat": "pack",
-            "Tower": "Cannon",
-            "Weight": 1.5083895921707153
-        },
-        {
             "Threat": "plated",
             "Tower": "PulseRifle",
             "Weight": 1.3946722745895386

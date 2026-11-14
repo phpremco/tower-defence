@@ -78,17 +78,17 @@
             "X": [
                 34,
                 35,
-                32,
-                33,
                 34,
+                33,
+                32,
                 33
             ],
             "Y": [
                 3,
                 3,
-                3,
-                3,
                 4,
+                3,
+                3,
                 4
             ]
         }
@@ -107,7 +107,7 @@
     "FieldCoverBelow": 1.0,
     "HarvesterCover": 1.0,
     "HarvesterShare": 0.5,
-    "RepairDroneWear": 0.05000000074505806,
+    "RepairDroneWear": 9.0,
     "AttackDroneAfterTowers": 12,
     "GateUpgradeBias": 0.0,
     "AllowSell": true

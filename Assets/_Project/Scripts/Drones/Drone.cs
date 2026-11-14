@@ -213,7 +213,9 @@ namespace Game.Drones
         private void UpdateRepair()
         {
             _retarget -= Time.deltaTime;
-            bool done = _repairTarget != null && (!_repairTarget.IsAlive || _repairTarget.HealthFraction >= 1f);
+            // Whole, wrecked, or no longer on the field: a tower sold under repair is still a live object to this reference, so
+            // the registry decides, and the dispatcher is asked again at once instead of at the next retarget.
+            bool done = _repairTarget != null && (!_repairTarget.IsAlive || _repairTarget.HealthFraction >= 1f || !_world.Structures.Contains(_repairTarget));
             if (_repairTarget == null || done || _retarget <= 0f)
             {
                 _retarget = RetargetSeconds;

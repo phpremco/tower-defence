@@ -83,6 +83,7 @@ for stage in "$@"; do
     fit)        echo "== fit: calibration from the records"; editmode_test CalibrationFitTests; sed -n '1,40p' Tools/PlayTest/calibration.txt ;;
     apply)      echo "== apply: calibration asset (refused below the bar)"; run_script Tools/PlayTest/Scripts/ApplyCalibration.cs ApplyCalibration.Run 120000 180 ;;
     apply-force) echo "== apply: calibration asset, bar override"; run_script Tools/PlayTest/Scripts/ApplyCalibration.cs ApplyCalibration.Force 120000 180 ;;
+    apply-keep) echo "== apply: inputs re-stamped, efficiencies and factors kept (round 62)"; run_script Tools/PlayTest/Scripts/ApplyCalibration.cs ApplyCalibration.Keep 120000 180 ;;
     solve)      echo "== solve: waves against the calibration"; run_script Tools/PlayTest/Scripts/ApplyWaves.cs ApplyWaves.Run 900000 960 ;;
     search)     echo "== search: plans per cell (stage A)"; editmode_test PlanSearchTests; cat Tools/PlayTest/plans_summary.txt ;;
     replay)     echo "== replay: searched plans (stage B)"; playmode_stage replay Replay_SearchedPlans_EveryCell ;;

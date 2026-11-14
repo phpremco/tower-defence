@@ -231,7 +231,9 @@ namespace Game.UI
             // A wrecked gate comes back at once when paid for; a wrecked tower is scrapped and built again.
             string wreck = tower.Definition.BlocksGroundEnemies ? "wrecked - rebuild restores it at once, full health, same level" : "wrecked";
             string state = tower.IsWrecked ? wreck : $"HP {Mathf.CeilToInt(tower.Health.Current)}/{Mathf.CeilToInt(tower.Health.Max)}";
-            _info.text = $"{tower.Definition.DisplayName}  {(tower.CanUpgrade ? $"Lv {tower.LevelIndex + 1}" : "MAX")}  {state}" + UpgradePreview(tower);
+            // What it does against ground and sky, from its data: a gun that aims up but barely hurts flyers says so here.
+            string reach = TargetRead.Label(tower.Definition);
+            _info.text = $"{tower.Definition.DisplayName}  {(tower.CanUpgrade ? $"Lv {tower.LevelIndex + 1}" : "MAX")}  {state}{(reach.Length > 0 ? "  -  " + reach : string.Empty)}" + UpgradePreview(tower);
 
             if (!_wasOpen)
             {

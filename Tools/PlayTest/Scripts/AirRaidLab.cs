@@ -13,7 +13,7 @@ using UnityEditor;
 /// health as spawned, the ledger's pressure on ground and sky and what the ledger bought for it (so one sees whether a raid was
 /// sized against sky guns or against the guns that merely reach the air), next to the multiplier the stored waves carry.
 /// Optional overrides in Tools/PlayTest/r61_lab_arg.txt, one per line: "air.&lt;TowerId&gt;=0.2" sets a tower's air share in
-/// memory, "rule.&lt;Field&gt;=0.5" a float field of BalanceRules, "levels=C1_03,C1_04" narrows the levels, "label=name" names the output Tools/PlayTest/r61_lab_&lt;name&gt;.txt. Run:
+/// memory, "rule.&lt;Field&gt;=0.5" a float field of BalanceRules, "levels=C1_03,C1_04" narrows the levels, "raid.C1_04=2,1.2,1.4,1.2" a level's AirRaidScale (round 62), "eff.&lt;TowerId&gt;=" a calibrated efficiency and "cal.&lt;Field&gt;=" a fitted factor (round 62), "label=name" names the output Tools/PlayTest/r61_lab_&lt;name&gt;.txt. Run:
 /// unity command run_script --file Tools/PlayTest/Scripts/AirRaidLab.cs --entry AirRaidLab.Run --timeout_ms 900000 --timeout 960
 /// </summary>
 public static class AirRaidLab
@@ -26,18 +26,46 @@ public static class AirRaidLab
         var upgrades = AssetDatabase.LoadAssetAtPath<Game.Economy.UpgradeCatalog>("Assets/_Project/Data/Upgrades/UpgradeCatalog.asset");
         var unlocks = AssetDatabase.LoadAssetAtPath<Game.Economy.UnlockTable>("Assets/_Project/Data/Unlocks/UnlockTable.asset");
         var calibration = AssetDatabase.LoadAssetAtPath<BalanceCalibration>(BalanceCalibration.AssetPath);
-        BalanceRules rules = Game.Editor.BalanceSheet.Rules;
+        // A fresh rules instance (round 62): the generator shares BalanceSheet.Rules, so an override written into it stayed in the
+        // editor until the next domain reload, and the calibration copies the rules when the model is built, so an override set
+        // after that never reached this run (round 61 set it there: its rule.* runs showed the previous run's override).
+        BalanceRules rules = BalanceRules.Default;
+        string[] args = File.Exists(ArgPath) ? File.ReadAllLines(ArgPath) : new string[0];
+        var notes = new List<string>();
+        foreach (string raw in args)
+        {
+            string[] kv = raw.Trim().Split('=');
+            string key = kv[0].Trim();
+            if (kv.Length != 2 || !key.StartsWith("rule."))
+            {
+                continue;
+            }
+
+            System.Reflection.FieldInfo field = typeof(BalanceRules).GetField(key.Substring(5));
+            if (field != null && field.FieldType == typeof(float))
+            {
+                notes.Add($"{field.Name} {field.GetValue(rules)} -> {kv[1].Trim()}");
+                field.SetValue(rules, float.Parse(kv[1].Trim(), CultureInfo.InvariantCulture));
+            }
+            else if (field != null && field.FieldType == typeof(float[]))
+            {
+                notes.Add($"{field.Name} -> {kv[1].Trim()}");
+                field.SetValue(rules, Array.ConvertAll(kv[1].Trim().Split(','), part => float.Parse(part, CultureInfo.InvariantCulture)));
+            }
+        }
+
         CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, rules, calibration);
+        rules = model.Rules;
         foreach (string guid in AssetDatabase.FindAssets("t:EnemyDefinition", new[] { "Assets/_Project/Data/Enemies" }))
         {
             var enemy = AssetDatabase.LoadAssetAtPath<Game.Enemies.EnemyDefinition>(AssetDatabase.GUIDToAssetPath(guid));
             model.Enemies[enemy.name] = BalanceLedger.Stats(enemy);
         }
 
+        var raidScales = new Dictionary<string, float[]>();
         string label = "run";
         HashSet<string> wanted = null;
-        var notes = new List<string>();
-        foreach (string raw in File.Exists(ArgPath) ? File.ReadAllLines(ArgPath) : new string[0])
+        foreach (string raw in args)
         {
             string[] kv = raw.Trim().Split('=');
             if (kv.Length != 2)
@@ -54,15 +82,23 @@ public static class AirRaidLab
             {
                 wanted = new HashSet<string>(kv[1].Trim().Split(','));
             }
-            else if (key.StartsWith("rule.") && typeof(BalanceRules).GetField(key.Substring(5)) is System.Reflection.FieldInfo field && field.FieldType == typeof(float))
+            else if (key.StartsWith("raid."))
             {
-                notes.Add($"{field.Name} {field.GetValue(rules)} -> {kv[1].Trim()}");
-                field.SetValue(rules, float.Parse(kv[1].Trim(), CultureInfo.InvariantCulture));
+                // Round 62: a level's AirRaidScale (Easy to Psycho) in memory, "raid.C1_04=2,1.2,1.4,1.2".
+                raidScales[key.Substring(5)] = Array.ConvertAll(kv[1].Trim().Split(','), part => float.Parse(part, CultureInfo.InvariantCulture));
+                notes.Add($"{key.Substring(5)} AirRaidScale -> {kv[1].Trim()}");
             }
-            else if (key.StartsWith("rule.") && typeof(BalanceRules).GetField(key.Substring(5)) is System.Reflection.FieldInfo list && list.FieldType == typeof(float[]))
+            else if (key.StartsWith("eff.") && model.Towers.TryGetValue(key.Substring(4), out TowerStats fitted))
             {
-                notes.Add($"{list.Name} -> {kv[1].Trim()}");
-                list.SetValue(rules, Array.ConvertAll(kv[1].Trim().Split(','), part => float.Parse(part, CultureInfo.InvariantCulture)));
+                // Round 62: a tower's calibrated efficiency in memory ("eff.PulseRifle=0.963"): what applying a new fit would do to the waves.
+                notes.Add($"{fitted.Id} efficiency {fitted.Efficiency.ToString("0.###", CultureInfo.InvariantCulture)} -> {kv[1].Trim()}");
+                fitted.Efficiency = float.Parse(kv[1].Trim(), CultureInfo.InvariantCulture);
+            }
+            else if (key.StartsWith("cal.") && typeof(BalanceRules).GetField(key.Substring(4)) is System.Reflection.FieldInfo fit && fit.FieldType == typeof(float))
+            {
+                // Round 62: a fitted factor on the model's own copy of the rules ("cal.SiegeFactor=1.445", "cal.QueueGuardShare=0.5").
+                notes.Add($"{fit.Name} {fit.GetValue(rules)} -> {kv[1].Trim()}");
+                fit.SetValue(rules, float.Parse(kv[1].Trim(), CultureInfo.InvariantCulture));
             }
             else if (key.StartsWith("air.") && model.Towers.TryGetValue(key.Substring(4), out TowerStats tower))
             {
@@ -93,6 +129,11 @@ public static class AirRaidLab
                 continue;
             }
 
+            if (raidScales.TryGetValue(key, out float[] raidScale))
+            {
+                script.AirRaidScale = raidScale;
+            }
+
             List<List<WaveSpec>> sets = model.BuildWaves(index, script, out _);
             for (int d = 0; d < sets.Count; d++)
             {
@@ -104,6 +145,7 @@ public static class AirRaidLab
                 int moved = 0;
                 float airTotal = 0f;
                 float allTotal = 0f;
+                float storedTotal = 0f;
                 var raids = new StringBuilder();
                 for (int w = 0; w < sets[d].Count; w++)
                 {
@@ -117,6 +159,7 @@ public static class AirRaidLab
                         int count = group.Enemy.IsBoss ? group.Count : Math.Max(1, (int)Math.Ceiling(group.Count * difficulty.Count));
                         float health = count * group.Enemy.Health * difficulty.Health * input.HealthScale * sets[d][w].HealthMultiplier;
                         allTotal += health;
+                        storedTotal += storedHealth > 0f && sets[d][w].HealthMultiplier > 0f ? health / sets[d][w].HealthMultiplier * storedHealth : 0f;
                         if (!group.Enemy.Flies)
                         {
                             continue;
@@ -144,8 +187,8 @@ public static class AirRaidLab
                 }
 
                 float surplus = 1f / Math.Max(0.001f, BalanceChecks.PlainMean(lens));
-                string head = string.Format(CultureInfo.InvariantCulture, "{0} {1}: flyer health {2:0} of {3:0} ({4:0.0}%), human surplus {5:0.00}x (curve {8:0.00}x), waves moved against the stored set {6}/{7}",
-                    key, names[d], airTotal, allTotal, allTotal > 0f ? 100f * airTotal / allTotal : 0f, surplus, moved, sets[d].Count, 1f / Math.Max(0.001f, model.HumanTarget(index, d)));
+                string head = string.Format(CultureInfo.InvariantCulture, "{0} {1}: flyer health {2:0} of {3:0} ({4:0.0}%), human surplus {5:0.00}x (curve {8:0.00}x), waves moved against the stored set {6}/{7}, total health x{9:0.000} of the stored set",
+                    key, names[d], airTotal, allTotal, allTotal > 0f ? 100f * airTotal / allTotal : 0f, surplus, moved, sets[d].Count, 1f / Math.Max(0.001f, model.HumanTarget(index, d)), storedTotal > 0f ? allTotal / storedTotal : 0f);
                 text.Append(head).Append('\n').Append(raids);
                 summary.Append(head).Append('\n');
             }

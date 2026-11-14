@@ -1078,7 +1078,9 @@ namespace Game.Levels
         {
             if (valid)
             {
-                return $"{selected.DisplayName} ({selected.BuildCost})";
+                // The tower in hand, its price and what it does against ground and sky (the cards only carry two badges).
+                string reach = TargetRead.Label(selected);
+                return reach.Length > 0 ? $"{selected.DisplayName} ({selected.BuildCost})  -  {reach}" : $"{selected.DisplayName} ({selected.BuildCost})";
             }
 
             if (_context.ClosedPads.Contains(_cursor))

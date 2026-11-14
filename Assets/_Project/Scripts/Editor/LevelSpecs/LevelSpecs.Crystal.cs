@@ -207,7 +207,9 @@ namespace Game.Editor
                     },
                     Flyer = "Skyray",
                     FlyerInterval = PackedFlyers,
-                    AirRaidScale = new[] { 1f, 1.2f, 1.4f, 1.2f },
+                    // Easy 1 -> 1.25 (round 62): two and three Skyrays were cleared by an upgraded Gun Turret row on two seeds of
+                    // three; three and four are not (0/3), a player who patches the base keeps two stars, two Flaks keep three.
+                    AirRaidScale = new[] { 1.25f, 1.2f, 1.4f, 1.2f },
                     AirWaves = new[] { 3, 6, 9, 12, 15, 8, 14 },
                     AirWavesPerDifficulty = new[] { 4, 5, 6, 7 },
                     AirSprinkleFrom = 2,

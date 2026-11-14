@@ -1,82 +1,124 @@
-Parallel replay over 5 workers, 2026-11-10 16:33; units: 1:2:1 1:2:2 1:2:3 2:2:1 2:2:2 2:2:3
+Parallel replay over 5 workers, 2026-11-14 00:43; units: 2:3:1 2:3:2 2:3:3 3:2:1 3:2:2 3:2:3 4:3:1 4:3:2 4:3:3
 
 ---- worker w1
-Plan replay (stage B) 2026-11-10 16:33. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
-Yardstick, searched plans: seeds 1,3, step 0.2 s, 2026-11-10 16:33. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
+Plan replay (stage B) 2026-11-14 00:42. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (STALE, data now 22954ca8)
+Yardstick, searched plans: seeds 1,3, step 0.2 s, 2026-11-14 00:42. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (STALE, data now 22954ca8)
 Per cell and strategy: wins over seeds, stars (mean of the wins), base left (mean), waves reached (losses), coins unspent (mean).
 
 level        diff    strategy          wins  stars   base  reached   coins
-Level_C1_02  Hard    strategy Level_C1_02_2_strategy1 1/1    3.0    700  -           280
-Level_C1_02  Hard    strategy Level_C1_02_2_strategy2 1/1    3.0    700  -           280
-Level_C1_02  Hard    strategy Level_C1_02_2_strategy3 1/1    3.0    700  -           280
-Level_C1_03  Hard    strategy Level_C1_03_2_strategy1 1/1    3.0    700  -           106
-Level_C1_03  Hard    strategy Level_C1_03_2_strategy2 1/1    2.0    596  -            45
-Level_C1_03  Hard    strategy Level_C1_03_2_strategy3 1/1    3.0    700  -            98
+Level_C1_03  Psycho  strategy Level_C1_03_3_strategy1 1/1    3.0    800  -           322
+Level_C1_03  Psycho  strategy Level_C1_03_3_strategy2 1/1    3.0    800  -           191
+Level_C1_03  Psycho  strategy Level_C1_03_3_strategy3 1/1    3.0    800  -           207
+Level_C1_04  Hard    strategy Level_C1_04_2_strategy1 1/1    3.0    800  -            82
+Level_C1_04  Hard    strategy Level_C1_04_2_strategy2 1/1    3.0    765  -            32
+Level_C1_04  Hard    strategy Level_C1_04_2_strategy3 1/1    3.0    800  -            63
+Level_C1_04  Hard    strategy Level_C1_04_2_strategy4 1/1    3.0    800  -            42
+Level_C1_04  Hard    strategy Level_C1_04_2_strategy5 1/1    3.0    800  -            51
 
 Runs:
-  Level_C1_02  Hard    seed 1 strategy Level_C1_02_2_strategy1 Won    3* 12/12 base  700 built  6 upg  8 sold 0 mines 0 fields 0 drones RepairDrone coins  280 repairs 0
-  Level_C1_02  Hard    seed 1 strategy Level_C1_02_2_strategy2 Won    3* 12/12 base  700 built  5 upg  7 sold 0 mines 0 fields 0 drones RepairDrone coins  280 repairs 0
-  Level_C1_02  Hard    seed 1 strategy Level_C1_02_2_strategy3 Won    3* 12/12 base  700 built  5 upg  7 sold 0 mines 0 fields 0 drones RepairDrone coins  280 repairs 0
-  Level_C1_03  Hard    seed 3 strategy Level_C1_03_2_strategy1 Won    3* 16/16 base  700 built 17 upg  5 sold 0 mines 0 fields 0 drones HarvestDrone coins  106 repairs 54
-  Level_C1_03  Hard    seed 3 strategy Level_C1_03_2_strategy2 Won    2* 16/16 base  596 built 18 upg  4 sold 0 mines 0 fields 0 drones HarvestDrone coins   45 repairs 75
-  Level_C1_03  Hard    seed 3 strategy Level_C1_03_2_strategy3 Won    3* 16/16 base  700 built 17 upg  5 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   98 repairs 27
+  Level_C1_03  Psycho  seed 1 strategy Level_C1_03_3_strategy1 Won    3* 16/16 base  800 built 22 upg 22 sold 4 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  322 repairs 143
+  Level_C1_03  Psycho  seed 1 strategy Level_C1_03_3_strategy2 Won    3* 16/16 base  800 built 27 upg 21 sold 5 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  191 repairs 149
+  Level_C1_03  Psycho  seed 1 strategy Level_C1_03_3_strategy3 Won    3* 16/16 base  800 built 22 upg 19 sold 5 mines 0 fields 0 drones HarvestDrone coins  207 repairs 123
+  Level_C1_04  Hard    seed 3 strategy Level_C1_04_2_strategy1 Won    3* 16/16 base  800 built 19 upg 10 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   82 repairs 36
+  Level_C1_04  Hard    seed 3 strategy Level_C1_04_2_strategy2 Won    3* 16/16 base  765 built 17 upg 10 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   32 repairs 236
+  Level_C1_04  Hard    seed 3 strategy Level_C1_04_2_strategy3 Won    3* 16/16 base  800 built 18 upg  6 sold 0 mines 0 fields 0 drones HarvestDrone+AttackDrone coins   63 repairs 100
+  Level_C1_04  Hard    seed 3 strategy Level_C1_04_2_strategy4 Won    3* 16/16 base  800 built 19 upg 10 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   42 repairs 61
+  Level_C1_04  Hard    seed 3 strategy Level_C1_04_2_strategy5 Won    3* 16/16 base  800 built 25 upg 10 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   51 repairs 171
 
 ---- worker w2
-Plan replay (stage B) 2026-11-10 16:32. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
-Yardstick, searched plans: seeds 2, step 0.2 s, 2026-11-10 16:32. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
+Plan replay (stage B) 2026-11-14 00:42. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (STALE, data now 22954ca8)
+Yardstick, searched plans: seeds 1,2, step 0.2 s, 2026-11-14 00:42. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (STALE, data now 22954ca8)
 Per cell and strategy: wins over seeds, stars (mean of the wins), base left (mean), waves reached (losses), coins unspent (mean).
 
 level        diff    strategy          wins  stars   base  reached   coins
-Level_C1_02  Hard    strategy Level_C1_02_2_strategy1 1/1    3.0    700  -           240
-Level_C1_02  Hard    strategy Level_C1_02_2_strategy2 1/1    3.0    700  -            70
-Level_C1_02  Hard    strategy Level_C1_02_2_strategy3 1/1    3.0    700  -           220
+Level_C1_03  Psycho  strategy Level_C1_03_3_strategy1 1/1    3.0    800  -           198
+Level_C1_03  Psycho  strategy Level_C1_03_3_strategy2 1/1    3.0    800  -           239
+Level_C1_03  Psycho  strategy Level_C1_03_3_strategy3 1/1    1.0    363  -           189
+Level_C1_05  Psycho  strategy Level_C1_05_3_strategy1 1/1    3.0    900  -           132
+Level_C1_05  Psycho  strategy Level_C1_05_3_strategy2 0/1    0.0      0  17/17         6
+Level_C1_05  Psycho  strategy Level_C1_05_3_strategy3 0/1    0.0      0  17/17        60
+Level_C1_05  Psycho  strategy Level_C1_05_3_strategy4 0/1    0.0      0  17/17        61
+Level_C1_05  Psycho  strategy Level_C1_05_3_strategy5 1/1    2.0    654  -            48
 
 Runs:
-  Level_C1_02  Hard    seed 2 strategy Level_C1_02_2_strategy1 Won    3* 12/12 base  700 built  6 upg  7 sold 0 mines 0 fields 0 drones RepairDrone coins  240 repairs 0
-  Level_C1_02  Hard    seed 2 strategy Level_C1_02_2_strategy2 Won    3* 12/12 base  700 built  5 upg  9 sold 0 mines 0 fields 0 drones - coins   70 repairs 0
-  Level_C1_02  Hard    seed 2 strategy Level_C1_02_2_strategy3 Won    3* 12/12 base  700 built  5 upg  8 sold 0 mines 0 fields 0 drones - coins  220 repairs 0
+  Level_C1_03  Psycho  seed 2 strategy Level_C1_03_3_strategy1 Won    3* 16/16 base  800 built 24 upg 23 sold 4 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  198 repairs 142
+  Level_C1_03  Psycho  seed 2 strategy Level_C1_03_3_strategy2 Won    3* 16/16 base  800 built 23 upg 22 sold 4 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  239 repairs 185
+  Level_C1_03  Psycho  seed 2 strategy Level_C1_03_3_strategy3 Won    1* 16/16 base  363 built 21 upg 24 sold 4 mines 0 fields 0 drones HarvestDrone coins  189 repairs 169
+  Level_C1_05  Psycho  seed 1 strategy Level_C1_05_3_strategy1 Won    3* 17/17 base  900 built 18 upg 32 sold 1 mines 0 fields 0 drones HarvestDrone coins  132 repairs 183
+  Level_C1_05  Psycho  seed 1 strategy Level_C1_05_3_strategy2 Lost   0* 17/17 base    0 built 18 upg 23 sold 2 mines 0 fields 0 drones HarvestDrone+AttackDrone coins    6 repairs 216
+  Level_C1_05  Psycho  seed 1 strategy Level_C1_05_3_strategy3 Lost   0* 17/17 base    0 built 19 upg 22 sold 2 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   60 repairs 129
+  Level_C1_05  Psycho  seed 1 strategy Level_C1_05_3_strategy4 Lost   0* 17/17 base    0 built 16 upg 21 sold 1 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   61 repairs 203
+  Level_C1_05  Psycho  seed 1 strategy Level_C1_05_3_strategy5 Won    2* 17/17 base  654 built 14 upg 27 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   48 repairs 57
 
 ---- worker w3
-Plan replay (stage B) 2026-11-10 16:32. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
-Yardstick, searched plans: seeds 3, step 0.2 s, 2026-11-10 16:32. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
+Plan replay (stage B) 2026-11-14 00:42. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (STALE, data now 22954ca8)
+Yardstick, searched plans: seeds 2,3, step 0.2 s, 2026-11-14 00:42. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (STALE, data now 22954ca8)
 Per cell and strategy: wins over seeds, stars (mean of the wins), base left (mean), waves reached (losses), coins unspent (mean).
 
 level        diff    strategy          wins  stars   base  reached   coins
-Level_C1_02  Hard    strategy Level_C1_02_2_strategy1 1/1    3.0    700  -           125
-Level_C1_02  Hard    strategy Level_C1_02_2_strategy2 1/1    3.0    700  -            70
-Level_C1_02  Hard    strategy Level_C1_02_2_strategy3 1/1    3.0    700  -           220
+Level_C1_03  Psycho  strategy Level_C1_03_3_strategy1 1/1    3.0    800  -            60
+Level_C1_03  Psycho  strategy Level_C1_03_3_strategy2 1/1    2.0    598  -           192
+Level_C1_03  Psycho  strategy Level_C1_03_3_strategy3 1/1    1.0    128  -            66
+Level_C1_05  Psycho  strategy Level_C1_05_3_strategy1 1/1    3.0    900  -           109
+Level_C1_05  Psycho  strategy Level_C1_05_3_strategy2 0/1    0.0      0  17/17        41
+Level_C1_05  Psycho  strategy Level_C1_05_3_strategy3 0/1    0.0      0  17/17        27
+Level_C1_05  Psycho  strategy Level_C1_05_3_strategy4 1/1    3.0    900  -           137
+Level_C1_05  Psycho  strategy Level_C1_05_3_strategy5 1/1    3.0    900  -            56
 
 Runs:
-  Level_C1_02  Hard    seed 3 strategy Level_C1_02_2_strategy1 Won    3* 12/12 base  700 built  6 upg  9 sold 0 mines 0 fields 0 drones RepairDrone coins  125 repairs 0
-  Level_C1_02  Hard    seed 3 strategy Level_C1_02_2_strategy2 Won    3* 12/12 base  700 built  5 upg  9 sold 0 mines 0 fields 0 drones - coins   70 repairs 0
-  Level_C1_02  Hard    seed 3 strategy Level_C1_02_2_strategy3 Won    3* 12/12 base  700 built  5 upg  8 sold 0 mines 0 fields 0 drones - coins  220 repairs 0
+  Level_C1_03  Psycho  seed 3 strategy Level_C1_03_3_strategy1 Won    3* 16/16 base  800 built 24 upg 25 sold 3 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   60 repairs 93
+  Level_C1_03  Psycho  seed 3 strategy Level_C1_03_3_strategy2 Won    2* 16/16 base  598 built 24 upg 24 sold 3 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  192 repairs 116
+  Level_C1_03  Psycho  seed 3 strategy Level_C1_03_3_strategy3 Won    1* 16/16 base  128 built 25 upg 24 sold 5 mines 0 fields 0 drones HarvestDrone coins   66 repairs 190
+  Level_C1_05  Psycho  seed 2 strategy Level_C1_05_3_strategy1 Won    3* 17/17 base  900 built 18 upg 31 sold 1 mines 0 fields 0 drones HarvestDrone coins  109 repairs 260
+  Level_C1_05  Psycho  seed 2 strategy Level_C1_05_3_strategy2 Lost   0* 17/17 base    0 built 18 upg 22 sold 2 mines 0 fields 0 drones HarvestDrone+AttackDrone coins   41 repairs 200
+  Level_C1_05  Psycho  seed 2 strategy Level_C1_05_3_strategy3 Lost   0* 17/17 base    0 built 19 upg 23 sold 2 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   27 repairs 117
+  Level_C1_05  Psycho  seed 2 strategy Level_C1_05_3_strategy4 Won    3* 17/17 base  900 built 15 upg 27 sold 1 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins  137 repairs 143
+  Level_C1_05  Psycho  seed 2 strategy Level_C1_05_3_strategy5 Won    3* 17/17 base  900 built 13 upg 25 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   56 repairs 218
 
 ---- worker w4
-Plan replay (stage B) 2026-11-10 16:33. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
-Yardstick, searched plans: seeds 1, step 0.2 s, 2026-11-10 16:33. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
+Plan replay (stage B) 2026-11-14 00:43. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (STALE, data now 22954ca8)
+Yardstick, searched plans: seeds 1,3, step 0.2 s, 2026-11-14 00:43. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (STALE, data now 22954ca8)
 Per cell and strategy: wins over seeds, stars (mean of the wins), base left (mean), waves reached (losses), coins unspent (mean).
 
 level        diff    strategy          wins  stars   base  reached   coins
-Level_C1_03  Hard    strategy Level_C1_03_2_strategy1 1/1    3.0    700  -           192
-Level_C1_03  Hard    strategy Level_C1_03_2_strategy2 1/1    2.0    564  -           192
-Level_C1_03  Hard    strategy Level_C1_03_2_strategy3 1/1    2.0    596  -            94
+Level_C1_04  Hard    strategy Level_C1_04_2_strategy1 1/1    3.0    800  -            60
+Level_C1_04  Hard    strategy Level_C1_04_2_strategy2 1/1    3.0    800  -            99
+Level_C1_04  Hard    strategy Level_C1_04_2_strategy3 1/1    3.0    792  -            34
+Level_C1_04  Hard    strategy Level_C1_04_2_strategy4 1/1    3.0    773  -             1
+Level_C1_04  Hard    strategy Level_C1_04_2_strategy5 1/1    3.0    800  -            41
+Level_C1_05  Psycho  strategy Level_C1_05_3_strategy1 1/1    2.0    799  -           129
+Level_C1_05  Psycho  strategy Level_C1_05_3_strategy2 0/1    0.0      0  17/17       144
+Level_C1_05  Psycho  strategy Level_C1_05_3_strategy3 1/1    2.0    732  -            12
+Level_C1_05  Psycho  strategy Level_C1_05_3_strategy4 1/1    2.0    721  -            70
+Level_C1_05  Psycho  strategy Level_C1_05_3_strategy5 1/1    2.0    665  -            54
 
 Runs:
-  Level_C1_03  Hard    seed 1 strategy Level_C1_03_2_strategy1 Won    3* 16/16 base  700 built 16 upg  5 sold 0 mines 0 fields 0 drones HarvestDrone coins  192 repairs 85
-  Level_C1_03  Hard    seed 1 strategy Level_C1_03_2_strategy2 Won    2* 16/16 base  564 built 17 upg  3 sold 0 mines 0 fields 0 drones HarvestDrone coins  192 repairs 90
-  Level_C1_03  Hard    seed 1 strategy Level_C1_03_2_strategy3 Won    2* 16/16 base  596 built 17 upg  5 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   94 repairs 51
+  Level_C1_04  Hard    seed 1 strategy Level_C1_04_2_strategy1 Won    3* 16/16 base  800 built 18 upg 11 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   60 repairs 54
+  Level_C1_04  Hard    seed 1 strategy Level_C1_04_2_strategy2 Won    3* 16/16 base  800 built 17 upg  9 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   99 repairs 245
+  Level_C1_04  Hard    seed 1 strategy Level_C1_04_2_strategy3 Won    3* 16/16 base  792 built 19 upg 11 sold 0 mines 0 fields 0 drones HarvestDrone+AttackDrone coins   34 repairs 110
+  Level_C1_04  Hard    seed 1 strategy Level_C1_04_2_strategy4 Won    3* 16/16 base  773 built 20 upg  8 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins    1 repairs 68
+  Level_C1_04  Hard    seed 1 strategy Level_C1_04_2_strategy5 Won    3* 16/16 base  800 built 25 upg 12 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   41 repairs 58
+  Level_C1_05  Psycho  seed 3 strategy Level_C1_05_3_strategy1 Won    2* 17/17 base  799 built 17 upg 30 sold 1 mines 0 fields 0 drones HarvestDrone coins  129 repairs 167
+  Level_C1_05  Psycho  seed 3 strategy Level_C1_05_3_strategy2 Lost   0* 17/17 base    0 built 17 upg 23 sold 2 mines 0 fields 0 drones HarvestDrone+AttackDrone coins  144 repairs 270
+  Level_C1_05  Psycho  seed 3 strategy Level_C1_05_3_strategy3 Won    2* 17/17 base  732 built 19 upg 24 sold 3 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   12 repairs 153
+  Level_C1_05  Psycho  seed 3 strategy Level_C1_05_3_strategy4 Won    2* 17/17 base  721 built 16 upg 27 sold 1 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   70 repairs 155
+  Level_C1_05  Psycho  seed 3 strategy Level_C1_05_3_strategy5 Won    2* 17/17 base  665 built 14 upg 27 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   54 repairs 62
 
 ---- worker w5
-Plan replay (stage B) 2026-11-10 16:33. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
-Yardstick, searched plans: seeds 2, step 0.2 s, 2026-11-10 16:33. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
+Plan replay (stage B) 2026-11-14 00:41. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (STALE, data now 22954ca8)
+Yardstick, searched plans: seeds 2, step 0.2 s, 2026-11-14 00:41. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (STALE, data now 22954ca8)
 Per cell and strategy: wins over seeds, stars (mean of the wins), base left (mean), waves reached (losses), coins unspent (mean).
 
 level        diff    strategy          wins  stars   base  reached   coins
-Level_C1_03  Hard    strategy Level_C1_03_2_strategy1 1/1    3.0    700  -           168
-Level_C1_03  Hard    strategy Level_C1_03_2_strategy2 1/1    2.0    396  -           270
-Level_C1_03  Hard    strategy Level_C1_03_2_strategy3 1/1    3.0    634  -           212
+Level_C1_04  Hard    strategy Level_C1_04_2_strategy1 1/1    3.0    800  -            74
+Level_C1_04  Hard    strategy Level_C1_04_2_strategy2 1/1    3.0    800  -            44
+Level_C1_04  Hard    strategy Level_C1_04_2_strategy3 1/1    3.0    784  -            39
+Level_C1_04  Hard    strategy Level_C1_04_2_strategy4 1/1    3.0    765  -            50
+Level_C1_04  Hard    strategy Level_C1_04_2_strategy5 1/1    2.0    680  -            47
 
 Runs:
-  Level_C1_03  Hard    seed 2 strategy Level_C1_03_2_strategy1 Won    3* 16/16 base  700 built 16 upg  6 sold 0 mines 0 fields 0 drones HarvestDrone coins  168 repairs 44
-  Level_C1_03  Hard    seed 2 strategy Level_C1_03_2_strategy2 Won    2* 16/16 base  396 built 17 upg  3 sold 0 mines 0 fields 0 drones HarvestDrone coins  270 repairs 22
-  Level_C1_03  Hard    seed 2 strategy Level_C1_03_2_strategy3 Won    3* 16/16 base  634 built 16 upg  5 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  212 repairs 29
+  Level_C1_04  Hard    seed 2 strategy Level_C1_04_2_strategy1 Won    3* 16/16 base  800 built 19 upg 16 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   74 repairs 34
+  Level_C1_04  Hard    seed 2 strategy Level_C1_04_2_strategy2 Won    3* 16/16 base  800 built 16 upg 10 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   44 repairs 229
+  Level_C1_04  Hard    seed 2 strategy Level_C1_04_2_strategy3 Won    3* 16/16 base  784 built 18 upg  5 sold 0 mines 0 fields 0 drones HarvestDrone+AttackDrone coins   39 repairs 98
+  Level_C1_04  Hard    seed 2 strategy Level_C1_04_2_strategy4 Won    3* 16/16 base  765 built 20 upg 14 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   50 repairs 48
+  Level_C1_04  Hard    seed 2 strategy Level_C1_04_2_strategy5 Won    2* 16/16 base  680 built 24 upg 14 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   47 repairs 46

@@ -27,8 +27,9 @@ MonoBehaviour:
   _repairDroneBusyShare: 0.418
   _queueGuardShare: 0.3
   _routeFire: 4
-  _inputHash: 0e507ead
-  _shapeHash: 2bbc7a34
-  _measuredOn: 2026-11-10 03:33
+  _inputHash: 22954ca8
+  _shapeHash: eb9557ea
+  _measuredOn: 2026-11-14 00:49
+  _factorsFrom: 2026-11-10 03:33
   _seeds: 1,2,3
   _step: 0.2

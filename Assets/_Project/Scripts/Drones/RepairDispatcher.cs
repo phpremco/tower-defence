@@ -36,7 +36,9 @@ namespace Game.Drones
         /// </summary>
         public IStructure Assign(object worker, Vector3 position, float speed, IStructure current)
         {
-            if (current != null && !NeedsWork(current))
+            // A structure that left the field (sold, scrapped, a drone gone home to recharge) is no job any more: it still reads
+            // as damaged, and a drone that kept it would fly to where it stood for ever (round 62: a tower sold under repair).
+            if (current != null && (!NeedsWork(current) || !_structures.Contains(current)))
             {
                 Release(worker, current);
                 current = null;

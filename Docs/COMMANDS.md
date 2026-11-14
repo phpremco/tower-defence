@@ -962,3 +962,45 @@ console and `Logs/probe_trace.txt`.
 - **Shockwave stills:** `[LOW=1] [NEAR=1] [PROBE=1] [FRAMES="6 8 11 15 20 26 34 45 60"] bash Tools/PlayTest/r61_shockwave.sh <out dir> <prefix> [level]`
   (towers by the hero, walkers at his post, the ability through the level's own event, stills of the play camera at stepped
   frames of 0.02 s; `PROBE=1` prints every part's live state with `r61_shock_probe.cs`). The wave leaves 0.1 s (5 frames) after the request.
+
+## Round 62: what-ifs on a clone, the pipeline on sixteen cells, the tower's air read (added 2026-11-13)
+
+- **A what-if played on a clone, nothing written in the project:** `bash Tools/PlayTest/r62_variant_worker.sh <N> <label> "<file>::<sed expression>" [more edits] -- [filter lines]`
+  syncs clone wN, applies the edits inside the clone only (a rule in `BalanceRules.cs`, a spec number in `LevelSpecs.Crystal.cs`),
+  solves the waves there (`BalanceStages.SolveWaves`, headless) and plays the three-bot air report (`AirDefenceProbeTests`) on
+  the clone's waves; the report comes back as `Tools/PlayTest/r62_air_<label>.txt`. About six minutes for one cell and three
+  seeds; five variants side by side on w1..w5. An edit that changes nothing stops the run. Examples:
+  `"Assets/_Project/Scripts/Balance/BalanceRules.cs::s/RaidHealthFloor = { 0.6f,/RaidHealthFloor = { 0.45f,/" -- levels=2 difficulties=0`,
+  `"Assets/_Project/Scripts/Editor/LevelSpecs/LevelSpecs.Crystal.cs::s/AirRaidScale = new\[\] { 1.25f,/AirRaidScale = new[] { 1.5f,/" -- levels=3 difficulties=0`.
+- **The air raid lab** (`AirRaidLab.cs`, round 61) takes `raid.<Key>=<Easy>,<Medium>,<Hard>,<Psycho>` (a level's `AirRaidScale` in
+  memory). Its `rule.*` overrides now go into a fresh `BalanceRules` before the model is built: in round 61 they were written
+  into the generator's shared `BalanceSheet.Rules` after the calibration had copied the rules, so a `rule.*` run showed the
+  *previous* run's override and the override stayed in the editor until the next domain reload (a solve after it would have used
+  it). Check with `unity command eval_file --file Tools/PlayTest/r62_rules_check.cs --result-only` (prints the editor's live
+  `RaidHealthFloor`); a domain reload without a script change: `unity command eval_file --file Tools/PlayTest/r62_reload.cs`.
+- **The pipeline on a set of cells** (the order that worked; the main editor only solves and applies, everything else on the clones):
+  1. `bash Tools/PlayTest/workers.sh run measure 5 "levels=2,3,4,5"` (the yardstick of those cells, merged into `calibration_records.txt`);
+  2. drop the replayed plans of those cells from `plan_records.txt` (they were played on the old waves and the fit reads them):
+     `awk -F'|' '$1=="run"{keep=($2!~/C1_0[3-6]/)} keep' plan_records.txt`;
+  3. `bash Tools/PlayTest/r34b_editmode_worker.sh 6 CalibrationFitTests`, copy `calibration.txt` and `calibration_waves.txt` back from w6;
+  4. `balance_pipeline.sh apply` (or `apply-force`), then `solve` (a new efficiency moves every wave of every level, C1_01 included,
+     and every record is stale again), **or** `balance_pipeline.sh apply-keep`: the calibration is stamped for the current inputs
+     (hash, shape, seeds, step, date) and keeps its efficiencies and factors, so no wave moves; the result line lists every kept
+     number beside the fit's, and every report header then reads `calibration <date> (factors of <older date> kept)`.
+     `Round62Tests.EveryStoredWave_IsWhatTheSolveGives_AtTheAppliedCalibration` guards it. What a full apply would do, in
+     memory: the air raid lab with `eff.<TowerId>=<fit>` and `cal.SiegeFactor=`, `cal.QueueGuardShare=`, `cal.RouteFire=` lines
+     (`total health x1.14 of the stored set` per cell);
+  5. `bash Tools/PlayTest/r34b_editmode_worker.sh <N> PlanSearchTests "levels=<n>"` on four clones side by side, copy each clone's
+     `Tools/PlayTest/Plans/Level_<key>_*` back (delete the project's old files of those cells first);
+  6. `bash Tools/PlayTest/workers.sh run replay 5 "levels=2,3,4,5"`;
+  7. `bash Tools/PlayTest/r34b_editmode_worker.sh 6 BalanceAcceptanceTests`, copy `acceptance.txt` back.
+- **A few cells after a builder step** (a scale in `wave_tuning.txt`, then `balance_pipeline.sh solve` in the editor):
+  `bash Tools/PlayTest/r62_cells_chain.sh 2:3 3:2 4:3 > Logs/r62/chain.log 2>&1 &` (cells as node:difficulty) measures them, searches
+  each on its own clone, copies the plan files back and replays them; about fifteen minutes for three cells. Then fit,
+  apply-keep and acceptance as above.
+- **A per-cell table from the record files, no editor:** `python -I Tools/PlayTest/r62_cells.py Tools/PlayTest/calibration_records.txt Tools/PlayTest/plan_records.txt C1_03 C1_04`
+  (best replayed plan, plans winning on most seeds, the obvious family with the wave a losing row fell at).
+- **The tower's ground/air read in stills:** `OUT=<dir> bash Tools/PlayTest/r62_hint_shot.sh <prefix> <node> hand:PulseRifle hand:Rocket menu:PulseRifle view:menu`
+  (`hand:` picks the card and puts the cursor on a free build cell, `menu:` builds one and opens its menu, each rendered
+  3840x2160 off-screen with the interface; `view:<name>` captures the Game view itself, which is the one that shows the tower
+  menu: the off-screen render misses that panel). Copies the save aside and restores it, MD5 printed at both ends.

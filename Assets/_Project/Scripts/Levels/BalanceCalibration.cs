@@ -46,6 +46,8 @@ namespace Game.Levels
         [Tooltip("Shape hash of the model and combat code the fit was made under (round 25); a different shape means a rule changed and a re-measure is needed.")]
         [SerializeField] private string _shapeHash = string.Empty;
         [SerializeField] private string _measuredOn = string.Empty;
+        [Tooltip("Set when a later fit only confirmed the inputs (round 62, the apply-keep stage): the date of the fit the efficiencies and factors above come from. Empty when the last apply wrote them.")]
+        [SerializeField] private string _factorsFrom = string.Empty;
         [SerializeField] private string _seeds = string.Empty;
         [SerializeField] [Min(0f)] private float _step;
 
@@ -59,6 +61,7 @@ namespace Game.Levels
         public string InputHashValue => _inputHash;
         public string ShapeHashValue => _shapeHash;
         public string MeasuredOn => _measuredOn;
+        public string FactorsFrom => _factorsFrom;
         public string Seeds => _seeds;
         public float Step => _step;
 
@@ -98,6 +101,6 @@ namespace Game.Levels
 
         /// <summary>One line for every stage's report header.</summary>
         public string Describe(string currentHash) =>
-            $"calibration {(string.IsNullOrEmpty(_measuredOn) ? "never measured" : _measuredOn)}, seeds {_seeds}, step {_step}, inputs {_inputHash} ({(IsStaleFor(currentHash) ? "STALE, data now " + currentHash : "current")})";
+            $"calibration {(string.IsNullOrEmpty(_measuredOn) ? "never measured" : _measuredOn)}{(string.IsNullOrEmpty(_factorsFrom) ? string.Empty : " (factors of " + _factorsFrom + " kept)")}, seeds {_seeds}, step {_step}, inputs {_inputHash} ({(IsStaleFor(currentHash) ? "STALE, data now " + currentHash : "current")})";
     }
 }

@@ -1,0 +1,19 @@
+Level_C1_03  Easy    3* base 700        1.81    30/30            25  3* base 700       mono PulseRifle falls w12, mono Cannon falls w12, mono Laser falls w12, naive falls w12
+Level_C1_03  Medium  3* base 700        0.67    30/30            24  falls w12         mono PulseRifle falls w11, mono Cannon falls w11, mono Laser falls w11, naive falls w11
+Level_C1_03  Hard    falls w15          0.33     0/30             0  falls w11         mono PulseRifle falls w9, mono Cannon falls w11, mono Laser falls w8, naive falls w9
+Level_C1_03  Psycho  falls w12          0.32     0/30             0  falls w11         mono PulseRifle falls w5, mono Cannon falls w9, mono Laser falls w5, naive falls w5
+Level_C1_04  Easy    3* base 700        1.06    30/30            21  3* base 700       mono PulseRifle falls w7, mono Cannon falls w7, mono Laser falls w7, naive 3* base 700
+Level_C1_04  Medium  falls w16          0.24     0/30             0  falls w12         mono PulseRifle falls w3, mono Cannon falls w3, mono Laser falls w3, naive falls w14
+Level_C1_04  Hard    2* base 464        0.32     1/30             1  falls w11         mono PulseRifle falls w3, mono Cannon falls w3, mono Laser falls w3, naive falls w12
+Level_C1_04  Psycho  3* base 786        0.55    30/30            22  falls w15         mono PulseRifle falls w3, mono Cannon falls w3, mono Laser falls w3, naive falls w14
+Level_C1_05  Easy    3* base 700        1.08    30/30            24  3* base 700       mono PulseRifle falls w8, mono Cannon falls w8, mono Laser falls w8, naive falls w8
+Level_C1_05  Medium  3* base 700        0.54    30/30            26  falls w17         mono PulseRifle falls w4, mono Cannon falls w4, mono Laser falls w4, naive falls w4
+Level_C1_05  Hard    3* base 736        0.57     5/30             5  falls w9          mono PulseRifle falls w4, mono Cannon falls w4, mono Laser falls w4, naive falls w4
+Level_C1_05  Psycho  3* base 898        0.54    30/30            22  falls w14         mono PulseRifle falls w6, mono Cannon falls w6, mono Laser falls w6, naive falls w6
+Level_C1_06  Easy    3* base 700        1.11    30/30            25  3* base 700       mono PulseRifle falls w7, mono Cannon falls w7, mono Laser falls w7, naive falls w7
+Level_C1_06  Medium  falls w11          0.21     0/30             0  falls w9          mono PulseRifle falls w7, mono Cannon falls w7, mono Laser falls w7, naive falls w7
+Level_C1_06  Hard    falls w10          0.08     0/30             0  falls w7          mono PulseRifle falls w7, mono Cannon falls w7, mono Laser falls w6, naive falls w4
+Level_C1_06  Psycho  3* base 900        0.45    30/30            14  falls w12         mono PulseRifle falls w5, mono Cannon falls w5, mono Laser falls w5, naive falls w5
+Level_C1_03  Psycho  falls w15          0.41     0/30             0  falls w11         mono PulseRifle falls w5, mono Cannon falls w9, mono Laser falls w5, naive falls w8
+Level_C1_04  Hard    3* base 800        0.38    30/30            22  falls w14         mono PulseRifle falls w3, mono Cannon falls w3, mono Laser falls w3, naive falls w15
+Level_C1_05  Psycho  3* base 900        0.58    30/30            21  3* base 900       mono PulseRifle falls w6, mono Cannon falls w6, mono Laser falls w6, naive falls w6

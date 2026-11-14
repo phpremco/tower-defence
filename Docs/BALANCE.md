@@ -1656,3 +1656,91 @@ the rule alone removes the dead zone but leaves Easy at 15 to 25 health a flyer;
 **Not re-measured.** The calibration's input hash is stale (the Gun Turret's air share is an input): the fit was measured with the
 old share and the old waves of C1_03 to C1_06. The Gun Turret's efficiency is fitted on all its damage, of which flyers are a small
 part; the yardstick and the replay of those sixteen cells are the next pipeline run (`measure fit apply search replay acceptance`).
+
+## Round 62: the air cells re-measured, Fault Line's Easy raids, the calibration confirmed and kept (2026-11-14)
+
+Round 61 changed an input of the calibration (the Gun Turret's air share) and every wave of C1_03 to C1_06, and played four of
+those sixteen cells. This round ran the pipeline on all sixteen. The commands are in Docs/COMMANDS.md "Round 62".
+
+**Fault Line Easy: `AirRaidScale` 1 -> 1.25** (`LevelSpecs.Crystal.cs`). Its raids were two and three Skyrays, and a row of
+upgraded Gun Turrets cleared them on two seeds of three. The three bots of round 61 on each scale (what-ifs on the clones,
+`r62_variant_worker.sh`; seeds 1-3; raids as Skyrays x health each on waves 10 and 13):
+
+| Easy scale | Raids | No sky gun | No sky gun, guns beside the besieged base | Two Flaks |
+| --- | --- | --- | --- | --- |
+| 1 (round 61) | 2 x 34, 3 x 72 | lost 1/3, won 2/3 at 700/700 | won 3/3 (base 465, 700, 700) | won 3/3, 3 stars, 700/700 |
+| **1.25** | 3 x 47, 4 x 76 | **lost 3/3** at the last wave | won 3/3, **2 stars**, base 489-609 | won 3/3, 3 stars, 700/700 |
+| 1.35 | 3 x 48, 4 x 81 | lost 3/3 (waves 13-16) | won 2/3 (base 388, 580), lost one at wave 14 | won 3/3, 3 stars |
+| 1.5 | 3 x 52, 5 x 81 | lost 3/3 (waves 13-16) | won 2/3 (base 388, 508) | won 3/3, 3 stars |
+| 2 | 4 x 56, 7 x 98 | lost 3/3 (waves 13-15) | lost 3/3 (waves 14-15) | won 3/3, 3 stars |
+| 2.5 | 5 x 60, 8 x 104 | lost 3/3 (wave 13) | lost 3/3 (waves 13-14) | won 3/3, 3 stars |
+
+1.25 is the smallest step at which the Gun row stops clearing the sky on every seed while the player who patches the base still
+wins every seed. The level stays on its curve (1.53x against 1.54x): the trim makes the walkers a little lighter for the extra
+flyers. Only Fault Line's Easy waves moved.
+
+**The Easy raid floor, measured for a choice (not changed: `RaidHealthFloor` Easy stays 0.6).** On paper the floor binds on Shard
+Ridge and Crysium Vein Easy only; Fault Line's and Quartz Flats' Easy raids sit above it on every floor tried, so their waves do
+not move. Shard Ridge Easy, the three bots (seeds 1-3):
+
+| Easy floor | Skyray health (raids of 4 and 7) | No sky gun | No sky gun, guns beside the base | Two Flaks |
+| --- | --- | --- | --- | --- |
+| 0.6 (now) | 33 | lost 3/3 at wave 14 | won 3/3, 1 star, base 158-273 | 3 stars, 700/700 |
+| 0.5 | 27 | lost 3/3 at wave 14 | won 3/3, 1-2 stars, base 162-364 | 3 stars, 700/700 |
+| 0.45 | 24 | lost 3/3 (waves 14, 16, 14) | won 3/3, 1-2 stars, base 258-575 | 3 stars, 700/700 |
+| 0.3 (extra point) | 16 | lost 3/3 at wave 16 | won 3/3, 2-3 stars, base 594-666 | 3 stars, 700/700 |
+
+The floor softens the patching player's bill and nothing else. The player who ignores the sky loses at every floor, because one
+or two Skyrays that reach the base stay and strike it until it falls (at 0.3 ten of eleven flyers are shot down and the level
+is still lost). "Easy stays forgiving for someone who ignores air" is therefore not a raid-health question: it needs a rule
+(a flyer leaves after so many strikes) or a base that shoots up from the start.
+
+**The calibration: confirmed for the new inputs, its numbers kept.** The fit on the new records (747 runs: the yardstick and the
+replays of the sixteen cells played again, C1_01 and C1_02 as they were):
+
+| | Applied (fit of 2026-11-10 03:33) | Fit of 2026-11-14 | |
+| --- | --- | --- | --- |
+| Cannon | 0.853 | 0.877 | +3 % |
+| Laser | 0.759 | 0.732 | -4 % |
+| Gun Turret | 0.878 | 1.013 | +15 % |
+| Flak | 1.041 | 1.113 | +7 % |
+| siege / queue guard / route fire | 1.187 / 0.30 / 4.0 | 2.653 / 1.00 / 4.0 | the trio moved between three fits of this round: (1.445, 0.50, 4.0) on 537 runs, (0.921, 0.40, 1.5) on 735, (2.653, 1.00, 4.0) on 747 |
+| hold-out | 78 % / mono 90 % / Spearman 0.70 | 78 % / 88 % / 0.77 | below the bar (90 % / 0.8), as before |
+
+The efficiencies are not round 61's doing: the records already read Gun Turret 1.03/0.98, Cannon 0.95/0.87 by halves on
+2026-11-10 14:00 (`impact_baseline/paper.txt`), after round 34b's re-measure, and the 03:33 calibration was kept then. Applying
+the new fit means a solve, and the solve moves every level (in memory, `AirRaidLab` with `eff.*` and `cal.*`): total health
+C1_01 +6 to +12 %, C1_02 -2 to +14 %, C1_03 +9 to +26 %, C1_04 +8 to +42 %, C1_05 +6 to +13 %, C1_06 +3 to +11 %
+(`Tools/PlayTest/r61_lab_r62_fit3.txt`); every
+record would be stale again and the scales found by play (`wave_tuning.txt`) would have to be found again. So the calibration
+was **re-stamped** (`balance_pipeline.sh apply-keep`, `BalanceStages.ApplyCalibration(keepFactors: true)`): inputs hash, shape,
+seeds, step and date of the new fit, efficiencies and factors of the old one. Every report header now reads `calibration
+2026-11-14 00:49 (factors of 2026-11-10 03:33 kept)`, `calibration.txt` holds the new fit, and
+`Round62Tests.EveryStoredWave_IsWhatTheSolveGives_AtTheAppliedCalibration` fails as soon as a fit is applied without a solve.
+Whether to take the new efficiencies (heavier waves on all six levels, then a full run) is the curator's decision; the
+unstable siege trio says the model's siege terms want work before that.
+
+**In play the tower change made three cells too hard, and each took one builder step (scale / 1.15).** The Gun Turret no longer
+helps against flyers, so the raids ask for more Flak out of the same purse:
+
+| Cell | Scale | Best replayed plan before round 61 | After round 61, before the step | After the step |
+| --- | --- | --- | --- | --- |
+| C1_03 Psycho | 0.757 -> 0.66 | 2/3, 2.5 stars | 1/3 (0 of 3 plans win on most seeds) | 3/3, 3.0 stars, 3 of 3 plans |
+| C1_04 Hard | 1 -> 0.87 | 3/3, 2.7 stars | 0/3 (lost at waves 8-10; the creative bot 1/3) | 3/3, 3.0 stars, 5 of 5 plans |
+| C1_05 Psycho | 0.57 -> 0.5 | 2/3, 2.0 stars | 1/3 (0 of 5 plans) | 3/3, 2.7 stars, 3 of 5 plans |
+
+C1_06 Psycho at round 61's 0.52 holds in play: 3/3 (2.3 stars, base 717), four of five plans win on most seeds, every obvious
+row loses at waves 7-12. Every cell sits on its curve on paper (`BalanceLedgerTests`; the lab prints surplus against the curve
+per cell).
+
+**The Easy acceptance rule meets the air design on four levels now.** "Two of the three obvious kinds win" cannot hold on a
+level with raids: no member of the obvious family (the three rows, the naive and the affordable buyer) ever buys a Flak, so from
+Shard Ridge on they all lose on Easy at the first raid or two (Shard Ridge wave 14, Fault Line 13-14, Quartz Flats 11, Crysium
+Vein 12), while the searched plans and the creative bot win 3/3 with three stars. Before round 61 Fault Line Easy passed
+(the naive and the affordable buyer won) and on Shard Ridge the Gun row and the affordable buyer still won. The rule or the family needs the designer's word (a row plus one sky gun as an obvious kind?).
+
+**The lab's rule overrides were wrong in round 61.** `AirRaidLab` wrote a `rule.*` override into the generator's shared
+`BalanceSheet.Rules` after the calibration had already copied the rules into the model: a run showed the override of the run
+before it, and the last override stayed in the editor until the next domain reload (found as `RaidHealthFloor` 0.5 in the live
+editor; a solve then would have written it). Fixed: a fresh `BalanceRules`, overridden before the model is built. Round 61's
+stored waves were not affected (they equal the solve at 0.6, all 24 cells), but its `r61_lab_rule*.txt` tables are one run off.

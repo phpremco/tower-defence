@@ -9405,3 +9405,195 @@ not reach the post in that run). The cannon stills are from the second tuning pa
 5. Tower texts: the Skyray's Codex line already says only anti-air weapons reach it; nothing in the UI tells the player the Gun
    Turret does a fifth up there.
 6. Shockwave: the weak spots listed above; the colour lean (`_whiteShare` 0.35) and the dust are data.
+
+## Round 62: the air cells through the pipeline, Fault Line's Easy raids, the tower's air read (2026-11-13/14)
+
+Not committed (the curator commits). No full generator run: the solve stage (`ApplyWaves.cs`) wrote the waves and the stored
+scales, `apply-keep` the calibration asset. `ArtSource/Exports` and `Tools/Blender` untouched, no Blender, no packages, the Game
+view's resolution untouched. Remco's save `progress.json` (MD5 **10522349c3c6ea16ba72897a65724cff** at the start) was copied
+aside before every Play Mode run in the editor and restored after; identical after each run and at the end; the worker scripts
+checked it too; the dev backup untouched (ec2a1f6d). Play runs in the editor one after another; the pipeline's PlayMode stages on
+the five worker clones (w1-w5), the EditMode stages on the spare clone w6, as in rounds 25 to 34b. Tables and commands:
+Docs/BALANCE.md "Round 62", Docs/COMMANDS.md "Round 62".
+
+### 1. The pipeline on the sixteen cells of C1_03 to C1_06
+
+Order as run: Fault Line's Easy raid scale and a solve first (task 2, so the cell was measured once) -> measure (16 cells, 288
+runs, 15 min 40 s) -> fit -> search (4 clones, 1.5 min) -> replay (198 runs, 21 min) -> fit on all records -> three cells one
+builder step easier, solve, their measure/search/replay again -> fit -> `apply-keep` -> acceptance -> readme -> the suite.
+
+**The calibration is current again (inputs 22954ca8) and `PlanSearchTests.Search_WritesPlansForEveryCell` passes instead of
+skipping; its efficiencies were kept, not replaced.** The new fit (747 runs) reads Cannon 0.877 (+3 %), Laser 0.732 (-4 %), Gun
+Turret 1.013 (+15 %), Flak 1.113 (+7 %) against the applied 0.853 / 0.759 / 0.878 / 1.041, hold-out 78 % / mono 88 % /
+Spearman 0.77 (the old fit: 78 / 90 / 0.70; both below the 90 % / 0.8 bar). Two things decided it:
+
+- The difference is not round 61's. The records already read Gun Turret 1.03/0.98 by halves on 2026-11-10 14:00, after round
+  34b's re-measure, and the 03:33 calibration was kept then. The air share moved the Gun's paper and its play together.
+- Applying it means a solve, and the solve moves every level: total health C1_01 +6 to +12 %, C1_02 -2 to +14 %, C1_03 +9
+  to +26 %, C1_04 +8 to +42 %, C1_05 +6 to +13 %, C1_06 +3 to +11 % (in memory, `r61_lab_r62_fit3.txt`). Every record would be
+  stale again and every scale found by play would have to be found again, C1_01 and C1_02 included. The siege terms are not
+  stable either: three fits of this round gave (siege, queue guard, route fire) = (1.445, 0.50, 4.0), (0.921, 0.40, 1.5) and
+  (2.653, 1.00, 4.0) on 537, 735 and 747 runs.
+
+So a new pipeline stage stamps the calibration for the current inputs and keeps its numbers: `balance_pipeline.sh apply-keep`
+(`BalanceStages.ApplyCalibration(keepFactors: true)`, `ApplyCalibration.Keep`). The asset carries `_factorsFrom`, every report
+header reads `calibration 2026-11-14 00:49 (factors of 2026-11-10 03:33 kept)`, `calibration.txt` holds the new fit, and
+`Round62Tests.EveryStoredWave_IsWhatTheSolveGives_AtTheAppliedCalibration` goes red when a fit is applied without a solve.
+**C1_01, C1_02, C1_06 and every other continent are byte-identical** (`git status Assets/_Project/Data`: the calibration asset
+and the level and wave assets of C1_03, C1_04, C1_05 only). This is a deviation from "apply": the shared model did not force a
+change, the fit only offered one, and taking it is the curator's call (open point 1).
+
+**Paper: every cell on its curve** (human lens, towers alone, surplus against the curve = 1.4 / 1.15 / 0.95 / 0.8 x the ramp /
+the cell's scale; `BalanceLedgerTests` green on the final data; the lab reports 0 waves moved against the solve on all 24 cells):
+
+| Level | Easy | Medium | Hard | Psycho |
+| --- | --- | --- | --- | --- |
+| C1_03 before | 2.27x (2.27x) | 1.47x (1.47x) | 1.40x (1.40x) | 1.03x (1.03x) |
+| C1_03 after | 2.27x (2.27x) | 1.47x (1.47x) | 1.40x (1.40x) | **1.18x (1.18x)**, scale 0.757 -> 0.66 |
+| C1_04 before | 1.54x (1.54x) | 0.96x (0.96x) | 0.91x (0.91x) | 1.16x (1.16x) |
+| C1_04 after | 1.53x (1.54x), raids x1.25 | 0.96x (0.96x) | **1.05x (1.04x)**, scale 1 -> 0.87 | 1.16x (1.16x) |
+| C1_05 before | 2.00x (2.00x) | 1.43x (1.43x) | 1.36x (1.36x) | 1.32x (1.32x) |
+| C1_05 after | 2.00x (2.00x) | 1.43x (1.43x) | 1.36x (1.36x) | **1.51x (1.51x)**, scale 0.57 -> 0.5 |
+| C1_06 before and after | 1.98x (1.97x) | 1.23x (1.23x) | 1.17x (1.17x) | 1.43x (1.43x) |
+
+**Play, before (round 34b's records, the waves before round 61) and after (this round's records)**: best replayed plan as wins
+over the three seeds, mean stars, mean base left; plans winning on most seeds; then the obvious family (the wave a row that
+never won fell at). `python -I Tools/PlayTest/r62_cells.py` prints it from the record files.
+
+| Cell | Best plan before | Best plan after | Plans winning 2+ (before -> after) | Gun row | Cannon row | Laser row | naive | affordable | creative (before -> after) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C1_03 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 -> 5/5 | **3/3 -> 0/3 (w14)** | 0/3 (w14) | 0/3 (w14) | 0/3 (w14) | **3/3 -> 0/3 (w14)** | 3/3 -> 3/3 |
+| C1_03 Medium | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 3/5 -> 4/5 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 -> 3/3 |
+| C1_03 Hard | 3/3, 3.0, 700 | 3/3, 3.0, 689 | 3/3 -> 3/3 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 -> 3/3 |
+| C1_03 Psycho | 2/3, 2.5, 687 | 3/3, 3.0, 800 (1/3 before the step) | 2/3 -> 3/3 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 0/3 -> 2/3 |
+| C1_04 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 -> 5/5 | **1/3 -> 0/3 (w13)** | 0/3 (w13) | 0/3 (w13) | **3/3 -> 0/3 (w14)** | **2/3 -> 0/3 (w13)** | 3/3 -> 3/3 |
+| C1_04 Medium | 3/3, 2.7, 636 | 3/3, 3.0, 682 | 3/3 -> 3/3 | 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 0/3 (w8) | 0/3 (w7) | 3/3 -> 3/3 |
+| C1_04 Hard | 3/3, 2.7, 696 | 3/3, 3.0, 800 (0/3 before the step) | 2/3 -> 5/5 | 0/3 (w5) | 0/3 (w5) | 0/3 (w5) | 0/3 (w5) | 0/3 (w5) | 3/3 -> 3/3 |
+| C1_04 Psycho | 3/3, 1.7, 501 | 3/3, 1.7, 446 | 4/5 -> 3/5 | 0/3 (w5) | 0/3 (w5) | 0/3 (w5) | 0/3 (w5) | 0/3 (w5) | 1/3 -> 1/3 |
+| C1_05 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 -> 5/5 | 0/3 (w11) | 0/3 (w11) | 0/3 (w11) | 0/3 (w11) | 0/3 (w11) | 3/3 -> 3/3 |
+| C1_05 Medium | 3/3, 3.0, 674 | 3/3, 3.0, 698 | 5/5 -> 4/5 | 0/3 (w9) | 0/3 (w9) | 0/3 (w9) | 0/3 (w9) | 0/3 (w9) | 1/3 -> 3/3 |
+| C1_05 Hard | 3/3, 2.3, 628 | **2/3, 2.5, 707** | 3/3 -> 4/5 | 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 1/3 -> 1/3 |
+| C1_05 Psycho | 2/3, 2.0, 775 | 3/3, 2.7, 866 (1/3 before the step) | 1/5 -> 3/5 | 0/3 (w9) | 0/3 (w9) | 0/3 (w9) | 0/3 (w9) | 0/3 (w9) | 0/3 -> 0/3 |
+| C1_06 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 -> 5/5 | 0/3 (w12) | 0/3 (w12) | 0/3 (w12) | 0/3 (w12) | 0/3 (w12) | 3/3 -> 3/3 |
+| C1_06 Medium | 3/3, 3.0, 687 | **3/3, 2.0, 568** | 3/3 -> 2/3 | 0/3 (w12) | 0/3 (w11) | 0/3 (w11) | 0/3 (w11) | 0/3 (w11) | 3/3 -> 2/3 |
+| C1_06 Hard | 3/3, 3.0, 800 | 3/3, 3.0, 800 | 2/3 -> 3/3 | 0/3 (w10) | 0/3 (w10) | 0/3 (w10) | 0/3 (w10) | 0/3 (w10) | 2/3 -> 2/3 |
+| C1_06 Psycho (scale 0.57 -> 0.52, round 61) | 3/3, 3.0, 862 | **3/3, 2.3, 717** | 5/5 -> 4/5 | 0/3 (w10) | 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 0/3 (w12) | 0/3 -> 0/3 |
+
+The rows' columns are the after values; apart from the arrows every row lost before too, on some cells later than now (Fault
+Line Psycho's Gun row and naive buyer reached wave 10, now 5; the before table is in round 34b's section). C1_01 and C1_02 were not played
+again (their waves and their towers' ground play are unchanged) and their rows are the old records.
+
+- **C1_06 Psycho at 0.52 holds in play**: the best plan wins 3/3 (2.3 stars, base 717 of 900; 3.0 and 862 at 0.57 with the old
+  Gun Turret), four of five plans win on most seeds, every obvious row loses.
+- **Three cells were too hard after round 61 and took one builder step each (scale / 1.15), by hand** (their builder counters
+  were spent): C1_03 Psycho 0.757 -> 0.66, C1_04 Hard 1 -> 0.87, C1_05 Psycho 0.57 -> 0.5. Cause: the Gun Turret no longer helps
+  in the sky (C1_03/C1_05 Psycho: the waves hardly moved, the plans dropped to 1/3), and on Fault Line Hard the early raids are
+  now sized against a Flak (wave 3: 2 x 35 -> 2 x 96 health, wave 6: 4 x 40 -> 4 x 166); its only plan lost 0/3 at waves 8-10.
+  After the step all three win 3/3. They may now be on the comfortable side (C1_03 Psycho and C1_04 Hard at 3 stars with the
+  base whole): one step is 15 %, there is no finer lever.
+- **Acceptance 9/24** (round 34b: 11/24). Gained: C1_04 Hard. Lost: C1_04 Easy (open point 2), C1_05 Psycho ("the replayed
+  plans are alike", a search matter; its best plan went from 2/3 to 3/3), C1_06 Medium (two plans win where the rule wants
+  three; best plan 3/3 but at 2 stars). No cell of the sixteen fails on its best plan.
+- `Tools/PlayTest/Plans/README.md` rewritten from the replay: 24 of 24 cells have a plan that won in play.
+
+**Found on the way, fixed: a repair drone kept the job of a tower that had been sold.** The first measure of the three moved
+cells failed on a worker with 1030 `MissingReferenceException`s: the creative bot sold a damaged tower while its repair drone was
+on it. The drone holds the structure as an interface, so the destroyed tower still read as alive and damaged, the dispatcher
+handed the same job back for ever, and `Tower.Position` threw every frame (a player selling a tower under repair gets the same:
+a frozen drone and an error a frame). `RepairDispatcher.Assign` now gives back a job that left the registry and `Drone.UpdateRepair`
+asks again at once; `RepairDispatcherTests.AJobThatLeftTheField_IsGivenBack_AndNeverHandedOutAgain`. The run was repeated: 0
+probe errors.
+
+### 2. Fault Line Easy: `AirRaidScale` 1 -> 1.25
+
+Two and three Skyrays became three and four (47 and 76 health each; the level stays on its curve, 1.53x). The three bots, seeds
+1-3 (on a clone and, seed 1, again in the editor with the same numbers):
+
+| Fault Line Easy | No sky gun | No sky gun, guns beside the besieged base | Two Flaks before the first raid |
+| --- | --- | --- | --- |
+| Before (scale 1) | lost 1/3, won 2/3 at 700/700 | won 3/3 (base 465, 700, 700) | won 3/3, 3 stars, 700/700 |
+| **After (1.25)** | **lost 3/3** at wave 16 | won 3/3, **2 stars**, base 489-609 of 700 | won 3/3, 3 stars, 700/700 |
+
+1.35 and 1.5 cost the patching player a seed (2/3), 2 and 2.5 lose it for him on every seed; the full table is in BALANCE.
+1.25 is the smallest step that meets the brief: the upgraded Gun row clears the raids on no seed, and Easy stays winnable
+without a Flak for a player who reacts.
+
+### 3. The Easy raid floor: numbers for Remco's choice (nothing changed, `RaidHealthFloor` Easy stays 0.6)
+
+On paper the floor binds on Shard Ridge and Crysium Vein Easy only. **Fault Line Easy does not move at 0.45 or 0.5** (its raids
+sit at x0.86 and above; the lab: 0 waves moved), so its three-bot numbers are the "after" row above on either floor.
+
+| Shard Ridge Easy | Skyray health | No sky gun | No sky gun, guns beside the base | Two Flaks |
+| --- | --- | --- | --- | --- |
+| Floor 0.6 (now) | 33 | lost 3/3 at wave 14 | won 3/3, 1 star, base 158-273 | 3 stars, 700/700 |
+| Floor 0.5 | 27 | lost 3/3 at wave 14 | won 3/3, stars 1/2/1, base 340, 364, 162 | 3 stars, 700/700 |
+| Floor 0.45 | 24 | lost 3/3 (waves 14, 16, 14) | won 3/3, stars 1/2/1, base 330, 575, 258 | 3 stars, 700/700 |
+| Floor 0.3 (extra point) | 16 | lost 3/3 at wave 16 (9-10 of 11 flyers down) | won 3/3, stars 3/2/2, base 666, 604, 594 | 3 stars, 700/700 |
+
+Read: 0.45 or 0.5 buys the patching player 50 to 300 base health and at most a star on one seed; the player who ignores the sky
+loses on every floor, because a single Skyray over the base strikes it until it falls. If Remco wants Easy to forgive that
+player, the lever is not the floor: it is a rule that a flyer leaves after a few strikes, or a base turret that shoots up from
+the start (neither built). Crysium Vein Easy would move with the floor too (its first raids are on it) and was not played.
+
+### 4. The tower's air read
+
+- `Game.Towers.TargetRead` (new, pure, from the data: target layers and the damage share per layer; a layer at
+  `TargetRead.WeakShare` 0.5 or less reads "weak"): "Air: weak" (Gun Turret), "Air only" (Flak), "Ground only" (Cannon, Laser),
+  "Ground and air" (Railgun and the rest), nothing for a support tower.
+- **Tower bar:** the badge of a weak layer is drawn faded (`HudView.Badges`, 35 % alpha), so the Gun Turret's card no longer shows
+  two equal badges; the status line over the bar, which already named the tower in hand, now reads `Gun Turret (50)  -  Air:
+  weak` / `Flak Turret (120)  -  Air only` / `Cannon (100)  -  Ground only`. The line follows the selected card, so it works the
+  same with the pad's card cycling as with the mouse; no new focusable element.
+- **Tower menu:** `Gun Turret  Lv 1  HP 150/150  -  Air: weak` on the info line. **Upgrade screen:** "Shoots ground and air (air:
+  weak)".
+- Stills (`ArtSource/Previews/QA/`): `r62_tower_air_hint.png` (the Game view, Gun Turret in hand) + `_x2`, `_flak` + `_flak_x2`,
+  `_menu` + `_menu_x2` (the tower menu), `_offscreen_x2` (the 4K off-screen render). What I see in the x2 crops: the status
+  line is as readable as the price digits; the Gun Turret's sky badge is clearly dimmer than the Flak's but still recognisable
+  as the same icon. Weak points: the words only show while the tower is in hand over a cell it can stand on (elsewhere the
+  line says "Cannot build here"), so a player who only looks at the cards gets the faded badge and no word; the fade alone does
+  not say *how* weak; the upgrade screen's line was not looked at in a still (the label is tested). The test tower's menu
+  overlaps the hero panel because I built it at the far left of the view; that placement is the menu's own, not new.
+  The off-screen render does not draw the tower menu panel (the Game view capture does), and in it the selected card's badge
+  looks dim whatever the tower, so the Game view captures are the ones to judge by.
+
+### Tests and checks
+
+- New `Round62Tests` (10 cases): the read per tower from its asset; the read follows the data; a support tower says nothing;
+  Fault Line's Easy raids are three flyers or more; every stored wave of every campaign cell equals the solve at the applied
+  calibration; a calibration with kept factors says so. `RepairDispatcherTests` +1.
+- EditMode on w6 (`r34b_editmode_worker.sh 6 "Game.Tests"`): **914 tests, 862 passed, 52 skipped, 0 failed** (round 61: 903 /
+  850 / 53). The skips are round 60's 52 again: 50 `TowerParityTests`, the fit below the bar, the acceptance report;
+  `PlanSearchTests.Search_WritesPlansForEveryCell` passes, and its fresh search writes the same strategy files as the ones that
+  were replayed for all sixteen cells (only the header line of the `.txt` differed).
+- Recompile: 0 errors, the one known warning (CS0618, `BalanceProbeTests` line 606). Play consoles in the editor: 0 errors, 0
+  warnings in the three-bot run on the final data and in the still runs, except one `Failed to handle /api/exec request: Main
+  thread operation timed out after 5000ms` from the Pipeline itself in a still run taken while five workers were measuring
+  (the harness, not the game).
+- Not done: the impact baseline (`balance_pipeline.sh snapshot`) was not retaken; `yardstick.txt` and `plan_replay.txt` (the
+  whole-run tables) are still the old ones, the narrowed runs wrote `yardstick_partial.txt` and `plan_replay_partial.txt`.
+  `Level_C1_05.asset` gained one line (`Footprint: []`, a field the asset had not been saved with since it was added) beside
+  its scale. The suite rewrote `drone_lens.txt`, `finale_balance.txt`, `finale_boss_share.txt`, `monoculture_ledger.txt` and
+  `tower_roles.txt` in the clone; they were left there. The stills after the last code change (the drone fix, the keep stage)
+  were not retaken: neither touches the interface.
+- Tools: `r62_variant_worker.sh`, `r62_cells_chain.sh`, `r62_cells.py`, `r62_hint_shot.sh`, `r62_hint.cs`, `r62_rules_check.cs`,
+  `r62_reload.cs`; `AirRaidLab.cs` takes `raid.<Key>=`, `eff.<TowerId>=`, `cal.<Field>=` and its `rule.*` overrides are fixed
+  (they landed one run late in round 61 and stayed in the editor's shared rules; BALANCE has the detail). Tables:
+  `r62_air_raid125|135|15|20|25.txt`, `r62_air_floor030|045|050.txt`, `r62_air_final_editor.txt`, `r61_lab_r62_*.txt`,
+  `r62_plans_summary.txt`; logs in `Logs/r62/`.
+
+### Open points (round 62)
+
+1. **The calibration's numbers.** The records say the Gun Turret is worth 1.01 of its paper, not 0.88 (and have since round
+   34b). Taking the fit makes every level 3 to 40 % heavier on paper and needs a full run with new scales; keeping it means the
+   paper stays lenient to Gun rows by that much. The siege, queue-guard and route-fire trio jumps between fits: a model matter.
+2. **Easy and the obvious family.** From Shard Ridge on every obvious kind loses on Easy (none of them ever buys a Flak), so the
+   Easy rule "two of three obvious kinds win" fails on four levels (Fault Line new; on Shard Ridge the Gun row and the
+   affordable buyer still won before round 61, one kind short of the rule). Either an obvious kind
+   gets a sky gun, or the rule counts only what can shoot what the level sends (round 34b's question 1, now on four levels).
+3. **Easy for a player who ignores the sky** (Remco's pending answer): the floor table above; the floor does not save him.
+4. **C1_06 Medium** is harder than it was (best plan 3/3 at 2 stars, base 568; two plans of three win, the creative bot 2/3).
+   One step easier (0.87 -> 0.757) is the same lever as the three cells above; not taken, because the cell is won on every seed.
+   **C1_05 Hard**: the best plan wins 2/3 (3/3 before), four of five plans win on most seeds.
+5. C1_03 Psycho and C1_04 Hard after their step win with the base whole: possibly a notch too easy for their names.
+6. The tower menu can open over the hero panel when the tower stands at the left edge of the view (seen in the still; older
+   than this round).

@@ -43,6 +43,7 @@ namespace Game.UI
         private static readonly Color GroundBadge = new Color(1f, 0.78f, 0.35f);
         private static readonly Color AirBadge = new Color(0.55f, 0.85f, 1f);
         private static readonly Color SlowBadge = new Color(0.75f, 1f, 1f);
+        private const float WeakBadgeAlpha = 0.35f;
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
         private static readonly Color Unaffordable = new Color(1f, 0.55f, 0.5f);
         private static readonly Color BossWarning = new Color(1f, 0.45f, 0.4f);
@@ -432,18 +433,21 @@ namespace Game.UI
             return button;
         }
 
-        // Small icons in the top band of a card tell what the tower hits: ground, air, and whether it slows.
+        // Small icons in the top band of a card tell what the tower hits: ground, air, and whether it slows. A layer the tower
+        // aims at but barely hurts (TargetRead: the Gun Turret against flyers) shows as a faded badge, so two badges no longer
+        // promise two equal jobs; the words are in the status line while the tower is in hand and in the tower menu.
         private static void Badges(Transform card, TowerDefinition tower)
         {
             int count = 0;
+            TargetReadKind read = TargetRead.Of(tower);
             if (!tower.IsSupport && (tower.Targets & TargetLayers.Ground) != 0)
             {
-                Badge(card, IconType.Ground, GroundBadge, count++);
+                Badge(card, IconType.Ground, read == TargetReadKind.GroundWeak ? Faded(GroundBadge) : GroundBadge, count++);
             }
 
             if (!tower.IsSupport && (tower.Targets & TargetLayers.Air) != 0)
             {
-                Badge(card, IconType.Air, AirBadge, count++);
+                Badge(card, IconType.Air, read == TargetReadKind.AirWeak ? Faded(AirBadge) : AirBadge, count++);
             }
 
             if (tower.SlowFactor < 1f)
@@ -451,6 +455,8 @@ namespace Game.UI
                 Badge(card, IconType.Slow, SlowBadge, count++);
             }
         }
+
+        private static Color Faded(Color colour) => new Color(colour.r, colour.g, colour.b, WeakBadgeAlpha);
 
         // A one-shot trap is bought for one number, so the card says how hard it hits, next to the effect badge.
         private static void DamageTag(RectTransform card, float damage)

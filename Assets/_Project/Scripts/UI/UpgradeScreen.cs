@@ -664,7 +664,9 @@ namespace Game.UI
             {
                 bool ground = (subject.Tower.Targets & TargetLayers.Ground) != 0;
                 bool air = (subject.Tower.Targets & TargetLayers.Air) != 0;
-                return "Shoots " + (ground && air ? "ground and air" : air ? "air" : "ground");
+                TargetReadKind read = TargetRead.Of(subject.Tower);
+                string weak = read == TargetReadKind.AirWeak || read == TargetReadKind.GroundWeak ? " (" + TargetRead.Label(read).ToLowerInvariant() + ")" : string.Empty;
+                return "Shoots " + (ground && air ? "ground and air" : air ? "air" : "ground") + weak;
             }
 
             return subject.Description ?? string.Empty;

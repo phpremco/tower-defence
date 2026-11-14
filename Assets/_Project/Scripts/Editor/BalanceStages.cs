@@ -272,7 +272,7 @@ namespace Game.Editor
         /// Writes calibration.txt's fit into the BalanceCalibration asset, creating it when absent. A fit below the bar (the hold-out
         /// line the fit writes; round 25) is refused unless <paramref name="force"/>: round 24 applied one without a word.
         /// </summary>
-        public static string ApplyCalibration(bool force = false)
+        public static string ApplyCalibration(bool force = false, bool keepFactors = false)
         {
             if (!File.Exists(CalibrationTablePath))
             {
@@ -280,7 +280,7 @@ namespace Game.Editor
             }
 
             string bar = BarVerdict(File.ReadAllLines(CalibrationTablePath), out bool belowBar);
-            if (belowBar && !force)
+            if (belowBar && !force && !keepFactors)
             {
                 return "REFUSED: " + bar + " Re-measure or refit, or apply with the override (balance_pipeline.sh apply-force) if the curator lowered the bar.";
             }
@@ -288,6 +288,11 @@ namespace Game.Editor
             var calibration = AssetDatabase.LoadAssetAtPath<BalanceCalibration>(BalanceCalibration.AssetPath);
             if (calibration == null)
             {
+                if (keepFactors)
+                {
+                    return "No calibration asset to keep the factors of: run the apply stage first.";
+                }
+
                 Directory.CreateDirectory(Path.GetDirectoryName(BalanceCalibration.AssetPath));
                 calibration = ScriptableObject.CreateInstance<BalanceCalibration>();
                 AssetDatabase.CreateAsset(calibration, BalanceCalibration.AssetPath);
@@ -295,42 +300,48 @@ namespace Game.Editor
 
             var so = new SerializedObject(calibration);
             SerializedProperty towers = so.FindProperty("_towers");
-            towers.arraySize = 0;
+            if (!keepFactors)
+            {
+                towers.arraySize = 0;
+            }
+
             var report = new StringBuilder();
             foreach (string line in File.ReadAllLines(CalibrationTablePath))
             {
                 string[] parts = line.Split(' ');
                 if (parts.Length == 3 && parts[0] == "factor")
                 {
+                    float fitted = float.Parse(parts[2], CultureInfo.InvariantCulture);
+                    if (keepFactors)
+                    {
+                        report.Append(Kept(parts[1], calibration.EfficiencyOf(parts[1]), fitted));
+                        continue;
+                    }
+
                     towers.arraySize++;
                     SerializedProperty element = towers.GetArrayElementAtIndex(towers.arraySize - 1);
                     element.FindPropertyRelative("TowerId").stringValue = parts[1];
-                    element.FindPropertyRelative("Efficiency").floatValue = float.Parse(parts[2], CultureInfo.InvariantCulture);
+                    element.FindPropertyRelative("Efficiency").floatValue = fitted;
                     report.Append(parts[1]).Append(' ').Append(parts[2]).Append("; ");
                 }
-                else if (parts.Length == 2 && parts[0] == "repairbusy")
+                else if (parts.Length == 2 && FittedFactor(parts[0], out string property, out string label))
                 {
-                    so.FindProperty("_repairDroneBusyShare").floatValue = float.Parse(parts[1], CultureInfo.InvariantCulture);
-                    report.Append("repair drone busy ").Append(parts[1]).Append("; ");
-                }
-                else if (parts.Length == 2 && parts[0] == "queueguard")
-                {
-                    so.FindProperty("_queueGuardShare").floatValue = float.Parse(parts[1], CultureInfo.InvariantCulture);
-                    report.Append("queue guard ").Append(parts[1]).Append("; ");
-                }
-                else if (parts.Length == 2 && parts[0] == "routefire")
-                {
-                    so.FindProperty("_routeFire").floatValue = float.Parse(parts[1], CultureInfo.InvariantCulture);
-                    report.Append("route fire ").Append(parts[1]).Append("; ");
-                }
-                else if (parts.Length == 2 && parts[0] == "siege")
-                {
-                    so.FindProperty("_siegeFactor").floatValue = float.Parse(parts[1], CultureInfo.InvariantCulture);
-                    report.Append("siege ").Append(parts[1]).Append("; ");
+                    float fitted = float.Parse(parts[1], CultureInfo.InvariantCulture);
+                    if (keepFactors)
+                    {
+                        report.Append(Kept(label, so.FindProperty(property).floatValue, fitted));
+                        continue;
+                    }
+
+                    so.FindProperty(property).floatValue = fitted;
+                    report.Append(label).Append(' ').Append(parts[1]).Append("; ");
                 }
                 else if (parts.Length == 3 && parts[0] == "utilisation")
                 {
-                    so.FindProperty(parts[1] == "human" ? "_humanUtilisation" : "_botUtilisation").floatValue = float.Parse(parts[2], CultureInfo.InvariantCulture);
+                    if (!keepFactors)
+                    {
+                        so.FindProperty(parts[1] == "human" ? "_humanUtilisation" : "_botUtilisation").floatValue = float.Parse(parts[2], CultureInfo.InvariantCulture);
+                    }
                 }
                 else if (parts.Length == 2 && parts[0] == "inputs")
                 {
@@ -350,12 +361,37 @@ namespace Game.Editor
                 }
             }
 
+            // Kept factors keep the date of the fit they came from, so every report header says whose numbers the model runs on.
+            string measuredOn = so.FindProperty("_measuredOn").stringValue;
+            string factorsFrom = so.FindProperty("_factorsFrom").stringValue;
+            so.FindProperty("_factorsFrom").stringValue = keepFactors ? (string.IsNullOrEmpty(factorsFrom) ? measuredOn : factorsFrom) : string.Empty;
             so.FindProperty("_measuredOn").stringValue = DateTime.Now.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(calibration);
             AssetDatabase.SaveAssets();
+            if (keepFactors)
+            {
+                return "Calibration re-stamped for the current inputs, its efficiencies and factors KEPT (the waves stay as solved; " + bar + "): " + report;
+            }
+
             return (belowBar ? "WARNING, applied by override: " + bar + " " : string.Empty) + "Calibration written to " + BalanceCalibration.AssetPath + ": " + report;
         }
+
+        // The single-number lines of the fit table and the asset fields they belong to.
+        private static bool FittedFactor(string key, out string property, out string label)
+        {
+            switch (key)
+            {
+                case "repairbusy": property = "_repairDroneBusyShare"; label = "repair drone busy"; return true;
+                case "queueguard": property = "_queueGuardShare"; label = "queue guard"; return true;
+                case "routefire": property = "_routeFire"; label = "route fire"; return true;
+                case "siege": property = "_siegeFactor"; label = "siege"; return true;
+                default: property = null; label = null; return false;
+            }
+        }
+
+        private static string Kept(string label, float applied, float fitted) =>
+            Invariant($"{label} {applied:0.###} kept (the fit says {fitted:0.###}, {(applied > 0f ? (fitted / applied - 1f) * 100f : 0f):+0;-0} %); ");
 
         // The fit's hold-out line against the bar; a table without one (written before round 25) counts as below the bar.
         private static string BarVerdict(string[] lines, out bool belowBar)

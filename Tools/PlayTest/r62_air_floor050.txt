@@ -1,0 +1,31 @@
+Air defence, sky guns against none, 2026-11-13 23:32. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (STALE, data now 22954ca8)
+Per run: outcome, wave reached, stars, base left, flyers shot down of those that came, hits flyers landed on the base, towers standing by type,
+then who took the flyers' health (share of what all flyers brought; the rest reached the end alive), and the raids one by one.
+
+Level_C1_03 Easy   seed 1 no sky gun    : LOST wave 14/16, 0 stars, base 0/700, flyers down 2/4, flyer base hits 146, coins left 8, built Cannon x1, PulseRifle x7, 7 upgrades
+    flyer health 109: PulseRifle 84 (77%); not shot 25 (23%)
+    raids: w12 84/109
+Level_C1_03 Easy   seed 1 no sky, guards: won  wave 16/16, 1 stars, base 340/700, flyers down 11/11, flyer base hits 77, coins left 130, built Cannon x1, PulseRifle x13, 7 upgrades
+    flyer health 299: PulseRifle 299 (100%); not shot 0 (0%)
+    raids: w12 109/109 w15 190/190
+Level_C1_03 Easy   seed 1 sky guns 2    : won  wave 16/16, 3 stars, base 700/700, flyers down 11/11, flyer base hits 0, coins left 145, built Cannon x1, PulseRifle x10, Rocket x2, 5 upgrades
+    flyer health 299: PulseRifle 34 (11%) Rocket 265 (89%); not shot 0 (0%)
+    raids: w12 109/109 w15 190/190
+Level_C1_03 Easy   seed 2 no sky gun    : LOST wave 14/16, 0 stars, base 0/700, flyers down 2/4, flyer base hits 146, coins left 16, built Cannon x1, PulseRifle x7, 7 upgrades
+    flyer health 109: PulseRifle 78 (72%); not shot 30 (28%)
+    raids: w12 78/109
+Level_C1_03 Easy   seed 2 no sky, guards: won  wave 16/16, 2 stars, base 364/700, flyers down 11/11, flyer base hits 71, coins left 176, built Cannon x1, PulseRifle x12, 7 upgrades
+    flyer health 299: PulseRifle 299 (100%); not shot 0 (0%)
+    raids: w12 109/109 w15 190/190
+Level_C1_03 Easy   seed 2 sky guns 2    : won  wave 16/16, 3 stars, base 700/700, flyers down 11/11, flyer base hits 0, coins left 145, built Cannon x1, PulseRifle x10, Rocket x2, 5 upgrades
+    flyer health 299: PulseRifle 34 (11%) Rocket 265 (89%); not shot 0 (0%)
+    raids: w12 109/109 w15 190/190
+Level_C1_03 Easy   seed 3 no sky gun    : LOST wave 14/16, 0 stars, base 0/700, flyers down 2/4, flyer base hits 146, coins left 3, built Cannon x1, PulseRifle x7, 7 upgrades
+    flyer health 109: PulseRifle 75 (69%); not shot 34 (31%)
+    raids: w12 75/109
+Level_C1_03 Easy   seed 3 no sky, guards: won  wave 16/16, 1 stars, base 162/700, flyers down 11/11, flyer base hits 115, coins left 76, built Cannon x1, PulseRifle x14, 7 upgrades
+    flyer health 299: PulseRifle 299 (100%); not shot 0 (0%)
+    raids: w12 109/109 w15 190/190
+Level_C1_03 Easy   seed 3 sky guns 2    : won  wave 16/16, 3 stars, base 700/700, flyers down 11/11, flyer base hits 0, coins left 91, built Cannon x1, PulseRifle x11, Rocket x2, 5 upgrades
+    flyer health 299: PulseRifle 29 (10%) Rocket 270 (90%); not shot 0 (0%)
+    raids: w12 109/109 w15 190/190
