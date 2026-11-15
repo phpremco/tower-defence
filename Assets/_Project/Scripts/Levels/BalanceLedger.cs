@@ -176,6 +176,9 @@ namespace Game.Levels
                     return UpgradeKind.GateHealth;
                 case UpgradeTarget.HeroDamage:
                     return UpgradeKind.HeroDamage;
+                case UpgradeTarget.HeroRegen:
+                case UpgradeTarget.HeroArmour:
+                    return UpgradeKind.HeroGear;
                 default:
                     return UpgradeKind.Other;
             }

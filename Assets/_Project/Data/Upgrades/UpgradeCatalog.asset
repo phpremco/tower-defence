@@ -51,6 +51,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 507f628dcc8eca04986a3fad6342c121, type: 2}
   - {fileID: 11400000, guid: 17b74c811986d104083b097739bd7d58, type: 2}
   - {fileID: 11400000, guid: 24ec731b5db80fd44bc0fe6007a52c4b, type: 2}
+  - {fileID: 11400000, guid: d41d98c3a61b01c41a65b81c2324fe88, type: 2}
+  - {fileID: 11400000, guid: f0f9192d27ab8104aad1ce93ed3ba775, type: 2}
   - {fileID: 11400000, guid: 63e8229a7ab7e8b489ec88d538fca7c1, type: 2}
   - {fileID: 11400000, guid: 052141bc9ba3ea24ba2c4d42b5b39125, type: 2}
   - {fileID: 11400000, guid: 636d0a2d35384c643b6f15250eafedc2, type: 2}
@@ -60,3 +62,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9150c4b7b39a60f43b69a9ff9e9c9732, type: 2}
   - {fileID: 11400000, guid: 09d6ba146944ba44f8b8e41aded38033, type: 2}
   - {fileID: 11400000, guid: d8227155a0b63014eabf6107dbe32b1b, type: 2}
+  _tiersPerContinent: 040000000600000008000000090000000a000000i

@@ -10359,3 +10359,125 @@ range ring and the placing glow are unchanged effects.
 6. Kept from round 64: the armour table (blade 0.5, Flak 1) is untouched as asked; Psycho's last boss on Crysium Vein is
    still below Hard's (2595 against 1978); Easy on Fault Line and Crysium Vein; the loading screen's two stalls.
 7. The terrace-step kit pieces are no longer placed and nothing else uses them.
+
+## Round 66: ten upgrade tiers opened per continent, Spencer's repair drone and armour, the blade that burns red, Voss explains the upgrade screen (2026-11-15)
+
+Not committed (the curator commits). No full generator run: `Tools/PlayTest/Scripts/ApplyRound66.cs` (the upgrades, the hero's
+gear art, the story's hints) writes what the changed generator now would; the waves were not touched and no solve was
+needed (section 1). No Blender (the armour plates are meshes built in code), no packages, the armour factor table and the
+Game view's resolution untouched, `Docs/RELEASE_GAPS.md` and `Docs/STORY_REVIEW.md` untouched. Remco's save `progress.json`
+(MD5 **463303aa28769c0934c10dc303967162** at the start) was copied aside before every Play Mode run and restored after;
+identical after each run and at the end; the dev backup untouched. Editor play runs strictly one after another; EditMode on
+the spare clone w6. The numbers: Docs/BALANCE.md "Round 66"; commands: Docs/COMMANDS.md "Round 66".
+
+### 1. Ten tiers, opened per continent
+
+- **Data.** Every permanent upgrade has ten tiers (`UpgradeDefinition._costs`); the base turrets (three steps) and the extra
+  harvest drone (two) keep their own. Which tier is open on which continent is a list on the upgrade catalogue
+  (`UpgradeCatalog._tiersPerContinent` = **4 / 6 / 8 / 9 / 10**), written by the generator from
+  `BalanceRules.UpgradeTiersPerContinent`, which the progression model shops under as well. No continent is named in code:
+  the player's cap is what the furthest continent they can enter opens (`CampaignRules.ReachedRegion` /
+  `UpgradeTierCap`, read by `UpgradeTiers`), and `ProgressService.TryBuyUpgrade(upgrade, tierCap)` refuses a tier above it.
+- **Prices.** First tier x 1 / 2 / 3 / 4.4 / 6 / 8 / 10.4 / 13.2 / 16.4 / 20 (`BalanceRules.UpgradeTierCostCurve`,
+  `UpgradeEconomy.TierCosts`): a first tier of 5 costs 5, 10, 15, 22, 30, 40, 52, 66, 82, 100. Tiers 1-3 are the old three
+  at the old price and the old worth (the bonus per tier is unchanged and stays linear).
+- **The economy** (Docs/BALANCE.md "Round 66" has the tables). Crystal Plains opens 1352 research (tiers 1-4 of its six
+  towers, the base, the gates and Spencer); its budget stays 748, which is 55% of that (`BalanceRules.ResearchBudgetShare`,
+  the rule for the later continents' budgets). All twenty levels pay 150 on Easy, 300 on Medium, 450 on Hard, 750 on
+  Psycho, 1650 on all four: one difficulty never buys all four tiers, all four together do with about 300 to spare. The
+  six levels that exist pay 36 / 72 / 108 / 180 (396 together). Projected to tier 10: 21 328 research opened over five
+  continents against 25 839 earned on every difficulty; the player of every difficulty holds the cap on every continent.
+- **The Crystal Plains balance did not move.** The model's player per cell is identical before and after
+  (`R66PlayerStates.cs`, 24 cells: research, every upgrade level, the mean tower bonus), so `ExpectedUpgradeBonus` and
+  every stored wave are as they were; nothing was solved, measured or replayed. The calibration's input and shape
+  hashes did move (upgrade tiers, the model's sources), so the yardstick-only fit ran again on w6 (identical in every
+  number) and `balance_pipeline.sh apply-keep` stamped the calibration current with every factor kept. Why, and where the model is now knowingly a little kind (Spencer's
+  gear is not in the model's shopping): BALANCE.
+- **The save.** No format change and no migration step: the three old tiers are the first three of the ten, so a save's
+  levels carry over as they are. `Round66Tests.OldSave_LoadsIntoTheTenTierModel_WithoutLoss` asserts it on a save shaped
+  like Remco's, and `SaveCopy_LoadsIntoTheTenTierModel_WithoutLoss` ran on a copy of his real file
+  (`Tools/PlayTest/r66_save_copy.json`, deleted afterwards): Base turrets 1, Gate strength 2, Gun Turret damage 2,
+  9 research and 7 power all kept, nothing above the cap.
+- **The upgrade screen.** A row is the upgrade's name over a strip of ten pips: bought (lit), open (dark), or a small
+  amber padlock for a tier that waits for a later continent. Top right of the panel: "Tier 5 opens on Ashen Reach" (the
+  continent's name from the campaign's regions). A row whose open tiers are all bought shows its value and
+  "tier 5 opens on Ashen Reach" in amber and cannot be pressed; the focus skips it as it skips an unaffordable row. Four
+  rows fit (Spencer has four). The tile's bar runs over all ten tiers (it never shrinks); its gold star now means
+  "everything open so far is bought", so MASTERED is celebrated per continent. The purchase celebration is unchanged.
+
+### 2. Spencer's gear
+
+Two new research upgrades in his group, ten tiers each, gated like every other: **Repair drone** (`Hero_RepairDrone`,
+`UpgradeTarget.HeroRegen`, +25% healing per tier: 6.0 to 7.5 hp/s at tier 1, 12 hp/s at tier 4) and **Armour**
+(`Hero_Armour`, `UpgradeTarget.HeroArmour`, 5% off every hit per tier: 20% at tier 4, half at tier 10). His old "Armour"
+row was his health and is now called **Health** (same id `Hero_Health`, same numbers). The effects travel in
+`HeroGear` (Core) on `PlayerModifiers`; `Commander` takes the armour off every hit he takes (a strike, his share of the
+gate's hit, slime) while the gate still gets what it got, and multiplies his own regeneration; the pause after a hit is
+unchanged. How it looks is `HeroGearArtDefinition` (`Data/Art/Story/MercerGearArt.asset`), read only by the views:
+- **The companion** (`HeroCompanionDrone`): the repair drone's own model at 45%, hovering at his left shoulder, bobbing,
+  its rotors turning, trailing a little when he walks or flies. While his health climbs it lays the painted tool cone
+  on his chest with a soft glow where it lands; both fade in and out over 0.35 s. It also stands beside him in the
+  upgrade screen's turning preview as soon as it is bought.
+- **The armour** (`HeroArmourPlates`, `ArmourPlateMesh`): framed plates in the suit's colours with a glowing ridge,
+  built in code and fixed to his bones: upper arms at tier 1, the chest at 2, the forearms at 3, the thighs at 4, the
+  shins at 5; from there they grow to 130% at tier 10. The generator seats each plate on the suit's surface in the idle
+  pose (it measures the posed mesh along the plate's outward line), so nothing floats; caps on his own shoulder pieces
+  were tried and dropped, they floated beside the helmet. The preview shows the plates the moment a tier is bought.
+
+### 3. The blade at its top tier
+
+When the blade damage upgrade stands at the highest tier open to the player (tier 4 on Crystal Plains), `HeroGear.BladeAtTop`
+is set and `HeroArtView` lights the blade in `MasterBladeColor` (red) with a `BladeAura`: a long soft glow laid along the
+blade and turned to the camera, a rounder glow about its middle, and a few embers. All of it is laid from the blade's
+own base and tip after the body is posed and scales with the blade's ignition, so it follows every cut and comes and
+goes with the blade. Not an upgrade of its own; when the next continent opens more tiers the blade is cyan again until
+it is topped again (deliberate, see the open points).
+
+### 4. Spencer in his card
+
+The tile picture used the tower framing, which is half his height: he stood half outside it. `IconFraming.FittedCard`
+centres and zooms the picture on the model itself (`ModelIconRenderer.FitTo`); the towers and drones keep their framing.
+
+### 5. Dr. Voss explains the upgrade screen (the coordinator's extra task)
+
+The first time the screen opens in a save, Voss says how it works in four lines (`Dlg_Tip_UpgradeScreen` on the story,
+written by the generator; the tier number in his third line is the rules' cap): research points and difficulty, tiers
+and power for the drones, the padlock and the continents, Spencer's drone and armour. `UpgradeScreenGuide` plays it in
+the level's own dialogue box, low on the screen; the screen underneath takes no input meanwhile, so Confirm reads on and
+never buys, and Cancel skips Voss instead of leaving. Seen when it ends or is skipped (the save's story flags), so once
+per save. It is also a loading tip and is listed in the story viewer.
+
+### What was checked
+
+- EditMode on w6 (`bash Tools/PlayTest/r34b_editmode_worker.sh 6 "Game.Tests"`): 968 tests, 915 passed, 0 failed, 53 skipped (the 52 known skips, and the save-copy test once the copy was deleted; with the copy in place it passed, 52 skipped). Before the round: 949 / 897 / 52. `Round66Tests` covers the
+  tier caps, buying at the cap, the model's shopper under the cap, the cost curve, Crystal Plains' budget, the
+  projection, an old save and the save copy, the gear's numbers, the armour and the drone on a `Commander`, the plates
+  per tier, the companion in the display figure, and Voss's explanation with its seen flag.
+- Play: the upgrade screen with 60 research (Voss up, skipped, seen; Armour bought four times for 52, the fifth press
+  refused; the drone bought twice), and Glass Meadows with armour 4, drone 2 and blade 4 in memory: a hit of 150 took
+  120, he mended at 9 hp/s with the light on, 30 Skitters at his gate for the cuts. Console clean in every run.
+- Stills in `ArtSource/Previews/QA/r66_*`: the upgrade screen at 1080p and 720p (Voss's first visit, a tower's locked
+  tiers, Spencer in his card, his gear bought), the armour per tier and from four sides, the companion mending (zoom,
+  crop, play camera), the red blade held and mid-cut (zoom, 2x crops, two sequences, play camera).
+
+### Seen in the stills, honestly
+
+- The plates read well in the preview and zoomed in; at the play zoom Spencer is about 55 px tall and seen from behind and
+  above, where his own shoulder pieces and the jetpack cover most of them. What reads there is the companion and the blade.
+- The mending cone is the repair drones' painted tool cone: soft along its length and faded in and out, but its two
+  sides are straight lines, as on the big drones.
+- The blade is drawn as it always was (two bright lines close together at some angles of a cut); only its colour and
+  the aura are new.
+- At 720p a padlock pip is about ten pixels: it reads as an amber mark, and the note at the top of the panel says what it means.
+
+### Open points for Remco
+
+1. **The tier list 4 / 6 / 8 / 9 / 10** and the cost curve are the curator's proposal; both are one line of data each.
+2. **Bonus per tier stays linear** to tier 10 (a tower at tier 10: damage x2, rate x2, range x1.5). The later continents'
+   waves are solved against it, but range x1.5 changes how a map plays; a flatter range path is a data change.
+3. **The red blade goes cyan again** when a new continent opens more tiers, until it is topped again. The alternative
+   (red from tier 4 on, for good) is one line.
+4. **Spencer's gear in the balance model** (BALANCE "Round 66"): not counted now; counting it needs the pipeline.
+5. **Shoulder caps** would make the armour read from the play camera; they need a plate modelled to his shoulder pieces
+   (Blender), not a seated shell.
+6. Voss's four lines are proposed text.

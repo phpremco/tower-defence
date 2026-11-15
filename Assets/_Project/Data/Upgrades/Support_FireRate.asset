@@ -17,7 +17,7 @@ MonoBehaviour:
   _towerId: Support
   _droneId: 
   _groupName: Support
-  _costs: 060000000c00000012000000i
+  _costs: 060000000c000000120000001a00000024000000300000003e0000004f0000006200000078000000i
   _currency: 0
   _groupDescription: 
   _bonusPerLevel: 0.1

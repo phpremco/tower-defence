@@ -35,6 +35,25 @@ namespace Game.Levels
             return first >= 0 && IsOpen(catalog, first, progress);
         }
 
+        /// <summary>Index of the furthest region the player can enter; the first one before anything is beaten.</summary>
+        public static int ReachedRegion(CampaignCatalog catalog, ProgressService progress)
+        {
+            int reached = 0;
+            for (int region = 0; region < catalog.Regions.Count; region++)
+            {
+                if (IsRegionOpen(catalog, region, progress))
+                {
+                    reached = region;
+                }
+            }
+
+            return reached;
+        }
+
+        /// <summary>The highest permanent-upgrade tier the player can buy now: what the furthest continent reached opens.</summary>
+        public static int UpgradeTierCap(CampaignCatalog catalog, UpgradeCatalog upgrades, ProgressService progress) =>
+            upgrades.TierCap(ReachedRegion(catalog, progress));
+
         /// <summary>How many levels of the region have been beaten on any difficulty.</summary>
         public static int CompletedInRegion(CampaignCatalog catalog, int region, ProgressService progress)
         {

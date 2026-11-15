@@ -127,6 +127,16 @@ namespace Game.Core
             block.SetColor(GlowColorId, colour * (FlareGlowStrength * strength));
         }
 
+        /// <summary>
+        /// Lights a flare card as a glow only, its middle in the glow's own colour instead of white-hot: for an aura laid
+        /// over something that has a bright core of its own (the hero's blade at its top tier).
+        /// </summary>
+        public static void SetFlareGlow(MaterialPropertyBlock block, Color colour, float strength)
+        {
+            block.SetColor(CoreColorId, colour * (FlareGlowStrength * strength));
+            block.SetColor(GlowColorId, colour * (FlareGlowStrength * strength));
+        }
+
         /// <summary>Dresses a line in the beam, its profile stretched once along the whole line, its ends tapered and rounded.</summary>
         public static LineRenderer UseBeam(LineRenderer line)
         {

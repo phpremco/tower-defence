@@ -1,4 +1,4 @@
-Calibration fit 2026-11-15 17:59: 432 runs (0 replayed plans), seeds 1,2,3, step 0.2, inputs 39c09104.
+Calibration fit 2026-11-15 19:59: 432 runs (0 replayed plans), seeds 1,2,3, step 0.2, inputs 4a5eb18b.
 Per tower type: efficiency = realised damage / paper capacity at one (from the towers' own spots, waves saturated at the health
 there was to take), absolute in the human lens with the hero (Docs/BALANCE.md, "The balance pipeline"). The siege factor is the gate and base
 health the runs really lost over the siege model's paper damage (round 22c). The cells are judged against the player who played each run (the
@@ -92,8 +92,8 @@ routefire 4.000
 siege 1.211
 utilisation human 0.340
 utilisation bot 0.270
-inputs 39c09104
+inputs 4a5eb18b
 seeds 1,2,3
 step 0.2
 holdout 0.806 0.867 0.804 0
-shape a5037d28
+shape db2413a6

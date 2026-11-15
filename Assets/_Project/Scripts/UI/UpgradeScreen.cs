@@ -45,15 +45,26 @@ namespace Game.UI
         private const float BarWidth = 160f;
         private const float BarHeight = 22f;
         private const float StatValueWidth = 120f;
-        private const float RowsTop = 478f;
-        private const float RowHeight = 82f;
-        private const float RowGap = 10f;
-        private const float RowNameWidth = 265f;
-        private const float RowChangeWidth = 230f;
-        private const float RowCostWidth = 160f;
-        private const float PipSize = 26f;
-        private const float PipGap = 8f;
+        private const float RowsTop = 474f;
+        private const float RowHeight = 74f;
+        private const float RowGap = 8f;
+        private const float RowNameWidth = 250f;
+        private const float RowChangeX = 290f;
+        private const float RowChangeWidth = 330f;
+        // A row with nothing to pay (at the top, or waiting for a continent) uses the cost's room for its line.
+        private const float RowChangeWideWidth = 500f;
+        private const float RowCostWidth = 170f;
+        // A row shows its name over a strip of ten pips, one per tier: bought, open, or locked until a later continent.
+        private const float RowNameLift = 15f;
+        private const float RowPipDrop = 19f;
+        private const float PipSize = 17f;
+        private const float PipGap = 5f;
+        private const float LockedPipSize = 15f;
+        private const int MaxPips = 10;
         private const int MaxRows = 4;
+        private const float TierNoteWidth = 520f;
+        private const float TierNoteLockSize = 24f;
+        private const int TierNoteSize = 20;
         private const int HeaderSize = 46;
         private const int SubtitleSize = 22;
         private const int StatSize = 23;
@@ -82,6 +93,7 @@ namespace Game.UI
         private static readonly Color LockedIcon = new Color(0.22f, 0.24f, 0.3f, 1f);
         private static readonly Color LockTint = new Color(1f, 0.78f, 0.35f, 1f);
         private static readonly Color LockedName = new Color(0.5f, 0.55f, 0.65f, 1f);
+        private static readonly Color PipLocked = new Color(0.62f, 0.46f, 0.2f, 1f);
 
         private enum SubjectKind
         {
@@ -157,6 +169,10 @@ namespace Game.UI
         private RectTransform _previewFrame;
         private ModelPreview _preview;
         private Subject _selected;
+        private UpgradeScreenGuide _guide;
+        private Text _tierNote;
+        private Image _tierNoteLock;
+        private int _tierCap = UpgradeTiers.Unlimited;
         private float _maxTowerDamage;
         private float _maxTowerRange;
         private float _maxTowerRate;
@@ -175,6 +191,8 @@ namespace Game.UI
                 _input.Cancelled += OnCancel;
             }
 
+            // How far the tiers are open: what the furthest continent the player has reached allows (data on the catalog).
+            _tierCap = CampaignRules.UpgradeTierCap(_campaign, _catalog, Progress);
             _celebration = gameObject.AddComponent<UpgradeCelebration>();
             MeasureTowerMaxima();
             CollectSubjects();
@@ -201,6 +219,14 @@ namespace Game.UI
             Select(_subjects[0]);
             RefreshAll();
             SetFirstSelected(_subjects[0].Tile);
+
+            // The first visit in a save: Dr. Voss says how the screen works, over it, before anything can be bought.
+            DialogueDefinition explanation = UpgradeScreenGuide.Pending(_campaign, Progress);
+            if (explanation != null)
+            {
+                _guide = gameObject.AddComponent<UpgradeScreenGuide>();
+                _guide.Play(explanation, Progress, root, FindHero());
+            }
         }
 
         private void OnDestroy()
@@ -211,7 +237,16 @@ namespace Game.UI
             }
         }
 
-        private void OnCancel() => Go(SceneNames.WorldMap);
+        // While Voss explains the screen, Cancel skips him instead of leaving.
+        private void OnCancel()
+        {
+            if (_guide != null && _guide.OwnsInput)
+            {
+                return;
+            }
+
+            Go(SceneNames.WorldMap);
+        }
 
         // ---- subjects -------------------------------------------------------------------------------------------
 
@@ -276,7 +311,7 @@ namespace Game.UI
                 subject.Drone = FindDrone(upgrade.DroneId);
                 subject.Glow = subject.Drone != null ? subject.Drone.Color : Color.white;
             }
-            else if (upgrade.Target == UpgradeTarget.HeroDamage || upgrade.Target == UpgradeTarget.HeroHealth)
+            else if (upgrade.IsForHero)
             {
                 subject.Kind = SubjectKind.Commander;
                 subject.Hero = FindHero();
@@ -308,10 +343,12 @@ namespace Game.UI
                 }
 
                 case SubjectKind.Commander when subject.Hero != null:
-                    subject.Stats.Add(Stat("Armour", subject.Hero.MaxHealth, UpgradeTarget.HeroHealth, "0", string.Empty));
+                    subject.Stats.Add(Stat("Health", subject.Hero.MaxHealth, UpgradeTarget.HeroHealth, "0", string.Empty));
                     subject.Stats.Add(Stat("Blade", subject.Hero.Damage, UpgradeTarget.HeroDamage, "0", string.Empty));
+                    subject.Stats.Add(Stat("Healing", subject.Hero.RegenPerSecond, UpgradeTarget.HeroRegen, "0.0", "/s"));
+                    // The armour is a share taken off every hit: it starts at nothing and each tier adds to it.
+                    subject.Stats.Add(Flat("Armour", 0f, UpgradeTarget.HeroArmour, "0%"));
                     subject.Stats.Add(Plain("Reach", subject.Hero.Reach, "0.0"));
-                    subject.Stats.Add(Plain("Speed", subject.Hero.WalkSpeed, "0.0"));
                     break;
 
                 case SubjectKind.Base:
@@ -551,6 +588,8 @@ namespace Game.UI
                 return;
             }
 
+            // The hero is twice a tower's height: his card is fitted to him, or he stands half outside it.
+            IconFraming framing = subject.Kind == SubjectKind.Commander ? IconFraming.FittedCard : IconFraming.Default;
             ModelIconRenderer.Request(key, build, sprite =>
             {
                 if (icon != null)
@@ -558,7 +597,7 @@ namespace Game.UI
                     icon.sprite = sprite;
                     icon.enabled = true;
                 }
-            });
+            }, framing);
         }
 
         // ---- the detail panel ----------------------------------------------------------------------------------
@@ -573,6 +612,14 @@ namespace Game.UI
             _subtitle = UiKit.CreateFixedText(rect, string.Empty, SubtitleSize, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(PanelInset, -80f), new Vector2(PanelWidth - PanelInset * 2f, 60f));
             _subtitle.horizontalOverflow = HorizontalWrapMode.Wrap;
             _subtitle.color = Muted;
+
+            // Top right of the panel: which tier is locked and where it opens, so the padlocked pips explain themselves.
+            _tierNote = UiKit.CreateFixedText(rect, string.Empty, TierNoteSize, TextAnchor.MiddleRight, new Vector2(1f, 1f), new Vector2(-PanelInset, -30f), new Vector2(TierNoteWidth, 40f));
+            _tierNote.color = LockTint;
+            _tierNote.raycastTarget = false;
+            _tierNoteLock = CreateIcon("TierLock", rect, IconType.Lock, LockTint, TierNoteLockSize);
+            _tierNoteLock.rectTransform.anchorMin = new Vector2(1f, 1f);
+            _tierNoteLock.rectTransform.anchorMax = new Vector2(1f, 1f);
 
             Image frame = UiKit.CreatePanel(rect, "Preview frame", new Vector2(0f, 1f), new Vector2(0f, 1f), Vector2.zero, Vector2.zero, PreviewTint);
             PlaceTopLeft(frame.rectTransform, new Vector2(PanelInset, -PreviewTop), new Vector2(PreviewSize, PreviewSize));
@@ -621,20 +668,23 @@ namespace Game.UI
             Destroy(button.GetComponentInChildren<Text>().gameObject);
 
             row.Button = button;
-            row.Name = UiKit.CreateFixedText(rect, string.Empty, RowSize, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(24f, 0f), new Vector2(RowNameWidth, RowHeight));
-            row.Change = UiKit.CreateFixedText(rect, string.Empty, RowSize, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(24f + RowNameWidth, 0f), new Vector2(RowChangeWidth, RowHeight));
-            row.Cost = UiKit.CreateFixedText(rect, string.Empty, RowSize, TextAnchor.MiddleRight, new Vector2(1f, 0.5f), new Vector2(-24f - 3 * (PipSize + PipGap) - 16f, 0f), new Vector2(RowCostWidth, RowHeight));
+            row.Name = UiKit.CreateFixedText(rect, string.Empty, RowSize, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(24f, RowNameLift), new Vector2(RowNameWidth, RowHeight * 0.5f));
+            row.Change = UiKit.CreateFixedText(rect, string.Empty, RowSize, TextAnchor.MiddleLeft, new Vector2(0f, 0.5f), new Vector2(RowChangeX, 0f), new Vector2(RowChangeWidth, RowHeight));
+            row.Cost = UiKit.CreateFixedText(rect, string.Empty, RowSize, TextAnchor.MiddleRight, new Vector2(1f, 0.5f), new Vector2(-24f, 0f), new Vector2(RowCostWidth, RowHeight));
+            row.Change.resizeTextForBestFit = true;
+            row.Change.resizeTextMinSize = 16;
+            row.Change.resizeTextMaxSize = RowSize;
             row.Name.raycastTarget = false;
             row.Change.raycastTarget = false;
             row.Cost.raycastTarget = false;
 
-            row.Pips = new Image[3];
+            row.Pips = new Image[MaxPips];
             for (int i = 0; i < row.Pips.Length; i++)
             {
                 Image pip = CreateIcon("Pip", rect, IconType.Disc, PipOff, PipSize);
-                pip.rectTransform.anchorMin = new Vector2(1f, 0.5f);
-                pip.rectTransform.anchorMax = new Vector2(1f, 0.5f);
-                pip.rectTransform.anchoredPosition = new Vector2(-24f - PipSize * 0.5f - (row.Pips.Length - 1 - i) * (PipSize + PipGap), 0f);
+                pip.rectTransform.anchorMin = new Vector2(0f, 0.5f);
+                pip.rectTransform.anchorMax = new Vector2(0f, 0.5f);
+                pip.rectTransform.anchoredPosition = new Vector2(24f + PipSize * 0.5f + i * (PipSize + PipGap), -RowPipDrop);
                 row.Pips[i] = pip;
             }
 
@@ -680,7 +730,8 @@ namespace Game.UI
                     _preview.ShowTower(subject.Tower);
                     break;
                 case SubjectKind.Commander when subject.Hero != null:
-                    _preview.ShowHero(subject.Hero);
+                    // He stands there as he will take the field: the armour plates of his tier, the companion drone beside him.
+                    _preview.ShowHero(subject.Hero, UpgradeEffects.ComputeGlobal(Progress, _catalog, _tierCap).HeroGear);
                     break;
                 case SubjectKind.Drone when subject.Drone != null:
                     _preview.ShowDrone(subject.Drone);
@@ -704,14 +755,17 @@ namespace Game.UI
                 subject.TileBack.color = subject == _selected ? TileChosen : subject.Locked ? TileLocked : TileTint;
                 int bought = 0;
                 int total = 0;
+                int open = 0;
                 foreach (UpgradeDefinition upgrade in subject.Upgrades)
                 {
                     bought += Progress.GetUpgradeLevel(upgrade.Id);
                     total += upgrade.MaxLevel;
+                    open += UpgradeTiers.Open(upgrade, _tierCap);
                 }
 
+                // The bar runs over all ten tiers, so it never shrinks; the star marks "everything open so far is bought".
                 subject.TileProgress.anchorMax = new Vector2(total > 0 ? bought / (float)total : 0f, 1f);
-                subject.TileStar.enabled = total > 0 && bought >= total;
+                subject.TileStar.enabled = open > 0 && bought >= open;
             }
 
             RefreshPanel();
@@ -720,6 +774,7 @@ namespace Game.UI
         private void RefreshPanel()
         {
             Subject subject = _selected;
+            RefreshTierNote(subject);
             for (int i = 0; i < _statWidgets.Count; i++)
             {
                 StatWidget widget = _statWidgets[i];
@@ -757,12 +812,15 @@ namespace Game.UI
         {
             UpgradeDefinition upgrade = row.Upgrade;
             int level = Progress.GetUpgradeLevel(upgrade.Id);
+            int open = UpgradeTiers.Open(upgrade, _tierCap);
             bool maxed = level >= upgrade.MaxLevel;
-            int cost = maxed ? 0 : upgrade.CostForNextLevel(level);
-            bool affordable = !maxed && Progress.CanAfford(upgrade, cost);
+            // Every open tier is bought and the next one waits for a later continent.
+            bool waiting = !maxed && level >= open;
+            int cost = maxed || waiting ? 0 : upgrade.CostForNextLevel(level);
+            bool affordable = !maxed && !waiting && Progress.CanAfford(upgrade, cost);
             bool power = upgrade.Currency == UpgradeCurrency.PowerCurrency;
 
-            row.Button.interactable = !subject.Locked && !maxed && affordable;
+            row.Button.interactable = !subject.Locked && !maxed && !waiting && affordable;
             row.Name.text = upgrade.DisplayName;
             row.Name.color = subject.Locked ? Muted : Color.white;
 
@@ -771,6 +829,11 @@ namespace Game.UI
             {
                 row.Change.text = stat != null ? ValueOf(subject, stat, null).ToString(stat.Format) + stat.Suffix + "   at the top" : "At the top";
                 row.Change.color = Gold;
+            }
+            else if (waiting)
+            {
+                row.Change.text = (stat != null ? ValueOf(subject, stat, null).ToString(stat.Format) + stat.Suffix + "   " : string.Empty) + LockedTierText(open + 1);
+                row.Change.color = LockTint;
             }
             else if (stat != null)
             {
@@ -783,16 +846,53 @@ namespace Game.UI
                 row.Change.color = Better;
             }
 
-            row.Cost.text = maxed ? string.Empty : $"{cost} {(power ? "power" : "research")}";
+            row.Change.rectTransform.sizeDelta = new Vector2(maxed || waiting ? RowChangeWideWidth : RowChangeWidth, RowHeight);
+            row.Cost.text = maxed || waiting ? string.Empty : $"{cost} {(power ? "power" : "research")}";
             row.Cost.color = maxed ? Muted : affordable ? (power ? PipPower : PipOn) : TooPoor;
 
             Color on = power ? PipPower : PipOn;
             for (int i = 0; i < row.Pips.Length; i++)
             {
+                Image pip = row.Pips[i];
                 bool exists = i < upgrade.MaxLevel;
-                row.Pips[i].enabled = exists;
-                row.Pips[i].color = i < level ? on : PipOff;
+                // A tier above the cap wears a small padlock instead of an empty socket (a bought one always shows as bought).
+                bool locked = exists && i >= open && i >= level;
+                pip.enabled = exists;
+                pip.sprite = IconFactory.Get(locked ? IconType.Lock : IconType.Disc);
+                pip.rectTransform.sizeDelta = Vector2.one * (locked ? LockedPipSize : PipSize);
+                pip.color = i < level ? on : locked ? PipLocked : PipOff;
             }
+        }
+
+        // "tier 5 opens on Ashen Reach": the continent comes from the catalog's tier list and the campaign's region names.
+        private string LockedTierText(int tier)
+        {
+            int continent = _catalog.ContinentOpening(tier);
+            return continent >= 0 && continent < _campaign.Regions.Count
+                ? $"tier {tier} opens on {_campaign.Regions[continent].DisplayName}"
+                : $"tier {tier} is not open yet";
+        }
+
+        // The note at the top of the panel names the first locked tier of the chosen subject, or hides when none is locked.
+        private void RefreshTierNote(Subject subject)
+        {
+            int most = 0;
+            foreach (UpgradeDefinition upgrade in subject.Upgrades)
+            {
+                most = Mathf.Max(most, upgrade.MaxLevel);
+            }
+
+            bool locked = !subject.Locked && most > _tierCap;
+            _tierNote.gameObject.SetActive(locked);
+            _tierNoteLock.gameObject.SetActive(locked);
+            if (!locked)
+            {
+                return;
+            }
+
+            string note = LockedTierText(_tierCap + 1);
+            _tierNote.text = char.ToUpperInvariant(note[0]) + note.Substring(1);
+            _tierNoteLock.rectTransform.anchoredPosition = new Vector2(-PanelInset - _tierNote.preferredWidth - 10f - TierNoteLockSize * 0.5f, -30f - 20f);
         }
 
         // Buying rebuilds the numbers at once; the celebration then animates from the old values to the new ones.
@@ -806,13 +906,19 @@ namespace Game.UI
             float valueBefore = stat != null ? ValueOf(subject, stat, null) : 0f;
             bool masteredBefore = subject.TileStar.enabled;
 
-            if (!Progress.TryBuyUpgrade(upgrade))
+            if (!Progress.TryBuyUpgrade(upgrade, _tierCap))
             {
                 return;
             }
 
             int level = Progress.GetUpgradeLevel(upgrade.Id);
             RefreshAll();
+            if (upgrade.Target == UpgradeTarget.HeroArmour || upgrade.Target == UpgradeTarget.HeroRegen)
+            {
+                // The new plate or the drone shows on the model at once; the celebration then spins it.
+                ShowPreview(subject);
+            }
+
             if (!row.Button.interactable)
             {
                 UiKit.Select(NextSelectable(row));

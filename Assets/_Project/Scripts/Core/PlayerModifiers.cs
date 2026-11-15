@@ -12,8 +12,10 @@
             float blockadeHealthMultiplier,
             float heroDamageMultiplier = 1f,
             float heroHealthMultiplier = 1f,
-            int baseWeaponLevel = 0)
+            int baseWeaponLevel = 0,
+            HeroGear heroGear = default)
         {
+            HeroGear = heroGear;
             BaseWeaponLevel = baseWeaponLevel;
             TowerDamageMultiplier = towerDamageMultiplier;
             TowerRangeMultiplier = towerRangeMultiplier;
@@ -35,6 +37,9 @@
         public float BlockadeHealthMultiplier { get; }
         public float HeroDamageMultiplier { get; }
         public float HeroHealthMultiplier { get; }
+
+        /// <summary>The hero's companion drone, armour and blade tier (see <see cref="Core.HeroGear"/>).</summary>
+        public HeroGear HeroGear { get; }
 
         /// <summary>How far the base's own guns are built out: 0 is an unarmed base.</summary>
         public int BaseWeaponLevel { get; }

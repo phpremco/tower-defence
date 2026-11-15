@@ -28,6 +28,7 @@ namespace Game.Hero
         private float _strikeCooldown;
         private float _reviveRemaining;
         private HeroPerkModifiers _perks = HeroPerkModifiers.None;
+        private HeroGear _gear;
         private HeroAbilityState[] _abilities = new HeroAbilityState[0];
         private int _shotsFired;
         private float _reloadRemaining;
@@ -70,6 +71,12 @@ namespace Game.Hero
 
         /// <summary>The ability slots, by button; a slot is null while the perk it needs is not unlocked.</summary>
         public IReadOnlyList<HeroAbilityState> Abilities => _abilities;
+
+        /// <summary>The permanent gear he carries into this level: the companion drone, the armour, the blade's tier.</summary>
+        public HeroGear Gear => _gear;
+
+        /// <summary>True while his health is climbing back out of a fight (the companion drone shows it).</summary>
+        public bool IsMending { get; private set; }
 
         /// <summary>The perks in force for this level.</summary>
         public HeroPerkModifiers Perks => _perks;
@@ -157,6 +164,7 @@ namespace Game.Hero
             _targets = targets;
             _posts = posts;
             _damageMultiplier = modifiers.HeroDamageMultiplier;
+            _gear = modifiers.HeroGear;
             _perks = HeroPerkModifiers.From(unlockedPerks);
             _abilities = BuildAbilities(definition.Abilities, unlockedPerks);
             Health = new Health(definition.MaxHealth * modifiers.HeroHealthMultiplier);
@@ -309,6 +317,7 @@ namespace Game.Hero
 
             if (IsDown)
             {
+                IsMending = false;
                 _reviveRemaining -= Time.deltaTime;
                 if (_reviveRemaining <= 0f)
                 {
@@ -337,10 +346,11 @@ namespace Game.Hero
             }
         }
 
+        // The armour takes its share off every hit, whatever dealt it: a strike, the guarded gate's share, slime underfoot.
         private void Hurt(float damage)
         {
             _sinceHurt = 0f;
-            Health.TakeDamage(damage);
+            Health.TakeDamage(damage * _gear.DamageTakenMultiplier);
         }
 
         // Out of a fight he patches himself up: a few seconds after the last hit his health climbs back, so he arrives at
@@ -348,12 +358,14 @@ namespace Game.Hero
         private void Recover(float seconds)
         {
             _sinceHurt += seconds;
-            if (_definition.RegenPerSecond <= 0f || _sinceHurt < _definition.RegenDelaySeconds || Health.Current >= Health.Max)
+            IsMending = _definition.RegenPerSecond > 0f && _sinceHurt >= _definition.RegenDelaySeconds && Health.Current < Health.Max;
+            if (!IsMending)
             {
                 return;
             }
 
-            Health.Heal(_definition.RegenPerSecond * seconds);
+            // The companion drone works on him while he mends: the same pause after a hit, a faster climb.
+            Health.Heal(_definition.RegenPerSecond * _gear.RegenMultiplier * seconds);
         }
 
         private void TickCooldowns(float seconds)

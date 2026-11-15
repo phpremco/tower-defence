@@ -1,1 +1,1 @@
-1280 720 Logs\r64\loading3\load_100_720.png
+1280 720 ArtSource/Previews/QA/r66_upgrade_spencer_gear_bought_720.png

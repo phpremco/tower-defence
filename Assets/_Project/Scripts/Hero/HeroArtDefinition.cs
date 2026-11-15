@@ -88,6 +88,10 @@ namespace Game.Hero
         [Header("Portrait")]
         [SerializeField] private PortraitArtDefinition _bust;
 
+        [Header("Gear")]
+        [Tooltip("How the permanent gear looks: the companion repair drone, the armour plates, the blade at its top tier. Empty shows none of it.")]
+        [SerializeField] private HeroGearArtDefinition _gear;
+
         public ModelArtDefinition Body => _body;
         public ModelArtDefinition Pistol => _pistol;
         public ModelArtDefinition SwordHilt => _swordHilt;
@@ -125,6 +129,7 @@ namespace Game.Hero
         public float BlinkSeconds => _blinkSeconds;
         public Vector2 BlinkEvery => _blinkEvery;
         public PortraitArtDefinition Bust => _bust;
+        public HeroGearArtDefinition Gear => _gear;
 
         /// <summary>The acting data of a clip role (its root offset at the first frame and its face tracks), or null.</summary>
         public HeroActingClip ActingFor(ModelClipRole role)

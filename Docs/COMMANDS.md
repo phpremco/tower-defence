@@ -1068,3 +1068,45 @@ console and `Logs/probe_trace.txt`.
   from the worker clones' `Logs/probe_trace.txt` after a measure or a replay (a clone keeps only its last test run).
 - **Boss rules on paper:** the boss lab (round 64) takes `rule.BossWaveShare=`, `rule.LevelBossAlone=` and
   `rule.LevelBossAloneMost=`; `label=` names the output `Tools/PlayTest/r64_lab_<label>.txt`.
+
+## Round 66: ten upgrade tiers, Spencer's gear, the upgrade screen (added 2026-11-15)
+
+- **Targeted data step (never the full generator):** `unity command run_script --file Tools/PlayTest/Scripts/ApplyRound66.cs --entry ApplyRound66.Run --timeout_ms 300000 --timeout 360`
+  rewrites the permanent upgrades as the generator's "Upgrades" step does (ten tiers from `BalanceRules.UpgradeTierCostCurve`,
+  `Hero_RepairDrone` and `Hero_Armour`, the tier caps per continent on `UpgradeCatalog.asset`), seats the hero's gear art
+  (`Data/Art/Story/MercerGearArt.asset`: the companion's model, every armour plate on the suit's surface in the idle pose)
+  and writes the story's hints (Voss's explanation of the upgrade screen). Safe to run again. No solve is needed: the
+  model's shopper buys what it bought (next point).
+- **Re-stamping the calibration after it** (the hash counts the upgrades, so every report called it STALE and the plan
+  search skipped itself): `apply-keep` takes the hash from `Tools/PlayTest/calibration.txt`, so the fit has to be run
+  first, and as the applied fit was (the yardstick alone): move `Tools/PlayTest/plan_records.txt` out of the project,
+  `bash Tools/PlayTest/r34b_editmode_worker.sh 6 CalibrationFitTests`, move the plan records back, copy
+  `calibration.txt` from w6 (check it differs from the old one only in date and hashes), then
+  `bash Tools/PlayTest/balance_pipeline.sh apply-keep`; `unity command eval_file --file Tools/PlayTest/r66_stale.cs`
+  must say `stale False`.
+- **Did the model's player move?** `unity command run_script --file Tools/PlayTest/Scripts/R66PlayerStates.cs --entry R66PlayerStates.Run --timeout_ms 120000 --timeout 180`
+  writes `Tools/PlayTest/r66_player_states_<label>.txt` (label = the text of `r66_states_arg.txt`): per cell the research
+  earned and spent, every upgrade level bought and the mean tower bonus. Run it before and after a change to the upgrade
+  catalogue and `diff` the two files; identical files mean every stored wave is still the solve.
+- **Recompile:** `bash Tools/PlayTest/r66_compile.sh` (r64's script with "up_to_date" taken for done: r64's loop waited its
+  full three minutes when nothing had changed).
+- **The hero's gear without Play Mode:** `bash Tools/PlayTest/r66_sheet.sh <label> <tiers> [out folder] [fresh]` runs the
+  apply step and renders the display figure per armour tier from the front, the back, the side and above
+  (`R66GearSheet.cs`, 900 px, companion drone included); `fresh` deletes the gear art asset first so it is written again with
+  the class's current defaults (the asset keeps its own numbers otherwise). `R66Bones.cs` (same `run_script` form) lists
+  his bones in the idle pose and the repair drone's nodes in `Logs/r66/bones.txt`.
+- **The upgrade screen in stills:** `[GEAR="Hero_Armour=4 Hero_RepairDrone=2"] OUT=<dir> bash Tools/PlayTest/r66_base.sh <prefix> <points> <action> ...`
+  plays from Boot and jumps to the base with that much research and power (unsaved until a purchase; the save is copied
+  aside and restored): `tip:state|next|skip` (Voss's first-visit explanation, `r66_tip.cs`), `select:<tile name>`,
+  `buy:<row> [times]` (presses the row's own button, so a locked or unaffordable row buys nothing, and prints every row),
+  `shot:<name>` (the screen with its interface off-screen at 1920x1080 and 1280x720), `step:<frames>`, `view:<name>`.
+- **Spencer in play:** `GEAR="Hero_Armour=4 Hero_RepairDrone=2 Hero_Damage=4" OUT=<dir> bash Tools/PlayTest/r66_shots.sh <prefix> <node> <difficulty> <action> ...`
+  is `r65_shots.sh` with the gear set in memory before the level loads, `hero:hurt <share>` / `hero:probe` (`r66_hero.cs`:
+  health, mending, the gear's numbers, the companion's light, the blade and its aura, the plate count) and the shot focus
+  `hero` (`r66_shot.cs`). A fight at his gate: `"eval:no_waves.cs" "act:spawn Skitter 0 30" "step:10" "eval:teleport_to_gate.cs" "step:215"`,
+  then a row of `"shot:sNN|hero 3 clean" "step:3"` catches the cuts. He mends about seven seconds of stepping after `hero:hurt`.
+- **Side by side:** `python -I Tools/PlayTest/r66_montage.py <out.png> <scale> <x0,y0,x1,y1 as shares, or -> <in.png> ...`.
+- **The economy table:** `Round66Tests.Projection_ReachesTierTenOnTheFifthContinent_AndWritesTheReport` writes
+  `Tools/PlayTest/r66_upgrade_economy.txt` (in the clone when run with `r34b_editmode_worker.sh`; copy it back).
+- **An old save in the new model:** put a COPY of a save at `Tools/PlayTest/r66_save_copy.json` and run `Round66Tests`
+  (`SaveCopy_LoadsIntoTheTenTierModel_WithoutLoss`; skipped without the file). Delete the copy afterwards: it is a save, not a fixture.

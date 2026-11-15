@@ -301,23 +301,21 @@ namespace Game.Editor
 
         private const float HybridUpgradeCostScale = 1.6f;
 
+        // Per tier: the companion drone heals Spencer a quarter faster, the armour takes a twentieth off every hit.
+        private const float HeroRepairDroneStep = 0.25f;
+        private const float HeroArmourStep = 0.05f;
+
         private static void AddTowerUpgrades(List<UpgradeDefinition> all, TowerDefinition tower, float costScale)
         {
-            all.Add(CreateUpgrade($"{tower.Id}_Damage", "Damage", UpgradeTarget.TowerDamage, Scaled(new[] { 5, 10, 15 }, costScale), 0.1f, tower.Id, tower.DisplayName));
-            all.Add(CreateUpgrade($"{tower.Id}_Range", "Range", UpgradeTarget.TowerRange, Scaled(new[] { 5, 10, 15 }, costScale), 0.05f, tower.Id, tower.DisplayName));
-            all.Add(CreateUpgrade($"{tower.Id}_FireRate", "Fire rate", UpgradeTarget.TowerFireRate, Scaled(new[] { 6, 12, 18 }, costScale), 0.1f, tower.Id, tower.DisplayName));
+            all.Add(CreateUpgrade($"{tower.Id}_Damage", "Damage", UpgradeTarget.TowerDamage, Tiers(5f * costScale), 0.1f, tower.Id, tower.DisplayName));
+            all.Add(CreateUpgrade($"{tower.Id}_Range", "Range", UpgradeTarget.TowerRange, Tiers(5f * costScale), 0.05f, tower.Id, tower.DisplayName));
+            all.Add(CreateUpgrade($"{tower.Id}_FireRate", "Fire rate", UpgradeTarget.TowerFireRate, Tiers(6f * costScale), 0.1f, tower.Id, tower.DisplayName));
         }
 
-        private static int[] Scaled(int[] costs, float scale)
-        {
-            var result = new int[costs.Length];
-            for (int i = 0; i < costs.Length; i++)
-            {
-                result[i] = Mathf.RoundToInt(costs[i] * scale);
-            }
-
-            return result;
-        }
+        // Ten tiers priced from the first one by the rules' cost curve (round 66): the first three are the old three tiers
+        // (1, 2 and 3 times the first), so nothing a player has bought changes its price or its worth.
+        private static int[] Tiers(float firstCost) =>
+            Game.Balance.UpgradeEconomy.TierCosts(firstCost, BalanceSheet.Rules.UpgradeTierCostCurve.Length, BalanceSheet.Rules);
 
         // The codex lists every recipe and every creature the generator knows, in the order the bestiary names them.
         private static CodexCatalog CreateCodex(CombineRecipe[] recipes, Bestiary bestiary)
@@ -356,33 +354,38 @@ namespace Game.Editor
             }
 
             const string BaseText = "The base and the gates that hold the roads";
-            all.Add(CreateUpgrade("BaseHealth", "Base armour", UpgradeTarget.BaseHealth, new[] { 4, 8, 12 }, BaseHealthUpgradeStep, string.Empty, "Base", UpgradeCurrency.ResearchPoints, BaseText));
+            all.Add(CreateUpgrade("BaseHealth", "Base armour", UpgradeTarget.BaseHealth, Tiers(4f), BaseHealthUpgradeStep, string.Empty, "Base", UpgradeCurrency.ResearchPoints, BaseText));
+            // The base turrets are built out in steps of their own (a turret per side, then stronger ones): three levels, not ten tiers.
             all.Add(CreateUpgrade("Base_Weapon", "Base turrets", UpgradeTarget.BaseWeapon, new[] { 12, 20, 32 }, 1f, string.Empty, "Base", UpgradeCurrency.ResearchPoints, BaseText));
-            all.Add(CreateUpgrade("BlockadeHealth", "Gate strength", UpgradeTarget.BlockadeHealth, new[] { 4, 8, 12 }, 0.2f, string.Empty, "Base", UpgradeCurrency.ResearchPoints, BaseText));
+            all.Add(CreateUpgrade("BlockadeHealth", "Gate strength", UpgradeTarget.BlockadeHealth, Tiers(4f), 0.2f, string.Empty, "Base", UpgradeCurrency.ResearchPoints, BaseText));
 
+            // Spencer (round 66): his health keeps its id but is no longer called "Armour"; the armour is its own path now
+            // (less damage per hit, plates on the model), beside the companion drone that speeds up his healing.
             const string HeroText = "Spencer, who holds the gates";
-            all.Add(CreateUpgrade("Hero_Damage", "Blade damage", UpgradeTarget.HeroDamage, new[] { 5, 10, 15 }, 0.15f, string.Empty, "Spencer", UpgradeCurrency.ResearchPoints, HeroText));
-            all.Add(CreateUpgrade("Hero_Health", "Armour", UpgradeTarget.HeroHealth, new[] { 5, 10, 15 }, 0.2f, string.Empty, "Spencer", UpgradeCurrency.ResearchPoints, HeroText));
+            all.Add(CreateUpgrade("Hero_Damage", "Blade damage", UpgradeTarget.HeroDamage, Tiers(5f), 0.15f, string.Empty, "Spencer", UpgradeCurrency.ResearchPoints, HeroText));
+            all.Add(CreateUpgrade("Hero_Health", "Health", UpgradeTarget.HeroHealth, Tiers(5f), 0.2f, string.Empty, "Spencer", UpgradeCurrency.ResearchPoints, HeroText));
+            all.Add(CreateUpgrade("Hero_RepairDrone", "Repair drone", UpgradeTarget.HeroRegen, Tiers(5f), HeroRepairDroneStep, string.Empty, "Spencer", UpgradeCurrency.ResearchPoints, HeroText));
+            all.Add(CreateUpgrade("Hero_Armour", "Armour", UpgradeTarget.HeroArmour, Tiers(5f), HeroArmourStep, string.Empty, "Spencer", UpgradeCurrency.ResearchPoints, HeroText));
 
             // Drones are bought with money inside a level; each type has its own permanent path, paid in power currency.
             foreach (DroneDefinition drone in drones)
             {
                 string id = drone.name;
                 string group = drone.DisplayName;
-                all.Add(CreateUpgrade($"{id}_Speed", "Flight speed", UpgradeTarget.DroneSpeed, new[] { 3, 6, 9 }, 0.2f, string.Empty, group, UpgradeCurrency.PowerCurrency, DroneText(drone), id));
+                all.Add(CreateUpgrade($"{id}_Speed", "Flight speed", UpgradeTarget.DroneSpeed, Tiers(3f), 0.2f, string.Empty, group, UpgradeCurrency.PowerCurrency, DroneText(drone), id));
                 switch (drone.Kind)
                 {
                     case DroneKind.Repair:
-                        all.Add(CreateUpgrade($"{id}_Output", "Repair rate", UpgradeTarget.DroneOutput, new[] { 4, 8, 12 }, 0.25f, string.Empty, group, UpgradeCurrency.PowerCurrency, string.Empty, id));
-                        all.Add(CreateUpgrade($"{id}_Armour", "Armour", UpgradeTarget.DroneArmour, new[] { 3, 6, 9 }, 0.3f, string.Empty, group, UpgradeCurrency.PowerCurrency, string.Empty, id));
+                        all.Add(CreateUpgrade($"{id}_Output", "Repair rate", UpgradeTarget.DroneOutput, Tiers(4f), 0.25f, string.Empty, group, UpgradeCurrency.PowerCurrency, string.Empty, id));
+                        all.Add(CreateUpgrade($"{id}_Armour", "Armour", UpgradeTarget.DroneArmour, Tiers(3f), 0.3f, string.Empty, group, UpgradeCurrency.PowerCurrency, string.Empty, id));
                         break;
                     case DroneKind.Harvest:
-                        all.Add(CreateUpgrade($"{id}_Output", "Yield per trip", UpgradeTarget.DroneOutput, new[] { 4, 8, 12 }, 0.25f, string.Empty, group, UpgradeCurrency.PowerCurrency, string.Empty, id));
+                        all.Add(CreateUpgrade($"{id}_Output", "Yield per trip", UpgradeTarget.DroneOutput, Tiers(4f), 0.25f, string.Empty, group, UpgradeCurrency.PowerCurrency, string.Empty, id));
                         all.Add(CreateUpgrade($"{id}_Count", "Extra drone", UpgradeTarget.DroneCount, new[] { 6, 12 }, 1f, string.Empty, group, UpgradeCurrency.PowerCurrency, string.Empty, id));
                         break;
                     default:
-                        all.Add(CreateUpgrade($"{id}_Output", "Damage", UpgradeTarget.DroneOutput, new[] { 4, 8, 12 }, 0.15f, string.Empty, group, UpgradeCurrency.PowerCurrency, string.Empty, id));
-                        all.Add(CreateUpgrade($"{id}_Tempo", "Fire rate", UpgradeTarget.DroneTempo, new[] { 4, 8, 12 }, 0.15f, string.Empty, group, UpgradeCurrency.PowerCurrency, string.Empty, id));
+                        all.Add(CreateUpgrade($"{id}_Output", "Damage", UpgradeTarget.DroneOutput, Tiers(4f), 0.15f, string.Empty, group, UpgradeCurrency.PowerCurrency, string.Empty, id));
+                        all.Add(CreateUpgrade($"{id}_Tempo", "Fire rate", UpgradeTarget.DroneTempo, Tiers(4f), 0.15f, string.Empty, group, UpgradeCurrency.PowerCurrency, string.Empty, id));
                         break;
                 }
             }
@@ -399,6 +402,15 @@ namespace Game.Editor
             for (int i = 0; i < all.Count; i++)
             {
                 list.GetArrayElementAtIndex(i).objectReferenceValue = all[i];
+            }
+
+            // Which tier opens on which continent comes from the rules the progression model shops under.
+            int[] caps = BalanceSheet.Rules.UpgradeTiersPerContinent;
+            SerializedProperty tiers = so.FindProperty("_tiersPerContinent");
+            tiers.arraySize = caps.Length;
+            for (int i = 0; i < caps.Length; i++)
+            {
+                tiers.GetArrayElementAtIndex(i).intValue = caps[i];
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();

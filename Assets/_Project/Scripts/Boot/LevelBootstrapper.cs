@@ -132,7 +132,9 @@ namespace Game.Boot
 
             ProgressService progress = Services.Get<ProgressService>();
             var upgrades = Services.Get<UpgradeCatalog>();
-            PlayerModifiers global = UpgradeEffects.ComputeGlobal(progress, upgrades);
+            // The tier cap decides whether the blade stands at its top; without a campaign (a bare test level) nothing is capped.
+            int tierCap = Services.TryGet(out CampaignCatalog tierCatalog) ? CampaignRules.UpgradeTierCap(tierCatalog, upgrades, progress) : UpgradeTiers.Unlimited;
+            PlayerModifiers global = UpgradeEffects.ComputeGlobal(progress, upgrades, tierCap);
             var towerModifiers = new Dictionary<string, PlayerModifiers>();
             foreach (TowerDefinition tower in level.AvailableTowers)
             {

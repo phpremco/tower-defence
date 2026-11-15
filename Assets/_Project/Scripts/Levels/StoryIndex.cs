@@ -125,7 +125,7 @@ namespace Game.Levels
         // for the first rift behind a gate and his gate tips play wherever that happens first, so they are listed there too.
         private void AddScans(StoryDefinition story)
         {
-            if (story == null || (story.ScanHints.Count == 0 && story.RearNestWarning == null && story.GateTips.Count == 0 && story.HighGroundTip == null))
+            if (story == null || (story.ScanHints.Count == 0 && story.RearNestWarning == null && story.GateTips.Count == 0 && story.HighGroundTip == null && story.UpgradeScreenTip == null))
             {
                 return;
             }
@@ -156,6 +156,11 @@ namespace Game.Levels
             if (story.HighGroundTip != null)
             {
                 page.Entries.Add(new Entry($"First tower in a level with high ground: {story.HighGroundTip.Id}", EntryKind.Dialogue, null, story.HighGroundTip, null));
+            }
+
+            if (story.UpgradeScreenTip != null)
+            {
+                page.Entries.Add(new Entry($"First visit to the upgrade screen: {story.UpgradeScreenTip.Id}", EntryKind.Dialogue, null, story.UpgradeScreenTip, null));
             }
 
             _pages.Add(page);

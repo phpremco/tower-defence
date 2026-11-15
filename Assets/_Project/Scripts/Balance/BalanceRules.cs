@@ -467,6 +467,31 @@ namespace Game.Balance
         /// <summary>No level pays less base research than this, so a small continent budget never pays a point or two.</summary>
         public int MinResearchPerLevel = 4;
 
+        /// <summary>
+        /// The highest permanent-upgrade tier open once the continent at this index is reached (Remco, round 66: ten tiers,
+        /// the first continent opens four, each later one or two more up to ten on the fifth). The generator writes it to the
+        /// upgrade catalogue, which the game reads; the progression model shops under the same caps.
+        /// </summary>
+        public int[] UpgradeTiersPerContinent = { 4, 6, 8, 9, 10 };
+
+        public int UpgradeTierCap(int continent) =>
+            UpgradeTiersPerContinent[System.Math.Max(0, System.Math.Min(continent, UpgradeTiersPerContinent.Length - 1))];
+
+        /// <summary>
+        /// The price of each tier as a multiple of the first tier's. The first three are the old three tiers (1, 2, 3 times
+        /// the first), so what a player bought before round 66 cost and gives the same; from the fourth on a tier costs a
+        /// little more than the straight line, ending at twenty times the first.
+        /// </summary>
+        public float[] UpgradeTierCostCurve = { 1f, 2f, 3f, 4.4f, 6f, 8f, 10.4f, 13.2f, 16.4f, 20f };
+
+        /// <summary>
+        /// A continent's research budget (what Psycho alone, or Medium and Hard together, pay) as a share of what the tiers
+        /// it opens cost. All four difficulties pay 2.2 budgets, so at 0.55 they pay everything the continent opens with a
+        /// fifth to spare, and no single difficulty buys it all. Crystal Plains' budget (748, FinalePlan) is this share of
+        /// its four tiers; it is pinned there because the waves are calibrated on it.
+        /// </summary>
+        public float ResearchBudgetShare = 0.55f;
+
         /// <summary>Power weight of a level: one, plus this much per boss wave on Medium (bosses pay power, GAME_DESIGN).</summary>
         public float PowerPerBossWeight = 0.75f;
 

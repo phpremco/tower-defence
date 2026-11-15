@@ -408,14 +408,17 @@ namespace Game.Hero
         /// The commander standing at rest, without a Commander behind it: the same parts, materials and stance
         /// as in the level, for menus that show the figure. Feet on y = 0, facing +z, in level scale.
         /// </summary>
-        public static GameObject BuildDisplayFigure(Transform parent, HeroDefinition definition)
+        public static GameObject BuildDisplayFigure(Transform parent, HeroDefinition definition) => BuildDisplayFigure(parent, definition, default);
+
+        /// <summary>As above, wearing the permanent gear given (armour plates, the companion drone); the procedural figure has none.</summary>
+        public static GameObject BuildDisplayFigure(Transform parent, HeroDefinition definition, HeroGear gear)
         {
             const float DisplayArmPitch = 6f;
             const float DisplayArmYaw = -10f;
 
             if (definition.Art != null && definition.Art.Body != null)
             {
-                return HeroArtView.BuildDisplay(parent, definition.Art, DisplayIdleSeconds);
+                return HeroArtView.BuildDisplay(parent, definition.Art, DisplayIdleSeconds, gear);
             }
 
             HeroModelFactory.Parts parts = HeroModelFactory.Create();

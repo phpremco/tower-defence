@@ -258,6 +258,12 @@ namespace Game.Balance
         GateHealth = 5,
         BaseHealth = 6,
         BaseWeapon = 7,
+
+        /// <summary>
+        /// The hero's companion drone and armour (round 66). The model's hero neither mends faster nor takes less, so its
+        /// shopper leaves them on the shelf: a player who buys them trades tower upgrades for a sturdier hero.
+        /// </summary>
+        HeroGear = 8,
     }
 
     /// <summary>One run of identical creatures inside a wave, as the game stores it.</summary>

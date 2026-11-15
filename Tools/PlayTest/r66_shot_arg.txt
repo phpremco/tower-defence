@@ -1,0 +1,2 @@
+hero 1 hud  
+Logs/r66/p5_fight_z1.png

@@ -710,24 +710,9 @@ namespace Game.Balance
         /// </summary>
         public void MetaTotals(int continent, out int researchCost, out int powerCost, out int[] researchPerDifficulty, out int[] powerPerDifficulty)
         {
-            researchCost = 0;
-            powerCost = 0;
-            foreach (UpgradeStats upgrade in Upgrades)
-            {
-                if (upgrade.Continent != continent)
-                {
-                    continue;
-                }
-
-                if (upgrade.PaidInPower)
-                {
-                    powerCost += upgrade.TotalCost;
-                }
-                else
-                {
-                    researchCost += upgrade.TotalCost;
-                }
-            }
+            // Round 66: what a continent's upgrades cost is what the tiers it opens cost (UpgradeEconomy.Opened).
+            researchCost = UpgradeEconomy.Opened(Upgrades, continent, power: false, Rules);
+            powerCost = UpgradeEconomy.Opened(Upgrades, continent, power: true, Rules);
 
             researchPerDifficulty = new int[Difficulties.Count];
             powerPerDifficulty = new int[Difficulties.Count];

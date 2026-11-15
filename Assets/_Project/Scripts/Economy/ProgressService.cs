@@ -154,10 +154,14 @@ namespace Game.Economy
             return held >= cost;
         }
 
-        public bool TryBuyUpgrade(UpgradeDefinition upgrade)
+        /// <summary>
+        /// Buys the next tier when it exists, is open under <paramref name="tierCap"/> (the highest tier the continents the
+        /// player has reached allow; see <see cref="UpgradeCatalog.TierCap"/>) and can be paid.
+        /// </summary>
+        public bool TryBuyUpgrade(UpgradeDefinition upgrade, int tierCap = UpgradeTiers.Unlimited)
         {
             int level = GetUpgradeLevel(upgrade.Id);
-            if (level >= upgrade.MaxLevel)
+            if (level >= UpgradeTiers.Open(upgrade, tierCap))
             {
                 return false;
             }

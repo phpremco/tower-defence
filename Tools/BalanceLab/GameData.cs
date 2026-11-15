@@ -178,6 +178,10 @@ namespace BalanceLab
                     return UpgradeKind.GateHealth;
                 case 7:
                     return UpgradeKind.HeroDamage;
+                // HeroRegen and HeroArmour (round 66): the hero's gear, which the model's shopper leaves on the shelf.
+                case 14:
+                case 15:
+                    return UpgradeKind.HeroGear;
                 default:
                     return UpgradeKind.Other;
             }

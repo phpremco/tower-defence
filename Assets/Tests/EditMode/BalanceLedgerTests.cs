@@ -137,8 +137,9 @@ namespace Game.Tests
 
                 string name = catalog.Regions[region].DisplayName;
                 Assert.Greater(researchCost, 0, $"{name} has research upgrades tagged to it");
-                Assert.AreEqual(0.2f, easy / (float)researchCost, 0.03f, $"{name}: all of Easy pays a fifth of its research upgrades");
-                Assert.AreEqual(1f, easy * rules.ResearchMultipliers[3] / researchCost, 0.05f, $"{name}: all of Psycho pays every research upgrade");
+                // Round 66: a continent's research upgrades are the tiers it opens; its budget (Psycho alone) is the rules' share of them.
+                Assert.AreEqual(rules.EasyResearchShare * rules.ResearchBudgetShare, easy / (float)researchCost, 0.02f, $"{name}: all of Easy pays a fifth of the budget share of the tiers it opens");
+                Assert.AreEqual(rules.ResearchBudgetShare, easy * rules.ResearchMultipliers[3] / researchCost, 0.03f, $"{name}: all of Psycho pays the budget share of the tiers it opens");
                 Assert.AreEqual(0, power[0], $"{name}: Easy pays no power");
                 Assert.Greater(powerCost, 0, $"{name} has drone upgrades tagged to it");
 

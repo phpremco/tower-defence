@@ -8,13 +8,14 @@ namespace Game.Economy
         /// <summary>Modifiers for one tower type. Base and blockade upgrades are not included.</summary>
         public static PlayerModifiers ComputeForTower(ProgressService progress, UpgradeCatalog catalog, string towerId)
         {
-            return Compute(progress, catalog, towerId, includeGlobal: false);
+            return Compute(progress, catalog, towerId, includeGlobal: false, UpgradeTiers.Unlimited);
         }
 
         /// <summary>Modifiers that do not belong to a tower or drone: base health, blockade strength and the hero.</summary>
-        public static PlayerModifiers ComputeGlobal(ProgressService progress, UpgradeCatalog catalog)
+        /// <param name="tierCap">The highest tier open to the player now; it decides whether the blade stands at its top.</param>
+        public static PlayerModifiers ComputeGlobal(ProgressService progress, UpgradeCatalog catalog, int tierCap = UpgradeTiers.Unlimited)
         {
-            return Compute(progress, catalog, string.Empty, includeGlobal: true);
+            return Compute(progress, catalog, string.Empty, includeGlobal: true, tierCap);
         }
 
         /// <summary>Modifiers for one drone type, by the drone's asset name.</summary>
@@ -57,7 +58,7 @@ namespace Game.Economy
             return new DroneModifiers(speed, health, output, tempo, (int)System.Math.Round(count));
         }
 
-        private static PlayerModifiers Compute(ProgressService progress, UpgradeCatalog catalog, string towerId, bool includeGlobal)
+        private static PlayerModifiers Compute(ProgressService progress, UpgradeCatalog catalog, string towerId, bool includeGlobal, int tierCap)
         {
             float damage = 1f;
             float range = 1f;
@@ -68,6 +69,12 @@ namespace Game.Economy
             float heroDamage = 1f;
             float heroHealth = 1f;
             float baseWeapon = 0f;
+            float heroRegen = 0f;
+            int repairDroneTier = 0;
+            float heroArmour = 0f;
+            int armourTier = 0;
+            int armourTiers = 0;
+            bool bladeAtTop = false;
 
             foreach (UpgradeDefinition upgrade in catalog.Upgrades)
             {
@@ -77,7 +84,8 @@ namespace Game.Economy
                     continue;
                 }
 
-                float bonus = progress.GetUpgradeLevel(upgrade.Id) * upgrade.BonusPerLevel;
+                int level = progress.GetUpgradeLevel(upgrade.Id);
+                float bonus = level * upgrade.BonusPerLevel;
                 switch (upgrade.Target)
                 {
                     case UpgradeTarget.TowerDamage:
@@ -103,14 +111,26 @@ namespace Game.Economy
                         break;
                     case UpgradeTarget.HeroDamage:
                         heroDamage += bonus;
+                        // The blade shows it has nothing left to learn for now: the top of what the reached continents open.
+                        bladeAtTop |= level > 0 && level >= UpgradeTiers.Open(upgrade, tierCap);
                         break;
                     case UpgradeTarget.HeroHealth:
                         heroHealth += bonus;
                         break;
+                    case UpgradeTarget.HeroRegen:
+                        heroRegen += bonus;
+                        repairDroneTier += level;
+                        break;
+                    case UpgradeTarget.HeroArmour:
+                        heroArmour += bonus;
+                        armourTier += level;
+                        armourTiers += upgrade.MaxLevel;
+                        break;
                 }
             }
 
-            return new PlayerModifiers(damage, range, fireRate, health, (int)System.Math.Round(baseHealth), blockade, heroDamage, heroHealth, (int)System.Math.Round(baseWeapon));
+            var gear = new HeroGear(heroRegen, repairDroneTier, heroArmour, armourTier, armourTiers, bladeAtTop);
+            return new PlayerModifiers(damage, range, fireRate, health, (int)System.Math.Round(baseHealth), blockade, heroDamage, heroHealth, (int)System.Math.Round(baseWeapon), gear);
         }
     }
 }

@@ -2203,3 +2203,91 @@ mono 87 % / Spearman 0.80: the same picture as round 64, below the 90 % bar as b
   waves of those cells are the stored ones, so this is the maps (fewer cells beside the road) and the search's draw.
 - Not done: the impact baseline (`snapshot`) was not retaken; no finale probe (no continent boss, tower or rule of the
   finale model changed; the arena copies took the plateau rules from their source levels and were not replayed).
+
+## Round 66: ten upgrade tiers over five continents, and what Crystal Plains pays for them (2026-11-15)
+
+Remco after playtest 2: the permanent upgrades go from three tiers to ten, opened per continent. This section is the
+research economy that follows; the code is `Game.Balance.UpgradeEconomy`, the rules are on `BalanceRules`
+(`UpgradeTiersPerContinent`, `UpgradeTierCostCurve`, `ResearchBudgetShare`), the table comes out of
+`Round66Tests.Projection_ReachesTierTenOnTheFifthContinent_AndWritesTheReport` (`Tools/PlayTest/r66_upgrade_economy.txt`).
+
+**The rules.**
+- **Tiers per continent: 4 / 6 / 8 / 9 / 10** (Crystal Plains opens tiers 1-4, Ashen Reach 5-6, Northern Crown 7-8,
+  Mirewood 9, Southern Crown 10; The Core keeps 10). The generator writes the list to `UpgradeCatalog.asset`
+  (`_tiersPerContinent`), which the game reads; the progression model shops under the same caps. The player's cap is
+  what the furthest continent they can enter opens (`CampaignRules.UpgradeTierCap`).
+- **Price of a tier = first tier x 1 / 2 / 3 / 4.4 / 6 / 8 / 10.4 / 13.2 / 16.4 / 20**, rounded per tier. Tiers 1-3 are
+  the old three tiers at the old prices (Damage and Range 5/10/15, Fire rate 6/12/18, base and gates 4/8/12, hero
+  5/10/15, drones 3/6/9 and 4/8/12); a first tier of 5 runs 5, 10, 15, 22, 30, 40, 52, 66, 82, 100. The base turrets
+  (12/20/32) and the extra harvest drone (6/12) keep their own steps: they are built out, not scaled.
+- **A tier gives what it gave**: the same bonus per level, linear (Damage +10%, Range +5%, Fire rate +10%, gates +20%,
+  blade +15%, hero health +20% per tier). At tier 10 a tower does twice the damage at twice the rate with half as much
+  range again; a later continent's waves are solved against that through the same progression model.
+- **Budget = 0.55 x what the continent opens.** A continent's research budget is what Psycho alone pays (Easy a fifth
+  of it, Medium two, Hard three fifths; all four together 2.2 budgets). At 0.55 one difficulty never buys everything
+  and all four pay everything the continent opens with a fifth to spare. Crystal Plains opens 1352 research (below);
+  0.55 of that is 744, and its budget stays the **748** the waves are calibrated on (0.553).
+
+**Crystal Plains: what it opens.** Six towers x (Damage 52 + Range 52 + Fire rate 62 for tiers 1-4) = 996; base armour
+42, gates 42, base turrets 64; Spencer's blade 52, health 52, repair drone 52, armour 52. Together **1352**; of that
+tiers 1-3 are 808 (the old 748 plus 60 for the first three tiers of Spencer's two new upgrades) and tier 4 is 544.
+
+**Crystal Plains: what it pays** (every one of its twenty levels once per difficulty; rewards are paid once per
+difficulty, as before):
+
+| | Easy | Medium | Hard | Psycho | all four |
+| --- | --- | --- | --- | --- | --- |
+| research, the whole continent | 150 | 300 | 450 | 750 | 1650 |
+| research, the six levels that exist | 36 | 72 | 108 | 180 | 396 |
+| share of tiers 1-4 (1352) | 11% | 22% | 33% | 55% | 122% |
+| share of tiers 1-3 (808) | 19% | 37% | 56% | 93% | 204% |
+
+So: an Easy player ends Crystal Plains with tier 1 of everything (136) and a little over; a Medium-and-Hard player
+(750) with tier 2 of everything and most of tier 3; a player who clears every level on every difficulty holds all four
+tiers with about 300 research left. Nothing here is paid differently than before round 66: the base research per level
+and the multipliers 1 / 2 / 3 / 5 are untouched. Power is untouched too (budget 186 for the drones' tiers 1-3; all
+difficulties pay about 400 against 309 for the drones' tiers 1-4).
+
+**The curve to tier 10** (later continents assume two new towers each, first-tier price 32 together: a working
+assumption, not built content; their budgets are the 0.55 rule, to be set when their content exists):
+
+| continent | cap | opens | budget | Easy | Medium | Hard | Psycho | all four | opened so far | earned so far (all four) | even tier: Easy / Medium / Medium+Hard / all four |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C1 Crystal Plains | 4 | 1352 | 748 | 150 | 300 | 450 | 750 | 1650 | 1352 | 1650 | 1 / 1 / 2 / 4 |
+| C2 Ashen Reach | 6 | 2517 | 1384 | 277 | 554 | 831 | 1385 | 3047 | 3869 | 4697 | 1 / 2 / 4 / 6 |
+| C3 Northern Crown | 8 | 5215 | 2868 | 574 | 1148 | 1722 | 2870 | 6314 | 9084 | 11011 | 2 / 3 / 6 / 8 |
+| C4 Mirewood | 9 | 5143 | 2829 | 566 | 1132 | 1698 | 2830 | 6226 | 14227 | 17237 | 3 / 4 / 7 / 9 |
+| C5 Southern Crown | 10 | 7101 | 3906 | 782 | 1564 | 2346 | 3910 | 8602 | 21328 | 25839 | 3 / 5 / 7 / 10 |
+
+"Even tier" is the highest tier a player on that path can hold on *every* upgrade open so far when the research is
+spread evenly (a real player concentrates it, so their best towers stand higher). The player of every difficulty reaches
+the cap on every continent and tier 10 on the fifth; Easy alone ends the campaign with everything at tier 3, Medium alone
+at 5, Medium and Hard at 7. Mirewood opens one tier and so pays about what Northern Crown pays (2829 against 2868).
+
+**What this did to the Crystal Plains balance: nothing.** `R66PlayerStates.cs` writes the progression model's player per
+cell; before and after the round the two files are identical in all 24 cells (research earned and spent, every upgrade
+level, the mean tower bonus). Three things keep it so:
+- tiers 1-3 keep price and worth, and no level pays a point more or less;
+- a fourth tier costs at least 18, and the model's richest player in the six levels (Crysium Vein on Psycho, 372
+  research) has not yet bought every third tier, so the cheapest-first shopper never reaches a fourth;
+- Spencer's gear (`UpgradeKind.HeroGear`) is left on the shelf by the model's shopper: the model's hero neither mends
+  faster nor takes less, so buying it would only have taken research from the towers on paper.
+So `ExpectedUpgradeBonus` is unchanged on every level, every stored wave is still the solve
+(`Round62Tests.EveryStoredWave_IsWhatTheSolveGives_AtTheAppliedCalibration`), and no wave was solved, measured or
+replayed. Two fingerprints did move: the calibration's input hash (it counts an upgrade's tiers and kinds: 39c09104 ->
+4a5eb18b) and its shape hash (the balance model's sources changed: the shopper's tier cap, `UpgradeEconomy`). So the
+yardstick-only fit was run again on w6 (the plan records set aside for the run, as the applied fit of round 65 was made
+without them): 432 runs, and **every number of the fit is the one it was** (`calibration.txt` differs only in its date
+and the two hashes, `calibration_waves.txt` not at all). `balance_pipeline.sh apply-keep` then stamped the calibration
+for the current inputs with every factor kept (Cannon 0.797, Laser 0.701, Gun Turret 0.808, Flak 1.039, siege 1.168).
+
+**Where the model is now a little kind to the player, knowingly.** A real player who buys Spencer's gear has that much
+less for towers than the model's shopper: up to 208 research for all four tiers of both, about a seventh of what
+Crystal Plains pays on every difficulty. In return his hero is sturdier than the model's (armour -5% damage per tier,
+the drone +25% healing per tier), which the siege model does not credit. Putting both in the model (the armour as hero
+health, the drone as `RegenPerSecond`) moves the solve and needs the pipeline; it is the natural next step once Remco
+has played with the gear.
+
+**Later, when Crystal Plains 7-20 exist:** the model's Psycho player will reach the fourth tier there (1650 research
+against 808 for tiers 1-3), so those levels are solved against tier-4 towers. That is the rule working, not a shift of
+the six levels that exist.

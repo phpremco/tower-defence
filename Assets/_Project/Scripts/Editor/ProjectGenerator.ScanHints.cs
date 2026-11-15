@@ -95,10 +95,33 @@ namespace Game.Editor
             so.FindProperty("_rearNestWarning").objectReferenceValue = CreateRearNestWarning(voss);
             WriteGateTips(so.FindProperty("_gateTips"), CreateGateTips(voss));
             so.FindProperty("_highGroundTip").objectReferenceValue = CreateHighGroundTip(voss);
+            so.FindProperty("_upgradeScreenTip").objectReferenceValue = CreateUpgradeScreenTip(voss);
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(story);
             WriteLoadingTips();
         }
+
+        /// <summary>Round 66 without the full generator: the story's hints again (the upgrade screen's explanation is new).</summary>
+        public static string ApplyRound66Story()
+        {
+            GenerateScanHints();
+            AssetDatabase.SaveAssets();
+            return $"story: upgrade screen explanation {UpgradeScreenTipId} (first continent opens tier {FirstContinentTiers}), {LoadingTipTexts.Length} loading tips\n";
+        }
+
+        // Remco 2026-11-15 (round 66): the first time the upgrade screen opens in a save, Voss says how it works: research
+        // points, tiers, the continents that open them, Spencer's gear (UpgradeScreenGuide). The tier number in his lines is
+        // the rules' own cap for the first continent, so the line and the padlocks cannot drift apart. Proposed lines.
+        public const string UpgradeScreenTipId = "Dlg_Tip_UpgradeScreen";
+
+        private static int FirstContinentTiers => BalanceSheet.Rules.UpgradeTierCap(0);
+
+        private static DialogueDefinition CreateUpgradeScreenTip(SpeakerDefinition voss) =>
+            CreateDialogue(UpgradeScreenTipId,
+                Say(voss, "Welcome to the research bay. Every level you clear pays research points, and a harder difficulty pays more."),
+                Say(voss, "Spend them here on tiers. Each tier makes a turret, the base or the gates better for good; the drones take power instead."),
+                Say(voss, $"A padlock means that tier opens on a later continent. Crystal Plains opens the first {FirstContinentTiers}; there are ten."),
+                Say(voss, "And do look after Spencer: a repair drone that mends him faster, and armour that takes the edge off every hit."));
 
         // Remco 2026-11-15 (playtest 2): towers on raised ground reach further, and Voss says so once per save, after the
         // first tower is built in a level that has a raised build spot (LevelStoryListener). The number in his lines is the
@@ -130,6 +153,7 @@ namespace Game.Editor
             (MoveHeroTipId, "When another gate is being hammered, send Spencer there: Next post, or select that gate."),
             (RearNestWarningId, "A rift can open behind the gates. Keep a turret in reach of it, or near the base."),
             (HighGroundTipId, $"Towers on high ground reach {HighGroundPercent} further. The bank round it is too steep to build on."),
+            (UpgradeScreenTipId, "Research points buy permanent upgrade tiers between levels. A padlocked tier opens on a later continent."),
         };
 
         private static void WriteLoadingTips()

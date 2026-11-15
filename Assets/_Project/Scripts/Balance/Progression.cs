@@ -171,7 +171,9 @@ namespace Game.Balance
                 }
             }
 
-            Spend(state, upgrades);
+            // The player shops under the tier cap of the continent the level lies in (the furthest one reached by then).
+            int continent = campaign.Count == 0 ? 0 : campaign[Math.Max(0, Math.Min(levelIndex, campaign.Count - 1))].Continent;
+            Spend(state, upgrades, rules.UpgradeTierCap(continent));
             return state;
         }
 
@@ -193,8 +195,8 @@ namespace Game.Balance
             return end;
         }
 
-        // Cheapest next level first over every useful upgrade; ties go to the earlier one in the catalogue.
-        private static void Spend(PlayerState state, IReadOnlyList<UpgradeStats> upgrades)
+        // Cheapest next level first over every useful upgrade, no further than the open tiers; ties go to the earlier one in the catalogue.
+        private static void Spend(PlayerState state, IReadOnlyList<UpgradeStats> upgrades, int tierCap)
         {
             var levels = new int[upgrades.Count];
             int purse = state.ResearchEarned;
@@ -205,7 +207,7 @@ namespace Game.Balance
                 for (int i = 0; i < upgrades.Count; i++)
                 {
                     UpgradeStats upgrade = upgrades[i];
-                    if (upgrade.PaidInPower || levels[i] >= upgrade.Costs.Length || !Useful(state, upgrade))
+                    if (upgrade.PaidInPower || levels[i] >= Math.Min(upgrade.Costs.Length, tierCap) || !Useful(state, upgrade))
                     {
                         continue;
                     }
@@ -290,11 +292,14 @@ namespace Game.Balance
             state.MeanTowerBonus = state.OwnedTowers.Count > 0 ? sum / state.OwnedTowers.Count : 0f;
         }
 
-        // Upgrades of towers the player does not own yet wait; base health and base turrets are not in the model.
+        // Upgrades of towers the player does not own yet wait; base health and base turrets are not in the model. The hero's
+        // gear (round 66) is left on the shelf: see UpgradeKind.HeroGear.
         private static bool Useful(PlayerState state, UpgradeStats upgrade)
         {
             switch (upgrade.Kind)
             {
+                case UpgradeKind.HeroGear:
+                    return false;
                 case UpgradeKind.TowerDamage:
                 case UpgradeKind.TowerFireRate:
                 case UpgradeKind.TowerRange:

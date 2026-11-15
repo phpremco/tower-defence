@@ -17,7 +17,7 @@ MonoBehaviour:
   _towerId: CryoBeam
   _droneId: 
   _groupName: Cryo Beam
-  _costs: 080000001000000018000000i
+  _costs: 080000001000000018000000230000003000000040000000530000006a00000083000000a0000000i
   _currency: 0
   _groupDescription: 
   _bonusPerLevel: 0.05

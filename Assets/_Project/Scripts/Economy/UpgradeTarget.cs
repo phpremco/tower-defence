@@ -30,5 +30,11 @@
 
         /// <summary>One more drone of this type may fly at once, per level.</summary>
         DroneCount,
+
+        /// <summary>The hero's companion repair drone: each level speeds up his own healing by the bonus.</summary>
+        HeroRegen,
+
+        /// <summary>The hero's armour plating: each level takes the bonus off every hit he takes.</summary>
+        HeroArmour,
     }
 }

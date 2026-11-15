@@ -1,0 +1,7 @@
+Round 66: research over five continents (every level of a continent once per difficulty; later continents assume two new towers each)
+continent | cap | opens | budget | Easy | Medium | Hard | Psycho | all four | opened so far | earned so far (all four) | even tier: Easy / Medium / Medium+Hard / all four
+C1 | 4 | 1352 | 748 | 150 | 300 | 450 | 750 | 1650 | 1352 | 1650 | 1 / 1 / 2 / 4
+C2 | 6 | 2517 | 1384 | 277 | 554 | 831 | 1385 | 3047 | 3869 | 4697 | 1 / 2 / 4 / 6
+C3 | 8 | 5215 | 2868 | 574 | 1148 | 1722 | 2870 | 6314 | 9084 | 11011 | 2 / 3 / 6 / 8
+C4 | 9 | 5143 | 2829 | 566 | 1132 | 1698 | 2830 | 6226 | 14227 | 17237 | 3 / 4 / 7 / 9
+C5 | 10 | 7101 | 3906 | 782 | 1564 | 2346 | 3910 | 8602 | 21328 | 25839 | 3 / 5 / 7 / 10

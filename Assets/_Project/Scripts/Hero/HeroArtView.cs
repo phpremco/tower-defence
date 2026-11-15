@@ -127,6 +127,8 @@ namespace Game.Hero
         private ArtModel _blade;
         private Material _bladeMaterial;
         private Color _bladeColour;
+        private BladeAura _bladeAura;
+        private HeroCompanionDrone _companion;
         private Transform _muzzle;
         private LineRenderer _bolt;
 
@@ -215,6 +217,7 @@ namespace Game.Hero
             _aimBones = Bones(art.AimBones);
             _gunArm = _body.Find(art.GunArmBone);
             BuildWeapons(hero.Definition);
+            BuildGear();
             BuildParticles();
             BuildJets();
             FindBlinkers();
@@ -248,6 +251,8 @@ namespace Game.Hero
                 _hero.Called -= OnCalled;
             }
 
+            _bladeAura?.Dispose();
+            _companion?.Dispose();
             _body?.Dispose();
             if (_bladeMaterial != null)
             {
@@ -259,7 +264,10 @@ namespace Game.Hero
         /// The commander at rest for a menu, a portrait or a turntable: the body posed in its idle, the pistol in the
         /// holster and the hilt on the pack. Feet on y = 0, facing +z.
         /// </summary>
-        public static GameObject BuildDisplay(Transform parent, HeroArtDefinition art, float idleSeconds)
+        public static GameObject BuildDisplay(Transform parent, HeroArtDefinition art, float idleSeconds) => BuildDisplay(parent, art, idleSeconds, default);
+
+        /// <summary>As above, wearing the gear given: the armour plates of its tier and the companion drone at his shoulder.</summary>
+        public static GameObject BuildDisplay(Transform parent, HeroArtDefinition art, float idleSeconds, HeroGear gear)
         {
             var root = new GameObject("Figure");
             root.transform.SetParent(parent, false);
@@ -267,6 +275,8 @@ namespace Game.Hero
             body.Sample(ModelClipRole.Idle, idleSeconds, loop: true);
             Attach(art.Pistol, body.Find(art.HolsterSocket), art.HiddenParts);
             Attach(art.SwordHilt, body.Find(art.BackSocket), art.HiddenParts);
+            HeroArmourPlates.Build(body.Find, art.Gear, gear);
+            HeroCompanionDrone.CreateStill(root.transform, art.Gear, gear);
             return root;
         }
 
@@ -383,7 +393,9 @@ namespace Game.Hero
                 Hide(_hilt, _art.HiddenParts);
                 if (_art.SwordBlade != null)
                 {
-                    _bladeColour = definition.Weapon.Color;
+                    // At its top tier the blade burns in another colour inside an aura (round 66); not an upgrade of its own.
+                    bool mastered = _hero.Gear.BladeAtTop && _art.Gear != null;
+                    _bladeColour = mastered ? _art.Gear.MasterBladeColor : definition.Weapon.Color;
                     _bladeMaterial = GlowDecal.BladeMaterial(_bladeColour * BladeEmission);
                     _blade = ArtModel.Create(_hilt.Root, _art.SwordBlade, _bladeMaterial);
                     Hide(_blade, _art.HiddenParts);
@@ -392,9 +404,28 @@ namespace Game.Hero
                         renderer.shadowCastingMode = ShadowCastingMode.Off;
                     }
 
+                    if (mastered)
+                    {
+                        _bladeAura = BladeAura.Create(_blade, _art.Gear, transform);
+                    }
+
                     _blade.SetActive(false);
                 }
             }
+        }
+
+        // The armour plates of his tier on his bones, and the companion drone beside him (it lives next to the hero, not
+        // under his figure, so it trails when he moves).
+        private void BuildGear()
+        {
+            HeroGearArtDefinition gear = _art.Gear;
+            if (gear == null)
+            {
+                return;
+            }
+
+            HeroArmourPlates.Build(_body.Find, gear, _hero.Gear);
+            _companion = HeroCompanionDrone.Create(transform.parent, _body.Find(gear.MendBone), gear, _hero.Gear, transform.position, Facing());
         }
 
         private static void Hide(ArtModel model, string[] parts)
@@ -1008,6 +1039,9 @@ namespace Game.Hero
             // The light strip and the bolt follow the gun as the aim left it.
             _pistolGlow?.Tick(_pistol.Root.gameObject.activeInHierarchy);
             PlaceBolt();
+            // The aura lies on the blade and the companion's light on his chest as this frame's pose left them.
+            _bladeAura?.Tick(_blade.Root.gameObject.activeInHierarchy, _ignite);
+            _companion?.Tick(Time.deltaTime, transform.position, Facing(), _hero.IsMending);
         }
 
         private void AimSpine()

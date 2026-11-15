@@ -121,10 +121,13 @@ namespace Game.UI
         }
 
         /// <summary>The commander standing at rest with the weapon in hand.</summary>
-        public void ShowHero(HeroDefinition hero)
+        public void ShowHero(HeroDefinition hero) => ShowHero(hero, default);
+
+        /// <summary>The commander wearing his permanent gear: the armour plates of his tier and the companion drone.</summary>
+        public void ShowHero(HeroDefinition hero, HeroGear gear)
         {
             Clear();
-            HeroView.BuildDisplayFigure(_turntable, hero);
+            HeroView.BuildDisplayFigure(_turntable, hero, gear);
             Frame();
         }
 

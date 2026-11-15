@@ -1,0 +1,24 @@
+C1_01 Easy earned 0 spent 0 bonus 0.0000 | 
+C1_01 Medium earned 0 spent 0 bonus 0.0000 | 
+C1_01 Hard earned 12 spent 8 bonus 0.0000 | BaseHealth=1,BlockadeHealth=1
+C1_01 Psycho earned 36 spent 33 bonus 0.1000 | BaseHealth=1,BlockadeHealth=1,Cannon_Damage=1,Cannon_Range=1,Laser_Damage=1,PulseRifle_Damage=1,PulseRifle_Range=1
+C1_02 Easy earned 6 spent 4 bonus 0.0000 | BaseHealth=1
+C1_02 Medium earned 12 spent 8 bonus 0.0000 | BaseHealth=1,BlockadeHealth=1
+C1_02 Hard earned 42 spent 38 bonus 0.0750 | BaseHealth=1,BlockadeHealth=1,Cannon_Damage=1,Cannon_Range=1,Laser_Damage=1,Laser_Range=1,PulseRifle_Damage=1,PulseRifle_Range=1
+C1_02 Psycho earned 102 spent 98 bonus 0.2100 | BaseHealth=2,BlockadeHealth=2,Cannon_Damage=1,Cannon_FireRate=1,Cannon_Range=1,Hero_Damage=1,Hero_Health=1,Laser_Damage=1,Laser_FireRate=1,Laser_Range=1,PulseRifle_Damage=1,PulseRifle_FireRate=1,PulseRifle_Range=1,Rocket_Damage=1,Rocket_FireRate=1,Rocket_Range=1
+C1_03 Easy earned 12 spent 8 bonus 0.0000 | BaseHealth=1,BlockadeHealth=1
+C1_03 Medium earned 24 spent 23 bonus 0.0500 | BaseHealth=1,BlockadeHealth=1,Cannon_Damage=1,PulseRifle_Damage=1,PulseRifle_Range=1
+C1_03 Hard earned 72 spent 70 bonus 0.1550 | BaseHealth=1,BlockadeHealth=1,Cannon_Damage=1,Cannon_FireRate=1,Cannon_Range=1,Hero_Damage=1,Hero_Health=1,Laser_Damage=1,Laser_Range=1,PulseRifle_Damage=1,PulseRifle_FireRate=1,PulseRifle_Range=1,Rocket_Damage=1,Rocket_Range=1
+C1_03 Psycho earned 168 spent 168 bonus 0.3200 | BaseHealth=2,BlockadeHealth=2,Cannon_Damage=2,Cannon_FireRate=1,Cannon_Range=2,Hero_Damage=1,Hero_Health=1,Laser_Damage=2,Laser_FireRate=1,Laser_Range=2,PulseRifle_Damage=2,PulseRifle_FireRate=1,PulseRifle_Range=2,Rocket_Damage=2,Rocket_FireRate=1,Rocket_Range=1
+C1_04 Easy earned 18 spent 18 bonus 0.0250 | BaseHealth=1,BlockadeHealth=1,PulseRifle_Damage=1,PulseRifle_Range=1
+C1_04 Medium earned 36 spent 33 bonus 0.0750 | BaseHealth=1,BlockadeHealth=1,Cannon_Damage=1,Cannon_Range=1,Laser_Damage=1,PulseRifle_Damage=1,PulseRifle_Range=1
+C1_04 Hard earned 102 spent 98 bonus 0.2100 | BaseHealth=2,BlockadeHealth=2,Cannon_Damage=1,Cannon_FireRate=1,Cannon_Range=1,Hero_Damage=1,Hero_Health=1,Laser_Damage=1,Laser_FireRate=1,Laser_Range=1,PulseRifle_Damage=1,PulseRifle_FireRate=1,PulseRifle_Range=1,Rocket_Damage=1,Rocket_FireRate=1,Rocket_Range=1
+C1_04 Psycho earned 234 spent 234 bonus 0.4100 | BaseHealth=2,BlockadeHealth=2,Cannon_Damage=2,Cannon_FireRate=2,Cannon_Range=2,Hero_Damage=2,Hero_Health=2,Laser_Damage=2,Laser_FireRate=2,Laser_Range=2,PulseRifle_Damage=2,PulseRifle_FireRate=2,PulseRifle_Range=2,Rocket_Damage=2,Rocket_FireRate=1,Rocket_Range=2
+C1_05 Easy earned 24 spent 23 bonus 0.0500 | BaseHealth=1,BlockadeHealth=1,Cannon_Damage=1,PulseRifle_Damage=1,PulseRifle_Range=1
+C1_05 Medium earned 48 spent 48 bonus 0.1000 | BaseHealth=1,BlockadeHealth=1,Cannon_Damage=1,Cannon_Range=1,Laser_Damage=1,Laser_Range=1,PulseRifle_Damage=1,PulseRifle_Range=1,Rocket_Damage=1,Rocket_Range=1
+C1_05 Hard earned 132 spent 128 bonus 0.2650 | BaseHealth=2,BlockadeHealth=2,Cannon_Damage=2,Cannon_FireRate=1,Cannon_Range=1,Hero_Damage=1,Hero_Health=1,Laser_Damage=1,Laser_FireRate=1,Laser_Range=1,PulseRifle_Damage=2,PulseRifle_FireRate=1,PulseRifle_Range=2,Rocket_Damage=1,Rocket_FireRate=1,Rocket_Range=1
+C1_05 Psycho earned 300 spent 297 bonus 0.4700 | BaseHealth=3,Base_Weapon=1,BlockadeHealth=3,Cannon_Damage=2,Cannon_FireRate=2,Cannon_Range=2,Hero_Damage=2,Hero_Health=2,Laser_Damage=2,Laser_FireRate=2,Laser_Range=2,PulseRifle_Damage=3,PulseRifle_FireRate=2,PulseRifle_Range=2,Rocket_Damage=2,Rocket_FireRate=2,Rocket_Range=2
+C1_06 Easy earned 30 spent 28 bonus 0.0500 | BaseHealth=1,BlockadeHealth=1,Cannon_Damage=1,Cannon_Range=1,PulseRifle_Damage=1,PulseRifle_Range=1
+C1_06 Medium earned 60 spent 58 bonus 0.1000 | BaseHealth=1,BlockadeHealth=1,Cannon_Damage=1,Cannon_Range=1,Hero_Damage=1,Hero_Health=1,Laser_Damage=1,Laser_Range=1,PulseRifle_Damage=1,PulseRifle_Range=1,Rocket_Damage=1,Rocket_Range=1
+C1_06 Hard earned 164 spent 158 bonus 0.2925 | BaseHealth=2,BlockadeHealth=2,Cannon_Damage=2,Cannon_FireRate=1,Cannon_Range=2,Hero_Damage=1,Hero_Health=1,Laser_Damage=2,Laser_FireRate=1,Laser_Range=2,PulseRifle_Damage=2,PulseRifle_FireRate=1,PulseRifle_Range=2,Rocket_Damage=1,Rocket_FireRate=1,Rocket_Range=1
+C1_06 Psycho earned 372 spent 372 bonus 0.5300 | BaseHealth=3,Base_Weapon=1,BlockadeHealth=3,Cannon_Damage=3,Cannon_FireRate=2,Cannon_Range=3,Hero_Damage=2,Hero_Health=2,Laser_Damage=3,Laser_FireRate=2,Laser_Range=3,PulseRifle_Damage=3,PulseRifle_FireRate=2,PulseRifle_Range=3,Rocket_Damage=2,Rocket_FireRate=2,Rocket_Range=2

@@ -17,7 +17,7 @@ MonoBehaviour:
   _towerId: 
   _droneId: RepairDrone
   _groupName: Repair drone
-  _costs: 030000000600000009000000i
+  _costs: 0300000006000000090000000d00000012000000180000001f00000028000000310000003c000000i
   _currency: 1
   _groupDescription: 
   _bonusPerLevel: 0.3

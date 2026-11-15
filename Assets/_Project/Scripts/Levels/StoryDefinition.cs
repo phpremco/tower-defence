@@ -28,6 +28,12 @@ namespace Game.Levels
         [Tooltip("Dr. Voss's hint about high ground: plays once per save after the first tower is built in a level that has a raised build spot (Remco 2026-11-15).")]
         [SerializeField] private DialogueDefinition _highGroundTip;
 
+        [Tooltip("Dr. Voss's explanation of the upgrade screen: plays once per save, the first time the screen is opened (Remco 2026-11-15).")]
+        [SerializeField] private DialogueDefinition _upgradeScreenTip;
+
+        /// <summary>The explanation of the upgrade screen; null while there is none.</summary>
+        public DialogueDefinition UpgradeScreenTip => _upgradeScreenTip;
+
         /// <summary>The hint about high ground; null while there is none.</summary>
         public DialogueDefinition HighGroundTip => _highGroundTip;
 

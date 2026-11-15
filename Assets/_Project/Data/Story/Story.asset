@@ -48,3 +48,4 @@ MonoBehaviour:
     HurtBelow: 0.6
     QuietAbove: 0.9
   _highGroundTip: {fileID: 11400000, guid: bad5d4cea72429a44aadfbc7e2b1f92c, type: 2}
+  _upgradeScreenTip: {fileID: 11400000, guid: 5b246a3db4efd734b9b8cad2b7eb4d88, type: 2}

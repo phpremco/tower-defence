@@ -18,6 +18,7 @@ namespace Game.UI
         private const float LightRange = 9f;
         private const float FillIntensity = 1.2f;
         private const int DepthBits = 16;
+        private const int BoxCorners = 8;
 
         // Behind the model as the camera sees it, a little above and to the side, so the rim catches one edge more.
         private static readonly Vector3 RimOffset = new Vector3(0.9f, 1.1f, 2.4f);
@@ -134,6 +135,44 @@ namespace Game.UI
             _rim.transform.localPosition = new Vector3(0f, framing.Lift, 0f) + view * RimOffset;
         }
 
+        // Centres the camera on the model as it sees it and zooms until its longest side fills the given share of the picture.
+        private void FitTo(GameObject model, float fill)
+        {
+            Vector3 right = _cameraTransform.right;
+            Vector3 up = _cameraTransform.up;
+            Vector3 eye = _cameraTransform.position;
+            var min = new Vector2(float.MaxValue, float.MaxValue);
+            var max = new Vector2(float.MinValue, float.MinValue);
+            foreach (Renderer renderer in model.GetComponentsInChildren<Renderer>())
+            {
+                if (!renderer.enabled || !(renderer is MeshRenderer || renderer is SkinnedMeshRenderer))
+                {
+                    continue;
+                }
+
+                Bounds bounds = renderer.bounds;
+                for (int corner = 0; corner < BoxCorners; corner++)
+                {
+                    Vector3 point = new Vector3(
+                        (corner & 1) == 0 ? bounds.min.x : bounds.max.x,
+                        (corner & 2) == 0 ? bounds.min.y : bounds.max.y,
+                        (corner & 4) == 0 ? bounds.min.z : bounds.max.z) - eye;
+                    var seen = new Vector2(Vector3.Dot(point, right), Vector3.Dot(point, up));
+                    min = Vector2.Min(min, seen);
+                    max = Vector2.Max(max, seen);
+                }
+            }
+
+            if (max.x < min.x)
+            {
+                return;
+            }
+
+            Vector2 centre = (min + max) * 0.5f;
+            _cameraTransform.position = eye + right * centre.x + up * centre.y;
+            _camera.orthographicSize = Mathf.Max(max.x - min.x, max.y - min.y) * 0.5f / fill;
+        }
+
         // One render texture per picture size, kept for the session: cards and portraits alternate without reallocating.
         private RenderTexture TextureFor(int size)
         {
@@ -161,6 +200,11 @@ namespace Game.UI
 
                 Frame(request.Framing);
                 GameObject model = request.Build(_stage);
+                if (request.Framing.Fit > 0f)
+                {
+                    FitTo(model, request.Framing.Fit);
+                }
+
                 _camera.enabled = true;
                 yield return new WaitForEndOfFrame();
 

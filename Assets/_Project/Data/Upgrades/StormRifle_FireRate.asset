@@ -17,7 +17,7 @@ MonoBehaviour:
   _towerId: StormRifle
   _droneId: 
   _groupName: Storm Rifle
-  _costs: 0a000000130000001d000000i
+  _costs: 0a000000130000001d0000002a0000003a0000004d000000640000007f0000009d000000c0000000i
   _currency: 0
   _groupDescription: 
   _bonusPerLevel: 0.1

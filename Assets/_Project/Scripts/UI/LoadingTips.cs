@@ -40,6 +40,7 @@ namespace Game.UI
             }
 
             AddTip(story.HighGroundTip, later);
+            AddTip(story.UpgradeScreenTip, later);
             AddTip(story.RearNestWarning, later);
             tips.AddRange(later);
             return tips;

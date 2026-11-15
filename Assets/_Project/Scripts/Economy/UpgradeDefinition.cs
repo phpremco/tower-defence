@@ -52,6 +52,10 @@ namespace Game.Economy
         /// <summary>True for the upgrades that belong to no tower and no drone: base, blockades and the hero.</summary>
         public bool IsGlobal => string.IsNullOrEmpty(_towerId) && string.IsNullOrEmpty(_droneId);
 
+        /// <summary>True for the hero's own upgrades: blade, health, the companion drone and the armour.</summary>
+        public bool IsForHero =>
+            _target == UpgradeTarget.HeroDamage || _target == UpgradeTarget.HeroHealth || _target == UpgradeTarget.HeroRegen || _target == UpgradeTarget.HeroArmour;
+
         /// <summary>Cost to go from the given level to the next one.</summary>
         public int CostForNextLevel(int currentLevel) => _costs[currentLevel];
 
@@ -65,6 +69,21 @@ namespace Game.Economy
             if (_costs == null || _costs.Length == 0)
             {
                 Debug.LogWarning($"Upgrade '{name}' has no levels.", this);
+                return;
+            }
+
+            for (int i = 1; i < _costs.Length; i++)
+            {
+                if (_costs[i] < _costs[i - 1])
+                {
+                    Debug.LogWarning($"Upgrade '{name}': tier {i + 1} costs less than tier {i}.", this);
+                }
+            }
+
+            // The armour's reduction is a share of the hit, so its tiers together must leave something to take.
+            if (_target == UpgradeTarget.HeroArmour && _bonusPerLevel * _costs.Length > Game.Core.HeroGear.MaxDamageReduction)
+            {
+                Debug.LogWarning($"Upgrade '{name}' adds up to more than {Game.Core.HeroGear.MaxDamageReduction:P0} damage reduction; the rest is ignored.", this);
             }
         }
     }
