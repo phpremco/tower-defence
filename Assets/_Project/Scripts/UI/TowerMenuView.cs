@@ -247,25 +247,9 @@ namespace Game.UI
             }
         }
 
-        // Shows what the next upgrade changes, so the player can judge it before paying.
-        private static string UpgradePreview(Tower tower)
-        {
-            if (!tower.CanUpgrade)
-            {
-                return string.Empty;
-            }
-
-            TowerLevel now = tower.Definition.GetLevel(tower.LevelIndex);
-            TowerLevel next = tower.Definition.GetLevel(tower.LevelIndex + 1);
-            string health = next.HealthBonus > 0f ? $"   +{next.HealthBonus:0} HP" : string.Empty;
-            // A chilling tower is bought for its slow, so that is what its preview talks about.
-            float slowNow = now.SlowSeconds > 0f ? now.SlowSeconds : tower.Definition.SlowSeconds;
-            float slowNext = next.SlowSeconds > 0f ? next.SlowSeconds : tower.Definition.SlowSeconds;
-            string effect = slowNext > 0f && Mathf.Approximately(now.Damage, next.Damage)
-                ? $"slow {slowNow:0.0}s > {slowNext:0.0}s"
-                : $"damage {now.Damage:0} > {next.Damage:0}";
-            return $"\nNext: {effect}   range {now.Range:0.0} > {next.Range:0.0}   shots/s {1f / now.FireInterval:0.0} > {1f / next.FireInterval:0.0}{health}";
-        }
+        // Shows the next upgrade step by name with the one thing it changes (round 67), so the player can judge it before paying.
+        private static string UpgradePreview(Tower tower) =>
+            tower.CanUpgrade ? "\nNext: " + TowerStepText.Next(tower.Definition, tower.LevelIndex) : string.Empty;
 
         // The press that opened the menu (A or Enter on the tower) still counts as "submitted this frame" for the UI, so
         // an icon focused in that frame was bought at once: the focus waits for the next frame. After that the focus is

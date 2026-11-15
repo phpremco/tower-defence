@@ -53,7 +53,7 @@ namespace Game.Balance
             }
 
             text.Append(F(model.Hero.BladeDamage)).Append(F(model.Hero.BladeInterval)).Append(F(model.Hero.GunDamage)).Append(F(model.Hero.GunInterval)).Append(model.Hero.Magazine).Append(F(model.Hero.ReloadSeconds)).Append(F(model.Hero.MaxHealth)).Append(F(model.Hero.GuardShare)).Append(model.Hero.Blocks).Append(F(model.Hero.ReviveSeconds));
-            text.Append(F(model.Hero.BladeArmourFactor)).Append(F(model.Hero.GunArmourFactor)).Append(F(model.Hero.PulseDamage)).Append(F(model.Hero.PulseCooldown)).Append(F(model.Hero.PulseArmourFactor)).Append(F(model.Hero.RegenPerSecond)).Append(F(model.Hero.RegenDelaySeconds));
+            text.Append(F(model.Hero.BladeArmourFactor)).Append(F(model.Hero.GunArmourFactor)).Append(F(model.Hero.GunAirFactor)).Append(F(model.Hero.PulseDamage)).Append(F(model.Hero.PulseCooldown)).Append(F(model.Hero.PulseArmourFactor)).Append(F(model.Hero.RegenPerSecond)).Append(F(model.Hero.RegenDelaySeconds));
             foreach (LevelFacts facts in model.Facts)
             {
                 text.Append(facts.Key).Append(facts.StartingMoney).Append(F(facts.HealthScale)).Append(facts.MineCount).Append(facts.MineStock).Append(facts.Harvest).Append(F(facts.GateHealth)).Append(F(facts.BaseHealth)).Append(F(facts.GateRepairCostPerHealth)).Append(facts.GateRebuildCost);
@@ -75,7 +75,7 @@ namespace Game.Balance
                 foreach (DroneStats d in facts.Drones)
                 {
                     // A drone's price is a plan input, not a capacity input (round 22d: the repair drone is priced from the fit's own busy share).
-                    text.Append(d.Id).Append(d.Role).Append(F(d.Dps)).Append(d.Targets).Append(F(d.RepairPerSecond)).Append(F(d.ArmourFactor));
+                    text.Append(d.Id).Append(d.Role).Append(F(d.Dps)).Append(d.Targets).Append(F(d.RepairPerSecond)).Append(F(d.ArmourFactor)).Append(F(d.AirFactor));
                 }
 
                 if (facts.Geometry != null)

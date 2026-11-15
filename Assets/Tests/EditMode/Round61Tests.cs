@@ -36,12 +36,12 @@ namespace Game.Tests
         {
             TowerDefinition gun = Tower(AllRounder);
             TowerDefinition flak = Tower(SkyGun);
-            Assert.AreEqual(ProjectGenerator.GunAirShare, gun.AirDamageFactor, 1e-4f, "the Gun Turret asset and the generator disagree on its air share");
-            Assert.LessOrEqual(gun.AirDamageFactor, 0.25f, "a row of Gun Turrets must not be an air defence");
-            Assert.Greater(gun.AirDamageFactor, 0f, "the Gun Turret still finishes a straggler over the base");
+            // Since round 67 the share is the combat rules' for bullets, not a number on the tower.
+            Assert.LessOrEqual(gun.Profile.Air, 0.25f, "a row of Gun Turrets must not be an air defence");
+            Assert.Greater(gun.Profile.Air, 0f, "the Gun Turret still finishes a straggler over the base");
             Assert.AreEqual(TargetLayers.Air, flak.Targets, "the Flak is the gun made for the sky");
-            float gunPerCoin = gun.GetLevel(0).Damage * gun.AirDamageFactor / gun.GetLevel(0).FireInterval / gun.BuildCost;
-            float flakPerCoin = flak.GetLevel(0).Damage * flak.AirDamageFactor / flak.GetLevel(0).FireInterval / flak.BuildCost;
+            float gunPerCoin = gun.GetLevel(0).Damage * gun.Profile.Air / gun.GetLevel(0).FireInterval / gun.BuildCost;
+            float flakPerCoin = flak.GetLevel(0).Damage * flak.Profile.Air / flak.GetLevel(0).FireInterval / flak.BuildCost;
             Assert.Greater(flakPerCoin, gunPerCoin * 3f, "against one flyer a coin of Flak must be worth several coins of Gun Turret (its blast comes on top)");
         }
 

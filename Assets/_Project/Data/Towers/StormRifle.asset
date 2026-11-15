@@ -22,27 +22,36 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: 
+    Step: 0
   - Cost: 200
-    Damage: 20
-    Range: 4.4
-    FireInterval: 0.18
+    Damage: 14
+    Range: 4.1
+    FireInterval: 0.126
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Faster cycling
+    Step: 2
   - Cost: 300
-    Damage: 28
-    Range: 4.7
-    FireInterval: 0.15
+    Damage: 23.519999
+    Range: 4.1
+    FireInterval: 0.126
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Higher voltage
+    Step: 1
   _projectileSpeed: 20
   _splashRadius: 0.8
   _splashTargets: 0
-  _groundDamageFactor: 1
-  _airDamageFactor: 1
   _damageType: 4
-  _armourFactor: 0.5
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
+  _roles: 0100000002000000i
+  _roleLine: 'Gun Turret and Tesla in one: rapid arcs for swarms and small groups. A fifth on armour, under half in the air.'
   _retargetRadius: 0
   _homing: 1
   _fuseRadius: 0

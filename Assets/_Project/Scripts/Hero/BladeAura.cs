@@ -5,7 +5,8 @@ using UnityEngine;
 namespace Game.Hero
 {
     /// <summary>
-    /// The aura of the blade at its top tier: a long soft glow laid along the blade and turned to the camera, a rounder
+    /// The aura of the blade once its damage upgrade has reached a stage (orange halfway, red at the last tier; the
+    /// stage gives the colour and how strong the aura is): a long soft glow laid along the blade and turned to the camera, a rounder
     /// glow about its middle that reads from the play camera, and embers shed along its length. The cards are laid from
     /// the blade's own base and tip every frame after the body is posed, so they follow it through every cut, and all of
     /// it scales with how far the blade has ignited, so it comes and goes with the blade instead of popping. Shaped by
@@ -27,6 +28,7 @@ namespace Game.Hero
         private const float SheathOverreach = 1.3f;
 
         private readonly HeroGearArtDefinition _art;
+        private readonly BladeAuraStage _stage;
         private readonly Transform _blade;
         private readonly MeshRenderer _sheath;
         private readonly MaterialPropertyBlock _sheathBlock = new MaterialPropertyBlock();
@@ -36,9 +38,10 @@ namespace Game.Hero
         private readonly float _length;
         private Transform _camera;
 
-        private BladeAura(HeroGearArtDefinition art, ArtModel blade, Transform owner)
+        private BladeAura(HeroGearArtDefinition art, BladeAuraStage stage, ArtModel blade, Transform owner)
         {
             _art = art;
+            _stage = stage;
             _blade = blade.Root;
             MeasureAlong(blade, out _bottom, out _length);
             _sheath = VfxQuad.Create(owner, "BladeAuraSheath", VfxQuad.Centred);
@@ -47,7 +50,7 @@ namespace Game.Hero
             _glow.Hide();
             if (art.EmberRate > 0f)
             {
-                _embers = ParticleKit.Create(_blade, "BladeEmbers", new Vector3(0f, _bottom + _length * 0.5f, 0f), art.EmberColor * EmberGlow, EmberMinLife, EmberMaxLife, EmberMinSize, EmberMaxSize, 0f, EmberMaxSpeed, EmberRise, EmberMax);
+                _embers = ParticleKit.Create(_blade, "BladeEmbers", new Vector3(0f, _bottom + _length * 0.5f, 0f), stage.EmberColor * EmberGlow, EmberMinLife, EmberMaxLife, EmberMinSize, EmberMaxSize, 0f, EmberMaxSpeed, EmberRise, EmberMax);
                 // Shed along the blade's whole length (its own Y), not from a ball at its middle.
                 ParticleSystem.ShapeModule shape = _embers.shape;
                 shape.shapeType = ParticleSystemShapeType.SingleSidedEdge;
@@ -57,7 +60,10 @@ namespace Game.Hero
         }
 
         /// <summary>The aura for a blade model (it grows along its root's own Y as it ignites); <paramref name="owner"/> is where the glow cards live.</summary>
-        public static BladeAura Create(ArtModel blade, HeroGearArtDefinition art, Transform owner) => new BladeAura(art, blade, owner);
+        public static BladeAura Create(ArtModel blade, HeroGearArtDefinition art, BladeAuraStage stage, Transform owner) => new BladeAura(art, stage, blade, owner);
+
+        /// <summary>The stage this aura shows.</summary>
+        public BladeAuraStage Stage => _stage;
 
         /// <summary>Lays the aura on the blade as it is this frame. Call after the body has been posed (LateUpdate).</summary>
         public void Tick(bool lit, float ignite)
@@ -71,7 +77,7 @@ namespace Game.Hero
 
             if (_embers != null)
             {
-                ParticleKit.SetRate(_embers, on ? _art.EmberRate * (ModelQuality.IsLow ? EmberLowShare : 1f) * shown : 0f);
+                ParticleKit.SetRate(_embers, on ? _art.EmberRate * _stage.Strength * (ModelQuality.IsLow ? EmberLowShare : 1f) * shown : 0f);
             }
 
             if (!on)
@@ -91,13 +97,13 @@ namespace Game.Hero
             }
 
             float breath = 0.5f + 0.5f * Mathf.Sin(Time.time * Mathf.PI * 2f / _art.AuraPulseSeconds);
-            float strength = Mathf.Lerp(_art.AuraLowShare, 1f, breath) * shown;
+            float strength = Mathf.Lerp(_art.AuraLowShare, 1f, breath) * shown * _stage.Strength;
             Vector3 middle = (hilt + tip) * 0.5f;
             _sheath.transform.SetPositionAndRotation(middle, VfxQuad.Along(axis, _camera.forward));
             _sheath.transform.localScale = new Vector3(reach * SheathOverreach, _art.AuraWidth, 1f);
-            LineKit.SetFlareGlow(_sheathBlock, _art.MasterBladeColor, _art.AuraGlow * strength);
+            LineKit.SetFlareGlow(_sheathBlock, _stage.BladeColor, _art.AuraGlow * strength);
             _sheath.SetPropertyBlock(_sheathBlock);
-            _glow.Show(middle, Mathf.Max(0.05f, reach * _art.HaloSize), _art.MasterBladeColor, _art.HaloStrength * strength);
+            _glow.Show(middle, Mathf.Max(0.05f, reach * _art.HaloSize), _stage.BladeColor, _art.HaloStrength * strength);
         }
 
         public void Dispose()

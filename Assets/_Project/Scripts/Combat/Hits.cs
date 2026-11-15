@@ -1,19 +1,24 @@
+using Game.Core;
+
 namespace Game.Combat
 {
     /// <summary>
-    /// Lands a hit on a target the way a projectile does: through <see cref="ISourcedTarget"/> when the target offers it,
-    /// so the weapon's armour factor and its source reach the creature, else the plain <see cref="ITargetable"/> hit.
-    /// For the hero's blows and abilities and anything else that hurts a creature without a projectile.
+    /// The one place a hit lands on a target (round 67): every damage source in the game (a tower's shot, the hero's blow
+    /// or shockwave, a drone's shot, a mine, a lava ball) comes through here with its <see cref="DamageProfile"/> from the
+    /// combat rules. The share for the target's layer is taken here, on the creature actually hit (a blast that catches a
+    /// flyer and a walker lands on each at its own share), and the armour share travels on to the creature's armour pool
+    /// through <see cref="ISourcedTarget"/>.
     /// </summary>
     public static class Hits
     {
-        /// <param name="armourFactor">Share of the hit that works on the target's armour while it has any.</param>
+        /// <param name="profile">What the weapon's hits are worth against armour and in the air (its definition's Profile).</param>
         /// <param name="splash">True for a blast that caught the target (it reaches a hidden boss in part), false for an aimed blow.</param>
-        public static void Deal(ITargetable target, float damage, float armourFactor, object source = null, bool splash = true)
+        public static void Deal(ITargetable target, float damage, DamageProfile profile, object source = null, bool splash = true)
         {
+            damage *= profile.Against(target.Layer);
             if (target is ISourcedTarget sourced)
             {
-                sourced.TakeDamageFrom(damage, source, splash, armourFactor);
+                sourced.TakeDamageFrom(damage, source, splash, profile.Armour);
                 return;
             }
 

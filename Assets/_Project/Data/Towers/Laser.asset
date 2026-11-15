@@ -22,27 +22,36 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: 
+    Step: 0
   - Cost: 55
-    Damage: 12
-    Range: 4.5
-    FireInterval: 0.18
+    Damage: 13.333333
+    Range: 4.3
+    FireInterval: 0.2
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Focused lens
+    Step: 1
   - Cost: 100
-    Damage: 18
-    Range: 4.8
-    FireInterval: 0.15
+    Damage: 13.333333
+    Range: 4.3
+    FireInterval: 0.11111111
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Overcharged emitter
+    Step: 2
   _projectileSpeed: 400
   _splashRadius: 0
   _splashTargets: 0
-  _groundDamageFactor: 1
-  _airDamageFactor: 1
   _damageType: 2
-  _armourFactor: 0.2
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
+  _roles: 01000000i
+  _roleLine: 'Light fire in one beam: the Gun Turret''s job with nearly three times the firepower in one cell. Glances off armour; cannot aim up.'
   _retargetRadius: 0
   _homing: 1
   _fuseRadius: 0

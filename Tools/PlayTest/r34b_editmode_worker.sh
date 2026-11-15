@@ -16,6 +16,8 @@ for d in Assets Packages ProjectSettings Tools; do
 done
 # The clone keeps its own product name (persistentDataPath), as workers.sh does.
 sed -i 's/^  productName: Tower defense$/  productName: Tower defense worker w'"$n"'/' "$dir/ProjectSettings/ProjectSettings.asset"
+# Audio stays on in this clone (round 67): an EditMode run plays nothing, and the audio tests build clips, which a project
+# with audio disabled cannot (the PlayMode workers are silenced in workers.sh).
 if [ "$#" -gt 0 ]; then printf '%s\n' "$@" > "$dir/Tools/PlayTest/probe_arg.txt"; else rm -f "$dir/Tools/PlayTest/probe_arg.txt"; fi
 rm -f "$dir/Logs/results.xml"
 started=$(date +%s)

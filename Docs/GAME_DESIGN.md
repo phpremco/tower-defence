@@ -78,9 +78,11 @@ Acht standaardtorens. Je begint met het pulsgeweer; de andere wapens krijg je al
 | Railgun | Enorm veel schade op één doel | Land en lucht | Bazen, brutes | Zwermen |
 | Support | Meer bereik of vuursnelheid voor torens in de buurt | Geen | Versterkt anderen | Doet zelf geen schade |
 
-**Upgrades.** Elke toren heeft drie niveaus (sterren). Op niveau 3 kies je een van twee paden, bijvoorbeeld meer schade of meer snelheid. Je betaalt met geld uit het level, plus onderzoekspunten voor permanente verbeteringen tussen levels.
+**Rollen en gevechtsregels (ronde 67, 2026-11-15).** Elke toren heeft één taak en is daarbuiten duidelijk slechter per munt. Wat een treffer waard is tegen pantser en in de lucht volgt uit het schadetype van het wapen via één regeltabel in data; alleen benoemde uitzonderingen wijken af. De tabel, de rol van elke toren, de uitzonderingen en de matrix "toren tegen vijand" staan in `Docs/COMBAT_RULES.md`; die gaat voor op de kolommen "Sterk tegen" en "Zwak tegen" hierboven.
 
-**Combineren.** Twee naastgelegen torens voeg je samen tot een hybride volgens een vaste receptenlijst, bijvoorbeeld Laser + Cryo = Cryostraal, Tesla + Support = Stroomnet, Kanon + Raket = Artillerie. Vaste recepten zijn makkelijker te balanceren dan vrije combinaties.
+**Upgrades.** Elke toren heeft drie niveaus (sterren), dus twee upgradestappen in het level. Elke stap heeft een naam en verbetert precies één ding, bijvoorbeeld "Faster cycling" (vuursnelheid), "Heavier rounds" (schade) of "Extended nozzle" (bereik). De stappen staan in data per toren en versterken de eigen rol van de toren, nooit een taak waar hij niet voor is. Het torenmenu toont de naam van de volgende stap en wat die verandert. De twee paden (A/B) op niveau 3 zijn geschrapt (besluit Remco, 2026-11-15): er is één route per toren. Je betaalt met geld uit het level, plus onderzoekspunten voor permanente verbeteringen tussen levels (tien tiers, per continent geopend). De stappen per toren staan in `Docs/COMBAT_RULES.md`, "Upgrade steps".
+
+**Combineren.** Twee naastgelegen torens voeg je samen tot een hybride volgens een vaste receptenlijst, bijvoorbeeld Laser + Cryo = Cryostraal, Tesla + Support = Stroomnet, Kanon + Raket = Artillerie. Vaste recepten zijn makkelijker te balanceren dan vrije combinaties. Een hybride is een nieuwe toren met de rollen van zijn twee ouders en met eigen upgradestappen.
 
 **Kapot gaan.** Vijanden vallen ook torens aan. Een beschadigde toren kun je laten repareren (door jou met geld, of door drones). Een volledig kapotte toren blijft als wrak staan: klik erop voor geld uit de scrap, daarna bouw je een nieuwe op die plek.
 

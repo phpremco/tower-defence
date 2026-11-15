@@ -282,35 +282,6 @@ namespace Game.Editor
             savingPerWave <= 0f ? 0 : System.Math.Max(0, waveCount - (int)System.Math.Ceiling(price / savingPerWave) + 1);
 
 
-        // The armour rule (round 64, Remco: "reduced damage from non-exploding things; the Cannon is explosive"). Armour is a
-        // pool in front of the body; a weapon works on it at the factor of its damage type and nothing reaches the body while
-        // any is left. Bullets and beams only chip it (Remco, 2026-11-09: light fire 0.2), what cuts, arcs, burns or rams
-        // does half, a blast strips it point for point and the Railgun's slug is made for it.
-        private const float LightArmourFactor = 0.2f;
-        private const float MediumArmourFactor = 0.5f;
-        private const float BlastArmourFactor = 1f;
-        private const float PiercingArmourFactor = 1.5f;
-
-        /// <summary>The share of a hit that works on a creature's armour, by what the damage is made of: the one table every weapon's armour factor is written from.</summary>
-        public static float ArmourFactorOf(Game.Core.DamageType type)
-        {
-            switch (type)
-            {
-                case Game.Core.DamageType.Bullet:
-                case Game.Core.DamageType.Beam:
-                    return LightArmourFactor;
-                case Game.Core.DamageType.Blade:
-                case Game.Core.DamageType.Arc:
-                case Game.Core.DamageType.Burn:
-                case Game.Core.DamageType.Ram:
-                    return MediumArmourFactor;
-                case Game.Core.DamageType.Piercing:
-                    return PiercingArmourFactor;
-                default:
-                    return BlastArmourFactor;
-            }
-        }
-
         /// <summary>
         /// Share of an armoured troop's toughness that is armour (round 64). At a third (round 24) light fire lost half its
         /// damage to a Cragback, which only cancelled the Cannon's lower rate: per coin the Laser killed one as fast as the

@@ -10481,3 +10481,131 @@ per save. It is also a loading tip and is listed in the story viewer.
 5. **Shoulder caps** would make the armour read from the play camera; they need a plate modelled to his shoulder pieces
    (Blender), not a seated shell.
 6. Voss's four lines are proposed text.
+
+## Round 67: one rule table for every damage source, tower roles held per coin, named upgrade steps, grace windows (2026-11-15)
+
+Not committed (the curator commits). No full generator run: `Tools/PlayTest/Scripts/ApplyRound67.cs` (via
+`bash Tools/PlayTest/r67_apply.sh`) writes what the changed generator now would. No Blender, no packages, the Game view's
+resolution untouched. Remco's save `progress.json` (MD5 **42fbe06b38e133cecfe2014def5c833c** at the start: he had played
+since round 66) was copied aside before every Play Mode run and restored after; identical after each run and at the end;
+`progress_dev_backup_2026-11-05.json` and `progress_before_r66_test_2026-11-15.json` untouched. Editor play runs strictly one
+after another; EditMode and every pipeline play run on the clones w1 to w6. The page for Remco: **Docs/COMBAT_RULES.md**.
+The numbers: Docs/BALANCE.md "Round 67". Commands: Docs/COMMANDS.md "Round 67".
+
+### 1. The audit: what was decided per weapon instead of by a rule
+
+Every damage source (13 towers with hybrids, gate gun and base turret; Spencer's blaster, sword and shockwave; the attack
+drone; mine, barrel, lava ball, ground drone) and every creature (41, bosses included) was read from the data and played
+through `RoleMatrix` (`Tools/PlayTest/r67_role_matrix.txt`).
+
+- **The air share was a number on one tower.** `TowerDefinition._airDamageFactor` was 0.2 on the Gun Turret (round 61) and 1
+  on everything else that aims up: the base turret, Spencer's blaster and the attack drone (the same bullets), the
+  Railgun, Cryo, Storm Rifle and Cryo Beam all landed in full on flyers. The hero's weapons, the drone and the path
+  objects had no layer share at all.
+- **The share was taken on the creature aimed at**, in `Tower.Shoot`, before the shot left: a blast aimed at a walker hurt
+  the flyers it caught at the ground share.
+- **The armour factor was a number stamped on each weapon** from a code table (`BalanceSheet.ArmourFactorOf`, round 64).
+  Right in value, but each asset carried its own copy.
+- **Four call sites landed hits on a creature** (projectile, hero blow, shockwave, path object), each with its own copy of
+  the armour hand-off.
+- **Tesla and Storm Rifle at 0.5 on armour** cleared armoured troops nearly as fast per coin as the Cannon (1.2x apart).
+- **A support mast's boost grew with its level by a constant in code** (`Tower.SupportLevelGrowth`).
+- **Tower levels changed damage, rate and reach at once**, and level 3 had two art paths (A/B) that no data used.
+- Not ad hoc, checked: splash caps, homing, retargeting, fuse and slow are per-tower data with one code path each; the
+  armour pool itself (`Health.TakeDamage`) is one rule for all.
+
+### 2. What was built
+
+- **`CombatRules`** (`Assets/_Project/Scripts/Core/CombatRules.cs`, asset `Data/Balance/CombatRules.asset`, generator
+  `ProjectGenerator.Damage.cs`): the table damage type x (armour, air), named exceptions with a reason (one: the Flak on
+  armour 0.5), trait thresholds, the reference fight and margin per trait, the health ladder, the helper horizon, the
+  grace windows. `DamageProfile` is what a weapon gets from it; `ProfileCache` keeps a shot from looking it up.
+- **Every weapon reads the table**: `TowerDefinition`, `HeroWeaponDefinition`, `HeroAbilityDefinition`, `DroneDefinition`,
+  `PathObjectDefinition` hold a damage type and the rules; their factor fields are gone. **`Hits.Deal`** is the one place
+  a hit lands (the projectile, the hero, the shockwave and the path objects all call it) and takes the air share on the
+  creature hit.
+- **Traits** (`EnemyTraits`, from a creature's numbers) and **roles** (`TowerRole`, `TowerDefinition.Roles` and
+  `RoleLine`): light fire, splash, anti-armour, anti-air, control, booster, helper.
+- **Named steps**: `TowerLevel.StepName` and `Step` (`TowerStep`: damage, fire rate, range, slow, support, refit);
+  `TowerDefinition.StepProblem()` refuses a step that changes two things; the generator types a step as its name and the
+  damage per second after it (`Levels`, `Harder`, `Faster`, `Further`, `Colder`, `Stronger`, `Refit`). The tower menu shows
+  "Next: Faster cycling: shots/s 2.9 > 6.0" (`TowerStepText`).
+- **The A/B paths are cut**: `TowerArtPath` deleted, a tower art has one look per level, the seven path-B tier assets
+  removed from the data (the T3B models stay in `Art/Models/Blender`, unreferenced), the importer list no longer names them.
+- **The role matrix and the checks**: `RoleMatrix`, `RoleChecks`, `GraceWindows` (Editor), `CombatRulesTests` (17 tests).
+- **Pipeline**: `balance_pipeline.sh roles` and `grace` (the latter in `all`).
+- **Model**: the hero's blaster and the attack drone take their air share on paper too (`HeroStats.GunAirFactor`,
+  `DroneStats.AirFactor`, in the input hash).
+
+### 3. Remco's two decisions of today, built
+
+- **Blade 0.5 and Flak 0.5 on armour.** The blade is its type's row; the Flak is the table's one named exception.
+- **The blade's aura by absolute tier.** Orange from blade damage tier 5 of 10 (a calmer aura, strength 0.6), red at
+  tier 10 only; tier 4, the top of Crystal Plains, shows nothing. Thresholds, colours and strength are data
+  (`HeroGearArtDefinition._bladeStages`, `BladeAuraStage`); `HeroGear.BladeTier` replaces `BladeAtTop`.
+  `Round66Tests.Blade_BurnsOrangeHalfway_AndRedOnlyAtTheLastTier` covers every tier. No still of the orange blade: the
+  probe at tier 5 reported the aura present, but the three captures caught Spencer with the blade away.
+
+### 4. The worker clones are silent
+
+Remco heard the hidden workers play the game. Every clone sync now sets `m_DisableAudio: 1` in the clone's own
+`AudioManager.asset` (`workers.sh`, `r34b_solve_worker.sh`, `r62_variant_worker.sh`) and the probe mutes the listener in batch mode. The EditMode clone script keeps audio on: an EditMode run plays nothing and the audio tests need it. The project's own setting is untouched.
+The curator had stopped the first measure; it was restarted after the change (nothing had been merged from the stopped run).
+
+### 5. Verification
+
+- Compile: 0 errors, no new warnings.
+- EditMode on w6, whole suite: **987 / 934 passed / 0 failed / 53 skipped** (968 / 915 / 53 before; 19 new tests). The full run on the clone showed 932 with the two `AudioTests` failing because that run had audio disabled in the clone; with audio left on for the EditMode clone (section 4 applies to the PlayMode workers only) both pass.
+- Play: the tower menu on Landing Site (`r65_shots.sh`), console 0 errors and 0 warnings; stills
+  `ArtSource/Previews/QA/r67_menu_gun_1080.png` and `_720.png` (the info line reads "Next: Faster cycling: shots/s 2.9 >
+  6.0" at both sizes). The blade run at tier 5: console clean.
+- Pipeline: the yardstick twice (432 runs each, before and after the solve), 297 replays, and the second pass of four cells, all on the clones, 0 probe errors; the calibration is current
+  (inputs 5fea0658); README 24 of 24.
+
+### 6. Results in short (tables in Docs/BALANCE.md "Round 67")
+
+- **Roles hold** at level 1, level 3 and level 3 with every permanent upgrade, and no helper replaces a role.
+- **All 24 cells have a plan that wins on most seeds**; the best plan wins 3/3 in 22 (Landing Site Hard and Shard Ridge
+  Hard 2/3). Four cells needed a second pass (one builder step, two scales by hand).
+- **Grace windows, as played**: 94 rows, 56 in time, 1 early, 29 late, 8 not judged. Air is close to the proposed window;
+  armour is not (a Gun Turret row wins Landing Site and Glass Meadows Easy with Cragbacks in it, and holds 9 to 10 waves
+  on Shard Ridge).
+- **The Cannon row still wins Landing Site Hard and Psycho 3/3.** By the rules it is on-role for everything that level
+  sends (armour, and a queue at a gate is a mob).
+- Worse than before in play: the creative bot on Quartz Flats Medium (3/3 -> 1/3) and Hard (2/3 -> 0/3) and Fault Line
+  Medium (3/3 -> 1/3); fewer of the searched plans win in several Psycho cells (3 of 5 where it was 5 of 5).
+
+### Open decisions for Remco
+
+1. **Tesla and Storm Rifle on armour: 0.2 (built) or your 0.5 of 2026-11-09.** At 0.5 the Tesla is 1.2x behind the Cannon
+   per coin on armoured troops, so the "at least twice" rule cannot hold with it. Back to 0.5 is one number in
+   `ProjectGenerator.Damage.cs`; the armour margin would then need a named exception for arcs. Neither tower is in
+   Crystal Plains 1 to 6, so no level moves either way.
+2. **The air column** is new for everything but the Gun Turret: Railgun 0.5, Storm Rifle 0.4, Cryo and Cryo Beam 0.2
+   (their slow lands in full), base turret, Spencer's blaster and attack drone 0.2. The last three are in the levels now.
+3. **The upgrade step names and stats** (Docs/COMBAT_RULES.md section 5): yes or no per tower. Known trade: reach no longer
+   grows with the stars. A third step for reach ("Extended optics") would need a fourth level and star.
+   "Armour-piercing rounds" (a step on the armour share) is not built: the model carries the armour share per tower, not
+   per level.
+4. **The grace window**: Easy 2, Medium 1, Hard 1, Psycho 0 waves, then lost within 4 / 4 / 3 / 3. Data.
+5. **Gun Turret and Laser do the same job per coin.** Should the Laser get a job of its own (for example a beam that
+   grows on a held target: the tough-body gun)?
+6. **The Cannon's splash is worth 1.3x over light fire on a soft mob and nothing at level 3**; its edge is armour.
+   Options: four per shell, a wider blast, or leave it as the armour gun.
+7. **The Railgun is three times worse per coin than the Cannon on armoured troops.** It needs either a big armoured
+   body in the levels or a stronger slug.
+8. **The Cannon row on Landing Site**: the rules say a creature of a trait the Cannon is off-role for (one big soft body,
+   or flyers on Hard and Psycho) is what breaks it. Level content, for the level-balance round.
+9. **Armour does not force the counter yet** in most cells (grace table): more plated troops per wave is the level
+   layer's first job.
+10. **A gate and the base turret keep refits** (health and gun in one step): they are structures, not towers.
+
+### Not done
+
+- No still of the orange or red blade lit.
+- The level layer was measured, not tuned: the 29 late rows stand.
+- `Tools/BalanceLab` (the .NET console copy of the model) was not touched; it does not read the rules asset.
+- Old round scripts that wrote the removed factor fields (`ApplyRound61.cs`) were left as they are; they no longer run.
+- The impact baseline (`snapshot`) was not retaken; no finale probe (no continent boss, no finale rule changed; the
+  continent bosses meet the same armour and air shares from the towers of Crystal Plains 1 to 6 as before, except the
+  hero's blaster and the base turret in the air).

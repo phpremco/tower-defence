@@ -110,9 +110,8 @@ namespace Game.Levels
                 Id = tower.Id,
                 Targets = (int)tower.Targets,
                 Splash = tower.SplashRadius,
-                GroundFactor = tower.GroundDamageFactor,
-                AirFactor = tower.AirDamageFactor,
-                ArmourFactor = tower.ArmourFactor,
+                AirFactor = tower.Profile.Air,
+                ArmourFactor = tower.Profile.Armour,
                 SplashTargets = tower.SplashTargets,
                 SellRefund = tower.SellRefundFraction,
                 IsSupport = tower.IsSupport,
@@ -337,7 +336,8 @@ namespace Game.Levels
                     Cost = drone.Cost,
                     Dps = drone.FireInterval > 0f ? drone.Damage / drone.FireInterval : 0f,
                     Targets = (int)drone.Targets,
-                    ArmourFactor = drone.ArmourFactor,
+                    ArmourFactor = drone.Profile.Armour,
+                    AirFactor = drone.Profile.Air,
                     RepairPerSecond = drone.RepairPerSecond,
                 });
             }
@@ -461,8 +461,9 @@ namespace Game.Levels
                     GuardShare = level.Hero.GuardShare,
                     Blocks = !level.Hero.Flies,
                     ReviveSeconds = level.Hero.ReviveSeconds,
-                    BladeArmourFactor = level.Hero.Weapon.ArmourFactor,
-                    GunArmourFactor = level.Hero.RangedWeapon != null ? level.Hero.RangedWeapon.ArmourFactor : 1f,
+                    BladeArmourFactor = level.Hero.Weapon.Profile.Armour,
+                    GunArmourFactor = level.Hero.RangedWeapon != null ? level.Hero.RangedWeapon.Profile.Armour : 1f,
+                    GunAirFactor = level.Hero.RangedWeapon != null ? level.Hero.RangedWeapon.Profile.Air : 1f,
                     RegenPerSecond = level.Hero.RegenPerSecond,
                     RegenDelaySeconds = level.Hero.RegenDelaySeconds,
                 };
@@ -473,7 +474,7 @@ namespace Game.Levels
                     {
                         model.Hero.PulseDamage = ability.Damage;
                         model.Hero.PulseCooldown = ability.Cooldown;
-                        model.Hero.PulseArmourFactor = ability.ArmourFactor;
+                        model.Hero.PulseArmourFactor = ability.Profile.Armour;
                     }
                 }
                 foreach (Game.Hero.HeroPerkDefinition perk in level.Hero.Perks)

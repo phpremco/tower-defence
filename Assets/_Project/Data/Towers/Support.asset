@@ -22,13 +22,19 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: 
+    Step: 0
   - Cost: 140
     Damage: 0
-    Range: 3.5
+    Range: 4
     FireInterval: 1
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Extended relay
+    Step: 3
   - Cost: 200
     Damage: 0
     Range: 4
@@ -36,8 +42,18 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 2
+    StepName: Stronger signal
+    Step: 5
   _projectileSpeed: 1
   _splashRadius: 0
+  _splashTargets: 0
+  _damageType: 0
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
+  _roles: 06000000i
+  _roleLine: 'Booster: the guns around it reach further and fire faster. It fires nothing itself.'
+  _retargetRadius: 0
+  _homing: 1
   _fuseRadius: 0
   _maxHealth: 140
   _sellRefundFraction: 0.7
@@ -54,5 +70,7 @@ MonoBehaviour:
   _color: {r: 1, g: 0.74, b: 0.2, a: 1}
   _shape: 7
   _projectileStyle: 0
+  _beamLockSeconds: 0.35
+  _beamSweepSeconds: 0
   _art: {fileID: 11400000, guid: 29e7d193ca8bbb34aaccc18907940eb7, type: 2}
   _gateArt: {fileID: 0}

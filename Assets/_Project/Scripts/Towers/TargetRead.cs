@@ -37,10 +37,9 @@ namespace Game.Towers
             bool air = (tower.Targets & TargetLayers.Air) != 0;
             if (ground && air)
             {
-                bool airWeak = tower.AirDamageFactor <= WeakShare;
-                bool groundWeak = tower.GroundDamageFactor <= WeakShare;
-                // Weak on both sides is simply a weak gun, not a lopsided one.
-                return airWeak == groundWeak ? TargetReadKind.GroundAndAir : airWeak ? TargetReadKind.AirWeak : TargetReadKind.GroundWeak;
+                // The ground takes every hit in full; the sky takes the share the combat rules give the tower's damage type.
+                // A control tower is bought for its slow, which lands on a flyer as on a walker: its token damage says nothing.
+                return tower.Role != TowerRole.Control && tower.Profile.Air <= WeakShare ? TargetReadKind.AirWeak : TargetReadKind.GroundAndAir;
             }
 
             return air ? TargetReadKind.AirOnly : ground ? TargetReadKind.GroundOnly : TargetReadKind.None;

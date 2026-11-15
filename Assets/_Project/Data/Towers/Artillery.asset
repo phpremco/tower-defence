@@ -22,27 +22,36 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: 
+    Step: 0
   - Cost: 220
-    Damage: 130
-    Range: 5.5
-    FireInterval: 1.4
+    Damage: 148.57144
+    Range: 5.1
+    FireInterval: 1.6
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Heavier shells
+    Step: 1
   - Cost: 320
-    Damage: 220
-    Range: 5.9
-    FireInterval: 1.2
+    Damage: 148.57144
+    Range: 5.1
+    FireInterval: 0.8103897
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Autoloader
+    Step: 2
   _projectileSpeed: 8
   _splashRadius: 1.8
   _splashTargets: 0
-  _groundDamageFactor: 1
-  _airDamageFactor: 1
   _damageType: 0
-  _armourFactor: 1
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
+  _roles: 020000000300000004000000i
+  _roleLine: 'Cannon and Flak in one: a big blast for groups and armour that also bursts among flyers.'
   _retargetRadius: 0
   _homing: 1
   _fuseRadius: 0

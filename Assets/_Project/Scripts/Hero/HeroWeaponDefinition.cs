@@ -24,11 +24,13 @@ namespace Game.Hero
 
         [SerializeField] private TargetLayers _targets = TargetLayers.Ground;
 
-        [Tooltip("What the damage is made of: a blade or a bullet, both reduced by armour (round 64).")]
+        [Tooltip("What the damage is made of: a blade or a bullet, both reduced by armour (round 64); the rules say by how much.")]
         [SerializeField] private DamageType _damageType = DamageType.Blade;
 
-        [Tooltip("Share of a hit that works on a creature's armour while it has any, from the sheet's table per damage type: the blade cuts it at half, the blaster only chips it.")]
-        [SerializeField] [Range(0.05f, 2f)] private float _armourFactor = 1f;
+        [Tooltip("The one rule table every damage source reads (Data/Balance/CombatRules): what a hit is worth against armour and in the air follows from the damage type there, nothing is typed here (round 67).")]
+        [SerializeField] private CombatRules _rules;
+
+        [System.NonSerialized] private ProfileCache _profileCache;
 
         /// <summary>Shots before the weapon must reload; zero means it never reloads.</summary>
         [SerializeField] [Min(0)] private int _magazine;
@@ -52,11 +54,14 @@ namespace Game.Hero
         public float AttackInterval => _attackInterval;
         public TargetLayers Targets => _targets;
         public DamageType DamageType => _damageType;
-        public float ArmourFactor => _armourFactor;
+        /// <summary>What a hit is worth against armour and in the air, from the rule table (and its named exceptions).</summary>
+        public DamageProfile Profile => _profileCache.Get(_rules, _damageType, this);
         public int Magazine => _magazine;
         public float ReloadSeconds => _reloadSeconds;
         public float DrawSeconds => _drawSeconds;
         public float StayDrawnSeconds => _stayDrawnSeconds;
         public Color Color => _color;
+
+        private void OnValidate() => _profileCache.Clear();
     }
 }

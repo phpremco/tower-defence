@@ -22,27 +22,36 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: 
+    Step: 0
   - Cost: 95
-    Damage: 48
-    Range: 4.3
-    FireInterval: 1.35
+    Damage: 56.888885
+    Range: 4
+    FireInterval: 1.6
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Heavier shells
+    Step: 1
   - Cost: 155
-    Damage: 85
-    Range: 4.6
-    FireInterval: 1.15
+    Damage: 118.26088
+    Range: 4
+    FireInterval: 1.6
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: High-explosive filler
+    Step: 1
   _projectileSpeed: 5
   _splashRadius: 1.2
   _splashTargets: 3
-  _groundDamageFactor: 1
-  _airDamageFactor: 1
   _damageType: 0
-  _armourFactor: 1
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
+  _roles: 0200000003000000i
+  _roleLine: 'Blast: breaks bunched groups and strips armour. Cannot aim up, and its shell lands where a runner was.'
   _retargetRadius: 0
   _homing: 0
   _fuseRadius: 0

@@ -2,7 +2,8 @@
 # The balance pipeline, chained (round 22; Docs/BALANCE.md "The balance pipeline"). Run from the project root with the
 # editor open (Unity CLI, Pipeline package). Every stage reads the previous stage's files and the game's definitions;
 # nothing is typed in. Stages: measure (PlayMode yardstick) -> fit (EditMode) -> apply (asset) -> solve (waves) ->
-# search (stage A, EditMode) -> replay (stage B, PlayMode) -> acceptance (EditMode). Use "all" or any list of stages.
+# search (stage A, EditMode) -> replay (stage B, PlayMode) -> acceptance (EditMode) -> grace (round 67: rows without the
+# counter tower against the rules' grace window, from the yardstick). Use "all" or any list of stages.
 #
 #   Tools/PlayTest/balance_pipeline.sh all
 #   Tools/PlayTest/balance_pipeline.sh search replay acceptance
@@ -77,7 +78,7 @@ run_script() {
 
 for stage in "$@"; do
   case "$stage" in
-    all) exec "$0" $([ "$SERIAL" = 1 ] && echo --serial) measure fit apply solve search replay acceptance readme ;;
+    all) exec "$0" $([ "$SERIAL" = 1 ] && echo --serial) measure fit apply solve search replay acceptance grace readme ;;
     measure)    echo "== measure: yardstick (obvious family, seeds)"; playmode_stage measure Measure_Yardstick_ObviousFamily ;;
     stepcheck)  echo "== step check"; playmode_test Measure_StepCheck_FineAgainstUsual ;;
     fit)        echo "== fit: calibration from the records"; editmode_test CalibrationFitTests; sed -n '1,40p' Tools/PlayTest/calibration.txt ;;
@@ -89,6 +90,8 @@ for stage in "$@"; do
     replay)     echo "== replay: searched plans (stage B)"; playmode_stage replay Replay_SearchedPlans_EveryCell ;;
     acceptance) echo "== acceptance per difficulty"; editmode_test BalanceAcceptanceTests; cat Tools/PlayTest/acceptance.txt ;;
     build)      echo "== build: lever from the stage-B verdicts, then solve (round 22d)"; run_script Tools/PlayTest/Scripts/BuildFromVerdicts.cs BuildFromVerdicts.Run 900000 960; cat Tools/PlayTest/builder.txt ;;
+    grace)      echo "== grace: rows without the counter tower after a trait appears (round 67)"; run_script Tools/PlayTest/Scripts/GraceReport.cs GraceReport.Run 120000 180; cat Tools/PlayTest/grace_windows.txt ;;
+    roles)      echo "== roles: the role matrix from the data (round 67)"; run_script Tools/PlayTest/Scripts/RoleMatrixReport.cs RoleMatrixReport.Run 120000 180 ;;
     readme)     echo "== readme: the plans that won in stage B"; run_script Tools/PlayTest/Scripts/ReadmePlans.cs ReadmePlans.Run 300000 360 ;;
     droneprice) echo "== drone price: the repair drone by the investment rule"; run_script Tools/PlayTest/Scripts/ApplyDronePrice.cs ApplyDronePrice.Run 120000 180 ;;
     finale)     echo "== finale: boss health and shares from the finale probe (round 22f)"; run_script Tools/PlayTest/Scripts/ApplyFinale.cs ApplyFinale.Run 120000 180 ;;

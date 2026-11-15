@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Game.Towers
 {
     /// <summary>
-    /// The imported (Blender) look of one tower type: a model per upgrade level, and for level 3 one per upgrade path,
+    /// The imported (Blender) look of one tower type: a model per upgrade level,
     /// with how the head aims, where shots leave, and the wreck it leaves. A <see cref="TowerDefinition"/> points at
     /// one of these; without it the tower keeps its procedural model. Pure look data: logic never reads it.
     /// </summary>
@@ -15,8 +15,6 @@ namespace Game.Towers
 
         [Header("Looks")]
         [SerializeField] private TowerTierArt[] _tiers = new TowerTierArt[0];
-        [Tooltip("The level-3 look shown while the data has no upgrade paths.")]
-        [SerializeField] private TowerArtPath _defaultPath = TowerArtPath.A;
 
         [Header("Aim and shots")]
         [SerializeField] private TowerAimMode _aim;
@@ -47,46 +45,30 @@ namespace Game.Towers
         public ModelArtDefinition Wreck => _wreck;
         public string Debris => _debris;
         public GameObject Star => _star;
-        public TowerArtPath DefaultPath => _defaultPath;
 
-        /// <summary>The look of a level on the default path.</summary>
-        public ModelArtDefinition ArtFor(int levelIndex) => ArtFor(levelIndex, _defaultPath);
+        /// <summary>How many looks the tower has.</summary>
+        public int TierCount => _tiers.Length;
 
-        /// <summary>
-        /// The look of a level on a path: the tier of that level and path, else its shared tier, else the newest look
-        /// below it.
-        /// </summary>
-        public ModelArtDefinition ArtFor(int levelIndex, TowerArtPath path)
+        /// <summary>The look of a level: the tier of that level, else the newest look below it.</summary>
+        public ModelArtDefinition ArtFor(int levelIndex)
         {
             for (int level = levelIndex; level >= 0; level--)
             {
-                ModelArtDefinition onPath = Find(level, path);
-                if (onPath != null)
+                ModelArtDefinition look = Find(level);
+                if (look != null)
                 {
-                    return onPath;
-                }
-
-                ModelArtDefinition shared = Find(level, TowerArtPath.Shared);
-                if (shared != null)
-                {
-                    return shared;
-                }
-
-                ModelArtDefinition fallback = Find(level, _defaultPath);
-                if (fallback != null)
-                {
-                    return fallback;
+                    return look;
                 }
             }
 
             return null;
         }
 
-        private ModelArtDefinition Find(int level, TowerArtPath path)
+        private ModelArtDefinition Find(int level)
         {
             foreach (TowerTierArt tier in _tiers)
             {
-                if (tier != null && tier.Art != null && tier.LevelIndex == level && tier.Path == path)
+                if (tier != null && tier.Art != null && tier.LevelIndex == level)
                 {
                     return tier.Art;
                 }

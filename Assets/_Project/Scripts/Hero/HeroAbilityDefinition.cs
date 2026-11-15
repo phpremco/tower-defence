@@ -32,8 +32,10 @@ namespace Game.Hero
         [Tooltip("What the damage is made of; a shockwave is a blast, so armour does not reduce it (round 64).")]
         [SerializeField] private DamageType _damageType = DamageType.Explosive;
 
-        [Tooltip("Share of the damage that works on a creature's armour while it has any (a shockwave is a blast: one).")]
-        [SerializeField] [Range(0.05f, 2f)] private float _armourFactor = 1f;
+        [Tooltip("The one rule table every damage source reads (Data/Balance/CombatRules): what a hit is worth against armour and in the air follows from the damage type there, nothing is typed here (round 67).")]
+        [SerializeField] private CombatRules _rules;
+
+        [System.NonSerialized] private ProfileCache _profileCache;
 
         /// <summary>The perk the hero must have unlocked before this ability shows; null means it is always there.</summary>
         [SerializeField] private HeroPerkDefinition _requiresPerk;
@@ -56,7 +58,8 @@ namespace Game.Hero
         public float Fraction => _fraction;
         public TargetLayers Targets => _targets;
         public DamageType DamageType => _damageType;
-        public float ArmourFactor => _armourFactor;
+        /// <summary>What a hit is worth against armour and in the air, from the rule table (and its named exceptions).</summary>
+        public DamageProfile Profile => _profileCache.Get(_rules, _damageType, this);
         public HeroPerkDefinition RequiresPerk => _requiresPerk;
         public Sprite Icon => _icon;
         public Color Tint => _tint;
@@ -80,6 +83,7 @@ namespace Game.Hero
 
         private void OnValidate()
         {
+            _profileCache.Clear();
             string problem = Problem();
             if (problem != null)
             {

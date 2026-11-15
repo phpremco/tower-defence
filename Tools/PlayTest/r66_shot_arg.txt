@@ -1,2 +1,2 @@
-hero 1 hud  
-Logs/r66/p5_fight_z1.png
+hero 3 clean  
+C:/Users/remco/Tower defense/Logs/r67/stills/r67orange_b3.png

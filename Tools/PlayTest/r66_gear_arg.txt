@@ -1,1 +1,1 @@
-Hero_Armour=4 Hero_RepairDrone=2 Hero_Damage=4
+Hero_Damage=5

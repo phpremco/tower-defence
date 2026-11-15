@@ -489,7 +489,7 @@ namespace Game.Hero
             }
 
             // Without a tower as source his blow counts as a blast, as it did before: it still reaches a hidden boss in part.
-            Hits.Deal(target, weapon.Damage * _damageMultiplier, weapon.ArmourFactor);
+            Hits.Deal(target, weapon.Damage * _damageMultiplier, weapon.Profile);
             Struck?.Invoke(target.Position, weapon);
             _strikeCooldown = Cadence.Rearm(_strikeCooldown, ranged ? RangedInterval : weapon.AttackInterval);
             _drawnRemaining = weapon.StayDrawnSeconds;

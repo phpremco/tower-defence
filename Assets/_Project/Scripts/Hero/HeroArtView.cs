@@ -393,9 +393,11 @@ namespace Game.Hero
                 Hide(_hilt, _art.HiddenParts);
                 if (_art.SwordBlade != null)
                 {
-                    // At its top tier the blade burns in another colour inside an aura (round 66); not an upgrade of its own.
-                    bool mastered = _hero.Gear.BladeAtTop && _art.Gear != null;
-                    _bladeColour = mastered ? _art.Gear.MasterBladeColor : definition.Weapon.Color;
+                    // Halfway up its damage upgrade the blade burns orange in a calm aura, at the last tier red (the gear art's
+                    // stages; round 67: absolute tiers, not the top of what the continent opens). Not an upgrade of its own.
+                    BladeAuraStage stage = default;
+                    bool mastered = _art.Gear != null && _art.Gear.TryBladeStage(_hero.Gear.BladeTier, out stage);
+                    _bladeColour = mastered ? stage.BladeColor : definition.Weapon.Color;
                     _bladeMaterial = GlowDecal.BladeMaterial(_bladeColour * BladeEmission);
                     _blade = ArtModel.Create(_hilt.Root, _art.SwordBlade, _bladeMaterial);
                     Hide(_blade, _art.HiddenParts);
@@ -406,7 +408,7 @@ namespace Game.Hero
 
                     if (mastered)
                     {
-                        _bladeAura = BladeAura.Create(_blade, _art.Gear, transform);
+                        _bladeAura = BladeAura.Create(_blade, _art.Gear, stage, transform);
                     }
 
                     _blade.SetActive(false);

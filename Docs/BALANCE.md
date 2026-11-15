@@ -2291,3 +2291,216 @@ has played with the gear.
 **Later, when Crystal Plains 7-20 exist:** the model's Psycho player will reach the fourth tier there (1650 research
 against 808 for tiers 1-3), so those levels are solved against tier-4 towers. That is the rule working, not a shift of
 the six levels that exist.
+
+## Round 67: the combat rules as a foundation, roles per coin, named upgrade steps, grace windows (2026-11-15)
+
+Remco: playtests kept finding rule breaks that were then fixed one weapon at a time (round 61: a simple gun killed flyers;
+round 64: Laser and attack drone melted armour). He expected one set of general combat rules that every damage source
+follows, with only named exceptions, and level balance built on top of it. This round is that foundation. The page for
+Remco is **Docs/COMBAT_RULES.md** (the table, the roles, the matrix, the steps); this section is the numbers behind it and
+what the pipeline did. Commands: Docs/COMMANDS.md "Round 67".
+
+### What the rules are, in the model's terms
+
+- `CombatRules.asset` (generator: `ProjectGenerator.Damage.cs`): per damage type the share on armour and the share in the
+  air, the named exceptions, the trait thresholds, a reference fight and a margin per trait, the grace windows.
+- Every weapon definition has its damage type and a reference to the rules; `Profile` (armour, air) is read from the table.
+  `_armourFactor`, `_airDamageFactor` and `_groundDamageFactor` are gone from every asset. `BalanceSheet.ArmourFactorOf` and
+  `ProjectGenerator.GunAirShare` are gone with them.
+- Every hit goes through `Hits.Deal(target, damage, profile)`: the air share is taken on the creature hit, the armour share
+  goes on to the armour pool. The model reads the same profile (`TowerStats.AirFactor` / `ArmourFactor`, and new:
+  `HeroStats.GunAirFactor`, `DroneStats.AirFactor`, both in the input hash).
+
+### What changed in play (numbers)
+
+| Source | Before | Now |
+| --- | --- | --- |
+| Base turret, Spencer's blaster, attack drone on flyers | full damage | 0.2 (bullets, like the Gun Turret) |
+| Cryo, Cryo Beam on flyers | full | 0.2 (beam); the slow lands in full |
+| Storm Rifle on flyers | full | 0.4 (arc) |
+| Railgun on flyers | full | 0.5 (piercing) |
+| Flak on armour | 1 | 0.5 (named exception, Remco 2026-11-15) |
+| Tesla, Storm Rifle on armour | 0.5 | 0.2 (see open decisions: Remco's 2026-11-09 number was 0.5) |
+| A blast that catches a flyer and a walker | both at the share of the creature aimed at | each at its own share |
+| Tower levels | damage, rate and reach all grew per level | one named thing per step; damage per second per level unchanged, reach no longer grows (it grew 0.3 a level) |
+| Cannon level 3 | 85 damage every 1.15 s | 118.3 damage every 1.6 s (both steps are its shell) |
+
+Blade 0.5, Bullet and Beam 0.2 on armour, Explosive 1, Piercing 1.5: unchanged.
+
+### The role matrix and what it showed
+
+`Tools/PlayTest/r67_role_matrix.txt` (seconds for 100 coins to clear a trait's reference group; `RoleMatrix`, played through
+the game's own `Health` at four health scales). The rule the tests hold: the best tower made for a trait beats every tower
+not made for it by the trait's margin, at level 1, level 3, and level 3 with all ten permanent tiers against creatures six
+times as tough. With the table as it now is the roles hold at all three moments and no helper replaces a role.
+
+What had to move to get there, and why:
+
+- **Tesla on armour.** At 0.5 a Tesla cleared three Cragbacks in 16.8 coin-seconds against the Cannon's 14.4: 1.2x, not 2x
+  (its chain takes all three and it has 1.5 times the Cannon's damage per coin). At 0.25 it was 1.84x at level 3; at 0.2,
+  the light-fire share, 2.6x / 2.2x / 2.4x at the three moments.
+- **Storm Rifle in the air.** At 0.5 it was 1.88x behind the Flak; at 0.4, 2.2x.
+- **Railgun in the air.** At full damage it was 0.8x the Flak per coin on one flyer; at 0.5 it is 5x behind on a wing.
+- **Swarm is a stream, mob is a queue.** With a swarm bunched inside one blast, every splash tower beats light fire (Tesla
+  2.3x faster than the Gun Turret). Remco's own split is "many enemies: rate of fire; many close together: Cannon", so the
+  swarm reference is a stream a blast apart and the mob reference a queue at a gate.
+- **The Cannon's second step.** As a rate step ("Autoloader") the level-3 Cannon was a better swarm gun than as a damage
+  step (16.2 against 33.6 coin-seconds on the swarm). Both steps are its shell now.
+
+What the matrix shows and the round did **not** change (design choices, COMBAT_RULES.md section 8): Gun Turret and Laser
+do the same job per coin; the Cannon's splash is worth 1.3x over light fire on a soft mob at level 1 and nothing at level
+3; the Railgun is three times worse per coin than the Cannon on armoured troops.
+
+### The pipeline
+
+Order: ApplyRound67 -> measure (432 runs on the stored waves) -> fit (yardstick alone) -> **apply-force** (hold-out 79 % /
+mono 89 % / Spearman 0.80, under the 90 % bar as in every round since 62) -> solve -> measure again (the yardstick on the
+new waves) -> search (six clones) -> replay (297 runs) -> acceptance -> grace -> one builder step and a second pass on four
+cells.
+
+**Calibration** (inputs 5fea0658): Cannon 0.797 -> **0.842**, Laser 0.701 -> **0.667**, Gun Turret 0.808 -> **0.876**, Flak
+1.039 -> **1.010**, route fire 4.0, queue guard 0.30, siege 1.168 -> **1.239**. The Gun Turret and the Cannon realise more of
+their paper than before: the paper now counts their shorter reach at levels 2 and 3, and what they lose in reach they
+lose on paper too.
+
+**Paper** (total health of a cell's waves; human surplus against its curve):
+
+| Cell | Round 65 | Round 67 | x | Surplus (curve) |
+| --- | --- | --- | --- | --- |
+| C1_01 Easy | 7360 | 8086 | 1.10 | 1.61x (1.61x) |
+| C1_01 Medium | 9913 | 10570 | 1.07 | 1.52x (1.52x) |
+| C1_01 Hard | 23997 | 24721 | 1.03 | 0.95x (0.95x) |
+| C1_01 Psycho | 52933 | 46093 (first solve 50134) | 0.87 | 1.14x (1.14x) |
+| C1_02 Easy | 7679 | 8535 | 1.11 | 2.10x (2.10x) |
+| C1_02 Medium | 29643 | 30164 | 1.02 | 0.99x (0.99x) |
+| C1_02 Hard | 29667 | 30377 | 1.02 | 0.94x (0.94x) |
+| C1_02 Psycho | 73084 | 71045 (first solve 70388) | 0.97 | 1.04x (1.04x) |
+| C1_03 Easy | 6074 | 8247 | 1.36 | 1.70x (1.70x) |
+| C1_03 Medium | 11635 | 14365 | 1.23 | 1.47x (1.47x) |
+| C1_03 Hard | 14253 | 15757 | 1.11 | 1.40x (1.40x) |
+| C1_03 Psycho | 45541 | 45091 | 0.99 | 1.35x (1.35x) |
+| C1_04 Easy | 4262 | 5651 | 1.33 | 1.54x (1.54x) |
+| C1_04 Medium | 15693 | 13321 (first solve 15028) | 0.85 | 1.10x (1.10x) |
+| C1_04 Hard | 16666 | 20791 | 1.25 | 1.20x (1.20x) |
+| C1_04 Psycho | 65625 | 62228 | 0.95 | 1.32x (1.33x) |
+| C1_05 Easy | 20435 | 22465 | 1.10 | 2.00x (2.00x) |
+| C1_05 Medium | 34350 | 36998 | 1.08 | 1.43x (1.43x) |
+| C1_05 Hard | 65201 | 63330 | 0.97 | 1.36x (1.36x) |
+| C1_05 Psycho | 122022 | 105503 (first solve 126486) | 0.86 | 1.69x (1.68x) |
+| C1_06 Easy | 9578 | 11760 | 1.23 | 1.97x (1.97x) |
+| C1_06 Medium | 25376 | 29034 | 1.14 | 1.23x (1.23x) |
+| C1_06 Hard | 43692 | 44301 | 1.01 | 1.34x (1.34x) |
+| C1_06 Psycho | 104910 | 98422 | 0.94 | 1.43x (1.43x) |
+
+The waves grew where the solve had been holding them down for the weaker fit (Easy and Medium, up to 1.36x on Shard Ridge
+Easy) and shrank a little on Psycho. Every cell is on its curve.
+
+**Play** (best replayed plan: wins, stars, base left; plans winning on most seeds; the rows; the creative bot):
+
+| Cell | Best plan before | Best plan after | Plans winning 2+ before -> after | Gun row | Cannon row | Laser row | Creative bot |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C1_01 Easy | 3/3, 3.0, 600 | 3/3, 3.0, 600 | 4/4 -> 5/5 | 3/3 | 3/3 | - | 3/3 |
+| C1_01 Medium | 3/3, 3.0, 600 | 3/3, 3.0, 600 | 3/3 -> 4/4 | 3/3 | 3/3 | - | 3/3 |
+| C1_01 Hard | 2/3, 3.0, 700 | 2/3, 3.0, 700 | 5/5 -> 4/5 | 0/3 (w12) | 3/3 | 0/3 (w10) | 1/3 -> 3/3 |
+| C1_01 Psycho | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 -> 3/5 | 0/3 (w12) | 3/3 | 0/3 (w11) | 3/3 |
+| C1_02 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 3/3 | 3/3 | 3/3 | 3/3 |
+| C1_02 Medium | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w10) | 3/3 -> 2/3 | 0/3 (w10) | 3/3 |
+| C1_02 Hard | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 3/3 | 0/3 (w10) | 1/3 | 0/3 (w10) | 3/3 |
+| C1_02 Psycho | 3/3, 3.0, 800 | 3/3, 3.0, 800 | 2/3 -> 2/4 | 0/3 (w11) -> 0/3 (w10) | 1/3 -> 0/3 (w11) | 0/3 (w10) | 0/3 (w11) -> 0/3 (w10) |
+| C1_03 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w14) | 0/3 (w14) | 0/3 (w14) | 3/3 |
+| C1_03 Medium | 3/3, 3.0, 700 | 3/3, 2.7, 614 | 5/5 -> 3/5 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 |
+| C1_03 Hard | 3/3, 3.0, 700 | 2/3, 3.0, 700 | 5/5 -> 1/1 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 |
+| C1_03 Psycho | 3/3, 2.7, 756 | 3/3, 3.0, 789 | 2/3 -> 3/3 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 2/3 -> 3/3 |
+| C1_04 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w13) | 0/3 (w13) -> 0/3 (w12) | 0/3 (w13) -> 0/3 (w12) | 3/3 |
+| C1_04 Medium | 3/3, 2.7, 666 | 3/3, 3.0, 677 | 3/3 -> 2/5 | 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 3/3 -> 1/3 |
+| C1_04 Hard | 3/3, 3.0, 800 | 3/3, 2.3, 665 | 5/5 -> 4/5 | 0/3 (w5) | 0/3 (w5) | 0/3 (w5) | 3/3 |
+| C1_04 Psycho | 3/3, 2.3, 630 | 3/3, 2.3, 653 | 5/5 | 0/3 (w6) -> 0/3 (w5) | 0/3 (w5) | 0/3 (w5) | 3/3 |
+| C1_05 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w11) | 0/3 (w11) | 0/3 (w11) | 3/3 |
+| C1_05 Medium | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w9) | 0/3 (w9) | 0/3 (w9) | 3/3 -> 1/3 |
+| C1_05 Hard | 3/3, 3.0, 787 | 3/3, 2.7, 673 | 3/3 -> 3/5 | 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 2/3 -> 0/3 (w17) |
+| C1_05 Psycho | 3/3, 3.0, 900 | 3/3, 2.3, 724 | 5/5 -> 3/5 | 0/3 (w9) -> 0/3 (w7) | 0/3 (w9) -> 0/3 (w7) | 0/3 (w9) -> 0/3 (w7) | 0/3 (w17) -> 2/3 |
+| C1_06 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w12) | 0/3 (w12) -> 0/3 (w11) | 0/3 (w12) -> 0/3 (w11) | 3/3 |
+| C1_06 Medium | 3/3, 3.0, 700 | 3/3, 2.7, 602 | 5/5 -> 3/3 | 0/3 (w12) | 0/3 (w11) | 0/3 (w11) | 3/3 |
+| C1_06 Hard | 3/3, 1.7, 501 | 3/3, 2.3, 693 | 2/3 -> 1/1 | 0/3 (w10) | 0/3 (w10) | 0/3 (w10) | 3/3 |
+| C1_06 Psycho | 3/3, 3.0, 884 | 3/3, 2.7, 834 | 5/5 -> 3/5 | 0/3 (w10) -> 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 2/3 -> 1/3 |
+
+**The second pass.** After the first replay four cells had no plan that won on most seeds: Landing Site Psycho (best plan
+1/3), Glass Meadows Psycho (0/3), Fault Line Medium (1/3) and Quartz Flats Psycho (1/3). The builder
+(`balance_pipeline.sh build`) took Fault Line Medium's scale from 1.15 to 1 and gave Glass Meadows Psycho a raid of fast,
+spread runners at wave 3 (its own script lever); it was out of moves on the other two, so their scales were set by hand
+in `wave_tuning.txt`: Landing Site Psycho 0.757 -> 0.7, Quartz Flats Psycho 0.5 -> 0.45. Solve, then measure, search and
+replay of those four cells (`r62_cells_chain.sh 0:3 1:3 3:1 4:3`): all four have a best plan that wins 3/3 (table above).
+Every cell now has a plan that wins on most seeds (README: 24 of 24); the best plan wins 3/3 in 22 cells and 2/3 on
+Landing Site Hard and Shard Ridge Hard. The runner raid also ended the Cannon row on Glass Meadows Psycho (2/3 -> 0/3).
+
+### The Cannon row on Landing Site, with the rules in place
+
+It still wins Hard and Psycho 3/3 (on Glass Meadows the row went from 3/3 to 2/3 on Medium and, with the runner raid, from 1/3 to 0/3 on Psycho). The rules say why, and they say it is
+not a rule break: Landing Site sends Skitters and Cragbacks. A Cragback is armoured and a mob: both are the Cannon's
+roles. A Skitter is a swarm, which is not, but every walker stops at a gate and a queue at a gate is a mob. So on this
+level the Cannon is on-role for everything it meets. The role matrix agrees with the play: nothing on Landing Site is a
+trait the Cannon is bad at.
+
+What the rules say would break it, in the order they suggest:
+
+1. **A creature of a trait the Cannon is off-role for that a gate does not turn into a mob.** Tough and soft (one big
+   body: the Cannon is 1.8x behind light fire per coin; a Shard Crawler or an Oozer pack that outlasts the queue), or
+   airborne (the Cannon cannot aim up) on Hard and Psycho only. This is level content: the next round's work.
+2. **Fast creatures that do not stop** (a Roller that rolls over a low gate): the unguided shell misses them. Needs a
+   mechanic, so a design choice.
+3. **The blast cap or the price**: three per shell is what makes a queue the Cannon's best case. Two per shell, or a
+   dearer Cannon, moves every level that has one.
+
+Not fixed this round: none of the three is clearly right without Remco, and 1 is the level-balance round's.
+
+### Grace windows (the growth layer)
+
+`balance_pipeline.sh grace` -> `Tools/PlayTest/grace_windows.txt`, as played on the solved waves: every yardstick row of one
+tower type that is not made for a trait, from the wave the trait first appears. Proposed window (may hold / must have
+lost within): Easy 2 / 4, Medium 1 / 4, Hard 1 / 3, Psycho 0 / 3.
+
+94 rows: 56 in time, 1 early, 29 late, 8 not judged.
+
+| Cell | Armour first | Gun row held | Laser row held | Air first | Gun / Cannon / Laser row held | Verdict |
+| --- | --- | --- | --- | --- | --- | --- |
+| C1_01 Easy | w7 | all (won) | - | - | - / - / - | late (armoured: Gun Turret) |
+| C1_01 Medium | w7 | all (won) | - | - | - / - / - | late (armoured: Gun Turret) |
+| C1_01 Hard | w7 | 5 | 3 | - | - / - / - | late (armoured: Gun Turret) |
+| C1_01 Psycho | w7 | 5 | 4 | - | - / - / - | late (armoured: Gun Turret; armoured: Laser Turret) |
+| C1_02 Easy | w6 | all (won) | all (won) | - | - / - / - | late (armoured: Gun Turret; armoured: Laser Turret) |
+| C1_02 Medium | w6 | 4 | 4 | - | - / - / - | in time |
+| C1_02 Hard | w6 | 4 | 4 | - | - / - / - | late (armoured: Gun Turret; armoured: Laser Turret) |
+| C1_02 Psycho | w6 | 4 | 4 | - | - / - / - | late (armoured: Gun Turret; armoured: Laser Turret) |
+| C1_03 Easy | w4 | 10 | 10 | w12 | 2 / 2 / 2 | late (armoured: Gun Turret; armoured: Laser Turret) |
+| C1_03 Medium | w4 | 9 | 9 | w11 | 2 / 2 / 2 | late (armoured: Gun Turret; armoured: Laser Turret) |
+| C1_03 Hard | w4 | 9 | 9 | w11 | 2 / 2 / 2 | late (armoured: Gun Turret; armoured: Laser Turret) |
+| C1_03 Psycho | w4 | 9 | 9 | w11 | 2 / 2 / 2 | late (armoured: Gun Turret; armoured: Laser Turret) |
+| C1_04 Easy | w8 | 5 | 4 | w7 | 6 / 5 / 5 | late (airborne: Gun Turret) |
+| C1_04 Medium | w8 | fell before | fell before | w3 | 4 / 4 / 4 | in time |
+| C1_04 Hard | w9 | fell before | fell before | w3 | 2 / 2 / 2 | in time |
+| C1_04 Psycho | w10 | fell before | fell before | w3 | 2 / 2 / 2 | in time |
+| C1_05 Easy | w4 | 7 | 7 | w8 | 3 / 3 / 3 | late (armoured: Gun Turret; armoured: Laser Turret) |
+| C1_05 Medium | w5 | 4 | 4 | w4 | 5 / 5 / 5 | late (airborne: Cannon; airborne: Gun Turret; airborne: Laser Turret) |
+| C1_05 Hard | w5 | 2 | 2 | w4 | 3 / 3 / 3 | in time |
+| C1_05 Psycho | w5 | 2 | 2 | w4 | 3 / 3 / 3 | late (airborne: Cannon; airborne: Gun Turret; airborne: Laser Turret) |
+| C1_06 Easy | w10 | 2 | 1 | w7 | 5 / 4 / 4 | in time, early (armoured: Laser Turret) |
+| C1_06 Medium | w9 | 3 | 2 | w7 | 5 / 4 / 4 | late (airborne: Gun Turret) |
+| C1_06 Hard | w9 | 1 | 1 | w7 | 3 / 3 / 3 | in time |
+| C1_06 Psycho | w9 | fell before | fell before | w5 | 2 / 2 / 2 | in time |
+
+Reading it:
+
+- **Air is close to the window.** A row without a Flak falls 2 to 5 waves after the first flyers in every cell. Late by
+  the window: Fault Line Easy (Gun row 6 waves), Quartz Flats Medium (5) and Psycho (3 where 3 are allowed from wave 4,
+  it fell one wave late), Crysium Vein Medium (Gun row 5).
+- **Armour is not.** On Landing Site and Glass Meadows Easy a Gun Turret row wins the level with Cragbacks in it from
+  wave 6 or 7; on Hard and Psycho it holds 4 to 5 waves; on Shard Ridge it holds 9 to 10 waves on every difficulty. A
+  Cragback is 60 body and 160 armour: one or two in a wave are a small share of its health, so light fire pays five
+  times for a small part of the wave. The armour rule is right per creature; the waves do not carry enough armour for it
+  to force the counter. That is the level layer's first job in the next round (the `plated` lever exists).
+- **A row often falls at the same wave whatever its tower** (Shard Ridge wave 13 or 14 on every difficulty): what ends it
+  is the first big raid over the base, not the trait in the row's column. The table says when a row fell, not why.
+- 8 rows are not judged: the row fell before the trait appeared.
+
+The check is a report, not a test: it says where the level layer does not yet follow the rule, cell by cell. The verdict
+logic is tested (`CombatRulesTests.TheGraceWindow_ShrinksWithTheDifficulty_AndJudgesARow`).

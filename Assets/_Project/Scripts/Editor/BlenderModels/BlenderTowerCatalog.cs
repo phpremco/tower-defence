@@ -50,7 +50,7 @@ namespace Game.Editor
 
         private static List<BlenderTowerEntry> CreateTowers()
         {
-            string[] paths = BlenderTowerEntry.PathTiers;
+            string[] paths = BlenderTowerEntry.StandardTiers;
             string[] plain = BlenderTowerEntry.PlainTiers;
             return new List<BlenderTowerEntry>
             {

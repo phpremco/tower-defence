@@ -18,7 +18,7 @@ namespace Game.Editor
         public const string TowerArtFolder = BlenderArtBuilder.ArtDataFolder + "/Towers";
         private const string TowerDataFolder = "Assets/_Project/Data/Towers";
         private const string FirePrefix = "Fire_";
-        private const string PathBSuffix = "B";
+        private const string CutPathTier = "T3B";
 
         // Below this share of the screen height a tower shows its far LOD: at the play zoom a tower is about 7 %.
         private const float TowerLodScreenHeight = 0.05f;
@@ -40,6 +40,47 @@ namespace Game.Editor
             int assigned = ApplyToTowers(art);
             AssetDatabase.SaveAssets();
             Debug.Log($"Blender towers: {art.Count} tower art definitions, {assigned} towers wear a model.");
+        }
+
+        /// <summary>
+        /// Takes the level-3 path-B looks out of the art data that exists (round 67: the A/B paths were cut): the tier rows
+        /// on every tower art definition and the tier's own art asset. What a fresh build writes; safe to run again.
+        /// </summary>
+        public static string DropCutPathLooks()
+        {
+            int rows = 0;
+            int assets = 0;
+            foreach (string guid in AssetDatabase.FindAssets("t:TowerArtDefinition", new[] { TowerArtFolder }))
+            {
+                var art = AssetDatabase.LoadAssetAtPath<TowerArtDefinition>(AssetDatabase.GUIDToAssetPath(guid));
+                var so = new SerializedObject(art);
+                SerializedProperty tiers = so.FindProperty("_tiers");
+                for (int i = tiers.arraySize - 1; i >= 0; i--)
+                {
+                    if (tiers.GetArrayElementAtIndex(i).FindPropertyRelative("_tier").stringValue == CutPathTier)
+                    {
+                        tiers.DeleteArrayElementAtIndex(i);
+                        rows++;
+                    }
+                }
+
+                so.ApplyModifiedPropertiesWithoutUndo();
+                // The dropped path fields leave the file only when it is written again.
+                EditorUtility.SetDirty(art);
+            }
+
+            foreach (string guid in AssetDatabase.FindAssets("t:ModelArtDefinition", new[] { TowerArtFolder }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (System.IO.Path.GetFileNameWithoutExtension(path).EndsWith("_" + CutPathTier))
+                {
+                    AssetDatabase.DeleteAsset(path);
+                    assets++;
+                }
+            }
+
+            AssetDatabase.SaveAssets();
+            return $"Tower art: {rows} path-B tier rows and {assets} path-B art assets removed.\n";
         }
 
         /// <summary>Syncs the tower exports, then builds every tower row whose tiers are there; returns them by asset.</summary>
@@ -103,7 +144,7 @@ namespace Game.Editor
             Material high = BlenderArtBuilder.BuildMaterial(look, report, folder, entry.Asset, false);
             Material low = BlenderArtBuilder.BuildMaterial(look, report, $"{folder}/{BlenderSync.LowFolder}", entry.Asset + "_Low", true);
 
-            var tiers = new List<(string Tier, int Level, TowerArtPath Path, ModelArtDefinition Art)>();
+            var tiers = new List<(string Tier, int Level, ModelArtDefinition Art)>();
             for (int i = 0; i < entry.Tiers.Length; i++)
             {
                 string tier = entry.Tiers[i];
@@ -113,12 +154,7 @@ namespace Game.Editor
                     continue;
                 }
 
-                // The fourth look is level 3 on path B; the third is level 3 on path A, or the only level-3 look.
-                int level = Mathf.Min(i, TowerDefinition.LevelCount - 1);
-                TowerArtPath path = level < TowerDefinition.LevelCount - 1 || entry.Tiers.Length <= TowerDefinition.LevelCount
-                    ? TowerArtPath.Shared
-                    : tier.EndsWith(PathBSuffix) ? TowerArtPath.B : TowerArtPath.A;
-                tiers.Add((tier, level, path, art));
+                tiers.Add((tier, Mathf.Min(i, TowerDefinition.LevelCount - 1), art));
             }
 
             var tower = BlenderArtBuilder.LoadOrCreate<TowerArtDefinition>($"{TowerArtFolder}/{entry.Asset}.asset");
@@ -130,11 +166,9 @@ namespace Game.Editor
                 SerializedProperty element = array.GetArrayElementAtIndex(i);
                 element.FindPropertyRelative("_tier").stringValue = tiers[i].Tier;
                 element.FindPropertyRelative("_levelIndex").intValue = tiers[i].Level;
-                element.FindPropertyRelative("_path").enumValueIndex = (int)tiers[i].Path;
                 element.FindPropertyRelative("_art").objectReferenceValue = tiers[i].Art;
             }
 
-            so.FindProperty("_defaultPath").enumValueIndex = (int)TowerArtPath.A;
             so.FindProperty("_aim").enumValueIndex = (int)entry.Aim;
             so.FindProperty("_muzzlePrefix").stringValue = entry.MuzzlePrefix;
             so.FindProperty("_muzzleChoice").enumValueIndex = (int)entry.MuzzleChoice;

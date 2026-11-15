@@ -1,0 +1,101 @@
+Grace windows (round 67): a row of one tower type that is not made for a trait, after the trait first appears, as played in the yardstick.
+Window per difficulty (may hold / must have lost within, in waves): Easy 2 / 4, Medium 1 / 4, Hard 1 / 3, Psycho 0 / 3.
+
+| Cell | Trait | First wave | Row without the counter | Wins | Fell at | Held | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C1_01 Easy | Armoured | w7 of 12 | Gun Turret | 3/3 | - | all | LATE: the counter was not needed |
+| C1_01 Medium | Armoured | w7 of 12 | Gun Turret | 3/3 | - | all | LATE: the counter was not needed |
+| C1_01 Hard | Armoured | w7 of 12 | Gun Turret | 0/3 | w12 | 5 | LATE: the counter was not needed |
+| C1_01 Hard | Armoured | w7 of 12 | Laser Turret | 0/3 | w10 | 3 | in time |
+| C1_01 Psycho | Armoured | w7 of 12 | Gun Turret | 0/3 | w12 | 5 | LATE: the counter was not needed |
+| C1_01 Psycho | Armoured | w7 of 12 | Laser Turret | 0/3 | w11 | 4 | LATE: the counter was not needed |
+| C1_02 Easy | Armoured | w6 of 12 | Gun Turret | 3/3 | - | all | LATE: the counter was not needed |
+| C1_02 Easy | Armoured | w6 of 12 | Laser Turret | 3/3 | - | all | LATE: the counter was not needed |
+| C1_02 Medium | Armoured | w6 of 12 | Gun Turret | 0/3 | w10 | 4 | in time |
+| C1_02 Medium | Armoured | w6 of 12 | Laser Turret | 0/3 | w10 | 4 | in time |
+| C1_02 Hard | Armoured | w6 of 12 | Gun Turret | 0/3 | w10 | 4 | LATE: the counter was not needed |
+| C1_02 Hard | Armoured | w6 of 12 | Laser Turret | 0/3 | w10 | 4 | LATE: the counter was not needed |
+| C1_02 Psycho | Armoured | w6 of 12 | Gun Turret | 0/3 | w10 | 4 | LATE: the counter was not needed |
+| C1_02 Psycho | Armoured | w6 of 12 | Laser Turret | 0/3 | w10 | 4 | LATE: the counter was not needed |
+| C1_03 Easy | Armoured | w4 of 16 | Gun Turret | 0/3 | w14 | 10 | LATE: the counter was not needed |
+| C1_03 Easy | Armoured | w4 of 16 | Laser Turret | 0/3 | w14 | 10 | LATE: the counter was not needed |
+| C1_03 Easy | Airborne | w12 of 16 | Gun Turret | 0/3 | w14 | 2 | in time |
+| C1_03 Easy | Airborne | w12 of 16 | Cannon | 0/3 | w14 | 2 | in time |
+| C1_03 Easy | Airborne | w12 of 16 | Laser Turret | 0/3 | w14 | 2 | in time |
+| C1_03 Medium | Armoured | w4 of 16 | Gun Turret | 0/3 | w13 | 9 | LATE: the counter was not needed |
+| C1_03 Medium | Armoured | w4 of 16 | Laser Turret | 0/3 | w13 | 9 | LATE: the counter was not needed |
+| C1_03 Medium | Airborne | w11 of 16 | Gun Turret | 0/3 | w13 | 2 | in time |
+| C1_03 Medium | Airborne | w11 of 16 | Cannon | 0/3 | w13 | 2 | in time |
+| C1_03 Medium | Airborne | w11 of 16 | Laser Turret | 0/3 | w13 | 2 | in time |
+| C1_03 Hard | Armoured | w4 of 16 | Gun Turret | 0/3 | w13 | 9 | LATE: the counter was not needed |
+| C1_03 Hard | Armoured | w4 of 16 | Laser Turret | 0/3 | w13 | 9 | LATE: the counter was not needed |
+| C1_03 Hard | Airborne | w11 of 16 | Gun Turret | 0/3 | w13 | 2 | in time |
+| C1_03 Hard | Airborne | w11 of 16 | Cannon | 0/3 | w13 | 2 | in time |
+| C1_03 Hard | Airborne | w11 of 16 | Laser Turret | 0/3 | w13 | 2 | in time |
+| C1_03 Psycho | Armoured | w4 of 16 | Gun Turret | 0/3 | w13 | 9 | LATE: the counter was not needed |
+| C1_03 Psycho | Armoured | w4 of 16 | Laser Turret | 0/3 | w13 | 9 | LATE: the counter was not needed |
+| C1_03 Psycho | Airborne | w11 of 16 | Gun Turret | 0/3 | w13 | 2 | in time |
+| C1_03 Psycho | Airborne | w11 of 16 | Cannon | 0/3 | w13 | 2 | in time |
+| C1_03 Psycho | Airborne | w11 of 16 | Laser Turret | 0/3 | w13 | 2 | in time |
+| C1_04 Easy | Armoured | w8 of 16 | Gun Turret | 0/3 | w13 | 5 | in time |
+| C1_04 Easy | Armoured | w8 of 16 | Laser Turret | 0/3 | w12 | 4 | in time |
+| C1_04 Easy | Airborne | w7 of 16 | Gun Turret | 0/3 | w13 | 6 | LATE: the counter was not needed |
+| C1_04 Easy | Airborne | w7 of 16 | Cannon | 0/3 | w12 | 5 | in time |
+| C1_04 Easy | Airborne | w7 of 16 | Laser Turret | 0/3 | w12 | 5 | in time |
+| C1_04 Medium | Armoured | w8 of 16 | Gun Turret | 0/3 | w7 | - | not judged |
+| C1_04 Medium | Armoured | w8 of 16 | Laser Turret | 0/3 | w7 | - | not judged |
+| C1_04 Medium | Airborne | w3 of 16 | Gun Turret | 0/3 | w7 | 4 | in time |
+| C1_04 Medium | Airborne | w3 of 16 | Cannon | 0/3 | w7 | 4 | in time |
+| C1_04 Medium | Airborne | w3 of 16 | Laser Turret | 0/3 | w7 | 4 | in time |
+| C1_04 Hard | Armoured | w9 of 16 | Gun Turret | 0/3 | w5 | - | not judged |
+| C1_04 Hard | Armoured | w9 of 16 | Laser Turret | 0/3 | w5 | - | not judged |
+| C1_04 Hard | Airborne | w3 of 16 | Gun Turret | 0/3 | w5 | 2 | in time |
+| C1_04 Hard | Airborne | w3 of 16 | Cannon | 0/3 | w5 | 2 | in time |
+| C1_04 Hard | Airborne | w3 of 16 | Laser Turret | 0/3 | w5 | 2 | in time |
+| C1_04 Psycho | Armoured | w10 of 16 | Gun Turret | 0/3 | w5 | - | not judged |
+| C1_04 Psycho | Armoured | w10 of 16 | Laser Turret | 0/3 | w5 | - | not judged |
+| C1_04 Psycho | Airborne | w3 of 16 | Gun Turret | 0/3 | w5 | 2 | in time |
+| C1_04 Psycho | Airborne | w3 of 16 | Cannon | 0/3 | w5 | 2 | in time |
+| C1_04 Psycho | Airborne | w3 of 16 | Laser Turret | 0/3 | w5 | 2 | in time |
+| C1_05 Easy | Armoured | w4 of 17 | Gun Turret | 0/3 | w11 | 7 | LATE: the counter was not needed |
+| C1_05 Easy | Armoured | w4 of 17 | Laser Turret | 0/3 | w11 | 7 | LATE: the counter was not needed |
+| C1_05 Easy | Airborne | w8 of 17 | Gun Turret | 0/3 | w11 | 3 | in time |
+| C1_05 Easy | Airborne | w8 of 17 | Cannon | 0/3 | w11 | 3 | in time |
+| C1_05 Easy | Airborne | w8 of 17 | Laser Turret | 0/3 | w11 | 3 | in time |
+| C1_05 Medium | Armoured | w5 of 17 | Gun Turret | 0/3 | w9 | 4 | in time |
+| C1_05 Medium | Armoured | w5 of 17 | Laser Turret | 0/3 | w9 | 4 | in time |
+| C1_05 Medium | Airborne | w4 of 17 | Gun Turret | 0/3 | w9 | 5 | LATE: the counter was not needed |
+| C1_05 Medium | Airborne | w4 of 17 | Cannon | 0/3 | w9 | 5 | LATE: the counter was not needed |
+| C1_05 Medium | Airborne | w4 of 17 | Laser Turret | 0/3 | w9 | 5 | LATE: the counter was not needed |
+| C1_05 Hard | Armoured | w5 of 17 | Gun Turret | 0/3 | w7 | 2 | in time |
+| C1_05 Hard | Armoured | w5 of 17 | Laser Turret | 0/3 | w7 | 2 | in time |
+| C1_05 Hard | Airborne | w4 of 17 | Gun Turret | 0/3 | w7 | 3 | in time |
+| C1_05 Hard | Airborne | w4 of 17 | Cannon | 0/3 | w7 | 3 | in time |
+| C1_05 Hard | Airborne | w4 of 17 | Laser Turret | 0/3 | w7 | 3 | in time |
+| C1_05 Psycho | Armoured | w5 of 17 | Gun Turret | 0/3 | w7 | 2 | in time |
+| C1_05 Psycho | Armoured | w5 of 17 | Laser Turret | 0/3 | w7 | 2 | in time |
+| C1_05 Psycho | Airborne | w4 of 17 | Gun Turret | 0/3 | w7 | 3 | LATE: the counter was not needed |
+| C1_05 Psycho | Airborne | w4 of 17 | Cannon | 0/3 | w7 | 3 | LATE: the counter was not needed |
+| C1_05 Psycho | Airborne | w4 of 17 | Laser Turret | 0/3 | w7 | 3 | LATE: the counter was not needed |
+| C1_06 Easy | Armoured | w10 of 18 | Gun Turret | 0/3 | w12 | 2 | in time |
+| C1_06 Easy | Armoured | w10 of 18 | Laser Turret | 0/3 | w11 | 1 | early (inside the grace window) |
+| C1_06 Easy | Airborne | w7 of 18 | Gun Turret | 0/3 | w12 | 5 | in time |
+| C1_06 Easy | Airborne | w7 of 18 | Cannon | 0/3 | w11 | 4 | in time |
+| C1_06 Easy | Airborne | w7 of 18 | Laser Turret | 0/3 | w11 | 4 | in time |
+| C1_06 Medium | Armoured | w9 of 18 | Gun Turret | 0/3 | w12 | 3 | in time |
+| C1_06 Medium | Armoured | w9 of 18 | Laser Turret | 0/3 | w11 | 2 | in time |
+| C1_06 Medium | Airborne | w7 of 18 | Gun Turret | 0/3 | w12 | 5 | LATE: the counter was not needed |
+| C1_06 Medium | Airborne | w7 of 18 | Cannon | 0/3 | w11 | 4 | in time |
+| C1_06 Medium | Airborne | w7 of 18 | Laser Turret | 0/3 | w11 | 4 | in time |
+| C1_06 Hard | Armoured | w9 of 18 | Gun Turret | 0/3 | w10 | 1 | in time |
+| C1_06 Hard | Armoured | w9 of 18 | Laser Turret | 0/3 | w10 | 1 | in time |
+| C1_06 Hard | Airborne | w7 of 18 | Gun Turret | 0/3 | w10 | 3 | in time |
+| C1_06 Hard | Airborne | w7 of 18 | Cannon | 0/3 | w10 | 3 | in time |
+| C1_06 Hard | Airborne | w7 of 18 | Laser Turret | 0/3 | w10 | 3 | in time |
+| C1_06 Psycho | Armoured | w9 of 18 | Gun Turret | 0/3 | w7 | - | not judged |
+| C1_06 Psycho | Armoured | w9 of 18 | Laser Turret | 0/3 | w7 | - | not judged |
+| C1_06 Psycho | Airborne | w5 of 18 | Gun Turret | 0/3 | w7 | 2 | in time |
+| C1_06 Psycho | Airborne | w5 of 18 | Cannon | 0/3 | w7 | 2 | in time |
+| C1_06 Psycho | Airborne | w5 of 18 | Laser Turret | 0/3 | w7 | 2 | in time |
+
+94 rows: 56 in time, 1 early, 29 late, 8 not judged.

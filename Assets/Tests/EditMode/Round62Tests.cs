@@ -31,7 +31,9 @@ namespace Game.Tests
         [TestCase("Rocket", TargetReadKind.AirOnly, "Air only")]
         [TestCase("Cannon", TargetReadKind.GroundOnly, "Ground only")]
         [TestCase("Laser", TargetReadKind.GroundOnly, "Ground only")]
-        [TestCase("Railgun", TargetReadKind.GroundAndAir, "Ground and air")]
+        [TestCase("Railgun", TargetReadKind.AirWeak, "Air: weak")]
+        [TestCase("Cryo", TargetReadKind.GroundAndAir, "Ground and air")]
+        [TestCase("Artillery", TargetReadKind.GroundAndAir, "Ground and air")]
         public void TheTowerSaysWhatItDoesUpThere(string id, TargetReadKind kind, string label)
         {
             TowerDefinition tower = Tower(id);
@@ -46,8 +48,7 @@ namespace Game.Tests
             TowerDefinition gun = Tower("PulseRifle");
             // The rule the label rests on, stated on the asset's own numbers: aims at both layers, a small share lands up there.
             Assert.AreEqual(TargetLayers.Ground | TargetLayers.Air, gun.Targets);
-            Assert.LessOrEqual(gun.AirDamageFactor, TargetRead.WeakShare);
-            Assert.Greater(gun.GroundDamageFactor, TargetRead.WeakShare);
+            Assert.LessOrEqual(gun.Profile.Air, TargetRead.WeakShare);
             Assert.AreEqual(TargetReadKind.None, TargetRead.Of(null), "no tower, nothing to say");
             Assert.IsEmpty(TargetRead.Label(TargetReadKind.None));
         }

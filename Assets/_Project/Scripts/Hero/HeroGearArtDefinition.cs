@@ -59,9 +59,13 @@ namespace Game.Hero
         [Tooltip("Thickness of a plate's rim in metres.")]
         [SerializeField] [Min(0.002f)] private float _plateThickness = 0.02f;
 
-        [Header("Blade at its top tier")]
-        [Tooltip("The blade's colour once the blade damage upgrade stands at the highest tier open to the player.")]
-        [SerializeField] private Color _masterBladeColor = new Color(1f, 0.16f, 0.1f);
+        [Header("Blade as its damage upgrade climbs")]
+        [Tooltip("The blade's looks by blade damage tier, lowest first: orange halfway (tier 5 of 10, a calmer aura), red at the last tier. Below the first stage the blade keeps the weapon's own colour and has no aura.")]
+        [SerializeField] private BladeAuraStage[] _bladeStages =
+        {
+            new BladeAuraStage { FromTier = 5, BladeColor = new Color(1f, 0.5f, 0.1f), EmberColor = new Color(1f, 0.62f, 0.2f), Strength = 0.6f },
+            new BladeAuraStage { FromTier = 10, BladeColor = new Color(1f, 0.16f, 0.1f), EmberColor = new Color(1f, 0.3f, 0.12f), Strength = 1f },
+        };
         [Tooltip("Width of the long glow laid along the blade, in metres (it fades to nothing at its edge).")]
         [SerializeField] [Min(0.05f)] private float _auraWidth = 0.6f;
         [Tooltip("Brightness of the aura; it breathes between this and the low share of it.")]
@@ -73,7 +77,6 @@ namespace Game.Hero
         [SerializeField] [Min(0f)] private float _haloStrength = 0.7f;
         [Tooltip("Embers shed along the blade per second (they stay behind in a swing); zero for none. The Low profile sheds a third.")]
         [SerializeField] [Min(0f)] private float _emberRate = 16f;
-        [SerializeField] private Color _emberColor = new Color(1f, 0.3f, 0.12f);
 
         public ModelArtDefinition DroneBody => _droneBody;
         public float DroneScale => _droneScale;
@@ -101,7 +104,24 @@ namespace Game.Hero
         public float PlateTrimGlow => _plateTrimGlow;
         public float PlateGrowth => _plateGrowth;
         public float PlateThickness => _plateThickness;
-        public Color MasterBladeColor => _masterBladeColor;
+        public BladeAuraStage[] BladeStages => _bladeStages;
+
+        /// <summary>The blade's look at a blade damage tier: the highest stage that tier has reached; false below the first.</summary>
+        public bool TryBladeStage(int bladeTier, out BladeAuraStage stage)
+        {
+            stage = default;
+            bool found = false;
+            foreach (BladeAuraStage candidate in _bladeStages)
+            {
+                if (bladeTier >= candidate.FromTier && (!found || candidate.FromTier > stage.FromTier))
+                {
+                    stage = candidate;
+                    found = true;
+                }
+            }
+
+            return found;
+        }
         public float AuraWidth => _auraWidth;
         public float AuraGlow => _auraGlow;
         public float AuraLowShare => _auraLowShare;
@@ -109,7 +129,6 @@ namespace Game.Hero
         public float HaloSize => _haloSize;
         public float HaloStrength => _haloStrength;
         public float EmberRate => _emberRate;
-        public Color EmberColor => _emberColor;
 
         private void OnValidate()
         {

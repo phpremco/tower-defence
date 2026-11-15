@@ -22,27 +22,36 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: 
+    Step: 0
   - Cost: 80
-    Damage: 25
-    Range: 5.9
-    FireInterval: 0.5
+    Damage: 27.5
+    Range: 5.5
+    FireInterval: 0.55
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Heavier bursts
+    Step: 1
   - Cost: 105
-    Damage: 40
-    Range: 6.3
-    FireInterval: 0.45
+    Damage: 27.5
+    Range: 5.5
+    FireInterval: 0.309375
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Faster loaders
+    Step: 2
   _projectileSpeed: 14
   _splashRadius: 1.1
   _splashTargets: 4
-  _groundDamageFactor: 1
-  _airDamageFactor: 1
   _damageType: 0
-  _armourFactor: 1
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
+  _roles: 04000000i
+  _roleLine: 'Air defence: the one gun that lands in full on flyers. Cannot hit the ground.'
   _retargetRadius: 1.5
   _homing: 1
   _fuseRadius: 0.6

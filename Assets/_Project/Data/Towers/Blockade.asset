@@ -22,6 +22,9 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: 
+    Step: 0
   - Cost: 90
     Damage: 6
     Range: 3.9
@@ -29,6 +32,9 @@ MonoBehaviour:
     HealthBonus: 300
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Armed gate
+    Step: 6
   - Cost: 150
     Damage: 11
     Range: 4.2
@@ -36,13 +42,16 @@ MonoBehaviour:
     HealthBonus: 500
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Fortified gate
+    Step: 6
   _projectileSpeed: 12
   _splashRadius: 0
   _splashTargets: 0
-  _groundDamageFactor: 1
-  _airDamageFactor: 1
   _damageType: 1
-  _armourFactor: 0.2
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
+  _roles: 00000000i
+  _roleLine: Holds the road. Its gun helps; it replaces no tower.
   _retargetRadius: 0
   _homing: 1
   _fuseRadius: 0

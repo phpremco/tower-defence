@@ -92,35 +92,43 @@ namespace Game.Editor
             // die at the rate the beam can swing, not at its pulse rate; on a big creature it is a plain 40 DPS.
             // Cyan like the model's lens (curator decision 2026-11-04: our colours follow the models; warm is for the aliens).
             roster.Laser = CreateTower("Laser", "Laser Turret", TargetLayers.Ground, BeamSpeed, 0f, new Color(0.35f, 0.9f, 1f),
-                new[] { Lvl(110, 8f, LightGunReach + 0.3f, 0.2f), Lvl(130, 12f, LightGunReach + 0.5f, 0.18f), Lvl(190, 18f, LightGunReach + 0.8f, 0.15f) }, 160f);
+                Levels(Lvl(110, 8f, LightGunReach + 0.3f, 0.2f), Harder("Focused lens", 12f / 0.18f), Faster("Overcharged emitter", 18f / 0.15f)), 160f,
+                roleLine: "Light fire in one beam: the Gun Turret's job with nearly three times the firepower in one cell. Glances off armour; cannot aim up.", roles: new[] { TowerRole.LightFire });
             SetBeam(roster.Laser, LaserSweepSeconds);
 
             roster.Cryo = CreateTower("Cryo", "Cryo", TargetLayers.Ground | TargetLayers.Air, 12f, 0f, new Color(0.55f, 0.95f, 1f),
-                new[] { Lvl(90, 2f, 3.7f, 0.5f, 0f, 0.5f, 2f), Lvl(110, 2f, 4f, 0.45f, 0f, 0.42f, 3f), Lvl(160, 2f, 4.3f, 0.4f, 0f, 0.35f, 4f) }, 140f, slowFactor: 0.5f, slowSeconds: 2f);
+                Levels(Lvl(90, 2f, 3.7f, 0.5f, 0f, 0.5f, 2f), Colder("Deeper chill", 0.35f, 110), Further("Extended nozzle", 4.6f, 160)), 140f, slowFactor: 0.5f, slowSeconds: 2f,
+                roleLine: "Control: slows what passes, so every other gun has longer. Its own damage is a token.", roles: new[] { TowerRole.Control });
 
             // Lightning is approximated by a small splash, so it works well on groups.
             roster.Tesla = CreateTower("Tesla", "Tesla", TargetLayers.Ground, 40f, 1.3f, new Color(0.7f, 0.5f, 1f),
-                new[] { Lvl(140, 16f, 3.5f, 0.5f), Lvl(160, 26f, 3.7f, 0.45f), Lvl(230, 40f, 4f, 0.4f) }, 160f);
+                Levels(Lvl(140, 16f, 3.5f, 0.5f), Harder("Higher voltage", 26f / 0.45f), Faster("Faster discharge", 40f / 0.4f)), 160f,
+                roleLine: "Chain lightning: jumps through a bunched group at short range. A fifth on armour; cannot aim up.", roles: new[] { TowerRole.Splash });
 
             roster.Railgun = CreateTower("Railgun", "Railgun", TargetLayers.Ground | TargetLayers.Air, 40f, 0f, new Color(1f, 1f, 1f),
-                new[] { Lvl(220, 80f, 6f, 2.2f), Lvl(260, 120f, 6.5f, 2f), Lvl(360, 180f, 7f, 1.8f) }, 180f);
+                Levels(Lvl(220, 80f, 6f, 2.2f), Harder("Heavier slug", 120f / 2f), Faster("Faster capacitors", 180f / 1.8f)), 180f,
+                roleLine: "Slug: made for armour and bosses, from far away. Slow: wasted on swarms, and half in the air.", roles: new[] { TowerRole.AntiArmour });
 
             // Signal yellow like the model's halos (was green).
             roster.Support = CreateTower("Support", "Support", TargetLayers.Ground, 1f, 0f, new Color(1f, 0.74f, 0.2f),
-                new[] { Lvl(120, 0f, 3f, 1f), Lvl(140, 0f, 3.5f, 1f), Lvl(200, 0f, 4f, 1f) }, 140f, support: true, rangeBonus: 0.15f, rateBonus: 0.2f);
+                Levels(Lvl(120, 0f, 3f, 1f), Further("Extended relay", 4f, 140), Stronger("Stronger signal", 2f, 200)), 140f, support: true, rangeBonus: 0.15f, rateBonus: 0.2f,
+                roleLine: "Booster: the guns around it reach further and fire faster. It fires nothing itself.", roles: new[] { TowerRole.Booster });
 
             // Hybrids come from recipes, so their first level costs nothing to build: the recipe has the price. Every
             // level beats the two parents at that level put together (by 15 to 50 percent), in one cell, and the
             // upgrades cost close to what upgrading both parents would.
             // The Artillery glows amber like its model (was orange).
             roster.Artillery = CreateTower("Artillery", "Artillery", TargetLayers.Ground | TargetLayers.Air, 8f, 1.8f, new Color(1f, 0.78f, 0.3f),
-                new[] { Lvl(0, 70f, 5.1f, 1.6f), Lvl(220, 130f, 5.5f, 1.4f), Lvl(320, 220f, 5.9f, 1.2f) }, 240f);
+                Levels(Lvl(0, 70f, 5.1f, 1.6f), Harder("Heavier shells", 130f / 1.4f, 220), Faster("Autoloader", 220f / 1.2f, 320)), 240f,
+                roleLine: "Cannon and Flak in one: a big blast for groups and armour that also bursts among flyers.", roles: new[] { TowerRole.Splash, TowerRole.AntiArmour, TowerRole.AntiAir });
 
             roster.StormRifle = CreateTower("StormRifle", "Storm Rifle", TargetLayers.Ground | TargetLayers.Air, 20f, 0.8f, new Color(0.6f, 0.8f, 1f),
-                new[] { Lvl(0, 14f, 4.1f, 0.2f), Lvl(200, 20f, 4.4f, 0.18f), Lvl(300, 28f, 4.7f, 0.15f) }, 190f);
+                Levels(Lvl(0, 14f, 4.1f, 0.2f), Faster("Faster cycling", 20f / 0.18f, 200), Harder("Higher voltage", 28f / 0.15f, 300)), 190f,
+                roleLine: "Gun Turret and Tesla in one: rapid arcs for swarms and small groups. A fifth on armour, under half in the air.", roles: new[] { TowerRole.LightFire, TowerRole.Splash });
 
             roster.CryoBeam = CreateTower("CryoBeam", "Cryo Beam", TargetLayers.Ground | TargetLayers.Air, 40f, 0f, new Color(0.7f, 1f, 1f),
-                new[] { Lvl(0, 8f, 4.3f, 0.15f, 0f, 0.4f, 2.5f), Lvl(210, 13f, 4.6f, 0.13f, 0f, 0.33f, 3.5f), Lvl(310, 20f, 4.9f, 0.11f, 0f, 0.27f, 4.5f) }, 180f, slowFactor: 0.4f, slowSeconds: 2.5f);
+                Levels(Lvl(0, 8f, 4.3f, 0.15f, 0f, 0.4f, 2.5f), Harder("Focused lens", 13f / 0.13f, 210), Faster("Overcharged emitter", 20f / 0.11f, 310)), 180f, slowFactor: 0.4f, slowSeconds: 2.5f,
+                roleLine: "Laser and Cryo in one: a beam that burns one big soft body and chills it. Glances off armour, a fifth in the air.", roles: new[] { TowerRole.LightFire, TowerRole.Control });
 
             return roster;
         }

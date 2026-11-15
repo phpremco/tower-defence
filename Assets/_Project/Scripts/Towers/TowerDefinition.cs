@@ -22,18 +22,19 @@ namespace Game.Towers
         /// </summary>
         [SerializeField] [Min(0)] private int _splashTargets;
 
-        /// <summary>
-        /// Share of the damage that lands on a target of each layer (a creature that is air only takes the air share). Ground
-        /// guns that can also aim up do less up there, so the sky asks for an air gun (Docs/BALANCE.md, "Roles by enemy").
-        /// </summary>
-        [SerializeField] [Range(0f, 1f)] private float _groundDamageFactor = 1f;
-        [SerializeField] [Range(0f, 1f)] private float _airDamageFactor = 1f;
-
-        [Tooltip("What the damage is made of. Armour reduces everything that neither explodes nor pierces (round 64).")]
+        [Tooltip("What the damage is made of. What a hit is worth against armour and in the air follows from it through the combat rules; nothing is typed here (round 67).")]
         [SerializeField] private DamageType _damageType = DamageType.Explosive;
 
-        [Tooltip("Share of a hit that works on a creature's armour while it has any: one for a heavy shell that strips it point for point, a fraction for light fire that only chips it (round 24). Written from the sheet's table per damage type.")]
-        [SerializeField] [Range(0.05f, 2f)] private float _armourFactor = 1f;
+        [Tooltip("The one rule table every damage source reads (Data/Balance/CombatRules).")]
+        [SerializeField] private CombatRules _rules;
+
+        [Tooltip("The job this tower is bought for, first; then the few other jobs it also does (the Cannon also strips armour, a hybrid has its parents' jobs). The role tests hold every tower to its list per coin.")]
+        [SerializeField] private TowerRole[] _roles = new TowerRole[0];
+
+        [Tooltip("The role in one line, for the rules page and the Codex.")]
+        [SerializeField] private string _roleLine = string.Empty;
+
+        [System.NonSerialized] private ProfileCache _profileCache;
 
         /// <summary>
         /// A guided shot whose creature dies in flight turns to the nearest live creature of the same layer this close to where
@@ -104,17 +105,34 @@ namespace Game.Towers
         public float ProjectileSpeed => _projectileSpeed;
         public float SplashRadius => _splashRadius;
         public int SplashTargets => _splashTargets;
-        public float GroundDamageFactor => _groundDamageFactor;
-        public float AirDamageFactor => _airDamageFactor;
-
-        /// <summary>What the damage is made of: armour reduces every type that neither explodes nor pierces.</summary>
+        /// <summary>What the damage is made of: the combat rules turn it into what a hit is worth against armour and in the air.</summary>
         public DamageType DamageType => _damageType;
 
-        /// <summary>Share of a hit that works on armour while the creature has any (Health.TakeDamage); light fire sits well under one.</summary>
-        public float ArmourFactor => _armourFactor;
+        /// <summary>What this tower's hits are worth against armour and in the air, from the rule table (and its named exceptions).</summary>
+        public DamageProfile Profile => _profileCache.Get(_rules, _damageType, this);
 
-        /// <summary>The damage share against a target of this layer: air only takes the air share, anything on the ground the ground share.</summary>
-        public float DamageFactorAgainst(TargetLayers layer) => (layer & TargetLayers.Ground) != 0 ? _groundDamageFactor : _airDamageFactor;
+        /// <summary>The job the tower is bought for (its first role); a tower without roles only helps.</summary>
+        public TowerRole Role => _roles.Length > 0 ? _roles[0] : TowerRole.Helper;
+
+        /// <summary>Every job it does, the one it is bought for first.</summary>
+        public System.Collections.Generic.IReadOnlyList<TowerRole> Roles => _roles;
+
+        /// <summary>The role in one line.</summary>
+        public string RoleLine => _roleLine;
+
+        /// <summary>True when any of its roles answers creatures of this trait.</summary>
+        public bool Answers(EnemyTraits trait)
+        {
+            for (int i = 0; i < _roles.Length; i++)
+            {
+                if ((CombatRules.Answers(_roles[i]) & trait) != 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         public float FuseRadius => _fuseRadius;
         public float RetargetRadius => _retargetRadius;
@@ -170,15 +188,54 @@ namespace Game.Towers
                 Debug.LogWarning($"TowerDefinition '{name}' fires unaimed single shots: only a splash shell may be fired at a spot.", this);
             }
 
-            if (((_targets & TargetLayers.Ground) != 0 && _groundDamageFactor <= 0f) || ((_targets & TargetLayers.Air) != 0 && _airDamageFactor <= 0f))
+            _profileCache.Clear();
+            if ((_targets & TargetLayers.Air) != 0 && !_isSupport && _rules != null && Profile.Air <= 0f)
             {
-                Debug.LogWarning($"TowerDefinition '{name}' aims at a layer it deals no damage to: drop the layer from its targets instead.", this);
+                Debug.LogWarning($"TowerDefinition '{name}' aims at the sky with {_damageType} damage, which never reaches it: drop the layer from its targets.", this);
             }
 
-            if (!_isSupport && !DamageTypeRule.Agrees(_damageType, _armourFactor))
+            string step = StepProblem();
+            if (step != null)
             {
-                Debug.LogWarning($"TowerDefinition '{name}': {DamageTypeRule.Describe(_damageType)} (it is {_armourFactor}).", this);
+                Debug.LogWarning($"TowerDefinition '{name}': {step}", this);
             }
+        }
+
+        /// <summary>
+        /// Null when every upgrade step has a name and changes the one thing it says (round 67), otherwise what is wrong.
+        /// A refit (gates, the base's turret) may change several things.
+        /// </summary>
+        public string StepProblem()
+        {
+            for (int i = 1; _levels != null && i < _levels.Length; i++)
+            {
+                TowerLevel from = _levels[i - 1];
+                TowerLevel to = _levels[i];
+                if (string.IsNullOrWhiteSpace(to.StepName) || to.Step == TowerStep.None)
+                {
+                    return $"the step to level {i + 1} has no name or does not say what it improves.";
+                }
+
+                if (to.Step == TowerStep.Refit)
+                {
+                    continue;
+                }
+
+                bool damage = !Mathf.Approximately(from.Damage, to.Damage);
+                bool rate = !Mathf.Approximately(from.FireInterval, to.FireInterval);
+                bool range = !Mathf.Approximately(from.Range, to.Range);
+                bool slow = !Mathf.Approximately(from.SlowFactor, to.SlowFactor) || !Mathf.Approximately(from.SlowSeconds, to.SlowSeconds);
+                bool support = !Mathf.Approximately(from.SupportScale, to.SupportScale);
+                int changed = (damage ? 1 : 0) + (rate ? 1 : 0) + (range ? 1 : 0) + (slow ? 1 : 0) + (support ? 1 : 0) + (to.HealthBonus > 0f ? 1 : 0);
+                bool named = (to.Step == TowerStep.Damage && damage) || (to.Step == TowerStep.FireRate && rate) || (to.Step == TowerStep.Range && range)
+                    || (to.Step == TowerStep.Slow && slow) || (to.Step == TowerStep.Support && support);
+                if (changed != 1 || !named)
+                {
+                    return $"the step '{to.StepName}' to level {i + 1} must improve its {to.Step} and nothing else (it changes {changed} things).";
+                }
+            }
+
+            return null;
         }
     }
 }

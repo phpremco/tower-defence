@@ -44,15 +44,17 @@ namespace Game.Tests
         // ---- armour: one rule, every weapon ----------------------------------------------------------------------
 
         [Test]
-        public void EveryWeapon_CarriesTheArmourFactorOfItsDamageType()
+        public void EveryWeapon_CarriesItsDamageType_AndReadsTheRuleTable()
         {
+            // Round 67: no weapon carries a factor of its own; each has its damage type and a reference to the one rule table.
+            var rules = AssetDatabase.LoadAssetAtPath<CombatRules>(CombatRules.AssetPath);
+            Assert.IsNotNull(rules, "run ApplyRound67");
             foreach (KeyValuePair<string, DamageType> entry in ProjectGenerator.WeaponDamageTypes)
             {
                 var so = new SerializedObject(Load<ScriptableObject>(entry.Key));
-                Assert.AreEqual((int)entry.Value, so.FindProperty("_damageType").enumValueIndex, entry.Key + ": damage type (run ApplyRound64)");
-                float factor = so.FindProperty("_armourFactor").floatValue;
-                Assert.AreEqual(BalanceSheet.ArmourFactorOf(entry.Value), factor, 0.0001f, entry.Key + ": armour factor is not the sheet's for its type");
-                Assert.IsTrue(DamageTypeRule.Agrees(entry.Value, factor), entry.Key + ": " + DamageTypeRule.Describe(entry.Value));
+                Assert.AreEqual((int)entry.Value, so.FindProperty("_damageType").enumValueIndex, entry.Key + ": damage type (run ApplyRound67)");
+                Assert.AreSame(rules, so.FindProperty("_rules").objectReferenceValue, entry.Key + ": not wired to the rule table");
+                Assert.IsNull(so.FindProperty("_armourFactor"), entry.Key + ": still carries a factor of its own");
             }
         }
 
@@ -93,9 +95,8 @@ namespace Game.Tests
         {
             foreach (DamageType type in System.Enum.GetValues(typeof(DamageType)))
             {
-                float factor = BalanceSheet.ArmourFactorOf(type);
+                float factor = AssetDatabase.LoadAssetAtPath<CombatRules>(CombatRules.AssetPath).RuleOf(type).Armour;
                 bool reduced = type != DamageType.Explosive && type != DamageType.Piercing;
-                Assert.AreEqual(reduced, DamageTypeRule.ReducedByArmour(type), type.ToString());
                 Assert.AreEqual(reduced, factor < 1f, $"{type}: factor {factor}");
             }
 
@@ -110,16 +111,16 @@ namespace Game.Tests
         {
             var drone = Load<DroneDefinition>("Drones/AttackDrone");
             var crag = Load<EnemyDefinition>("Enemies/Cragback");
-            Assert.Less(drone.ArmourFactor, 1f, "the drone's shots ignored armour until round 64");
+            Assert.Less(drone.Profile.Armour, 1f, "the drone's shots ignored armour until round 64");
             // One shot on a fresh Cragback: the body is not touched, the armour loses a fifth of the shot.
             var health = new Health(crag.MaxHealth, crag.Armor);
-            health.TakeDamage(drone.Damage, drone.ArmourFactor);
+            health.TakeDamage(drone.Damage, drone.Profile.Armour);
             Assert.AreEqual(crag.MaxHealth, health.Current, 0.0001f);
-            Assert.AreEqual(crag.Armor - drone.Damage * drone.ArmourFactor, health.Armor, 0.0001f);
+            Assert.AreEqual(crag.Armor - drone.Damage * drone.Profile.Armour, health.Armor, 0.0001f);
             // And the plan model counts it: an attack drone on paper lands the share the wave's armour lets it.
             DroneStats stats = BalanceLedger.Drones(Load<LevelDefinition>("Levels/Level_C1_04")).Find(d => d.Role == DroneRole.Attack);
             Assert.IsNotNull(stats);
-            Assert.AreEqual(drone.ArmourFactor, stats.ArmourFactor, 0.0001f);
+            Assert.AreEqual(drone.Profile.Armour, stats.ArmourFactor, 0.0001f);
         }
 
         [Test]
@@ -150,7 +151,7 @@ namespace Game.Tests
             int hits = 0;
             while (!health.IsDead && hits < 10000)
             {
-                health.TakeDamage(level.Damage, tower.ArmourFactor);
+                health.TakeDamage(level.Damage, tower.Profile.Armour);
                 hits++;
             }
 

@@ -7,10 +7,12 @@ using UnityEngine;
 namespace Game.Editor
 {
     /// <summary>
-    /// Generator part for the armour rule (round 64): what every weapon's damage is made of. One table for all of them
-    /// (towers, the hero's weapons and abilities, the attack drone, the path objects); the share of a hit that works on
-    /// armour follows from the type (<see cref="BalanceSheet.ArmourFactorOf"/>), so no weapon carries a hand-typed armour
-    /// factor and a new weapon cannot forget one (the attack drone's shots ignored armour until this round).
+    /// Generator part for the combat rules (round 67; the armour rule of round 64 is its first column). One table for
+    /// every damage source: a weapon is listed once with what its damage is made of, the rules asset
+    /// (<see cref="CombatRules"/>) says what each damage type is worth against armour and in the air, and the few weapons
+    /// that differ from their type are named exceptions with a reason. No weapon carries a hand-typed factor, so a new
+    /// weapon cannot forget one (the attack drone's shots ignored armour until round 64; the base turret, the hero's
+    /// blaster and the attack drone hit flyers in full until round 67 while the Gun Turret, the same bullets, did not).
     /// </summary>
     public static partial class ProjectGenerator
     {
@@ -22,7 +24,7 @@ namespace Game.Editor
             { "Towers/Blockade", DamageType.Bullet },
             { "Towers/Cannon", DamageType.Explosive },
             { "Towers/Artillery", DamageType.Explosive },
-            // The Flak's shells burst; until round 64 they were rated half on armour like an arc.
+            // The Flak's shells burst (its type), but against armour it is a named exception: see CombatExceptions.
             { "Towers/Rocket", DamageType.Explosive },
             { "Towers/Laser", DamageType.Beam },
             { "Towers/Cryo", DamageType.Beam },
@@ -31,7 +33,6 @@ namespace Game.Editor
             { "Towers/StormRifle", DamageType.Arc },
             { "Towers/Railgun", DamageType.Piercing },
             { "Hero/Weapon_Blaster", DamageType.Bullet },
-            // The blade was heavy (one) until round 64; it does not explode, so armour turns half of it.
             { "Hero/Weapon_EnergySword", DamageType.Blade },
             { "Hero/Abilities/Ability_Shockwave", DamageType.Explosive },
             { "Drones/AttackDrone", DamageType.Bullet },
@@ -41,21 +42,158 @@ namespace Game.Editor
             { "PathObjects/GroundDrone", DamageType.Ram },
         };
 
-        /// <summary>Writes a weapon's damage type and the armour factor that follows from it; an asset outside the table keeps a blast's full share.</summary>
+        // The rule table: damage type against the two traits a factor exists for. Armour (round 64, Remco: "reduced damage
+        // from non-exploding things"; light fire 0.2 and the middle 0.5 are his numbers of 2026-11-09, the blade's 0.5 his
+        // of 2026-11-15): a pool in front of the body that a weapon works on at this share. Air (round 61, "air needs the
+        // sky gun"): the share that lands on a creature only the sky can be aimed at. Zero in the air column means the
+        // damage never reaches the sky; no weapon of that type may aim up.
+        private static readonly DamageRule[] DamageRules =
+        {
+            Rule(DamageType.Explosive, 1f, 1f, "A blast strips armour point for point and bursts among flyers. (A shell still cannot be aimed up: that is the Cannon's targets, not its damage.)"),
+            Rule(DamageType.Bullet, 0.2f, 0.2f, "Light fire only chips armour, and a gun not made for the sky lands a fifth up there: enough to finish a straggler, never an air defence."),
+            Rule(DamageType.Beam, 0.2f, 0.2f, "A beam is light fire: it glances off plates, and it spreads out over the distance to a flyer."),
+            Rule(DamageType.Blade, 0.5f, 0f, "A blade cuts armour at half. It never reaches the sky."),
+            Rule(DamageType.Arc, 0.2f, 0.4f, "Lightning runs over plates instead of through them, like the other light fire, and thins out on its way up."),
+            Rule(DamageType.Burn, 0.5f, 0f, "Fire heats armour at half. It burns on the ground."),
+            Rule(DamageType.Ram, 0.5f, 0f, "A ram dents armour at half. It drives on the ground."),
+            Rule(DamageType.Piercing, 1.5f, 0.5f, "A slug is made for armour: it works on plates better than on the body. One slow shot is a poor way to hunt flyers."),
+        };
+
+        // The named exceptions: the only weapons that differ from their damage type, each with its reason.
+        private static readonly CombatException[] CombatExceptions =
+        {
+            new CombatException
+            {
+                Weapon = "Rocket", Trait = EnemyTraits.Armoured, Factor = 0.5f,
+                Reason = "The Flak's airburst is fragments, not a shell: it is the air specialist and no anti-armour gun (Remco 2026-11-15). No armoured flyer exists today.",
+            },
+        };
+
+        // The reference fight per creature trait and the margin the towers made for it must keep per coin over every other
+        // source (the role tests play these; Docs/COMBAT_RULES.md shows the matrix). Air and armour are Remco's "at least
+        // twice"; the size traits are held by mechanics (hit size, blast cap, unguided shells), so their margins are what
+        // those mechanics give today with a little room.
+        private static readonly RoleScenario[] RoleScenarios =
+        {
+            Scenario(EnemyTraits.Swarm, "Skitter", 12, 1.5f, true, 1.15f, "A stream of a dozen Skitters, a blast apart: every hit bigger than one of them is wasted, so light fire wins."),
+            Scenario(EnemyTraits.Mob, "Oozer", 5, 0.5f, false, 1.25f, "Five Oozers queued at a gate: one blast takes three."),
+            Scenario(EnemyTraits.Tough, "ShardCrawler", 1, 1f, false, 1.15f, "One Shard Crawler: a big soft body asks for light fire held on one target."),
+            Scenario(EnemyTraits.Armoured, "Cragback", 3, 0.6f, false, 2f, "Three Cragbacks at a gate: light fire chips the plates, shells and slugs break them."),
+            Scenario(EnemyTraits.Airborne, "Skyray", 4, 0.8f, true, 2f, "A wing of four Skyrays: only the sky guns land in full."),
+            Scenario(EnemyTraits.Fast, "Roller", 1, 1f, true, 1.15f, "One Roller at speed: an unguided shell lands where it was."),
+        };
+
+        private const float SwarmHealthMost = 40f;
+        private const float ToughHealthLeast = 250f;
+        private const float FastSpeedLeast = 1.3f;
+
+        // Late waves at the top tower level with every permanent upgrade bought: the reference creatures are this much tougher.
+        private const float LateHealthScale = 6f;
+
+        // Every reference fight is played at these health scales and averaged (waves run from under one to a few times a creature's book health).
+        private static readonly float[] HealthLadder = { 0.75f, 1f, 1.5f, 2.25f };
+        private const float HelperHorizonSeconds = 120f;
+        private const int FreeHelperCoins = 100;
+
+        // Growth (Remco 2026-11-15): after a creature trait first appears, a defence without its counter tower may hold this
+        // many waves on Easy, Medium, Hard and Psycho, and must have lost within the second list's waves after that.
+        private static readonly int[] GraceWaves = { 2, 1, 1, 0 };
+        private static readonly int[] FallWithinWaves = { 4, 4, 3, 3 };
+
+        private static DamageRule Rule(DamageType type, float armour, float air, string reason) =>
+            new DamageRule { Type = type, Armour = armour, Air = air, Reason = reason };
+
+        private static RoleScenario Scenario(EnemyTraits trait, string enemy, int count, float spacing, bool moving, float margin, string reason) =>
+            new RoleScenario { Trait = trait, Enemy = enemy, Count = count, Spacing = spacing, Moving = moving, Margin = margin, Reason = reason };
+
+        /// <summary>Writes the rules asset from the tables above; safe to run again.</summary>
+        public static CombatRules CreateCombatRules()
+        {
+            EnsureFolder($"{DataRoot}/Balance");
+            var rules = LoadOrCreate<CombatRules>(CombatRules.AssetPath);
+            var so = new SerializedObject(rules);
+            SerializedProperty damage = so.FindProperty("_damage");
+            damage.arraySize = DamageRules.Length;
+            for (int i = 0; i < DamageRules.Length; i++)
+            {
+                SerializedProperty row = damage.GetArrayElementAtIndex(i);
+                row.FindPropertyRelative("Type").enumValueIndex = (int)DamageRules[i].Type;
+                row.FindPropertyRelative("Armour").floatValue = DamageRules[i].Armour;
+                row.FindPropertyRelative("Air").floatValue = DamageRules[i].Air;
+                row.FindPropertyRelative("Reason").stringValue = DamageRules[i].Reason;
+            }
+
+            SerializedProperty exceptions = so.FindProperty("_exceptions");
+            exceptions.arraySize = CombatExceptions.Length;
+            for (int i = 0; i < CombatExceptions.Length; i++)
+            {
+                SerializedProperty row = exceptions.GetArrayElementAtIndex(i);
+                row.FindPropertyRelative("Weapon").stringValue = CombatExceptions[i].Weapon;
+                row.FindPropertyRelative("Trait").intValue = (int)CombatExceptions[i].Trait;
+                row.FindPropertyRelative("Factor").floatValue = CombatExceptions[i].Factor;
+                row.FindPropertyRelative("Reason").stringValue = CombatExceptions[i].Reason;
+            }
+
+            SerializedProperty scenarios = so.FindProperty("_scenarios");
+            scenarios.arraySize = RoleScenarios.Length;
+            for (int i = 0; i < RoleScenarios.Length; i++)
+            {
+                SerializedProperty row = scenarios.GetArrayElementAtIndex(i);
+                row.FindPropertyRelative("Trait").intValue = (int)RoleScenarios[i].Trait;
+                row.FindPropertyRelative("Enemy").stringValue = RoleScenarios[i].Enemy;
+                row.FindPropertyRelative("Count").intValue = RoleScenarios[i].Count;
+                row.FindPropertyRelative("Spacing").floatValue = RoleScenarios[i].Spacing;
+                row.FindPropertyRelative("Moving").boolValue = RoleScenarios[i].Moving;
+                row.FindPropertyRelative("Margin").floatValue = RoleScenarios[i].Margin;
+                row.FindPropertyRelative("Reason").stringValue = RoleScenarios[i].Reason;
+            }
+
+            so.FindProperty("_swarmHealth").floatValue = SwarmHealthMost;
+            so.FindProperty("_toughHealth").floatValue = ToughHealthLeast;
+            so.FindProperty("_fastSpeed").floatValue = FastSpeedLeast;
+            so.FindProperty("_lateHealthScale").floatValue = LateHealthScale;
+            SerializedProperty ladder = so.FindProperty("_healthLadder");
+            ladder.arraySize = HealthLadder.Length;
+            for (int i = 0; i < HealthLadder.Length; i++)
+            {
+                ladder.GetArrayElementAtIndex(i).floatValue = HealthLadder[i];
+            }
+
+            so.FindProperty("_helperHorizonSeconds").floatValue = HelperHorizonSeconds;
+            so.FindProperty("_freeHelperCoins").intValue = FreeHelperCoins;
+            WriteInts(so.FindProperty("_graceWaves"), GraceWaves);
+            WriteInts(so.FindProperty("_fallWithinWaves"), FallWithinWaves);
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(rules);
+            return rules;
+        }
+
+        private static void WriteInts(SerializedProperty array, int[] values)
+        {
+            array.arraySize = values.Length;
+            for (int i = 0; i < values.Length; i++)
+            {
+                array.GetArrayElementAtIndex(i).intValue = values[i];
+            }
+        }
+
+        /// <summary>Writes a weapon's damage type and hands it the rule table; an asset outside the list is a blast.</summary>
         private static void StampDamage(SerializedObject so, string key)
         {
             DamageType type = WeaponDamageTypes.TryGetValue(key, out DamageType listed) ? listed : DamageType.Explosive;
             so.FindProperty("_damageType").enumValueIndex = (int)type;
-            so.FindProperty("_armourFactor").floatValue = BalanceSheet.ArmourFactorOf(type);
+            CombatRules rules = AssetDatabase.LoadAssetAtPath<CombatRules>(CombatRules.AssetPath);
+            so.FindProperty("_rules").objectReferenceValue = rules != null ? rules : CreateCombatRules();
         }
 
         /// <summary>
-        /// Stamps every weapon asset in the table and nothing else: the round's targeted step, safe to run again. Returns
-        /// one line per weapon whose factor changed.
+        /// Stamps every weapon asset in the list and nothing else: the targeted step, safe to run again. Returns one line
+        /// per weapon with what the rules make of it.
         /// </summary>
         public static string ApplyDamageTypes()
         {
             var report = new StringBuilder();
+            CombatRules rules = CreateCombatRules();
             foreach (KeyValuePair<string, DamageType> entry in WeaponDamageTypes)
             {
                 var asset = AssetDatabase.LoadAssetAtPath<ScriptableObject>($"{DataRoot}/{entry.Key}.asset");
@@ -66,12 +204,11 @@ namespace Game.Editor
                 }
 
                 var so = new SerializedObject(asset);
-                float before = so.FindProperty("_armourFactor").floatValue;
                 StampDamage(so, entry.Key);
-                float after = so.FindProperty("_armourFactor").floatValue;
                 so.ApplyModifiedPropertiesWithoutUndo();
                 EditorUtility.SetDirty(asset);
-                report.Append($"{entry.Key}: {entry.Value}, armour factor {before:0.##} -> {after:0.##}{(Mathf.Approximately(before, after) ? string.Empty : "  CHANGED")}\n");
+                DamageProfile profile = rules.ProfileOf(entry.Value, asset.name);
+                report.Append($"{entry.Key}: {entry.Value}, armour {profile.Armour:0.##}, air {profile.Air:0.##}\n");
             }
 
             return report.ToString();

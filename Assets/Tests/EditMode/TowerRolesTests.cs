@@ -95,7 +95,9 @@ namespace Game.Tests
                     TowerLevelStats low = stats.Levels[level];
                     TowerLevelStats high = stats.Levels[level + 1];
                     float n = CostTo(gun, level + 1) / (float)Mathf.Max(1, CostTo(gun, level));
-                    bool hits = high.Damage > low.Damage;
+                    // Round 67 (Remco 2026-11-15): a step improves one named thing, so a fire-rate step leaves the hit as it
+                    // was; the hit never shrinks, and the single-target rule below holds for every step.
+                    bool hits = high.Damage >= low.Damage;
                     bool single = high.Dps >= n * low.Dps * rules.UpgradeMargin;
                     bool spread = n > 1f;
                     if ((!hits || !single || !spread) && !UpgradeExceptions.ContainsKey(gun.name))

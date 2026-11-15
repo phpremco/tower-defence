@@ -67,9 +67,13 @@ namespace Game.Tests
 
             foreach (TowerDefinition tower in level.AvailableTowers)
             {
+                // Since round 67 a step improves one thing: the hit or the rate. Either way the level deals more per second.
                 for (int i = 1; i <= tower.MaxLevelIndex; i++)
                 {
-                    Assert.Greater(tower.GetLevel(i).Damage, tower.GetLevel(i - 1).Damage, tower.name);
+                    TowerLevel low = tower.GetLevel(i - 1);
+                    TowerLevel high = tower.GetLevel(i);
+                    Assert.Greater(high.Damage / high.FireInterval, low.Damage / low.FireInterval, tower.name);
+                    Assert.GreaterOrEqual(high.Damage, low.Damage, tower.name + ": a step never makes the hit smaller");
                 }
             }
         }

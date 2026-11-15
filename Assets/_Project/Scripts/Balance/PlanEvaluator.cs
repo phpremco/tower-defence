@@ -140,6 +140,7 @@ namespace Game.Balance
             int cheapestGun = CheapestGun(level);
             float attackDps = 0f;
             float attackArmourFactor = 1f;
+            float attackAirFactor = 1f;
             int attackTargets = 0;
             float coverSum = 0f;
             int covered = 0;
@@ -237,6 +238,7 @@ namespace Game.Balance
                             harvestWave = drone.Role == DroneRole.Harvest && harvestWave == 0 ? wave : harvestWave;
                             attackDps += drone.Role == DroneRole.Attack ? drone.Dps : 0f;
                             attackArmourFactor = drone.Role == DroneRole.Attack ? drone.ArmourFactor : attackArmourFactor;
+                            attackAirFactor = drone.Role == DroneRole.Attack ? drone.AirFactor : attackAirFactor;
                             attackTargets |= drone.Role == DroneRole.Attack ? drone.Targets : 0;
                             repairRate += drone.Role == DroneRole.Repair ? drone.RepairPerSecond : 0f;
                             break;
@@ -290,7 +292,7 @@ namespace Game.Balance
                     float drone = attackDps * rules.Utilisation;
                     float droneStream = Layer.Has(attackTargets, Layer.Ground) ? drone * load.Window * load.StreamArmour.Share(attackArmourFactor) : 0f;
                     float droneSingle = Layer.Has(attackTargets, Layer.Ground) ? drone * load.BossSeconds(load.BossWindow + load.BossFight, rules) * load.BossArmour.Share(attackArmourFactor) : 0f;
-                    float droneAir = Layer.Has(attackTargets, Layer.Air) ? drone * load.AirWindow * load.AirArmour.Share(attackArmourFactor) : 0f;
+                    float droneAir = Layer.Has(attackTargets, Layer.Air) ? drone * attackAirFactor * load.AirWindow * load.AirArmour.Share(attackArmourFactor) : 0f;
                     stream += droneStream;
                     single += droneSingle;
                     air += droneAir;

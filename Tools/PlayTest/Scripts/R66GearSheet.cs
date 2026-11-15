@@ -69,7 +69,7 @@ public static class R66GearSheet
             Directory.CreateDirectory(outFolder);
             foreach (int tier in tiers)
             {
-                var gear = new HeroGear(0f, drone, 0f, tier, 10, false);
+                var gear = new HeroGear(0f, drone, 0f, tier, 10);
                 GameObject figure = HeroView.BuildDisplayFigure(rig.transform, hero, gear);
                 SetFlags(figure.transform);
                 int plates = 0;

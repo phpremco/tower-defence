@@ -29,7 +29,7 @@ namespace Game.Combat
         private float _fuseRadius;
         private Vector3 _impactPoint;
         private object _source;
-        private float _armourFactor = 1f;
+        private DamageProfile _profile = DamageProfile.Full;
 
         /// <summary>Raised when the projectile leaves the barrel, so the view can dress it.</summary>
         public event Action<Projectile> Launched;
@@ -89,7 +89,7 @@ namespace Game.Combat
             float retargetRadius = 0f,
             bool homing = true,
             int splashTargets = 0,
-            float armourFactor = 1f)
+            DamageProfile? profile = null)
         {
             transform.position = from;
             _source = source;
@@ -100,7 +100,7 @@ namespace Game.Combat
             _retargetRadius = retargetRadius;
             _homing = homing;
             _splashTargets = splashTargets;
-            _armourFactor = armourFactor;
+            _profile = profile ?? DamageProfile.Full;
             _startDistance = (_lastTargetPosition - from).magnitude;
             _damage = damage;
             _speed = speed;
@@ -222,15 +222,6 @@ namespace Game.Combat
             _splashTargetList.RemoveRange(_splashTargets, _splashTargetList.Count - _splashTargets);
         }
 
-        private void Deal(ITargetable target, bool splash)
-        {
-            if (target is ISourcedTarget sourced)
-            {
-                sourced.TakeDamageFrom(_damage, _source, splash, _armourFactor);
-                return;
-            }
-
-            target.TakeDamage(_damage);
-        }
+        private void Deal(ITargetable target, bool splash) => Hits.Deal(target, _damage, _profile, _source, splash);
     }
 }

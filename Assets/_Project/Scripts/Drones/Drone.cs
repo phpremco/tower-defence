@@ -340,7 +340,7 @@ namespace Game.Drones
             if (distance <= _definition.Range && _cooldown <= 0f)
             {
                 _cooldown = _definition.FireInterval / _modifiers.TempoMultiplier;
-                _world.Projectiles.Fire(transform.position, _prey, _definition.Damage * _modifiers.OutputMultiplier, _definition.ProjectileSpeed, 0f, _definition.Targets, 1f, 0f, _definition.ProjectileStyle, _definition.Color, armourFactor: _definition.ArmourFactor);
+                _world.Projectiles.Fire(transform.position, _prey, _definition.Damage * _modifiers.OutputMultiplier, _definition.ProjectileSpeed, 0f, _definition.Targets, 1f, 0f, _definition.ProjectileStyle, _definition.Color, profile: _definition.Profile);
                 Fired?.Invoke(preyPosition);
             }
         }

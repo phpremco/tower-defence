@@ -22,27 +22,36 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: 
+    Step: 0
   - Cost: 95
-    Damage: 120
-    Range: 6.5
-    FireInterval: 2
+    Damage: 132
+    Range: 6
+    FireInterval: 2.2
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Heavier slug
+    Step: 1
   - Cost: 140
-    Damage: 180
-    Range: 7
-    FireInterval: 1.8
+    Damage: 132
+    Range: 6
+    FireInterval: 1.32
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Faster capacitors
+    Step: 2
   _projectileSpeed: 40
   _splashRadius: 0
   _splashTargets: 0
-  _groundDamageFactor: 1
-  _airDamageFactor: 1
   _damageType: 7
-  _armourFactor: 1.5
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
+  _roles: 03000000i
+  _roleLine: 'Slug: made for armour and bosses, from far away. Slow: wasted on swarms, and half in the air.'
   _retargetRadius: 0
   _homing: 1
   _fuseRadius: 0

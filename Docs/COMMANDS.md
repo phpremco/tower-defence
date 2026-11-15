@@ -1110,3 +1110,39 @@ console and `Logs/probe_trace.txt`.
   `Tools/PlayTest/r66_upgrade_economy.txt` (in the clone when run with `r34b_editmode_worker.sh`; copy it back).
 - **An old save in the new model:** put a COPY of a save at `Tools/PlayTest/r66_save_copy.json` and run `Round66Tests`
   (`SaveCopy_LoadsIntoTheTenTierModel_WithoutLoss`; skipped without the file). Delete the copy afterwards: it is a save, not a fixture.
+
+## Round 67: combat rules, roles, named upgrade steps, grace windows (added 2026-11-15)
+
+- **Targeted data step (never the full generator):** `bash Tools/PlayTest/r67_apply.sh` recompiles (refuses while Play Mode
+  runs), runs `Tools/PlayTest/Scripts/ApplyRound67.cs` and writes the role matrix. The apply step writes
+  `Data/Balance/CombatRules.asset` from the generator's tables (`ProjectGenerator.Damage.cs`: damage type against armour
+  and air, the named exceptions, trait thresholds, the reference fight and margin per trait, the grace windows), stamps
+  every weapon with its damage type and a reference to the rules (no weapon keeps a factor), rewrites every tower's
+  levels as named one-thing steps with its roles (`ProjectGenerator.Towers.cs`, `ProjectGenerator.World.cs`: the
+  generator's "Towers" and "Roster" steps alone; the result lists price and damage per second per level before and
+  after), takes the level-3 path-B looks out of the tower art and writes the blade's looks per tier into the hero's gear
+  art. Safe to run again. On its own: `unity command run_script --file Tools/PlayTest/Scripts/ApplyRound67.cs --entry ApplyRound67.Run --timeout_ms 300000 --timeout 360`.
+- **Recompile with the play-mode guard:** `bash Tools/PlayTest/r67_compile.sh`.
+- **The role matrix (no asset written):** `bash Tools/PlayTest/balance_pipeline.sh roles` (or `unity command run_script --file Tools/PlayTest/Scripts/RoleMatrixReport.cs --entry RoleMatrixReport.Run --timeout_ms 120000 --timeout 180`)
+  writes `Tools/PlayTest/r67_role_matrix.txt`: every tower at level 1, level 3 and level 3 with every permanent upgrade
+  against the reference group of each trait (seconds for 100 coins to clear it), every role break the tests would report
+  under its table, the helpers, and every creature with its traits. The Markdown tables are the ones in Docs/COMBAT_RULES.md.
+- **The rule tests:** `bash Tools/PlayTest/r34b_editmode_worker.sh 6 CombatRulesTests` (the table, the wiring of every weapon
+  asset, the roles per coin at three moments, the helpers, the named steps, the grace verdicts; they also rewrite the two
+  reports in the clone).
+- **Grace windows (the growth layer), a pipeline stage:** `bash Tools/PlayTest/balance_pipeline.sh grace` after a measure
+  writes `Tools/PlayTest/grace_windows.txt`: per cell and counter trait (armour, air) the wave the trait first appears in
+  (from the stored waves) and how long each yardstick row of one tower type that is not made for it held after that
+  (`mono <TowerId>` in `calibration_records.txt`), against the rules' window. Part of `balance_pipeline.sh all`.
+- **Changing a rule:** Docs/COMBAT_RULES.md, "Changing a rule". A factor that a tower of the levels uses is in the
+  calibration's input hash: measure, fit, apply and solve follow.
+- **Stills of the tower menu:** `OUT=<dir> bash Tools/PlayTest/r65_shots.sh r67 0 1 "eval:no_waves.cs" "act:tower PulseRifle 14 1" "act:select 14 1" "step:6" "shot:menu_gun_1080|cell:14:1 7 hud 1920 1080" "shot:menu_gun_720|cell:14:1 7 hud 1280 720"`
+  (the info line reads "Next: <step name>: <what it changes>"). The blade's stages: `GEAR="Hero_Damage=5"` (orange) or
+  `=10` (red) with `r66_shots.sh` and the shot focus `hero`.
+- `Tools/PlayTest/r64_save_md5.txt` holds the save's MD5 the shot harnesses check against after restoring; set it to the
+  save's MD5 at the start of a round (Remco plays between rounds).
+- **The worker clones are silent** (Remco heard the hidden workers play the game): every clone sync sets
+  `m_DisableAudio: 1` in the clone's own `ProjectSettings/AudioManager.asset` (`workers.sh`, `r34b_solve_worker.sh`,
+  `r62_variant_worker.sh`; the project's own file stays 0), and the probe sets `AudioListener.volume = 0` in batch mode.
+  A new clone script that plays must do the same. `r34b_editmode_worker.sh` leaves audio on: an EditMode run plays
+  nothing, and `AudioTests` build clips, which fails with audio disabled.

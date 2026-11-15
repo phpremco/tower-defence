@@ -1,2 +1,2 @@
-cell:10:18.5 2.2 clean  
-C:/Users/remco/Tower defense/ArtSource/Previews/QA/r65_c106_plateau_close.png
+cell:15:1 7 hud 1280 720
+C:/Users/remco/Tower defense/Logs/r67/stills/r67_menu_cannon_720.png

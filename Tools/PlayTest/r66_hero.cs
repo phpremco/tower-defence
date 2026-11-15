@@ -16,7 +16,7 @@ var view = hero.GetComponent<Game.Hero.HeroArtView>();
 var gear = hero.Gear;
 var sb = new System.Text.StringBuilder();
 sb.Append("health " + hero.Health.Current.ToString("0.0", inv) + "/" + hero.Health.Max.ToString("0", inv) + " mending " + hero.IsMending);
-sb.Append(" | gear regen x" + gear.RegenMultiplier.ToString("0.00", inv) + " drone tier " + gear.RepairDroneTier + " taken x" + gear.DamageTakenMultiplier.ToString("0.00", inv) + " armour " + gear.ArmourTier + "/" + gear.ArmourTiers + " bladeAtTop " + gear.BladeAtTop);
+sb.Append(" | gear regen x" + gear.RegenMultiplier.ToString("0.00", inv) + " drone tier " + gear.RepairDroneTier + " taken x" + gear.DamageTakenMultiplier.ToString("0.00", inv) + " armour " + gear.ArmourTier + "/" + gear.ArmourTiers + " bladeAtTop " + gear.BladeTier);
 if (view != null)
 {
     var companion = (Game.Hero.HeroCompanionDrone)typeof(Game.Hero.HeroArtView).GetField("_companion", flags).GetValue(view);

@@ -25,8 +25,10 @@ namespace Game.PathObjects
         [Tooltip("What the damage is made of: a mine or a barrel explodes, a lava ball burns, a ground drone rams. Armour reduces all but the explosion (round 64).")]
         [SerializeField] private DamageType _damageType = DamageType.Explosive;
 
-        [Tooltip("Share of the damage that works on a creature's armour while it has any, from the sheet's table per damage type.")]
-        [SerializeField] [Range(0.05f, 2f)] private float _armourFactor = 1f;
+        [Tooltip("The one rule table every damage source reads (Data/Balance/CombatRules): what a hit is worth against armour and in the air follows from the damage type there, nothing is typed here (round 67).")]
+        [SerializeField] private CombatRules _rules;
+
+        [System.NonSerialized] private ProfileCache _profileCache;
 
         [SerializeField] [Range(0.1f, 1f)] private float _slowFactor = 0.5f;
 
@@ -62,8 +64,8 @@ namespace Game.PathObjects
         public float Damage => _damage;
         public DamageType DamageType => _damageType;
 
-        /// <summary>Share of the damage that works on armour while the creature has any (Health.TakeDamage).</summary>
-        public float ArmourFactor => _armourFactor;
+        /// <summary>What a hit is worth against armour and in the air, from the rule table (and its named exceptions).</summary>
+        public DamageProfile Profile => _profileCache.Get(_rules, _damageType, this);
         public float SlowFactor => _slowFactor;
         public bool Burns => _burns;
         public float Speed => _speed;
@@ -77,9 +79,10 @@ namespace Game.PathObjects
 
         private void OnValidate()
         {
-            if (_damage > 0f && !DamageTypeRule.Agrees(_damageType, _armourFactor))
+            _profileCache.Clear();
+            if (_damage > 0f && _rules == null)
             {
-                Debug.LogWarning($"Path object '{name}': {DamageTypeRule.Describe(_damageType)} (it is {_armourFactor}).", this);
+                Debug.LogWarning($"Path object '{name}' has no combat rules: its damage would land in full on everything.", this);
             }
         }
     }

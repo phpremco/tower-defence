@@ -22,27 +22,36 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0.5
     SlowSeconds: 2
+    SupportScale: 0
+    StepName: 
+    Step: 0
   - Cost: 110
     Damage: 2
-    Range: 4
-    FireInterval: 0.45
-    HealthBonus: 0
-    SlowFactor: 0.42
-    SlowSeconds: 3
-  - Cost: 160
-    Damage: 2
-    Range: 4.3
-    FireInterval: 0.4
+    Range: 3.7
+    FireInterval: 0.5
     HealthBonus: 0
     SlowFactor: 0.35
-    SlowSeconds: 4
+    SlowSeconds: 2
+    SupportScale: 0
+    StepName: Deeper chill
+    Step: 4
+  - Cost: 160
+    Damage: 2
+    Range: 4.6
+    FireInterval: 0.5
+    HealthBonus: 0
+    SlowFactor: 0.35
+    SlowSeconds: 2
+    SupportScale: 0
+    StepName: Extended nozzle
+    Step: 3
   _projectileSpeed: 12
   _splashRadius: 0
   _splashTargets: 0
-  _groundDamageFactor: 1
-  _airDamageFactor: 1
   _damageType: 2
-  _armourFactor: 0.2
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
+  _roles: 05000000i
+  _roleLine: 'Control: slows what passes, so every other gun has longer. Its own damage is a token.'
   _retargetRadius: 0
   _homing: 1
   _fuseRadius: 0

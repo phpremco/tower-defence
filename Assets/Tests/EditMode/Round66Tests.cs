@@ -400,7 +400,7 @@ namespace Game.Tests
             Assert.AreEqual(1f, none.RegenMultiplier);
             Assert.AreEqual(1f, none.DamageTakenMultiplier);
             Assert.AreEqual(0, none.RepairDroneTier);
-            Assert.IsFalse(none.BladeAtTop);
+            Assert.AreEqual(0, none.BladeTier);
 
             HeroGear gear = UpgradeEffects.ComputeGlobal(ProgressWith(("Hero_RepairDrone", 2), ("Hero_Armour", 3)), catalog, 4).HeroGear;
             Assert.AreEqual(1f + 2 * drone.BonusPerLevel, gear.RegenMultiplier, 1e-4f);
@@ -412,30 +412,53 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Blade_IsAtItsTop_OnlyAtTheHighestOpenTier()
+        public void Blade_BurnsOrangeHalfway_AndRedOnlyAtTheLastTier()
         {
+            // Round 67 (Remco 2026-11-15): orange from tier 5 of 10, red at tier 10; absolute tiers, never "the highest tier
+            // open on this continent" (tier 4, the top of Crystal Plains, shows nothing).
             UpgradeCatalog catalog = Catalog();
-            Assert.IsFalse(UpgradeEffects.ComputeGlobal(ProgressWith(("Hero_Damage", 3)), catalog, 4).HeroGear.BladeAtTop);
-            Assert.IsTrue(UpgradeEffects.ComputeGlobal(ProgressWith(("Hero_Damage", 4)), catalog, 4).HeroGear.BladeAtTop, "tier 4 is the top on the first continent");
-            Assert.IsFalse(UpgradeEffects.ComputeGlobal(ProgressWith(("Hero_Damage", 4)), catalog, 6).HeroGear.BladeAtTop, "the second continent opens more: the blade cools until it is topped again");
-            Assert.IsTrue(UpgradeEffects.ComputeGlobal(ProgressWith(("Hero_Damage", 10)), catalog, UpgradeTiers.Unlimited).HeroGear.BladeAtTop);
-            Assert.IsFalse(UpgradeEffects.ComputeGlobal(ProgressWith(), catalog, 0).HeroGear.BladeAtTop, "an unbought blade is never at its top");
+            UpgradeDefinition blade = Find(catalog, "Hero_Damage");
+            var art = AssetDatabase.LoadAssetAtPath<HeroGearArtDefinition>("Assets/_Project/Data/Art/Story/MercerGearArt.asset");
+            Assert.IsNotNull(art);
+            Assert.AreEqual(2, art.BladeStages.Length, "an orange stage and a red one");
+            BladeAuraStage orange = art.BladeStages[0];
+            BladeAuraStage red = art.BladeStages[1];
+            Assert.AreEqual(blade.MaxLevel / 2, orange.FromTier, "orange halfway through the blade damage tiers");
+            Assert.AreEqual(blade.MaxLevel, red.FromTier, "red at the last tier there is");
+            Assert.Greater(orange.BladeColor.g, red.BladeColor.g + 0.2f, "orange is orange, red is red");
+            Assert.Less(orange.Strength, red.Strength, "the orange aura is the calmer one");
+            Assert.Greater(orange.Strength, 0f);
+
+            for (int tier = 0; tier <= blade.MaxLevel; tier++)
+            {
+                // The tier cap of the continent plays no part: the gear carries the tier bought.
+                int bought = UpgradeEffects.ComputeGlobal(ProgressWith(("Hero_Damage", tier)), catalog, 4).HeroGear.BladeTier;
+                Assert.AreEqual(tier, bought);
+                bool lit = art.TryBladeStage(bought, out BladeAuraStage stage);
+                Assert.AreEqual(tier >= orange.FromTier, lit, "tier " + tier);
+                if (lit)
+                {
+                    Assert.AreEqual(tier >= red.FromTier ? red.FromTier : orange.FromTier, stage.FromTier, "tier " + tier);
+                }
+            }
+
+            Assert.IsFalse(art.TryBladeStage(4, out _), "the top of the first continent is not the top of the blade");
         }
 
         [Test]
         public void HeroGear_ClampsItsNumbers()
         {
-            Assert.AreEqual(1f - HeroGear.MaxDamageReduction, new HeroGear(0f, 0, 5f, 10, 10, false).DamageTakenMultiplier, 1e-5f);
-            Assert.AreEqual(1f, new HeroGear(-1f, 0, -1f, 0, 10, false).RegenMultiplier);
+            Assert.AreEqual(1f - HeroGear.MaxDamageReduction, new HeroGear(0f, 0, 5f, 10, 10).DamageTakenMultiplier, 1e-5f);
+            Assert.AreEqual(1f, new HeroGear(-1f, 0, -1f, 0, 10).RegenMultiplier);
             Assert.AreEqual(1f, default(HeroGear).DamageTakenMultiplier, "no gear changes nothing");
-            Assert.AreEqual(0.4f, new HeroGear(0f, 0, 0f, 4, 10, false).ArmourGrowth, 1e-5f);
+            Assert.AreEqual(0.4f, new HeroGear(0f, 0, 0f, 4, 10).ArmourGrowth, 1e-5f);
         }
 
         [Test]
         public void Armour_TakesItsShareOffEveryHit_AndTheGateStillGetsItsOwn()
         {
             Commander plain = Hero(default, out HeroDefinition definition);
-            Commander armoured = Hero(new HeroGear(0f, 0, 0.2f, 4, 10, false), out _);
+            Commander armoured = Hero(new HeroGear(0f, 0, 0.2f, 4, 10), out _);
 
             plain.TakeHazardDamage(100f);
             armoured.TakeHazardDamage(100f);
@@ -451,7 +474,7 @@ namespace Game.Tests
         public void RepairDrone_SpeedsUpHisMending_NotItsStart()
         {
             Commander plain = Hero(default, out HeroDefinition definition);
-            Commander helped = Hero(new HeroGear(0.5f, 2, 0f, 0, 10, false), out _);
+            Commander helped = Hero(new HeroGear(0.5f, 2, 0f, 0, 10), out _);
             MethodInfo recover = typeof(Commander).GetMethod("Recover", BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (Commander hero in new[] { plain, helped })
             {
@@ -507,7 +530,7 @@ namespace Game.Tests
             int before = -1;
             for (int tier = 0; tier <= 6; tier++)
             {
-                GameObject figure = HeroView.BuildDisplayFigure(root.transform, hero, new HeroGear(0f, 0, 0f, tier, 10, false));
+                GameObject figure = HeroView.BuildDisplayFigure(root.transform, hero, new HeroGear(0f, 0, 0f, tier, 10));
                 int plates = 0;
                 foreach (MeshRenderer renderer in figure.GetComponentsInChildren<MeshRenderer>())
                 {
@@ -536,9 +559,9 @@ namespace Game.Tests
             }
 
             Assert.AreEqual(0, HeroArmourPlates.Build(_ => null, art, default), "no armour, no plates");
-            var top = new HeroGear(0f, 0, 0f, 10, 10, false);
+            var top = new HeroGear(0f, 0, 0f, 10, 10);
             Assert.AreEqual(art.PlateGrowth, HeroArmourPlates.Growth(1, top, art.PlateGrowth), 1e-4f, "the first plates are full grown at the last tier");
-            Assert.AreEqual(1f, HeroArmourPlates.Growth(4, new HeroGear(0f, 0, 0f, 4, 10, false), art.PlateGrowth), 1e-4f, "a new plate starts at its own size");
+            Assert.AreEqual(1f, HeroArmourPlates.Growth(4, new HeroGear(0f, 0, 0f, 4, 10), art.PlateGrowth), 1e-4f, "a new plate starts at its own size");
         }
 
         // ---- Dr. Voss explains the screen ---------------------------------------------------------------------------
@@ -593,7 +616,7 @@ namespace Game.Tests
             _created.Add(root);
             GameObject without = HeroView.BuildDisplayFigure(root.transform, hero, default);
             Assert.IsNull(without.transform.Find("CompanionDrone"));
-            GameObject with = HeroView.BuildDisplayFigure(root.transform, hero, new HeroGear(0.25f, 1, 0f, 0, 10, false));
+            GameObject with = HeroView.BuildDisplayFigure(root.transform, hero, new HeroGear(0.25f, 1, 0f, 0, 10));
             Transform drone = with.transform.Find("CompanionDrone");
             Assert.IsNotNull(drone, "the drone hovers at his shoulder on the upgrade screen");
             Assert.Less(drone.localScale.x, 1f, "a small drone");

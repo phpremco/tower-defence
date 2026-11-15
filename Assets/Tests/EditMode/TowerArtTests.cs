@@ -50,14 +50,18 @@ namespace Game.Tests
         }
 
         [Test]
-        public void LevelThree_ShowsPathA_AndKeepsPathB()
+        public void LevelThree_HasOneLook_ThePathsAreCut()
         {
-            TowerArtDefinition gun = Load("PulseRifle").Art;
-            Assert.AreEqual(TowerArtPath.A, gun.DefaultPath);
-            StringAssert.EndsWith("_T3A", gun.ArtFor(2).name);
-            StringAssert.EndsWith("_T3B", gun.ArtFor(2, TowerArtPath.B).name);
-            Assert.AreSame(gun.ArtFor(1), gun.ArtFor(1, TowerArtPath.B), "levels 1 and 2 are shared by both paths");
-            StringAssert.EndsWith("_T3", Load("Artillery").Art.ArtFor(2, TowerArtPath.B).name, "a hybrid has one level-3 look");
+            // Round 67 (Remco 2026-11-15): the A/B paths at level 3 are cut; a tower has one look per level.
+            foreach (string guid in AssetDatabase.FindAssets("t:TowerArtDefinition", new[] { "Assets/_Project/Data/Art/Towers" }))
+            {
+                var art = AssetDatabase.LoadAssetAtPath<TowerArtDefinition>(AssetDatabase.GUIDToAssetPath(guid));
+                Assert.LessOrEqual(art.TierCount, TowerDefinition.LevelCount, art.name + " carries a look no level wears");
+            }
+
+            StringAssert.EndsWith("_T3A", Load("PulseRifle").Art.ArtFor(2).name);
+            StringAssert.EndsWith("_T3", Load("Artillery").Art.ArtFor(2).name, "a hybrid has one level-3 look");
+            Assert.IsEmpty(AssetDatabase.FindAssets("_T3B t:ModelArtDefinition", new[] { "Assets/_Project/Data/Art/Towers" }), "a path-B look is still in the data");
         }
 
         [Test]

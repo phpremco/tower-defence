@@ -21,5 +21,14 @@ namespace Game.Towers
         [Tooltip("How long that slow lasts at this level; zero keeps the tower's own value.")]
         [Min(0f)] public float SlowSeconds;
 
+        [Tooltip("Support masts only: multiplier on the mast's boost at this level; zero is one.")]
+        [Min(0f)] public float SupportScale;
+
+        [Tooltip("The name of the upgrade step that leads to this level, as the tower menu shows it (\"Faster cycling\"); empty for the level a tower is built at.")]
+        public string StepName;
+
+        [Tooltip("The one thing that step improves; the tower's data is checked against it.")]
+        public TowerStep Step;
+
     }
 }

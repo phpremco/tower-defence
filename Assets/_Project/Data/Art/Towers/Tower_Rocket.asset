@@ -15,17 +15,13 @@ MonoBehaviour:
   _tiers:
   - _tier: T1
     _levelIndex: 0
-    _path: 0
     _art: {fileID: 11400000, guid: e9beb2070440e7744bb62dd7e0ecc57c, type: 2}
   - _tier: T2
     _levelIndex: 1
-    _path: 0
     _art: {fileID: 11400000, guid: 7091e60b9a33f394e8c64ea95bc1fbef, type: 2}
   - _tier: T3
     _levelIndex: 2
-    _path: 0
     _art: {fileID: 11400000, guid: a86956ab199e38a4d9b7daa2715eb428, type: 2}
-  _defaultPath: 1
   _aim: 1
   _pitchLimits: {x: -12, y: 60}
   _muzzlePrefix: Tube

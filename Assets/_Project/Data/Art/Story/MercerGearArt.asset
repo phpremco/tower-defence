@@ -83,7 +83,15 @@ MonoBehaviour:
   _plateTrimGlow: 2.2
   _plateGrowth: 1.3
   _plateThickness: 0.02
-  _masterBladeColor: {r: 1, g: 0.16, b: 0.1, a: 1}
+  _bladeStages:
+  - FromTier: 5
+    BladeColor: {r: 1, g: 0.5, b: 0.1, a: 1}
+    EmberColor: {r: 1, g: 0.62, b: 0.2, a: 1}
+    Strength: 0.6
+  - FromTier: 10
+    BladeColor: {r: 1, g: 0.16, b: 0.1, a: 1}
+    EmberColor: {r: 1, g: 0.3, b: 0.12, a: 1}
+    Strength: 1
   _auraWidth: 0.6
   _auraGlow: 2.2
   _auraLowShare: 0.6
@@ -91,4 +99,3 @@ MonoBehaviour:
   _haloSize: 1.2
   _haloStrength: 0.7
   _emberRate: 16
-  _emberColor: {r: 1, g: 0.3, b: 0.12, a: 1}

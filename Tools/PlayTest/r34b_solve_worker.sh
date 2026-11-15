@@ -14,6 +14,8 @@ for d in Assets Packages ProjectSettings Tools; do
   robocopy "$PROJECT/$d" "$ROOT/w$n/$d" /MIR /MT:16 /R:1 /W:1 /NFL /NDL /NJH /NJS /NP /NS /NC > /dev/null || [ $? -le 7 ]
 done
 sed -i 's/^  productName: Tower defense$/  productName: Tower defense worker w'"$n"'/' "$dir/ProjectSettings/ProjectSettings.asset"
+# A clone never makes a sound (round 67: Remco heard the hidden workers): audio is off in the clone's own settings.
+sed -i 's/^  m_DisableAudio: 0$/  m_DisableAudio: 1/' "$dir/ProjectSettings/AudioManager.asset"
 started=$(date +%s)
 echo "== w$n: SolveWaves ($(date +%H:%M:%S))"
 "$UNITY" -batchmode -nographics -quit -job-worker-count 2 -projectPath "$ROOT\w$n" -executeMethod Game.Editor.BalanceStages.SolveWaves -logFile "$ROOT\w$n\Logs\unity_solve.log" > /dev/null 2>&1 || true

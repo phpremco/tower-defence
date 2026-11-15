@@ -21,7 +21,7 @@ MonoBehaviour:
   _fraction: 0
   _targets: 3
   _damageType: 0
-  _armourFactor: 1
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _requiresPerk: {fileID: 0}
   _icon: {fileID: 0}
   _tint: {r: 0.4, g: 0.8, b: 1, a: 1}

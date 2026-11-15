@@ -20,7 +20,7 @@ MonoBehaviour:
   _attackInterval: 0.7
   _targets: 1
   _damageType: 3
-  _armourFactor: 0.5
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _magazine: 0
   _reloadSeconds: 0
   _drawSeconds: 0.733

@@ -119,6 +119,10 @@ namespace Game.Tests
             { "Tesla L2 swarm", KnownPrefix + "Tesla splash at the cap on a fast cheap gun, about 1.94x the median (Cannon 0.91x)" },
 
             // Cannon: strong first build against swarms, then its bigger shells overkill them.
+            // Round 67: both Cannon steps are its shell (a faster Cannon would be a swarm gun, which is not its role), so an
+            // upgraded Cannon is worth less against swarms than a new one and than the median: off-role by the role rules.
+            { "Cannon L1 swarm upgrade", "By the role rules (round 67): the Cannon's steps are heavier shells, wasted on swarms (about 0.82x a new build)" },
+            { "Cannon L2 swarm", "By the role rules (round 67): a level-3 Cannon is no swarm gun (about 0.55x the median)" },
             { "Cannon L0 swarm", KnownPrefix + "Cannon splash at the cap for 100 coins, about 1.48x the median" },
             { "Cannon L2 swarm upgrade", KnownPrefix + "Cannon L2 85-damage shells overkill swarms, about 0.59x a new build" },
 

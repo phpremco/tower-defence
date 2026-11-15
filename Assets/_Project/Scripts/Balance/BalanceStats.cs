@@ -139,6 +139,9 @@ namespace Game.Balance
         public float BladeArmourFactor = 1f;
         public float GunArmourFactor = 1f;
 
+        /// <summary>Share of a blaster shot that lands on a creature in the air (the combat rules' air share of its damage type, round 67).</summary>
+        public float GunAirFactor = 1f;
+
         /// <summary>The shockwave (round 24): damage to everything within reach every cooldown, as the bot and a player use it in a crowd or on a boss; zero without the ability.</summary>
         public float PulseDamage;
         public float PulseCooldown = 20f;
@@ -338,6 +341,9 @@ namespace Game.Balance
 
         /// <summary>Share of an attack drone's shot that works on armour (DroneDefinition.ArmourFactor); its shots ignored armour until round 64.</summary>
         public float ArmourFactor = 1f;
+
+        /// <summary>Share of an attack drone's shot that lands on a creature in the air (the combat rules' air share of its damage type, round 67).</summary>
+        public float AirFactor = 1f;
 
         /// <summary>Hit points a repair drone restores per second while it works on a structure (DroneDefinition.RepairPerSecond).</summary>
         public float RepairPerSecond;

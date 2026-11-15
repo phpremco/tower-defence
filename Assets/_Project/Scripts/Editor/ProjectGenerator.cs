@@ -108,6 +108,81 @@ namespace Game.Editor
         private static TowerLevel Lvl(int cost, float damage, float range, float interval, float healthBonus = 0f, float slowFactor = 0f, float slowSeconds = 0f) =>
             new TowerLevel { Cost = cost, Damage = damage, Range = range, FireInterval = interval, HealthBonus = healthBonus, SlowFactor = slowFactor, SlowSeconds = slowSeconds };
 
+        /// <summary>
+        /// One in-level upgrade step (round 67, Remco: "each upgrade step improves ONE named thing"): its name on the tower
+        /// menu, the one stat it improves and that stat's new value. A damage or fire-rate step is given as the damage per
+        /// second the tower has after it, so a tower's power per level is typed once and the stat follows.
+        /// </summary>
+        private readonly struct StepSpec
+        {
+            public readonly string Name;
+            public readonly TowerStep Improves;
+            public readonly float Value;
+            public readonly int Cost;
+            public readonly TowerLevel Refit;
+
+            public StepSpec(string name, TowerStep improves, float value, int cost, TowerLevel refit = default)
+            {
+                Name = name;
+                Improves = improves;
+                Value = value;
+                Cost = cost;
+                Refit = refit;
+            }
+        }
+
+        /// <summary>Heavier hits: the damage rises until the tower deals this much per second; the rate stays.</summary>
+        private static StepSpec Harder(string name, float toDps, int cost = 0) => new StepSpec(name, TowerStep.Damage, toDps, cost);
+
+        /// <summary>Faster fire: the interval shrinks until the tower deals this much per second; the hit stays.</summary>
+        private static StepSpec Faster(string name, float toDps, int cost = 0) => new StepSpec(name, TowerStep.FireRate, toDps, cost);
+
+        private static StepSpec Further(string name, float range, int cost) => new StepSpec(name, TowerStep.Range, range, cost);
+
+        private static StepSpec Colder(string name, float slowFactor, int cost) => new StepSpec(name, TowerStep.Slow, slowFactor, cost);
+
+        private static StepSpec Stronger(string name, float supportScale, int cost) => new StepSpec(name, TowerStep.Support, supportScale, cost);
+
+        /// <summary>A structure's refit (a gate, the base's turret): the whole next level, several things at once.</summary>
+        private static StepSpec Refit(string name, TowerLevel level) => new StepSpec(name, TowerStep.Refit, 0f, level.Cost, level);
+
+        /// <summary>The levels of a tower: the level it is built at, then each step applied to the level before it.</summary>
+        private static TowerLevel[] Levels(TowerLevel build, params StepSpec[] steps)
+        {
+            var levels = new TowerLevel[steps.Length + 1];
+            levels[0] = build;
+            for (int i = 0; i < steps.Length; i++)
+            {
+                StepSpec step = steps[i];
+                TowerLevel level = step.Improves == TowerStep.Refit ? step.Refit : levels[i];
+                level.Cost = step.Cost;
+                level.StepName = step.Name;
+                level.Step = step.Improves;
+                switch (step.Improves)
+                {
+                    case TowerStep.Damage:
+                        level.Damage = step.Value * level.FireInterval;
+                        break;
+                    case TowerStep.FireRate:
+                        level.FireInterval = level.Damage / step.Value;
+                        break;
+                    case TowerStep.Range:
+                        level.Range = step.Value;
+                        break;
+                    case TowerStep.Slow:
+                        level.SlowFactor = step.Value;
+                        break;
+                    case TowerStep.Support:
+                        level.SupportScale = step.Value;
+                        break;
+                }
+
+                levels[i + 1] = level;
+            }
+
+            return levels;
+        }
+
         private static void SetShape(TowerDefinition tower, TowerShape shape)
         {
             var so = new SerializedObject(tower);
@@ -115,7 +190,7 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health, bool blocksGround = false, float slowFactor = 1f, float slowSeconds = 0f, bool support = false, float rangeBonus = 0f, float rateBonus = 0f, bool baseDefence = false, float airDamageFactor = 1f, bool homing = true, float retargetRadius = 0f, int splashTargets = 0)
+        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health, bool blocksGround = false, float slowFactor = 1f, float slowSeconds = 0f, bool support = false, float rangeBonus = 0f, float rateBonus = 0f, bool baseDefence = false, bool homing = true, float retargetRadius = 0f, int splashTargets = 0, string roleLine = "", TowerRole[] roles = null)
         {
             var tower = LoadOrCreate<TowerDefinition>($"{DataRoot}/Towers/{id}.asset");
             var so = new SerializedObject(tower);
@@ -130,8 +205,15 @@ namespace Game.Editor
             so.FindProperty("_targets").intValue = (int)targets;
             so.FindProperty("_projectileSpeed").floatValue = projectileSpeed;
             so.FindProperty("_splashRadius").floatValue = splash;
-            so.FindProperty("_groundDamageFactor").floatValue = 1f;
-            so.FindProperty("_airDamageFactor").floatValue = airDamageFactor;
+            SerializedProperty roleArray = so.FindProperty("_roles");
+            roles = roles ?? new TowerRole[0];
+            roleArray.arraySize = roles.Length;
+            for (int i = 0; i < roles.Length; i++)
+            {
+                roleArray.GetArrayElementAtIndex(i).enumValueIndex = (int)roles[i];
+            }
+
+            so.FindProperty("_roleLine").stringValue = roleLine;
             so.FindProperty("_retargetRadius").floatValue = retargetRadius;
             so.FindProperty("_splashTargets").intValue = splashTargets;
             StampDamage(so, $"Towers/{id}");
@@ -161,6 +243,9 @@ namespace Game.Editor
                 element.FindPropertyRelative("HealthBonus").floatValue = levels[i].HealthBonus;
                 element.FindPropertyRelative("SlowFactor").floatValue = levels[i].SlowFactor;
                 element.FindPropertyRelative("SlowSeconds").floatValue = levels[i].SlowSeconds;
+                element.FindPropertyRelative("SupportScale").floatValue = levels[i].SupportScale;
+                element.FindPropertyRelative("StepName").stringValue = levels[i].StepName ?? string.Empty;
+                element.FindPropertyRelative("Step").enumValueIndex = (int)levels[i].Step;
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();

@@ -2,7 +2,7 @@ namespace Game.Core
 {
     /// <summary>
     /// What the hero's permanent gear upgrades add when a level starts: the companion drone that mends him faster, the
-    /// armour that takes the edge off every hit, and whether the blade has reached the top tier open to the player.
+    /// armour that takes the edge off every hit, and how far the blade damage upgrade has come (the blade's look follows it).
     /// The default value means "no gear": nothing healed faster, nothing absorbed, no plates, a plain blade.
     /// </summary>
     public readonly struct HeroGear
@@ -10,14 +10,14 @@ namespace Game.Core
         /// <summary>The armour never takes more than this share off a hit, whatever the data adds up to.</summary>
         public const float MaxDamageReduction = 0.9f;
 
-        public HeroGear(float regenBonus, int repairDroneTier, float damageReduction, int armourTier, int armourTiers, bool bladeAtTop)
+        public HeroGear(float regenBonus, int repairDroneTier, float damageReduction, int armourTier, int armourTiers, int bladeTier = 0)
         {
             RegenBonus = regenBonus < 0f ? 0f : regenBonus;
             RepairDroneTier = repairDroneTier;
             DamageReduction = damageReduction < 0f ? 0f : damageReduction > MaxDamageReduction ? MaxDamageReduction : damageReduction;
             ArmourTier = armourTier;
             ArmourTiers = armourTiers;
-            BladeAtTop = bladeAtTop;
+            BladeTier = bladeTier;
         }
 
         /// <summary>Extra healing as a fraction of the hero's own rate (0.3 heals 30% faster).</summary>
@@ -35,8 +35,8 @@ namespace Game.Core
         /// <summary>How many armour tiers exist in all, so a view can tell how far the plates have grown.</summary>
         public int ArmourTiers { get; }
 
-        /// <summary>True when the blade damage upgrade stands at the highest tier the player can buy right now.</summary>
-        public bool BladeAtTop { get; }
+        /// <summary>Tiers bought of the blade damage upgrade; the blade's colour and aura follow it at the tiers the gear art names.</summary>
+        public int BladeTier { get; }
 
         public float RegenMultiplier => 1f + RegenBonus;
 

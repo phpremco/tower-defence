@@ -9,10 +9,12 @@ namespace Game.Editor
     /// </summary>
     public sealed class BlenderTowerEntry
     {
-        // A standard tower has a level-3 look for each upgrade path; until the data has paths, A is the level-3 look.
-        public static readonly string[] PathTiers = { "T1", "T2", "T3A", "T3B" };
+        // A standard tower's exports carry two level-3 looks, from when level 3 was to split into paths A and B. The paths
+        // were cut (round 67, Remco 2026-11-15: every step improves one named thing): the A look is the level-3 look, the B
+        // export stays in ArtSource and is not imported.
+        public static readonly string[] StandardTiers = { "T1", "T2", "T3A" };
 
-        // Hybrids and the gate gun have three looks and no paths.
+        // Hybrids and the gate gun were exported with one level-3 look.
         public static readonly string[] PlainTiers = { "T1", "T2", "T3" };
 
         public BlenderTowerEntry(string tower, string asset, string[] tiers)
@@ -28,7 +30,7 @@ namespace Game.Editor
         /// <summary>The export folder and file prefix.</summary>
         public string Asset { get; }
 
-        /// <summary>The tier names in level order; a fourth is the level-3 look of path B.</summary>
+        /// <summary>The tier names in level order.</summary>
         public string[] Tiers { get; }
 
         public TowerAimMode Aim { get; set; } = TowerAimMode.YawAndPitch;

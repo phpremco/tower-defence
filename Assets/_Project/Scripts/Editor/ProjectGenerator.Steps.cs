@@ -26,6 +26,7 @@ namespace Game.Editor
         private static readonly GeneratorStep[] Steps =
         {
             new GeneratorStep("TextMeshPro essentials", _ => EnsureTextMeshProEssentials()),
+            new GeneratorStep("Combat rules", _ => CreateCombatRules()),
             new GeneratorStep("Towers", GenerateCoreTowers),
             new GeneratorStep("Bestiary", c => c.Bestiary = CreateBestiary()),
             // The Blender models: synced from ArtSource, turned into materials and art data, and worn by the bestiary.

@@ -54,6 +54,9 @@ sync_worker() {
   fi
   # The clone's own persistentDataPath: its product name differs, so it never sees Remco's save folder.
   sed -i "s/^  productName: Tower defense\$/  productName: Tower defense worker w$i/" "$(cygpath -u "$dir")/ProjectSettings/ProjectSettings.asset"
+  # A clone never makes a sound (round 67: Remco heard the hidden workers play the game): audio is off in the clone's own
+  # settings, never in the project's. The probe also mutes the listener in batch mode.
+  sed -i 's/^  m_DisableAudio: 0$/  m_DisableAudio: 1/' "$(cygpath -u "$dir")/ProjectSettings/AudioManager.asset"
   rm -f "$(cygpath -u "$dir")"/Assets/InitTestScene*.unity*
 }
 

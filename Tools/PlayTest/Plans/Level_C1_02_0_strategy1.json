@@ -8,98 +8,103 @@
             "Tower": "PulseRifle",
             "X": [
                 1,
-                1,
                 4,
                 1,
-                4,
+                1,
+                32,
                 4,
                 7,
-                32
+                4
             ],
             "Y": [
                 15,
-                14,
                 15,
-                13,
-                13,
                 14,
+                13,
+                16,
+                13,
                 6,
-                16
+                14
             ]
         },
         {
             "Tower": "Cannon",
             "X": [
-                1,
                 4,
                 1,
                 1,
                 4,
+                1,
                 4,
-                7,
-                32
+                32,
+                7
             ],
             "Y": [
                 15,
                 15,
                 14,
-                13,
-                13,
                 14,
-                6,
-                16
+                13,
+                13,
+                16,
+                6
             ]
         },
         {
             "Tower": "Laser",
             "X": [
+                1,
                 0,
-                1,
-                1,
-                4,
                 0,
                 4,
-                7,
-                31
+                1,
+                4,
+                31,
+                7
             ],
             "Y": [
                 15,
-                14,
-                15,
                 15,
                 14,
+                15,
                 14,
-                6,
-                19
+                14,
+                19,
+                6
             ]
         }
     ],
     "Weights": [
         {
             "Threat": "swarm",
-            "Tower": "Laser",
-            "Weight": 1.9754754304885864
+            "Tower": "Cannon",
+            "Weight": 0.5242512822151184
         },
         {
             "Threat": "pack",
             "Tower": "Laser",
-            "Weight": 2.029677391052246
+            "Weight": 0.7877294421195984
         },
         {
-            "Threat": "air",
-            "Tower": "PulseRifle",
-            "Weight": 1.5148212909698486
+            "Threat": "plated",
+            "Tower": "Laser",
+            "Weight": 2.1897976398468018
+        },
+        {
+            "Threat": "boss",
+            "Tower": "Laser",
+            "Weight": 2.340665817260742
         }
     ],
-    "UpgradeBias": 1.2699999809265137,
+    "UpgradeBias": 1.6399999856948853,
     "TowersBeforeUpgrades": 3,
-    "MineCoverBelow": 1.0,
-    "MineOnBoss": true,
-    "FieldCoverBelow": 1.0,
-    "HarvesterCover": 1.5,
-    "HarvesterShare": 0.4000000059604645,
-    "RepairDroneWear": 0.10000000149011612,
-    "AttackDroneAfterTowers": 0,
+    "MineCoverBelow": 0.0,
+    "MineOnBoss": false,
+    "FieldCoverBelow": 1.2000000476837158,
+    "HarvesterCover": 1.0,
+    "HarvesterShare": 0.5,
+    "RepairDroneWear": 0.5,
+    "AttackDroneAfterTowers": 12,
     "GateUpgradeBias": 0.0,
     "AllowSell": false
 }

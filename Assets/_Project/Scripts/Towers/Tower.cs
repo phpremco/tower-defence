@@ -11,7 +11,6 @@ namespace Game.Towers
     /// </summary>
     public sealed class Tower : MonoBehaviour, IStructure, IGuardable, ISupportSource, IBridgeable
     {
-        private const float SupportLevelGrowth = 0.5f;
         private const float MuzzleHeight = 1f;
         private const float MuzzleForward = 0.55f;
         private const float SupportRefreshSeconds = 0.25f;
@@ -67,9 +66,19 @@ namespace Game.Towers
 
         public float SupportRadius => _definition.IsSupport && IsAlive ? _definition.GetLevel(LevelIndex).Range * _modifiers.TowerRangeMultiplier * GroundRange : 0f;
 
-        public float RangeBonus => _definition.SupportRangeBonus * (1f + SupportLevelGrowth * LevelIndex);
+        public float RangeBonus => _definition.SupportRangeBonus * SupportScale;
 
-        public float RateBonus => _definition.SupportRateBonus * (1f + SupportLevelGrowth * LevelIndex);
+        public float RateBonus => _definition.SupportRateBonus * SupportScale;
+
+        // A mast's boost at its level (a named upgrade step in the data; zero in the data is one).
+        private float SupportScale
+        {
+            get
+            {
+                float scale = _definition.GetLevel(LevelIndex).SupportScale;
+                return scale > 0f ? scale : 1f;
+            }
+        }
 
         public int TotalSpent
         {
@@ -519,8 +528,8 @@ namespace Game.Towers
 
         private void Shoot(TowerLevel level, ITargetable target)
         {
-            // The layer share follows the aimed creature (a gun that also aims up hits the sky softer).
-            float damage = level.Damage * _modifiers.TowerDamageMultiplier * Power * _definition.DamageFactorAgainst(target.Layer);
+            // What the shot is worth on each creature it hits (armour, the sky) is the combat rules' and is taken where it lands.
+            float damage = level.Damage * _modifiers.TowerDamageMultiplier * Power;
             // The shot leaves from the mouth of the barrel: a little above the base and towards the target.
             Vector3 towards = target.Position - transform.position;
             towards.y = 0f;
@@ -530,7 +539,7 @@ namespace Game.Towers
             // A chilling tower grows its slow with its stars instead of its damage.
             float slowFactor = level.SlowFactor > 0f ? level.SlowFactor : _definition.SlowFactor;
             float slowSeconds = level.SlowSeconds > 0f ? level.SlowSeconds : _definition.SlowSeconds;
-            _projectiles.Fire(muzzle, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets, slowFactor, slowSeconds, _definition.ProjectileStyle, _definition.Color, _definition.FuseRadius, this, _definition.RetargetRadius, _definition.Homing, _definition.SplashTargets, _definition.ArmourFactor);
+            _projectiles.Fire(muzzle, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets, slowFactor, slowSeconds, _definition.ProjectileStyle, _definition.Color, _definition.FuseRadius, this, _definition.RetargetRadius, _definition.Homing, _definition.SplashTargets, _definition.Profile);
             Fired?.Invoke(target.Position);
         }
 

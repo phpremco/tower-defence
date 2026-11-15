@@ -74,7 +74,7 @@ namespace Game.Economy
             float heroArmour = 0f;
             int armourTier = 0;
             int armourTiers = 0;
-            bool bladeAtTop = false;
+            int bladeTier = 0;
 
             foreach (UpgradeDefinition upgrade in catalog.Upgrades)
             {
@@ -111,8 +111,7 @@ namespace Game.Economy
                         break;
                     case UpgradeTarget.HeroDamage:
                         heroDamage += bonus;
-                        // The blade shows it has nothing left to learn for now: the top of what the reached continents open.
-                        bladeAtTop |= level > 0 && level >= UpgradeTiers.Open(upgrade, tierCap);
+                        bladeTier += level;
                         break;
                     case UpgradeTarget.HeroHealth:
                         heroHealth += bonus;
@@ -129,7 +128,7 @@ namespace Game.Economy
                 }
             }
 
-            var gear = new HeroGear(heroRegen, repairDroneTier, heroArmour, armourTier, armourTiers, bladeAtTop);
+            var gear = new HeroGear(heroRegen, repairDroneTier, heroArmour, armourTier, armourTiers, bladeTier);
             return new PlayerModifiers(damage, range, fireRate, health, (int)System.Math.Round(baseHealth), blockade, heroDamage, heroHealth, (int)System.Math.Round(baseWeapon), gear);
         }
     }

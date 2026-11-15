@@ -476,6 +476,11 @@ namespace Game.Tests
             Application.logMessageReceived += onLog;
             // A headless worker keeps every rig evaluated although nothing is drawn (see the camera switch below).
             ModelClipPlayer.AlwaysAnimate = Application.isBatchMode;
+            if (Application.isBatchMode)
+            {
+                // A hidden worker plays the game without anyone watching: it must not be heard either (round 67).
+                AudioListener.volume = 0f;
+            }
             foreach ((int level, int difficulty) in runs)
             {
                 SceneManager.LoadScene(SceneNames.Boot);

@@ -22,6 +22,9 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: 
+    Step: 0
   - Cost: 70
     Damage: 12
     Range: 4.5
@@ -29,6 +32,9 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Turret Mk II
+    Step: 6
   - Cost: 110
     Damage: 19
     Range: 4.8
@@ -36,13 +42,16 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
+    SupportScale: 0
+    StepName: Turret Mk III
+    Step: 6
   _projectileSpeed: 14
   _splashRadius: 0
   _splashTargets: 0
-  _groundDamageFactor: 1
-  _airDamageFactor: 1
   _damageType: 1
-  _armourFactor: 0.2
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
+  _roles: 00000000i
+  _roleLine: The base's last line. It helps; it replaces no tower.
   _retargetRadius: 0
   _homing: 1
   _fuseRadius: 0

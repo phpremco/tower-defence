@@ -15,21 +15,13 @@ MonoBehaviour:
   _tiers:
   - _tier: T1
     _levelIndex: 0
-    _path: 0
     _art: {fileID: 11400000, guid: ff9807309e7095544a98f15ef212ca62, type: 2}
   - _tier: T2
     _levelIndex: 1
-    _path: 0
     _art: {fileID: 11400000, guid: 809f7d7b3520e904bb610488d4103f02, type: 2}
   - _tier: T3A
     _levelIndex: 2
-    _path: 1
     _art: {fileID: 11400000, guid: 013f0258b321eab4199bd204966eb869, type: 2}
-  - _tier: T3B
-    _levelIndex: 2
-    _path: 2
-    _art: {fileID: 11400000, guid: decabf7a37c3c8144bdaa6fa8bc5b916, type: 2}
-  _defaultPath: 1
   _aim: 0
   _pitchLimits: {x: -12, y: 60}
   _muzzlePrefix: Muzzle

@@ -321,7 +321,7 @@ namespace Game.Balance
             // group's armour lets each of them land (round 24); against flyers at the base the blaster only.
             float heroGround = state.HeroUp ? Ledger.HeroDps(level, load.StreamArmour, attackers) : 0f;
             float heroBoss = state.HeroUp ? Ledger.HeroDps(level, load.BossArmour, bossAttackers) : 0f;
-            float heroAir = state.HeroUp && level.Hero != null ? Ledger.HeroGunDps(level) * load.AirArmour.Share(level.Hero.GunArmourFactor) : 0f;
+            float heroAir = state.HeroUp && level.Hero != null ? Ledger.HeroGunDps(level) * level.Hero.GunAirFactor * load.AirArmour.Share(level.Hero.GunArmourFactor) : 0f;
 
             // The defence gate: the queue guns and the hero at his post against the stream, then the bosses.
             if (state.TrunkGates > 0 && state.DefenceGate > 0f)
