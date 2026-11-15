@@ -25,6 +25,12 @@ namespace Game.Levels
         [Tooltip("Dr. Voss's gate tips: the in-level gate upgrade and moving the hero to the gate under pressure (once per save; Remco 2026-11-08).")]
         [SerializeField] private GateTip[] _gateTips = new GateTip[0];
 
+        [Tooltip("Dr. Voss's hint about high ground: plays once per save after the first tower is built in a level that has a raised build spot (Remco 2026-11-15).")]
+        [SerializeField] private DialogueDefinition _highGroundTip;
+
+        /// <summary>The hint about high ground; null while there is none.</summary>
+        public DialogueDefinition HighGroundTip => _highGroundTip;
+
         /// <summary>The opening cutscene; null while there is none.</summary>
         public CutsceneDefinition OpeningCutscene => _openingCutscene;
 

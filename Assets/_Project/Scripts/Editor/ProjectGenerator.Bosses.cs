@@ -618,6 +618,8 @@ namespace Game.Editor
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();
+            // The copy's own pools and ruin gate may lie beside raised ground the source level had clear (round 65).
+            ApplyPlateauSkirt(level);
             EditorUtility.SetDirty(level);
             return level;
         }

@@ -313,11 +313,11 @@ namespace Game.Tests
             int about = LoadingTips.AboutLevel(catalog.Story, level, easy);
             Assert.Greater(tips.Count, 3, "the story has scan hints and gate tips");
             Assert.Greater(about, 0, "Shard Ridge sends creatures the story has a hint for");
+            // Round 65: a tip is the hint's own loading tip (written to stand alone), no longer its closing line.
             var words = new HashSet<string>();
             foreach (ScanHint hint in catalog.Story.ScanHints)
             {
-                DialogueLine closing = hint.Dialogue.Lines[hint.Dialogue.Lines.Count - 1];
-                words.Add(closing.Segments[0].Text.Trim());
+                words.Add(hint.Dialogue.LoadingTip.Trim());
             }
 
             for (int i = 0; i < tips.Count; i++)
@@ -326,7 +326,7 @@ namespace Game.Tests
                 Assert.LessOrEqual(tips[i].Text.Length, LoadingTips.MaxLength, "a tip fits its box");
                 if (i < about)
                 {
-                    Assert.IsTrue(words.Contains(tips[i].Text) || tips[i].Text.Length > 0, "a level tip is a scan hint's closing line");
+                    Assert.IsTrue(words.Contains(tips[i].Text), "a level tip is a scan hint's loading tip");
                 }
             }
 

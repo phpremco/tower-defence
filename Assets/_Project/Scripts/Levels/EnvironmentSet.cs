@@ -58,6 +58,10 @@ namespace Game.Levels
         [SerializeField] [Min(0.01f)] private float _altNoiseScale = 0.3f;
         [Tooltip("The second layer keeps this many cells off the road, so the road edge stays one clean line.")]
         [SerializeField] [Min(0f)] private float _altRoadClearance = 0.8f;
+        [Tooltip("How much of the cliff rock shows on the bank of raised ground (round 65: the slope has no wall, so the bank must read as rock). 0 keeps the plain ground there.")]
+        [SerializeField] [Range(0f, 1f)] private float _plateauBank = 0.85f;
+        [Tooltip("How much of the second ground layer covers the level top of raised ground, so high ground reads as its own surface.")]
+        [SerializeField] [Range(0f, 1f)] private float _plateauTop = 0.9f;
         [SerializeField] [Min(0f)] private float _sparkle = 0.6f;
         [SerializeField] private Color _sparkleColour = new Color(1f, 0.7f, 0.95f);
         [SerializeField] [Range(0f, 1f)] private float _occlusion = 0.6f;
@@ -153,6 +157,8 @@ namespace Game.Levels
         public float AltCoverage => _altCoverage;
         public float AltNoiseScale => _altNoiseScale;
         public float AltRoadClearance => _altRoadClearance;
+        public float PlateauBank => _plateauBank;
+        public float PlateauTop => _plateauTop;
         public float Sparkle => _sparkle;
         public Color SparkleColour => _sparkleColour;
         public float Occlusion => _occlusion;

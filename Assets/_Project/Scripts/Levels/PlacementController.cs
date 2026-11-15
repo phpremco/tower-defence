@@ -661,6 +661,8 @@ namespace Game.Levels
 
             go.AddComponent<TowerView>();
             tower.Initialize(definition, _context.Targets, _context.Projectiles, _context.ModifiersFor(definition));
+            // A gate stands on the road; everything else takes what its ground gives (high ground reaches further).
+            tower.GroundRange = definition.BlocksGroundEnemies ? 1f : TerrainBalance.RangeMultiplier(_context.Level, cell);
             if (preview)
             {
                 tower.enabled = false;
@@ -895,7 +897,7 @@ namespace Game.Levels
         {
             if (placing && selected != null)
             {
-                float range = selected.GetLevel(0).Range * _context.ModifiersFor(selected).TowerRangeMultiplier;
+                float range = selected.GetLevel(0).Range * _context.ModifiersFor(selected).TowerRangeMultiplier * TerrainBalance.RangeMultiplier(_context.Level, _cursor);
                 _range.Show(world, range, valid ? ValidColor : InvalidColor);
             }
             else if (_context.Mode == PlacementMode.TowerMenu && _context.SelectedPlacedTower != null)
@@ -1054,6 +1056,8 @@ namespace Game.Levels
             Destroy(tower.gameObject);
         }
 
+        private const string SlopeStatus = "Too steep: the slope of the high ground holds no tower";
+
         private string DescribeBlockedCell()
         {
             if (_context.SelectedPathObject != null)
@@ -1071,6 +1075,11 @@ namespace Game.Levels
                 return "Towers cannot be built on the road";
             }
 
+            if (_buildGrid.IsSlope(_cursor))
+            {
+                return SlopeStatus;
+            }
+
             return _buildGrid.IsBlocked(_cursor) ? "Something is in the way here" : "Cannot build here";
         }
 
@@ -1080,12 +1089,18 @@ namespace Game.Levels
             {
                 // The tower in hand, its price and what it does against ground and sky (the cards only carry two badges).
                 string reach = TargetRead.Label(selected);
-                return reach.Length > 0 ? $"{selected.DisplayName} ({selected.BuildCost})  -  {reach}" : $"{selected.DisplayName} ({selected.BuildCost})";
+                string ground = HighGroundNote(_cursor);
+                return $"{selected.DisplayName} ({selected.BuildCost})" + (reach.Length > 0 ? "  -  " + reach : string.Empty) + (ground.Length > 0 ? "  -  " + ground : string.Empty);
             }
 
             if (_context.ClosedPads.Contains(_cursor))
             {
                 return "Overgrown: burn it clean first";
+            }
+
+            if (_buildGrid.IsSlope(_cursor))
+            {
+                return SlopeStatus;
             }
 
             if (!_buildGrid.CanBuild(_cursor))
@@ -1094,6 +1109,13 @@ namespace Game.Levels
             }
 
             return "Not enough money";
+        }
+
+        // What the cell under the cursor adds to a tower's reach, in the words of the status line; empty on the plain.
+        private string HighGroundNote(Vector2Int cell)
+        {
+            TerrainRules rules = _context.Level.TerrainRules;
+            return rules != null && TerrainBalance.RangeMultiplier(_context.Level, cell) > 1f ? $"High ground: {rules.HighGroundLabel} range" : string.Empty;
         }
     }
 }

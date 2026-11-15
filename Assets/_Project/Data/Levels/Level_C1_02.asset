@@ -81,6 +81,13 @@ MonoBehaviour:
   - {x: 36, y: 2}
   - {x: 36, y: 10}
   - {x: 36, y: 11}
+  - {x: 13, y: 10}
+  - {x: 13, y: 12}
+  - {x: 14, y: 11}
+  - {x: 15, y: 11}
+  - {x: 16, y: 11}
+  - {x: 31, y: 11}
+  - {x: 33, y: 12}
   _blockades:
   - Cell: {x: 3, y: 10}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
@@ -127,8 +134,6 @@ MonoBehaviour:
     Kind: 2
   - Cell: {x: 10, y: 1}
     Kind: 2
-  - Cell: {x: 13, y: 9}
-    Kind: 1
   - Cell: {x: 13, y: 10}
     Kind: 1
   - Cell: {x: 13, y: 12}
@@ -141,8 +146,6 @@ MonoBehaviour:
     Kind: 1
   - Cell: {x: 15, y: 8}
     Kind: 2
-  - Cell: {x: 15, y: 10}
-    Kind: 1
   - Cell: {x: 15, y: 11}
     Kind: 1
   - Cell: {x: 16, y: 7}
@@ -151,17 +154,7 @@ MonoBehaviour:
     Kind: 2
   - Cell: {x: 16, y: 9}
     Kind: 2
-  - Cell: {x: 16, y: 10}
-    Kind: 1
   - Cell: {x: 16, y: 11}
-    Kind: 1
-  - Cell: {x: 17, y: 9}
-    Kind: 1
-  - Cell: {x: 17, y: 10}
-    Kind: 1
-  - Cell: {x: 17, y: 11}
-    Kind: 1
-  - Cell: {x: 17, y: 12}
     Kind: 1
   - Cell: {x: 24, y: 7}
     Kind: 2
@@ -173,14 +166,6 @@ MonoBehaviour:
     Kind: 2
   - Cell: {x: 26, y: 9}
     Kind: 2
-  - Cell: {x: 30, y: 10}
-    Kind: 1
-  - Cell: {x: 30, y: 11}
-    Kind: 1
-  - Cell: {x: 30, y: 12}
-    Kind: 1
-  - Cell: {x: 30, y: 14}
-    Kind: 1
   - Cell: {x: 31, y: 9}
     Kind: 7
   - Cell: {x: 31, y: 11}
@@ -193,8 +178,6 @@ MonoBehaviour:
     Kind: 1
   - Cell: {x: 32, y: 9}
     Kind: 7
-  - Cell: {x: 32, y: 11}
-    Kind: 1
   - Cell: {x: 32, y: 12}
     Kind: 1
   - Cell: {x: 32, y: 13}
@@ -207,8 +190,6 @@ MonoBehaviour:
     Kind: 7
   - Cell: {x: 33, y: 10}
     Kind: 7
-  - Cell: {x: 33, y: 11}
-    Kind: 1
   - Cell: {x: 33, y: 12}
     Kind: 1
   - Cell: {x: 34, y: 4}
@@ -247,6 +228,45 @@ MonoBehaviour:
     Kind: 7
   - Cell: {x: 37, y: 13}
     Kind: 7
+  _slopeCells:
+  - {x: 12, y: 9}
+  - {x: 12, y: 10}
+  - {x: 12, y: 11}
+  - {x: 12, y: 12}
+  - {x: 12, y: 13}
+  - {x: 13, y: 9}
+  - {x: 13, y: 11}
+  - {x: 13, y: 13}
+  - {x: 14, y: 9}
+  - {x: 14, y: 10}
+  - {x: 14, y: 12}
+  - {x: 14, y: 13}
+  - {x: 15, y: 10}
+  - {x: 15, y: 12}
+  - {x: 16, y: 10}
+  - {x: 16, y: 12}
+  - {x: 17, y: 10}
+  - {x: 17, y: 11}
+  - {x: 17, y: 12}
+  - {x: 30, y: 10}
+  - {x: 30, y: 11}
+  - {x: 30, y: 12}
+  - {x: 30, y: 13}
+  - {x: 30, y: 14}
+  - {x: 30, y: 15}
+  - {x: 31, y: 10}
+  - {x: 31, y: 15}
+  - {x: 32, y: 10}
+  - {x: 32, y: 11}
+  - {x: 32, y: 15}
+  - {x: 33, y: 11}
+  - {x: 33, y: 13}
+  - {x: 33, y: 14}
+  - {x: 33, y: 15}
+  - {x: 34, y: 11}
+  - {x: 34, y: 12}
+  - {x: 34, y: 13}
+  _terrainRules: {fileID: 11400000, guid: 0ac737044b0451f4e98e9986a9f69eac, type: 2}
   _mineCells:
   - {x: 13, y: 7}
   - {x: 6, y: 12}
@@ -255,6 +275,7 @@ MonoBehaviour:
   _bossEntrance:
     Kind: 0
     Cell: {x: 0, y: 0}
+    Footprint: []
   _nests:
   - Cell: {x: 7, y: 15}
     Element: 7

@@ -131,8 +131,6 @@ MonoBehaviour:
     Kind: 7
   - Cell: {x: 21, y: 8}
     Kind: 7
-  - Cell: {x: 30, y: 18}
-    Kind: 1
   - Cell: {x: 31, y: 16}
     Kind: 1
   - Cell: {x: 31, y: 17}
@@ -153,18 +151,6 @@ MonoBehaviour:
     Kind: 1
   - Cell: {x: 32, y: 18}
     Kind: 1
-  - Cell: {x: 32, y: 19}
-    Kind: 1
-  - Cell: {x: 33, y: 15}
-    Kind: 1
-  - Cell: {x: 33, y: 16}
-    Kind: 1
-  - Cell: {x: 33, y: 17}
-    Kind: 1
-  - Cell: {x: 33, y: 18}
-    Kind: 1
-  - Cell: {x: 33, y: 19}
-    Kind: 1
   - Cell: {x: 33, y: 20}
     Kind: 5
   - Cell: {x: 34, y: 6}
@@ -175,10 +161,6 @@ MonoBehaviour:
     Kind: 5
   - Cell: {x: 34, y: 17}
     Kind: 5
-  - Cell: {x: 34, y: 18}
-    Kind: 1
-  - Cell: {x: 34, y: 19}
-    Kind: 1
   - Cell: {x: 34, y: 21}
     Kind: 5
   - Cell: {x: 35, y: 6}
@@ -233,6 +215,39 @@ MonoBehaviour:
     Kind: 5
   - Cell: {x: 6, y: 21}
     Kind: 5
+  _slopeCells:
+  - {x: 0, y: 0}
+  - {x: 0, y: 1}
+  - {x: 0, y: 4}
+  - {x: 1, y: 4}
+  - {x: 2, y: 0}
+  - {x: 2, y: 2}
+  - {x: 2, y: 3}
+  - {x: 2, y: 4}
+  - {x: 3, y: 0}
+  - {x: 3, y: 1}
+  - {x: 3, y: 2}
+  - {x: 30, y: 15}
+  - {x: 30, y: 16}
+  - {x: 30, y: 17}
+  - {x: 30, y: 18}
+  - {x: 30, y: 19}
+  - {x: 30, y: 20}
+  - {x: 31, y: 13}
+  - {x: 31, y: 14}
+  - {x: 31, y: 15}
+  - {x: 31, y: 20}
+  - {x: 32, y: 13}
+  - {x: 32, y: 19}
+  - {x: 32, y: 20}
+  - {x: 33, y: 13}
+  - {x: 33, y: 14}
+  - {x: 33, y: 15}
+  - {x: 33, y: 16}
+  - {x: 33, y: 17}
+  - {x: 33, y: 18}
+  - {x: 33, y: 19}
+  _terrainRules: {fileID: 11400000, guid: 0ac737044b0451f4e98e9986a9f69eac, type: 2}
   _mineCells:
   - {x: 13, y: 13}
   - {x: 26, y: 7}
@@ -241,6 +256,7 @@ MonoBehaviour:
   _bossEntrance:
     Kind: 0
     Cell: {x: 0, y: 0}
+    Footprint: []
   _nests:
   - Cell: {x: 1, y: 11}
     Element: 7
@@ -252,10 +268,10 @@ MonoBehaviour:
   _enemyHealthMultiplier: 1
   _expectedUpgradeBonus: 0.1
   _balanceTargetScale:
-  - 0.87
+  - 0.66
   - 0.757
-  - 0.757
-  - 0.757
+  - 0.66
+  - 0.5
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}

@@ -33,3 +33,4 @@ MonoBehaviour:
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 0}
+  _loadingTip: 'A gate under attack can be upgraded during the level: it gets tougher and grows a turret of its own.'

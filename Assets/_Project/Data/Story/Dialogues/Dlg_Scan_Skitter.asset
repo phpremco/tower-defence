@@ -27,3 +27,4 @@ MonoBehaviour:
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+  _loadingTip: 'Skitters are weak alone and come in packs: the Cannon''s shells thin a pack, the Gun Turret picks off loose runners.'

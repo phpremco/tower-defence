@@ -81,6 +81,13 @@ MonoBehaviour:
   - {x: 36, y: 2}
   - {x: 36, y: 10}
   - {x: 36, y: 11}
+  - {x: 13, y: 10}
+  - {x: 13, y: 12}
+  - {x: 14, y: 11}
+  - {x: 15, y: 11}
+  - {x: 16, y: 11}
+  - {x: 31, y: 11}
+  - {x: 33, y: 12}
   _blockades:
   - Cell: {x: 3, y: 10}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
@@ -109,40 +116,20 @@ MonoBehaviour:
     Kind: 7
   - Cell: {x: 7, y: 16}
     Kind: 7
-  - Cell: {x: 7, y: 20}
-    Kind: 6
-  - Cell: {x: 7, y: 21}
-    Kind: 6
   - Cell: {x: 8, y: 14}
     Kind: 7
   - Cell: {x: 8, y: 15}
     Kind: 7
   - Cell: {x: 8, y: 16}
     Kind: 7
-  - Cell: {x: 8, y: 21}
-    Kind: 6
-  - Cell: {x: 9, y: 1}
-    Kind: 6
-  - Cell: {x: 9, y: 21}
-    Kind: 6
-  - Cell: {x: 10, y: 1}
-    Kind: 6
-  - Cell: {x: 13, y: 9}
-    Kind: 1
   - Cell: {x: 13, y: 10}
     Kind: 1
   - Cell: {x: 13, y: 12}
     Kind: 1
-  - Cell: {x: 14, y: 7}
-    Kind: 6
-  - Cell: {x: 14, y: 8}
-    Kind: 6
   - Cell: {x: 14, y: 11}
     Kind: 1
   - Cell: {x: 15, y: 8}
     Kind: 6
-  - Cell: {x: 15, y: 10}
-    Kind: 1
   - Cell: {x: 15, y: 11}
     Kind: 1
   - Cell: {x: 16, y: 7}
@@ -151,17 +138,7 @@ MonoBehaviour:
     Kind: 6
   - Cell: {x: 16, y: 9}
     Kind: 6
-  - Cell: {x: 16, y: 10}
-    Kind: 1
   - Cell: {x: 16, y: 11}
-    Kind: 1
-  - Cell: {x: 17, y: 9}
-    Kind: 1
-  - Cell: {x: 17, y: 10}
-    Kind: 1
-  - Cell: {x: 17, y: 11}
-    Kind: 1
-  - Cell: {x: 17, y: 12}
     Kind: 1
   - Cell: {x: 24, y: 7}
     Kind: 6
@@ -173,14 +150,6 @@ MonoBehaviour:
     Kind: 6
   - Cell: {x: 26, y: 9}
     Kind: 6
-  - Cell: {x: 30, y: 10}
-    Kind: 1
-  - Cell: {x: 30, y: 11}
-    Kind: 1
-  - Cell: {x: 30, y: 12}
-    Kind: 1
-  - Cell: {x: 30, y: 14}
-    Kind: 1
   - Cell: {x: 31, y: 9}
     Kind: 7
   - Cell: {x: 31, y: 11}
@@ -193,8 +162,6 @@ MonoBehaviour:
     Kind: 1
   - Cell: {x: 32, y: 9}
     Kind: 7
-  - Cell: {x: 32, y: 11}
-    Kind: 1
   - Cell: {x: 32, y: 12}
     Kind: 1
   - Cell: {x: 32, y: 13}
@@ -207,8 +174,6 @@ MonoBehaviour:
     Kind: 7
   - Cell: {x: 33, y: 10}
     Kind: 7
-  - Cell: {x: 33, y: 11}
-    Kind: 1
   - Cell: {x: 33, y: 12}
     Kind: 1
   - Cell: {x: 34, y: 4}
@@ -247,6 +212,45 @@ MonoBehaviour:
     Kind: 7
   - Cell: {x: 37, y: 13}
     Kind: 7
+  _slopeCells:
+  - {x: 12, y: 9}
+  - {x: 12, y: 10}
+  - {x: 12, y: 11}
+  - {x: 12, y: 12}
+  - {x: 12, y: 13}
+  - {x: 13, y: 9}
+  - {x: 13, y: 11}
+  - {x: 13, y: 13}
+  - {x: 14, y: 9}
+  - {x: 14, y: 10}
+  - {x: 14, y: 12}
+  - {x: 14, y: 13}
+  - {x: 15, y: 10}
+  - {x: 15, y: 12}
+  - {x: 16, y: 10}
+  - {x: 16, y: 12}
+  - {x: 17, y: 10}
+  - {x: 17, y: 11}
+  - {x: 17, y: 12}
+  - {x: 30, y: 10}
+  - {x: 30, y: 11}
+  - {x: 30, y: 12}
+  - {x: 30, y: 13}
+  - {x: 30, y: 14}
+  - {x: 30, y: 15}
+  - {x: 31, y: 10}
+  - {x: 31, y: 15}
+  - {x: 32, y: 10}
+  - {x: 32, y: 11}
+  - {x: 32, y: 15}
+  - {x: 33, y: 11}
+  - {x: 33, y: 13}
+  - {x: 33, y: 14}
+  - {x: 33, y: 15}
+  - {x: 34, y: 11}
+  - {x: 34, y: 12}
+  - {x: 34, y: 13}
+  _terrainRules: {fileID: 11400000, guid: 0ac737044b0451f4e98e9986a9f69eac, type: 2}
   _mineCells:
   - {x: 13, y: 7}
   - {x: 6, y: 12}
@@ -255,6 +259,7 @@ MonoBehaviour:
   _bossEntrance:
     Kind: 0
     Cell: {x: 0, y: 0}
+    Footprint: []
   _nests:
   - Cell: {x: 7, y: 15}
     Element: 7
@@ -263,6 +268,11 @@ MonoBehaviour:
   _terrainEmission: {fileID: 2800000, guid: c94d93afcd88e64479bc64a3c995ffe1, type: 3}
   _enemyHealthMultiplier: 1
   _expectedUpgradeBonus: 0
+  _balanceTargetScale:
+  - 0.658
+  - 1.15
+  - 1
+  - 0.757
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}

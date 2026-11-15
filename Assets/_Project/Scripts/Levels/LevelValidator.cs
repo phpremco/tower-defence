@@ -54,6 +54,7 @@ namespace Game.Levels
             CheckTowers(level, errors);
             CheckBlockades(level, errors);
             CheckTerrain(level, errors);
+            CheckPlateaus(level, grid, errors);
             CheckMines(level, grid, errors);
             CheckRoad(level, grid, errors);
             CheckRoadsReachBase(level, errors);
@@ -226,6 +227,83 @@ namespace Game.Levels
                     }
                 }
             }
+        }
+
+        // Round 65: raised ground slopes down over the ring of ground cells round it. Every cell round a raised cell is
+        // raised or on that ring, the ring is plain ground off the road that holds no tower, mining node or nest, and no
+        // tower can stand where its shots at the road would dip under the plateau's own lip.
+        private static void CheckPlateaus(LevelDefinition level, GridMap grid, List<string> errors)
+        {
+            TerrainMap terrain = level.Terrain;
+            var slope = new HashSet<Vector2Int>(level.SlopeCells);
+            var ring = new HashSet<Vector2Int>(PlateauSkirt.Ring(terrain, level.GridSize));
+            foreach (KeyValuePair<Vector2Int, TerrainKind> entry in terrain.Cells)
+            {
+                if (entry.Value != TerrainKind.Raised)
+                {
+                    continue;
+                }
+
+                foreach (Vector2Int step in PlateauSkirt.Neighbours)
+                {
+                    Vector2Int other = entry.Key + step;
+                    if (grid.Contains(other) && terrain.KindAt(other) != TerrainKind.Raised && !slope.Contains(other))
+                    {
+                        errors.Add($"Raised ground at {entry.Key} has no slope cell at {other}: the plateau would end in a cliff there.");
+                    }
+                }
+            }
+
+            var mines = new HashSet<Vector2Int>(level.MineCells);
+            var nests = new HashSet<Vector2Int>();
+            foreach (ElementNest nest in level.Nests)
+            {
+                nests.Add(nest.Cell);
+            }
+
+            foreach (Vector2Int cell in level.SlopeCells)
+            {
+                if (!ring.Contains(cell))
+                {
+                    errors.Add($"Slope cell {cell} is not plain ground beside raised ground.");
+                }
+                else if (level.Road.IsRoad(cell) || mines.Contains(cell) || nests.Contains(cell))
+                {
+                    errors.Add($"Slope cell {cell} lies on the road, a mining node or a nest, which must stay level.");
+                }
+            }
+
+            TerrainRules rules = level.TerrainRules;
+            if (rules == null)
+            {
+                return;
+            }
+
+            var build = new BuildGrid(level);
+            foreach (Vector2Int cell in PlateauSkirt.Shadowed(terrain, grid, level.Road.Cells, EnemySpawner.StrayPastRowCells(level.RoadWidth), GroundReach(level) * rules.HighGroundRange, rules.SightRatio))
+            {
+                if (build.CanBuild(cell))
+                {
+                    errors.Add($"A tower on the raised cell {cell} would fire at the road through the plateau's own lip; it must be a blocked cell.");
+                }
+            }
+        }
+
+        /// <summary>The longest reach of a gun this level sells against creatures on the ground, in world units.</summary>
+        public static float GroundReach(LevelDefinition level)
+        {
+            float reach = 0f;
+            foreach (Towers.TowerDefinition tower in level.AvailableTowers)
+            {
+                if (tower == null || tower.IsSupport || (tower.Targets & TargetLayers.Ground) == 0)
+                {
+                    continue;
+                }
+
+                reach = Mathf.Max(reach, tower.GetLevel(tower.MaxLevelIndex).Range);
+            }
+
+            return reach;
         }
 
         private static void CheckPaths(LevelDefinition level, GridMap grid, List<string> errors)

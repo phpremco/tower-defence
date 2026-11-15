@@ -1032,3 +1032,39 @@ console and `Logs/probe_trace.txt`.
   ends it and probes the clock, the summed positions of creatures, shots and drones and the loops still audible at 1.5, 5.5 and
   8.5 s after (`r64_gameover.cs probe`); once the panel is up the three probes must be identical.
 - Every harness copies the save aside, restores it and checks it against `Tools/PlayTest/r64_save_md5.txt`.
+
+## Round 65: plateau rules, line of fire, the high-ground hint, flight curves, boss fates (added 2026-11-15)
+
+- **Targeted data step (never the full generator):** `unity command run_script --file Tools/PlayTest/Scripts/ApplyRound65.cs --entry ApplyRound65.Run --timeout_ms 900000 --timeout 960`
+  writes the terrain rules asset (`Data/Balance/TerrainRules.asset`: reach on high ground, the sight ratio), shapes every
+  campaign level's plateaus (`ProjectGenerator.ApplyPlateauSkirt`: raised cells beside the road, a liquid, a mine or a nest
+  taken down, the ring written as `_slopeCells`, shadowed raised cells blocked), paints its ground again, rebuilds the arena
+  copies from it and writes the story's hints (the high-ground hint, every hint's loading tip). `Tools/PlayTest/r65_apply_arg.txt`
+  may hold `nobake` (skip the painting) and `only=C1_01` (one level). Safe to run again. Then `balance_pipeline.sh solve`.
+- **Text map with the plateau rules:** `unity command eval_file --file Tools/PlayTest/dump_map.cs` now marks the slope ring
+  (`/`) and raised cells closed for towers (`#`).
+- **Line of fire:** `bash Tools/PlayTest/r34b_editmode_worker.sh 6 LineOfFireTests`, then read the clone's
+  `Tools/PlayTest/r65_line_of_fire.txt` under `TowerDefenseWorkers/w6` (per level: raised build cells, the tightest line over
+  the plateau and its slope, and how many build cells on the plain have a line under raised ground; copy it back to keep it).
+  `unity command eval_file --file Tools/PlayTest/r65_muzzles.cs` lists every tower's range and lowest muzzle per level.
+- **Stills from the play camera:** `[STORY=1] [NODEPLOY=1] OUT=<dir> bash Tools/PlayTest/r65_shots.sh <prefix> <node> <difficulty> <action> ...`
+  with `act:tower <TowerId> <x> <y> [upgrades]`, `act:select <x> <y>` (tower menu: range ring and info line), `act:hand <TowerId> <x> <y>`
+  (placing: ring and status line), `act:spawn <Enemy> <path> [count] [Gate|Nest]`, `act:probe` (towers with height and range, the
+  status line), `arg:<file>=<text>`, `eval:<file.cs>`, `step:<frames>`, `skip:<n>`, `scale:<x>`, `fly:<n>`,
+  `shot:<name>|cell:<x>:<y> <zoom> <hud|clean> [w h]` (off-screen; `keep` leaves the camera) and `view:<name>` (the Game view
+  itself, with post-processing and the interface as shown). `STORY=1` starts the level as the map does (Medium), so the story
+  plays. Copies the save aside, restores it and checks its MD5. `bash Tools/PlayTest/r65_look.sh <prefix>` recompiles, paints
+  Landing Site again and takes its plateau stills (for a change to the painter or the landscape).
+- **The high-ground hint in play:** `STORY=1 OUT=<dir> bash Tools/PlayTest/r65_shots.sh v 0 1 "arg:r35_tip_arg.txt=setup" "eval:r35_tip.cs" "act:tower PulseRifle 14 1" "step:150" "view:voss_1" "arg:r65_dlg_arg.txt=next" "eval:r65_dlg.cs" ...`
+  (`r65_dlg.cs`: `state`, `next`, `skip`; reports whether the save has seen `Dlg_Tip_HighGround`).
+- **Flight routes:** `unity command eval_file --file Tools/PlayTest/r65_air_routes.cs` writes `Tools/PlayTest/r65_air_routes.txt`
+  (every flight route and nest flight: length as its waypoints give it and as flown, sharpest turn, radius per flyer) and
+  `.csv`. In play: `r65_shots.sh ... "eval:no_waves.cs" "act:spawn Shalebat 0 1 Nest" "act:spawn Skyray 1 1" "scale:2" "fly:14"`
+  appends every flyer's place, facing and roll to `Logs/r65/fly_trace.csv`; the top-down picture:
+  `python -I Tools/PlayTest/r65_fly_plot.py <map dump txt> Level_C1_04 <out.png> Logs/r65/fly_trace.csv` (the map dump is the
+  `result` of `dump_map.cs` saved as text). Python is installed on this machine (3.12, with Pillow; no matplotlib).
+- **Where a boss fell:** every probe run writes a `boss w<N> <name> <hp> hp died at <share> of the road ... first gate
+  reached|not reached` line into its trace; `python -I Tools/PlayTest/r65_boss_fates.py [level name] [difficulty]` collects them
+  from the worker clones' `Logs/probe_trace.txt` after a measure or a replay (a clone keeps only its last test run).
+- **Boss rules on paper:** the boss lab (round 64) takes `rule.BossWaveShare=`, `rule.LevelBossAlone=` and
+  `rule.LevelBossAloneMost=`; `label=` names the output `Tools/PlayTest/r64_lab_<label>.txt`.

@@ -19,6 +19,8 @@ namespace Game.Tests
         private readonly Dictionary<int, float> _spawnedHealth = new Dictionary<int, float>();
         private readonly Dictionary<int, int> _spawned = new Dictionary<int, int>();
         private const float BaseHitDistance = 3f;
+        // A boss held at a gate stands this share of the road before the gate's own cell at most (two cells of a 74-cell road).
+        private const float GateStandShare = 0.03f;
         private readonly SortedDictionary<string, int> _baseHits = new SortedDictionary<string, int>();
         private readonly Dictionary<Enemy, System.Action<UnityEngine.Vector3>> _attackHandlers = new Dictionary<Enemy, System.Action<UnityEngine.Vector3>>();
         private int _kills;
@@ -29,6 +31,8 @@ namespace Game.Tests
         private readonly HashSet<Tower> _hooked = new HashSet<Tower>();
         private float _frameTime;
         private readonly List<Enemy> _living = new List<Enemy>();
+        // Round 65: where every boss of the level fell (a share of the main road), so "does it reach the first gate" is a number.
+        private readonly Dictionary<Enemy, (int Wave, float Time, float Health)> _bosses = new Dictionary<Enemy, (int Wave, float Time, float Health)>();
         private int _recordedWave;
 
         public ProbeTrace(LevelContext context)
@@ -56,6 +60,12 @@ namespace Game.Tests
         {
             _context.EnemySpawned.Unsubscribe(OnSpawned);
             _context.EnemyKilled.Unsubscribe(OnKilled);
+            foreach (KeyValuePair<Enemy, (int Wave, float Time, float Health)> boss in _bosses)
+            {
+                _lines.Add(BossLine(boss.Key, boss.Value, "still standing"));
+            }
+
+            _bosses.Clear();
             foreach (KeyValuePair<Enemy, System.Action<UnityEngine.Vector3>> pair in _attackHandlers)
             {
                 pair.Key.Attacked -= pair.Value;
@@ -214,6 +224,30 @@ namespace Game.Tests
             Hook(enemy);
             _spawned[wave] = (_spawned.TryGetValue(wave, out int count) ? count : 0) + 1;
             _spawnedHealth[wave] = (_spawnedHealth.TryGetValue(wave, out float health) ? health : 0f) + enemy.Health.Max;
+            if (enemy.Definition.IsBoss)
+            {
+                _bosses[enemy] = (wave, UnityEngine.Time.time, enemy.Health.Max + enemy.Health.ArmorMax);
+            }
+        }
+
+        // "boss w16 BroodMother 932 hp died at 0.07 of the road after 9.4 s; gates 0.12 0.45 0.78; first gate not reached".
+        private string BossLine(Enemy boss, (int Wave, float Time, float Health) entered, string fate)
+        {
+            LevelDefinition level = _context.Level;
+            UnityEngine.Vector2Int[] road = Walk(level.MainRoad);
+            float at = Along(road, level.Grid.WorldToCell(boss.Position));
+            var text = new StringBuilder($"boss w{entered.Wave} {boss.Definition.name} {entered.Health:0} hp {fate} at {at:0.00} of the road after {UnityEngine.Time.time - entered.Time:0.0} s; gates");
+            float first = float.MaxValue;
+            foreach (BlockadeSpot gate in level.Blockades)
+            {
+                float share = Along(road, gate.Cell);
+                first = System.Math.Min(first, share);
+                text.Append($" {share:0.00}");
+            }
+
+            // A creature held at a gate stands a little before it.
+            text.Append(at >= first - GateStandShare ? "; first gate reached" : "; first gate not reached");
+            return text.ToString();
         }
 
         private void OnKilled(Enemy enemy)
@@ -226,6 +260,11 @@ namespace Game.Tests
             Unhook(enemy);
             _kills += enemy.Reward;
             _killed++;
+            if (_bosses.TryGetValue(enemy, out (int Wave, float Time, float Health) entered))
+            {
+                _lines.Add(BossLine(enemy, entered, "died"));
+                _bosses.Remove(enemy);
+            }
         }
 
         private int InRange(List<Tower> towers)

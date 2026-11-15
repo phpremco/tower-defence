@@ -371,6 +371,27 @@ namespace Game.Balance
         public float MaxBossGrowth = 8f;
 
         /// <summary>
+        /// The most a level's walking boss asks on its own of the expected player with the hero (round 65), Easy to Psycho.
+        /// A boss carries its wave's multiplier, and with a thin crowd (the "bosscrowd" lever) the solve can raise that
+        /// until one creature asks more than everything the player has (Crysium Vein Psycho's Core Wisp asked 1.2 on paper
+        /// with every boss wave thinned). Above this the boss comes down on its own scale, never under
+        /// <see cref="LevelBossHealthFloor"/>. The bosses the round-64 replays held asked up to 0.6 alone.
+        /// </summary>
+        public float[] LevelBossAloneMost = { 0.65f, 0.65f, 0.65f, 0.65f };
+
+        public float LevelBossAloneMostFor(int difficulty) => LevelBossAloneMost.Length == 0 ? 0f : LevelBossAloneMost[System.Math.Min(difficulty, LevelBossAloneMost.Length - 1)];
+
+        /// <summary>
+        /// The share of a wave's budget its crowd keeps when a boss leads the wave (the composer's constant until round 65).
+        /// A cell may thin the crowd of its boss waves further with the script lever "bosscrowd"
+        /// (<see cref="WaveScriptSpec.BossCrowd"/>): the wave then has room for the boss to grow to
+        /// <see cref="LevelBossAlone"/>. Round 64 left Shard Ridge Hard's last boss at its floor because the crowd took all
+        /// the room; thinning every boss wave of the campaign (tried at 0.35 in round 65) made the mid-level bosses of four
+        /// other cells half again as tough and lost two cells, so the lever is per cell.
+        /// </summary>
+        public float BossWaveShare = 0.6f;
+
+        /// <summary>
         /// The Easy raid rule (the curator, round 22f): on Easy the first air raid comes no earlier than the wave by which the
         /// expected player's kills have paid for the cheapest owned sky gun, plus this many waves; a player who owns no sky gun
         /// gets no raid. <see cref="CampaignModel.EasyRaidFloor"/> derives the floor from the ledger's purse walk at every solve.

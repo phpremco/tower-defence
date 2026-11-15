@@ -10051,3 +10051,311 @@ the probe's known 15 % spread; not verified twice.
 6. **The loading screen still stalls twice** for half a second or more (terrain field, gameplay step), and its planet is
    generic. The Core Wisp's and the wisps' new levels are calculated, not heard.
 7. The fit still depends on which records it reads (yardstick only: Gun 0.81; with replays: 0.87).
+
+## Round 65: high ground (sloped plateaus, the line of fire, +10% range, Voss's hint), loading tips that stand alone, flyers that fly curves, bosses sized as a fight (2026-11-15)
+
+Not committed (the curator commits). No full generator run: `Tools/PlayTest/Scripts/ApplyRound65.cs` (the terrain rules asset,
+every level's plateaus and painted ground, the arena copies, the story's hints) and the solve stage (`ApplyWaves.cs`) write
+what the changed generator now would. `ArtSource/Exports` and `Tools/Blender` untouched, no Blender, no packages, the Game
+view's resolution untouched. Remco's save `progress.json` (MD5 **463303aa28769c0934c10dc303967162** at the start) was copied
+aside before every Play Mode run in the editor and restored after; identical after each run and at the end; the dev backup
+untouched. Editor play runs strictly one after another; the pipeline's PlayMode stages on the worker clones w1-w5, EditMode on
+the spare clone w6. Tables and the model: Docs/BALANCE.md "Round 65"; commands: Docs/COMMANDS.md "Round 65".
+
+### 1. Plateaus slope down, and a gun on one never fires through the ground
+
+**What was wrong, in numbers.** Raised ground ended in a wall inside its own cells (0.55 high, `TerrainField.ConfineToCells`),
+dressed with square terrace-step kit pieces, and it could stand right beside the road. A tower's shot flies from its muzzle
+to the creature's feet, and the muzzles are low: Cannon 0.34 over its pad, Gun Turret 0.39, Railgun 0.42, Laser 0.48
+(`Tools/PlayTest/r65_muzzles.cs`). From the second row of a plateau the line to a creature under the wall passed 0.1 to 0.2
+under the lip, which is the Laser Remco saw.
+
+**The rules now** (`Game.Levels.PlateauSkirt`, pure, on cells; one place the generator, the validator and the landscape share):
+- Raised ground keeps **one cell clear** of everything that must stay level: the road, a liquid, a mining node, a nest, a boss
+  gate's footprint. A raised cell touching one of those (eight ways) is taken down to plain ground.
+- The **ring** of plain ground round what is left is the slope. It is data (`LevelDefinition._slopeCells`), no tower stands on
+  it (`BuildGrid.IsSlope`; the placing status says "Too steep: the slope of the high ground holds no tower"), and the
+  build-cell glow, the radar and the plan model's spots leave it out because they all ask `BuildGrid.CanBuild`.
+- A raised cell whose straight line to some road cell in reach leaves the plateau later than **0.54 of the way** (the terrain
+  rules' sight ratio) is **closed** as a blocked cell: there the shot would dip under the plateau's own lip. A cell with one
+  raised cell between it and the ring still sees the road (1.5 of 2.8 cells, the nearest a walker comes), a cell with two
+  does not (2.5 of 3.8).
+- `LevelValidator.CheckPlateaus` checks all three on every level (the generator's layout step runs it too).
+
+**The landscape** (`TerrainField`): the plateau's level top is the raised cells drawn in by 0.3 of a cell (which rounds every
+outer corner by that much), and from there the ground falls on a smooth curve over 1.08 cells, so it has run out before the
+cell beyond the ring (shoulder 0.3 + slope 0.78 + a wandering foot of 0.05; one soft pass takes the crease out of inside
+corners). The plateau is **0.33 high** now (0.55 before): with muzzles this low a taller one cannot be seen over from its
+own second row, whatever the slope (the sums are in Docs/BALANCE.md). The terrace-step kit is no longer placed
+(`EnvironmentLayout`); the pieces stay in the set.
+
+**How it reads without a wall** (the first stills showed a slope nobody could see): the bank wears the set's cliff rock
+through the mesh's vertex colours (`TerrainSurfaceBuilder`, `EnvironmentGround.shader`: `EnvironmentSet.PlateauBank`), the
+level top wears the second ground layer (`EnvironmentSplat`, `PlateauTop`), and the painter draws a bank that is pale at the
+top and dark at its foot with a soft seam of the level's glow wandering round it (`TerrainPainter.ShadeCliff`; broken up, so
+it is a vein in the rock and not a drawn outline). Voss's hint points at exactly that seam.
+
+**Every level** (`ApplyRound65`; campaign levels, the four arena copies follow their source):
+
+| Level | Raised cells before | after (taken down) | Slope cells | Closed by the sight rule | Raised build cells | Build cells before -> after | Spots within 2 of the road | of them high ground |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C1_01 Landing Site | 17 | 12 (5) | 29 | 1 | 11 | 450 -> 420 | 348 -> 333 | 11 -> 6 |
+| C1_02 Glass Meadows | 26 | 13 (13) | 37 | 7 | 6 | 559 -> 515 | 335 -> 308 | 17 -> 3 |
+| C1_03 Shard Ridge | 24 | 11 (13) | 38 | 2 | 9 | 534 -> 495 | 387 -> 348 | 24 -> 9 |
+| C1_04 Fault Line | 15 | 12 (3) | 19 | 7 | 5 | 521 -> 495 | 432 -> 416 | 8 -> 3 |
+| C1_05 Quartz Flats | 25 | 16 (9) | 31 | 0 | 16 | 570 -> 540 | 373 -> 361 | 5 -> 4 |
+| C1_06 Crysium Vein | 20 | 13 (7) | 38 | 0 | 13 | 615 -> 579 | 422 -> 408 | 8 -> 6 |
+
+Roads, gates, nests and mining nodes did not move (the step only reads them); every level passes the validator.
+
+**The line-of-fire check** (`LineOfFireTests`, EditMode, in the suite): on every level, for every tower the level sells
+against the ground at every upgrade level, from every raised build cell, the straight line from its lowest muzzle (the
+imported model's shot origin at rest, over the cell's middle) to every point of the road a walker can be on within its reach
+(the +10% included) is walked in steps of 0.05 against the drawn landscape. **127 244 lines, none under the ground**
+(tolerance 0.01); the report is `Tools/PlayTest/r65_line_of_fire.txt`.
+
+### 2. Ten percent more range on high ground
+
+One number, in data: `Data/Balance/TerrainRules.asset` (`TerrainRules.HighGroundRange` 1.1; the generator's constant is
+`ProjectGenerator.HighGroundRange`), and every level points at that one asset. Everything asks the same place
+(`TerrainBalance.RangeMultiplier(level, cell)`):
+- the tower itself (`Tower.GroundRange`, set when it is stood on its cell; `Tower.Range` and a support tower's radius carry
+  it), so targeting reaches further for real;
+- the **range ring**: the ring of a placed tower is its own range, the ring of the tower in hand grows on a raised cell;
+- the **status line** while placing ("Cannon (100)  -  Ground only  -  High ground: +10% range") and the **tower menu's info
+  line** ("Laser Turret  MAX  HP 160/160  -  Ground only  -  High ground: +10% range");
+- the **balance model**: `BalanceLedger.Geometry` gives every raised spot the multiplier (`LevelGeometry.SpotRange`, the hook
+  round 22 left for this), so the spot lens, the plan search and the input hash see it. The wave solve itself buys guns at
+  the defence gate and did not move for it (see 5).
+
+Measured in play: a Laser at level 3 on Landing Site's plateau reaches 5.28 (4.80 on the plain), a Cannon 4.40 (4.00).
+
+### 3. Dr. Voss on high ground, and loading tips that stand on their own
+
+**The hint** (`Dlg_Tip_HighGround`, `StoryDefinition.HighGroundTip`, three lines by Voss, proposed copy): it plays once per
+save, right after the player has built a first tower in a level that has a raised build cell (`LevelStoryListener.WatchHighGround`,
+`PlateauSkirt.HasBuildSpot`), through the same queue, hold and seen-flag as the gate tips. Landing Site has eleven such
+cells, so a new player gets it in the first minute, when the second tower can use it. The ten percent in his line is written
+from the generator's number.
+
+> "Good, the first turret stands. Now look for the rises: ground with a glowing seam round its bank."
+> "That is high ground. A turret on top of it sees further: 10% more range. The range ring shows it before you build."
+> "The bank itself is too steep for a turret, so only the top counts. Take it where the road passes close."
+
+**The loading tips.** The screen showed the closing line of each hint's conversation, which leans on the lines before it
+("Ground guns can't touch it."). Every hint now carries its advice once more as a line written for the loading screen
+(`DialogueDefinition.LoadingTip`, the table `ProjectGenerator.LoadingTipTexts`), naming the creature or the thing it is about,
+and `LoadingTips` shows only those: twelve tips (eight creatures, the two gate tips, high ground, the rift behind the gates).
+The Skyray's is now "Skyrays never land, so ground guns can't touch them. Build a Flak Turret where they cross the gates."
+A test holds every creature tip to its creature's name and every tip to its box (150 characters).
+
+### 4. Flyers fly curves and bank
+
+**Where the sharp turns were.** The six levels' own flight routes have three waypoints and turn 1 to 47 degrees; the
+right angles were flown by the **bats out of the nests**, which fly to the road and then along it, corner by corner, and by
+every flyer that **dives at a gate** (the gate was a waypoint inserted into its route).
+
+**Now** (`Game.Levels.FlightCurve`, pure; `EnemySpawner.FlightRoute`): when a flyer is launched, every corner of its route is
+replaced by an arc. The radius is the creature's speed over its turn rate (`EnemyDefinition.TurnRate`, 60 degrees a second by
+default, so a Skyray or a Shalebat at 1.3 turns on 1.24 cells, a Storm Matriarch on 1.05; never under 0.75 of a cell), drawn in
+where a leg is too short for it. A flyer that strikes a gate swings past it on an arc too, as long as the arc still brings it
+within 0.6 of its attack range of the gate (it stops there to strike, as before); a dive too sharp for that keeps its point.
+The body **banks**: `EnemyView.Bank` rolls it into the turn by how fast its facing comes round, up to
+`EnemyDefinition.BankDegrees` (28) at the full turn rate, eased over 0.3 s.
+
+**Path lengths** (`Tools/PlayTest/r65_air_routes.txt`; cells):
+
+| Flight | As its waypoints give it | As flown | Change | Sharpest turn before -> after (between two points) |
+| --- | --- | --- | --- | --- |
+| C1_01 north / south route | 35.09 / 40.78 | no flyers on this level | - | 1 / 37 deg |
+| C1_02 north / south route | 37.19 / 44.01 | no flyers on this level | - | 4 / 43 deg |
+| C1_03 north / south route (Skyray) | 41.85 / 37.53 | 41.85 / 37.52 | 0.0 % | 24 -> 8 / 19 -> 10 deg |
+| C1_04 north / south route | 42.47 / 37.02 | 42.45 / 37.01 | 0.0 % | 28 -> 9 / 13 -> 7 deg |
+| C1_05 north / south route | 47.48 / 39.03 | 47.42 / 39.03 | -0.1 % / 0 | 47 -> 12 / 1 deg |
+| C1_06 north / south route | 44.84 / 39.23 | 44.82 / 39.22 | 0.0 % | 29 -> 10 / 14 -> 7 deg |
+| C1_04 nest flights (Shalebat, three nests) | 73.50 / 68.50 / 60.50 | 71.78 / 66.89 / 58.89 | -2.3 / -2.3 / -2.7 % | 90 -> 11 deg |
+| C1_05 nest flights (two nests) | 105.50 / 61.50 | 100.14 / 58.28 | -5.1 / -5.2 % | 90 -> 11 deg |
+| C1_06 nest flight | 80.50 | 78.36 | -2.7 % | 90 -> 11 deg |
+
+The raid routes are as long as they were, so the raids' timing is unchanged; a bat out of a nest arrives 2 to 5 % sooner.
+The balance model's air-route lengths were **not** changed: the model walks nest creatures along the road as written, and
+2 to 5 % on the bats is far inside what the calibration resolves (its hold-out is 81 %). The routes are the same data, so
+the validator's route checks are untouched; a test rounds every flight of every level for every flyer and holds it to its
+route's own bounds, to at most 13 degrees between two points and to at most a tenth shorter.
+
+In play (`Logs/r65/fly_trace.csv`, Fault Line, a Shalebat out of a nest and a Skyray on the north route, sampled every 0.2 s
+of game time): the heading never changed more than 11.3 degrees between two samples (57 degrees a second, under the 60 it
+may), and the bodies rolled up to 29 and 26.5 degrees in the turns (the bank plus the flight's own sway) and flew level between them.
+
+### 5. The balance pass
+
+Order as run: solve on the new maps -> a first full pass with a boss rule for every cell (measure 432 runs, fit,
+apply-keep, search, replay 306 runs, acceptance), **taken back** (below) -> the per-cell lever -> solve -> measure (24 cells,
+432 runs) -> fit -> **apply-keep** (the factors of round 64 stay: Cannon 0.797, Laser 0.701, Gun Turret 0.808, Flak 1.039; this
+round's fit on the yardstick reads 0.794 / 0.686 / 0.848 / 0.982, hold-out 81 % / mono 87 % / Spearman 0.80, below the bar as
+before) -> search (six levels on the six clones) -> replay -> acceptance.
+
+**What the maps did to the waves: almost nothing.** With the plateau rules and the ten percent alone, the solve gave back
+the stored waves of five levels exactly (0 waves moved); Landing Site moved by under 1.5 % of its total health. The wave
+solve buys at the defence gate and does not read single spots. The plans do, so every cell was searched and replayed on
+the new maps. Every cell's paper is on its curve (`Tools/PlayTest/r65_paper.txt`; `BalanceLedgerTests` green).
+
+**Shard Ridge's last boss** (round 64's open point 2). New script lever `bosscrowd` (`wave_tuning.txt`: the share of a boss
+wave's budget its crowd keeps on that cell; the rule's 0.6 otherwise), set to 0.35 on Shard Ridge Hard and Psycho. The crowd
+gives way and the boss grows to what the round-64 rule asks of it (two fifths of what the expected player can deal in its
+walk): Hard **932 -> 2197**, Psycho 1337 -> 2550 (and its Core Wisp 1364 -> 1766), so Psycho's last boss is above Hard's
+again on this level. No other boss of the campaign moved (`Tools/PlayTest/r65_bosses.txt`; Landing Site Psycho's three by
+1 to 4 % with its waves).
+
+**Where it falls** (the probe: `ProbeTrace` now writes a line per boss into every run's trace, `Tools/PlayTest/r65_boss_fates.py`
+collects them; the five searched plans on three seeds): Shard Ridge Hard's Brood Mother falls at **0.55 to 0.57 of the
+road, 111 to 118 s after it came in, in 15 runs of 15**, past the first gate (0.14 of the road), and the cell is won 3/3 by
+every plan. Honest reading: it fell that deep before as well. On round 64's waves with this round's maps the 932-point boss
+fell at 0.40 to 0.41 after 82 to 86 s, and on Easy the 699-point one falls at 0.56. The searched plans defend Shard Ridge's
+*second* gate (0.72, behind the join of its two roads; their towers stand at 0.39 to 0.95 of the road) and leave the first
+gate to itself, and a gun shoots whatever is furthest along, so a boss that comes in behind its crowd walks until it is the
+last thing on the road. Where a boss falls says where the defence stands more than how tough the boss is: on Landing Site,
+Glass Meadows and Quartz Flats the plans stand at the first gate and the bosses die in front of it (Glass Meadows Hard's
+Brood Mother, 1531: 0.05 of the road, 6 to 9 s in, 0 runs of 9 at the gate; the table of all 42 bosses is in
+Docs/BALANCE.md). Against Remco's own defence at the first gate (a Cannon at level 2 and a Gun Turret at level 3, about 96
+damage a second and some 8 s of fire before the gate) the 349 he met was gone in under four seconds and round 64's 932 fell
+about at the gate; **2197 reaches the gate and hammers it for a quarter of a minute**. A defence that lands more than about
+260 a second on it there still stops it short, and a boss tough enough for that does not fit under its wave's cap.
+
+**The rule for every cell that was taken back.** First I thinned the crowd of every boss wave of the campaign
+(`BossWaveShare` 0.6 -> 0.35) and raised what a boss asks alone on Hard and Psycho (0.4 / 0.45 -> 0.5), reasoning that a
+boss asks single-target fire and a row of Cannons has least of that. The paper liked it; the full pipeline did not:
+mid-level bosses carried their wave's multiplier up (Glass Meadows Hard's Core Wisp 877 -> 1425, Crysium Vein Psycho's
+2534 -> 4149), acceptance fell from 11 to 9 of 24, Landing Site Hard's searched plans fell from 2/3 to 1/3 at the bigger
+last boss, and the Cannon row won Landing Site Hard and Psycho 3/3 all the same. So the rule is back at 0.6 and 0.4 / 0.45
+and the thinner crowd is a lever per cell. That pass cost about fifty minutes of machine time; its tables are in
+`Logs/r65/` (`cells_globalrule.txt`, `acceptance_globalrule.txt`, `boss_fates_replay_globalrule.txt`).
+
+**The Cannon row (round 64's open point 1): not fixed, and not fixable with Landing Site's own creatures.** It still wins
+Landing Site Hard and Psycho 3/3 with three stars and a full base. Why, in numbers:
+- Per 100 coins at level 1 a Cannon lands 25 every 1.6 s on up to three creatures: 47 damage a second on a pile. Two Gun
+  Turrets for the same money land 29, and a fifth of that on armour. Creatures stop at a gate, so there is always a pile.
+- Landing Site sends two ground species: Skitters (a pile at the gate) and Cragbacks (armour). The Cannon is the best gun
+  per coin against both. The levers the builder has (plated, swarm, tempo, raid, scale) only move the mix of those two:
+  more Cragbacks is what made the Cannon the answer, and fewer hands the level back to the Gun Turret row, which lost this
+  cell only once armour counted (round 64).
+- In round 64's Hard record the seven Cannons of the row (four at level 2) dealt all 5681 hit points of wave 11 with the
+  gate barely touched; on a pile they land some 570 damage a second together. The bigger last boss of the first pass
+  (1843) died at 0.11 of the road, in the first gate's queue, 22 to 24 s in, for the Cannon row as for the creative bot.
+- What a Cannon cannot do: aim up, and hit something that does not stop (its shell flies at 5 a second and does not home).
+  Neither is in Landing Site's bestiary. So the composition that breaks the row is one Remco has to choose (open point 1).
+
+**Play, before (round 64) and after** (best replayed plan as wins over three seeds, mean stars, mean base left; plans
+winning on most seeds; the rows of one type and the creative bot; `Tools/PlayTest/r65_cells_before.txt`, `r65_cells_after.txt`):
+
+| Cell | Best plan before (wins, stars, base) | Best plan after | Plans winning 2+ | Gun row | Cannon row | Laser row | Creative bot |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C1_01 Easy | 3/3, 3.0, 600 | 3/3, 3.0, 600 | 4/4 | 3/3 | 3/3 | - | 3/3 |
+| C1_01 Medium | 3/3, 3.0, 600 | 3/3, 3.0, 600 | 5/5 -> 3/3 | 3/3 | 3/3 | - | 3/3 |
+| C1_01 Hard | 2/3, 3.0, 700 | 2/3, 3.0, 700 | 3/3 -> 5/5 | 0/3 (w12) | 3/3 | 0/3 (w10) | 1/3 |
+| C1_01 Psycho | 2/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w12) | 3/3 | 0/3 (w11) | 3/3 |
+| C1_02 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 3/3 | 3/3 | 3/3 | 3/3 |
+| C1_02 Medium | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w10) | 3/3 | 0/3 (w9) -> 0/3 (w10) | 3/3 |
+| C1_02 Hard | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 3/3 | 0/3 (w11) -> 0/3 (w10) | 1/3 | 0/3 (w10) | 3/3 |
+| C1_02 Psycho | 3/3, 3.0, 800 | 3/3, 3.0, 800 | 2/3 | 0/3 (w11) | 1/3 | 0/3 (w10) | 0/3 (w11) |
+| C1_03 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w14) | 0/3 (w14) | 0/3 (w14) | 3/3 |
+| C1_03 Medium | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 |
+| C1_03 Hard | 3/3, 2.7, 667 | 3/3, 3.0, 700 | 1/3 -> 5/5 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 |
+| C1_03 Psycho | 3/3, 3.0, 785 | 3/3, 2.7, 756 | 3/3 -> 2/3 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 -> 2/3 |
+| C1_04 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 |
+| C1_04 Medium | 3/3, 3.0, 672 | 3/3, 2.7, 666 | 3/3 | 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 3/3 |
+| C1_04 Hard | 3/3, 3.0, 800 | 3/3, 3.0, 800 | 5/5 | 0/3 (w5) | 0/3 (w5) | 0/3 (w5) | 3/3 |
+| C1_04 Psycho | 3/3, 2.3, 627 | 3/3, 2.3, 630 | 5/5 | 0/3 (w6) | 0/3 (w5) | 0/3 (w5) | 2/3 -> 3/3 |
+| C1_05 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w11) | 0/3 (w11) | 0/3 (w11) | 3/3 |
+| C1_05 Medium | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w9) | 0/3 (w9) | 0/3 (w9) | 2/3 -> 3/3 |
+| C1_05 Hard | 3/3, 2.3, 671 | 3/3, 3.0, 787 | 3/3 | 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 3/3 -> 2/3 |
+| C1_05 Psycho | 3/3, 3.0, 889 | 3/3, 3.0, 900 | 5/5 | 0/3 (w9) | 0/3 (w9) | 0/3 (w9) | 1/3 -> 0/3 (w17) |
+| C1_06 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w12) | 0/3 (w12) | 0/3 (w12) | 3/3 |
+| C1_06 Medium | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w12) | 0/3 (w11) | 0/3 (w11) | 3/3 |
+| C1_06 Hard | 3/3, 2.0, 568 | 3/3, 1.7, 501 | 2/3 | 0/3 (w10) | 0/3 (w10) | 0/3 (w10) | 3/3 |
+| C1_06 Psycho | 3/3, 2.7, 783 | 3/3, 3.0, 884 | 4/5 -> 5/5 | 0/3 (w10) | 0/3 (w7) | 0/3 (w7) | 1/3 -> 2/3 |
+
+- Every cell has a plan that wins on most seeds (README: 24 of 24); the best plan wins 3/3 in 23 cells (22 in round 64)
+  and 2/3 on Landing Site Hard as before. Acceptance **11/24, the same eleven cells** as round 64.
+- Shard Ridge Hard with the boss at 2197: best plan 3/3, three stars, base whole (2.7 stars before), and all five searched
+  plans win on most seeds (one of three before): the thinner crowd of its last wave is worth more to the player than the
+  bigger boss costs. Shard Ridge Psycho: 3/3 with 2.7 stars (3.0), two plans of three.
+- **High ground is in the plans where it lies at a gate**: Landing Site's winning plans build on (11,2), (12,2) and (13,2),
+  the plateau beside the first gate, on every difficulty; Glass Meadows lists (31,14) among its best spots on Hard and
+  Psycho. Elsewhere the plateaus lie away from the defence gate and the plans leave them.
+- A little worse: Crysium Vein Hard's best plan keeps 1.7 stars (2.0), Fault Line Medium 2.7 (3.0). A little better:
+  Landing Site Psycho 3/3 (2/3), Quartz Flats Hard three stars (2.3), Crysium Vein Psycho three stars and 5/5 plans. Those
+  cells' waves are the stored ones, so this is the maps (3 to 10 % fewer cells beside the road) and the search's draw.
+- Not done: the impact baseline (`snapshot`) was not retaken; no finale probe (no continent boss, tower or rule of the finale
+  model changed; the arena copies took the plateau rules from their source levels and were not replayed); `yardstick.txt`
+  and `plan_replay.txt` are still old whole-run tables (the partial ones are current).
+
+### Stills (`ArtSource/Previews/QA/r65_*`)
+
+- `r65_c101_plateau_close` ... `r65_c106_plateau_close` (off-screen from the play camera at 2.2 to 2.4 times the play zoom, no
+  interface, no post-processing: the structure) and `r65_c10N_view_plateau_play` (the Game view as played, with
+  post-processing and the interface), one pair per level, towers standing on the high ground.
+- `r65_c101_range_ring_info` (a Laser at level 3 on the plateau, its ring and the tower menu's line "High ground: +10%
+  range"), `r65_c101_view_range_ring`, `r65_c101_view_placing_high_ground`, `r65_c101_view_placing_slope_refused`.
+- `r65_voss_view_panel_1..3`: the hint's three lines in the dialogue box.
+- `r65_flyer_trace_topdown_c104`: Fault Line from above, every flight as its waypoints give it (red) and as flown (white),
+  and where a Shalebat out of a nest and a Skyray really were in play (dots, yellow the further they were rolled).
+
+What I see, zoomed 3x on the Landing Site close-up: the tower pads sit on the ground with no gap or sunken edge; the seam is
+a soft glow that fades out where it breaks, no hard end anywhere; the plateau's outline is rounded at every corner, nothing
+square. Weak: without post-processing the scene is very dark and the bank's rock is close to black, so the height itself is
+read from the seam and the different top more than from light and shadow; on a long ridge (Shard Ridge) the seam runs in
+two long, fairly straight strokes; the cliff rock on so gentle a bank is stretched along it; the top's second ground layer
+(the ringed lichen) also grows in loose patches elsewhere on the plain, so the top alone does not say "high ground". The
+range ring and the placing glow are unchanged effects.
+
+### Tests and checks
+
+- New `Round65Tests` (12): raised ground beside the road or a liquid is taken down and the rest keeps its ring; the rim and
+  the row behind it see the road, the third row is shadowed; every level has its ring as slope cells, no tower on it, and
+  passes the validator; the validator names a plateau without its ring; the landscape is level under a tower on high
+  ground, slopes over the ring only and has no cliff; the terrain rules carry the generator's numbers and every level
+  points at them; a tower on high ground reaches further by the rule's number and the plan model sees the same spots;
+  Voss's hint with the number in it; every loading tip stands alone, names its creature and fits its box; a right-angle
+  corner is flown on an arc of the radius; a short leg draws the arc in; every flight of every level for every flyer stays
+  smooth and inside its route's bounds.
+- New `LineOfFireTests` (1): 127 244 lines from raised build cells, none under the ground; the tightest passes 0.047 over
+  the plateau's slope (a Cannon at level 3 on Glass Meadows' (32,12)). Report: `Tools/PlayTest/r65_line_of_fire.txt`.
+- `EnvironmentArtTests` fails on any terrace step placed; `Round64Tests`' loading-tip test follows the new tips.
+- EditMode on w6 (`r34b_editmode_worker.sh 6 "Game.Tests"`): **949 tests, 897 passed, 52 skipped, 0 failed** (round 64:
+  936 / 884 / 52; +13). The skips are the same 52 (50 `TowerParityTests`, the fit below the bar, the acceptance report).
+  A first run of the round, before the solve, had two red tests that only said "run the solve stage".
+- Recompile: 0 errors; no new warnings (the known CS0618 in `BalanceProbeTests`).
+- Play consoles in the editor: 0 errors, 0 warnings in every harness run (six levels' stills twice, the hint, the range
+  ring, the flight trace, five moments of the opening cutscene with its ground probe: nothing sinking). The worker runs
+  (1500 probe runs over the round) reported 0 probe errors.
+- Save: MD5 463303aa28769c0934c10dc303967162 after every harness and at the end; the worker scripts report it untouched.
+- Not checked: the Low (Switch) profile's look of the bank (no still taken, its shader variant not exercised); no
+  PlayMode smoke test besides the pipeline's own runs; the opening cutscene was checked on five moments, not played through.
+- Tools: `Tools/PlayTest/Scripts/ApplyRound65.cs`, `r65_shots.sh`, `r65_act.cs`, `r65_shot.cs`, `r65_look.sh`, `r65_dlg.cs`,
+  `r65_muzzles.cs`, `r65_air_routes.cs`, `r65_fly_trace.cs`, `r65_fly_plot.py`, `r65_boss_fates.py`, `r65_cells_table.py`,
+  `r65_chain.sh`; tables `r65_line_of_fire.txt`, `r65_air_routes.txt|csv`, `r65_bosses.txt`, `r65_paper.txt`, `r65_play.txt`,
+  `r65_cells_before|after.txt`, `r65_boss_fates_replay.txt`, `r64_lab_r65_*.txt`; logs and the first pass's tables in `Logs/r65/`.
+
+### Open points (round 65)
+
+1. **The Cannon row still wins Landing Site Hard and Psycho** (and Glass Meadows Medium). No mix of Skitters and Cragbacks
+   breaks it (see 5). The choices: (a) **flyers on Landing Site's Hard and Psycho** (Remco's own note of 2026-10-29,
+   "difficulty can add air waves"): a Cannon cannot aim up, so the row needs Gun Turrets; but the Flak is Glass Meadows'
+   reward, so those raids must be small enough for Gun Turrets at their 0.2 against the sky, and Voss's Skyray scan names a
+   Flak the player may not own yet; (b) **the Cannon's data**, with the numbers above as the reason (three creatures a shell
+   at 100 coins beats two Gun Turrets on every pile: two a shell, or 120 coins); (c) **a creature for the early levels that
+   does not stop at a gate or outruns a shell** (the Roller comes in level 6). I did not choose for Remco.
+2. **A gun on the plain behind a plateau still fires through it** (per level 12 to 71 of the build cells within reach of raised ground: Landing Site 18 of 120, Glass Meadows 38 of 194, Shard Ridge 71 of 172, Fault Line 12 of 100, Quartz Flats 19 of 138, Crysium Vein 29 of 169; `Tools/PlayTest/r65_line_of_fire.txt`). They are four or
+   more cells from the road and no plan spot; closing them would dot the ground behind every plateau with blocked cells.
+   A line-of-sight rule in targeting would end it for good, at a cost per shot and a change the balance model must learn.
+3. **Creatures out of a nest walk straight to the road at road height** (they always did): on today's six levels no nest's walk crosses raised ground or its slope (0 of 10; the line-of-fire report counts them), but a map that puts a plateau between a nest and the road would have them wade through it.
+4. **The look of high ground** is a first pass (see the stills): 0.33 high, a glowing seam, a different top. Higher is not
+   possible with muzzles this low (a taller plateau closes its own second row); a tower model with a higher muzzle, or a
+   plinth for towers on high ground, would allow it.
+5. **Bosses in the replays walk half the road** because the guns shoot whatever is furthest along and the boss comes in
+   behind its crowd. Whether Shard Ridge's boss now feels like a fight against a defence that focuses it is Remco's to
+   judge in play; on paper it asks 0.40 of the expected player alone.
+6. Kept from round 64: the armour table (blade 0.5, Flak 1) is untouched as asked; Psycho's last boss on Crysium Vein is
+   still below Hard's (2595 against 1978); Easy on Fault Line and Crysium Vein; the loading screen's two stalls.
+7. The terrace-step kit pieces are no longer placed and nothing else uses them.

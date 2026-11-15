@@ -21,6 +21,8 @@ namespace Game.Enemies
         // frame's time step while the body moved by this one's (a judder whenever frame times vary).
         private const int AfterSimulation = 100;
         private const float MinHeadingSqr = 0.0001f;
+        // How long a flyer takes to roll into a turn and to level out of it.
+        private const float BankEaseSeconds = 0.3f;
         // A procedural body (no imported art) turns like the art default (ModelArtDefinition._turnSeconds).
         private const float ProceduralTurnSeconds = 0.08f;
         // A laser boss comes round to its beam's target (round 58): it starts this long before its power clip does, so a quarter
@@ -351,6 +353,7 @@ namespace Game.Enemies
         private bool _aiming;
         private bool _aimTurn;
         private float _turnSeconds;
+        private float _bank;
 
         /// <summary>Gives the view the pool its death animation plays from. Without one the enemy simply disappears.</summary>
         public void Initialize(EnemyDeathEffectPool deaths) => _deaths = deaths;
@@ -638,6 +641,7 @@ namespace Game.Enemies
             SetBar(1f);
             _scripted = false;
             _tilt = Quaternion.identity;
+            _bank = 0f;
             SetHidden(false);
             _clips?.Restart();
             // The pooled rig still holds its last life's pose; show the fresh one on the first frame, and face the road at once.
@@ -1112,6 +1116,7 @@ namespace Game.Enemies
             bob += heave * BossBreathBob;
             float yaw = flyer ? 0f : swayWave * (SwayDegrees + (biped ? BipedSwaggerDegrees : 0f)) * (1f - _curl) + shift * 1.2f + gaze;
             float roll = flyer ? -swayWave * FlyerRollDegrees : shift + (biped ? swayWave * BipedRollDegrees : 0f);
+            float yawBefore = _facingYaw;
             if (style == AttackStyle.Whip)
             {
                 roll += strike * FlyerRollDegrees * 2f * _whipSide;
@@ -1124,6 +1129,7 @@ namespace Game.Enemies
             attackPitch -= display * DisplayRearDegrees;
             attackLift += display * DisplayLift;
             Vector3 forward = Facing(dt);
+            roll += Bank(dt, yawBefore);
             Vector3 right = Vector3.Cross(Vector3.up, forward);
             float along = (strike * lunge - rear * AttackRearBack - knock * HitKnockBack) * _creatureScale;
             float hoverScale = _hover > 0f ? 1f : _creatureScale;
@@ -1199,7 +1205,9 @@ namespace Game.Enemies
             PlayClipMoment();
             LiftBar(dt);
 
+            float yawBefore = _facingYaw;
             Vector3 forward = Facing(dt);
+            float bank = Bank(dt, yawBefore);
             Vector3 right = Vector3.Cross(Vector3.up, forward);
             float swayWave = _dangle ? Mathf.Sin(_clock * FlyerSwaySpeed + _swayPhase) : 0f;
             float sway = swayWave * FlyerSwayDistance * _creatureScale;
@@ -1208,7 +1216,7 @@ namespace Game.Enemies
             float along = (strike * lunge * pose - rear * AttackRearBack * pose - knock * HitKnockBack) * _creatureScale;
             _body.position = position + Vector3.up * (attackLift * pose * _creatureScale - emerge) + forward * along + right * sway;
             float lean = _enemy.IsHasted && walking && !_dangle ? HasteLeanDegrees : 0f;
-            float roll = -swayWave * FlyerRollDegrees;
+            float roll = -swayWave * FlyerRollDegrees + bank;
             if (style == AttackStyle.Whip)
             {
                 roll += strike * FlyerRollDegrees * 2f * _whipSide * pose;
@@ -1264,6 +1272,24 @@ namespace Game.Enemies
         {
             Vector3 look = _model.Root.InverseTransformDirection(_worldBar.Root.forward);
             return Mathf.Atan2(look.x, look.z) * Mathf.Rad2Deg;
+        }
+
+        // A flyer rolls into its turns (round 65): the faster the body comes round, the further it banks, up to the
+        // creature's own bank at its full turn rate, eased so it rolls in and levels out instead of flicking over.
+        private float Bank(float deltaTime, float yawBefore)
+        {
+            EnemyDefinition definition = _enemy.Definition;
+            if (!_dangle || _scripted || deltaTime <= 0f || definition.TurnRate <= 0f)
+            {
+                _bank = 0f;
+                return 0f;
+            }
+
+            float rate = Mathf.DeltaAngle(yawBefore, _facingYaw) / deltaTime;
+            // A turn to the right (yaw growing) drops the right wing, which is a negative roll about the body's forward axis.
+            float target = -Mathf.Clamp(rate / definition.TurnRate, -1f, 1f) * definition.BankDegrees;
+            _bank = Mathf.Lerp(_bank, target, 1f - Mathf.Exp(-deltaTime / BankEaseSeconds));
+            return _bank;
         }
 
         // The way the body faces: eased round to the heading (a road corner, a gate it turns to) instead of snapping, in game

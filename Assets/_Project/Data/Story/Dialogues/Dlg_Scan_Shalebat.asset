@@ -27,3 +27,4 @@ MonoBehaviour:
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 11400000, guid: 2e64d27e5f86a5f44b833ee41cf3e795, type: 2}
+  _loadingTip: Shalebats spit at the turrets they fly past. A Flak Turret beside the stone nests takes them first.

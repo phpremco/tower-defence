@@ -27,3 +27,4 @@ MonoBehaviour:
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 11400000, guid: 5cc35a59ea77e874c8b7b50dab908bc2, type: 2}
+  _loadingTip: 'Wisps die fast but hit a gate hard. Stop them early: the Laser Turret fires fast enough to catch them.'

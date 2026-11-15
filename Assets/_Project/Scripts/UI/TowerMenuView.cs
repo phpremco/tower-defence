@@ -233,7 +233,10 @@ namespace Game.UI
             string state = tower.IsWrecked ? wreck : $"HP {Mathf.CeilToInt(tower.Health.Current)}/{Mathf.CeilToInt(tower.Health.Max)}";
             // What it does against ground and sky, from its data: a gun that aims up but barely hurts flyers says so here.
             string reach = TargetRead.Label(tower.Definition);
-            _info.text = $"{tower.Definition.DisplayName}  {(tower.CanUpgrade ? $"Lv {tower.LevelIndex + 1}" : "MAX")}  {state}{(reach.Length > 0 ? "  -  " + reach : string.Empty)}" + UpgradePreview(tower);
+            // A tower on raised ground says what the height gives it (round 65), from the level's terrain rules.
+            TerrainRules rules = _context.Level.TerrainRules;
+            string ground = rules != null && tower.GroundRange > 1f ? $"  -  High ground: {rules.HighGroundLabel} range" : string.Empty;
+            _info.text = $"{tower.Definition.DisplayName}  {(tower.CanUpgrade ? $"Lv {tower.LevelIndex + 1}" : "MAX")}  {state}{(reach.Length > 0 ? "  -  " + reach : string.Empty)}{ground}" + UpgradePreview(tower);
 
             if (!_wasOpen)
             {

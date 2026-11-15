@@ -63,6 +63,7 @@ MonoBehaviour:
   - {x: 27, y: 1}
   - {x: 31, y: 2}
   - {x: 31, y: 7}
+  - {x: 23, y: 0}
   _blockades:
   - Cell: {x: 14, y: 5}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
@@ -119,8 +120,6 @@ MonoBehaviour:
     Kind: 1
   - Cell: {x: 13, y: 2}
     Kind: 1
-  - Cell: {x: 13, y: 3}
-    Kind: 1
   - Cell: {x: 14, y: 1}
     Kind: 1
   - Cell: {x: 16, y: 9}
@@ -163,18 +162,41 @@ MonoBehaviour:
     Kind: 1
   - Cell: {x: 23, y: 2}
     Kind: 1
-  - Cell: {x: 23, y: 3}
-    Kind: 1
   - Cell: {x: 24, y: 2}
-    Kind: 1
-  - Cell: {x: 24, y: 3}
     Kind: 1
   - Cell: {x: 25, y: 2}
     Kind: 1
-  - Cell: {x: 25, y: 3}
-    Kind: 1
-  - Cell: {x: 26, y: 3}
-    Kind: 1
+  _slopeCells:
+  - {x: 10, y: 0}
+  - {x: 10, y: 1}
+  - {x: 10, y: 2}
+  - {x: 10, y: 3}
+  - {x: 11, y: 0}
+  - {x: 11, y: 3}
+  - {x: 12, y: 0}
+  - {x: 12, y: 3}
+  - {x: 13, y: 0}
+  - {x: 13, y: 3}
+  - {x: 14, y: 0}
+  - {x: 14, y: 2}
+  - {x: 14, y: 3}
+  - {x: 15, y: 0}
+  - {x: 15, y: 1}
+  - {x: 15, y: 2}
+  - {x: 22, y: 0}
+  - {x: 22, y: 1}
+  - {x: 22, y: 2}
+  - {x: 22, y: 3}
+  - {x: 23, y: 3}
+  - {x: 24, y: 0}
+  - {x: 24, y: 1}
+  - {x: 24, y: 3}
+  - {x: 25, y: 1}
+  - {x: 25, y: 3}
+  - {x: 26, y: 1}
+  - {x: 26, y: 2}
+  - {x: 26, y: 3}
+  _terrainRules: {fileID: 11400000, guid: 0ac737044b0451f4e98e9986a9f69eac, type: 2}
   _mineCells:
   - {x: 3, y: 2}
   - {x: 33, y: 2}

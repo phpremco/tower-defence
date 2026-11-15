@@ -156,11 +156,13 @@ namespace Game.UI
         /// <summary>Moves the core to where the base model really has it (the imported base carries its own core).</summary>
         public void PlaceCore(Vector3 core) => Core = Ground(core);
 
-        // On the grid the cell's own height; off it (the colony rig stands beside the field) the landscape's rolling border.
+        // On the grid the cell's own height; off it (the colony rig stands beside the field) the landscape's rolling border,
+        // and so on the ring round raised ground, where the plateau slopes down through the cell (round 65).
         public Vector3 Ground(Vector3 position)
         {
             Vector2Int cell = Level.Grid.WorldToCell(position);
-            float height = Level.Grid.Contains(cell) ? Level.Terrain.HeightAt(cell) : Border.HeightAt(position.x, position.z);
+            bool level = Level.Grid.Contains(cell) && System.Array.IndexOf(Level.SlopeCells, cell) < 0;
+            float height = level ? Level.Terrain.HeightAt(cell) : Border.HeightAt(position.x, position.z);
             return new Vector3(position.x, height, position.z);
         }
 

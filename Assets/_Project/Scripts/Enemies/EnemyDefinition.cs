@@ -31,6 +31,12 @@ namespace Game.Enemies
         [SerializeField] [Min(0.1f)] private float _attackInterval = 1.2f;
         [SerializeField] [Min(0)] private int _gateStrikes;
 
+        [Header("Flight")]
+        [Tooltip("How fast a flyer can change its heading, in degrees per second: it rounds every corner of its route on the arc its speed and this rate allow (speed 1.5 at 60 degrees a second turns on 1.4 cells). Zero turns on the spot.")]
+        [SerializeField] [Min(0f)] private float _turnRate = 60f;
+        [Tooltip("How far a flyer rolls into a turn at its full turn rate, in degrees.")]
+        [SerializeField] [Range(0f, 60f)] private float _bankDegrees = 28f;
+
         [Header("Skills")]
         [SerializeField] [Min(0f)] private float _walkSeconds;
         [SerializeField] [Min(0f)] private float _rollSeconds;
@@ -105,6 +111,12 @@ namespace Game.Enemies
 
         /// <summary>How many times a flyer stops to hit a gate it passes. Zero means it flies straight on.</summary>
         public int GateStrikes => _gateStrikes;
+
+        /// <summary>Degrees per second a flyer can turn; its route's corners are rounded to fit (FlightCurve).</summary>
+        public float TurnRate => _turnRate;
+
+        /// <summary>Degrees a flyer rolls into a turn at its full turn rate.</summary>
+        public float BankDegrees => _bankDegrees;
 
         /// <summary>Seconds of walking between two rolls. Only rollers (a roll time above zero) use it.</summary>
         public float WalkSeconds => _walkSeconds;

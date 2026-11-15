@@ -27,6 +27,17 @@ namespace Game.Editor
             Debug.Log("Generated the creature scans and the button prompt tables.");
         }
 
+        /// <summary>
+        /// Round 65 without the full generator: the story's hints again (the high-ground hint is new, and every hint
+        /// carries its loading tip). Reads existing assets only, like the menu item above.
+        /// </summary>
+        public static string ApplyRound65Story()
+        {
+            GenerateScanHints();
+            AssetDatabase.SaveAssets();
+            return $"story: {LoadingTipTexts.Length} loading tips written, high-ground hint {HighGroundTipId} ({HighGroundPercent})\n";
+        }
+
         // One scan per creature that Crystal Plains levels 1 to 6 send (bosses meet the hero through their own intros).
         // Proposed lines (2026-11-10), in Voss's voice: what the scan found, then the tower that answers it. The Cragback
         // keeps the level-1 sighting conversation it already had, now with its Codex link.
@@ -83,8 +94,59 @@ namespace Game.Editor
 
             so.FindProperty("_rearNestWarning").objectReferenceValue = CreateRearNestWarning(voss);
             WriteGateTips(so.FindProperty("_gateTips"), CreateGateTips(voss));
+            so.FindProperty("_highGroundTip").objectReferenceValue = CreateHighGroundTip(voss);
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(story);
+            WriteLoadingTips();
+        }
+
+        // Remco 2026-11-15 (playtest 2): towers on raised ground reach further, and Voss says so once per save, after the
+        // first tower is built in a level that has a raised build spot (LevelStoryListener). The number in his lines is the
+        // generator's own (HighGroundRange), so the hint and the rule cannot drift apart. Proposed lines in Voss's voice.
+        public const string HighGroundTipId = "Dlg_Tip_HighGround";
+
+        private static string HighGroundPercent => $"{Mathf.RoundToInt((HighGroundRange - 1f) * 100f)}%";
+
+        private static DialogueDefinition CreateHighGroundTip(SpeakerDefinition voss) =>
+            CreateDialogue(HighGroundTipId,
+                Say(voss, "Good, the first turret stands. Now look for the rises: ground with a glowing seam round its bank."),
+                Say(voss, $"That is high ground. A turret on top of it sees further: {HighGroundPercent} more range. The range ring shows it before you build."),
+                Say(voss, "The bank itself is too steep for a turret, so only the top counts. Take it where the road passes close."));
+
+        // Round 65 (Remco: "Ground guns can't touch it" on the loading screen reads without context): every hint's advice
+        // once more as a line that stands on its own, naming the creature or the thing it is about. The loading screen
+        // shows only these (LoadingTips); each fits its box (LoadingTips.MaxLength).
+        public static readonly (string Dialogue, string Tip)[] LoadingTipTexts =
+        {
+            ("Dlg_Scan_Skitter", "Skitters are weak alone and come in packs: the Cannon's shells thin a pack, the Gun Turret picks off loose runners."),
+            ("Dlg_L01_Stone", "Cragbacks wear armour that bullets and beams barely scratch. A Cannon's heavy shells strip it."),
+            ("Dlg_Scan_Wisp", "Wisps die fast but hit a gate hard. Stop them early: the Laser Turret fires fast enough to catch them."),
+            ("Dlg_Scan_Skyray", "Skyrays never land, so ground guns can't touch them. Build a Flak Turret where they cross the gates."),
+            ("Dlg_Scan_Shalebat", "Shalebats spit at the turrets they fly past. A Flak Turret beside the stone nests takes them first."),
+            ("Dlg_Scan_Mossbat", "Mossbats are shed in flight by the big flyers. Keep a Flak Turret in reach of wherever those go."),
+            ("Dlg_Scan_Roller", "Rollers curl up and roll three times faster than anything else. The Laser Turret's beam keeps up with them."),
+            ("Dlg_Scan_Prowler", "When one Prowler falls, the rest of its pack rages and runs. Hit them together with the Cannon's splash."),
+            (GateUpgradeTipId, "A gate under attack can be upgraded during the level: it gets tougher and grows a turret of its own."),
+            (MoveHeroTipId, "When another gate is being hammered, send Spencer there: Next post, or select that gate."),
+            (RearNestWarningId, "A rift can open behind the gates. Keep a turret in reach of it, or near the base."),
+            (HighGroundTipId, $"Towers on high ground reach {HighGroundPercent} further. The bank round it is too steep to build on."),
+        };
+
+        private static void WriteLoadingTips()
+        {
+            foreach ((string id, string tip) in LoadingTipTexts)
+            {
+                var dialogue = AssetDatabase.LoadAssetAtPath<DialogueDefinition>($"{DialogueFolder}/{id}.asset");
+                if (dialogue == null)
+                {
+                    throw new System.InvalidOperationException($"Loading tip: the dialogue '{id}' does not exist.");
+                }
+
+                var so = new SerializedObject(dialogue);
+                so.FindProperty("_loadingTip").stringValue = tip;
+                so.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(dialogue);
+            }
         }
 
         // Remco 2026-11-10: rifts that join the road behind the defence gate stay where they are (they keep the player

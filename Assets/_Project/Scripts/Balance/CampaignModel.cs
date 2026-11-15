@@ -368,6 +368,20 @@ namespace Game.Balance
                     }
                 }
 
+                // Round 65: with a thin crowd the wave's own multiplier can carry a boss past what one creature should ask. A
+                // walking boss asks at most LevelBossAloneMost on its own; above it the boss comes down, never under its floor.
+                float most = Rules.LevelBossAloneMostFor(difficulty);
+                float lowest = floor / Math.Max(0.001f, healths[wave]);
+                if (!enemy.Flies && most > 0f && scales[wave] > lowest && Pressure(wave, true) > most)
+                {
+                    float tall = scales[wave];
+                    scales[wave] = (float)Math.Round(BossScaleUnder(scale =>
+                    {
+                        scales[wave] = scale;
+                        return Pressure(wave, true);
+                    }, most, lowest, tall), 3);
+                }
+
                 if (scales[wave] <= 1f || Pressure(wave, false) <= cap)
                 {
                     continue;

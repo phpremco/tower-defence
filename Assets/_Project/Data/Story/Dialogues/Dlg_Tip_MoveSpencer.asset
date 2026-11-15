@@ -33,3 +33,4 @@ MonoBehaviour:
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 0}
+  _loadingTip: 'When another gate is being hammered, send Spencer there: Next post, or select that gate.'

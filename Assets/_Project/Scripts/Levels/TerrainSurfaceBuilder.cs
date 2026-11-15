@@ -12,12 +12,13 @@ namespace Game.Levels
         private const float DetailTileSize = 1.6f;
         private const float DetailAlbedoStrength = 0.7f;
         private const float DetailNormalStrength = 1f;
+        private const float BankFull = 0.8f;
 
         public static GameObject Build(LevelDefinition level, VisualTheme theme, TerrainField field, RoadShape road, Transform parent)
         {
             var go = new GameObject("Terrain");
             go.transform.SetParent(parent, false);
-            go.AddComponent<MeshFilter>().sharedMesh = BuildMesh(field);
+            go.AddComponent<MeshFilter>().sharedMesh = BuildMesh(field, theme.Environment != null ? theme.Environment.PlateauBank : 0f);
 
             // The generator bakes the textures; painting at load time is only the fallback for a level without them.
             bool baked = level.TerrainAlbedo != null && level.TerrainEmission != null;
@@ -59,12 +60,15 @@ namespace Game.Levels
             return material;
         }
 
-        private static Mesh BuildMesh(TerrainField field)
+        // The bank of raised ground is marked in the vertex colours (red): the environment ground shader lays its cliff
+        // rock there, full where the slope is steepest and thinning out towards its top and its foot.
+        private static Mesh BuildMesh(TerrainField field, float bankRock)
         {
             int nx = field.Nx;
             int nz = field.Nz;
             var vertices = new Vector3[nx * nz];
             var uvs = new Vector2[vertices.Length];
+            var colours = new Color32[vertices.Length];
             for (int iz = 0; iz < nz; iz++)
             {
                 for (int ix = 0; ix < nx; ix++)
@@ -72,6 +76,9 @@ namespace Game.Levels
                     int i = field.Index(ix, iz);
                     vertices[i] = new Vector3(field.WorldX(ix), field.HeightAtVertex(ix, iz), field.WorldZ(iz));
                     uvs[i] = new Vector2(ix / (float)(nx - 1), iz / (float)(nz - 1));
+                    float plateau = field.PlateauAt(vertices[i].x, vertices[i].z);
+                    float bank = TerrainNoise.SmoothStep(0f, BankFull, plateau * (1f - plateau) * 4f) * bankRock;
+                    colours[i] = new Color32((byte)Mathf.RoundToInt(bank * byte.MaxValue), 0, 0, byte.MaxValue);
                 }
             }
 
@@ -97,6 +104,7 @@ namespace Game.Levels
             var mesh = new Mesh { name = "Terrain", indexFormat = IndexFormat.UInt32 };
             mesh.vertices = vertices;
             mesh.uv = uvs;
+            mesh.colors32 = colours;
             mesh.triangles = triangles;
             mesh.RecalculateNormals();
             // The detail normal map needs tangents.

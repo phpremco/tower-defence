@@ -30,6 +30,10 @@ namespace Game.Levels
         [SerializeField] private Vector2Int[] _blockedCells = new Vector2Int[0];
         [SerializeField] private BlockadeSpot[] _blockades = new BlockadeSpot[0];
         [SerializeField] private TerrainPatch[] _terrain = new TerrainPatch[0];
+        /// <summary>The ring of ground round raised ground that its slope runs out on; no tower stands on it (<see cref="PlateauSkirt"/>).</summary>
+        [SerializeField] private Vector2Int[] _slopeCells = new Vector2Int[0];
+        /// <summary>What the landscape does to a tower (reach on high ground); one asset shared by every level.</summary>
+        [SerializeField] private TerrainRules _terrainRules;
         [SerializeField] private Vector2Int[] _mineCells = new Vector2Int[0];
         /// <summary>Money each mining node holds before it is spent; harvest drones empty it trip by trip.</summary>
         [SerializeField] [Min(0)] private int _mineStock = 140;
@@ -129,6 +133,12 @@ namespace Game.Levels
 
         /// <summary>Raised ground and liquids. Liquids cannot hold towers; every other cell is plain ground.</summary>
         public TerrainPatch[] TerrainPatches => _terrain;
+
+        /// <summary>The ring round raised ground its slope runs out on. Nothing can be built on it.</summary>
+        public Vector2Int[] SlopeCells => _slopeCells;
+
+        /// <summary>The landscape's rules for towers, or null for a level without any (every cell is then worth the same).</summary>
+        public TerrainRules TerrainRules => _terrainRules;
 
         /// <summary>The ground texture painted ahead of time by the generator, or null to paint it when the level loads.</summary>
         public Texture2D TerrainAlbedo => _terrainAlbedo;

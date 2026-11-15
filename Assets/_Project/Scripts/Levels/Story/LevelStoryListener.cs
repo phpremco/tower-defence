@@ -42,6 +42,7 @@ namespace Game.Levels
         // A tip is marked seen only when it ends, so one already queued in this level must not be queued again.
         private readonly HashSet<DialogueDefinition> _tipsQueued = new HashSet<DialogueDefinition>();
         private OriginDirector _origins;
+        private DialogueDefinition _highGroundTip;
         private bool[] _fired;
         private bool _levelStartRaised;
         private bool _levelEndHandled;
@@ -55,7 +56,8 @@ namespace Game.Levels
         /// <param name="rearNestWarning">Voss's warning for a rift behind the defence gate (once per save); null plays none.</param>
         /// <param name="gateTips">Voss's gate tips (once per save each); null plays none.</param>
         /// <param name="gates">The level's gates in the order of its data, which the hero's posts follow.</param>
-        public void Initialize(LevelContext context, TimeController time, IInputProvider input, ProgressService progress, bool storyEnabled, IReadOnlyList<ScanHint> scanHints = null, DialogueDefinition rearNestWarning = null, IReadOnlyList<GateTip> gateTips = null, IReadOnlyList<Tower> gates = null)
+        /// <param name="highGroundTip">Voss's hint about high ground (once per save); null plays none.</param>
+        public void Initialize(LevelContext context, TimeController time, IInputProvider input, ProgressService progress, bool storyEnabled, IReadOnlyList<ScanHint> scanHints = null, DialogueDefinition rearNestWarning = null, IReadOnlyList<GateTip> gateTips = null, IReadOnlyList<Tower> gates = null, DialogueDefinition highGroundTip = null)
         {
             _scanHints = scanHints;
             _context = context;
@@ -78,6 +80,30 @@ namespace Game.Levels
             _context.PathObjectSpawned.Subscribe(OnPathObjectSpawned);
             WatchRearNests(rearNestWarning);
             WatchGates(gateTips, gates);
+            WatchHighGround(highGroundTip);
+        }
+
+        // Only while the hint is unseen in this save and the level has a raised cell a tower can stand on: it plays once the
+        // player has built a first tower here, so the lesson lands when the next tower can use it.
+        private void WatchHighGround(DialogueDefinition tip)
+        {
+            if (tip == null || tip.Lines.Count == 0 || !_context.StoryEnabled || _isSeen(tip.Id) || !PlateauSkirt.HasBuildSpot(_context.Level))
+            {
+                return;
+            }
+
+            _highGroundTip = tip;
+            _context.TowerBuilt.Subscribe(OnTowerBuilt);
+        }
+
+        private void OnTowerBuilt()
+        {
+            if (!Active || _context.Outcome != LevelOutcome.Running || _isSeen(_highGroundTip.Id) || !_tipsQueued.Add(_highGroundTip))
+            {
+                return;
+            }
+
+            _pending.Add(_highGroundTip);
         }
 
         // Only while the warning is still unseen in this save and the level has a rift behind its gate is the map read at all.
@@ -180,6 +206,11 @@ namespace Game.Levels
             {
                 _context.StructureHit.Unsubscribe(OnStructureHit);
                 _context.Wallet.Changed -= OnMoneyChanged;
+            }
+
+            if (_highGroundTip != null)
+            {
+                _context.TowerBuilt.Unsubscribe(OnTowerBuilt);
             }
         }
 

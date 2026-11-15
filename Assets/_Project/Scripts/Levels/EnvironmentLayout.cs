@@ -6,14 +6,15 @@ namespace Game.Levels
     /// <summary>
     /// Where the environment kit goes, read from the grid alone (ArtSource README rounds 8 and 17): a kerb on every side
     /// of a road cell that borders something else, with corner pieces where the outline turns, plaza edges and joins,
-    /// end caps beside each gate and a plinth under it, a pad on every buildable cell, banks round the pools, terrace
-    /// steps round raised ground, rift pieces along straight fissures and cliff walls behind the field. Pure layout:
-    /// whatever the set lacks is skipped by the builder, so the rules serve every continent.
+    /// end caps beside each gate and a plinth under it, a pad on every buildable cell, banks round the pools, rift
+    /// pieces along straight fissures and cliff walls behind the field. Raised ground gets no kit since round 65: it
+    /// slopes down as landscape (TerrainField), and the square terrace steps that walled it are no longer placed. Pure
+    /// layout: whatever the set lacks is skipped by the builder, so the rules serve every continent.
     /// </summary>
     /// <remarks>
     /// Frames after the import's axis change (Blender -Y is Unity -Z): an edge piece has the road (or liquid) on its
-    /// local -Z, an outer corner its road in the (-X, -Z) quadrant, an inner corner its ground in (+X, +Z), a terrace step
-    /// its plateau on +Z, a cliff its field on -Z, a rift runs along X.
+    /// local -Z, an outer corner its road in the (-X, -Z) quadrant, an inner corner its ground in (+X, +Z), a cliff its
+    /// field on -Z, a rift runs along X.
     /// </remarks>
     public sealed class EnvironmentLayout
     {
@@ -58,7 +59,6 @@ namespace Game.Levels
             PlaceGatePlinths();
             PlaceBuildPads();
             PlaceBanks();
-            PlaceTerraces();
             PlaceRifts();
             PlaceBorder(cliffInset, sideReach);
             return this;
@@ -266,29 +266,6 @@ namespace Game.Levels
         }
 
         private static bool IsPool(TerrainKind kind) => TerrainMap.IsLiquid(kind) && kind != TerrainKind.Rift;
-
-        // Steps round raised ground on every side that drops to a lower cell; an outer corner where one cell of four is raised.
-        private void PlaceTerraces()
-        {
-            foreach (KeyValuePair<Vector2Int, TerrainKind> pair in _terrain.Cells)
-            {
-                if (pair.Value != TerrainKind.Raised)
-                {
-                    continue;
-                }
-
-                foreach (Vector2Int side in Sides)
-                {
-                    if (_terrain.KindAt(pair.Key + side) != TerrainKind.Raised)
-                    {
-                        Vector3 position = SideMiddle(pair.Key, side);
-                        Add(EnvironmentPieceKind.TerraceStep, position, YawBetween(Vector2.up, -side));
-                    }
-                }
-            }
-
-            PlaceQuadrantCorners(cell => _terrain.KindAt(cell) == TerrainKind.Raised, EnvironmentPieceKind.TerraceStepOuter, null, new Vector2(1f, 1f), false);
-        }
 
         // Corner pieces at the grid points round a set of cells: the outer piece where one cell of four belongs (its
         // quadrant turned onto the outer frame), the inner where three do (the odd cell onto the inner frame's (+X, +Z)).

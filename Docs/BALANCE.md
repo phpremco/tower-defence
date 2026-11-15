@@ -1958,3 +1958,248 @@ Acceptance 11/24 (9/24), README 24 of 24. What the iterations taught: a boss may
 armour makes Cragback-heavy cells harder in play than the paper's lighter health suggests on Hard and Psycho (five builder
 steps), and easier to solve with a row of Cannons on the two levels without flyers. Docs/STATUS.md "Round 64" has the
 reading and the open points.
+
+## Round 65: high ground in the model, bosses sized as a fight, and what a row of Cannons still does (2026-11-15)
+
+Remco after his second playtest: plateaus slope down and their ring holds no tower, towers on high ground reach ten percent
+further, and the two open points of round 64 (the Cannon row on Landing Site, Shard Ridge Hard's last boss). Commands:
+Docs/COMMANDS.md "Round 65"; what was built: Docs/STATUS.md "Round 65".
+
+### High ground: why the plateau is 0.33 high and which cells may hold a gun
+
+A shot flies in a straight line from the muzzle to the creature's feet on the road. The muzzles are low (the model's shot
+origin at rest over the pad, `Tools/PlayTest/r65_muzzles.cs`): Cannon **0.34**, Gun Turret and Storm Rifle 0.39, Railgun
+0.42, Cryo 0.45, Laser and Cryo Beam 0.48, Tesla 0.76 to 0.91, Flak and Artillery 0.8 to 0.9. Take a gun on a plateau of
+height h whose line to the creature leaves the level top after a share r of the way. Over the lip the line is at
+(h + m)(1 - r), and it clears the lip when m(1 - r) >= h r, so r <= m / (h + m): with the old wall (h 0.55) a Cannon saw
+over 0.38 of the way and a Laser over 0.47, and a gun in a plateau's second row (1.5 cells of plateau, a creature 2.5 to 3
+cells away: r 0.5 to 0.6) fired through the ground at everything near. No slope repairs that; only a lower plateau or a
+rounder lip does. The plateau now rounds off 0.3 of a cell inside its cells and is **0.33** high: with the real curve
+(`TerrainField`: smooth step over 1.08 cells from 0.3 inside the edge, the foot wandering 0.05) the Cannon's line clears it
+by 0.022 at r = 1.5 / 2.8 = 0.536 and by 0.008 at 2.5 / 4.63, which is where the terrain rules put the sight ratio:
+**0.54**. At 0.40 the same line is 0.009 under the ground; at 0.55 no second row can be built on at all.
+
+So the rule (`PlateauSkirt.Shadowed`): a raised cell holds a tower only when, to every road cell within the longest ground
+reach the level sells (the Railgun's 7 x 1.1 on Crystal Plains) and as far to the side as a walker strays (0.2 of a cell past
+the middle of the outer row on a road two cells wide, `EnemySpawner.StrayPastRowCells`), its line leaves the raised cells
+within 0.54 of the way. One raised cell between the gun and the ring is fine on both sides of a ridge (1.5 of 2.8); two are
+not (2.5 of 3.8). `LineOfFireTests` then walks the real thing: every tower of the roster at every level from every raised
+build cell to every such road point against the drawn landscape.
+
+**Not covered** (open point): a gun on the plain *behind* a plateau fires through it just the same (its muzzle is 0.34 to
+0.48 over the plain and the plateau 0.33), and the report counts those cells per level; nothing closes them. They
+are far from the road by construction (a plateau is two cells from it, so the cell behind is four or more) and no plan spot.
+
+### High ground in the model
+
+`TerrainRules.HighGroundRange` (1.1) is one asset every level points at. The tower multiplies its range by it
+(`Tower.GroundRange`), and `BalanceLedger.Geometry` gives every raised spot the same multiplier (`LevelGeometry.SpotRange`,
+the hook of round 22), so the spot lens and the plan search weigh a raised spot with its longer reach and the input hash
+covers it. What changed for the model is the map more than the reach:
+
+| Level | Spots within 2 cells of the road, before -> after | of them on high ground |
+| --- | --- | --- |
+| C1_01 | 348 -> 333 | 11 -> 6 |
+| C1_02 | 335 -> 308 | 17 -> 3 |
+| C1_03 | 387 -> 348 | 24 -> 9 |
+| C1_04 | 432 -> 416 | 8 -> 3 |
+| C1_05 | 373 -> 361 | 5 -> 4 |
+| C1_06 | 422 -> 408 | 8 -> 6 |
+
+The wave solve buys its guns at the defence gate and does not read single spots: with the new maps alone the stored waves
+of five levels were exactly what the solve gives (0 waves moved); only Landing Site moved, by under 1.5 % of its total
+health (I did not trace why; its first gate stands beside a plateau whose ring took the row of cells under it). The plans do read the spots, so
+every cell was searched and replayed again.
+
+### Shard Ridge's last boss: a per-cell lever, and where a boss falls
+
+Round 64 left Shard Ridge Hard's Brood Mother at its floor (932) because the crowd of its wave took all the room under the
+cap. The boss wave's crowd share was a constant of the composer (0.6); it is a rule now (`BalanceRules.BossWaveShare`, still
+0.6) and a cell may thin it with the script lever **`bosscrowd`** (`wave_tuning.txt`, `WaveScriptSpec.BossCrowd`), which gives
+the boss room to grow to `LevelBossAlone`. Shard Ridge Hard and Psycho carry `bosscrowd 0.35`:
+
+| Shard Ridge | Boss (wave) | Round 64 | Round 65 | Boss alone, with the hero | Whole wave (cap) |
+| --- | --- | --- | --- | --- | --- |
+| Hard | Core Wisp (w10) | 1031 | 1031 | 0.40 | 0.82 -> 0.81 (1.25) |
+| Hard | Brood Mother (w16) | 932 | **2197** | 0.18 -> 0.40 | 1.16 -> 1.14 (1.25) |
+| Psycho | Brood Mother (w6) | 2041 | 2042 | 0.45 | 0.72 -> 0.68 (1.35) |
+| Psycho | Core Wisp (w10) | 1364 | 1766 | 0.29 -> 0.38 | 1.00 (1.35) |
+| Psycho | Brood Mother (w16) | 1337 | **2550** | 0.17 -> 0.39 | 1.04 -> 1.00 (1.35) |
+
+The level's total health on Hard is 0.90 of what it was (the crowd of two waves gave way), on Psycho 1.02; both stay on
+their curve (1.40x and 1.35x). Psycho's last boss is now above Hard's on this level, as Remco asked on 2026-11-09.
+
+**The first try was a rule for every cell and it was taken back.** `BossWaveShare` 0.35 everywhere, with `LevelBossAlone`
+on Hard and Psycho raised from 0.4 / 0.45 to 0.5 (the idea: a boss asks single-target fire, which a row of Cannons has
+least of). On paper it looked right (every cell on its curve; table `Tools/PlayTest/r64_lab_r65_new.txt`), and it did give
+Shard Ridge its boss, but the whole pipeline on it (432 + 306 runs) said no: mid-level bosses carried their wave's
+multiplier up when the crowd thinned (Glass Meadows Hard's Core Wisp 877 -> 1425, Psycho 1879 -> 3010, Crysium Vein
+Psycho's 2534 -> 4149, and 7257 before a cap was put on it), acceptance went from 11 to 9 of 24 (Fault Line Medium fell to
+two stars, Crysium Vein Psycho to 2/3 with one plan of five), Landing Site Hard's searched plans went from 2/3 to 1/3 at
+the bigger last boss, and **the Cannon row still won Landing Site Hard and Psycho 3/3**. What stays of it: the rule field,
+the lever, and a guard for any cell that thins its boss waves, `LevelBossAloneMost` (0.65: a walking boss never asks more
+than that on its own; it comes down on its own scale, never under its floor; at the default share no boss reaches it).
+
+**Where a boss falls** (the probe Remco asked for). `ProbeTrace` writes one line per boss into every run's trace: the share
+of the main road it had walked when it died, the seconds since it came in, the gates' shares, and whether it reached the
+first gate (a creature held at a gate stands up to 0.03 before it). `Tools/PlayTest/r65_boss_fates.py` collects them from
+the clones.
+
+Every level boss against the searched plans (the replay of this round, 315 runs; all plans of a cell on three seeds;
+`Tools/PlayTest/r65_boss_fates_replay.txt`). "Fell at" is the range over the runs in which it was killed:
+
+| Level | Difficulty | Boss (wave) | Health | Runs | Reached the first gate | Fell at (share of the road) | Seconds on the field |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Landing Site | Easy | BroodMother (w12) | 482 | 12 | 2 | 0.07-0.10 | 13-20 |
+| Landing Site | Medium | BroodMother (w12) | 675 | 9 | 0 | 0.07-0.08 | 14-16 |
+| Landing Site | Hard | BroodMother (w8) | 932 | 15 | 7 | 0.08-0.12 | 16-34 |
+| Landing Site | Hard | BroodMother (w12) | 1423 | 15 | 0 | 0.08-0.09 | 16-18 |
+| Landing Site | Psycho | BroodMother (w5) | 1451 | 15 | 15 | 0.11-0.13 | 21-35 |
+| Landing Site | Psycho | BroodMother (w8) | 1566 | 15 | 13 | 0.09-0.67 | 16-135 |
+| Landing Site | Psycho | BroodMother (w12) | 2239 | 15 | 2 | 0.07-0.11 | 14-21 |
+| Glass Meadows | Easy | BroodMother (w12) | 500 | 15 | 0 | 0.02-0.02 | 4-5 |
+| Glass Meadows | Medium | BroodMother (w12) | 1535 | 15 | 5 | 0.06-0.11 | 9-16 |
+| Glass Meadows | Hard | CoreWisp (w9) | 877 | 9 | 0 | 0.05-0.07 | 5-7 |
+| Glass Meadows | Hard | BroodMother (w12) | 1531 | 9 | 0 | 0.05-0.05 | 6-9 |
+| Glass Meadows | Psycho | BroodMother (w5) | 2210 | 9 | 0 | 0.07-0.08 | 13-13 |
+| Glass Meadows | Psycho | CoreWisp (w9) | 1879 | 9 | 1 | 0.06-0.11 | 6-11 |
+| Glass Meadows | Psycho | BroodMother (w12) | 2983 | 9 | 0 | 0.05-0.08 | 7-11 |
+| Shard Ridge | Easy | BroodMother (w16) | 699 | 15 | 15 | 0.56-0.57 | 107-123 |
+| Shard Ridge | Medium | BroodMother (w16) | 1296 | 15 | 15 | 0.57-0.60 | 104-111 |
+| Shard Ridge | Hard | CoreWisp (w10) | 1031 | 15 | 15 | 0.61-0.75 | 67-104 |
+| Shard Ridge | Hard | BroodMother (w16) | 2197 | 15 | 15 | 0.55-0.57 | 111-118 |
+| Shard Ridge | Psycho | BroodMother (w6) | 2042 | 9 | 9 | 0.59-0.60 | 104-122 |
+| Shard Ridge | Psycho | CoreWisp (w10) | 1766 | 9 | 9 | 0.60-0.74 | 63-104 |
+| Shard Ridge | Psycho | BroodMother (w16) | 2550 | 8 | 6 | 0.49-0.55 | 87-99 |
+| Fault Line | Easy | StormMatriarch (w16) | 471 | 15 | 15 | 0.90-0.91 | 77-91 |
+| Fault Line | Medium | StormMatriarch (w16) | 1189 | 9 | 9 | 0.96-1.00 | 102-119 |
+| Fault Line | Hard | BroodMother (w10) | 931 | 15 | 15 | 0.88-0.91 | 163-196 |
+| Fault Line | Hard | StormMatriarch (w16) | 724 | 15 | 15 | 0.91-0.93 | 80-95 |
+| Fault Line | Psycho | CoreWisp (w5) | 1041 | 15 | 15 | 0.89-0.92 | 101-124 |
+| Fault Line | Psycho | BroodMother (w10) | 1337 | 15 | 15 | 0.90-0.91 | 155-188 |
+| Fault Line | Psycho | StormMatriarch (w16) | 3639 | 15 | 15 | 0.93-1.00 | 88-99 |
+| Quartz Flats | Easy | CoreWisp (w17) | 885 | 15 | 10 | 0.10-0.12 | 10-14 |
+| Quartz Flats | Medium | CoreWisp (w17) | 1464 | 15 | 15 | 0.12-0.12 | 13-25 |
+| Quartz Flats | Hard | StormMatriarch (w11) | 1657 | 9 | 9 | 0.95-1.00 | 98-113 |
+| Quartz Flats | Hard | CoreWisp (w17) | 3338 | 9 | 9 | 0.11-0.12 | 12-18 |
+| Quartz Flats | Psycho | BroodMother (w5) | 3073 | 15 | 12 | 0.09-0.12 | 16-25 |
+| Quartz Flats | Psycho | StormMatriarch (w11) | 2400 | 15 | 15 | 0.90-0.94 | 85-105 |
+| Quartz Flats | Psycho | CoreWisp (w17) | 5274 | 15 | 14 | 0.09-0.12 | 12-17 |
+| Crysium Vein | Easy | PackAlpha (w18) | 627 | 15 | 15 | 0.74-0.77 | 47-58 |
+| Crysium Vein | Medium | PackAlpha (w18) | 765 | 14 | 14 | 0.73-0.78 | 48-52 |
+| Crysium Vein | Hard | CoreWisp (w12) | 1463 | 7 | 6 | 0.74-0.84 | 87-108 |
+| Crysium Vein | Hard | PackAlpha (w18) | 2595 | 6 | 6 | 0.77-0.90 | 48-61 |
+| Crysium Vein | Psycho | StormMatriarch (w7) | 3373 | 15 | 15 | 0.98-1.00 | 111-124 |
+| Crysium Vein | Psycho | CoreWisp (w12) | 2534 | 15 | 15 | 0.76-0.78 | 93-110 |
+| Crysium Vein | Psycho | PackAlpha (w18) | 1978 | 15 | 15 | 0.73-0.76 | 46-55 |
+
+What it says:
+- **Shard Ridge Hard's Brood Mother (2197) falls at 0.55 to 0.57 of the road, 111 to 118 s after it came in, in 15 runs of
+  15**, past the first gate (0.14). But it fell there before, too: on round 64's waves with this round's maps the
+  932-point boss fell at 0.40 to 0.41 after 82 to 86 s (`Logs/r65/boss_probe_round64_waves.txt`: the three runs of fifteen
+  those plans won, they were searched for other waves), and on Easy the 699-point one falls at 0.56. The searched plans
+  defend Shard Ridge's second gate (0.72, behind the join of its two roads; their towers stand at 0.39 to 0.95 of the road)
+  and leave the first gate to itself, and a gun shoots whatever is furthest along, so a boss that comes in behind its
+  crowd walks until it is the last thing on the road.
+- **Where a boss falls says where the defence stands, more than how tough the boss is.** On Landing Site, Glass Meadows
+  and Quartz Flats the plans stand at the first gate, and there the bosses die in front of it: Glass Meadows Hard's Brood
+  Mother (1531) at 0.05 of the road, 6 to 9 s in, 0 runs of 9 at the gate; Landing Site Hard's last (1423) at 0.08 to
+  0.09, 0 of 15. On Fault Line and Crysium Vein they cross most of the map.
+- **Against Remco's own defence** (a Cannon at level 2 and a Gun Turret at level 3 at the first gate: about 96 damage a
+  second, some 8 s of fire before the gate at the Brood Mother's 0.55 cells a second) the 349 he met was gone in under
+  four seconds and round 64's 932 fell about at the gate; 2197 reaches it and stands hammering it for a quarter of a minute.
+  A defence that lands more than about 260 a second on it there still stops it short. A boss tough enough for a full
+  defence at the first gate does not fit under the wave's cap: 2197 is two fifths of what the expected player deals in
+  its whole walk.
+
+### The Cannon row on Landing Site: why no mix of its creatures breaks it
+
+Round 64's open point 1: a row of Cannons alone wins Landing Site Hard and Psycho 3/3 (three stars, base 700, some 170 to
+260 coins unspent), which is against "no row of one type wins". This round it still does, on the new maps and after both
+boss passes. The reasons are in the data, not in the waves:
+
+- **A pile is the Cannon's best case, and a gate makes everything a pile.** At level 1 a Cannon (100 coins) lands 25 every
+  1.6 s on up to three creatures within 1.2 cells: 47 damage a second on a pile. Two Gun Turrets (100 coins) land 29 on one
+  creature, and a fifth of that on armour. Every walker stops at a gate.
+- **Landing Site sends two ground species**: Skitters (11 hit points, a pile at the gate) and Cragbacks (60 + 160 armour).
+  The Cannon is the best buy against both. The builder's levers (plated, swarm, tempo, raid, the scale) only move the mix
+  of those two. With `plated 1.5` (round 34b, against the Gun Turret row) and round 64's armour the Cragbacks made the
+  Cannon the answer; without it the Gun Turret row, which lost this cell only once armour counted, comes back.
+- **The paper underrates the row.** The plan model says the Cannon row falls at wave 7 with a margin of 0.37; in play it
+  holds every wave with the base untouched. One efficiency per tower type (0.797) cannot carry "three creatures a shell
+  whenever they stand at a gate", so the solve sizes Landing Site's waves against less than the row really deals.
+- **A bigger boss did not do it.** With the last boss at 1843 (the first pass of this round) it died at 0.11 of the road,
+  in the first gate's queue, 22 to 24 s after it came in, for the Cannon row exactly as for the creative bot: seven
+  Cannons have enough single-target fire for a boss of that size.
+- **What a Cannon cannot do**: aim up (`Targets` ground only), and hit something that keeps moving (its shell flies at 5 a
+  second and does not home: a Skitter at 1.6 has moved 1.3 cells when a shell fired from 4 cells lands, more than the blast's
+  1.2). Nothing on Landing Site flies, and nothing keeps moving past a standing gate.
+
+So the row is broken by a creature the level does not have (flyers on Hard and Psycho, or one that does not stop), or by the
+Cannon's own data (targets per shell, price); both are Remco's to choose (Docs/STATUS.md, round 65, open point 1). The
+yardstick below is unchanged from round 64 on these two cells.
+
+### The pipeline
+
+All 24 cells again, because every map changed (the spots the plans stand on), though only six cells' waves did (Landing Site's four by under 1.5 %, Shard Ridge Hard and Psycho). As run:
+solve -> measure (432 runs, 24 min on five clones) -> fit -> **apply-keep** -> search (six levels side by side on the six
+clones, 2.5 min) -> replay (315 runs, 25 min) -> acceptance -> readme. The calibration keeps round 64's factors (Cannon
+0.797, Laser 0.701, Gun Turret 0.808, Flak 1.039, route fire 4, queue guard 0.3, siege 1.168); this round's fit on the
+yardstick alone reads Cannon 0.794, Laser 0.686, Gun Turret 0.848, Flak 0.982 (route fire 8, siege 1.75), hold-out 81 % /
+mono 87 % / Spearman 0.80: the same picture as round 64, below the 90 % bar as before. Re-stamped for inputs 39c09104
+(the terrain rules, the spots with their reach and the new boss rule fields are in the hash).
+
+**Paper** (human lens, towers alone; total health of the level's waves; all 24 cells in `Tools/PlayTest/r65_paper.txt`):
+
+| Cell | Round 64 | The new maps alone (waves moved) | Round 65 | x | Surplus (curve) |
+| --- | --- | --- | --- | --- | --- |
+| C1_01 Easy | 7360 | 7360 (2/12) | 7360 | 1.00 | 1.61x (1.61x) |
+| C1_01 Medium | 9953 | 9913 (12/12) | 9913 | 1.00 | 1.52x (1.52x) |
+| C1_01 Hard | 23949 | 23997 (8/12) | 23997 | 1.00 | 0.95x (0.95x) |
+| C1_01 Psycho | 52202 | 52933 (12/12) | 52933 | 1.01 | 1.06x (1.06x) |
+| C1_03 Hard | 15829 | 15829 (0/16) | 14253 | 0.90 | 1.40x (1.40x) |
+| C1_03 Psycho | 44495 | 44495 (0/16) | 45541 | 1.02 | 1.35x (1.35x) |
+| the other 18 cells | as stored | 0 waves moved | unchanged | 1.00 | on their curves |
+
+**Play, before (round 64) and after** (as in Docs/STATUS.md, round 65):
+
+| Cell | Best plan before (wins, stars, base) | Best plan after | Plans winning 2+ | Gun row | Cannon row | Laser row | Creative bot |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C1_01 Easy | 3/3, 3.0, 600 | 3/3, 3.0, 600 | 4/4 | 3/3 | 3/3 | - | 3/3 |
+| C1_01 Medium | 3/3, 3.0, 600 | 3/3, 3.0, 600 | 5/5 -> 3/3 | 3/3 | 3/3 | - | 3/3 |
+| C1_01 Hard | 2/3, 3.0, 700 | 2/3, 3.0, 700 | 3/3 -> 5/5 | 0/3 (w12) | 3/3 | 0/3 (w10) | 1/3 |
+| C1_01 Psycho | 2/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w12) | 3/3 | 0/3 (w11) | 3/3 |
+| C1_02 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 3/3 | 3/3 | 3/3 | 3/3 |
+| C1_02 Medium | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w10) | 3/3 | 0/3 (w9) -> 0/3 (w10) | 3/3 |
+| C1_02 Hard | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 3/3 | 0/3 (w11) -> 0/3 (w10) | 1/3 | 0/3 (w10) | 3/3 |
+| C1_02 Psycho | 3/3, 3.0, 800 | 3/3, 3.0, 800 | 2/3 | 0/3 (w11) | 1/3 | 0/3 (w10) | 0/3 (w11) |
+| C1_03 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w14) | 0/3 (w14) | 0/3 (w14) | 3/3 |
+| C1_03 Medium | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 |
+| C1_03 Hard | 3/3, 2.7, 667 | 3/3, 3.0, 700 | 1/3 -> 5/5 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 |
+| C1_03 Psycho | 3/3, 3.0, 785 | 3/3, 2.7, 756 | 3/3 -> 2/3 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 -> 2/3 |
+| C1_04 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 |
+| C1_04 Medium | 3/3, 3.0, 672 | 3/3, 2.7, 666 | 3/3 | 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 3/3 |
+| C1_04 Hard | 3/3, 3.0, 800 | 3/3, 3.0, 800 | 5/5 | 0/3 (w5) | 0/3 (w5) | 0/3 (w5) | 3/3 |
+| C1_04 Psycho | 3/3, 2.3, 627 | 3/3, 2.3, 630 | 5/5 | 0/3 (w6) | 0/3 (w5) | 0/3 (w5) | 2/3 -> 3/3 |
+| C1_05 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w11) | 0/3 (w11) | 0/3 (w11) | 3/3 |
+| C1_05 Medium | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w9) | 0/3 (w9) | 0/3 (w9) | 2/3 -> 3/3 |
+| C1_05 Hard | 3/3, 2.3, 671 | 3/3, 3.0, 787 | 3/3 | 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 3/3 -> 2/3 |
+| C1_05 Psycho | 3/3, 3.0, 889 | 3/3, 3.0, 900 | 5/5 | 0/3 (w9) | 0/3 (w9) | 0/3 (w9) | 1/3 -> 0/3 (w17) |
+| C1_06 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w12) | 0/3 (w12) | 0/3 (w12) | 3/3 |
+| C1_06 Medium | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w12) | 0/3 (w11) | 0/3 (w11) | 3/3 |
+| C1_06 Hard | 3/3, 2.0, 568 | 3/3, 1.7, 501 | 2/3 | 0/3 (w10) | 0/3 (w10) | 0/3 (w10) | 3/3 |
+| C1_06 Psycho | 3/3, 2.7, 783 | 3/3, 3.0, 884 | 4/5 -> 5/5 | 0/3 (w10) | 0/3 (w7) | 0/3 (w7) | 1/3 -> 2/3 |
+
+- Every cell has a plan that wins on most seeds (README: 24 of 24); the best plan wins 3/3 in 23 cells (22 in round 64)
+  and 2/3 on Landing Site Hard as before. Acceptance **11/24, the same eleven cells**.
+- Shard Ridge Hard with the boss at 2197: best plan 3/3 with three stars and the base whole (2.7 stars before), and all
+  five searched plans win on most seeds (one of three before). The thinner crowd of its last wave is worth more to the
+  player than the bigger boss costs. Shard Ridge Psycho: 3/3, 2.7 stars (3.0 before), two plans of three.
+- High ground is in the plans where it lies at a gate: Landing Site's winning plans build on (11,2), (12,2) and (13,2),
+  the plateau beside the first gate, on every difficulty; Glass Meadows lists (31,14) among its best spots on Hard and
+  Psycho. Elsewhere the plateaus are away from the defence gate and the plans leave them.
+- A little worse: Crysium Vein Hard's best plan keeps 1.7 stars (2.0), Fault Line Medium 2.7 (3.0); a little better:
+  Landing Site Psycho 3/3 (2/3), Quartz Flats Hard three stars (2.3), Crysium Vein Psycho three stars and 5/5 plans. The
+  waves of those cells are the stored ones, so this is the maps (fewer cells beside the road) and the search's draw.
+- Not done: the impact baseline (`snapshot`) was not retaken; no finale probe (no continent boss, tower or rule of the
+  finale model changed; the arena copies took the plateau rules from their source levels and were not replayed).

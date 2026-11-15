@@ -6,8 +6,9 @@ namespace Game.Levels
     /// <summary>
     /// The splat map of the environment ground shader, built from the grid when the level loads: R road and G plaza
     /// follow the cell outline exactly (the kerbs stand on it), B marks the patches of the second ground layer away from
-    /// the road, A the continent's element terrain. A few texels per cell is enough: the shader's height blend breaks the
-    /// edges up, the kerbs cover the road's. Covers the whole landscape, margins included.
+    /// the road and the level top of raised ground, A the continent's element terrain. A few texels per cell is enough:
+    /// the shader's height blend breaks the edges up, the kerbs cover the road's. Covers the whole landscape, margins
+    /// included.
     /// </summary>
     public static class EnvironmentSplat
     {
@@ -16,6 +17,8 @@ namespace Game.Levels
         private const float AltSeed = 57f;
         private const int AltOctaves = 3;
         private const float ElementGain = 4f;
+        private const float PlateauTopStart = 0.7f;
+        private const float PlateauTopFull = 0.95f;
 
         private static readonly Vector2Int[] Neighbours =
         {
@@ -49,6 +52,9 @@ namespace Game.Levels
                         alt = TerrainNoise.SmoothStep(set.AltCoverage, set.AltCoverage + AltSoftness, noise);
                     }
 
+                    // The level top of raised ground wears the second layer, so high ground reads as its own surface
+                    // (its bank wears the cliff rock, through the mesh: TerrainSurfaceBuilder).
+                    alt = Mathf.Max(alt, TerrainNoise.SmoothStep(PlateauTopStart, PlateauTopFull, field.PlateauAt(x, z)) * set.PlateauTop);
                     float element = Mathf.Clamp01(ElementMask(field, set.ElementTerrain, x, z) * ElementGain);
                     pixels[ty * width + tx] = new Color32(
                         (byte)(isRoad && !plaza ? 255 : 0),

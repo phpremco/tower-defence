@@ -27,3 +27,4 @@ MonoBehaviour:
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+  _loadingTip: Cragbacks wear armour that bullets and beams barely scratch. A Cannon's heavy shells strip it.

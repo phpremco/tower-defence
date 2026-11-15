@@ -171,6 +171,8 @@ Shader "Game/EnvironmentGround"
                 float4 positionOS : POSITION;
                 float3 normalOS : NORMAL;
                 float4 tangentOS : TANGENT;
+                // Red: the bank of raised ground (TerrainSurfaceBuilder), which wears the cliff rock however gentle it is.
+                half4 color : COLOR;
             };
 
             struct Varyings
@@ -180,6 +182,7 @@ Shader "Game/EnvironmentGround"
                 half3 normalWS : TEXCOORD1;
                 half4 tangentWS : TEXCOORD2;
                 half fogFactor : TEXCOORD3;
+                half bank : TEXCOORD4;
             };
 
             Varyings GroundVertex(Attributes input)
@@ -192,6 +195,7 @@ Shader "Game/EnvironmentGround"
                 output.normalWS = normals.normalWS;
                 output.tangentWS = half4(normals.tangentWS, input.tangentOS.w);
                 output.fogFactor = ComputeFogFactor(positions.positionCS.z);
+                output.bank = input.color.r;
                 return output;
             }
 
@@ -291,7 +295,7 @@ Shader "Game/EnvironmentGround"
                 }
 
                 // Rock on steep ground: projected from the side the slope faces, so the strata run level.
-                half cliffWeight = smoothstep(_Blend.y, _Blend.z, slope) * (1.0h - splat.r) * (1.0h - splat.g);
+                half cliffWeight = max(smoothstep(_Blend.y, _Blend.z, slope), input.bank) * (1.0h - splat.r) * (1.0h - splat.g);
                 UNITY_BRANCH
                 if (cliffWeight > 0.01h)
                 {

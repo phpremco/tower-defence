@@ -30,7 +30,6 @@ namespace Game.Balance
         private const float HeavyTempo = 1.4f;
         private const float AirShare = 0.35f;
         private const float AirGroundShare = 0.4f;
-        private const float BossWaveShare = 0.6f;
         private const float SprinkleShare = 0.15f;
         // The default spacing of flyers in an air raid and in the sprinkle; a script may pack its raids tighter.
         private const float FlyerInterval = 1.6f;
@@ -132,7 +131,8 @@ namespace Game.Balance
             Kind kind = KindOf(script, difficulty, number);
             if (boss != null)
             {
-                budget *= BossWaveShare;
+                float crowd = script.BossCrowdFor(difficulty);
+                budget *= crowd > 0f ? crowd : rules.BossWaveShare;
             }
 
             List<TroopSpec> open = Unlocked(script.Troops, number, difficulty, false);

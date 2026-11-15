@@ -26,8 +26,14 @@ namespace Game.Levels
         private const float CliffLipPlateau = 0.78f;
         private const float CliffLipWidth = 0.08f;
         private const float CliffSeamPlateau = 0.45f;
-        private const float CliffSeamWidth = 0.07f;
-        private const float CliffSeamGlow = 0.9f;
+        private const float CliffSeamWidth = 0.16f;
+        private const float CliffSeamWander = 0.3f;
+        private const float CliffSeamGlow = 2.4f;
+        private const float BankRock = 0.9f;
+        private const float BankPale = 2.2f;
+        private const float BankShade = 0.6f;
+        private const float PlateauTopLift = 1.9f;
+        private const float PlateauTopBlend = 0.7f;
         private const float PebbleScale = 4.1f;
         private const float PebbleEdge = 0.63f;
         private const float RiftStrataBands = 40f;
@@ -159,11 +165,14 @@ namespace Game.Levels
                 // Bare rock where it is steep and on the far hills; the top of a plateau is lighter.
                 float rockiness = Mathf.Clamp01(TerrainNoise.SmoothStep(0.8f, 1.7f, slope) * 0.85f + hills * 0.7f + (medium - 0.5f) * 0.4f * hills);
                 color = Color.Lerp(color, _rock * (0.65f + 0.7f * medium), rockiness);
-                // Raised ground must read as raised from straight above: a dark cliff face and a paler, rockier top.
-                float cliff = plateau * (1f - plateau) * 4f;
-                color *= 1f - cliff * 0.5f;
-                color = Color.Lerp(color, _rock * 1.3f, TerrainNoise.SmoothStep(0.7f, 0.97f, plateau) * 0.45f);
-                ShadeCliff(plateau, medium, ref color, ref glow);
+                // Raised ground must read as raised from straight above (round 65: it slopes down over a cell, with no
+                // wall to see): a bank of bare rock that is pale where it meets the top and dark at its foot, as if lit
+                // from above, a clearly paler top, and the seam of the level's glow in the bank.
+                float bank = plateau * (1f - plateau) * 4f;
+                color = Color.Lerp(color, _rock * (BankPale + 0.4f * medium), bank * plateau * BankRock);
+                color *= 1f - bank * (1f - plateau) * BankShade;
+                color = Color.Lerp(color, _groundLight * PlateauTopLift, TerrainNoise.SmoothStep(0.7f, 0.97f, plateau) * PlateauTopBlend);
+                ShadeCliff(x, z, plateau, medium, ref color, ref glow);
 
                 ShadeLiquids(x, z, medium, ref color, ref glow);
                 ShadeVeins(x, z, outside, ref color, ref glow);
@@ -191,9 +200,10 @@ namespace Game.Levels
                 color *= 1f - fissure * FissureDarkening;
             }
 
-            // Layered strata on the cliff face, a pale worn lip along the top edge and a thin seam of the level's
-            // glow where the rock was split, so raised ground reads as a solid block with height.
-            private void ShadeCliff(float plateau, float noise, ref Color color, ref Color glow)
+            // Layered strata on the bank, a pale worn lip along the top edge and a seam of the level's glow where the
+            // rock was split, so raised ground reads as solid ground with height. The seam comes and goes along the
+            // bank like a vein in the rock; a closed line round the plateau would read as drawn on.
+            private void ShadeCliff(float x, float z, float plateau, float noise, ref Color color, ref Color glow)
             {
                 float face = TerrainNoise.SmoothStep(0.12f, 0.5f, plateau) * (1f - TerrainNoise.SmoothStep(0.72f, 0.9f, plateau));
                 if (face <= 0f)
@@ -205,8 +215,10 @@ namespace Game.Levels
                 color *= 1f - face * strata * CliffStrataDarkening;
                 float lip = 1f - Mathf.Clamp01(Mathf.Abs(plateau - CliffLipPlateau) / CliffLipWidth);
                 color = Color.Lerp(color, _rock * 1.5f, lip * face * 0.6f);
-                float seam = 1f - Mathf.Clamp01(Mathf.Abs(plateau - CliffSeamPlateau) / CliffSeamWidth);
-                glow += _accent * (seam * seam * face * CliffSeamGlow * (0.4f + 0.6f * _vein) * (0.6f + 0.4f * noise));
+                float wander = (TerrainNoise.Fbm(x * 0.9f + 11f, z * 0.9f, 2, _seed) - 0.5f) * CliffSeamWander;
+                float seam = 1f - Mathf.Clamp01(Mathf.Abs(plateau - CliffSeamPlateau - wander) / CliffSeamWidth);
+                float exposed = TerrainNoise.SmoothStep(0.3f, 0.46f, TerrainNoise.Fbm(x * 1.4f, z * 1.4f + 29f, 2, _seed));
+                glow += _accent * (seam * seam * face * exposed * CliffSeamGlow * (0.4f + 0.6f * _vein) * (0.6f + 0.4f * noise));
             }
 
             private void ShadeLiquids(float x, float z, float noise, ref Color color, ref Color glow)

@@ -90,6 +90,8 @@ MonoBehaviour:
   - {x: 30, y: 16}
   - {x: 35, y: 5}
   - {x: 38, y: 13}
+  - {x: 24, y: 21}
+  - {x: 26, y: 21}
   _blockades:
   - Cell: {x: 15, y: 19}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
@@ -128,29 +130,15 @@ MonoBehaviour:
     Kind: 4
   - Cell: {x: 2, y: 13}
     Kind: 4
-  - Cell: {x: 5, y: 15}
-    Kind: 1
   - Cell: {x: 5, y: 16}
-    Kind: 1
-  - Cell: {x: 6, y: 15}
     Kind: 1
   - Cell: {x: 6, y: 16}
     Kind: 1
-  - Cell: {x: 7, y: 15}
-    Kind: 1
   - Cell: {x: 7, y: 16}
-    Kind: 1
-  - Cell: {x: 8, y: 15}
     Kind: 1
   - Cell: {x: 8, y: 16}
     Kind: 1
-  - Cell: {x: 8, y: 17}
-    Kind: 1
   - Cell: {x: 9, y: 16}
-    Kind: 1
-  - Cell: {x: 9, y: 17}
-    Kind: 1
-  - Cell: {x: 10, y: 17}
     Kind: 1
   - Cell: {x: 20, y: 1}
     Kind: 4
@@ -176,27 +164,15 @@ MonoBehaviour:
     Kind: 4
   - Cell: {x: 24, y: 3}
     Kind: 4
-  - Cell: {x: 24, y: 20}
-    Kind: 1
   - Cell: {x: 24, y: 21}
     Kind: 1
-  - Cell: {x: 26, y: 15}
-    Kind: 1
   - Cell: {x: 26, y: 16}
-    Kind: 1
-  - Cell: {x: 26, y: 17}
-    Kind: 1
-  - Cell: {x: 26, y: 20}
     Kind: 1
   - Cell: {x: 26, y: 21}
     Kind: 1
   - Cell: {x: 27, y: 16}
     Kind: 1
-  - Cell: {x: 28, y: 15}
-    Kind: 1
   - Cell: {x: 28, y: 16}
-    Kind: 1
-  - Cell: {x: 28, y: 17}
     Kind: 1
   - Cell: {x: 29, y: 16}
     Kind: 1
@@ -264,6 +240,46 @@ MonoBehaviour:
     Kind: 7
   - Cell: {x: 39, y: 20}
     Kind: 7
+  _slopeCells:
+  - {x: 4, y: 15}
+  - {x: 4, y: 16}
+  - {x: 4, y: 17}
+  - {x: 5, y: 15}
+  - {x: 5, y: 17}
+  - {x: 6, y: 15}
+  - {x: 6, y: 17}
+  - {x: 7, y: 15}
+  - {x: 7, y: 17}
+  - {x: 8, y: 15}
+  - {x: 8, y: 17}
+  - {x: 9, y: 15}
+  - {x: 9, y: 17}
+  - {x: 10, y: 15}
+  - {x: 10, y: 16}
+  - {x: 10, y: 17}
+  - {x: 23, y: 20}
+  - {x: 23, y: 21}
+  - {x: 24, y: 20}
+  - {x: 25, y: 15}
+  - {x: 25, y: 16}
+  - {x: 25, y: 17}
+  - {x: 25, y: 20}
+  - {x: 25, y: 21}
+  - {x: 26, y: 15}
+  - {x: 26, y: 17}
+  - {x: 26, y: 20}
+  - {x: 27, y: 15}
+  - {x: 27, y: 17}
+  - {x: 27, y: 20}
+  - {x: 27, y: 21}
+  - {x: 28, y: 15}
+  - {x: 28, y: 17}
+  - {x: 29, y: 15}
+  - {x: 29, y: 17}
+  - {x: 30, y: 15}
+  - {x: 30, y: 16}
+  - {x: 30, y: 17}
+  _terrainRules: {fileID: 11400000, guid: 0ac737044b0451f4e98e9986a9f69eac, type: 2}
   _mineCells:
   - {x: 20, y: 11}
   - {x: 29, y: 6}

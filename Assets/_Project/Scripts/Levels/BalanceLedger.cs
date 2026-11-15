@@ -281,7 +281,7 @@ namespace Game.Levels
             LevelGeometry geometry = LevelGeometry.Build(roads, flights, gates, defence, spots, level.CellSize);
             foreach (Cell spot in spots)
             {
-                float multiplier = TerrainBalance.RangeMultiplier(level.Terrain.KindAt(new Vector2Int(spot.X, spot.Y)));
+                float multiplier = TerrainBalance.RangeMultiplier(level, new Vector2Int(spot.X, spot.Y));
                 if (multiplier != 1f)
                 {
                     geometry.SetSpotRange(spot, multiplier);

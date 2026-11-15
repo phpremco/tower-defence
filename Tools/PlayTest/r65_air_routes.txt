@@ -1,0 +1,19 @@
+level | route | waypoints | length (cells) | sharpest turn | flyer: radius (cells) -> length, change, sharpest turn between points
+Level_C1_01 | North air route | 3 | 35.09 | 1 deg |
+Level_C1_01 | South air route | 3 | 40.78 | 37 deg |
+Level_C1_02 | North air route | 3 | 37.19 | 4 deg |
+Level_C1_02 | South air route | 3 | 44.01 | 43 deg |
+Level_C1_03 | North air route | 3 | 41.85 | 24 deg | Skyray: 1.24 -> 41.85 (0.0%), 8 deg;
+Level_C1_03 | South air route | 3 | 37.53 | 19 deg | Skyray: 1.24 -> 37.52 (0.0%), 10 deg;
+Level_C1_04 | North air route | 3 | 42.47 | 28 deg | Shalebat: 1.24 -> 42.45 (0.0%), 9 deg; Skyray: 1.24 -> 42.45 (0.0%), 9 deg; StormMatriarch: 1.05 -> 42.46 (0.0%), 9 deg;
+Level_C1_04 | South air route | 3 | 37.02 | 13 deg | Shalebat: 1.24 -> 37.01 (0.0%), 7 deg; Skyray: 1.24 -> 37.01 (0.0%), 7 deg; StormMatriarch: 1.05 -> 37.01 (0.0%), 7 deg;
+Level_C1_04 | nest 0 at (37, 16) (Shalebat, along the road) | 7 | 73.50 | 90 deg | radius 1.24 -> 71.78 (-2.3%), 11 deg
+Level_C1_04 | nest 1 at (30, 11) (Shalebat, along the road) | 6 | 68.50 | 90 deg | radius 1.24 -> 66.89 (-2.3%), 11 deg
+Level_C1_04 | nest 2 at (22, 11) (Shalebat, along the road) | 6 | 60.50 | 90 deg | radius 1.24 -> 58.89 (-2.7%), 11 deg
+Level_C1_05 | North air route | 3 | 47.48 | 47 deg | Shalebat: 1.24 -> 47.42 (-0.1%), 12 deg; Skyray: 1.24 -> 47.42 (-0.1%), 12 deg; StormMatriarch: 1.05 -> 47.43 (-0.1%), 12 deg;
+Level_C1_05 | South air route | 3 | 39.03 | 1 deg | Shalebat: 1.24 -> 39.03 (0.0%), 1 deg; Skyray: 1.24 -> 39.03 (0.0%), 1 deg; StormMatriarch: 1.05 -> 39.03 (0.0%), 1 deg;
+Level_C1_05 | nest 0 at (1, 11) (Shalebat, along the road) | 12 | 105.50 | 90 deg | radius 1.24 -> 100.14 (-5.1%), 11 deg
+Level_C1_05 | nest 1 at (20, 7) (Shalebat, along the road) | 8 | 61.50 | 90 deg | radius 1.24 -> 58.28 (-5.2%), 11 deg
+Level_C1_06 | North air route | 3 | 44.84 | 29 deg | Shalebat: 1.24 -> 44.82 (0.0%), 10 deg; Skyray: 1.24 -> 44.82 (0.0%), 10 deg; StormMatriarch: 1.05 -> 44.83 (0.0%), 10 deg;
+Level_C1_06 | South air route | 3 | 39.23 | 14 deg | Shalebat: 1.24 -> 39.22 (0.0%), 7 deg; Skyray: 1.24 -> 39.22 (0.0%), 7 deg; StormMatriarch: 1.05 -> 39.22 (0.0%), 7 deg;
+Level_C1_06 | nest 0 at (39, 18) (Shalebat, along the road) | 7 | 80.50 | 90 deg | radius 1.24 -> 78.36 (-2.7%), 11 deg

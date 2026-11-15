@@ -17,10 +17,16 @@ namespace Game.Levels
         [Tooltip("The creature this conversation scans: while it shows, the box offers to open the creature in the Codex.")]
         [SerializeField] private EnemyDefinition _codexEntry;
 
+        [Tooltip("The conversation's advice as one line that stands on its own on the loading screen: it names what it is about (round 65: a closing line that says 'it' about a creature means nothing there). Empty: no tip.")]
+        [SerializeField] private string _loadingTip = string.Empty;
+
         public string Id => name;
         public IReadOnlyList<DialogueLine> Lines => _lines;
 
         public IReadOnlyList<DroneDefinition> IntroducedDrones => _introducedDrones ?? NoDrones;
+
+        /// <summary>The advice as the loading screen shows it, or empty when this conversation gives none.</summary>
+        public string LoadingTip => _loadingTip ?? string.Empty;
 
         /// <summary>The Codex entry the box links to, or null for a conversation without one.</summary>
         public EnemyDefinition CodexEntry => _codexEntry;

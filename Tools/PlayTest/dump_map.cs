@@ -1,5 +1,6 @@
 // Prints every level as text: road rows (=), plazas (P), gates (G), hero stands (H), base (B), spawn (S),
-// raised ground (^), water (~), lava (*), quicksand (:), blocked cells (X), mines (M) and build cells (.).
+// raised ground (^), raised ground closed for towers (#), the slope ring round it (/), water (~), lava (*), quicksand (:),
+// blocked cells (X), mines (M) and build cells (.).
 // Row 0 is at the bottom, as in the game. Run after the generator to check a layout without playing it.
 var sb = new System.Text.StringBuilder();
 foreach (string guid in UnityEditor.AssetDatabase.FindAssets("t:LevelDefinition", new[] { "Assets/_Project/Data/Levels" }))
@@ -12,6 +13,8 @@ foreach (string guid in UnityEditor.AssetDatabase.FindAssets("t:LevelDefinition"
     foreach (UnityEngine.Vector2Int c in level.BlockedCells) marks[c] = 'X';
     foreach (UnityEngine.Vector2Int c in level.MineCells) marks[c] = 'M';
     foreach (var kv in level.Terrain.Cells) marks[kv.Key] = kv.Value == Game.Levels.TerrainKind.Raised ? '^' : kv.Value == Game.Levels.TerrainKind.Water ? '~' : kv.Value == Game.Levels.TerrainKind.Lava ? '*' : ':';
+    foreach (UnityEngine.Vector2Int c in level.SlopeCells) marks[c] = '/';
+    foreach (UnityEngine.Vector2Int c in level.BlockedCells) if (level.Terrain.KindAt(c) == Game.Levels.TerrainKind.Raised) marks[c] = '#';
     foreach (UnityEngine.Vector2Int c in road.Cells) marks[c] = road.IsPlaza(c) ? 'P' : '=';
     foreach (Game.Levels.EnemyPath p in level.Paths) if (!p.Flying && p.Waypoints.Length > 0) marks[p.Waypoints[0]] = 'S';
     foreach (Game.Levels.BlockadeSpot spot in level.Blockades)

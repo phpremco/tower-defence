@@ -4,8 +4,8 @@ using UnityEngine;
 namespace Game.Levels
 {
     /// <summary>
-    /// Which cells can hold a tower: any cell of the grid except the road, the blocked cells the level lists, the ground
-    /// under the base model and under the gate that rises at the boss entrance, and not a cell that already has a tower. The road stays free for path objects.
+    /// Which cells can hold a tower: any cell of the grid except the road, the blocked cells the level lists, the slope
+    /// round raised ground, the ground under the base model and under the gate that rises at the boss entrance, and not a cell that already has a tower. The road stays free for path objects.
     /// </summary>
     public sealed class BuildGrid
     {
@@ -14,6 +14,7 @@ namespace Game.Levels
 
         private readonly GridMap _grid;
                 private readonly HashSet<Vector2Int> _blocked;
+        private readonly HashSet<Vector2Int> _slope;
         private readonly HashSet<Vector2Int> _occupied = new HashSet<Vector2Int>();
         private readonly TerrainMap _terrain;
         private readonly RoadCorridor _road;
@@ -25,6 +26,7 @@ namespace Game.Levels
             _road = level.Road;
             _blocked = new HashSet<Vector2Int>(level.BlockedCells);
             _blocked.UnionWith(level.MineCells);
+            _slope = new HashSet<Vector2Int>(level.SlopeCells);
             foreach (ElementNest nest in level.Nests)
             {
                 _blocked.Add(nest.Cell);
@@ -78,9 +80,12 @@ namespace Game.Levels
 
         public bool IsLiquid(Vector2Int cell) => _terrain.IsLiquid(cell);
 
+        /// <summary>True on the ring round raised ground, where the plateau slopes down: too steep for a tower.</summary>
+        public bool IsSlope(Vector2Int cell) => _slope.Contains(cell);
+
         /// <summary>True when the cell is a free, buildable tile.</summary>
         public bool CanBuild(Vector2Int cell) =>
-            _grid.Contains(cell) && !IsRoad(cell) && !IsBlocked(cell) && !IsLiquid(cell) && !IsOccupied(cell);
+            _grid.Contains(cell) && !IsRoad(cell) && !IsBlocked(cell) && !IsLiquid(cell) && !IsSlope(cell) && !IsOccupied(cell);
 
         public void Occupy(Vector2Int cell) => _occupied.Add(cell);
 

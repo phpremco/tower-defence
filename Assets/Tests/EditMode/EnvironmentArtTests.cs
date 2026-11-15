@@ -135,7 +135,8 @@ namespace Game.Tests
                             Assert.IsTrue(level.Terrain.IsLiquid(grid.WorldToCell(placement.Position + turn * Vector3.back * half)), $"{level.name}: bank at {placement.Position} has no liquid behind it");
                             break;
                         case EnvironmentPieceKind.TerraceStep:
-                            Assert.AreEqual(TerrainKind.Raised, level.Terrain.KindAt(grid.WorldToCell(placement.Position + turn * Vector3.forward * half)), $"{level.name}: step at {placement.Position} has no plateau in front");
+                        case EnvironmentPieceKind.TerraceStepOuter:
+                            Assert.Fail($"{level.name}: a terrace step at {placement.Position}; raised ground slopes down as landscape since round 65");
                             break;
                     }
 

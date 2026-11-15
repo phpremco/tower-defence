@@ -1,0 +1,540 @@
+| Level | Difficulty | Strategy | Seed | Boss (wave) | Health | Fate | Road walked | Seconds | First gate at | First gate |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Crysium Vein | Easy | strategy Level_C1_06_0_strategy1 | 1 | PackAlpha (w18) | 627 | died | 0.76 | 57.0 | 0.12 | reached |
+| Crysium Vein | Easy | strategy Level_C1_06_0_strategy1 | 2 | PackAlpha (w18) | 627 | died | 0.75 | 47.0 | 0.12 | reached |
+| Crysium Vein | Easy | strategy Level_C1_06_0_strategy1 | 3 | PackAlpha (w18) | 627 | died | 0.77 | 57.6 | 0.12 | reached |
+| Crysium Vein | Easy | strategy Level_C1_06_0_strategy2 | 1 | PackAlpha (w18) | 627 | died | 0.76 | 57.4 | 0.12 | reached |
+| Crysium Vein | Easy | strategy Level_C1_06_0_strategy2 | 2 | PackAlpha (w18) | 627 | died | 0.75 | 47.6 | 0.12 | reached |
+| Crysium Vein | Easy | strategy Level_C1_06_0_strategy2 | 3 | PackAlpha (w18) | 627 | died | 0.76 | 57.0 | 0.12 | reached |
+| Crysium Vein | Easy | strategy Level_C1_06_0_strategy3 | 1 | PackAlpha (w18) | 627 | died | 0.74 | 55.8 | 0.12 | reached |
+| Crysium Vein | Easy | strategy Level_C1_06_0_strategy3 | 2 | PackAlpha (w18) | 627 | died | 0.75 | 47.0 | 0.12 | reached |
+| Crysium Vein | Easy | strategy Level_C1_06_0_strategy3 | 3 | PackAlpha (w18) | 627 | died | 0.75 | 56.2 | 0.12 | reached |
+| Crysium Vein | Easy | strategy Level_C1_06_0_strategy4 | 1 | PackAlpha (w18) | 627 | died | 0.76 | 57.6 | 0.12 | reached |
+| Crysium Vein | Easy | strategy Level_C1_06_0_strategy4 | 2 | PackAlpha (w18) | 627 | died | 0.76 | 47.8 | 0.12 | reached |
+| Crysium Vein | Easy | strategy Level_C1_06_0_strategy4 | 3 | PackAlpha (w18) | 627 | died | 0.76 | 57.2 | 0.12 | reached |
+| Crysium Vein | Easy | strategy Level_C1_06_0_strategy5 | 1 | PackAlpha (w18) | 627 | died | 0.75 | 56.4 | 0.12 | reached |
+| Crysium Vein | Easy | strategy Level_C1_06_0_strategy5 | 2 | PackAlpha (w18) | 627 | died | 0.75 | 47.6 | 0.12 | reached |
+| Crysium Vein | Easy | strategy Level_C1_06_0_strategy5 | 3 | PackAlpha (w18) | 627 | died | 0.75 | 56.4 | 0.12 | reached |
+| Crysium Vein | Medium | strategy Level_C1_06_1_strategy1 | 1 | PackAlpha (w18) | 765 | died | 0.78 | 51.0 | 0.12 | reached |
+| Crysium Vein | Medium | strategy Level_C1_06_1_strategy1 | 2 | PackAlpha (w18) | 765 | died | 0.78 | 48.4 | 0.12 | reached |
+| Crysium Vein | Medium | strategy Level_C1_06_1_strategy1 | 3 | PackAlpha (w18) | 765 | died | 0.77 | 51.8 | 0.12 | reached |
+| Crysium Vein | Medium | strategy Level_C1_06_1_strategy2 | 1 | PackAlpha (w18) | 765 | died | 0.78 | 51.2 | 0.12 | reached |
+| Crysium Vein | Medium | strategy Level_C1_06_1_strategy2 | 2 | PackAlpha (w18) | 765 | died | 0.78 | 48.4 | 0.12 | reached |
+| Crysium Vein | Medium | strategy Level_C1_06_1_strategy2 | 3 | PackAlpha (w18) | 765 | died | 0.78 | 52.0 | 0.12 | reached |
+| Crysium Vein | Medium | strategy Level_C1_06_1_strategy3 | 1 | PackAlpha (w18) | 765 | died | 0.78 | 50.2 | 0.12 | reached |
+| Crysium Vein | Medium | strategy Level_C1_06_1_strategy3 | 2 | PackAlpha (w18) | 765 | died | 0.78 | 48.4 | 0.12 | reached |
+| Crysium Vein | Medium | strategy Level_C1_06_1_strategy3 | 3 | PackAlpha (w18) | 765 | died | 0.77 | 51.2 | 0.12 | reached |
+| Crysium Vein | Medium | strategy Level_C1_06_1_strategy4 | 1 | PackAlpha (w18) | 765 | died | 0.73 | 48.6 | 0.12 | reached |
+| Crysium Vein | Medium | strategy Level_C1_06_1_strategy4 | 3 | PackAlpha (w18) | 765 | died | 0.76 | 50.6 | 0.12 | reached |
+| Crysium Vein | Medium | strategy Level_C1_06_1_strategy5 | 1 | PackAlpha (w18) | 765 | died | 0.76 | 49.6 | 0.12 | reached |
+| Crysium Vein | Medium | strategy Level_C1_06_1_strategy5 | 2 | PackAlpha (w18) | 765 | died | 0.77 | 47.6 | 0.12 | reached |
+| Crysium Vein | Medium | strategy Level_C1_06_1_strategy5 | 3 | PackAlpha (w18) | 765 | died | 0.77 | 51.6 | 0.12 | reached |
+| Crysium Vein | Hard | strategy Level_C1_06_2_strategy1 | 1 | CoreWisp (w12) | 1463 | died | 0.74 | 87.2 | 0.12 | reached |
+| Crysium Vein | Hard | strategy Level_C1_06_2_strategy1 | 1 | PackAlpha (w18) | 2595 | died | 0.78 | 54.0 | 0.12 | reached |
+| Crysium Vein | Hard | strategy Level_C1_06_2_strategy1 | 2 | CoreWisp (w12) | 1463 | still standing | 0.03 | 3.6 | 0.12 | not reached |
+| Crysium Vein | Hard | strategy Level_C1_06_2_strategy1 | 3 | CoreWisp (w12) | 1463 | died | 0.78 | 103.0 | 0.12 | reached |
+| Crysium Vein | Hard | strategy Level_C1_06_2_strategy1 | 3 | PackAlpha (w18) | 2595 | died | 0.78 | 48.2 | 0.12 | reached |
+| Crysium Vein | Hard | strategy Level_C1_06_2_strategy2 | 2 | CoreWisp (w12) | 1463 | died | 0.80 | 98.6 | 0.12 | reached |
+| Crysium Vein | Hard | strategy Level_C1_06_2_strategy2 | 2 | PackAlpha (w18) | 2595 | died | 0.90 | 61.0 | 0.12 | reached |
+| Crysium Vein | Hard | strategy Level_C1_06_2_strategy3 | 1 | CoreWisp (w12) | 1463 | died | 0.76 | 88.8 | 0.12 | reached |
+| Crysium Vein | Hard | strategy Level_C1_06_2_strategy3 | 1 | PackAlpha (w18) | 2595 | died | 0.78 | 54.8 | 0.12 | reached |
+| Crysium Vein | Hard | strategy Level_C1_06_2_strategy3 | 2 | CoreWisp (w12) | 1463 | died | 0.78 | 95.0 | 0.12 | reached |
+| Crysium Vein | Hard | strategy Level_C1_06_2_strategy3 | 2 | PackAlpha (w18) | 2595 | died | 0.77 | 53.0 | 0.12 | reached |
+| Crysium Vein | Hard | strategy Level_C1_06_2_strategy3 | 3 | CoreWisp (w12) | 1463 | died | 0.84 | 108.4 | 0.12 | reached |
+| Crysium Vein | Hard | strategy Level_C1_06_2_strategy3 | 3 | PackAlpha (w18) | 2595 | died | 0.81 | 49.0 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy1 | 1 | StormMatriarch (w7) | 3373 | died | 0.98 | 111.2 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy1 | 1 | CoreWisp (w12) | 2534 | died | 0.77 | 104.2 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy1 | 1 | PackAlpha (w18) | 1978 | died | 0.76 | 51.4 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy1 | 2 | StormMatriarch (w7) | 3373 | died | 1.00 | 111.4 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy1 | 2 | CoreWisp (w12) | 2534 | died | 0.78 | 95.6 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy1 | 2 | PackAlpha (w18) | 1978 | died | 0.73 | 53.4 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy1 | 3 | StormMatriarch (w7) | 3373 | died | 1.00 | 113.0 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy1 | 3 | CoreWisp (w12) | 2534 | died | 0.76 | 107.4 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy1 | 3 | PackAlpha (w18) | 1978 | died | 0.74 | 46.0 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy2 | 1 | StormMatriarch (w7) | 3373 | died | 1.00 | 115.6 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy2 | 1 | CoreWisp (w12) | 2534 | died | 0.77 | 104.0 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy2 | 1 | PackAlpha (w18) | 1978 | died | 0.76 | 51.4 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy2 | 2 | StormMatriarch (w7) | 3373 | died | 1.00 | 116.8 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy2 | 2 | CoreWisp (w12) | 2534 | died | 0.76 | 93.0 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy2 | 2 | PackAlpha (w18) | 1978 | died | 0.73 | 53.8 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy2 | 3 | StormMatriarch (w7) | 3373 | died | 1.00 | 116.2 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy2 | 3 | CoreWisp (w12) | 2534 | died | 0.77 | 108.2 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy2 | 3 | PackAlpha (w18) | 1978 | died | 0.75 | 47.2 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy3 | 1 | StormMatriarch (w7) | 3373 | died | 1.00 | 124.0 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy3 | 1 | CoreWisp (w12) | 2534 | died | 0.78 | 105.4 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy3 | 1 | PackAlpha (w18) | 1978 | died | 0.74 | 52.0 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy3 | 2 | StormMatriarch (w7) | 3373 | died | 1.00 | 119.6 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy3 | 2 | CoreWisp (w12) | 2534 | died | 0.77 | 94.4 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy3 | 2 | PackAlpha (w18) | 1978 | died | 0.74 | 54.2 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy3 | 3 | StormMatriarch (w7) | 3373 | died | 1.00 | 115.6 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy3 | 3 | CoreWisp (w12) | 2534 | died | 0.77 | 108.2 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy3 | 3 | PackAlpha (w18) | 1978 | died | 0.74 | 46.6 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy4 | 1 | StormMatriarch (w7) | 3373 | died | 1.00 | 116.2 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy4 | 1 | CoreWisp (w12) | 2534 | died | 0.78 | 104.6 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy4 | 1 | PackAlpha (w18) | 1978 | died | 0.76 | 51.8 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy4 | 2 | StormMatriarch (w7) | 3373 | died | 1.00 | 121.6 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy4 | 2 | CoreWisp (w12) | 2534 | died | 0.78 | 95.0 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy4 | 2 | PackAlpha (w18) | 1978 | died | 0.75 | 54.6 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy4 | 3 | StormMatriarch (w7) | 3373 | died | 1.00 | 114.2 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy4 | 3 | CoreWisp (w12) | 2534 | died | 0.78 | 109.8 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy4 | 3 | PackAlpha (w18) | 1978 | died | 0.75 | 47.2 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy5 | 1 | StormMatriarch (w7) | 3373 | died | 0.99 | 112.4 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy5 | 1 | CoreWisp (w12) | 2534 | died | 0.76 | 103.2 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy5 | 1 | PackAlpha (w18) | 1978 | died | 0.75 | 51.0 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy5 | 2 | StormMatriarch (w7) | 3373 | died | 1.00 | 116.6 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy5 | 2 | CoreWisp (w12) | 2534 | died | 0.77 | 94.0 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy5 | 2 | PackAlpha (w18) | 1978 | died | 0.75 | 54.8 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy5 | 3 | StormMatriarch (w7) | 3373 | died | 1.00 | 113.6 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy5 | 3 | CoreWisp (w12) | 2534 | died | 0.76 | 108.0 | 0.12 | reached |
+| Crysium Vein | Psycho | strategy Level_C1_06_3_strategy5 | 3 | PackAlpha (w18) | 1978 | died | 0.75 | 47.0 | 0.12 | reached |
+| Fault Line | Easy | strategy Level_C1_04_0_strategy1 | 1 | StormMatriarch (w16) | 471 | died | 0.91 | 80.6 | 0.10 | reached |
+| Fault Line | Easy | strategy Level_C1_04_0_strategy1 | 2 | StormMatriarch (w16) | 471 | died | 0.91 | 90.8 | 0.10 | reached |
+| Fault Line | Easy | strategy Level_C1_04_0_strategy1 | 3 | StormMatriarch (w16) | 471 | died | 0.91 | 78.0 | 0.10 | reached |
+| Fault Line | Easy | strategy Level_C1_04_0_strategy2 | 1 | StormMatriarch (w16) | 471 | died | 0.91 | 81.4 | 0.10 | reached |
+| Fault Line | Easy | strategy Level_C1_04_0_strategy2 | 2 | StormMatriarch (w16) | 471 | died | 0.91 | 91.0 | 0.10 | reached |
+| Fault Line | Easy | strategy Level_C1_04_0_strategy2 | 3 | StormMatriarch (w16) | 471 | died | 0.91 | 78.2 | 0.10 | reached |
+| Fault Line | Easy | strategy Level_C1_04_0_strategy3 | 1 | StormMatriarch (w16) | 471 | died | 0.91 | 80.6 | 0.10 | reached |
+| Fault Line | Easy | strategy Level_C1_04_0_strategy3 | 2 | StormMatriarch (w16) | 471 | died | 0.91 | 91.2 | 0.10 | reached |
+| Fault Line | Easy | strategy Level_C1_04_0_strategy3 | 3 | StormMatriarch (w16) | 471 | died | 0.91 | 77.6 | 0.10 | reached |
+| Fault Line | Easy | strategy Level_C1_04_0_strategy4 | 1 | StormMatriarch (w16) | 471 | died | 0.91 | 80.4 | 0.10 | reached |
+| Fault Line | Easy | strategy Level_C1_04_0_strategy4 | 2 | StormMatriarch (w16) | 471 | died | 0.91 | 91.0 | 0.10 | reached |
+| Fault Line | Easy | strategy Level_C1_04_0_strategy4 | 3 | StormMatriarch (w16) | 471 | died | 0.90 | 77.2 | 0.10 | reached |
+| Fault Line | Easy | strategy Level_C1_04_0_strategy5 | 1 | StormMatriarch (w16) | 471 | died | 0.91 | 80.6 | 0.10 | reached |
+| Fault Line | Easy | strategy Level_C1_04_0_strategy5 | 2 | StormMatriarch (w16) | 471 | died | 0.91 | 91.2 | 0.10 | reached |
+| Fault Line | Easy | strategy Level_C1_04_0_strategy5 | 3 | StormMatriarch (w16) | 471 | died | 0.91 | 77.6 | 0.10 | reached |
+| Fault Line | Medium | strategy Level_C1_04_1_strategy1 | 1 | StormMatriarch (w16) | 1189 | died | 1.00 | 119.2 | 0.10 | reached |
+| Fault Line | Medium | strategy Level_C1_04_1_strategy1 | 2 | StormMatriarch (w16) | 1189 | still standing | 1.00 | 124.2 | 0.10 | reached |
+| Fault Line | Medium | strategy Level_C1_04_1_strategy1 | 3 | StormMatriarch (w16) | 1189 | died | 1.00 | 112.6 | 0.10 | reached |
+| Fault Line | Medium | strategy Level_C1_04_1_strategy2 | 1 | StormMatriarch (w16) | 1189 | died | 1.00 | 105.4 | 0.10 | reached |
+| Fault Line | Medium | strategy Level_C1_04_1_strategy2 | 2 | StormMatriarch (w16) | 1189 | died | 0.96 | 104.6 | 0.10 | reached |
+| Fault Line | Medium | strategy Level_C1_04_1_strategy2 | 3 | StormMatriarch (w16) | 1189 | died | 0.98 | 102.4 | 0.10 | reached |
+| Fault Line | Medium | strategy Level_C1_04_1_strategy3 | 1 | StormMatriarch (w16) | 1189 | died | 1.00 | 117.2 | 0.10 | reached |
+| Fault Line | Medium | strategy Level_C1_04_1_strategy3 | 2 | StormMatriarch (w16) | 1189 | died | 1.00 | 114.8 | 0.10 | reached |
+| Fault Line | Medium | strategy Level_C1_04_1_strategy3 | 3 | StormMatriarch (w16) | 1189 | died | 1.00 | 110.6 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy1 | 1 | BroodMother (w10) | 931 | died | 0.90 | 194.8 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy1 | 1 | StormMatriarch (w16) | 724 | died | 0.91 | 80.6 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy1 | 2 | BroodMother (w10) | 931 | died | 0.91 | 163.8 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy1 | 2 | StormMatriarch (w16) | 724 | died | 0.91 | 94.4 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy1 | 3 | BroodMother (w10) | 931 | died | 0.88 | 174.8 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy1 | 3 | StormMatriarch (w16) | 724 | died | 0.92 | 91.2 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy2 | 1 | BroodMother (w10) | 931 | died | 0.90 | 195.0 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy2 | 1 | StormMatriarch (w16) | 724 | died | 0.91 | 80.8 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy2 | 2 | BroodMother (w10) | 931 | died | 0.91 | 163.6 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy2 | 2 | StormMatriarch (w16) | 724 | died | 0.91 | 94.6 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy2 | 3 | BroodMother (w10) | 931 | died | 0.88 | 181.8 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy2 | 3 | StormMatriarch (w16) | 724 | died | 0.93 | 93.2 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy3 | 1 | BroodMother (w10) | 931 | died | 0.90 | 194.0 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy3 | 1 | StormMatriarch (w16) | 724 | died | 0.91 | 79.8 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy3 | 2 | BroodMother (w10) | 931 | died | 0.91 | 163.6 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy3 | 2 | StormMatriarch (w16) | 724 | died | 0.91 | 93.8 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy3 | 3 | BroodMother (w10) | 931 | died | 0.88 | 181.2 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy3 | 3 | StormMatriarch (w16) | 724 | died | 0.91 | 87.6 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy4 | 1 | BroodMother (w10) | 931 | died | 0.91 | 196.2 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy4 | 1 | StormMatriarch (w16) | 724 | died | 0.91 | 80.8 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy4 | 2 | BroodMother (w10) | 931 | died | 0.91 | 163.6 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy4 | 2 | StormMatriarch (w16) | 724 | died | 0.91 | 93.2 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy4 | 3 | BroodMother (w10) | 931 | died | 0.90 | 173.8 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy4 | 3 | StormMatriarch (w16) | 724 | died | 0.91 | 87.0 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy5 | 1 | BroodMother (w10) | 931 | died | 0.90 | 194.6 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy5 | 1 | StormMatriarch (w16) | 724 | died | 0.91 | 80.2 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy5 | 2 | BroodMother (w10) | 931 | died | 0.90 | 163.0 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy5 | 2 | StormMatriarch (w16) | 724 | died | 0.91 | 93.8 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy5 | 3 | BroodMother (w10) | 931 | died | 0.88 | 181.6 | 0.10 | reached |
+| Fault Line | Hard | strategy Level_C1_04_2_strategy5 | 3 | StormMatriarch (w16) | 724 | died | 0.91 | 88.0 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy1 | 1 | CoreWisp (w5) | 1041 | died | 0.92 | 123.8 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy1 | 1 | BroodMother (w10) | 1337 | died | 0.90 | 183.0 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy1 | 1 | StormMatriarch (w16) | 3639 | died | 0.96 | 97.2 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy1 | 2 | CoreWisp (w5) | 1041 | died | 0.89 | 111.0 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy1 | 2 | BroodMother (w10) | 1337 | died | 0.91 | 156.0 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy1 | 2 | StormMatriarch (w16) | 3639 | died | 0.98 | 88.8 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy1 | 3 | CoreWisp (w5) | 1041 | died | 0.92 | 106.4 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy1 | 3 | BroodMother (w10) | 1337 | died | 0.90 | 188.2 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy1 | 3 | StormMatriarch (w16) | 3639 | died | 0.95 | 94.6 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy2 | 1 | CoreWisp (w5) | 1041 | died | 0.91 | 123.0 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy2 | 1 | BroodMother (w10) | 1337 | died | 0.90 | 182.4 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy2 | 1 | StormMatriarch (w16) | 3639 | died | 0.96 | 97.0 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy2 | 2 | CoreWisp (w5) | 1041 | died | 0.90 | 110.2 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy2 | 2 | BroodMother (w10) | 1337 | died | 0.90 | 155.0 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy2 | 2 | StormMatriarch (w16) | 3639 | died | 0.99 | 89.6 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy2 | 3 | CoreWisp (w5) | 1041 | died | 0.91 | 102.8 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy2 | 3 | BroodMother (w10) | 1337 | died | 0.91 | 158.0 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy2 | 3 | StormMatriarch (w16) | 3639 | died | 0.96 | 87.6 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy3 | 1 | CoreWisp (w5) | 1041 | died | 0.92 | 123.8 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy3 | 1 | BroodMother (w10) | 1337 | died | 0.91 | 183.4 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy3 | 1 | StormMatriarch (w16) | 3639 | died | 0.98 | 99.0 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy3 | 2 | CoreWisp (w5) | 1041 | died | 0.90 | 111.8 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy3 | 2 | BroodMother (w10) | 1337 | died | 0.90 | 155.2 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy3 | 2 | StormMatriarch (w16) | 3639 | died | 1.00 | 92.2 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy3 | 3 | CoreWisp (w5) | 1041 | died | 0.92 | 105.8 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy3 | 3 | BroodMother (w10) | 1337 | died | 0.90 | 186.6 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy3 | 3 | StormMatriarch (w16) | 3639 | died | 0.94 | 93.4 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy4 | 1 | CoreWisp (w5) | 1041 | died | 0.92 | 118.2 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy4 | 1 | BroodMother (w10) | 1337 | died | 0.90 | 183.0 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy4 | 1 | StormMatriarch (w16) | 3639 | died | 0.94 | 94.8 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy4 | 2 | CoreWisp (w5) | 1041 | died | 0.92 | 108.2 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy4 | 2 | BroodMother (w10) | 1337 | died | 0.90 | 155.2 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy4 | 2 | StormMatriarch (w16) | 3639 | died | 0.99 | 90.4 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy4 | 3 | CoreWisp (w5) | 1041 | died | 0.92 | 100.8 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy4 | 3 | BroodMother (w10) | 1337 | died | 0.90 | 177.4 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy4 | 3 | StormMatriarch (w16) | 3639 | died | 0.93 | 92.4 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy5 | 1 | CoreWisp (w5) | 1041 | died | 0.92 | 121.0 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy5 | 1 | BroodMother (w10) | 1337 | died | 0.90 | 182.2 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy5 | 1 | StormMatriarch (w16) | 3639 | died | 0.96 | 97.2 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy5 | 2 | CoreWisp (w5) | 1041 | died | 0.91 | 110.6 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy5 | 2 | BroodMother (w10) | 1337 | died | 0.91 | 156.2 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy5 | 2 | StormMatriarch (w16) | 3639 | still standing | 1.00 | 96.4 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy5 | 3 | CoreWisp (w5) | 1041 | died | 0.92 | 104.0 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy5 | 3 | BroodMother (w10) | 1337 | died | 0.90 | 157.4 | 0.10 | reached |
+| Fault Line | Psycho | strategy Level_C1_04_3_strategy5 | 3 | StormMatriarch (w16) | 3639 | died | 1.00 | 90.4 | 0.10 | reached |
+| Glass Meadows | Easy | strategy Level_C1_02_0_strategy1 | 1 | BroodMother (w12) | 500 | died | 0.02 | 4.6 | 0.12 | not reached |
+| Glass Meadows | Easy | strategy Level_C1_02_0_strategy1 | 2 | BroodMother (w12) | 500 | died | 0.02 | 3.8 | 0.12 | not reached |
+| Glass Meadows | Easy | strategy Level_C1_02_0_strategy1 | 3 | BroodMother (w12) | 500 | died | 0.02 | 4.2 | 0.12 | not reached |
+| Glass Meadows | Easy | strategy Level_C1_02_0_strategy2 | 1 | BroodMother (w12) | 500 | died | 0.02 | 4.6 | 0.12 | not reached |
+| Glass Meadows | Easy | strategy Level_C1_02_0_strategy2 | 2 | BroodMother (w12) | 500 | died | 0.02 | 3.8 | 0.12 | not reached |
+| Glass Meadows | Easy | strategy Level_C1_02_0_strategy2 | 3 | BroodMother (w12) | 500 | died | 0.02 | 4.2 | 0.12 | not reached |
+| Glass Meadows | Easy | strategy Level_C1_02_0_strategy3 | 1 | BroodMother (w12) | 500 | died | 0.02 | 5.0 | 0.12 | not reached |
+| Glass Meadows | Easy | strategy Level_C1_02_0_strategy3 | 2 | BroodMother (w12) | 500 | died | 0.02 | 3.8 | 0.12 | not reached |
+| Glass Meadows | Easy | strategy Level_C1_02_0_strategy3 | 3 | BroodMother (w12) | 500 | died | 0.02 | 4.0 | 0.12 | not reached |
+| Glass Meadows | Easy | strategy Level_C1_02_0_strategy4 | 1 | BroodMother (w12) | 500 | died | 0.02 | 5.0 | 0.12 | not reached |
+| Glass Meadows | Easy | strategy Level_C1_02_0_strategy4 | 2 | BroodMother (w12) | 500 | died | 0.02 | 3.8 | 0.12 | not reached |
+| Glass Meadows | Easy | strategy Level_C1_02_0_strategy4 | 3 | BroodMother (w12) | 500 | died | 0.02 | 4.0 | 0.12 | not reached |
+| Glass Meadows | Easy | strategy Level_C1_02_0_strategy5 | 1 | BroodMother (w12) | 500 | died | 0.02 | 5.0 | 0.12 | not reached |
+| Glass Meadows | Easy | strategy Level_C1_02_0_strategy5 | 2 | BroodMother (w12) | 500 | died | 0.02 | 3.8 | 0.12 | not reached |
+| Glass Meadows | Easy | strategy Level_C1_02_0_strategy5 | 3 | BroodMother (w12) | 500 | died | 0.02 | 4.0 | 0.12 | not reached |
+| Glass Meadows | Medium | strategy Level_C1_02_1_strategy1 | 1 | BroodMother (w12) | 1535 | died | 0.09 | 14.8 | 0.12 | reached |
+| Glass Meadows | Medium | strategy Level_C1_02_1_strategy1 | 2 | BroodMother (w12) | 1535 | died | 0.06 | 11.0 | 0.12 | not reached |
+| Glass Meadows | Medium | strategy Level_C1_02_1_strategy1 | 3 | BroodMother (w12) | 1535 | died | 0.07 | 12.0 | 0.12 | not reached |
+| Glass Meadows | Medium | strategy Level_C1_02_1_strategy2 | 1 | BroodMother (w12) | 1535 | died | 0.11 | 16.2 | 0.12 | reached |
+| Glass Meadows | Medium | strategy Level_C1_02_1_strategy2 | 2 | BroodMother (w12) | 1535 | died | 0.07 | 11.4 | 0.12 | not reached |
+| Glass Meadows | Medium | strategy Level_C1_02_1_strategy2 | 3 | BroodMother (w12) | 1535 | died | 0.07 | 12.2 | 0.12 | not reached |
+| Glass Meadows | Medium | strategy Level_C1_02_1_strategy3 | 1 | BroodMother (w12) | 1535 | died | 0.09 | 15.2 | 0.12 | reached |
+| Glass Meadows | Medium | strategy Level_C1_02_1_strategy3 | 2 | BroodMother (w12) | 1535 | died | 0.06 | 10.0 | 0.12 | not reached |
+| Glass Meadows | Medium | strategy Level_C1_02_1_strategy3 | 3 | BroodMother (w12) | 1535 | died | 0.06 | 10.2 | 0.12 | not reached |
+| Glass Meadows | Medium | strategy Level_C1_02_1_strategy4 | 1 | BroodMother (w12) | 1535 | died | 0.09 | 15.2 | 0.12 | reached |
+| Glass Meadows | Medium | strategy Level_C1_02_1_strategy4 | 2 | BroodMother (w12) | 1535 | died | 0.06 | 10.6 | 0.12 | not reached |
+| Glass Meadows | Medium | strategy Level_C1_02_1_strategy4 | 3 | BroodMother (w12) | 1535 | died | 0.08 | 14.2 | 0.12 | not reached |
+| Glass Meadows | Medium | strategy Level_C1_02_1_strategy5 | 1 | BroodMother (w12) | 1535 | died | 0.09 | 14.8 | 0.12 | reached |
+| Glass Meadows | Medium | strategy Level_C1_02_1_strategy5 | 2 | BroodMother (w12) | 1535 | died | 0.06 | 9.6 | 0.12 | not reached |
+| Glass Meadows | Medium | strategy Level_C1_02_1_strategy5 | 3 | BroodMother (w12) | 1535 | died | 0.06 | 9.4 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy1 | 1 | CoreWisp (w9) | 877 | died | 0.07 | 6.8 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy1 | 1 | BroodMother (w12) | 1531 | died | 0.05 | 6.4 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy1 | 2 | CoreWisp (w9) | 877 | died | 0.05 | 5.6 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy1 | 2 | BroodMother (w12) | 1531 | died | 0.05 | 7.2 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy1 | 3 | CoreWisp (w9) | 877 | died | 0.05 | 5.4 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy1 | 3 | BroodMother (w12) | 1531 | died | 0.05 | 7.4 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy2 | 1 | CoreWisp (w9) | 877 | died | 0.07 | 6.8 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy2 | 1 | BroodMother (w12) | 1531 | died | 0.05 | 7.2 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy2 | 2 | CoreWisp (w9) | 877 | died | 0.06 | 7.0 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy2 | 2 | BroodMother (w12) | 1531 | died | 0.05 | 7.8 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy2 | 3 | CoreWisp (w9) | 877 | died | 0.07 | 7.0 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy2 | 3 | BroodMother (w12) | 1531 | died | 0.05 | 8.6 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy3 | 1 | CoreWisp (w9) | 877 | died | 0.06 | 5.4 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy3 | 1 | BroodMother (w12) | 1531 | died | 0.05 | 7.0 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy3 | 2 | CoreWisp (w9) | 877 | died | 0.06 | 6.6 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy3 | 2 | BroodMother (w12) | 1531 | died | 0.05 | 8.0 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy3 | 3 | CoreWisp (w9) | 877 | died | 0.06 | 6.4 | 0.12 | not reached |
+| Glass Meadows | Hard | strategy Level_C1_02_2_strategy3 | 3 | BroodMother (w12) | 1531 | died | 0.05 | 7.6 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy1 | 1 | BroodMother (w5) | 2210 | died | 0.08 | 12.6 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy1 | 1 | CoreWisp (w9) | 1879 | died | 0.08 | 6.4 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy1 | 1 | BroodMother (w12) | 2983 | died | 0.05 | 8.4 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy1 | 2 | BroodMother (w5) | 2210 | died | 0.08 | 12.6 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy1 | 2 | CoreWisp (w9) | 1879 | died | 0.06 | 7.0 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy1 | 2 | BroodMother (w12) | 2983 | died | 0.05 | 6.8 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy1 | 3 | BroodMother (w5) | 2210 | died | 0.07 | 12.6 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy1 | 3 | CoreWisp (w9) | 1879 | died | 0.06 | 6.4 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy1 | 3 | BroodMother (w12) | 2983 | died | 0.06 | 8.0 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy2 | 1 | BroodMother (w5) | 2210 | died | 0.08 | 12.6 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy2 | 1 | CoreWisp (w9) | 1879 | died | 0.08 | 6.4 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy2 | 1 | BroodMother (w12) | 2983 | died | 0.05 | 7.4 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy2 | 2 | BroodMother (w5) | 2210 | died | 0.08 | 12.6 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy2 | 2 | CoreWisp (w9) | 1879 | died | 0.06 | 7.0 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy2 | 2 | BroodMother (w12) | 2983 | died | 0.05 | 6.8 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy2 | 3 | BroodMother (w5) | 2210 | died | 0.07 | 12.6 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy2 | 3 | CoreWisp (w9) | 1879 | died | 0.06 | 6.4 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy2 | 3 | BroodMother (w12) | 2983 | died | 0.06 | 8.0 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy3 | 1 | BroodMother (w5) | 2210 | died | 0.08 | 12.6 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy3 | 1 | CoreWisp (w9) | 1879 | died | 0.07 | 6.2 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy3 | 1 | BroodMother (w12) | 2983 | died | 0.05 | 7.8 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy3 | 2 | BroodMother (w5) | 2210 | died | 0.08 | 12.6 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy3 | 2 | CoreWisp (w9) | 1879 | died | 0.11 | 10.6 | 0.12 | reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy3 | 2 | BroodMother (w12) | 2983 | died | 0.08 | 11.0 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy3 | 3 | BroodMother (w5) | 2210 | died | 0.07 | 12.6 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy3 | 3 | CoreWisp (w9) | 1879 | died | 0.06 | 6.4 | 0.12 | not reached |
+| Glass Meadows | Psycho | strategy Level_C1_02_3_strategy3 | 3 | BroodMother (w12) | 2983 | died | 0.06 | 8.0 | 0.12 | not reached |
+| Landing Site | Easy | strategy Level_C1_01_0_strategy1 | 1 | BroodMother (w12) | 482 | died | 0.08 | 15.4 | 0.13 | not reached |
+| Landing Site | Easy | strategy Level_C1_01_0_strategy1 | 2 | BroodMother (w12) | 482 | died | 0.09 | 17.8 | 0.13 | not reached |
+| Landing Site | Easy | strategy Level_C1_01_0_strategy1 | 3 | BroodMother (w12) | 482 | died | 0.09 | 18.2 | 0.13 | not reached |
+| Landing Site | Easy | strategy Level_C1_01_0_strategy2 | 1 | BroodMother (w12) | 482 | died | 0.09 | 15.8 | 0.13 | not reached |
+| Landing Site | Easy | strategy Level_C1_01_0_strategy2 | 2 | BroodMother (w12) | 482 | died | 0.10 | 19.8 | 0.13 | reached |
+| Landing Site | Easy | strategy Level_C1_01_0_strategy2 | 3 | BroodMother (w12) | 482 | died | 0.10 | 20.2 | 0.13 | reached |
+| Landing Site | Easy | strategy Level_C1_01_0_strategy3 | 1 | BroodMother (w12) | 482 | died | 0.09 | 16.2 | 0.13 | not reached |
+| Landing Site | Easy | strategy Level_C1_01_0_strategy3 | 2 | BroodMother (w12) | 482 | died | 0.09 | 18.6 | 0.13 | not reached |
+| Landing Site | Easy | strategy Level_C1_01_0_strategy3 | 3 | BroodMother (w12) | 482 | died | 0.09 | 18.6 | 0.13 | not reached |
+| Landing Site | Easy | strategy Level_C1_01_0_strategy4 | 1 | BroodMother (w12) | 482 | died | 0.07 | 13.2 | 0.13 | not reached |
+| Landing Site | Easy | strategy Level_C1_01_0_strategy4 | 2 | BroodMother (w12) | 482 | died | 0.09 | 18.4 | 0.13 | not reached |
+| Landing Site | Easy | strategy Level_C1_01_0_strategy4 | 3 | BroodMother (w12) | 482 | died | 0.09 | 17.6 | 0.13 | not reached |
+| Landing Site | Medium | strategy Level_C1_01_1_strategy1 | 1 | BroodMother (w12) | 675 | died | 0.07 | 14.6 | 0.13 | not reached |
+| Landing Site | Medium | strategy Level_C1_01_1_strategy1 | 2 | BroodMother (w12) | 675 | died | 0.07 | 14.2 | 0.13 | not reached |
+| Landing Site | Medium | strategy Level_C1_01_1_strategy1 | 3 | BroodMother (w12) | 675 | died | 0.07 | 14.2 | 0.13 | not reached |
+| Landing Site | Medium | strategy Level_C1_01_1_strategy2 | 1 | BroodMother (w12) | 675 | died | 0.08 | 15.6 | 0.13 | not reached |
+| Landing Site | Medium | strategy Level_C1_01_1_strategy2 | 2 | BroodMother (w12) | 675 | died | 0.08 | 15.2 | 0.13 | not reached |
+| Landing Site | Medium | strategy Level_C1_01_1_strategy2 | 3 | BroodMother (w12) | 675 | died | 0.08 | 15.0 | 0.13 | not reached |
+| Landing Site | Medium | strategy Level_C1_01_1_strategy3 | 1 | BroodMother (w12) | 675 | died | 0.07 | 14.0 | 0.13 | not reached |
+| Landing Site | Medium | strategy Level_C1_01_1_strategy3 | 2 | BroodMother (w12) | 675 | died | 0.07 | 13.6 | 0.13 | not reached |
+| Landing Site | Medium | strategy Level_C1_01_1_strategy3 | 3 | BroodMother (w12) | 675 | died | 0.07 | 13.8 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy1 | 1 | BroodMother (w8) | 932 | died | 0.09 | 17.6 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy1 | 1 | BroodMother (w12) | 1423 | died | 0.08 | 16.2 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy1 | 2 | BroodMother (w8) | 932 | died | 0.12 | 32.0 | 0.13 | reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy1 | 2 | BroodMother (w12) | 1423 | died | 0.09 | 17.8 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy1 | 3 | BroodMother (w8) | 932 | died | 0.09 | 17.8 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy1 | 3 | BroodMother (w12) | 1423 | died | 0.09 | 17.8 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy2 | 1 | BroodMother (w8) | 932 | died | 0.08 | 16.8 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy2 | 1 | BroodMother (w12) | 1423 | died | 0.08 | 16.2 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy2 | 2 | BroodMother (w8) | 932 | died | 0.12 | 34.4 | 0.13 | reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy2 | 2 | BroodMother (w12) | 1423 | died | 0.09 | 18.0 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy2 | 3 | BroodMother (w8) | 932 | died | 0.08 | 16.4 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy2 | 3 | BroodMother (w12) | 1423 | died | 0.09 | 17.4 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy3 | 1 | BroodMother (w8) | 932 | died | 0.09 | 18.2 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy3 | 1 | BroodMother (w12) | 1423 | died | 0.08 | 16.0 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy3 | 2 | BroodMother (w8) | 932 | died | 0.12 | 32.6 | 0.13 | reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy3 | 2 | BroodMother (w12) | 1423 | died | 0.09 | 18.4 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy3 | 3 | BroodMother (w8) | 932 | died | 0.09 | 17.8 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy3 | 3 | BroodMother (w12) | 1423 | died | 0.09 | 17.4 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy4 | 1 | BroodMother (w8) | 932 | died | 0.08 | 16.4 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy4 | 1 | BroodMother (w12) | 1423 | died | 0.08 | 16.2 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy4 | 2 | BroodMother (w8) | 932 | died | 0.12 | 32.4 | 0.13 | reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy4 | 2 | BroodMother (w12) | 1423 | died | 0.09 | 17.8 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy4 | 3 | BroodMother (w8) | 932 | died | 0.08 | 16.4 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy4 | 3 | BroodMother (w12) | 1423 | died | 0.09 | 17.6 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy5 | 1 | BroodMother (w8) | 932 | died | 0.10 | 20.4 | 0.13 | reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy5 | 1 | BroodMother (w12) | 1423 | died | 0.09 | 18.2 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy5 | 2 | BroodMother (w8) | 932 | died | 0.12 | 33.2 | 0.13 | reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy5 | 2 | BroodMother (w12) | 1423 | died | 0.09 | 17.4 | 0.13 | not reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy5 | 3 | BroodMother (w8) | 932 | died | 0.10 | 20.0 | 0.13 | reached |
+| Landing Site | Hard | strategy Level_C1_01_2_strategy5 | 3 | BroodMother (w12) | 1423 | died | 0.08 | 17.0 | 0.13 | not reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy1 | 1 | BroodMother (w5) | 1451 | died | 0.12 | 33.8 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy1 | 1 | BroodMother (w8) | 1566 | died | 0.14 | 27.8 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy1 | 1 | BroodMother (w12) | 2239 | died | 0.09 | 20.6 | 0.13 | not reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy1 | 2 | BroodMother (w5) | 1451 | died | 0.12 | 34.6 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy1 | 2 | BroodMother (w8) | 1566 | died | 0.47 | 92.4 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy1 | 2 | BroodMother (w12) | 2239 | died | 0.11 | 19.6 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy1 | 3 | BroodMother (w5) | 1451 | died | 0.12 | 35.0 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy1 | 3 | BroodMother (w8) | 1566 | died | 0.67 | 135.4 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy1 | 3 | BroodMother (w12) | 2239 | died | 0.11 | 20.8 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy2 | 1 | BroodMother (w5) | 1451 | died | 0.13 | 32.6 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy2 | 1 | BroodMother (w8) | 1566 | died | 0.12 | 31.0 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy2 | 1 | BroodMother (w12) | 2239 | died | 0.08 | 18.6 | 0.13 | not reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy2 | 2 | BroodMother (w5) | 1451 | died | 0.12 | 32.0 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy2 | 2 | BroodMother (w8) | 1566 | died | 0.12 | 27.2 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy2 | 2 | BroodMother (w12) | 2239 | died | 0.09 | 18.6 | 0.13 | not reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy2 | 3 | BroodMother (w5) | 1451 | died | 0.12 | 32.0 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy2 | 3 | BroodMother (w8) | 1566 | died | 0.39 | 82.2 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy2 | 3 | BroodMother (w12) | 2239 | died | 0.09 | 17.2 | 0.13 | not reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy3 | 1 | BroodMother (w5) | 1451 | died | 0.12 | 26.6 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy3 | 1 | BroodMother (w8) | 1566 | died | 0.10 | 18.6 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy3 | 1 | BroodMother (w12) | 2239 | died | 0.09 | 19.0 | 0.13 | not reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy3 | 2 | BroodMother (w5) | 1451 | died | 0.12 | 30.2 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy3 | 2 | BroodMother (w8) | 1566 | died | 0.11 | 20.4 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy3 | 2 | BroodMother (w12) | 2239 | died | 0.09 | 19.4 | 0.13 | not reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy3 | 3 | BroodMother (w5) | 1451 | died | 0.12 | 28.8 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy3 | 3 | BroodMother (w8) | 1566 | died | 0.12 | 24.8 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy3 | 3 | BroodMother (w12) | 2239 | died | 0.09 | 19.6 | 0.13 | not reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy4 | 1 | BroodMother (w5) | 1451 | died | 0.11 | 21.2 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy4 | 1 | BroodMother (w8) | 1566 | died | 0.09 | 19.0 | 0.13 | not reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy4 | 1 | BroodMother (w12) | 2239 | died | 0.07 | 15.0 | 0.13 | not reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy4 | 2 | BroodMother (w5) | 1451 | died | 0.12 | 25.6 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy4 | 2 | BroodMother (w8) | 1566 | died | 0.09 | 15.8 | 0.13 | not reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy4 | 2 | BroodMother (w12) | 2239 | died | 0.07 | 14.2 | 0.13 | not reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy4 | 3 | BroodMother (w5) | 1451 | died | 0.11 | 23.0 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy4 | 3 | BroodMother (w8) | 1566 | died | 0.10 | 19.8 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy4 | 3 | BroodMother (w12) | 2239 | died | 0.08 | 17.6 | 0.13 | not reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy5 | 1 | BroodMother (w5) | 1451 | died | 0.12 | 26.2 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy5 | 1 | BroodMother (w8) | 1566 | died | 0.11 | 22.0 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy5 | 1 | BroodMother (w12) | 2239 | died | 0.08 | 17.0 | 0.13 | not reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy5 | 2 | BroodMother (w5) | 1451 | died | 0.12 | 29.0 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy5 | 2 | BroodMother (w8) | 1566 | died | 0.10 | 19.0 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy5 | 2 | BroodMother (w12) | 2239 | died | 0.08 | 18.4 | 0.13 | not reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy5 | 3 | BroodMother (w5) | 1451 | died | 0.12 | 28.2 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy5 | 3 | BroodMother (w8) | 1566 | died | 0.12 | 25.2 | 0.13 | reached |
+| Landing Site | Psycho | strategy Level_C1_01_3_strategy5 | 3 | BroodMother (w12) | 2239 | died | 0.09 | 18.8 | 0.13 | not reached |
+| Quartz Flats | Easy | strategy Level_C1_05_0_strategy1 | 1 | CoreWisp (w17) | 885 | died | 0.12 | 13.2 | 0.13 | reached |
+| Quartz Flats | Easy | strategy Level_C1_05_0_strategy1 | 2 | CoreWisp (w17) | 885 | died | 0.12 | 13.0 | 0.13 | reached |
+| Quartz Flats | Easy | strategy Level_C1_05_0_strategy1 | 3 | CoreWisp (w17) | 885 | died | 0.12 | 14.2 | 0.13 | reached |
+| Quartz Flats | Easy | strategy Level_C1_05_0_strategy2 | 1 | CoreWisp (w17) | 885 | died | 0.12 | 12.2 | 0.13 | reached |
+| Quartz Flats | Easy | strategy Level_C1_05_0_strategy2 | 2 | CoreWisp (w17) | 885 | died | 0.11 | 11.0 | 0.13 | reached |
+| Quartz Flats | Easy | strategy Level_C1_05_0_strategy2 | 3 | CoreWisp (w17) | 885 | died | 0.11 | 11.6 | 0.13 | reached |
+| Quartz Flats | Easy | strategy Level_C1_05_0_strategy3 | 1 | CoreWisp (w17) | 885 | died | 0.11 | 11.6 | 0.13 | reached |
+| Quartz Flats | Easy | strategy Level_C1_05_0_strategy3 | 2 | CoreWisp (w17) | 885 | died | 0.12 | 11.6 | 0.13 | reached |
+| Quartz Flats | Easy | strategy Level_C1_05_0_strategy3 | 3 | CoreWisp (w17) | 885 | died | 0.10 | 11.0 | 0.13 | not reached |
+| Quartz Flats | Easy | strategy Level_C1_05_0_strategy4 | 1 | CoreWisp (w17) | 885 | died | 0.11 | 11.2 | 0.13 | reached |
+| Quartz Flats | Easy | strategy Level_C1_05_0_strategy4 | 2 | CoreWisp (w17) | 885 | died | 0.12 | 11.6 | 0.13 | reached |
+| Quartz Flats | Easy | strategy Level_C1_05_0_strategy4 | 3 | CoreWisp (w17) | 885 | died | 0.10 | 11.0 | 0.13 | not reached |
+| Quartz Flats | Easy | strategy Level_C1_05_0_strategy5 | 1 | CoreWisp (w17) | 885 | died | 0.10 | 10.6 | 0.13 | not reached |
+| Quartz Flats | Easy | strategy Level_C1_05_0_strategy5 | 2 | CoreWisp (w17) | 885 | died | 0.10 | 9.8 | 0.13 | not reached |
+| Quartz Flats | Easy | strategy Level_C1_05_0_strategy5 | 3 | CoreWisp (w17) | 885 | died | 0.10 | 11.0 | 0.13 | not reached |
+| Quartz Flats | Medium | strategy Level_C1_05_1_strategy1 | 1 | CoreWisp (w17) | 1464 | died | 0.12 | 16.0 | 0.13 | reached |
+| Quartz Flats | Medium | strategy Level_C1_05_1_strategy1 | 2 | CoreWisp (w17) | 1464 | died | 0.12 | 17.2 | 0.13 | reached |
+| Quartz Flats | Medium | strategy Level_C1_05_1_strategy1 | 3 | CoreWisp (w17) | 1464 | died | 0.12 | 13.4 | 0.13 | reached |
+| Quartz Flats | Medium | strategy Level_C1_05_1_strategy2 | 1 | CoreWisp (w17) | 1464 | died | 0.12 | 24.8 | 0.13 | reached |
+| Quartz Flats | Medium | strategy Level_C1_05_1_strategy2 | 2 | CoreWisp (w17) | 1464 | died | 0.12 | 19.0 | 0.13 | reached |
+| Quartz Flats | Medium | strategy Level_C1_05_1_strategy2 | 3 | CoreWisp (w17) | 1464 | died | 0.12 | 20.8 | 0.13 | reached |
+| Quartz Flats | Medium | strategy Level_C1_05_1_strategy3 | 1 | CoreWisp (w17) | 1464 | died | 0.12 | 15.8 | 0.13 | reached |
+| Quartz Flats | Medium | strategy Level_C1_05_1_strategy3 | 2 | CoreWisp (w17) | 1464 | died | 0.12 | 15.2 | 0.13 | reached |
+| Quartz Flats | Medium | strategy Level_C1_05_1_strategy3 | 3 | CoreWisp (w17) | 1464 | died | 0.12 | 14.4 | 0.13 | reached |
+| Quartz Flats | Medium | strategy Level_C1_05_1_strategy4 | 1 | CoreWisp (w17) | 1464 | died | 0.12 | 18.4 | 0.13 | reached |
+| Quartz Flats | Medium | strategy Level_C1_05_1_strategy4 | 2 | CoreWisp (w17) | 1464 | died | 0.12 | 18.0 | 0.13 | reached |
+| Quartz Flats | Medium | strategy Level_C1_05_1_strategy4 | 3 | CoreWisp (w17) | 1464 | died | 0.12 | 17.4 | 0.13 | reached |
+| Quartz Flats | Medium | strategy Level_C1_05_1_strategy5 | 1 | CoreWisp (w17) | 1464 | died | 0.12 | 15.8 | 0.13 | reached |
+| Quartz Flats | Medium | strategy Level_C1_05_1_strategy5 | 2 | CoreWisp (w17) | 1464 | died | 0.12 | 15.2 | 0.13 | reached |
+| Quartz Flats | Medium | strategy Level_C1_05_1_strategy5 | 3 | CoreWisp (w17) | 1464 | died | 0.12 | 14.2 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy1 | 1 | StormMatriarch (w11) | 1657 | died | 1.00 | 104.4 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy1 | 1 | CoreWisp (w17) | 3338 | died | 0.12 | 14.2 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy1 | 2 | StormMatriarch (w11) | 1657 | died | 1.00 | 113.2 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy1 | 2 | CoreWisp (w17) | 3338 | died | 0.12 | 13.2 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy1 | 3 | StormMatriarch (w11) | 1657 | died | 0.99 | 110.0 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy1 | 3 | CoreWisp (w17) | 3338 | died | 0.11 | 12.6 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy2 | 1 | StormMatriarch (w11) | 1657 | died | 1.00 | 105.4 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy2 | 1 | CoreWisp (w17) | 3338 | died | 0.12 | 15.2 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy2 | 2 | StormMatriarch (w11) | 1657 | died | 1.00 | 112.6 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy2 | 2 | CoreWisp (w17) | 3338 | died | 0.12 | 18.4 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy2 | 3 | StormMatriarch (w11) | 1657 | died | 0.95 | 104.6 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy2 | 3 | CoreWisp (w17) | 3338 | died | 0.12 | 16.4 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy3 | 1 | StormMatriarch (w11) | 1657 | died | 0.96 | 98.2 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy3 | 1 | CoreWisp (w17) | 3338 | died | 0.12 | 15.0 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy3 | 2 | StormMatriarch (w11) | 1657 | died | 0.96 | 107.6 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy3 | 2 | CoreWisp (w17) | 3338 | died | 0.12 | 15.6 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy3 | 3 | StormMatriarch (w11) | 1657 | died | 0.95 | 104.8 | 0.13 | reached |
+| Quartz Flats | Hard | strategy Level_C1_05_2_strategy3 | 3 | CoreWisp (w17) | 3338 | died | 0.12 | 12.0 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy1 | 1 | BroodMother (w5) | 3073 | died | 0.12 | 22.2 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy1 | 1 | StormMatriarch (w11) | 2400 | died | 0.92 | 86.0 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy1 | 1 | CoreWisp (w17) | 5274 | died | 0.12 | 17.2 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy1 | 2 | BroodMother (w5) | 3073 | died | 0.12 | 24.2 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy1 | 2 | StormMatriarch (w11) | 2400 | died | 0.92 | 90.4 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy1 | 2 | CoreWisp (w17) | 5274 | died | 0.12 | 16.0 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy1 | 3 | BroodMother (w5) | 3073 | died | 0.12 | 22.4 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy1 | 3 | StormMatriarch (w11) | 2400 | died | 0.91 | 104.0 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy1 | 3 | CoreWisp (w17) | 5274 | died | 0.12 | 15.4 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy2 | 1 | BroodMother (w5) | 3073 | died | 0.12 | 21.2 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy2 | 1 | StormMatriarch (w11) | 2400 | died | 0.94 | 86.6 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy2 | 1 | CoreWisp (w17) | 5274 | died | 0.12 | 16.2 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy2 | 2 | BroodMother (w5) | 3073 | died | 0.12 | 24.8 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy2 | 2 | StormMatriarch (w11) | 2400 | died | 0.93 | 92.0 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy2 | 2 | CoreWisp (w17) | 5274 | died | 0.12 | 15.0 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy2 | 3 | BroodMother (w5) | 3073 | died | 0.12 | 21.8 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy2 | 3 | StormMatriarch (w11) | 2400 | died | 0.92 | 105.0 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy2 | 3 | CoreWisp (w17) | 5274 | died | 0.12 | 14.8 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy3 | 1 | BroodMother (w5) | 3073 | died | 0.10 | 16.0 | 0.13 | not reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy3 | 1 | StormMatriarch (w11) | 2400 | died | 0.92 | 94.8 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy3 | 1 | CoreWisp (w17) | 5274 | died | 0.12 | 12.6 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy3 | 2 | BroodMother (w5) | 3073 | died | 0.09 | 16.6 | 0.13 | not reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy3 | 2 | StormMatriarch (w11) | 2400 | died | 0.92 | 91.2 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy3 | 2 | CoreWisp (w17) | 5274 | died | 0.12 | 12.2 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy3 | 3 | BroodMother (w5) | 3073 | died | 0.09 | 15.8 | 0.13 | not reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy3 | 3 | StormMatriarch (w11) | 2400 | died | 0.92 | 87.8 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy3 | 3 | CoreWisp (w17) | 5274 | died | 0.09 | 12.8 | 0.13 | not reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy4 | 1 | BroodMother (w5) | 3073 | died | 0.12 | 22.8 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy4 | 1 | StormMatriarch (w11) | 2400 | died | 0.94 | 86.6 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy4 | 1 | CoreWisp (w17) | 5274 | died | 0.12 | 15.2 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy4 | 2 | BroodMother (w5) | 3073 | died | 0.12 | 24.8 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy4 | 2 | StormMatriarch (w11) | 2400 | died | 0.92 | 91.2 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy4 | 2 | CoreWisp (w17) | 5274 | died | 0.11 | 11.8 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy4 | 3 | BroodMother (w5) | 3073 | died | 0.12 | 22.8 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy4 | 3 | StormMatriarch (w11) | 2400 | died | 0.91 | 104.0 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy4 | 3 | CoreWisp (w17) | 5274 | died | 0.12 | 14.8 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy5 | 1 | BroodMother (w5) | 3073 | died | 0.12 | 19.2 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy5 | 1 | StormMatriarch (w11) | 2400 | died | 0.92 | 85.2 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy5 | 1 | CoreWisp (w17) | 5274 | died | 0.12 | 14.2 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy5 | 2 | BroodMother (w5) | 3073 | died | 0.11 | 21.6 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy5 | 2 | StormMatriarch (w11) | 2400 | died | 0.92 | 90.8 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy5 | 2 | CoreWisp (w17) | 5274 | died | 0.12 | 13.4 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy5 | 3 | BroodMother (w5) | 3073 | died | 0.12 | 20.4 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy5 | 3 | StormMatriarch (w11) | 2400 | died | 0.90 | 102.6 | 0.13 | reached |
+| Quartz Flats | Psycho | strategy Level_C1_05_3_strategy5 | 3 | CoreWisp (w17) | 5274 | died | 0.12 | 14.4 | 0.13 | reached |
+| Shard Ridge | Easy | strategy Level_C1_03_0_strategy1 | 1 | BroodMother (w16) | 699 | died | 0.57 | 112.2 | 0.14 | reached |
+| Shard Ridge | Easy | strategy Level_C1_03_0_strategy1 | 2 | BroodMother (w16) | 699 | died | 0.57 | 107.2 | 0.14 | reached |
+| Shard Ridge | Easy | strategy Level_C1_03_0_strategy1 | 3 | BroodMother (w16) | 699 | died | 0.57 | 122.6 | 0.14 | reached |
+| Shard Ridge | Easy | strategy Level_C1_03_0_strategy2 | 1 | BroodMother (w16) | 699 | died | 0.57 | 112.6 | 0.14 | reached |
+| Shard Ridge | Easy | strategy Level_C1_03_0_strategy2 | 2 | BroodMother (w16) | 699 | died | 0.57 | 107.2 | 0.14 | reached |
+| Shard Ridge | Easy | strategy Level_C1_03_0_strategy2 | 3 | BroodMother (w16) | 699 | died | 0.57 | 121.8 | 0.14 | reached |
+| Shard Ridge | Easy | strategy Level_C1_03_0_strategy3 | 1 | BroodMother (w16) | 699 | died | 0.57 | 113.0 | 0.14 | reached |
+| Shard Ridge | Easy | strategy Level_C1_03_0_strategy3 | 2 | BroodMother (w16) | 699 | died | 0.57 | 108.2 | 0.14 | reached |
+| Shard Ridge | Easy | strategy Level_C1_03_0_strategy3 | 3 | BroodMother (w16) | 699 | died | 0.57 | 122.2 | 0.14 | reached |
+| Shard Ridge | Easy | strategy Level_C1_03_0_strategy4 | 1 | BroodMother (w16) | 699 | died | 0.57 | 112.0 | 0.14 | reached |
+| Shard Ridge | Easy | strategy Level_C1_03_0_strategy4 | 2 | BroodMother (w16) | 699 | died | 0.57 | 107.0 | 0.14 | reached |
+| Shard Ridge | Easy | strategy Level_C1_03_0_strategy4 | 3 | BroodMother (w16) | 699 | died | 0.57 | 122.0 | 0.14 | reached |
+| Shard Ridge | Easy | strategy Level_C1_03_0_strategy5 | 1 | BroodMother (w16) | 699 | died | 0.57 | 112.0 | 0.14 | reached |
+| Shard Ridge | Easy | strategy Level_C1_03_0_strategy5 | 2 | BroodMother (w16) | 699 | died | 0.56 | 106.6 | 0.14 | reached |
+| Shard Ridge | Easy | strategy Level_C1_03_0_strategy5 | 3 | BroodMother (w16) | 699 | died | 0.57 | 121.4 | 0.14 | reached |
+| Shard Ridge | Medium | strategy Level_C1_03_1_strategy1 | 1 | BroodMother (w16) | 1296 | died | 0.59 | 110.2 | 0.14 | reached |
+| Shard Ridge | Medium | strategy Level_C1_03_1_strategy1 | 2 | BroodMother (w16) | 1296 | died | 0.59 | 106.4 | 0.14 | reached |
+| Shard Ridge | Medium | strategy Level_C1_03_1_strategy1 | 3 | BroodMother (w16) | 1296 | died | 0.59 | 104.0 | 0.14 | reached |
+| Shard Ridge | Medium | strategy Level_C1_03_1_strategy2 | 1 | BroodMother (w16) | 1296 | died | 0.59 | 110.4 | 0.14 | reached |
+| Shard Ridge | Medium | strategy Level_C1_03_1_strategy2 | 2 | BroodMother (w16) | 1296 | died | 0.59 | 106.0 | 0.14 | reached |
+| Shard Ridge | Medium | strategy Level_C1_03_1_strategy2 | 3 | BroodMother (w16) | 1296 | died | 0.60 | 104.8 | 0.14 | reached |
+| Shard Ridge | Medium | strategy Level_C1_03_1_strategy3 | 1 | BroodMother (w16) | 1296 | died | 0.59 | 111.2 | 0.14 | reached |
+| Shard Ridge | Medium | strategy Level_C1_03_1_strategy3 | 2 | BroodMother (w16) | 1296 | died | 0.57 | 103.8 | 0.14 | reached |
+| Shard Ridge | Medium | strategy Level_C1_03_1_strategy3 | 3 | BroodMother (w16) | 1296 | died | 0.60 | 105.4 | 0.14 | reached |
+| Shard Ridge | Medium | strategy Level_C1_03_1_strategy4 | 1 | BroodMother (w16) | 1296 | died | 0.59 | 111.4 | 0.14 | reached |
+| Shard Ridge | Medium | strategy Level_C1_03_1_strategy4 | 2 | BroodMother (w16) | 1296 | died | 0.59 | 106.6 | 0.14 | reached |
+| Shard Ridge | Medium | strategy Level_C1_03_1_strategy4 | 3 | BroodMother (w16) | 1296 | died | 0.59 | 104.4 | 0.14 | reached |
+| Shard Ridge | Medium | strategy Level_C1_03_1_strategy5 | 1 | BroodMother (w16) | 1296 | died | 0.59 | 110.6 | 0.14 | reached |
+| Shard Ridge | Medium | strategy Level_C1_03_1_strategy5 | 2 | BroodMother (w16) | 1296 | died | 0.59 | 106.8 | 0.14 | reached |
+| Shard Ridge | Medium | strategy Level_C1_03_1_strategy5 | 3 | BroodMother (w16) | 1296 | died | 0.59 | 104.2 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy1 | 1 | CoreWisp (w10) | 1031 | died | 0.72 | 96.0 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy1 | 1 | BroodMother (w16) | 2197 | died | 0.56 | 113.8 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy1 | 2 | CoreWisp (w10) | 1031 | died | 0.74 | 102.2 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy1 | 2 | BroodMother (w16) | 2197 | died | 0.56 | 115.0 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy1 | 3 | CoreWisp (w10) | 1031 | died | 0.72 | 103.8 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy1 | 3 | BroodMother (w16) | 2197 | died | 0.56 | 117.6 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy2 | 1 | CoreWisp (w10) | 1031 | died | 0.72 | 96.0 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy2 | 1 | BroodMother (w16) | 2197 | died | 0.56 | 112.6 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy2 | 2 | CoreWisp (w10) | 1031 | died | 0.73 | 94.0 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy2 | 2 | BroodMother (w16) | 2197 | died | 0.56 | 115.2 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy2 | 3 | CoreWisp (w10) | 1031 | died | 0.73 | 104.4 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy2 | 3 | BroodMother (w16) | 2197 | died | 0.55 | 117.4 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy3 | 1 | CoreWisp (w10) | 1031 | died | 0.72 | 96.0 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy3 | 1 | BroodMother (w16) | 2197 | died | 0.56 | 112.4 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy3 | 2 | CoreWisp (w10) | 1031 | died | 0.74 | 102.2 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy3 | 2 | BroodMother (w16) | 2197 | died | 0.55 | 114.8 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy3 | 3 | CoreWisp (w10) | 1031 | died | 0.72 | 103.8 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy3 | 3 | BroodMother (w16) | 2197 | died | 0.55 | 117.2 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy4 | 1 | CoreWisp (w10) | 1031 | died | 0.72 | 95.6 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy4 | 1 | BroodMother (w16) | 2197 | died | 0.55 | 110.6 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy4 | 2 | CoreWisp (w10) | 1031 | died | 0.75 | 102.6 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy4 | 2 | BroodMother (w16) | 2197 | died | 0.56 | 116.8 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy4 | 3 | CoreWisp (w10) | 1031 | died | 0.72 | 103.2 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy4 | 3 | BroodMother (w16) | 2197 | died | 0.55 | 117.4 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy5 | 1 | CoreWisp (w10) | 1031 | died | 0.61 | 67.0 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy5 | 1 | BroodMother (w16) | 2197 | died | 0.56 | 113.4 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy5 | 2 | CoreWisp (w10) | 1031 | died | 0.72 | 82.8 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy5 | 2 | BroodMother (w16) | 2197 | died | 0.57 | 117.8 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy5 | 3 | CoreWisp (w10) | 1031 | died | 0.72 | 103.8 | 0.14 | reached |
+| Shard Ridge | Hard | strategy Level_C1_03_2_strategy5 | 3 | BroodMother (w16) | 2197 | died | 0.56 | 118.2 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy1 | 1 | BroodMother (w6) | 2042 | died | 0.59 | 121.4 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy1 | 1 | CoreWisp (w10) | 1766 | died | 0.72 | 96.8 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy1 | 1 | BroodMother (w16) | 2550 | still standing | 0.00 | 0.0 | 0.14 | not reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy1 | 2 | BroodMother (w6) | 2042 | died | 0.60 | 113.4 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy1 | 2 | CoreWisp (w10) | 1766 | died | 0.60 | 63.0 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy1 | 2 | BroodMother (w16) | 2550 | still standing | 0.02 | 3.8 | 0.14 | not reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy1 | 3 | BroodMother (w6) | 2042 | died | 0.59 | 104.8 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy1 | 3 | CoreWisp (w10) | 1766 | died | 0.61 | 71.6 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy2 | 1 | BroodMother (w6) | 2042 | died | 0.59 | 121.6 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy2 | 1 | CoreWisp (w10) | 1766 | died | 0.73 | 96.2 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy2 | 1 | BroodMother (w16) | 2550 | died | 0.50 | 87.0 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy2 | 2 | BroodMother (w6) | 2042 | died | 0.60 | 114.2 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy2 | 2 | CoreWisp (w10) | 1766 | died | 0.72 | 86.2 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy2 | 2 | BroodMother (w16) | 2550 | died | 0.54 | 97.6 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy2 | 3 | BroodMother (w6) | 2042 | died | 0.59 | 104.4 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy2 | 3 | CoreWisp (w10) | 1766 | died | 0.72 | 94.6 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy2 | 3 | BroodMother (w16) | 2550 | died | 0.54 | 96.8 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy3 | 1 | BroodMother (w6) | 2042 | died | 0.59 | 121.6 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy3 | 1 | CoreWisp (w10) | 1766 | died | 0.74 | 104.2 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy3 | 1 | BroodMother (w16) | 2550 | died | 0.55 | 95.8 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy3 | 2 | BroodMother (w6) | 2042 | died | 0.60 | 114.2 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy3 | 2 | CoreWisp (w10) | 1766 | died | 0.73 | 85.4 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy3 | 2 | BroodMother (w16) | 2550 | died | 0.54 | 99.0 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy3 | 3 | BroodMother (w6) | 2042 | died | 0.60 | 106.2 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy3 | 3 | CoreWisp (w10) | 1766 | died | 0.71 | 90.4 | 0.14 | reached |
+| Shard Ridge | Psycho | strategy Level_C1_03_3_strategy3 | 3 | BroodMother (w16) | 2550 | died | 0.49 | 87.2 | 0.14 | reached |
+
+536 boss fates, 398 reached the first gate

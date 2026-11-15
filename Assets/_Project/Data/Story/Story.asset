@@ -47,3 +47,4 @@ MonoBehaviour:
     Dialogue: {fileID: 11400000, guid: 07a7e2a2642c3aa43a9f1c8015d12057, type: 2}
     HurtBelow: 0.6
     QuietAbove: 0.9
+  _highGroundTip: {fileID: 11400000, guid: bad5d4cea72429a44aadfbc7e2b1f92c, type: 2}

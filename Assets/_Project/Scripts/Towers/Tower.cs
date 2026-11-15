@@ -52,14 +52,20 @@ namespace Game.Towers
         public float Power => IsWrecked ? 0f : _definition.DamagedPowerFloor + (1f - _definition.DamagedPowerFloor) * Health.Fraction;
 
         /// <summary>Range after upgrades, in world units.</summary>
-        public float Range => _definition.GetLevel(LevelIndex).Range * _modifiers.TowerRangeMultiplier * (_definition.IsSupport ? 1f : 1f + _supportRange);
+        public float Range => _definition.GetLevel(LevelIndex).Range * _modifiers.TowerRangeMultiplier * GroundRange * (_definition.IsSupport ? 1f : 1f + _supportRange);
+
+        /// <summary>
+        /// What the ground under the tower does to its reach (1 on the plain, more on raised ground: the level's
+        /// TerrainRules). Set by whoever stands the tower on its cell.
+        /// </summary>
+        public float GroundRange { get; set; } = 1f;
 
         /// <summary>Value carried over from the towers this one was combined from, so selling it is fair.</summary>
         public int InheritedValue { get; set; }
 
         public float HealthFraction => Health.Fraction;
 
-        public float SupportRadius => _definition.IsSupport && IsAlive ? _definition.GetLevel(LevelIndex).Range * _modifiers.TowerRangeMultiplier : 0f;
+        public float SupportRadius => _definition.IsSupport && IsAlive ? _definition.GetLevel(LevelIndex).Range * _modifiers.TowerRangeMultiplier * GroundRange : 0f;
 
         public float RangeBonus => _definition.SupportRangeBonus * (1f + SupportLevelGrowth * LevelIndex);
 

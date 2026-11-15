@@ -37,6 +37,10 @@ namespace Game.Levels
         private const float MaxLateralCells = 0.35f;
         private const float MaxLateralPerExtraCell = 0.35f;
         private const float MinLateral = 0.02f;
+        // The tightest arc any flyer turns on, in cells, however slow it flies.
+        private const float MinTurnRadiusCells = 0.75f;
+        // A flyer that swings past a gate on an arc must come within this share of its attack range of the gate.
+        private const float GateSwingReachShare = 0.6f;
 
         private readonly LevelContext _context;
         private readonly Transform _parent;
@@ -81,9 +85,8 @@ namespace Game.Levels
                 _gates[i] = road.CentreOf(context.Level.Blockades[i].Cell);
             }
 
-            int extraCells = road.Width - 1;
             _kerb = road.HalfWidthCells * context.Level.CellSize - KerbMargin;
-            _maxLateral = (MaxLateralCells + extraCells * MaxLateralPerExtraCell) * context.Level.CellSize;
+            _maxLateral = StrayCells(road.Width) * context.Level.CellSize;
         }
 
         public int Alive { get; private set; }
@@ -106,6 +109,12 @@ namespace Game.Levels
             Slime.SetHero(_context.Hero);
             Slime.Step(deltaTime);
         }
+
+        /// <summary>How far from the centre line of a road this many cells wide a walker may stray, in cells.</summary>
+        public static float StrayCells(int roadWidth) => MaxLateralCells + (roadWidth - 1) * MaxLateralPerExtraCell;
+
+        /// <summary>How far past the middle of the road's outer row of cells a walker may stray, in cells.</summary>
+        public static float StrayPastRowCells(int roadWidth) => Mathf.Max(0f, StrayCells(roadWidth) - (roadWidth - 1) * 0.5f);
 
         /// <param name="nest">For a nest spawn, the index of the level's nest it comes out of; -1 picks one at random.</param>
         public void Spawn(EnemyDefinition definition, int pathIndex, SpawnSource source = SpawnSource.Gate, int nest = -1)
@@ -147,9 +156,9 @@ namespace Game.Levels
                 : Mathf.Clamp(_kerb - BodyHalf(definition), 0f, _maxLateral);
             float lateral = Range(-lateralRoom, lateralRoom);
             Vector3[] route = Mathf.Abs(lateral) > MinLateral ? PathOffset.Shift(_paths[pathIndex], lateral) : _paths[pathIndex];
-            if (air && definition.GateStrikes > 0)
+            if (air)
             {
-                route = WithGateDetour(route);
+                route = FlightRoute(definition, route);
             }
 
             Launch(definition, route, FlightHeight(definition), EnemyOrigin.Gate, 0f);
@@ -236,9 +245,9 @@ namespace Game.Levels
 
             Vector3 start = _context.Level.Grid.CellToWorld(chosen.Cell);
             Vector3[] route = OffRoadRoute.Build(_context.Level, start, out float progress);
-            if (definition.Flies && definition.GateStrikes > 0)
+            if (definition.Flies)
             {
-                route = WithGateDetour(route);
+                route = FlightRoute(definition, route);
             }
 
             Launch(definition, route, FlightHeight(definition), NestOrigin(chosen.Element), progress);
@@ -434,10 +443,39 @@ namespace Game.Levels
             : definition.Boss != null ? definition.Boss.BodyHalfWidth
             : definition.Scale * BodyHalfWidthPerScale * _context.Level.CellSize;
 
+        // A flyer's route as it flies it: every corner rounded on the arc its speed and turn rate allow (FlightCurve). A
+        // flyer that strikes a gate swings past it on an arc too, as long as that arc still brings it well within its
+        // reach of the gate (it stops there to strike); a dive too sharp for that keeps its point at the gate.
+        private Vector3[] FlightRoute(EnemyDefinition definition, Vector3[] route)
+        {
+            float radius = TurnRadius(definition, _context.Level.CellSize);
+            if (definition.GateStrikes <= 0 || _gates.Length == 0 || route.Length < 2)
+            {
+                return FlightCurve.Round(route, radius);
+            }
+
+            Vector3[] swung = FlightCurve.Round(WithGateDetour(route, out Vector3 gate), radius);
+            float reach = definition.AttackRange * GateSwingReachShare;
+            for (int i = 0; i < swung.Length - 1; i++)
+            {
+                if (DistanceToSegmentSqr(gate, swung[i], swung[i + 1]) <= reach * reach)
+                {
+                    return swung;
+                }
+            }
+
+            return WithGateDetour(FlightCurve.Round(route, radius), out _);
+        }
+
+        /// <summary>The radius a flyer rounds the corners of its route on, in world units.</summary>
+        public static float TurnRadius(EnemyDefinition definition, float cellSize) =>
+            FlightCurve.Radius(definition.Speed, definition.TurnRate, MinTurnRadiusCells * cellSize);
+
         // The gate nearest the flight route becomes a waypoint, inserted before the first point past it, so the
         // flyer dives at the gate and carries on along its route afterwards.
-        private Vector3[] WithGateDetour(Vector3[] route)
+        private Vector3[] WithGateDetour(Vector3[] route, out Vector3 gate)
         {
+            gate = Vector3.zero;
             if (_gates.Length == 0 || route.Length < 2)
             {
                 return route;
@@ -466,7 +504,8 @@ namespace Game.Levels
                 result[i] = route[i];
             }
 
-            result[bestSegment + 1] = new Vector3(bestGate.x, 0f, bestGate.z);
+            gate = new Vector3(bestGate.x, 0f, bestGate.z);
+            result[bestSegment + 1] = gate;
             for (int i = bestSegment + 1; i < route.Length; i++)
             {
                 result[i + 1] = route[i];

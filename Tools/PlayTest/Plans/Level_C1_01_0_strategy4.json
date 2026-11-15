@@ -7,23 +7,23 @@
         {
             "Tower": "PulseRifle",
             "X": [
+                10,
                 9,
                 9,
-                10,
-                10,
                 11,
                 11,
-                5,
-                31
+                31,
+                12,
+                5
             ],
             "Y": [
-                3,
+                6,
                 6,
                 3,
                 6,
-                3,
-                6,
+                2,
                 14,
+                7,
                 14
             ]
         },
@@ -32,45 +32,45 @@
             "X": [
                 31,
                 11,
+                12,
+                12,
+                12,
                 13,
-                12,
-                12,
-                12,
                 5,
                 11
             ],
             "Y": [
                 14,
-                3,
-                3,
                 6,
-                3,
+                2,
+                6,
                 7,
+                2,
                 14,
-                6
+                2
             ]
         }
     ],
     "Weights": [
         {
-            "Threat": "air",
+            "Threat": "swarm",
             "Tower": "PulseRifle",
-            "Weight": 1.242398738861084
+            "Weight": 1.4875584840774536
         },
         {
             "Threat": "boss",
             "Tower": "Cannon",
-            "Weight": 1.3056707382202148
+            "Weight": 0.5079089999198914
         }
     ],
     "UpgradeBias": 1.0099999904632568,
-    "TowersBeforeUpgrades": 2,
+    "TowersBeforeUpgrades": 1,
     "MineCoverBelow": 1.2999999523162842,
     "MineOnBoss": true,
-    "FieldCoverBelow": 1.2000000476837158,
-    "HarvesterCover": 1.0,
+    "FieldCoverBelow": 0.0,
+    "HarvesterCover": 1.5,
     "HarvesterShare": 0.5,
-    "RepairDroneWear": 0.10000000149011612,
+    "RepairDroneWear": 9.0,
     "AttackDroneAfterTowers": 0,
     "GateUpgradeBias": 0.0,
     "AllowSell": false

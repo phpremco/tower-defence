@@ -77,6 +77,13 @@ MonoBehaviour:
   - {x: 33, y: 11}
   - {x: 35, y: 12}
   - {x: 38, y: 2}
+  - {x: 0, y: 4}
+  - {x: 0, y: 5}
+  - {x: 1, y: 4}
+  - {x: 1, y: 5}
+  - {x: 1, y: 6}
+  - {x: 2, y: 6}
+  - {x: 3, y: 6}
   _blockades:
   - Cell: {x: 11, y: 19}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
@@ -102,8 +109,6 @@ MonoBehaviour:
   - Cell: {x: 2, y: 5}
     Kind: 1
   - Cell: {x: 2, y: 6}
-    Kind: 1
-  - Cell: {x: 3, y: 3}
     Kind: 1
   - Cell: {x: 3, y: 4}
     Kind: 1
@@ -131,14 +136,10 @@ MonoBehaviour:
     Kind: 7
   - Cell: {x: 25, y: 21}
     Kind: 1
-  - Cell: {x: 26, y: 20}
-    Kind: 1
   - Cell: {x: 27, y: 11}
     Kind: 7
   - Cell: {x: 27, y: 12}
     Kind: 7
-  - Cell: {x: 27, y: 20}
-    Kind: 1
   - Cell: {x: 30, y: 10}
     Kind: 7
   - Cell: {x: 30, y: 11}
@@ -213,6 +214,27 @@ MonoBehaviour:
     Kind: 7
   - Cell: {x: 39, y: 20}
     Kind: 7
+  _slopeCells:
+  - {x: 0, y: 3}
+  - {x: 0, y: 6}
+  - {x: 0, y: 7}
+  - {x: 1, y: 3}
+  - {x: 1, y: 7}
+  - {x: 2, y: 3}
+  - {x: 2, y: 7}
+  - {x: 3, y: 3}
+  - {x: 3, y: 7}
+  - {x: 4, y: 3}
+  - {x: 4, y: 4}
+  - {x: 4, y: 5}
+  - {x: 4, y: 6}
+  - {x: 4, y: 7}
+  - {x: 24, y: 20}
+  - {x: 24, y: 21}
+  - {x: 25, y: 20}
+  - {x: 26, y: 20}
+  - {x: 26, y: 21}
+  _terrainRules: {fileID: 11400000, guid: 0ac737044b0451f4e98e9986a9f69eac, type: 2}
   _mineCells:
   - {x: 18, y: 5}
   - {x: 6, y: 5}

@@ -33,3 +33,4 @@ MonoBehaviour:
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 0}
+  _loadingTip: A rift can open behind the gates. Keep a turret in reach of it, or near the base.

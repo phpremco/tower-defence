@@ -27,3 +27,4 @@ MonoBehaviour:
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 11400000, guid: 92fb551ff76be8f4ab4ecfbd0f621e77, type: 2}
+  _loadingTip: Rollers curl up and roll three times faster than anything else. The Laser Turret's beam keeps up with them.

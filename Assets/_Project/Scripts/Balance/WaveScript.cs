@@ -127,6 +127,14 @@ namespace Game.Balance
         public float[] Tempo = { 1f };
         public int[] RaidWave = { 0 };
 
+        /// <summary>
+        /// The share of a boss wave's budget its crowd keeps on this script, per difficulty (the lever "bosscrowd", round 65);
+        /// zero leaves it to <see cref="BalanceRules.BossWaveShare"/>.
+        /// </summary>
+        public float[] BossCrowd = { 0f };
+
+        public float BossCrowdFor(int difficulty) => At(BossCrowd, difficulty, 0f);
+
         public float PlatedBiasFor(int difficulty) => At(PlatedBias, difficulty, 1f);
 
         public float SwarmBiasFor(int difficulty) => At(SwarmBias, difficulty, 1f);

@@ -19,7 +19,14 @@ namespace Game.Levels
         private const float WidestAspect = 2.4f;
         private const int FootprintSlackCells = 1;
 
-        private const float EdgeWander = 0.7f;
+        // Round 65: raised ground rounds off just inside its own cells and slopes down over the ring of ground round it
+        // (PlateauSkirt: that ring holds no tower). The level top is the raised cells drawn in by the shoulder, which
+        // also rounds its corners by that much; shoulder, slope and wander together stay under one cell, so the slope
+        // never reaches the cell beyond the ring, and the middle of a raised cell stays level for its tower.
+        private const float PlateauShoulderCells = 0.3f;
+        private const float PlateauSlopeCells = 0.78f;
+        private const float PlateauWander = 0.1f;
+        private const int PlateauSearchCells = 2;
         private const float BasinDepth = 0.6f;
         private const float SandDepth = 0.16f;
         private const float IceDepth = 0.1f;
@@ -160,7 +167,7 @@ namespace Game.Levels
         {
             GridMap grid = level.Grid;
             TerrainMap map = level.Terrain;
-            var core = new float[Nx * Nz];
+            HashSet<Vector2Int> nearPlateau = CellsNearPlateau(map);
 
             for (int iz = 0; iz < Nz; iz++)
             {
@@ -168,32 +175,96 @@ namespace Game.Levels
                 {
                     float x = WorldX(ix);
                     float z = WorldZ(iz);
-                    // The edges between kinds wander a little, so lakes and ridges are not made of squares.
-                    float warpX = (TerrainNoise.Fbm(x * 0.8f, z * 0.8f, 2, 21f) - 0.5f) * EdgeWander * CellSize;
-                    float warpZ = (TerrainNoise.Fbm(x * 0.8f + 40f, z * 0.8f, 2, 33f) - 0.5f) * EdgeWander * CellSize;
-                    Vector2Int cell = grid.WorldToCell(new Vector3(x + warpX, 0f, z + warpZ));
-                    int i = Index(ix, iz);
-                    if (map.KindAt(cell) == TerrainKind.Raised)
-                    {
-                        _plateau[i] = 1f;
-                    }
-
-                    // The middle of a raised cell must be exactly at plateau height: that is where the tower stands.
-                    Vector2Int own = grid.WorldToCell(new Vector3(x, 0f, z));
-                    Vector3 centre = grid.CellToWorld(own);
-                    bool nearCentre = Mathf.Abs(x - centre.x) < Step * 1.01f && Mathf.Abs(z - centre.z) < Step * 1.01f;
-                    core[i] = nearCentre && map.KindAt(own) == TerrainKind.Raised ? 1f : 0f;
+                    // The foot of the slope wanders a little, so a plateau is not a rounded square.
+                    float warpX = (TerrainNoise.Fbm(x * 0.8f, z * 0.8f, 2, 21f) - 0.5f) * PlateauWander * CellSize;
+                    float warpZ = (TerrainNoise.Fbm(x * 0.8f + 40f, z * 0.8f, 2, 33f) - 0.5f) * PlateauWander * CellSize;
+                    float distance = DistanceToPlateauTop(grid, map, nearPlateau, x + warpX, z + warpZ);
+                    _plateau[Index(ix, iz)] = 1f - TerrainNoise.SmoothStep(0f, PlateauShoulderCells + PlateauSlopeCells, distance);
                 }
             }
 
+            // One soft pass takes the crease out of an inside corner; the level top is wider than the pass, so it stays level.
             Blur(_plateau);
-            for (int i = 0; i < core.Length; i++)
+            FillLiquids(grid, map);
+        }
+
+        // Distance in cells from a point to the level top of the raised ground (zero on it): the raised cells drawn in by
+        // the shoulder, joined where they touch. Measured to those shapes, so every outer corner comes out round.
+        private float DistanceToPlateauTop(GridMap grid, TerrainMap map, HashSet<Vector2Int> nearPlateau, float x, float z)
+        {
+            Vector2Int own = grid.WorldToCell(new Vector3(x, 0f, z));
+            if (!nearPlateau.Contains(own))
             {
-                _plateau[i] = Mathf.Max(_plateau[i], core[i]);
+                return PlateauSearchCells;
             }
 
-            ConfineToCells(grid, map);
-            FillLiquids(grid, map);
+            float half = 0.5f - PlateauShoulderCells;
+            float nearest = PlateauSearchCells;
+            for (int dx = -PlateauSearchCells; dx <= PlateauSearchCells; dx++)
+            {
+                for (int dy = -PlateauSearchCells; dy <= PlateauSearchCells; dy++)
+                {
+                    var cell = new Vector2Int(own.x + dx, own.y + dy);
+                    if (map.KindAt(cell) != TerrainKind.Raised)
+                    {
+                        continue;
+                    }
+
+                    Vector3 centre = grid.CellToWorld(cell);
+                    float localX = (x - centre.x) / CellSize;
+                    float localZ = (z - centre.z) / CellSize;
+                    bool right = map.KindAt(cell + Vector2Int.right) == TerrainKind.Raised;
+                    bool up = map.KindAt(cell + Vector2Int.up) == TerrainKind.Raised;
+                    // The cell's own top, its joins to the cells right of and above it, and the middle of a full block of four.
+                    nearest = Mathf.Min(nearest, RectDistance(localX, localZ, -half, half, -half, half));
+                    if (right)
+                    {
+                        nearest = Mathf.Min(nearest, RectDistance(localX, localZ, 0f, 1f, -half, half));
+                    }
+
+                    if (up)
+                    {
+                        nearest = Mathf.Min(nearest, RectDistance(localX, localZ, -half, half, 0f, 1f));
+                    }
+
+                    if (right && up && map.KindAt(cell + Vector2Int.one) == TerrainKind.Raised)
+                    {
+                        nearest = Mathf.Min(nearest, RectDistance(localX, localZ, 0f, 1f, 0f, 1f));
+                    }
+                }
+            }
+
+            return nearest;
+        }
+
+        private static float RectDistance(float x, float z, float minX, float maxX, float minZ, float maxZ)
+        {
+            float outX = Mathf.Max(Mathf.Max(minX - x, x - maxX), 0f);
+            float outZ = Mathf.Max(Mathf.Max(minZ - z, z - maxZ), 0f);
+            return Mathf.Sqrt(outX * outX + outZ * outZ);
+        }
+
+        // Every cell the slope of some raised cell could reach; the rest of the map skips the distance search.
+        private static HashSet<Vector2Int> CellsNearPlateau(TerrainMap map)
+        {
+            var near = new HashSet<Vector2Int>();
+            foreach (KeyValuePair<Vector2Int, TerrainKind> pair in map.Cells)
+            {
+                if (pair.Value != TerrainKind.Raised)
+                {
+                    continue;
+                }
+
+                for (int dx = -PlateauSearchCells; dx <= PlateauSearchCells; dx++)
+                {
+                    for (int dy = -PlateauSearchCells; dy <= PlateauSearchCells; dy++)
+                    {
+                        near.Add(new Vector2Int(pair.Key.x + dx, pair.Key.y + dy));
+                    }
+                }
+            }
+
+            return near;
         }
 
         // A pool follows its smoothed shore (LiquidShape); a rift keeps its shore inside its own cells: the mask rises from
@@ -301,22 +372,6 @@ namespace Game.Levels
             }
 
             return depth;
-        }
-
-        // Raised ground stays inside its own cells: a hill never spills onto the flat cell beside it, so a tower on
-        // the cell next to it (even shifted away from the road inside its cell) stands on level ground.
-        private void ConfineToCells(GridMap grid, TerrainMap map)
-        {
-            for (int iz = 0; iz < Nz; iz++)
-            {
-                for (int ix = 0; ix < Nx; ix++)
-                {
-                    if (map.KindAt(grid.WorldToCell(new Vector3(WorldX(ix), 0f, WorldZ(iz)))) != TerrainKind.Raised)
-                    {
-                        _plateau[Index(ix, iz)] = 0f;
-                    }
-                }
-            }
         }
 
         private void FillHeights(RoadShape road)
@@ -453,32 +508,7 @@ namespace Game.Levels
             }
         }
 
-        private float DistanceTo(Vector3 centre, int ix, int iz)
-        {
-            float dx = WorldX(ix) - centre.x;
-            float dz = WorldZ(iz) - centre.z;
-            return Mathf.Sqrt(dx * dx + dz * dz);
-        }
-
-        private void FillSlopes()
-        {
-            for (int iz = 0; iz < Nz; iz++)
-            {
-                for (int ix = 0; ix < Nx; ix++)
-                {
-                    int x0 = Mathf.Max(ix - 1, 0);
-                    int x1 = Mathf.Min(ix + 1, Nx - 1);
-                    int z0 = Mathf.Max(iz - 1, 0);
-                    int z1 = Mathf.Min(iz + 1, Nz - 1);
-                    float dx = (_height[Index(x1, iz)] - _height[Index(x0, iz)]) / ((x1 - x0) * Step);
-                    float dz = (_height[Index(ix, z1)] - _height[Index(ix, z0)]) / ((z1 - z0) * Step);
-                    _slope[Index(ix, iz)] = Mathf.Sqrt(dx * dx + dz * dz);
-                }
-            }
-        }
-
-        // One box blur pass of radius one point in both directions: soft edges between kinds, and the middle of
-        // a one-cell patch keeps its full value.
+        // One box blur pass of radius one point in both directions.
         private void Blur(float[] data)
         {
             var temp = new float[data.Length];
@@ -507,6 +537,30 @@ namespace Game.Levels
                     }
 
                     data[Index(ix, iz)] = sum / 3f;
+                }
+            }
+        }
+
+        private float DistanceTo(Vector3 centre, int ix, int iz)
+        {
+            float dx = WorldX(ix) - centre.x;
+            float dz = WorldZ(iz) - centre.z;
+            return Mathf.Sqrt(dx * dx + dz * dz);
+        }
+
+        private void FillSlopes()
+        {
+            for (int iz = 0; iz < Nz; iz++)
+            {
+                for (int ix = 0; ix < Nx; ix++)
+                {
+                    int x0 = Mathf.Max(ix - 1, 0);
+                    int x1 = Mathf.Min(ix + 1, Nx - 1);
+                    int z0 = Mathf.Max(iz - 1, 0);
+                    int z1 = Mathf.Min(iz + 1, Nz - 1);
+                    float dx = (_height[Index(x1, iz)] - _height[Index(x0, iz)]) / ((x1 - x0) * Step);
+                    float dz = (_height[Index(ix, z1)] - _height[Index(ix, z0)]) / ((z1 - z0) * Step);
+                    _slope[Index(ix, iz)] = Mathf.Sqrt(dx * dx + dz * dz);
                 }
             }
         }

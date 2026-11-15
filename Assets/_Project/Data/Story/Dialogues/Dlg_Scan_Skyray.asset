@@ -27,3 +27,4 @@ MonoBehaviour:
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 11400000, guid: 892c4a380bece3a478c63202c6d940c9, type: 2}
+  _loadingTip: Skyrays never land, so ground guns can't touch them. Build a Flak Turret where they cross the gates.

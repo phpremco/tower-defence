@@ -241,6 +241,9 @@ namespace Game.Editor
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();
+            // Round 65: raised ground keeps clear of the road, slopes down over a ring no tower stands on, and closes the
+            // cells a gun could not see the road from.
+            ApplyPlateauSkirt(level);
         }
 
         private static Vector2Int Vector(Cell cell) => new Vector2Int(cell.X, cell.Y);

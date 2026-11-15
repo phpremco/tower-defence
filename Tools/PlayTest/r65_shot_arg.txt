@@ -1,0 +1,2 @@
+cell:10:18.5 2.2 clean  
+C:/Users/remco/Tower defense/ArtSource/Previews/QA/r65_c106_plateau_close.png

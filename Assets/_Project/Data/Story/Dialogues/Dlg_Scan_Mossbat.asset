@@ -27,3 +27,4 @@ MonoBehaviour:
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 11400000, guid: e7eac3a0449156148a0d557255fa8f98, type: 2}
+  _loadingTip: Mossbats are shed in flight by the big flyers. Keep a Flak Turret in reach of wherever those go.
