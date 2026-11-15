@@ -269,44 +269,44 @@ namespace Game.Boot
 
         private void CreateFamilies(SfxLibrary library)
         {
-            _pulse = new SoundFamily(library?.PulseShots, ProceduralSfx.PulseShot());
-            _heavy = new SoundFamily(library?.HeavyShots, ProceduralSfx.HeavyShot());
-            _rocket = new SoundFamily(library?.RocketLaunches, ProceduralSfx.RocketLaunch());
-            _flak = new SoundFamily(library?.FlakShots, ProceduralSfx.HeavyShot());
-            _flakBurst = new SoundFamily(library?.FlakBursts, ProceduralSfx.Explosion());
-            _cryo = new SoundFamily(library?.CryoShots, ProceduralSfx.CryoShot());
-            _tesla = new SoundFamily(library?.TeslaShots, ProceduralSfx.TeslaShot());
+            _pulse = new SoundFamily(library?.PulseShots, ProceduralSfx.PulseShot);
+            _heavy = new SoundFamily(library?.HeavyShots, ProceduralSfx.HeavyShot);
+            _rocket = new SoundFamily(library?.RocketLaunches, ProceduralSfx.RocketLaunch);
+            _flak = new SoundFamily(library?.FlakShots, ProceduralSfx.HeavyShot);
+            _flakBurst = new SoundFamily(library?.FlakBursts, ProceduralSfx.Explosion);
+            _cryo = new SoundFamily(library?.CryoShots, ProceduralSfx.CryoShot);
+            _tesla = new SoundFamily(library?.TeslaShots, ProceduralSfx.TeslaShot);
             for (int i = 0; i < BeamVoiceCount; i++)
             {
                 _beamVoices[i] = library != null && !library.BeamLoops.IsEmpty ? LoopVoice.Create(gameObject, library.BeamLoops) : LoopVoice.Create(gameObject, ProceduralSfx.BossLaserHum(), BeamFallbackGain);
             }
-            _rail = new SoundFamily(library?.RailShots, ProceduralSfx.RailShot());
-            _cannonExplosion = new SoundFamily(library?.CannonExplosions, ProceduralSfx.Explosion());
-            _rocketExplosion = new SoundFamily(library?.RocketExplosions, ProceduralSfx.Explosion());
-            _mineExplosion = new SoundFamily(library?.MineExplosions, ProceduralSfx.BigExplosion());
-            _gateExplosion = new SoundFamily(library?.GateExplosions, ProceduralSfx.BigExplosion());
-            _baseExplosion = new SoundFamily(library?.BaseExplosions, ProceduralSfx.BaseExplosion());
-            _towerBreak = new SoundFamily(library?.TowerBreaks, ProceduralSfx.BigExplosion());
+            _rail = new SoundFamily(library?.RailShots, ProceduralSfx.RailShot);
+            _cannonExplosion = new SoundFamily(library?.CannonExplosions, ProceduralSfx.Explosion);
+            _rocketExplosion = new SoundFamily(library?.RocketExplosions, ProceduralSfx.Explosion);
+            _mineExplosion = new SoundFamily(library?.MineExplosions, ProceduralSfx.BigExplosion);
+            _gateExplosion = new SoundFamily(library?.GateExplosions, ProceduralSfx.BigExplosion);
+            _baseExplosion = new SoundFamily(library?.BaseExplosions, ProceduralSfx.BaseExplosion);
+            _towerBreak = new SoundFamily(library?.TowerBreaks, ProceduralSfx.BigExplosion);
             _bossDeath = ProceduralSfx.BossDeath();
-            _baseAlert = new SoundFamily(library?.BaseAlerts, ProceduralSfx.BaseHit());
-            _horn = new SoundFamily(library?.WaveDrums, ProceduralSfx.WaveHorn());
+            _baseAlert = new SoundFamily(library?.BaseAlerts, ProceduralSfx.BaseHit);
+            _horn = new SoundFamily(library?.WaveDrums, ProceduralSfx.WaveHorn);
             _build = ProceduralSfx.Build();
-            _upgrade = new SoundFamily(library?.Upgrades, ProceduralSfx.Upgrade());
-            _cash = new SoundFamily(library?.Cash, ProceduralSfx.Sell());
-            _scrap = new SoundFamily(library?.ScrapPickups, ProceduralSfx.Sell());
+            _upgrade = new SoundFamily(library?.Upgrades, ProceduralSfx.Upgrade);
+            _cash = new SoundFamily(library?.Cash, ProceduralSfx.Sell);
+            _scrap = new SoundFamily(library?.ScrapPickups, ProceduralSfx.Sell);
             _repair = ProceduralSfx.Repair();
-            _blaster = new SoundFamily(library?.HeroBlasters, ProceduralSfx.HeroBlaster());
-            _saberSwing = new SoundFamily(library?.SaberSwings, ProceduralSfx.HeroStrike());
+            _blaster = new SoundFamily(library?.HeroBlasters, ProceduralSfx.HeroBlaster);
+            _saberSwing = new SoundFamily(library?.SaberSwings, ProceduralSfx.HeroStrike);
             _saberHit = new SoundFamily(library?.SaberHits);
-            _heroPulse = new SoundFamily(library?.HeroPulses, ProceduralSfx.Shockwave());
+            _heroPulse = new SoundFamily(library?.HeroPulses, ProceduralSfx.Shockwave);
             _heroStep = new SoundFamily(library?.HeroSteps);
-            _heroDeath = new SoundFamily(library?.HeroDeaths, ProceduralSfx.HeroDown());
+            _heroDeath = new SoundFamily(library?.HeroDeaths, ProceduralSfx.HeroDown);
             _heroFall = new SoundFamily(library?.HeroFalls);
             _heroRevive = ProceduralSfx.HeroRevive();
             _droneBuy = ProceduralSfx.DroneBuy();
-            _droneLaser = new SoundFamily(library?.DroneLasers, ProceduralSfx.PulseShot());
-            _structureHit = new SoundFamily(library?.StructureHits, ProceduralSfx.StructureHit());
-            _decorSmash = new SoundFamily(library?.DecorSmashes, ProceduralSfx.StructureHit());
+            _droneLaser = new SoundFamily(library?.DroneLasers, ProceduralSfx.PulseShot);
+            _structureHit = new SoundFamily(library?.StructureHits, ProceduralSfx.StructureHit);
+            _decorSmash = new SoundFamily(library?.DecorSmashes, ProceduralSfx.StructureHit);
             _freezes = new SoundFamily(library?.Freezes);
             _acid = new SoundFamily(library?.AcidSizzles);
             _saberHum = LoopVoice.Create(gameObject, library?.SaberHums);

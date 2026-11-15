@@ -30,6 +30,8 @@ MonoBehaviour:
   _projectileSpeed: 14
   _targets: 3
   _projectileStyle: 0
+  _damageType: 1
+  _armourFactor: 0.2
   _color: {r: 0.3, g: 0.7, b: 1, a: 1}
   _skin: 11
   _accentColor: {r: 0.92, g: 0.95, b: 1, a: 1}

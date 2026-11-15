@@ -329,6 +329,48 @@ namespace Game.Balance
         public float RaidHealthFloorFor(int difficulty) => RaidHealthFloor.Length == 0 ? 0f : RaidHealthFloor[System.Math.Min(difficulty, RaidHealthFloor.Length - 1)];
 
         /// <summary>
+        /// The least a level's boss is scaled to, as a multiple of its book health before the difficulty's own health factor,
+        /// Easy to Psycho (round 64, Remco: "on Hard it died before the first gate with one Cannon and one Gun Turret"). A boss
+        /// wave had one health multiplier for the boss and its crowd, and the solver and the cap sized it by the crowd: on a
+        /// crowded finale the boss came out at a third of its book health (Shard Ridge Hard: 349 hit points at wave 16, less
+        /// than on Medium; Fault Line Hard: 217). The boss now has a scale of its own on top of the wave's multiplier
+        /// (<see cref="WaveSpec.BossHealthScale"/>), never under this floor. Continent bosses are not touched; they have their
+        /// own health share and the finale probe.
+        /// </summary>
+        public float[] LevelBossHealthFloor = { 0.5f, 0.75f, 0.9f, 0.9f };
+
+        public float LevelBossHealthFloorFor(int difficulty) => LevelBossHealthFloor.Length == 0 ? 0f : LevelBossHealthFloor[System.Math.Min(difficulty, LevelBossHealthFloor.Length - 1)];
+
+        /// <summary>
+        /// What a level's walking boss at least asks on its own of the expected player with the hero, Easy to Psycho (round 64):
+        /// the ledger's pressure of its wave reduced to the boss, where one is "everything that player can deal in the boss's
+        /// walk and its stand at the gate". The boss alone is made tougher until it asks this much
+        /// (<see cref="CampaignModel.BuildWaves"/>), so a boss grows with the firepower the player has by then: on Hard it takes
+        /// two fifths of all of it, on Easy a fifth. A boss already above it is left alone, and so is a flying boss (its
+        /// pressure is the sky's, and the sky guns the ledger buys for it stay out of the purse for the rest of the level).
+        /// When the wave as a whole then asks more than the hero cap, its crowd gives way and the boss keeps its health.
+        /// </summary>
+        public float[] LevelBossAlone = { 0.2f, 0.3f, 0.4f, 0.45f };
+
+        public float LevelBossAloneFor(int difficulty) => LevelBossAlone.Length == 0 ? 0f : LevelBossAlone[System.Math.Min(difficulty, LevelBossAlone.Length - 1)];
+
+        /// <summary>
+        /// The most a boss wave may ask of the expected player with the hero once its boss has grown (round 64), Easy to Psycho;
+        /// the boss stops growing there. A boss wave must really be held (<see cref="BossWaveCap"/>): on Easy and Medium the
+        /// boss grows no further than a wave that is just held. On Hard it may go a little over, as the replays carried it:
+        /// bosses grown to the hero cap (1.25) were beaten on Hard in every cell that did not fall earlier. On Psycho the
+        /// player has nothing to spare: grown to 1.35 and again to 1.15, Shard Ridge's last boss beat the searched plans
+        /// (8 and 6 runs of 9 lost at the last wave), so a Psycho boss grows only while its wave is held. A boss wave already
+        /// above this keeps its boss as it is.
+        /// </summary>
+        public float[] LevelBossGrowthCap = { 1f, 1f, 1.15f, 1f };
+
+        public float LevelBossGrowthCapFor(int difficulty) => LevelBossGrowthCap.Length == 0 ? BossWaveCap : LevelBossGrowthCap[System.Math.Min(difficulty, LevelBossGrowthCap.Length - 1)];
+
+        /// <summary>Most a boss may grow over its floor to ask that; keeps the bisection away from a boss nothing could size.</summary>
+        public float MaxBossGrowth = 8f;
+
+        /// <summary>
         /// The Easy raid rule (the curator, round 22f): on Easy the first air raid comes no earlier than the wave by which the
         /// expected player's kills have paid for the cheapest owned sky gun, plus this many waves; a player who owns no sky gun
         /// gets no raid. <see cref="CampaignModel.EasyRaidFloor"/> derives the floor from the ledger's purse walk at every solve.

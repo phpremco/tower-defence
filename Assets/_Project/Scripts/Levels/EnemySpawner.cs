@@ -97,6 +97,9 @@ namespace Game.Levels
         /// <summary>Health scale of the wave under way, set by the controller; minions a boss releases inherit it.</summary>
         public float WaveHealthScale { get; set; } = 1f;
 
+        /// <summary>The current wave's level boss health on top of <see cref="WaveHealthScale"/> (WaveDefinition.BossHealthScale); a continent boss does not take it.</summary>
+        public float WaveBossHealthScale { get; set; } = 1f;
+
         /// <summary>Advances what the spawner runs between spawns: the slime on the road. Called once per frame.</summary>
         public void Step(float deltaTime)
         {
@@ -399,7 +402,7 @@ namespace Game.Levels
             enemy.Initialize(
                 definition,
                 route,
-                difficulty.HealthMultiplier * _context.Level.EnemyHealthScale * WaveHealthScale * (definition.Boss != null ? difficulty.BossHealthShare * definition.Boss.HealthOn(difficulty.name) : 1f),
+                difficulty.HealthMultiplier * _context.Level.EnemyHealthScale * WaveHealthScale * (definition.IsBoss && definition.Boss == null ? WaveBossHealthScale : 1f) * (definition.Boss != null ? difficulty.BossHealthShare * definition.Boss.HealthOn(difficulty.name) : 1f),
                 1f,
                 height,
                 _context.Targets,

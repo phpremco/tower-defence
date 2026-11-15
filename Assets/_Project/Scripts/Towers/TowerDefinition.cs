@@ -29,7 +29,10 @@ namespace Game.Towers
         [SerializeField] [Range(0f, 1f)] private float _groundDamageFactor = 1f;
         [SerializeField] [Range(0f, 1f)] private float _airDamageFactor = 1f;
 
-        [Tooltip("Share of a hit that works on a creature's armour while it has any: one for a heavy shell that strips it point for point, a fraction for light fire that only chips it (round 24).")]
+        [Tooltip("What the damage is made of. Armour reduces everything that neither explodes nor pierces (round 64).")]
+        [SerializeField] private DamageType _damageType = DamageType.Explosive;
+
+        [Tooltip("Share of a hit that works on a creature's armour while it has any: one for a heavy shell that strips it point for point, a fraction for light fire that only chips it (round 24). Written from the sheet's table per damage type.")]
         [SerializeField] [Range(0.05f, 2f)] private float _armourFactor = 1f;
 
         /// <summary>
@@ -104,6 +107,9 @@ namespace Game.Towers
         public float GroundDamageFactor => _groundDamageFactor;
         public float AirDamageFactor => _airDamageFactor;
 
+        /// <summary>What the damage is made of: armour reduces every type that neither explodes nor pierces.</summary>
+        public DamageType DamageType => _damageType;
+
         /// <summary>Share of a hit that works on armour while the creature has any (Health.TakeDamage); light fire sits well under one.</summary>
         public float ArmourFactor => _armourFactor;
 
@@ -167,6 +173,11 @@ namespace Game.Towers
             if (((_targets & TargetLayers.Ground) != 0 && _groundDamageFactor <= 0f) || ((_targets & TargetLayers.Air) != 0 && _airDamageFactor <= 0f))
             {
                 Debug.LogWarning($"TowerDefinition '{name}' aims at a layer it deals no damage to: drop the layer from its targets instead.", this);
+            }
+
+            if (!_isSupport && !DamageTypeRule.Agrees(_damageType, _armourFactor))
+            {
+                Debug.LogWarning($"TowerDefinition '{name}': {DamageTypeRule.Describe(_damageType)} (it is {_armourFactor}).", this);
             }
         }
     }

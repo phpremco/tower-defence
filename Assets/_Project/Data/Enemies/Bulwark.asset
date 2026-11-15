@@ -15,10 +15,10 @@ MonoBehaviour:
   _displayName: Bulwark
   _layer: 1
   _flies: 0
-  _maxHealth: 380
-  _armor: 180
+  _maxHealth: 155
+  _armor: 405
   _speed: 0.7
-  _reward: 40
+  _reward: 43
   _baseDamage: 5
   _element: 0
   _attackStyle: 5

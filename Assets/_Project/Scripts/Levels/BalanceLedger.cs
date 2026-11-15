@@ -334,6 +334,7 @@ namespace Game.Levels
                     Cost = drone.Cost,
                     Dps = drone.FireInterval > 0f ? drone.Damage / drone.FireInterval : 0f,
                     Targets = (int)drone.Targets,
+                    ArmourFactor = drone.ArmourFactor,
                     RepairPerSecond = drone.RepairPerSecond,
                 });
             }
@@ -499,7 +500,7 @@ namespace Game.Levels
         /// <summary>A stored wave as the model reads it, with the creatures from the model's own table.</summary>
         public static WaveSpec Spec(WaveDefinition wave, IDictionary<string, EnemyStats> enemies)
         {
-            var spec = new WaveSpec { StartDelay = wave.StartDelay, HealthMultiplier = wave.HealthMultiplier };
+            var spec = new WaveSpec { StartDelay = wave.StartDelay, HealthMultiplier = wave.HealthMultiplier, BossHealthScale = wave.BossHealthScale };
             foreach (SpawnGroup group in wave.Groups)
             {
                 if (group.Enemy == null)

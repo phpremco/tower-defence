@@ -12,6 +12,16 @@ namespace Game.Levels
     /// </summary>
     public static class LevelVisualBuilder
     {
+        // How far the build is after each of its steps, for a loading screen's progress (shares of its time as measured on
+        // Shard Ridge, round 64; a level with other scenery only moves the bar unevenly).
+        private const float FieldShare = 0.37f;
+        private const float SurfaceShare = 0.51f;
+        private const float LiquidShare = 0.6f;
+        private const float PropShare = 0.82f;
+        private const float KitShare = 0.93f;
+        private const float MistShare = 0.95f;
+        private const float MarkerShare = 0.97f;
+        private const float OriginShare = 0.99f;
         private const float ArrowEmission = 2.2f;
         private const float ArrowHeight = 0.07f;
         private const float RouteDotSpacing = 0.9f;
@@ -89,51 +99,37 @@ namespace Game.Levels
         /// <param name="dressingOnly">Only the landscape, mist and stars: no road arrows, gates, base, flight routes, mining nodes or nests. For cutscenes that stage the field themselves.</param>
         public static Dictionary<int, GameObject> Build(LevelDefinition level, Transform parent, float particleScale = 1f, bool groundMist = true, bool dressingOnly = false)
         {
+            var routes = new Dictionary<int, GameObject>();
+            IEnumerator<float> steps = BuildInSteps(level, parent, routes, particleScale, groundMist, dressingOnly);
+            while (steps.MoveNext())
+            {
+            }
+
+            return routes;
+        }
+
+        /// <summary>
+        /// The same build cut into steps, for a loading screen that draws a frame between them (round 64: the whole build in
+        /// one frame froze the game for seconds). Each step yields the share of the build that is done, from 0 to 1;
+        /// <paramref name="routes"/> is filled by the step that makes the markers. Nothing built here needs the level's
+        /// gameplay, so frames may pass between the steps.
+        /// </summary>
+        public static IEnumerator<float> BuildInSteps(LevelDefinition level, Transform parent, Dictionary<int, GameObject> routes, float particleScale = 1f, bool groundMist = true, bool dressingOnly = false)
+        {
             VisualTheme theme = level.Theme;
             GridMap grid = level.Grid;
 
             // The imported environment (kit, decor, burrows) is drawn instanced; a theme without a set builds none.
             EnvironmentInstancer instancer = theme.Environment != null ? EnvironmentInstancer.Create(parent) : null;
-            TerrainField field = BuildLandscape(level, theme, parent, particleScale, instancer);
-            if (theme.Mist != null)
-            {
-                GroundMistBuilder.Build(level, theme.Mist, parent, !groundMist || ModelQuality.IsLow);
-            }
-            else if (groundMist)
-            {
-                GroundMistBuilder.Build(level, theme, parent);
-            }
-
-            if (dressingOnly)
-            {
-                instancer?.Finish();
-                BuildStarfield(parent, level.WorldSize);
-                return new Dictionary<int, GameObject>();
-            }
-
-            BuildRoadArrows(level, field, parent);
-            Dictionary<int, GameObject> routes = BuildMarkers(level, theme, grid, parent);
-            BuildMiningNodes(level, grid, parent);
-            BuildNests(level, grid, parent, instancer);
-            BuildColonyRig(level, theme, field, parent);
-            if (instancer != null)
-            {
-                instancer.Finish();
-                instancer.UseRemains(theme.Environment, ModelQuality.IsLow);
-                instancer.gameObject.AddComponent<BuildPadHighlight>().Initialize(level);
-            }
-
-            BuildStarfield(parent, level.WorldSize);
-            return routes;
-        }
-
-        private static TerrainField BuildLandscape(LevelDefinition level, VisualTheme theme, Transform parent, float particleScale, EnvironmentInstancer instancer)
-        {
             var road = new RoadShape(level);
             var field = new TerrainField(level, road);
+            yield return FieldShare;
             TerrainSurfaceBuilder.Build(level, theme, field, road, parent);
+            yield return SurfaceShare;
             TerrainLiquidBuilder.Build(level, theme, parent, field, particleScale);
+            yield return LiquidShare;
             PropScatterBuilder.Build(level, theme, field, parent, instancer);
+            yield return PropShare;
             if (instancer != null)
             {
                 EnvironmentSet set = theme.Environment;
@@ -143,8 +139,46 @@ namespace Game.Levels
                 instancer.LeaveOutBuriedBrittle();
             }
 
+            yield return KitShare;
             AmbientParticlesBuilder.Build(level, theme, parent, particleScale);
-            return field;
+            if (theme.Mist != null)
+            {
+                GroundMistBuilder.Build(level, theme.Mist, parent, !groundMist || ModelQuality.IsLow);
+            }
+            else if (groundMist)
+            {
+                GroundMistBuilder.Build(level, theme, parent);
+            }
+
+            yield return MistShare;
+            if (dressingOnly)
+            {
+                instancer?.Finish();
+                BuildStarfield(parent, level.WorldSize);
+                yield return 1f;
+                yield break;
+            }
+
+            BuildRoadArrows(level, field, parent);
+            foreach (KeyValuePair<int, GameObject> route in BuildMarkers(level, theme, grid, parent))
+            {
+                routes[route.Key] = route.Value;
+            }
+
+            yield return MarkerShare;
+            BuildMiningNodes(level, grid, parent);
+            BuildNests(level, grid, parent, instancer);
+            BuildColonyRig(level, theme, field, parent);
+            yield return OriginShare;
+            if (instancer != null)
+            {
+                instancer.Finish();
+                instancer.UseRemains(theme.Environment, ModelQuality.IsLow);
+                instancer.gameObject.AddComponent<BuildPadHighlight>().Initialize(level);
+            }
+
+            BuildStarfield(parent, level.WorldSize);
+            yield return 1f;
         }
 
         // The flora sway in the environment shader reads the set's wind from shader globals.

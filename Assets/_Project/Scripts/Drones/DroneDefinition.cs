@@ -62,6 +62,12 @@ namespace Game.Drones
         [SerializeField] private TargetLayers _targets = TargetLayers.Ground | TargetLayers.Air;
         [SerializeField] private ProjectileStyle _projectileStyle = ProjectileStyle.Bolt;
 
+        [Tooltip("What the attack drone's shots are made of: bullets, which armour reduces (round 64).")]
+        [SerializeField] private DamageType _damageType = DamageType.Bullet;
+
+        [Tooltip("Share of a shot that works on a creature's armour while it has any, from the sheet's table per damage type. Until round 64 the drone's shots ignored armour.")]
+        [SerializeField] [Range(0.05f, 2f)] private float _armourFactor = 0.2f;
+
         [Header("Look")]
         [SerializeField] private Color _color = new Color(0.4f, 0.9f, 1f);
 
@@ -90,6 +96,10 @@ namespace Game.Drones
         public float ProjectileSpeed => _projectileSpeed;
         public TargetLayers Targets => _targets;
         public ProjectileStyle ProjectileStyle => _projectileStyle;
+        public DamageType DamageType => _damageType;
+
+        /// <summary>Share of a shot that works on armour while the creature has any (Health.TakeDamage).</summary>
+        public float ArmourFactor => _armourFactor;
         public Color Color => _color;
         public CreatureSkin.Kind Skin => _skin;
         public Color AccentColor => _accentColor;
@@ -100,6 +110,11 @@ namespace Game.Drones
             if (string.IsNullOrWhiteSpace(_role) || _role.Length > MaxRoleLength)
             {
                 Debug.LogWarning($"Drone '{name}' needs a role of 1 to {MaxRoleLength} letters for its card, not '{_role}'.", this);
+            }
+
+            if (_kind == DroneKind.Attack && !DamageTypeRule.Agrees(_damageType, _armourFactor))
+            {
+                Debug.LogWarning($"Drone '{name}': {DamageTypeRule.Describe(_damageType)} (it is {_armourFactor}).", this);
             }
 
             if (string.IsNullOrWhiteSpace(_summary))

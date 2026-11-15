@@ -278,6 +278,14 @@ namespace Game.Balance
         public readonly List<GroupSpec> Groups = new List<GroupSpec>();
         public float StartDelay = 8f;
         public float HealthMultiplier = 1f;
+
+        /// <summary>
+        /// The health of the wave's bosses on top of <see cref="HealthMultiplier"/> (round 64). One multiplier for the whole
+        /// wave made a boss as feeble as the crowd it walked in with: where the cap trimmed a crowded boss wave to a third, the
+        /// boss came out at a third of its book health and fell to two guns. The calibration gives a level's boss a floor and
+        /// sizes it against the player's firepower (<see cref="BalanceRules.LevelBossHealthFloor"/>, <see cref="BalanceRules.LevelBossAlone"/>).
+        /// </summary>
+        public float BossHealthScale = 1f;
     }
 }
 
@@ -321,6 +329,9 @@ namespace Game.Balance
         public int Cost;
         public float Dps;
         public int Targets = Layer.Ground;
+
+        /// <summary>Share of an attack drone's shot that works on armour (DroneDefinition.ArmourFactor); its shots ignored armour until round 64.</summary>
+        public float ArmourFactor = 1f;
 
         /// <summary>Hit points a repair drone restores per second while it works on a structure (DroneDefinition.RepairPerSecond).</summary>
         public float RepairPerSecond;

@@ -56,6 +56,9 @@ namespace Game.Balance
         private const int CapRefinements = 8;
         private const int CapSweeps = 4;
 
+        /// <summary>Times the bosses are sized; between two sizings the waves are trimmed again around them.</summary>
+        private const int BossPasses = 2;
+
         public readonly List<CampaignLevel> Levels = new List<CampaignLevel>();
         public readonly List<LevelFacts> Facts = new List<LevelFacts>();
         public readonly Dictionary<string, TowerStats> Towers = new Dictionary<string, TowerStats>();
@@ -152,21 +155,21 @@ namespace Game.Balance
             var sets = new List<List<WaveSpec>>();
             for (int d = 0; d < Difficulties.Count; d++)
             {
-                float[] own = SolveDifficulty(levelIndex, script, d, medium, healths);
+                float[] own = SolveDifficulty(levelIndex, script, d, medium, healths, out float[] bossScales);
                 if (d == EasyDifficulty)
                 {
                     // The Easy raid rule (the curator, round 22f): the first raid waits until the expected player's kills have paid for
                     // a sky gun, plus a wave. Judged on the waves as solved; when it moves the raids, Easy is solved again with them moved.
                     int first = WaveComposer.FirstAirWave(script, d);
-                    int floor = EasyRaidFloor(levelIndex, ComposedWaves(script, d, own, facts.SecondRoad));
+                    int floor = EasyRaidFloor(levelIndex, ComposedWaves(script, d, own, facts.SecondRoad, bossScales));
                     if (first != int.MaxValue && floor > first)
                     {
                         script.FirstAirWaveFloor = FloorPerDifficulty(floor);
-                        own = SolveDifficulty(levelIndex, script, d, medium, healths);
+                        own = SolveDifficulty(levelIndex, script, d, medium, healths, out bossScales);
                     }
                 }
 
-                sets.Add(ComposedWaves(script, d, own, facts.SecondRoad));
+                sets.Add(ComposedWaves(script, d, own, facts.SecondRoad, bossScales));
             }
 
             return sets;
@@ -234,21 +237,171 @@ namespace Game.Balance
             return floors;
         }
 
-        private float[] SolveDifficulty(int levelIndex, WaveScriptSpec script, int d, int medium, float[] healths)
+        // The solver's multipliers of one difficulty, trimmed to the human curve, and the bosses' own scales (round 64; null when
+        // the model does not calibrate). The bosses are sized on the trimmed waves, the waves are trimmed once more around the
+        // bosses as sized (a tougher boss costs kill money and so shifts the waves after it), and the bosses are sized again.
+        private float[] SolveDifficulty(int levelIndex, WaveScriptSpec script, int d, int medium, float[] healths, out float[] bossScales)
         {
-            float[] own = d == medium ? healths : WaveSolver.SolveVariant(script, Enemies, ReferenceInputFor(levelIndex, d), Difficulties[d], healths, Facts[levelIndex].SecondRoad, Rules);
-            return Rules.CalibrateToHuman ? CalibrateToHuman(levelIndex, script, d, own, Facts[levelIndex].SecondRoad) : own;
+            int secondRoad = Facts[levelIndex].SecondRoad;
+            float[] solved = d == medium ? healths : WaveSolver.SolveVariant(script, Enemies, ReferenceInputFor(levelIndex, d), Difficulties[d], healths, secondRoad, Rules);
+            bossScales = null;
+            if (!Rules.CalibrateToHuman)
+            {
+                return solved;
+            }
+
+            float[] own = CalibrateToHuman(levelIndex, script, d, solved, secondRoad, null);
+            for (int pass = 0; pass < BossPasses; pass++)
+            {
+                bossScales = SizeBosses(levelIndex, script, d, own, secondRoad);
+                if (pass == BossPasses - 1 || !Resized(bossScales))
+                {
+                    break;
+                }
+
+                var bossHealths = new float[own.Length];
+                for (int i = 0; i < own.Length; i++)
+                {
+                    bossHealths[i] = own[i] * bossScales[i];
+                }
+
+                own = CalibrateToHuman(levelIndex, script, d, solved, secondRoad, bossHealths);
+            }
+
+            return own;
         }
 
-        private List<WaveSpec> ComposedWaves(WaveScriptSpec script, int d, float[] healths, int secondRoad)
+        private static bool Resized(float[] bossScales)
+        {
+            foreach (float scale in bossScales)
+            {
+                if (scale != 1f)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private List<WaveSpec> ComposedWaves(WaveScriptSpec script, int d, float[] healths, int secondRoad, float[] bossScales = null)
         {
             var waves = new List<WaveSpec>(script.Waves);
             for (int i = 0; i < script.Waves; i++)
             {
-                waves.Add(Composed(script, d, i, healths[i], secondRoad));
+                WaveSpec wave = Composed(script, d, i, healths[i], secondRoad);
+                wave.BossHealthScale = bossScales != null ? bossScales[i] : 1f;
+                waves.Add(wave);
             }
 
             return waves;
+        }
+
+        /// <summary>
+        /// The health of the bosses of every wave on top of the wave's multiplier, one per wave, as the assets store it (one
+        /// for a wave without a level boss). A level's boss is never scaled under <see cref="BalanceRules.LevelBossHealthFloor"/>;
+        /// a walking boss that then asks less on its own than <see cref="BalanceRules.LevelBossAlone"/> grows until it does; and
+        /// where its wave as a whole then asks more than the hero cap, the crowd of that wave is trimmed
+        /// (<paramref name="healths"/> changes for it) while the boss keeps its health.
+        /// </summary>
+        private float[] SizeBosses(int levelIndex, WaveScriptSpec script, int difficulty, float[] healths, int secondRoad)
+        {
+            var scales = new float[healths.Length];
+            for (int i = 0; i < scales.Length; i++)
+            {
+                scales[i] = 1f;
+            }
+
+            DifficultyStats stats = Difficulties[difficulty];
+            BalanceRules withHero = Rules.HumanWithHero();
+            LevelInput input = InputFor(levelIndex, difficulty);
+            float floor = Rules.LevelBossHealthFloorFor(difficulty);
+            float alone = Rules.LevelBossAloneFor(difficulty);
+            float cap = Rules.HeroCapFor(difficulty);
+
+            // What one wave asks, as stored or reduced to its bosses.
+            float Pressure(int index, bool bossOnly)
+            {
+                List<WaveSpec> waves = ComposedWaves(script, difficulty, healths, secondRoad, scales);
+                if (bossOnly)
+                {
+                    WaveSpec whole = waves[index];
+                    var only = new WaveSpec { StartDelay = whole.StartDelay, HealthMultiplier = whole.HealthMultiplier, BossHealthScale = whole.BossHealthScale };
+                    only.Groups.AddRange(whole.Groups.FindAll(g => g.Enemy.IsBoss));
+                    waves[index] = only;
+                }
+
+                return Ledger.Evaluate(input, waves, stats, withHero)[index].Pressure;
+            }
+
+            for (int i = 0; i < healths.Length; i++)
+            {
+                BossSpec boss = WaveComposer.BossOn(script, difficulty, i + 1);
+                if (boss == null || !Enemies.TryGetValue(boss.Enemy, out EnemyStats enemy) || !enemy.IsBoss || enemy.IsContinentBoss)
+                {
+                    continue;
+                }
+
+                int wave = i;
+                scales[wave] = (float)Math.Round(Math.Max(1f, floor / Math.Max(0.001f, healths[wave])), 3);
+                if (!enemy.Flies && alone > 0f && Pressure(wave, true) < alone)
+                {
+                    float from = scales[wave];
+                    double growth = Bisect(logGrowth =>
+                    {
+                        scales[wave] = from * (float)Math.Exp(logGrowth);
+                        return Pressure(wave, true);
+                    }, alone, 0d, Math.Log(Rules.MaxBossGrowth));
+                    scales[wave] = (float)Math.Round(from * growth, 3);
+                    // A boss that reaches the base ends the level in seconds, so it grows only as far as its wave still fits
+                    // BalanceRules.LevelBossGrowthCap; grown to the hero cap it lost every searched plan Shard Ridge Psycho's last
+                    // wave (round 64).
+                    float held = Math.Min(cap, Rules.LevelBossGrowthCapFor(difficulty));
+                    if (scales[wave] > from && Pressure(wave, false) > held)
+                    {
+                        float grown = scales[wave];
+                        scales[wave] = (float)Math.Round(BossScaleUnder(scale =>
+                        {
+                            scales[wave] = scale;
+                            return Pressure(wave, false);
+                        }, held, from, grown), 3);
+                    }
+                }
+
+                if (scales[wave] <= 1f || Pressure(wave, false) <= cap)
+                {
+                    continue;
+                }
+
+                // The boss is tougher than the wave had room for: its crowd gives way, the boss keeps its health.
+                float crowd = healths[wave];
+                float bossHealth = crowd * scales[wave];
+                float kept = CapScale(scale =>
+                {
+                    healths[wave] = crowd * scale;
+                    scales[wave] = bossHealth / healths[wave];
+                    return Pressure(wave, false);
+                }, cap);
+                healths[wave] = (float)Math.Round(crowd * kept, 3);
+                scales[wave] = (float)Math.Round(bossHealth / healths[wave], 3);
+                float least = Math.Max(1f, floor / Math.Max(0.001f, healths[wave]));
+                if (Pressure(wave, false) <= cap || scales[wave] <= least)
+                {
+                    continue;
+                }
+
+                // The crowd cannot give way any further (what an earlier wave left on the road is not this wave's to trim): the
+                // boss comes down again, never under its floor, until the wave fits. A boss stays killable.
+                float tough = scales[wave];
+                float fits = BossScaleUnder(scale =>
+                {
+                    scales[wave] = scale;
+                    return Pressure(wave, false);
+                }, cap, least, tough);
+                scales[wave] = (float)Math.Round(fits, 3);
+            }
+
+            return scales;
         }
 
         // A wave as the generator stores it: composed, on the clock the assets carry (the first wave's longer countdown included), so
@@ -287,7 +440,8 @@ namespace Game.Balance
         /// difficulty's <see cref="BalanceRules.HeroCap"/>: a boss wave or a spike above it is softened on its own (bosses keep
         /// their high health but stay killable), and the other waves are trimmed again so the plain mean stays on the curve.
         /// </remarks>
-        private float[] CalibrateToHuman(int levelIndex, WaveScriptSpec script, int difficulty, float[] healths, int secondRoad)
+        /// <param name="bossHealths">Per wave the health multiplier its bosses carry whatever the trim makes of the wave (round 64), or null: the bosses follow their wave.</param>
+        private float[] CalibrateToHuman(int levelIndex, WaveScriptSpec script, int difficulty, float[] healths, int secondRoad, float[] bossHealths)
         {
             BalanceRules human = Rules.HumanTowersOnly();
             BalanceRules withHero = Rules.HumanWithHero();
@@ -304,10 +458,31 @@ namespace Game.Balance
                 var waves = new List<WaveSpec>(script.Waves);
                 for (int i = 0; i < script.Waves; i++)
                 {
-                    waves.Add(Composed(script, difficulty, i, health[i], secondRoad));
+                    WaveSpec wave = Composed(script, difficulty, i, health[i], secondRoad);
+                    wave.BossHealthScale = bossHealths != null && health[i] > 0f ? bossHealths[i] / health[i] : 1f;
+                    waves.Add(wave);
                 }
 
                 return Ledger.Evaluate(input, waves, stats, rules);
+            }
+
+            // Round 64: a wave can stay over the cap through what the wave before it left on the road (a slow, armoured creature
+            // arrives with the next wave, KillPurse.Carried), and no trim of its own creatures brings it down (Fault Line Hard
+            // wave 10: a Cragback of wave 9). Then the wave before it gives way, unless it is a raid held on its floor.
+            void GiveWayBefore(int wave)
+            {
+                if (wave <= 0 || Evaluate(trimmed, withHero)[wave].Pressure <= cap || (raidFloor > 0f && WaveComposer.KindOf(script, difficulty, wave) == WaveComposer.Kind.Air))
+                {
+                    return;
+                }
+
+                float before = trimmed[wave - 1];
+                trimmed[wave - 1] = before * CapScale(scale =>
+                {
+                    trimmed[wave - 1] = before * scale;
+                    return Evaluate(trimmed, withHero)[wave].Pressure;
+                }, cap);
+                capped[wave - 1] = true;
             }
 
             for (int pass = 0; pass < CalibrationPasses; pass++)
@@ -354,6 +529,7 @@ namespace Game.Balance
                         return Evaluate(trimmed, withHero)[wave].Pressure;
                     }, cap);
                     capped[i] = true;
+                    GiveWayBefore(wave);
                 }
             }
 
@@ -379,6 +555,7 @@ namespace Game.Balance
                         return Evaluate(trimmed, withHero)[wave].Pressure;
                     }, cap);
                     capped[i] = true;
+                    GiveWayBefore(wave);
                     lines = Evaluate(trimmed, withHero);
                 }
 
@@ -395,6 +572,32 @@ namespace Game.Balance
             }
 
             return trimmed;
+        }
+
+        // The largest boss scale between its floor and what it grew to that keeps its wave under the cap; the floor when none does.
+        private static float BossScaleUnder(Func<float, float> pressure, float cap, float least, float grown)
+        {
+            if (pressure(least) > cap)
+            {
+                return least;
+            }
+
+            float below = least;
+            float above = grown;
+            for (int i = 0; i < CalibrationIterations; i++)
+            {
+                float mid = (below + above) * 0.5f;
+                if (pressure(mid) <= cap)
+                {
+                    below = mid;
+                }
+                else
+                {
+                    above = mid;
+                }
+            }
+
+            return below;
         }
 
         // The largest scale of one wave's health (at most one) that brings its pressure under the cap. A wave's own health is

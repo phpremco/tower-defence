@@ -32,7 +32,7 @@ namespace Game.Editor
         {
             HeroWeaponDefinition sword = CreateHeroWeapon("EnergySword", "Energy sword", HeroWeaponKind.Melee, HeroWeaponStyle.EnergySword, 18f, 1.5f, 0.7f, TargetLayers.Ground, new Color(0.3f, 0.95f, 1f));
             // The sidearm: the damage of a level-one pulse rifle, so the hero is worth one simple turret at range.
-            HeroWeaponDefinition blaster = CreateHeroWeapon("Blaster", "Blaster", HeroWeaponKind.Ranged, HeroWeaponStyle.Blaster, 4f, 3.5f, BlasterInterval, TargetLayers.Ground | TargetLayers.Air, new Color(1f, 0.6f, 0.25f), LightFireArmourFactor);
+            HeroWeaponDefinition blaster = CreateHeroWeapon("Blaster", "Blaster", HeroWeaponKind.Ranged, HeroWeaponStyle.Blaster, 4f, 3.5f, BlasterInterval, TargetLayers.Ground | TargetLayers.Air, new Color(1f, 0.6f, 0.25f));
             var gun = new SerializedObject(blaster);
             gun.FindProperty("_magazine").intValue = BlasterMagazine;
             gun.FindProperty("_reloadSeconds").floatValue = BlasterReload;
@@ -80,6 +80,7 @@ namespace Game.Editor
             so.FindProperty("_targets").intValue = (int)(TargetLayers.Ground | TargetLayers.Air);
             so.FindProperty("_tint").colorValue = tint;
             so.FindProperty("_description").stringValue = description;
+            StampDamage(so, $"Hero/Abilities/{id}");
             so.ApplyModifiedPropertiesWithoutUndo();
             return ability;
         }

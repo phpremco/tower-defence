@@ -74,7 +74,7 @@ visible pool. They are background, never the loudest thing in a level.
 | Drone fan, repair, harvest, laser, cash | drone list: alive count, `Activity`, `Fired`, `Delivered` |
 | Hero gun, saber, steps, abilities, death, fall | `Commander.Struck` (weapon kind), walking distance, `AbilityUsed` (the ability's own `SoundSet`, else the pulse for a shockwave and the repair chime), `Downed` |
 | Creature loop, steps, roll | distance travelled per frame (`PathProgress`), `IsRolling` |
-| Species loop presence | `CreatureVoice._presence` multiplies the loop level of one species (Wisp 2, Core Wisp 1.5): a hum needs more than legs |
+| Species loop presence | `CreatureVoice._presence` multiplies the loop level of one species (Wisp 1, Core Wisp 0.4 since round 64: their loop is static, and at 3 and 2 it read as a loud hiss; the Roller keeps 7): a hum may need more than legs |
 | Creature attack and impact | `Enemy.Attacked`; impact scheduled after range / bolt speed |
 | Creature death, boss growl | `EnemyKilled`, `EnemySpawned` (boss) |
 | Boss powers | `BossAbilities` events per boss instance (pulse, volley, rally, regrow, spawn, laser) |

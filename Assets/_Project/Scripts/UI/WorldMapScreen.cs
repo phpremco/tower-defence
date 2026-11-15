@@ -1119,8 +1119,7 @@ namespace Game.UI
 
         private static void StartLevel(LevelDefinition level, DifficultyProfile difficulty, IReadOnlyList<PathObjectDefinition> loadout)
         {
-            Services.Register(new LevelSession(level, difficulty, true, loadout));
-            Go(SceneNames.Level);
+            LevelLoader.Begin(level, difficulty, loadout);
         }
 
         // ---- helpers ---------------------------------------------------------------------------------------------

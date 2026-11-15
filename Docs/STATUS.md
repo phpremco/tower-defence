@@ -9691,3 +9691,363 @@ effects volume, pauses with the game). The plumes share the cutscene's ExhaustPl
 3. The angry line is held open by the dialogue like every other line; with auto-advance it reads for its own length.
 4. The base pad changes the drawn ground round every level's base (no gameplay cell changes; the road is untouched).
 5. The shuttle roar plays 2D at 0.2; with several bases on screen in a later mode it should become spatial.
+
+## Round 64: Remco's second playtest (the loading screen, the field stops at the end, the Core Wisp's static, one armour rule for every weapon, level bosses sized on their own) (2026-11-15)
+
+Not committed (the curator commits). No full generator run: `Tools/PlayTest/Scripts/ApplyRound64.cs` (damage types and armour
+factors, the armoured troops, the wisp voices, the music import) and the solve stage (`ApplyWaves.cs`) write what the changed
+generator now would. `ArtSource/Exports` and `Tools/Blender` untouched, no Blender, no packages, the Game view's resolution
+untouched. Remco's save `progress.json` (MD5 **463303aa28769c0934c10dc303967162** at the start) was copied aside before every
+Play Mode run in the editor and restored after; identical after each run and at the end (`Tools/PlayTest/r64_save_md5.txt`);
+the dev backup untouched. Editor play runs strictly one after another, each harness waiting on the one before; the pipeline's
+PlayMode stages on the five worker clones (w1-w5), EditMode on the spare clone w6. Tables and the model: Docs/BALANCE.md
+"Round 64"; commands: Docs/COMMANDS.md "Round 64".
+
+### 1. The loading screen (`Game.UI.LevelLoader`, `LoadingScreen`, `LoadingProgress`, `LoadingTips`, `LoadingArt`, `ILevelLoadProgress`)
+
+**The freeze, measured** (`r64_hitch.sh`, Shard Ridge on Easy from the menu, real time per frame): choosing a difficulty loaded
+the Level scene and built the whole level in **one frame of 3165 ms**. Where it went (stopwatch marks in the bootstrapper):
+1.6 s decoding the two music loops whole the first time they played (30 MB of Vorbis each, "decompress on load"), 0.7 s
+synthesising the generated score and some forty generated sound effects that are then never played because the recordings
+exist, 0.5 s the terrain field, 0.3 s the props, 0.2 s each for the surface, the gates and the HUD.
+
+**What changed.**
+- Every way into a level that is not a cut of its own (the map, "Play again", the pause menu's restart, a practice fight)
+  goes through `LevelLoader`: the screen fades in over 0.3 s, the scene is loaded in the background once the screen covers
+  everything, the level is built **a step a frame** behind it (`LevelBootstrapper.Build`, `LevelVisualBuilder.BuildInSteps`:
+  setup, terrain field, surface, liquids, props, environment kit, mist, markers, origins, sound, gameplay; each reports its
+  share), and the screen fades out over 0.45 s once the bar is full and four frames in a row ran under 50 ms (at most 2 s).
+  No hard cut either way; a long frame cannot turn a fade into a cut (the fade moves at most 1/30 s a frame). A level loaded
+  directly (tests, probes, the cutscene's handoff) is built in one frame as before.
+- The waste is gone rather than hidden: the music loops **stream** (`ProjectGenerator.ApplyMusicImport`; also the menu's loop),
+  the generated fallbacks are only synthesised when a recording is missing (`SoundFamily(set, Func<AudioClip>)`,
+  `MusicPlayer.Recorded`), and the generated ambience bed is made on a step of its own.
+- The look: the menu's painted night sky, the planet's limb painted in code from the level's `VisualTheme` (ground and accent
+  colours, a night side, a rim of air) with two scan rings turning round it, "DEPLOYING TO", the level's name, its continent
+  and the difficulty, one line of Dr. Voss's advice and a thin bar with a light riding its end and a percentage. The advice is
+  the closing line of the story's own scan hints and gate tips (`LoadingTips`, no new copy); hints about creatures the level
+  sends on that difficulty come first and the screen opens on one of those; a new line fades in every 5.5 s.
+- Nothing on it can be pressed, so it needs no focus: it swallows clicks, drops the focus of the button that started the load
+  (a second Confirm cannot start it twice; `LevelLoader.Busy`), and runs on unscaled time. It uses the game's scaled canvas
+  and safe frame, with 96 px of its own at the sides (the safe frame adds nothing on a monitor).
+
+**Measured after** (the same run, `Logs/r64/hitch_after_c103_easy.txt`; in the editor with the tools attached, so a build is
+faster on both sides):
+
+| Shard Ridge, Easy, from the menu | Before | After |
+| --- | --- | --- |
+| Longest frame | **3165 ms** (the whole load, the map frozen) | **798 ms** (the gameplay step, behind the screen; 606 ms in an earlier run) |
+| Frames over 50 ms | 1 | 11: the click 85 + 111 ms, the scene 70, terrain field 510, surface 209, liquids 115, props 304, kit 154, sound 70, gameplay 798, first level frame 57 |
+| Level ready after the click | 3.17 s (nothing on screen moves) | 2.76 s (0.3 s of it the fade in) |
+| Loading screen gone | - | 3.33 s |
+
+Honest reading: the freeze became a loading screen, and the load itself is a little shorter, but the screen is not smooth all
+the way: the terrain field (0.5 s) and the gameplay step (0.6-0.8 s: gates and base turrets 0.2, sounds 0.15, HUD 0.14) are
+still single frames in which the rings and the bar stand still. The bar itself eases, so it never jumps, and fills at once
+when the load is done. Cutting those two steps further means building the gameplay over several frames, which changes the
+order things wake up in; not done in this round.
+
+Stills (`ArtSource/Previews/QA/`, rendered off-screen with the interface at 1920x1080, `_720` at 1280x720; stepped frames):
+`r64_loading_1_fade_in` (+`_x2`: the map under the screen at 18 %), `_2_covered`, `_3_mid` (+`_720`, `_title_x2`, `_tip_x2`,
+`_bar_x2`, `_planet_x2`), `_4_late` (100 %, the next tip), `_5_after` (the level, the screen gone). What I see in the x2
+crops: the title and the tip are clean and as readable at 720p as at 1080p; the bar starts and ends in a soft light (its
+square start in the first pass is gone); the planet's limb is clean and nothing ends on a hard edge. Weak: the planet is
+soft (384 px drawn at 980) and its cloud bands are low in contrast, grey-violet on Shard Ridge's palette, so it reads as
+"a planet" more than as this level's place; the rings are faint; the small labels are 19 px at 720p.
+
+### 2. The field stops when the level is over (`ResultView.Freeze`)
+
+The result panel reset the clock to normal speed and the level played on behind it. Now the clock winds down to zero over
+0.5 s (real time, smoothstep) the moment the panel appears, on a win and on a defeat: creatures, towers, shots, drones,
+particles and every timer run on game time, so they all stop; the panel, its stars and its buttons run on unscaled time as
+before. The defeat keeps its 3.2 s of the base going up before the panel, and a victory dialogue or a boss's end still
+plays first. "Play again" and the pause menu's restart leave the clock stopped under the loading screen; the loader starts
+it for the new level. The level's running sounds already fell silent at the outcome (`SfxPlayer`) and the ambience fades
+out (`MusicPlayer`); the score plays on over the panel as it did.
+
+Measured (`r64_gameover.sh`, Shard Ridge Hard, a defeat; `r64_gameover.cs probe` 1.5, 5.5 and 8.5 s after): time scale
+**0.000**, game time **91.846** on all three, the summed positions of the 22 living creatures, the shots and the drones
+identical to four decimals on all three, the panel up, the only loop still audible the score (0.28). The two stills taken
+3 s apart differ in 0.45 % of their pixels (the focus frame's pulse and the radar, both interface).
+
+### 3. The Core Wisp's static
+
+The first boss of Shard Ridge on Hard is the Core Wisp (wave 10; on Easy and Medium the level has only the Brood Mother at
+wave 16). Its voice is `energy_ball_static_loop_boss`, a loop of static, and it was the only boss whose loop played at twice
+the others' level (`CreatureVoice._presence` 2); the wisps it travels with and sheds when it dies carry the same static at
+three times a creature's level. That is the "spray or steam" sound: a hiss louder than any other creature loop in the game.
+
+| Loop (source volume before the effects volume and the zoom) | Before | After |
+| --- | --- | --- |
+| Core Wisp: presence x gain 0.512 x one boss (0.25) | 2 -> **0.256** | 0.4 -> **0.051** (-14 dB) |
+| Wisp, one: presence x gain 0.676 x one creature (0.15) | 3 -> **0.304** | 1 -> **0.101** (-9.5 dB) |
+| Wisps, four or more: x the crowd's cap (0.3) | **0.609** | **0.203** |
+| For scale: the Brood Mother's loop | 0.146 | 0.146 |
+
+Not removed: an energy creature with a faint crackle still reads; at these levels it sits under the Brood Mother's loop. The
+gains are calculated from the data and the chorus's caps (`CreatureChorus.Level`), not measured by ear; the pulse and the
+attack sounds are unchanged. `ProjectGenerator.CoreWispPresence` / `WispPresence`, Docs/AUDIO.md.
+
+### 4. Armour across all weapons
+
+**Found** (`ArmourTtk.cs`, every damage source against every armoured troop through the game's own `Health`):
+- **The attack drone had no armour factor.** Its shots went through the projectile pool at the default of one, like a shell:
+  a Cragback in 18.5 s where the rule would give 38 s. Mines, the barrel, the lava ball and the ground drone were the same
+  (meant as heavy, but never data).
+- **The Laser never bypassed armour; the armour was too small to matter.** The pool is spent point for point, so a beam of
+  small ticks pays what one big hit pays (no per-tick loophole, no damage-over-time path round it). But a Cragback was 160
+  body + 60 armour: light fire paid 2.1 times what a shell paid, and the Laser has 2.6 times the Cannon's damage per second per
+  coin. Per coin the Laser killed a Cragback as fast as the Cannon did. Armour forced nothing.
+
+**The rule** (one table, data): every weapon has a `DamageType`; what neither explodes nor pierces is reduced by armour.
+Bullet and Beam 0.2 (Gun Turret, base turret, gate gun, blaster, **attack drone**, Laser, Cryo), Blade, Arc, Burn and Ram 0.5
+(**energy sword, was 1**; Tesla; **lava ball and ground drone, were 1**), Explosive 1 (Cannon, Artillery, mine, barrel,
+shockwave, **Flak, was 0.5**: its shells burst, and no armoured flyer exists), Piercing 1.5 (Railgun).
+`BalanceSheet.ArmourFactorOf`, `ProjectGenerator.WeaponDamageTypes`, checked on every asset (`Round64Tests`, `OnValidate`).
+
+**The armoured troops are mostly armour** (`BalanceSheet.TroopArmourShare` 0.72; the toughness a shell must deal is
+unchanged): Cragback 160+60 -> **60+160**, Stinger 80+210, Shardback 90+240, Bulwark 155+405.
+
+Seconds for one source to kill one Cragback at wave multiplier one (coins x seconds / 1000):
+
+| Source | Before | After |
+| --- | --- | --- |
+| Gun Turret L1 / L3 | 32.2 s (1.6) / 7.8 s | **60.2 s (3.0)** / 14.5 s |
+| Laser L1 / L3 | 11.6 s (1.5) / 3.9 s | **21.6 s (2.8)** / 7.2 s |
+| Cannon L1 / L3 | 14.4 s (1.4) / 3.5 s | 14.4 s (1.4) / 3.5 s |
+| Base turret L1 | 26.4 s | 49.2 s |
+| Hero blade / blaster | 9.1 s / 23.2 s | 15.4 s / 43.0 s |
+| Attack drone | 18.5 s (3.3) | **72.0 s (13.0)** |
+| Mine (one blast) | 64 % of it | 64 % of it |
+| Lava ball / ground drone (while touching) | 4.0 s / 7.4 s | 7.0 s / 12.7 s |
+
+Against the other armoured species the ratios are the same (the full tables: `Tools/PlayTest/r64_armour_ttk_before.txt`,
+`_after.txt`). Per coin a Laser or a Gun Turret needs twice what a Cannon needs for a Cragback (it was 1.05x and 1.14x),
+and the Cannon's blast takes three at once; light fire still kills one alone and lands in full once the shells have
+stripped the armour. In play the yardstick shows it: on Landing Site Hard the Gun Turret row won 3/3 and now loses 0/3 at
+the last wave, the Cannon row went from 1/3 to 3/3.
+
+### 5. Shard Ridge's bosses on Hard
+
+**Cause.** A boss wave had one health multiplier for the boss and its crowd, the solver and the cap sized it by the crowd,
+and the per-difficulty boss share (`DifficultyProfile.BossHealthShare`, round 10; it works as written) only ever applied
+to continent bosses. On a crowded last wave the level's boss came out at a third of its book health: the Brood Mother of
+Shard Ridge Hard had 900 x 0.337 x 1.15 = **349** hit points (Medium 327, Easy 122), the Core Wisp before it 565; Fault
+Line Hard 279 and 217. Not round 62's builder step (Psycho only), not the armour bug (these bosses wear none).
+
+**Fix.** A level's boss carries its own health scale on top of its wave's multiplier (`WaveDefinition._bossHealthScale`),
+set by the solve (`CampaignModel.SizeBosses`): never under a floor (`LevelBossHealthFloor` 0.5 / 0.75 / 0.9 / 0.9 of its
+book health), grown with the player's firepower until the boss alone asks `LevelBossAlone` (0.2 / 0.3 / 0.4 / 0.45 of
+what the expected player with the hero can deal in its walk), but only as far as its wave still fits
+`LevelBossGrowthCap` (1 / 1 / 1.15 / 1; set by the replays, see 6); a crowd gives way to a boss that pushed its wave over the hero cap.
+
+Every level boss as spawned, before and after (book health x difficulty x wave multiplier x boss scale;
+`python -I Tools/PlayTest/r64_bosses.py`):
+
+| Level | Difficulty | Boss (wave) | Before | After | x |
+| --- | --- | --- | --- | --- | --- |
+| C1_01 | Easy | BroodMother (w12) | 508 | 482 | 0.95 |
+| C1_01 | Medium | BroodMother (w12) | 660 | 675 | 1.02 |
+| C1_01 | Hard | BroodMother (w8) | 880 | 932 | 1.06 |
+| C1_01 | Hard | BroodMother (w12) | 1172 | 1422 | 1.21 |
+| C1_01 | Psycho | BroodMother (w5) | 1830 | 1432 | 0.78 |
+| C1_01 | Psycho | BroodMother (w8) | 1959 | 1634 | 0.83 |
+| C1_01 | Psycho | BroodMother (w12) | 2563 | 2176 | 0.85 |
+| C1_02 | Easy | BroodMother (w12) | 471 | 500 | 1.06 |
+| C1_02 | Medium | BroodMother (w12) | 1688 | 1534 | 0.91 |
+| C1_02 | Hard | CoreWisp (w9) | 984 | 877 | 0.89 |
+| C1_02 | Hard | BroodMother (w12) | 1558 | 1531 | 0.98 |
+| C1_02 | Psycho | BroodMother (w5) | 2263 | 2210 | 0.98 |
+| C1_02 | Psycho | CoreWisp (w9) | 2020 | 1879 | 0.93 |
+| C1_02 | Psycho | BroodMother (w12) | 3243 | 2983 | 0.92 |
+| C1_03 | Easy | BroodMother (w16) | 122 | 699 | 5.74 |
+| C1_03 | Medium | BroodMother (w16) | 327 | 1296 | 3.97 |
+| C1_03 | Hard | CoreWisp (w10) | 565 | 1031 | 1.82 |
+| C1_03 | Hard | BroodMother (w16) | 349 | 932 | 2.67 |
+| C1_03 | Psycho | BroodMother (w6) | 2058 | 2041 | 0.99 |
+| C1_03 | Psycho | CoreWisp (w10) | 1251 | 1364 | 1.09 |
+| C1_03 | Psycho | BroodMother (w16) | 1178 | 1337 | 1.14 |
+| C1_04 | Easy | StormMatriarch (w16) | 445 | 471 | 1.06 |
+| C1_04 | Medium | StormMatriarch (w16) | 1279 | 1189 | 0.93 |
+| C1_04 | Hard | BroodMother (w10) | 279 | 931 | 3.33 |
+| C1_04 | Hard | StormMatriarch (w16) | 217 | 724 | 3.33 |
+| C1_04 | Psycho | CoreWisp (w5) | 1111 | 1041 | 0.94 |
+| C1_04 | Psycho | BroodMother (w10) | 1519 | 1337 | 0.88 |
+| C1_04 | Psycho | StormMatriarch (w16) | 3571 | 3639 | 1.02 |
+| C1_05 | Easy | CoreWisp (w17) | 626 | 885 | 1.41 |
+| C1_05 | Medium | CoreWisp (w17) | 1046 | 1464 | 1.40 |
+| C1_05 | Hard | StormMatriarch (w11) | 1650 | 1657 | 1.00 |
+| C1_05 | Hard | CoreWisp (w17) | 1419 | 3338 | 2.35 |
+| C1_05 | Psycho | BroodMother (w5) | 1378 | 3073 | 2.23 |
+| C1_05 | Psycho | StormMatriarch (w11) | 2752 | 2400 | 0.87 |
+| C1_05 | Psycho | CoreWisp (w17) | 2228 | 5274 | 2.37 |
+| C1_06 | Easy | PackAlpha (w18) | 296 | 627 | 2.12 |
+| C1_06 | Medium | PackAlpha (w18) | 832 | 765 | 0.92 |
+| C1_06 | Hard | CoreWisp (w12) | 1468 | 1463 | 1.00 |
+| C1_06 | Hard | PackAlpha (w18) | 987 | 2595 | 2.63 |
+| C1_06 | Psycho | StormMatriarch (w7) | 3090 | 3373 | 1.09 |
+| C1_06 | Psycho | CoreWisp (w12) | 2268 | 2534 | 1.12 |
+| C1_06 | Psycho | PackAlpha (w18) | 1655 | 1978 | 1.20 |
+
+Shard Ridge on Hard: the Core Wisp 565 -> **1031**, the Brood Mother 349 -> **932**; on Medium 327 -> 1296, on Easy 122 -> 699.
+Fault Line Hard 279 / 217 -> 931 / 724. Bosses that were already sized by their wave moved a few percent with the re-solve.
+
+**Honest reading.** The feeble bosses are gone and no boss of a level is under nine tenths of its book health on Hard any
+more, but "a real threat" is only half met on Shard Ridge Hard: its last wave is crowded with armoured Cragbacks, the
+paper already rates that wave at its limit, so the boss there stays at its floor (932; the growth rule gives 2600-3300 on
+Quartz Flats and Crysium Vein Hard, where the last wave has room). Against Remco's two guns (about 105 damage a second) 932
+hit points are nine seconds of fire instead of three; with a full defence it will still fall on the first stretch. I did
+not run a boss-fight probe that measures where it dies. Making it more needs a thinner crowd on boss waves (tried on paper:
+`BossWaveShare` 0.6 -> 0.3 gives 2150 there but 4500 for the mid-level Core Wisp of Crysium Vein Hard, so it needs a cap of
+its own) or a boss that does more than walk. Also open: on Crysium Vein the Psycho last boss (1978) is now below Hard's
+(2595), because Psycho bosses only grow while their wave is held.
+
+### 6. The pipeline (all 24 cells)
+
+Order as run: solve on the new mechanics -> measure (24 cells, 432 runs, 24 min) -> fit -> **apply (the new fit, not kept)**
+-> solve -> search (6 levels on the clones, 4 min) -> replay (279 runs) -> acceptance -> three builder iterations on the
+cells that fell (below) -> finale probe -> finale apply -> the suite.
+
+**The calibration: the fit was applied.** The round re-solves every level anyway, so round 62's open question is moot. The
+fit on the new yardstick (432 runs, no old replays): Cannon 0.853 -> **0.797**, Laser 0.759 -> **0.701**, Gun Turret 0.878 ->
+**0.808**, Flak 1.041 -> **1.039**; route fire 4.0, queue guard 0.30, siege 1.187 -> 1.168; hold-out 81 % / mono 89 % /
+Spearman 0.80 (below the 90 % bar as before, applied by override). The Gun Turret did not come out 15 % higher this time
+but 8 % lower: round 62's reading leaned on replayed plans, and a later fit of this round with the 279 new replays in it
+again reads Gun 0.871, Laser 0.741, route fire 2.0, queue guard 0.5. The fit still moves with the record set (a model
+matter, as round 62 said); the applied one is the yardstick-only fit, kept through the later re-stamps
+(`apply-keep`, calibration 2026-11-15 14:41, factors of 12:40 kept, inputs c0e168ae, current).
+
+**Paper: every cell on its curve** (human lens, towers alone; `BalanceLedgerTests` green; the lab reports 0 waves moved
+against the solve on all 24 cells):
+
+| Cell | Surplus before (curve) | Surplus after (curve) | Total health before | after | x |
+| --- | --- | --- | --- | --- | --- |
+| C1_01 Easy | 1.61x (1.61x) | 1.61x (1.61x) | 8293 | 7358 | 0.89 |
+| C1_01 Medium | 1.52x (1.52x) | 1.52x (1.52x) | 11058 | 9950 | 0.90 |
+| C1_01 Hard | 0.95x (0.95x) | 0.95x (0.95x) | 27423 | 23951 | 0.87 |
+| C1_01 Psycho | 0.92x (0.92x) | 1.06x (1.06x) | 68204 | 52224 | 0.77 |
+| C1_02 Easy | 2.10x (2.10x) | 2.10x (2.10x) | 8591 | 7679 | 0.89 |
+| C1_02 Medium | 0.99x (0.99x) | 0.99x (0.99x) | 32329 | 29643 | 0.92 |
+| C1_02 Hard | 0.93x (0.94x) | 0.93x (0.94x) | 32113 | 29667 | 0.92 |
+| C1_02 Psycho | 1.04x (1.04x) | 1.05x (1.04x) | 77976 | 73084 | 0.94 |
+| C1_03 Easy | 2.27x (2.27x) | 1.71x (1.70x) | 5361 | 6074 | 1.13 |
+| C1_03 Medium | 1.47x (1.47x) | 1.47x (1.47x) | 14594 | 11635 | 0.80 |
+| C1_03 Hard | 1.40x (1.40x) | 1.40x (1.40x) | 17798 | 15829 | 0.89 |
+| C1_03 Psycho | 1.18x (1.18x) | 1.35x (1.35x) | 58218 | 44495 | 0.76 |
+| C1_04 Easy | 1.53x (1.54x) | 1.54x (1.54x) | 5800 | 4262 | 0.73 |
+| C1_04 Medium | 0.96x (0.96x) | 0.96x (0.96x) | 17059 | 15693 | 0.92 |
+| C1_04 Hard | 1.05x (1.04x) | 1.18x (1.20x) | 19408 | 16666 | 0.86 |
+| C1_04 Psycho | 1.16x (1.16x) | 1.33x (1.33x) | 81144 | 65625 | 0.81 |
+| C1_05 Easy | 2.00x (2.00x) | 2.00x (2.00x) | 23994 | 20435 | 0.85 |
+| C1_05 Medium | 1.43x (1.43x) | 1.43x (1.43x) | 36354 | 34350 | 0.94 |
+| C1_05 Hard | 1.36x (1.36x) | 1.36x (1.36x) | 68158 | 65201 | 0.96 |
+| C1_05 Psycho | 1.51x (1.51x) | 1.51x (1.51x) | 126338 | 122022 | 0.97 |
+| C1_06 Easy | 1.98x (1.97x) | 1.97x (1.97x) | 14506 | 9578 | 0.66 |
+| C1_06 Medium | 1.23x (1.23x) | 1.23x (1.23x) | 33355 | 25376 | 0.76 |
+| C1_06 Hard | 1.17x (1.17x) | 1.34x (1.34x) | 59299 | 43692 | 0.74 |
+| C1_06 Psycho | 1.43x (1.43x) | 1.44x (1.43x) | 110125 | 104910 | 0.95 |
+
+Total health is lower nearly everywhere: the lower efficiencies (7 %) and the armour (a Cragback costs light guns twice
+what it did) both make the same waves harder on paper. Scales moved by hand (`wave_tuning.txt`): Shard Ridge Easy 0.6 ->
+**0.8** (a wave of many light creatures cannot be trimmed: at 0.6 the trim drove its Skitters to half a hit point; at 0.8
+the level has about its old health, x1.13, on a curve of 1.70x instead of 2.27x), and one builder step easier (scale / 1.15)
+for five cells whose best plan lost in play: Landing Site Psycho 0.87 -> 0.757, Shard Ridge Psycho 0.66 -> 0.574, Fault
+Line Hard 0.87 -> 0.757 and Psycho 0.66 -> 0.574, Crysium Vein Hard 0.757 -> 0.658.
+
+**Play, before (the round's start) and after** (best replayed plan as wins over three seeds, mean stars, mean base left;
+plans winning on most seeds; rows and the creative bot; `Tools/PlayTest/r64_cells_before.txt`, `r64_cells_after.txt`):
+
+| Cell | Best plan before (wins, stars, base) | Best plan after | Plans winning 2+ | Gun row | Cannon row | Laser row | Creative bot |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C1_01 Easy | 3/3, 3.0, 600 | 3/3, 3.0, 600 | 4/4 | 3/3 | 3/3 | - | 3/3 |
+| C1_01 Medium | 2/3, 3.0, 600 | 3/3, 3.0, 600 | 5/5 | 3/3 | 3/3 | - | 3/3 |
+| C1_01 Hard | 2/3, 2.5, 644 | 2/3, 3.0, 700 | 1/5 -> 3/3 | 3/3 -> 0/3 (w12) | 1/3 -> 3/3 | 0/3 (w10) | 2/3 -> 1/3 |
+| C1_01 Psycho | 2/3, 2.5, 664 | 2/3, 3.0, 700 | 1/5 -> 5/5 | 0/3 (w11) -> 0/3 (w12) | 0/3 (w11) -> 3/3 | 1/3 -> 0/3 (w11) | 2/3 -> 3/3 |
+| C1_02 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 3/3 | 3/3 | 3/3 | 3/3 |
+| C1_02 Medium | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w11) -> 0/3 (w10) | 3/3 | 0/3 (w10) -> 0/3 (w9) | 3/3 |
+| C1_02 Hard | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 3/3 | 0/3 (w10) -> 0/3 (w11) | 0/3 (w11) -> 1/3 | 0/3 (w10) | 3/3 |
+| C1_02 Psycho | 3/3, 3.0, 800 | 3/3, 3.0, 800 | 1/3 -> 2/3 | 0/3 (w11) | 0/3 (w12) -> 1/3 | 0/3 (w10) | 0/3 (w12) -> 0/3 (w11) |
+| C1_03 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w14) | 0/3 (w14) | 0/3 (w14) | 3/3 |
+| C1_03 Medium | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 4/5 -> 5/5 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 |
+| C1_03 Hard | 3/3, 3.0, 689 | 3/3, 2.7, 667 | 3/3 -> 1/3 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 |
+| C1_03 Psycho | 3/3, 3.0, 800 | 3/3, 3.0, 785 | 3/3 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 2/3 -> 3/3 |
+| C1_04 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 |
+| C1_04 Medium | 3/3, 3.0, 682 | 3/3, 3.0, 672 | 3/3 | 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 3/3 |
+| C1_04 Hard | 3/3, 3.0, 800 | 3/3, 3.0, 800 | 5/5 | 0/3 (w5) | 0/3 (w5) | 0/3 (w5) | 3/3 |
+| C1_04 Psycho | 3/3, 1.7, 446 | 3/3, 2.3, 627 | 3/5 -> 5/5 | 0/3 (w5) -> 0/3 (w6) | 0/3 (w5) | 0/3 (w5) | 1/3 -> 2/3 |
+| C1_05 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w11) | 0/3 (w11) | 0/3 (w11) | 3/3 |
+| C1_05 Medium | 3/3, 3.0, 698 | 3/3, 3.0, 700 | 4/5 -> 5/5 | 0/3 (w9) | 0/3 (w9) | 0/3 (w9) | 3/3 -> 2/3 |
+| C1_05 Hard | 2/3, 2.5, 707 | 3/3, 2.3, 671 | 4/5 -> 3/3 | 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 1/3 -> 3/3 |
+| C1_05 Psycho | 3/3, 2.7, 866 | 3/3, 3.0, 889 | 3/5 -> 5/5 | 0/3 (w9) | 0/3 (w9) | 0/3 (w9) | 0/3 (w17) -> 1/3 |
+| C1_06 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w12) | 0/3 (w12) | 0/3 (w12) | 3/3 |
+| C1_06 Medium | 3/3, 2.0, 568 | 3/3, 3.0, 700 | 2/3 -> 5/5 | 0/3 (w12) | 0/3 (w11) | 0/3 (w11) | 2/3 -> 3/3 |
+| C1_06 Hard | 3/3, 3.0, 800 | 3/3, 2.0, 568 | 3/3 -> 2/3 | 0/3 (w10) | 0/3 (w10) | 0/3 (w10) | 2/3 -> 3/3 |
+| C1_06 Psycho | 3/3, 2.3, 717 | 3/3, 2.7, 783 | 4/5 | 0/3 (w10) | 0/3 (w7) | 0/3 (w7) | 0/3 (w16) -> 1/3 |
+
+- Every cell has a plan that wins on most seeds (README: 24 of 24); the best plan wins 3/3 in 22 cells and 2/3 in two
+  (Landing Site Hard and Psycho: seed 3 loses at the last wave). Acceptance 9/24 -> **11/24**.
+- Armour does its job in the yardstick: the Gun Turret row lost Landing Site Hard (3/3 -> 0/3), the Laser row wins only Glass
+  Meadows Easy, and no row wins from Shard Ridge on.
+- **The Cannon row wins more than it should**: Landing Site Hard 1/3 -> 3/3 and Psycho 0/3 -> 3/3 (after its builder step),
+  Glass Meadows Medium 3/3 as before, Hard and Psycho 1/3. A row of one type winning Psycho is against the balance
+  principle; the armour made the Cannon the answer to everything on the first two levels (no flyers there). Open point 1.
+- The air design of round 61 holds: from Shard Ridge on every row and obvious buyer still loses at the first raids (waves
+  13-14 on Shard Ridge, 5-8 on Fault Line), the plans with Flaks win.
+- How the iterations went: after the first solve (bosses grown to the hero cap) five cells fell: Shard Ridge Psycho 1/3
+  (8 of 9 runs lost to the last boss, 2160 hit points), Fault Line Hard 1/3 and Psycho 1/3, Crysium Vein Hard 1/3, all at
+  ordinary waves. Second pass (growth cap 1.15, three builder steps): those recovered to 3/3 except Shard Ridge Psycho (0/3,
+  six runs at the boss) and Landing Site Psycho 1/3. Third pass (Psycho bosses held to 1, two builder steps): the table above.
+- One worker clone hung at start-up during the first replay (its log stopped at a script recompile; I had edited a test file
+  while the clones synced); its 56 runs were replayed again. `r62_cells_chain.sh` asks for one clone per cell, so twelve
+  cells started Unity on clones w7-w10 that did not exist; stopped, the four new folders removed, and replaced by
+  `r64_cells_chain.sh`, which never uses more than w1-w5.
+
+**Finale probe** (`finale_workers.sh`, the continent bosses at their arenas as played, on the new armour rule: the attack
+drone and the blade now work on their armour at 0.2 and 0.5): every boss is beaten as-is on all four difficulties (24 of
+24); the largest health multiple still beaten on Medium is 1.09-1.34 (before 1.09-1.29), on Easy 1.66-2.74, Hard 1.52-1.88,
+Psycho 1.18-1.73. The `finale` stage then wrote the derived health: Gravemaw 39540 -> 43250, Cinder Matriarch 10350 ->
+10400, Frost Warden 7500 -> 6950, Shattered 14000 -> 14100, Sealed One 27200 -> 31050, Rotbloom 3550 unchanged; the shares
+stay (Easy 0.8, Hard and Psycho 1.25). The generator spec carries the same numbers. One seed per cell, so these are within
+the probe's known 15 % spread; not verified twice.
+
+### Tests and checks
+
+- New `Round64Tests` (14): every weapon carries the factor of its damage type and none is left out; only what explodes or
+  pierces works on armour in full; the drone's shot on a Cragback and on paper; the Cannon's edge per coin (>= 1.8x) while
+  light fire still kills; the boss scale in the game and on paper; every level boss on its floor and the stored scales
+  equal to the solve; Shard Ridge's two Hard bosses; the Core Wisp's loop under half the Brood Mother's; the bar (eases,
+  never back, full only when done); the tips; the art's edges; the stepped build; the music streaming.
+  `Continent1ContentTests` (2) now measure a slice creature's armour against the Cragback's pool instead of a share of its
+  health.
+- EditMode on w6 (`r34b_editmode_worker.sh 6 "Game.Tests"`): **936 tests, 884 passed, 52 skipped, 0 failed** (round 63: 922 /
+  870 / 52; +14 `Round64Tests`). The skips are the same 52 (50 `TowerParityTests`, the fit below the bar, the
+  acceptance report). Three earlier runs of the round were red and are fixed: the two content tests above, the art test
+  (texture not readable), `WorldContentTests` (Shard Ridge Easy "never grows": the scale, see above) and
+  `ContinentFinaleTests` (the level boss's scale had leaked onto the continent boss in the finale model).
+- Recompile: 0 errors; no new warnings (the known CS0618 in `BalanceProbeTests`).
+- Play consoles in the editor: 0 errors, 0 warnings in every harness run (hitch, loading stills, game over).
+- Save: MD5 463303aa28769c0934c10dc303967162 after every harness and at the end; the worker scripts report it untouched.
+- Not done: the impact baseline (`snapshot`) was not retaken; `yardstick.txt` and `plan_replay.txt` are still the old
+  whole-run tables (the partial ones are current); no PlayMode smoke test was run besides the pipeline's own
+  (the result panel now stops the clock: a PlayMode test that waits on game time after a level's end would hang; the probes
+  stop at the outcome and passed).
+- Tools: `ApplyRound64.cs`, `ArmourTtk.cs`, `BossLab.cs`, `r64_compile.sh`, `r64_hitch.sh|cs`, `r64_loading.sh`,
+  `r64_shot.cs`, `r64_gameover.sh|cs`, `r64_chain.sh`, `r64_cells_chain.sh`, `r64_psycho_step.sh`, `r64_after_measure.sh`,
+  `r64_bosses.py`; tables `r64_armour_ttk_before|after.txt`, `r64_bosses.txt`, `r64_paper.txt`, `r64_play.txt`,
+  `r64_cells_before|after.txt`, `r64_lab_*.txt`; logs and the records of each iteration in `Logs/r64/`.
+
+### Open points (round 64)
+
+1. **The Cannon row** wins Landing Site Hard and Psycho and Glass Meadows Medium. With armour this strong the first two
+   levels (no flyers) have one answer. Levers: fewer Cragbacks there (the `plated` weights of round 34b are still on), a
+   swarm the Cannon's three-target blast cannot keep up with, or undo Landing Site Psycho's builder step.
+2. **Shard Ridge Hard's last boss** is 2.7 times what it was, not a fight yet (see 5). Wants a decision on thinner crowds on
+   boss waves, or a boss power.
+3. **Psycho below Hard** on Crysium Vein's last boss (1978 against 2595), from the Psycho growth cap.
+4. **Blade 0.5, lava ball 0.5, ground drone 0.5, Flak 1**: my reading of "non-exploding is reduced"; the blade and the Flak
+   differ from Remco's 2026-11-09 answers (blade heavy, Flak 0.5). One table to change (`BalanceSheet.ArmourFactorOf`).
+5. **Easy got lighter** on Fault Line (x0.73 health) and Crysium Vein (x0.66): the paper rates their Cragbacks hard for an
+   Easy purse. Won 3/3 with three stars by every plan; may be too easy for a player with Cannons.
+6. **The loading screen still stalls twice** for half a second or more (terrain field, gameplay step), and its planet is
+   generic. The Core Wisp's and the wisps' new levels are calculated, not heard.
+7. The fit still depends on which records it reads (yardstick only: Gun 0.81; with replays: 0.87).

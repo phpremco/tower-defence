@@ -54,25 +54,30 @@
     "Weights": [
         {
             "Threat": "swarm",
-            "Tower": "PulseRifle",
-            "Weight": 0.8434469699859619
+            "Tower": "Cannon",
+            "Weight": 1.1991463899612427
         },
         {
-            "Threat": "plated",
-            "Tower": "PulseRifle",
-            "Weight": 1.7233999967575073
+            "Threat": "pack",
+            "Tower": "Cannon",
+            "Weight": 1.5630855560302734
+        },
+        {
+            "Threat": "air",
+            "Tower": "Cannon",
+            "Weight": 1.4338301420211792
         },
         {
             "Threat": "boss",
-            "Tower": "Cannon",
-            "Weight": 1.464961051940918
+            "Tower": "PulseRifle",
+            "Weight": 0.6859523057937622
         }
     ],
-    "UpgradeBias": 0.6000000238418579,
-    "TowersBeforeUpgrades": 1,
-    "MineCoverBelow": 1.2999999523162842,
+    "UpgradeBias": 0.8899999856948853,
+    "TowersBeforeUpgrades": 2,
+    "MineCoverBelow": 1.0,
     "MineOnBoss": false,
-    "FieldCoverBelow": 1.0,
+    "FieldCoverBelow": 0.0,
     "HarvesterCover": 1.0,
     "HarvesterShare": 0.6000000238418579,
     "RepairDroneWear": 0.05000000074505806,

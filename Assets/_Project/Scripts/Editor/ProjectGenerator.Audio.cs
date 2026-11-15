@@ -137,6 +137,69 @@ namespace Game.Editor
         public const float SwarmDeathVolume = 0.45f;
         public const float SwarmDeathInterval = 0.35f;
 
+        // Round 64 (Remco: "the spray or steam noise of the first boss in level 3 is super loud and makes no sense"): the Core
+        // Wisp hums on a loop of static, and it was the only boss whose loop played at twice the others' level (0.26 of full
+        // scale, the Brood Mother 0.15); the wisps it sheds and travels with carried the same static at three times a
+        // creature's level (0.30 for one, 0.61 for four). A hiss that loud reads as a leak, not as a creature. Both now sit
+        // under the other loops: the boss at 0.05, a crowd of wisps at 0.20.
+        public const float CoreWispPresence = 0.4f;
+        public const float WispPresence = 1f;
+
+        /// <summary>The music loops, relative to the audio root: long recordings that stream from disk (see <see cref="ApplyMusicImport"/>).</summary>
+        private static readonly string[] MusicLoops = { "Music/menu_loop.wav", "Music/game_calm_loop.wav", "Music/game_boss_loop.wav" };
+
+        /// <summary>
+        /// The music streams (round 64). The loops were decoded whole the first time they played: 1.6 s of the frame that
+        /// built a level, the larger half of the freeze after choosing a difficulty, and some 60 MB of memory each. Streamed
+        /// they start at once. Safe to run again; a loop already streaming is left alone. Returns what it changed.
+        /// </summary>
+        public static string ApplyMusicImport()
+        {
+            var report = new System.Text.StringBuilder();
+            foreach (string loop in MusicLoops)
+            {
+                string path = $"{AudioRoot}/{ApprovedFolder}/{loop}";
+                var importer = AssetImporter.GetAtPath(path) as AudioImporter;
+                if (importer == null)
+                {
+                    report.Append($"MISSING {path}\n");
+                    continue;
+                }
+
+                AudioImporterSampleSettings settings = importer.defaultSampleSettings;
+                if (settings.loadType == AudioClipLoadType.Streaming)
+                {
+                    report.Append($"{loop}: streaming already\n");
+                    continue;
+                }
+
+                report.Append($"{loop}: {settings.loadType} -> Streaming\n");
+                settings.loadType = AudioClipLoadType.Streaming;
+                importer.defaultSampleSettings = settings;
+                importer.SaveAndReimport();
+            }
+
+            return report.ToString();
+        }
+
+        /// <summary>Writes the presence of the two wisp voices from the spec and nothing else; returns before and after.</summary>
+        public static string ApplyWispPresence()
+        {
+            var report = new System.Text.StringBuilder();
+            foreach ((string Enemy, float Presence) entry in new[] { ("CoreWisp", CoreWispPresence), ("Wisp", WispPresence) })
+            {
+                var voice = AssetDatabase.LoadAssetAtPath<CreatureVoice>($"{VoicesFolder}/Voice_{entry.Enemy}.asset");
+                var so = new SerializedObject(voice);
+                float before = so.FindProperty("_presence").floatValue;
+                so.FindProperty("_presence").floatValue = entry.Presence;
+                so.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(voice);
+                report.Append($"Voice_{entry.Enemy} presence {before} -> {entry.Presence}\n");
+            }
+
+            return report.ToString();
+        }
+
         private const string Special = "Bosses/Special/";
         private const float StoneVoicePitch = 0.85f;
         private const string EnvironmentFolder = "Environment/";
@@ -153,7 +216,7 @@ namespace Game.Editor
             new VoiceSpec { Enemy = "Mireleech", Move = "Monsters/Leech/leech_slime_loop", Screech = "Monsters/Leech/leech_screech" },
             new VoiceSpec { Enemy = "Bulwark", Steps = "Monsters/DinoSoldier/dino_soldier_step", StepSpacing = 0.7f, Screech = "Monsters/DinoSoldier/dino_soldier_death" },
             new VoiceSpec { Enemy = "Prowler", Steps = "Monsters/Wolf/wolf_step", StepSpacing = 0.55f, Screech = "Monsters/Wolf/wolf_death" },
-            new VoiceSpec { Enemy = "Wisp", Presence = 3f, Move = "Monsters/EnergyBall/energy_ball_static_loop", Screech = "Monsters/EnergyBall/energy_ball_death", Attack = "Monsters/EnergyBall/energy_ball_fire" },
+            new VoiceSpec { Enemy = "Wisp", Presence = WispPresence, Move = "Monsters/EnergyBall/energy_ball_static_loop", Screech = "Monsters/EnergyBall/energy_ball_death", Attack = "Monsters/EnergyBall/energy_ball_fire" },
             new VoiceSpec { Enemy = "Skyray", Move = "Monsters/Stingray/stingray_fly_loop", Attack = "Monsters/Stingray/stingray_tailwhip", Screech = "Monsters/Stingray/stingray_death" },
             new VoiceSpec { Enemy = "Oozer", Move = "Monsters/Slug/slug_move_loop", Attack = "Monsters/Slug/slug_attack", Screech = "Monsters/Slug/slug_death" },
             new VoiceSpec { Enemy = "Roller", Presence = 7f, Steps = "Monsters/Armadillo/armadillo_step", StepSpacing = 0.5f, Roll = "Monsters/Armadillo/armadillo_roll_loop", Screech = "Monsters/Armadillo/armadillo_death" },
@@ -163,7 +226,7 @@ namespace Game.Editor
             new VoiceSpec { Enemy = "StormMatriarch", Move = "Bosses/Bat/bat_wings_loop_boss", Screech = "Bosses/Bat/bat_screech_boss", Growl = "Bosses/Bat/bat_screech_boss", Attack = "Bosses/Bat/bat_attack_moss_boss", VolleyLaunch = Special + "boss_bat_bomb_launch", VolleyImpact = Special + "boss_bat_bomb_explode_moss", Spawn = "Bosses/Bat/bat_screech_boss" },
             new VoiceSpec { Enemy = "CrystalWarlord", Steps = "Bosses/DinoSoldier/dino_soldier_step_boss", StepSpacing = 1f, Screech = "Bosses/DinoSoldier/dino_soldier_death_boss", Pulse = "Monsters/Shared/enemy_power_pulse", Regrow = Special + "boss_armor_regrow" },
             new VoiceSpec { Enemy = "PackAlpha", Steps = "Bosses/Wolf/wolf_step_boss", StepSpacing = 0.8f, Screech = "Bosses/Wolf/wolf_death_boss", Growl = Special + "boss_howl", Rally = Special + "boss_howl" },
-            new VoiceSpec { Enemy = "CoreWisp", Presence = 2f, Move = "Bosses/EnergyBall/energy_ball_static_loop_boss", Screech = "Bosses/EnergyBall/energy_ball_death_boss", Attack = "Bosses/EnergyBall/energy_ball_fire_boss", Pulse = "Monsters/Shared/enemy_power_pulse", Spawn = "Monsters/Shared/enemy_power_pulse" },
+            new VoiceSpec { Enemy = "CoreWisp", Presence = CoreWispPresence, Move = "Bosses/EnergyBall/energy_ball_static_loop_boss", Screech = "Bosses/EnergyBall/energy_ball_death_boss", Attack = "Bosses/EnergyBall/energy_ball_fire_boss", Pulse = "Monsters/Shared/enemy_power_pulse", Spawn = "Monsters/Shared/enemy_power_pulse" },
             new VoiceSpec { Enemy = "SkySovereign", Move = "Bosses/Stingray/stingray_fly_loop_boss", Screech = "Bosses/Stingray/stingray_death_boss", Attack = "Bosses/Stingray/stingray_tailwhip_boss", Laser = "Bosses/Stingray/stingray_tail_laser" },
             new VoiceSpec { Enemy = "SlimeMonarch", Move = "Bosses/Slug/slug_move_loop_boss", Attack = "Bosses/Slug/slug_attack_boss", Screech = "Bosses/Slug/slug_death_boss", Growl = "Bosses/Slug/slug_boss_growl", Pulse = Special + "boss_slime_spit", Spawn = Special + "boss_slime_spit" },
             new VoiceSpec { Enemy = "RollerKing", Presence = 4f, Steps = "Bosses/Armadillo/armadillo_step_boss", StepSpacing = 0.8f, Screech = "Bosses/Armadillo/armadillo_death_boss", Roll = "Bosses/Armadillo/armadillo_roll_heavy_loop", Pulse = EnvironmentFolder + "earthquake" },

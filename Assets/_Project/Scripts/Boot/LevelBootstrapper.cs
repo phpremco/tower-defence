@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Game.Combat;
 using Game.Core;
 using Game.Economy;
@@ -20,12 +21,47 @@ namespace Game.Boot
         [SerializeField] private FixedCameraRig _cameraRig;
         [SerializeField] private Camera _camera;
 
+        // How far a level's build is after its setup, its scenery and its sound, for the loading screen (shares of its time
+        // as measured on Shard Ridge, round 64); the gameplay is the last third.
+        private const float SetupShare = 0.03f;
+        private const float SceneryShare = 0.64f;
+        private const float SoundShare = 0.7f;
+
+        // Behind a loading screen (Game.UI.LevelLoader) the level is built a step a frame, so the screen keeps moving; without
+        // one (a test, a probe, a scene played on its own) it is built in this frame as it always was.
         private void Start()
+        {
+            IEnumerator<float> build = Build();
+            if (Services.TryGet(out ILevelLoadProgress progress))
+            {
+                StartCoroutine(BuildBehind(build, progress));
+                return;
+            }
+
+            while (build.MoveNext())
+            {
+            }
+        }
+
+        private static IEnumerator BuildBehind(IEnumerator<float> build, ILevelLoadProgress progress)
+        {
+            while (build.MoveNext())
+            {
+                progress.Report(build.Current);
+                yield return null;
+            }
+
+            // Also when the build gave up on a broken level: the screen must never stay up over the error.
+            progress.Complete();
+        }
+
+        // The level's build in steps; each yields the share that is done.
+        private IEnumerator<float> Build()
         {
             if (!Services.TryGet(out LevelSession session))
             {
                 Debug.LogError("No LevelSession registered. Start the game from the Boot scene.", this);
-                return;
+                yield break;
             }
 
             LevelDefinition level = session.Level;
@@ -33,29 +69,38 @@ namespace Game.Boot
             if (!LevelValidator.Validate(level, errors))
             {
                 Debug.LogError($"Level '{level.name}' is invalid:\n{string.Join("\n", errors)}", level);
-                return;
+                yield break;
             }
 
             WaveDefinition[] waves = session.Waves ?? level.GetWaves(session.Difficulty);
             if (waves == null)
             {
                 Debug.LogError($"Level '{level.name}' has no waves for difficulty '{session.Difficulty.name}'.", level);
-                return;
+                yield break;
             }
 
             Services.TryGet(out PlaytestSettings debug);
             _cameraRig.Apply(level);
-            PostProcessingBuilder.Build(_camera, level.Theme, Services.Get<IPlatformSettings>());
-            Dictionary<int, GameObject> routes = BuildEnvironment(level);
-            BuildGameplay(level, session.Difficulty, waves, debug, routes, session.Briefing, session.Loadout, session.StartingMoney);
-        }
-
-        private static Dictionary<int, GameObject> BuildEnvironment(LevelDefinition level)
-        {
-            ThemeLighting.Apply(level.Theme);
-            var visuals = new GameObject("LevelVisuals").transform;
             IPlatformSettings platform = Services.Get<IPlatformSettings>();
-            return LevelVisualBuilder.Build(level, visuals, platform.ParticleScale, platform.FogEnabled);
+            PostProcessingBuilder.Build(_camera, level.Theme, platform);
+            ThemeLighting.Apply(level.Theme);
+            yield return SetupShare;
+
+            var routes = new Dictionary<int, GameObject>();
+            var visuals = new GameObject("LevelVisuals").transform;
+            IEnumerator<float> scenery = LevelVisualBuilder.BuildInSteps(level, visuals, routes, platform.ParticleScale, platform.FogEnabled);
+            while (scenery.MoveNext())
+            {
+                yield return SetupShare + SceneryShare * scenery.Current;
+            }
+
+            // The level's generated ambience bed is synthesised the first time a theme asks for it and kept; made here, on a
+            // step of its own, the music player finds it ready instead of making it in the frame that builds the gameplay.
+            ProceduralSfx.Ambience(level.Theme.Ambience);
+            yield return SoundShare;
+
+            BuildGameplay(level, session.Difficulty, waves, debug, routes, session.Briefing, session.Loadout, session.StartingMoney);
+            yield return 1f;
         }
 
         // The perks the hero can earn that the player has unlocked (the debug switch unlocks them all, like the weapons).

@@ -139,6 +139,7 @@ namespace Game.Balance
             float repairRate = 0f;
             int cheapestGun = CheapestGun(level);
             float attackDps = 0f;
+            float attackArmourFactor = 1f;
             int attackTargets = 0;
             float coverSum = 0f;
             int covered = 0;
@@ -235,6 +236,7 @@ namespace Game.Balance
                             view?.Drones.Add(step.Item);
                             harvestWave = drone.Role == DroneRole.Harvest && harvestWave == 0 ? wave : harvestWave;
                             attackDps += drone.Role == DroneRole.Attack ? drone.Dps : 0f;
+                            attackArmourFactor = drone.Role == DroneRole.Attack ? drone.ArmourFactor : attackArmourFactor;
                             attackTargets |= drone.Role == DroneRole.Attack ? drone.Targets : 0;
                             repairRate += drone.Role == DroneRole.Repair ? drone.RepairPerSecond : 0f;
                             break;
@@ -284,11 +286,11 @@ namespace Game.Balance
 
                 if (attackDps > 0f)
                 {
-                    // The attack drone fires everywhere: its kills count on the walk.
+                    // The attack drone fires everywhere: its kills count on the walk, at the share the group's armour lets its shots land.
                     float drone = attackDps * rules.Utilisation;
-                    float droneStream = Layer.Has(attackTargets, Layer.Ground) ? drone * load.Window : 0f;
-                    float droneSingle = Layer.Has(attackTargets, Layer.Ground) ? drone * load.BossSeconds(load.BossWindow + load.BossFight, rules) : 0f;
-                    float droneAir = Layer.Has(attackTargets, Layer.Air) ? drone * load.AirWindow : 0f;
+                    float droneStream = Layer.Has(attackTargets, Layer.Ground) ? drone * load.Window * load.StreamArmour.Share(attackArmourFactor) : 0f;
+                    float droneSingle = Layer.Has(attackTargets, Layer.Ground) ? drone * load.BossSeconds(load.BossWindow + load.BossFight, rules) * load.BossArmour.Share(attackArmourFactor) : 0f;
+                    float droneAir = Layer.Has(attackTargets, Layer.Air) ? drone * load.AirWindow * load.AirArmour.Share(attackArmourFactor) : 0f;
                     stream += droneStream;
                     single += droneSingle;
                     air += droneAir;

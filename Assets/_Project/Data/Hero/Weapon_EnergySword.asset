@@ -19,7 +19,8 @@ MonoBehaviour:
   _reach: 1.5
   _attackInterval: 0.7
   _targets: 1
-  _armourFactor: 1
+  _damageType: 3
+  _armourFactor: 0.5
   _magazine: 0
   _reloadSeconds: 0
   _drawSeconds: 0.733

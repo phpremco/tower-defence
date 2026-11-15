@@ -22,6 +22,12 @@ namespace Game.PathObjects
         /// <summary>Blast damage of a mine, or damage per second of a roller.</summary>
         [SerializeField] [Min(0f)] private float _damage = 100f;
 
+        [Tooltip("What the damage is made of: a mine or a barrel explodes, a lava ball burns, a ground drone rams. Armour reduces all but the explosion (round 64).")]
+        [SerializeField] private DamageType _damageType = DamageType.Explosive;
+
+        [Tooltip("Share of the damage that works on a creature's armour while it has any, from the sheet's table per damage type.")]
+        [SerializeField] [Range(0.05f, 2f)] private float _armourFactor = 1f;
+
         [SerializeField] [Range(0.1f, 1f)] private float _slowFactor = 0.5f;
 
         [Tooltip("It burns what it hits (a lava ball): ice armour cracks under it.")]
@@ -54,6 +60,10 @@ namespace Game.PathObjects
         public float Radius => _radius;
         public float TriggerRadius => _triggerRadius;
         public float Damage => _damage;
+        public DamageType DamageType => _damageType;
+
+        /// <summary>Share of the damage that works on armour while the creature has any (Health.TakeDamage).</summary>
+        public float ArmourFactor => _armourFactor;
         public float SlowFactor => _slowFactor;
         public bool Burns => _burns;
         public float Speed => _speed;
@@ -64,5 +74,13 @@ namespace Game.PathObjects
         public PathObjectEffect Effect => _effect;
         public Game.Combat.ImpactVfxDefinition ImpactVfx => _impactVfx;
         public string Description => _description;
+
+        private void OnValidate()
+        {
+            if (_damage > 0f && !DamageTypeRule.Agrees(_damageType, _armourFactor))
+            {
+                Debug.LogWarning($"Path object '{name}': {DamageTypeRule.Describe(_damageType)} (it is {_armourFactor}).", this);
+            }
+        }
     }
 }

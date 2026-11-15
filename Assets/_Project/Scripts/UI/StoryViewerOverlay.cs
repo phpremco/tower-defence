@@ -197,8 +197,7 @@ namespace Game.UI
                 case StoryIndex.EntryKind.BossArena:
                     // A practice fight: the arena's level with only the boss wave; nothing is paid or saved.
                     BossArenaDefinition arena = _index.Arena;
-                    Services.Register(new LevelSession(arena.LevelFor(entry.Boss), arena.Difficulty, false, null, arena.WavesFor(entry.Boss), arena.StartingMoney));
-                    SceneManager.LoadScene(SceneNames.Level);
+                    LevelLoader.BeginSession(new LevelSession(arena.LevelFor(entry.Boss), arena.Difficulty, false, null, arena.WavesFor(entry.Boss), arena.StartingMoney));
                     break;
                 case StoryIndex.EntryKind.Dialogue:
                     _playing = true;

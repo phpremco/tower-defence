@@ -207,7 +207,7 @@ namespace Game.Balance
         {
             var alone = new List<WaveSpec>(waves);
             WaveSpec boss = waves[finale];
-            var only = new WaveSpec { StartDelay = boss.StartDelay, HealthMultiplier = boss.HealthMultiplier };
+            var only = new WaveSpec { StartDelay = boss.StartDelay, HealthMultiplier = boss.HealthMultiplier, BossHealthScale = boss.BossHealthScale };
             only.Groups.AddRange(boss.Groups.FindAll(g => g.Enemy.IsBoss));
             alone[finale] = only;
             return alone;
@@ -218,7 +218,7 @@ namespace Game.Balance
             var scaled = new List<WaveSpec>(waves.Count);
             foreach (WaveSpec wave in waves)
             {
-                var copy = new WaveSpec { StartDelay = wave.StartDelay, HealthMultiplier = (float)(wave.HealthMultiplier * scale) };
+                var copy = new WaveSpec { StartDelay = wave.StartDelay, HealthMultiplier = (float)(wave.HealthMultiplier * scale), BossHealthScale = wave.BossHealthScale };
                 copy.Groups.AddRange(wave.Groups);
                 scaled.Add(copy);
             }

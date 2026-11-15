@@ -8,21 +8,21 @@
             "Tower": "PulseRifle",
             "X": [
                 12,
-                13,
                 12,
                 13,
+                13,
+                14,
+                14,
                 21,
-                14,
-                14,
                 36
             ],
             "Y": [
-                11,
-                10,
                 10,
                 11,
+                10,
                 11,
                 7,
+                11,
                 11,
                 11
             ]
@@ -35,8 +35,8 @@
                 14,
                 12,
                 13,
-                14,
                 35,
+                14,
                 36
             ],
             "Y": [
@@ -54,22 +54,22 @@
             "Tower": "Laser",
             "X": [
                 13,
-                11,
-                12,
                 13,
                 12,
-                14,
+                12,
                 22,
+                11,
+                14,
                 35
             ],
             "Y": [
                 10,
-                10,
+                11,
                 10,
                 11,
-                11,
+                10,
+                10,
                 6,
-                10,
                 10
             ]
         },
@@ -79,8 +79,8 @@
                 36,
                 36,
                 36,
-                34,
                 35,
+                34,
                 35
             ],
             "Y": [
@@ -95,30 +95,25 @@
     ],
     "Weights": [
         {
-            "Threat": "pack",
+            "Threat": "plated",
             "Tower": "PulseRifle",
-            "Weight": 0.6273888349533081
+            "Weight": 0.7179991602897644
         },
         {
             "Threat": "air",
             "Tower": "Laser",
-            "Weight": 2.08168363571167
-        },
-        {
-            "Threat": "boss",
-            "Tower": "PulseRifle",
-            "Weight": 1.7882344722747803
+            "Weight": 1.9601547718048096
         }
     ],
-    "UpgradeBias": 1.7100000381469727,
-    "TowersBeforeUpgrades": 4,
-    "MineCoverBelow": 0.0,
-    "MineOnBoss": true,
+    "UpgradeBias": 1.6299999952316284,
+    "TowersBeforeUpgrades": 3,
+    "MineCoverBelow": 1.0,
+    "MineOnBoss": false,
     "FieldCoverBelow": 1.0,
-    "HarvesterCover": 1.0,
-    "HarvesterShare": 0.4000000059604645,
-    "RepairDroneWear": 0.05000000074505806,
+    "HarvesterCover": 0.0,
+    "HarvesterShare": 0.5,
+    "RepairDroneWear": 0.10000000149011612,
     "AttackDroneAfterTowers": 0,
-    "GateUpgradeBias": 0.800000011920929,
+    "GateUpgradeBias": 1.2000000476837158,
     "AllowSell": false
 }

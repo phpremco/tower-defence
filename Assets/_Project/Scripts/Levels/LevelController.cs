@@ -175,6 +175,7 @@ namespace Game.Levels
             _scheduler = new WaveScheduler(_waves[_nextWaveIndex], _context.Difficulty, _random);
             _origins?.BeginWave(_nextWaveIndex, _scheduler);
             _spawner.WaveHealthScale = _waves[_nextWaveIndex].HealthMultiplier;
+            _spawner.WaveBossHealthScale = _waves[_nextWaveIndex].BossHealthScale;
             PublishRoutes(_nextWaveIndex);
             _nextWaveIndex++;
             _context.WaveNumber = _nextWaveIndex;

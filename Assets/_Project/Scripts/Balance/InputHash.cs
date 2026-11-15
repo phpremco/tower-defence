@@ -75,7 +75,7 @@ namespace Game.Balance
                 foreach (DroneStats d in facts.Drones)
                 {
                     // A drone's price is a plan input, not a capacity input (round 22d: the repair drone is priced from the fit's own busy share).
-                    text.Append(d.Id).Append(d.Role).Append(F(d.Dps)).Append(d.Targets).Append(F(d.RepairPerSecond));
+                    text.Append(d.Id).Append(d.Role).Append(F(d.Dps)).Append(d.Targets).Append(F(d.RepairPerSecond)).Append(F(d.ArmourFactor));
                 }
 
                 if (facts.Geometry != null)
@@ -90,6 +90,21 @@ namespace Game.Balance
 
             BalanceRules r = model.Rules;
             text.Append(F(r.Utilisation)).Append(F(r.HumanUtilisation)).Append(F(r.MaxSplashTargets)).Append(F(r.HeroShare)).Append(F(r.GateWindowShare)).Append(F(r.MaxGateHoldSeconds)).Append(F(r.CarriedShare)).Append(F(r.FrontEfficiency)).Append(F(r.TrunkReference)).Append(r.AttackersPerGate).Append(F(r.BossWaveCap)).Append(r.ShockwaveCrowd).Append(F(r.ArmorThreatShare));
+            foreach (float floor in r.LevelBossHealthFloor)
+            {
+                text.Append(F(floor));
+            }
+
+            foreach (float alone in r.LevelBossAlone)
+            {
+                text.Append(F(alone));
+            }
+
+            foreach (float growth in r.LevelBossGrowthCap)
+            {
+                text.Append(F(growth));
+            }
+
             return Fnv(text.ToString());
         }
 

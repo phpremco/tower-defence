@@ -20,6 +20,8 @@ MonoBehaviour:
   _radius: 3.2
   _fraction: 0
   _targets: 3
+  _damageType: 0
+  _armourFactor: 1
   _requiresPerk: {fileID: 0}
   _icon: {fileID: 0}
   _tint: {r: 0.4, g: 0.8, b: 1, a: 1}

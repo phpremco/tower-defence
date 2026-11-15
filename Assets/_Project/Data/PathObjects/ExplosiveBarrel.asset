@@ -20,7 +20,10 @@ MonoBehaviour:
   _radius: 2
   _triggerRadius: 1.1
   _damage: 200
+  _damageType: 0
+  _armourFactor: 1
   _slowFactor: 1
+  _burns: 0
   _speed: 0
   _lifetime: 0
   _color: {r: 0.9, g: 0.5, b: 0.1, a: 1}

@@ -116,7 +116,7 @@ namespace Game.Editor
                 Creature = new Creature
                 {
                     Id = "Gravemaw", Description = "The planet's digging maw: it answers the colony's drill with a drill of its own.",
-                    Layer = TargetLayers.Ground, Health = 39540f, Armor = 1200f, Speed = 0.55f, BaseDamage = 25, Boss = true,
+                    Layer = TargetLayers.Ground, Health = 43250f, Armor = 1200f, Speed = 0.55f, BaseDamage = 25, Boss = true,
                     Attack = AttackStyle.Bite, BlockadeDamage = 110f, AttackRange = 2.5f, AttackInterval = 1.4f,
                     Color = new Color(0.55f, 0.2f, 0.4f), Eyes = new Color(1f, 0.45f, 0.75f), Accent = new Color(1f, 0.4f, 0.8f), Blood = new Color(1f, 0.45f, 0.7f),
                     Scale = 0.8f, Shape = EnemyShape.None, Death = DeathStyle.Collapse,
@@ -136,7 +136,7 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "CinderMatriarch",
-                Creature = Titan("CinderMatriarch", "The queen of the lava, and she hates the cold.", 10350f, 1800f, 0.4f, new Color(0.8f, 0.25f, 0.08f), new Color(1f, 0.6f, 0.2f)),
+                Creature = Titan("CinderMatriarch", "The queen of the lava, and she hates the cold.", 10400f, 1800f, 0.4f, new Color(0.8f, 0.25f, 0.08f), new Color(1f, 0.6f, 0.2f)),
                 Phases = new[] { new BossPhase("Hunting", 1f), new BossPhase("Brood", 0.5f) },
                 Signature = BossSignature.HuntTheCold,
                 Arrival = BossArrival.Pool,
@@ -154,7 +154,7 @@ namespace Game.Editor
             {
                 Id = "FrostWarden",
                 // Its ice armour is the mechanic (a share of each hit lands until it breaks); round 29 adds a frost crust pool on top.
-                Creature = Titan("FrostWarden", "A guardian of ice that freezes your defence in place.", 7500f, 1200f, 0.5f, new Color(0.55f, 0.75f, 0.9f), new Color(0.6f, 0.9f, 1f)),
+                Creature = Titan("FrostWarden", "A guardian of ice that freezes your defence in place.", 6950f, 1200f, 0.5f, new Color(0.55f, 0.75f, 0.9f), new Color(0.6f, 0.9f, 1f)),
                 Phases = new[] { new BossPhase("Armoured", 1f), new BossPhase("Exposed", 0.4f) },
                 Signature = BossSignature.GateBreaker,
                 Arrival = BossArrival.Pool,
@@ -191,7 +191,7 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "Shattered",
-                Creature = Titan("Shattered", "A crystal giant that splits apart when it takes damage.", 14000f, 2000f, 0.5f, new Color(0.6f, 0.7f, 0.85f), new Color(0.8f, 0.95f, 1f)),
+                Creature = Titan("Shattered", "A crystal giant that splits apart when it takes damage.", 14100f, 2000f, 0.5f, new Color(0.6f, 0.7f, 0.85f), new Color(0.8f, 0.95f, 1f)),
                 Phases = new[] { new BossPhase("Whole", 1f), new BossPhase("Split", 0.66f), new BossPhase("Rejoined", 0.33f) },
                 Signature = BossSignature.Splitting,
                 Arrival = BossArrival.Ruins,
@@ -211,7 +211,7 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "SealedOne",
-                Creature = Titan("SealedOne", "The secret under the planet: its immune system, not an animal.", 27200f, 3500f, 0.25f, new Color(0.85f, 0.85f, 0.95f), Color.white),
+                Creature = Titan("SealedOne", "The secret under the planet: its immune system, not an animal.", 31050f, 3500f, 0.25f, new Color(0.85f, 0.85f, 0.95f), Color.white),
                 Phases = new[] { new BossPhase("First seal", 1f), new BossPhase("Second seal", 0.75f), new BossPhase("Third seal", 0.5f), new BossPhase("Release", 0.25f) },
                 Signature = BossSignature.Recognition,
                 Arrival = BossArrival.Rift,

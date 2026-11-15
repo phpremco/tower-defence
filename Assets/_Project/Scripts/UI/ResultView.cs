@@ -24,6 +24,9 @@ namespace Game.UI
         private const int UnlockLineSize = 30;
         private const float ButtonWidth = 340f;
         private const float DefeatDelaySeconds = 3.2f;
+
+        /// <summary>Seconds (real time) over which the field winds down to a stop once the result panel is up.</summary>
+        private const float FreezeSeconds = 0.5f;
         // Text keeps this far from the panel edges, and the panel this far from the safe area edges.
         private const float TextInset = 60f;
         private const float SafeMargin = 24f;
@@ -132,7 +135,7 @@ namespace Game.UI
         private void Show()
         {
             _shown = true;
-            Time.timeScale = 1f;
+            StartCoroutine(Freeze());
             _root = Build(_context.Result);
             StartCoroutine(Reveal(_root.transform.GetChild(0) as RectTransform, _context.Result));
         }
@@ -352,12 +355,30 @@ namespace Game.UI
             }
         }
 
+        // The level is decided and its panel is up: the field behind it stops (round 64, Remco: "right now it just keeps
+        // living"). Creatures, towers, shots, drones and every timer run on game time, so stopping the clock stops them all;
+        // it winds down over a moment instead of snapping. The panel itself, its stars and its buttons run on unscaled time.
+        private static IEnumerator Freeze()
+        {
+            float from = Time.timeScale;
+            float t = 0f;
+            while (t < FreezeSeconds)
+            {
+                t += Time.unscaledDeltaTime;
+                Time.timeScale = Mathf.Lerp(from, 0f, Mathf.SmoothStep(0f, 1f, t / FreezeSeconds));
+                yield return null;
+            }
+
+            Time.timeScale = 0f;
+        }
+
         private static void Go(string scene)
         {
             Time.timeScale = 1f;
             SceneManager.LoadScene(scene);
         }
 
-        private static void PlayAgain() => Go(SceneNames.Level);
+        // The clock stays stopped under the loading screen; the loader starts it again for the new level.
+        private static void PlayAgain() => LevelLoader.Reload();
     }
 }

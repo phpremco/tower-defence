@@ -108,10 +108,20 @@ namespace Game.Editor
         }
 
         // Armour is a pool in front of the body (round 24, Remco): a shell strips it point for point, a light pulse works on it
-        // at its gun's armour factor (0.3), so against the Gun Turret or the Laser a Cragback is worth 160 + 60 / 0.3 = 360 hit
-        // points and against the Cannon 220. Its waves ask for the Cannon or upgrades, not a row of fresh light guns. The
-        // heavier armour of the later species sits around half their health.
-        private const float CragbackArmour = 60f;
+        // at its damage type's armour factor (0.2). Round 64 (Remco: "the Laser melts them"): a troop's toughness (what a shell
+        // must deal) stays, but most of it is armour now (BalanceSheet.TroopArmourShare), so against the Gun Turret or the Laser
+        // a Cragback is worth 60 + 160 / 0.2 = 860 hit points and against the Cannon 220 (it was 460 against 220, which the
+        // Laser's rate of fire made up for). Its waves ask for the Cannon; the light guns finish what the shells have stripped.
+        public const float CragbackToughness = 220f;
+        public const float StingerToughness = 290f;
+        public const float ShardbackToughness = 330f;
+        public const float BulwarkToughness = 560f;
+
+        /// <summary>The armoured troops and their toughness, for the round's targeted apply step.</summary>
+        public static readonly (string Id, float Toughness)[] ArmouredTroops =
+        {
+            ("Cragback", CragbackToughness), ("Stinger", StingerToughness), ("Shardback", ShardbackToughness), ("Bulwark", BulwarkToughness),
+        };
 
         private static readonly Color VenomGreen = new Color(0.62f, 1f, 0.2f);
         private static readonly Color GooGreen = new Color(0.35f, 1f, 0.25f);
@@ -137,7 +147,7 @@ namespace Game.Editor
             });
             b.Stinger = CreateEnemy(new Creature
             {
-                Id = "Stinger", Description = "Scorpion in glowing armour plates. Its acid tail stings the towers it passes; heavy single shots strip the armour.", Layer = TargetLayers.Ground, Health = 200f, Armor = 90f, Speed = 0.9f, BaseDamage = 3,
+                Id = "Stinger", Description = "Scorpion in glowing armour plates. Its acid tail stings the towers it passes; heavy single shots strip the armour.", Layer = TargetLayers.Ground, Health = BalanceSheet.BodyOf(StingerToughness), Armor = BalanceSheet.ArmourOf(StingerToughness), Speed = 0.9f, BaseDamage = 3,
                 Attack = AttackStyle.Sting, AttackDamage = 3f, BlockadeDamage = 10f, AttackRange = 2.6f, AttackInterval = 2f,
                 Color = new Color(0.6f, 0.2f, 0.85f), Eyes = new Color(1f, 0.5f, 1f), Accent = new Color(1f, 0.35f, 0.9f), Blood = new Color(0.55f, 1f, 0.35f),
                 Scale = 0.8f, Shape = EnemyShape.Stinger, Death = DeathStyle.Shatter,
@@ -151,7 +161,7 @@ namespace Game.Editor
             // The ice beetle: slow and heavily plated under its ice, spitting frost at the towers it passes.
             b.Shardback = CreateEnemy(new Creature
             {
-                Id = "Shardback", Description = "Ice beetle under a crust of shards. Slow and heavily armoured; spits frost at the towers it passes.", Layer = TargetLayers.Ground, Health = 220f, Armor = 110f, Speed = 0.75f, BaseDamage = 4,
+                Id = "Shardback", Description = "Ice beetle under a crust of shards. Slow and heavily armoured; spits frost at the towers it passes.", Layer = TargetLayers.Ground, Health = BalanceSheet.BodyOf(ShardbackToughness), Armor = BalanceSheet.ArmourOf(ShardbackToughness), Speed = 0.75f, BaseDamage = 4,
                 Attack = AttackStyle.Sting, AttackDamage = 4f, BlockadeDamage = 14f, AttackRange = 2.6f, AttackInterval = 1.9f, Element = Element.Ice,
                 Color = new Color(0.55f, 0.75f, 0.9f), Eyes = new Color(0.85f, 1f, 1f), Accent = new Color(0.8f, 0.95f, 1f), Blood = new Color(0.75f, 0.9f, 1f),
                 Scale = 0.8f, Shape = EnemyShape.Shardback, Death = DeathStyle.Shatter,
@@ -167,7 +177,7 @@ namespace Game.Editor
             });
             b.Bulwark = CreateEnemy(new Creature
             {
-                Id = "Bulwark", BodyHalfWidth = 0.9f, Description = "Shield bearer with a crystal sword. Natural shields soak damage; it hacks at towers and gates in its way.", Layer = TargetLayers.Ground, Health = 380f, Armor = 180f, Speed = 0.7f, BaseDamage = 5,
+                Id = "Bulwark", BodyHalfWidth = 0.9f, Description = "Shield bearer with a crystal sword. Natural shields soak damage; it hacks at towers and gates in its way.", Layer = TargetLayers.Ground, Health = BalanceSheet.BodyOf(BulwarkToughness), Armor = BalanceSheet.ArmourOf(BulwarkToughness), Speed = 0.7f, BaseDamage = 5,
                 Attack = AttackStyle.Slash, AttackDamage = 9f, BlockadeDamage = 24f, AttackRange = 1.6f, AttackInterval = 1.6f,
                 Color = new Color(0.3f, 0.6f, 0.35f), Eyes = new Color(1f, 0.9f, 0.4f), Accent = new Color(0.4f, 1f, 0.95f), Blood = GooGreen,
                 Scale = 0.9f, Shape = EnemyShape.Bulwark, Death = DeathStyle.Collapse,
@@ -215,7 +225,7 @@ namespace Game.Editor
             // for heavy hides"), so the Cannon is wanted from the first level (round 21a); the heavy plates come in level 11.
             b.Cragback = CreateEnemy(new Creature
             {
-                Id = "Cragback", BodyHalfWidth = 0.65f, Description = "Stone crawler. A walking boulder: slow, heavy and very tough, it slams the gates in its way. Heavy shells crack it best.", Layer = TargetLayers.Ground, Health = 160f, Armor = CragbackArmour, Speed = 0.6f, BaseDamage = 4,
+                Id = "Cragback", BodyHalfWidth = 0.65f, Description = "Stone crawler. A walking boulder: slow, heavy and very tough, it slams the gates in its way. Heavy shells crack it best.", Layer = TargetLayers.Ground, Health = BalanceSheet.BodyOf(CragbackToughness), Armor = BalanceSheet.ArmourOf(CragbackToughness), Speed = 0.6f, BaseDamage = 4,
                 Attack = AttackStyle.Slam, BlockadeDamage = 16f, AttackRange = 2.4f, AttackInterval = 1.8f, Element = Element.Stone,
                 Color = new Color(0.4f, 0.36f, 0.32f), Eyes = new Color(1f, 0.75f, 0.3f), Accent = new Color(0.85f, 0.42f, 0.14f), Blood = new Color(0.9f, 0.55f, 0.25f),
                 Scale = 0.85f, Shape = EnemyShape.Cragback, Death = DeathStyle.Shatter,

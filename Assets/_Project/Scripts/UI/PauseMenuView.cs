@@ -278,11 +278,8 @@ namespace Game.UI
             }
         }
 
-        private static void Restart()
-        {
-            Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneNames.Level);
-        }
+        // The clock stays stopped while the loading screen fades in over the pause menu; the loader starts it again.
+        private static void Restart() => LevelLoader.Reload();
 
         private static void QuitToMap()
         {

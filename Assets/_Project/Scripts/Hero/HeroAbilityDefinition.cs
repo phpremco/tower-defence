@@ -29,7 +29,10 @@ namespace Game.Hero
 
         [SerializeField] private TargetLayers _targets = TargetLayers.Ground | TargetLayers.Air;
 
-        [Tooltip("Share of the damage that works on a creature's armour while it has any (a shockwave is heavy: one).")]
+        [Tooltip("What the damage is made of; a shockwave is a blast, so armour does not reduce it (round 64).")]
+        [SerializeField] private DamageType _damageType = DamageType.Explosive;
+
+        [Tooltip("Share of the damage that works on a creature's armour while it has any (a shockwave is a blast: one).")]
         [SerializeField] [Range(0.05f, 2f)] private float _armourFactor = 1f;
 
         /// <summary>The perk the hero must have unlocked before this ability shows; null means it is always there.</summary>
@@ -52,6 +55,7 @@ namespace Game.Hero
         public float Radius => _radius;
         public float Fraction => _fraction;
         public TargetLayers Targets => _targets;
+        public DamageType DamageType => _damageType;
         public float ArmourFactor => _armourFactor;
         public HeroPerkDefinition RequiresPerk => _requiresPerk;
         public Sprite Icon => _icon;

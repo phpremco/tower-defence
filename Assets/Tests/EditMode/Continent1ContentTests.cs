@@ -25,9 +25,9 @@ namespace Game.Tests
         private const int SliceLevels = 6;
         private const int FirstAirLevel = 2;
 
-        // The most armour a slice creature may wear, as a share of its health: a light hide a shell strips in a few hits; the heavy
-        // armour of the later species (around half their health) waits for level 11 (Docs/STORY.md).
-        private const float LightHideShare = 0.4f;
+        // The most armour a slice creature may wear: the Cragback's (round 64: most of an armoured troop's toughness is armour,
+        // so the measure is the pool itself, not its share). The tougher armoured species wait for level 11 (Docs/STORY.md).
+        private static readonly float SliceArmour = Game.Editor.BalanceSheet.ArmourOf(Game.Editor.ProjectGenerator.CragbackToughness);
         private const float FastTeaserShare = 2.5f;
 
         private static readonly string[] SliceTowers = { "PulseRifle", "Cannon", "Laser", "Rocket" };
@@ -85,7 +85,7 @@ namespace Game.Tests
             {
                 foreach (SpawnGroup group in Groups(level))
                 {
-                    Assert.LessOrEqual(group.Enemy.Armor, group.Enemy.MaxHealth * LightHideShare, $"{level.name}: {group.Enemy.name} wears heavy armour, which waits for level 11");
+                    Assert.LessOrEqual(group.Enemy.Armor, SliceArmour, $"{level.name}: {group.Enemy.name} wears heavier armour than a Cragback, which waits for level 11");
                 }
             }
         }
@@ -200,10 +200,11 @@ namespace Game.Tests
             EnemyDefinition bat = Load<EnemyDefinition>("Enemies/Shalebat");
             Assert.AreEqual(Element.Stone, crag.Element);
             Assert.AreEqual(Element.Stone, bat.Element);
-            // Round 24: the Cragback's dense hide is a light armour pool ("heavy shells for heavy hides"), so the Cannon is wanted.
-            Assert.That(crag.Armor, Is.GreaterThan(0f).And.LessThanOrEqualTo(crag.MaxHealth * LightHideShare));
+            // Round 24: the Cragback's dense hide is an armour pool ("heavy shells for heavy hides"), so the Cannon is wanted.
+            // Round 64: most of its toughness is that pool; the toughness itself (what a shell must deal) is the old 220.
+            Assert.AreEqual(SliceArmour, crag.Armor, 0.001f);
             Assert.AreEqual(0f, bat.Armor, "the Flak's air targets stay soft");
-            Assert.AreEqual(160f, crag.MaxHealth, 0.001f);
+            Assert.AreEqual(Game.Editor.ProjectGenerator.CragbackToughness, crag.MaxHealth + crag.Armor, 0.001f);
             Assert.AreEqual(0.6f, crag.Speed, 0.001f);
             Assert.IsTrue(bat.Flies);
             Assert.IsNotNull(crag.Voice, "the Cragback borrows a voice until Remco records its own");

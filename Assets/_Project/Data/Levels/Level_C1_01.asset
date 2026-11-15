@@ -183,6 +183,7 @@ MonoBehaviour:
   _bossEntrance:
     Kind: 0
     Cell: {x: 0, y: 0}
+    Footprint: []
   _nests:
   - Cell: {x: 17, y: 1}
     Element: 7
@@ -197,7 +198,7 @@ MonoBehaviour:
   - 0.87
   - 0.757
   - 1
-  - 0.87
+  - 0.757
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 0}

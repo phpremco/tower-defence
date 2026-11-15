@@ -1,0 +1,47 @@
+Armour audit 2026-11-15 11:50 (after): seconds for one source to kill one creature at wave multiplier one; in brackets coins x seconds / 1000 for a bought source.
+A blast is given as the share of the creature one blast takes. 'soft' is the same toughness without armour, for scale.
+
+source                type         dmg     /s    dps armour x       Cragback 60+160        Stinger 80+210      Shardback 90+240       Bulwark 155+405    soft 220  note
+Gun Turret L1         Bullet         5   2.86   14.3      0.2          60.2 s (3.0)          79.1 s (4.0)          90.3 s (4.5)         152.6 s (7.6)15.4 s (0.8)  
+Gun Turret L2         Bullet         9   3.33     30      0.2          28.8 s (2.6)          37.8 s (3.4)          43.2 s (3.9)          72.9 s (6.6) 7.5 s (0.7)  
+Gun Turret L3         Bullet        15      4     60      0.2          14.5 s (2.2)          19.0 s (2.9)          21.5 s (3.3)          36.5 s (5.7) 3.8 s (0.6)  
+Laser Turret L1       Beam           8      5     40      0.2          21.6 s (2.8)          28.4 s (3.7)          32.4 s (4.2)          54.6 s (7.1) 5.6 s (0.7)  
+Laser Turret L2       Beam          12   5.56   66.7      0.2          13.0 s (2.4)          17.1 s (3.2)          19.4 s (3.6)          32.8 s (6.1) 3.4 s (0.6)  
+Laser Turret L3       Beam          18   6.67    120      0.2           7.2 s (2.1)           9.5 s (2.7)          10.8 s (3.1)          18.3 s (5.2) 2.0 s (0.6)  
+Cannon L1             Explosive     25   0.63   15.6        1          14.4 s (1.4)          19.2 s (1.9)          22.4 s (2.2)          36.8 s (3.7)14.4 s (1.4)  splash, up to 3 in the blast
+Cannon L2             Explosive     48   0.74   35.6        1           6.8 s (1.3)           9.5 s (1.8)           9.5 s (1.8)          16.2 s (3.2) 6.8 s (1.3)  splash, up to 3 in the blast
+Cannon L3             Explosive     85   0.87   73.9        1           3.5 s (1.2)           4.6 s (1.6)           4.6 s (1.6)           8.1 s (2.8) 3.5 s (1.2)  splash, up to 3 in the blast
+Flak Turret L1        Explosive     14   1.82   25.5        1           8.8 s (1.1)          11.6 s (1.4)          13.2 s (1.6)          22.0 s (2.6) 8.8 s (1.1)  air only (no armoured flyer exists)
+Flak Turret L2        Explosive     25      2     50        1           4.5 s (0.9)           6.0 s (1.2)           7.0 s (1.4)          11.5 s (2.3) 4.5 s (0.9)  air only (no armoured flyer exists)
+Flak Turret L3        Explosive     40   2.22   88.9        1           2.7 s (0.8)           3.6 s (1.1)           4.1 s (1.2)           6.3 s (1.9) 2.7 s (0.8)  air only (no armoured flyer exists)
+Tesla L1              Arc           16      2     32      0.5          12.0 s (1.7)          16.0 s (2.2)          18.0 s (2.5)          30.5 s (4.3) 7.0 s (1.0)  splash, up to all in the blast
+Tesla L2              Arc           26   2.22   57.8      0.5           6.8 s (1.5)           9.0 s (1.9)           9.9 s (2.1)          17.1 s (3.7) 4.1 s (0.9)  splash, up to all in the blast
+Tesla L3              Arc           40    2.5    100      0.5           4.0 s (1.3)           5.2 s (1.7)           6.0 s (1.9)          10.0 s (3.2) 2.4 s (0.8)  splash, up to all in the blast
+Railgun L1            Piercing      80   0.45   36.4      1.5           6.6 s (1.5)           6.6 s (1.5)           8.8 s (1.9)          13.2 s (2.9) 6.6 s (1.5)  
+Railgun L2            Piercing     120    0.5     60      1.5           4.0 s (1.3)           4.0 s (1.3)           6.0 s (1.9)           8.0 s (2.5) 4.0 s (1.3)  
+Railgun L3            Piercing     180   0.56    100      1.5           1.8 s (0.8)           3.6 s (1.6)           3.6 s (1.6)           5.4 s (2.5) 3.6 s (1.6)  
+Cryo L1               Beam           2      2      4      0.2        215.5 s (19.4)        283.0 s (25.5)        323.0 s (29.1)        545.5 s (49.1)55.0 s (5.0)  
+Cryo L2               Beam           2   2.22    4.4      0.2        194.0 s (38.8)        254.7 s (50.9)        290.7 s (58.1)        491.0 s (98.2)49.5 s (9.9)  
+Cryo L3               Beam           2    2.5      5      0.2        172.4 s (62.1)        226.4 s (81.5)        258.4 s (93.0)       436.4 s (157.1)44.0 s (15.8)  
+Artillery L1          Explosive     70   0.63   43.8        1                 6.4 s                 8.0 s                 8.0 s                12.8 s       6.4 s  splash, up to all in the blast
+Artillery L2          Explosive    130   0.71   92.9        1           2.8 s (0.6)           4.2 s (0.9)           4.2 s (0.9)           7.0 s (1.5) 2.8 s (0.6)  splash, up to all in the blast
+Artillery L3          Explosive    220   0.83  183.3        1           2.4 s (1.3)           2.4 s (1.3)           2.4 s (1.3)           3.6 s (1.9) 1.2 s (0.6)  splash, up to all in the blast
+Storm Rifle L1        Arc           14      5     70      0.5                 5.6 s                 7.2 s                 8.2 s                13.8 s       3.2 s  splash, up to all in the blast
+Storm Rifle L2        Arc           20   5.56  111.1      0.5           3.4 s (0.7)           4.5 s (0.9)           5.2 s (1.0)           8.8 s (1.8) 2.0 s (0.4)  splash, up to all in the blast
+Storm Rifle L3        Arc           28   6.67  186.7      0.5           2.1 s (1.1)           2.7 s (1.4)           3.2 s (1.6)           5.3 s (2.6) 1.2 s (0.6)  splash, up to all in the blast
+Cryo Beam L1          Beam           8   6.67   53.3      0.2                16.2 s                21.3 s                24.3 s                41.0 s       4.2 s  
+Cryo Beam L2          Beam          13   7.69    100      0.2           8.7 s (1.8)          11.3 s (2.4)          13.0 s (2.7)          21.8 s (4.6) 2.2 s (0.5)  
+Cryo Beam L3          Beam          20   9.09  181.8      0.2           4.7 s (2.5)           6.3 s (3.3)           7.2 s (3.7)          12.0 s (6.2) 1.2 s (0.6)  
+Base Turret L1        Bullet         7    2.5   17.5      0.2                49.2 s                64.8 s                74.0 s               124.8 s      12.8 s  
+Base Turret L2        Bullet        12   2.86   34.3      0.2          25.2 s (1.8)          33.3 s (2.3)          37.8 s (2.6)          63.7 s (4.5) 6.7 s (0.5)  
+Base Turret L3        Bullet        19   3.33   63.3      0.2          13.8 s (2.5)          18.0 s (3.2)          20.4 s (3.7)          34.5 s (6.2) 3.6 s (0.6)  
+Blockade L2           Bullet         6   2.22   13.3      0.2          64.8 s (9.7)         85.1 s (12.8)         97.2 s (14.6)        163.8 s (24.6)16.7 s (2.5)  
+Blockade L3           Bullet        11   2.86   31.4      0.2          27.7 s (8.3)         36.1 s (10.8)         41.3 s (12.4)         69.7 s (20.9) 7.0 s (2.1)  
+Hero energy sword     Blade         18   1.43   25.7      0.5                15.4 s                19.6 s                22.4 s                37.8 s       9.1 s  
+Hero blaster          Bullet         4      5     20      0.2                43.0 s                56.6 s                64.6 s               109.2 s      11.0 s  
+Hero shockwave        Explosive     40   0.05      2        1               120.0 s               160.0 s               180.0 s               280.0 s     120.0 s  one blast per cooldown, everything in its radius
+Attack drone          Bullet         6      2     12      0.2         72.0 s (13.0)         94.5 s (17.0)        108.0 s (19.4)        182.0 s (32.8)18.5 s (3.3)  
+Land Mine             Explosive    140      0      0        1             64% of it             48% of it             42% of it             25% of it   64% of it  one blast
+Barrel                Explosive    200      0      0        1             91% of it             69% of it             61% of it             36% of it   91% of it  one blast
+Lava ball             Burn         5.5     10     55      0.5           7.0 s (0.5)           9.1 s (0.6)          10.4 s (0.7)          17.6 s (1.2) 4.0 s (0.3)  55 a second while it touches (damage over time)
+Ground drone          Ram            3     10     30      0.5          12.7 s (1.0)          16.7 s (1.3)          19.0 s (1.5)          32.2 s (2.6) 7.4 s (0.6)  30 a second while it touches (damage over time)

@@ -156,6 +156,7 @@ namespace Game.Balance
             float airBaseDamage = 0f;
             float airStrikeSum = 0f;
             float scale = difficulty.Health * level.HealthScale * wave.HealthMultiplier;
+            float bossScale = wave.BossHealthScale > 0f ? wave.BossHealthScale : 1f;
 
             foreach (GroupSpec group in wave.Groups)
             {
@@ -166,9 +167,11 @@ namespace Game.Balance
                 }
 
                 int count = enemy.IsBoss ? group.Count : Math.Max(1, (int)Math.Ceiling(group.Count * difficulty.Count));
-                float each = enemy.EffectiveHealth * scale * difficulty.ShareFor(enemy);
+                // A level's boss only: a continent boss has its own health share per difficulty and never takes a wave's boss scale.
+                float own = enemy.IsBoss && !enemy.IsContinentBoss ? bossScale : 1f;
+                float each = enemy.EffectiveHealth * scale * own * difficulty.ShareFor(enemy);
                 float health = each * count;
-                float armour = enemy.Armor * scale * difficulty.ShareFor(enemy) * count;
+                float armour = enemy.Armor * scale * own * difficulty.ShareFor(enemy) * count;
                 float end = group.Delay + (group.Stagger + (count - 1) * group.Interval) * difficulty.Interval;
                 load.KillMoney += (int)Math.Round(enemy.Reward * count * level.Income);
                 load.HasBoss |= enemy.IsBoss;

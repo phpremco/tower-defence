@@ -15,10 +15,10 @@ MonoBehaviour:
   _displayName: Shardback
   _layer: 1
   _flies: 0
-  _maxHealth: 220
-  _armor: 110
+  _maxHealth: 90
+  _armor: 240
   _speed: 0.75
-  _reward: 22
+  _reward: 24
   _baseDamage: 4
   _element: 5
   _attackStyle: 1

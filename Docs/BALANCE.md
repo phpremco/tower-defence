@@ -1744,3 +1744,217 @@ Vein 12), while the searched plans and the creative bot win 3/3 with three stars
 before it, and the last override stayed in the editor until the next domain reload (found as `RaidHealthFloor` 0.5 in the live
 editor; a solve then would have written it). Fixed: a fresh `BalanceRules`, overridden before the model is built. Round 61's
 stored waves were not affected (they equal the solve at 0.6, all 24 cells), but its `r61_lab_rule*.txt` tables are one run off.
+
+## Round 64: one armour rule for every weapon, a level's boss sized on its own (2026-11-15)
+
+Remco after his second playtest: "we gave the stone enemies armour, but the Laser melts them, on Easy and also on Hard", "the
+attack drone killed armoured stone guys in a few shots; across all weapons this must be balanced: reduced damage from
+non-exploding things, the Cannon is explosive", and "the level 3 main boss on Hard died before the first gate with one Cannon
+level 2 and one Gun Turret level 3". Commands: Docs/COMMANDS.md "Round 64".
+
+**The audit** (`Tools/PlayTest/Scripts/ArmourTtk.cs`, tables `r64_armour_ttk_before.txt` / `_after.txt`: every damage source
+against every armoured troop through the game's own `Health`). Two different things were wrong:
+
+1. *The attack drone had no armour factor at all.* `Drone.UpdateAttack` fired through the projectile pool without one, so its
+   shots landed at the default of one, like a shell. Mines, the barrel, the lava ball and the ground drone went the same way
+   (written down as "heavy", but never data). Every other source did carry a factor (towers, hero weapons, the shockwave).
+2. *The Laser never bypassed armour; the armour was too small to matter.* The pool is spent point for point (a hit at factor f
+   takes f of itself off the armour and nothing reaches the body while any is left), so a beam of many small ticks pays exactly
+   what one big hit pays: per hit or per tick makes no difference, and there is no damage-over-time path round it. But a
+   Cragback was 160 body + 60 armour: light fire paid 460 for what a shell paid 220, a factor 2.1, and the Laser has 2.6 times the
+   Cannon's single-target damage per second per coin, so per coin the Laser killed a Cragback as fast as the Cannon did
+   (coins x seconds / 1000 at level 1: Gun Turret 1.6, Laser 1.5, Cannon 1.4). Armour forced nothing.
+
+**The rule.** A weapon has a damage type (`Game.Core.DamageType` on `TowerDefinition`, `HeroWeaponDefinition`,
+`HeroAbilityDefinition`, `DroneDefinition`, `PathObjectDefinition`), and the share of a hit that works on armour follows from the
+type in one table (`BalanceSheet.ArmourFactorOf`); `ProjectGenerator.WeaponDamageTypes` lists every weapon once and no weapon
+carries a hand-typed factor any more. `DamageTypeRule`: everything that neither explodes nor pierces is reduced.
+
+| Type | Factor | Weapons |
+| --- | --- | --- |
+| Bullet | 0.2 | Gun Turret, base turret, gate gun, hero blaster, **attack drone (was 1)** |
+| Beam | 0.2 | Laser, Cryo, Cryo Beam |
+| Blade | 0.5 | hero energy sword (**was 1**) |
+| Arc | 0.5 | Tesla, Storm Rifle |
+| Burn | 0.5 | lava ball (**was 1**) |
+| Ram | 0.5 | ground drone (**was 1**) |
+| Explosive | 1 | Cannon, Artillery, mine, barrel, hero shockwave, Flak Turret (**was 0.5**; no armoured flyer exists) |
+| Piercing | 1.5 | Railgun |
+
+**The armoured troops are mostly armour now** (`BalanceSheet.TroopArmourShare` 0.72, `ArmourOf` / `BodyOf`). The toughness
+(body plus armour: what a shell must deal) is unchanged, so a Cannon sees the same creature: Cragback 160+60 -> **60+160**,
+Stinger 200+90 -> 80+210, Shardback 220+110 -> 90+240, Bulwark 380+180 -> 155+405. Kill money follows threat (Cragback 14 -> 15).
+Boss armour pools are untouched.
+
+Seconds for one source to kill one Cragback at wave multiplier one (coins x seconds / 1000 for a bought source):
+
+| Source | Before | After |
+| --- | --- | --- |
+| Gun Turret L1 / L3 | 32.2 s (1.6) / 7.8 s | **60.2 s (3.0)** / 14.5 s |
+| Laser L1 / L3 | 11.6 s (1.5) / 3.9 s | **21.6 s (2.8)** / 7.2 s |
+| Cannon L1 / L3 | 14.4 s (1.4) / 3.5 s | 14.4 s (1.4) / 3.5 s |
+| Railgun L1 | 6.6 s (1.5) | 6.6 s (1.5) |
+| Tesla L1 | 9.0 s (1.3) | 12.0 s (1.7) |
+| Base turret L1 | 26.4 s | 49.2 s |
+| Hero blade / blaster | 9.1 s / 23.2 s | 15.4 s / 43.0 s |
+| Attack drone | 18.5 s (3.3) | **72.0 s (13.0)** |
+| Mine (one blast) | 64 % of it | 64 % of it |
+| Lava ball / ground drone (while touching) | 4.0 s / 7.4 s | 7.0 s / 12.7 s |
+
+Per coin a Laser or a Gun Turret now needs twice what a Cannon needs (2.0x and 2.1x; it was 1.05x and 1.14x), and the Cannon's
+blast still takes three at once. Light fire still counts: it kills a Cragback alone, only slowly, and once shells have stripped
+the armour every weapon lands in full (the Laser takes a stripped Cragback's body in 1.6 s).
+
+**On paper.** `DroneStats.ArmourFactor` (the attack drone's fire lands at the share the wave's armour lets it,
+`PlanEvaluator`); the blade's factor reaches the ledger from the data as before. The armour makes every wave with Cragbacks
+harder for the ledger's light guns, so the solve makes the same waves lighter where it can. Two things came out of that:
+
+- *A wave of many light creatures cannot be trimmed.* Once a creature has less health than one shot deals, the ledger's
+  pressure no longer falls with its health (a shot kills one creature at most), so the trim to the curve drove such waves to
+  the bottom of its range (Shard Ridge Easy at scale 0.6: Skitters of half a hit point, the level at 0.6 of its health). The
+  cell's target scale went **0.6 -> 0.8** (`wave_tuning.txt`): a curve it can reach (1.70x) with its creatures about as
+  tough as they were (total health x1.13).
+- *A wave over the cap through the wave before it.* A Cragback of Fault Line Hard's wave 9 arrives with wave 10
+  (`KillPurse.Carried`), and no trim of wave 10 brought wave 10 under the cap. `CampaignModel.CalibrateToHuman` now lets the wave
+  before give way (`GiveWayBefore`), inside the trim passes, so the rest of the level is trimmed around it.
+
+**A level's boss has a health scale of its own** (`WaveDefinition._bossHealthScale`, `WaveSpec.BossHealthScale`,
+`EnemySpawner.WaveBossHealthScale`: the boss spawns at the wave's multiplier times its scale). Why the bosses were feeble: a
+boss wave had one multiplier for the boss and its crowd, the solver and the cap sized it by the crowd, and
+`DifficultyProfile.BossHealthShare` (round 10, checked: it works) only ever applied to continent bosses. On a crowded finale
+the boss came out at a third of its book health: Shard Ridge Hard wave 16, a Brood Mother of 900 x 0.337 x 1.15 = **349**
+hit points, about what Medium's had (327) and a seventh of the wave's health. Fault Line Hard: 279 and 217. Round 62's builder
+step is not the cause (it touched Psycho), nor is the armour bug (these bosses wear none).
+
+`CampaignModel.SizeBosses`, after the trim, per boss wave of a level boss (continent bosses keep their share and the finale
+probe):
+
+1. a floor: the boss is never scaled under `BalanceRules.LevelBossHealthFloor` (0.5 / 0.75 / 0.9 / 0.9 of its book health,
+   before the difficulty's own health factor);
+2. firepower: a walking boss that asks less on its own than `BalanceRules.LevelBossAlone` (0.2 / 0.3 / 0.4 / 0.45: the ledger's
+   pressure of the wave reduced to its boss, the expected player with the hero) grows until it does, so a boss grows with what
+   the player has by then. A flying boss is left at its floor: its pressure is the sky's, and the sky guns the ledger buys for
+   it stay out of the purse for the rest of the level (filling it put Crysium Vein Psycho at half its curve);
+3. the growth cap: the boss grows only as far as its wave still fits `BalanceRules.LevelBossGrowthCap` (1 / 1 / 1.15 / 1).
+   A boss that reaches the base ends the level, so its wave has to be held. This number was set by the replays: grown to the
+   hero cap (the round's first solve) the bosses were beaten on Hard in every cell that did not fall earlier, but on Psycho
+   (1.35) Shard Ridge's last boss (2160 hit points) beat the searched plans at the last wave in 8 runs of 9, and at 1.15
+   (1454) still in 6 of 9; held to 1 (1337) the cell is won 3/3;
+4. the hero cap: when the floor alone pushed the whole wave over the hero cap, its crowd gives way; when the crowd cannot (a
+   count-bound crowd, see above), the boss comes down again, never under its floor.
+
+The waves are trimmed once more around the bosses as sized and the bosses sized again (`BossPasses` 2), because a tougher
+boss costs kill money and shifts the waves after it. The rules are in the `InputHash`. The scale is a level boss's only: a continent
+boss in the same wave keeps its own share (`WaveLoad`, `EnemySpawner`; the finale model read the level boss's scale onto the
+continent boss for a moment, which `ContinentFinaleTests` caught).
+
+**Boss health as spawned, before and after.**
+
+| Level | Difficulty | Boss (wave) | Before | After | x |
+| --- | --- | --- | --- | --- | --- |
+| C1_01 | Easy | BroodMother (w12) | 508 | 482 | 0.95 |
+| C1_01 | Medium | BroodMother (w12) | 660 | 675 | 1.02 |
+| C1_01 | Hard | BroodMother (w8) | 880 | 932 | 1.06 |
+| C1_01 | Hard | BroodMother (w12) | 1172 | 1422 | 1.21 |
+| C1_01 | Psycho | BroodMother (w5) | 1830 | 1432 | 0.78 |
+| C1_01 | Psycho | BroodMother (w8) | 1959 | 1634 | 0.83 |
+| C1_01 | Psycho | BroodMother (w12) | 2563 | 2176 | 0.85 |
+| C1_02 | Easy | BroodMother (w12) | 471 | 500 | 1.06 |
+| C1_02 | Medium | BroodMother (w12) | 1688 | 1534 | 0.91 |
+| C1_02 | Hard | CoreWisp (w9) | 984 | 877 | 0.89 |
+| C1_02 | Hard | BroodMother (w12) | 1558 | 1531 | 0.98 |
+| C1_02 | Psycho | BroodMother (w5) | 2263 | 2210 | 0.98 |
+| C1_02 | Psycho | CoreWisp (w9) | 2020 | 1879 | 0.93 |
+| C1_02 | Psycho | BroodMother (w12) | 3243 | 2983 | 0.92 |
+| C1_03 | Easy | BroodMother (w16) | 122 | 699 | 5.74 |
+| C1_03 | Medium | BroodMother (w16) | 327 | 1296 | 3.97 |
+| C1_03 | Hard | CoreWisp (w10) | 565 | 1031 | 1.82 |
+| C1_03 | Hard | BroodMother (w16) | 349 | 932 | 2.67 |
+| C1_03 | Psycho | BroodMother (w6) | 2058 | 2041 | 0.99 |
+| C1_03 | Psycho | CoreWisp (w10) | 1251 | 1364 | 1.09 |
+| C1_03 | Psycho | BroodMother (w16) | 1178 | 1337 | 1.14 |
+| C1_04 | Easy | StormMatriarch (w16) | 445 | 471 | 1.06 |
+| C1_04 | Medium | StormMatriarch (w16) | 1279 | 1189 | 0.93 |
+| C1_04 | Hard | BroodMother (w10) | 279 | 931 | 3.33 |
+| C1_04 | Hard | StormMatriarch (w16) | 217 | 724 | 3.33 |
+| C1_04 | Psycho | CoreWisp (w5) | 1111 | 1041 | 0.94 |
+| C1_04 | Psycho | BroodMother (w10) | 1519 | 1337 | 0.88 |
+| C1_04 | Psycho | StormMatriarch (w16) | 3571 | 3639 | 1.02 |
+| C1_05 | Easy | CoreWisp (w17) | 626 | 885 | 1.41 |
+| C1_05 | Medium | CoreWisp (w17) | 1046 | 1464 | 1.40 |
+| C1_05 | Hard | StormMatriarch (w11) | 1650 | 1657 | 1.00 |
+| C1_05 | Hard | CoreWisp (w17) | 1419 | 3338 | 2.35 |
+| C1_05 | Psycho | BroodMother (w5) | 1378 | 3073 | 2.23 |
+| C1_05 | Psycho | StormMatriarch (w11) | 2752 | 2400 | 0.87 |
+| C1_05 | Psycho | CoreWisp (w17) | 2228 | 5274 | 2.37 |
+| C1_06 | Easy | PackAlpha (w18) | 296 | 627 | 2.12 |
+| C1_06 | Medium | PackAlpha (w18) | 832 | 765 | 0.92 |
+| C1_06 | Hard | CoreWisp (w12) | 1468 | 1463 | 1.00 |
+| C1_06 | Hard | PackAlpha (w18) | 987 | 2595 | 2.63 |
+| C1_06 | Psycho | StormMatriarch (w7) | 3090 | 3373 | 1.09 |
+| C1_06 | Psycho | CoreWisp (w12) | 2268 | 2534 | 1.12 |
+| C1_06 | Psycho | PackAlpha (w18) | 1655 | 1978 | 1.20 |
+
+**The pipeline's run** (measure 24 cells, fit applied: Cannon 0.797, Laser 0.701, Gun Turret 0.808, Flak 1.039, route fire 4.0,
+queue guard 0.30, siege 1.168; solve; search; replay; three builder iterations; finale probe and apply). Paper:
+
+| Cell | Surplus before (curve) | Surplus after (curve) | Total health before | after | x |
+| --- | --- | --- | --- | --- | --- |
+| C1_01 Easy | 1.61x (1.61x) | 1.61x (1.61x) | 8293 | 7358 | 0.89 |
+| C1_01 Medium | 1.52x (1.52x) | 1.52x (1.52x) | 11058 | 9950 | 0.90 |
+| C1_01 Hard | 0.95x (0.95x) | 0.95x (0.95x) | 27423 | 23951 | 0.87 |
+| C1_01 Psycho | 0.92x (0.92x) | 1.06x (1.06x) | 68204 | 52224 | 0.77 |
+| C1_02 Easy | 2.10x (2.10x) | 2.10x (2.10x) | 8591 | 7679 | 0.89 |
+| C1_02 Medium | 0.99x (0.99x) | 0.99x (0.99x) | 32329 | 29643 | 0.92 |
+| C1_02 Hard | 0.93x (0.94x) | 0.93x (0.94x) | 32113 | 29667 | 0.92 |
+| C1_02 Psycho | 1.04x (1.04x) | 1.05x (1.04x) | 77976 | 73084 | 0.94 |
+| C1_03 Easy | 2.27x (2.27x) | 1.71x (1.70x) | 5361 | 6074 | 1.13 |
+| C1_03 Medium | 1.47x (1.47x) | 1.47x (1.47x) | 14594 | 11635 | 0.80 |
+| C1_03 Hard | 1.40x (1.40x) | 1.40x (1.40x) | 17798 | 15829 | 0.89 |
+| C1_03 Psycho | 1.18x (1.18x) | 1.35x (1.35x) | 58218 | 44495 | 0.76 |
+| C1_04 Easy | 1.53x (1.54x) | 1.54x (1.54x) | 5800 | 4262 | 0.73 |
+| C1_04 Medium | 0.96x (0.96x) | 0.96x (0.96x) | 17059 | 15693 | 0.92 |
+| C1_04 Hard | 1.05x (1.04x) | 1.18x (1.20x) | 19408 | 16666 | 0.86 |
+| C1_04 Psycho | 1.16x (1.16x) | 1.33x (1.33x) | 81144 | 65625 | 0.81 |
+| C1_05 Easy | 2.00x (2.00x) | 2.00x (2.00x) | 23994 | 20435 | 0.85 |
+| C1_05 Medium | 1.43x (1.43x) | 1.43x (1.43x) | 36354 | 34350 | 0.94 |
+| C1_05 Hard | 1.36x (1.36x) | 1.36x (1.36x) | 68158 | 65201 | 0.96 |
+| C1_05 Psycho | 1.51x (1.51x) | 1.51x (1.51x) | 126338 | 122022 | 0.97 |
+| C1_06 Easy | 1.98x (1.97x) | 1.97x (1.97x) | 14506 | 9578 | 0.66 |
+| C1_06 Medium | 1.23x (1.23x) | 1.23x (1.23x) | 33355 | 25376 | 0.76 |
+| C1_06 Hard | 1.17x (1.17x) | 1.34x (1.34x) | 59299 | 43692 | 0.74 |
+| C1_06 Psycho | 1.43x (1.43x) | 1.44x (1.43x) | 110125 | 104910 | 0.95 |
+
+Play (best replayed plan, plans winning on most seeds, the rows, the creative bot):
+
+| Cell | Best plan before (wins, stars, base) | Best plan after | Plans winning 2+ | Gun row | Cannon row | Laser row | Creative bot |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C1_01 Easy | 3/3, 3.0, 600 | 3/3, 3.0, 600 | 4/4 | 3/3 | 3/3 | - | 3/3 |
+| C1_01 Medium | 2/3, 3.0, 600 | 3/3, 3.0, 600 | 5/5 | 3/3 | 3/3 | - | 3/3 |
+| C1_01 Hard | 2/3, 2.5, 644 | 2/3, 3.0, 700 | 1/5 -> 3/3 | 3/3 -> 0/3 (w12) | 1/3 -> 3/3 | 0/3 (w10) | 2/3 -> 1/3 |
+| C1_01 Psycho | 2/3, 2.5, 664 | 2/3, 3.0, 700 | 1/5 -> 5/5 | 0/3 (w11) -> 0/3 (w12) | 0/3 (w11) -> 3/3 | 1/3 -> 0/3 (w11) | 2/3 -> 3/3 |
+| C1_02 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 3/3 | 3/3 | 3/3 | 3/3 |
+| C1_02 Medium | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w11) -> 0/3 (w10) | 3/3 | 0/3 (w10) -> 0/3 (w9) | 3/3 |
+| C1_02 Hard | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 3/3 | 0/3 (w10) -> 0/3 (w11) | 0/3 (w11) -> 1/3 | 0/3 (w10) | 3/3 |
+| C1_02 Psycho | 3/3, 3.0, 800 | 3/3, 3.0, 800 | 1/3 -> 2/3 | 0/3 (w11) | 0/3 (w12) -> 1/3 | 0/3 (w10) | 0/3 (w12) -> 0/3 (w11) |
+| C1_03 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w14) | 0/3 (w14) | 0/3 (w14) | 3/3 |
+| C1_03 Medium | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 4/5 -> 5/5 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 |
+| C1_03 Hard | 3/3, 3.0, 689 | 3/3, 2.7, 667 | 3/3 -> 1/3 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 |
+| C1_03 Psycho | 3/3, 3.0, 800 | 3/3, 3.0, 785 | 3/3 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 2/3 -> 3/3 |
+| C1_04 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 3/3 |
+| C1_04 Medium | 3/3, 3.0, 682 | 3/3, 3.0, 672 | 3/3 | 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 3/3 |
+| C1_04 Hard | 3/3, 3.0, 800 | 3/3, 3.0, 800 | 5/5 | 0/3 (w5) | 0/3 (w5) | 0/3 (w5) | 3/3 |
+| C1_04 Psycho | 3/3, 1.7, 446 | 3/3, 2.3, 627 | 3/5 -> 5/5 | 0/3 (w5) -> 0/3 (w6) | 0/3 (w5) | 0/3 (w5) | 1/3 -> 2/3 |
+| C1_05 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w11) | 0/3 (w11) | 0/3 (w11) | 3/3 |
+| C1_05 Medium | 3/3, 3.0, 698 | 3/3, 3.0, 700 | 4/5 -> 5/5 | 0/3 (w9) | 0/3 (w9) | 0/3 (w9) | 3/3 -> 2/3 |
+| C1_05 Hard | 2/3, 2.5, 707 | 3/3, 2.3, 671 | 4/5 -> 3/3 | 0/3 (w7) | 0/3 (w7) | 0/3 (w7) | 1/3 -> 3/3 |
+| C1_05 Psycho | 3/3, 2.7, 866 | 3/3, 3.0, 889 | 3/5 -> 5/5 | 0/3 (w9) | 0/3 (w9) | 0/3 (w9) | 0/3 (w17) -> 1/3 |
+| C1_06 Easy | 3/3, 3.0, 700 | 3/3, 3.0, 700 | 5/5 | 0/3 (w12) | 0/3 (w12) | 0/3 (w12) | 3/3 |
+| C1_06 Medium | 3/3, 2.0, 568 | 3/3, 3.0, 700 | 2/3 -> 5/5 | 0/3 (w12) | 0/3 (w11) | 0/3 (w11) | 2/3 -> 3/3 |
+| C1_06 Hard | 3/3, 3.0, 800 | 3/3, 2.0, 568 | 3/3 -> 2/3 | 0/3 (w10) | 0/3 (w10) | 0/3 (w10) | 2/3 -> 3/3 |
+| C1_06 Psycho | 3/3, 2.3, 717 | 3/3, 2.7, 783 | 4/5 | 0/3 (w10) | 0/3 (w7) | 0/3 (w7) | 0/3 (w16) -> 1/3 |
+
+Acceptance 11/24 (9/24), README 24 of 24. What the iterations taught: a boss may not grow past a held wave on Psycho; the
+armour makes Cragback-heavy cells harder in play than the paper's lighter health suggests on Hard and Psycho (five builder
+steps), and easier to solve with a row of Cannons on the two levels without flyers. Docs/STATUS.md "Round 64" has the
+reading and the open points.

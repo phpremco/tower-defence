@@ -138,13 +138,14 @@ namespace Game.PathObjects
             }
         }
 
-        // The blast or the roll is passed with its definition as the source, so a boss knows a lava ball burned it. A mine's blast
-        // and a lava ball's burn are heavy: they work on armour in full.
+        // The blast or the roll is passed with its definition as the source, so a boss knows a lava ball burned it. Armour
+        // takes it by the object's damage type: a mine's blast in full, a burn or a ram at their share (per tick or per hit
+        // makes no difference: the pool is spent point for point).
         private void Hit(ITargetable target, float damage)
         {
             if (target is ISourcedTarget sourced)
             {
-                sourced.TakeDamageFrom(damage, _definition, true);
+                sourced.TakeDamageFrom(damage, _definition, true, _definition.ArmourFactor);
             }
             else
             {

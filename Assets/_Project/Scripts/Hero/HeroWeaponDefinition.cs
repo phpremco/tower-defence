@@ -24,7 +24,10 @@ namespace Game.Hero
 
         [SerializeField] private TargetLayers _targets = TargetLayers.Ground;
 
-        [Tooltip("Share of a hit that works on a creature's armour while it has any: the blade is heavy (one), the blaster light.")]
+        [Tooltip("What the damage is made of: a blade or a bullet, both reduced by armour (round 64).")]
+        [SerializeField] private DamageType _damageType = DamageType.Blade;
+
+        [Tooltip("Share of a hit that works on a creature's armour while it has any, from the sheet's table per damage type: the blade cuts it at half, the blaster only chips it.")]
         [SerializeField] [Range(0.05f, 2f)] private float _armourFactor = 1f;
 
         /// <summary>Shots before the weapon must reload; zero means it never reloads.</summary>
@@ -48,6 +51,7 @@ namespace Game.Hero
         public float Reach => _reach;
         public float AttackInterval => _attackInterval;
         public TargetLayers Targets => _targets;
+        public DamageType DamageType => _damageType;
         public float ArmourFactor => _armourFactor;
         public int Magazine => _magazine;
         public float ReloadSeconds => _reloadSeconds;

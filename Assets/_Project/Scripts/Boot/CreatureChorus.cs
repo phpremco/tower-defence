@@ -115,7 +115,7 @@ namespace Game.Boot
             return new Voicing
             {
                 Steps = new SoundFamily(steps),
-                Screeches = new SoundFamily(deaths, ProceduralSfx.EnemyDeath()),
+                Screeches = new SoundFamily(deaths, ProceduralSfx.EnemyDeath),
                 Growls = new SoundFamily(null, _bossRoar),
                 Attacks = new SoundFamily(null),
                 Impacts = new SoundFamily(null),
@@ -148,7 +148,7 @@ namespace Game.Boot
             voicing = new Voicing
             {
                 Steps = new SoundFamily(voice.Steps),
-                Screeches = new SoundFamily(voice.Screeches, ProceduralSfx.EnemyDeath()),
+                Screeches = new SoundFamily(voice.Screeches, ProceduralSfx.EnemyDeath),
                 Growls = new SoundFamily(voice.Growls, _bossRoar),
                 Attacks = new SoundFamily(voice.Attacks),
                 Impacts = new SoundFamily(voice.Impacts),

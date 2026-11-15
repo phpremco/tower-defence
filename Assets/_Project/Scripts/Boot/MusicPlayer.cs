@@ -56,8 +56,8 @@ namespace Game.Boot
             // Recorded loops when the library has them, the generated score otherwise. A recorded loop carries its
             // measured gain, so the mix levels below mean the same for both.
             Services.TryGet(out SfxLibrary library);
-            _calm = Loop(Recorded(library?.GameMusic, ProceduralMusic.Calm(), out _calmGain));
-            _intense = Loop(Recorded(library?.BossMusic, ProceduralMusic.Intense(), out _intenseGain));
+            _calm = Loop(Recorded(library?.GameMusic, ProceduralMusic.Calm, out _calmGain));
+            _intense = Loop(Recorded(library?.BossMusic, ProceduralMusic.Intense, out _intenseGain));
             _alarm = library != null && !library.BossAlarms.IsEmpty ? library.BossAlarms[0] : ProceduralSfx.BossAlarm();
             _rumble = library != null && !library.Earthquakes.IsEmpty ? library.Earthquakes[0] : ProceduralSfx.QuakeRumble();
             CreateLayers(library, context.Level);
@@ -80,12 +80,14 @@ namespace Game.Boot
             _context?.BossWaveStarted.Unsubscribe(OnBossWave);
         }
 
-        private static AudioClip Recorded(SoundSet set, AudioClip fallback, out float gain)
+        // The generated score is only synthesised when there is no recording (round 64: making it anyway cost the level's
+        // first frame most of a second).
+        private static AudioClip Recorded(SoundSet set, System.Func<AudioClip> fallback, out float gain)
         {
             if (set == null || set.IsEmpty)
             {
                 gain = 1f;
-                return fallback;
+                return fallback();
             }
 
             // Mastered music is not normalised like an effect: the mix levels apply to it as recorded.

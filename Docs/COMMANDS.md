@@ -1004,3 +1004,31 @@ console and `Logs/probe_trace.txt`.
   (`hand:` picks the card and puts the cursor on a free build cell, `menu:` builds one and opens its menu, each rendered
   3840x2160 off-screen with the interface; `view:<name>` captures the Game view itself, which is the one that shows the tower
   menu: the off-screen render misses that panel). Copies the save aside and restores it, MD5 printed at both ends.
+
+## Round 64: armour audit, boss lab, loading and game-over probes (added 2026-11-15)
+
+- **Targeted data step (never the full generator):** `unity command run_script --file Tools/PlayTest/Scripts/ApplyRound64.cs --entry ApplyRound64.Run --timeout_ms 300000 --timeout 360`
+  stamps every weapon's damage type and armour factor (`ProjectGenerator.WeaponDamageTypes`, `BalanceSheet.ArmourFactorOf`), the
+  armoured troops' body and armour (`BalanceSheet.TroopArmourShare`), the two wisp voices' presence and the music loops' streaming
+  import. Then `bash Tools/PlayTest/balance_pipeline.sh solve`.
+- **Recompile with the play-mode guard:** `bash Tools/PlayTest/r64_compile.sh` (refuses while Play Mode runs, waits for the reload, prints errors).
+- **Armour audit (no assets written):** `unity command run_script --file Tools/PlayTest/Scripts/ArmourTtk.cs --entry ArmourTtk.Run --timeout_ms 120000 --timeout 180`
+  writes `Tools/PlayTest/r64_armour_ttk_<label>.txt`: every damage source against every armoured troop (seconds to kill through
+  the game's own `Health`, coins x seconds for bought sources). `Tools/PlayTest/r64_ttk_arg.txt`: `label=`, `factor.<Asset>=`
+  (a source's factor as it was), `pool.<Enemy>=body,armour`.
+- **Boss lab (no assets written):** `unity command run_script --file Tools/PlayTest/Scripts/BossLab.cs --entry BossLab.Run --timeout_ms 900000 --timeout 960`
+  solves every level in memory and prints per cell the human surplus against the curve, the total health against the stored set
+  and every boss wave (boss health as spawned, wave multiplier and boss scale, boss alone and whole wave with the hero against
+  the cap). `Tools/PlayTest/r64_lab_arg.txt`: `label=`, `levels=C1_03`, `rule.<Field>=` (floats or a comma list, e.g.
+  `rule.LevelBossAlone=0,0,0,0` switches the rule off), `enemy.<Id>=body,armour`, `armour.<TowerId>=`, `hero.blade=`, `eff.`, `cal.`.
+  "waves moved against the stored set 0/N" on every cell means the stored waves are the solve.
+- **Level start hitch:** `bash Tools/PlayTest/r64_hitch.sh old|new <node> <difficulty> <label>` (old = one-frame load as before the
+  round, new = through `LevelLoader`); `Logs/r64/hitch_<label>.txt` lists every frame over 50 ms with what the loading screen had
+  reported by then, the longest frame and when the level was ready.
+- **Loading screen stills:** `OUT=<dir> bash Tools/PlayTest/r64_loading.sh <node> <difficulty> <prefix> <frames> [<frames> ...]` steps the
+  paused editor through the load and renders the screen with its interface at 1920x1080 and 1280x720 off-screen (`r64_shot.cs`,
+  the Game view is left alone).
+- **Game over:** `RUN=9 OUT=<dir> bash Tools/PlayTest/r64_gameover.sh <node> <difficulty> lose|win <prefix>` runs a level at speed,
+  ends it and probes the clock, the summed positions of creatures, shots and drones and the loops still audible at 1.5, 5.5 and
+  8.5 s after (`r64_gameover.cs probe`); once the panel is up the three probes must be identical.
+- Every harness copies the save aside, restores it and checks it against `Tools/PlayTest/r64_save_md5.txt`.

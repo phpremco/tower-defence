@@ -41,6 +41,8 @@ MonoBehaviour:
   _splashTargets: 3
   _groundDamageFactor: 1
   _airDamageFactor: 1
+  _damageType: 0
+  _armourFactor: 1
   _retargetRadius: 0
   _homing: 0
   _fuseRadius: 0

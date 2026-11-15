@@ -22,7 +22,7 @@ MonoBehaviour:
     _gain: 1
     _pitch: 1
   _stepSpacing: 0.5
-  _presence: 2
+  _presence: 0.4
   _rollLoop:
     _clips: []
     _gain: 1
@@ -33,6 +33,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 8dcdbe272dae45049a3ffe10615366ba, type: 3}
     _gain: 0.25367287
     _pitch: 1
+  _deathVolume: 1
+  _deathInterval: 0
   _growls:
     _clips: []
     _gain: 1

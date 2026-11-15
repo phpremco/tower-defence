@@ -194,6 +194,7 @@ namespace Game.Editor
             wave.FindPropertyRelative("_startDelay").floatValue = spec.StartDelay;
             wave.FindPropertyRelative("_spawnJitter").floatValue = WaveDefinition.DefaultSpawnJitter;
             wave.FindPropertyRelative("_healthMultiplier").floatValue = spec.HealthMultiplier;
+            wave.FindPropertyRelative("_bossHealthScale").floatValue = spec.BossHealthScale;
             SerializedProperty array = wave.FindPropertyRelative("_groups");
             array.arraySize = spec.Groups.Count;
             for (int g = 0; g < spec.Groups.Count; g++)

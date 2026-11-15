@@ -38,12 +38,13 @@ MonoBehaviour:
     SlowSeconds: 0
   _projectileSpeed: 8
   _splashRadius: 1.8
+  _splashTargets: 0
   _groundDamageFactor: 1
   _airDamageFactor: 1
+  _damageType: 0
+  _armourFactor: 1
   _retargetRadius: 0
-  _softTargetShare: 0
   _homing: 1
-  _ledgerEfficiency: 1
   _fuseRadius: 0
   _maxHealth: 240
   _sellRefundFraction: 0.7

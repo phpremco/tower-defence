@@ -18,6 +18,7 @@ namespace Game.Levels
         [SerializeField] [Range(0f, 1f)] private float _spawnJitter = DefaultSpawnJitter;
         [SerializeField] private List<SpawnGroup> _groups = new List<SpawnGroup>();
         [SerializeField] [Min(0.1f)] private float _healthMultiplier = 1f;
+        [SerializeField] [Min(0.1f)] private float _bossHealthScale = 1f;
 
         /// <summary>Unity's serializer builds waves through this constructor, so the field defaults apply.</summary>
         public WaveDefinition()
@@ -25,9 +26,10 @@ namespace Game.Levels
         }
 
         /// <summary>A wave built in code, for tests and tools; the generator writes waves through serialized properties.</summary>
-        public WaveDefinition(IEnumerable<SpawnGroup> groups, float spawnJitter = DefaultSpawnJitter, float startDelay = DefaultStartDelay, float healthMultiplier = 1f)
+        public WaveDefinition(IEnumerable<SpawnGroup> groups, float spawnJitter = DefaultSpawnJitter, float startDelay = DefaultStartDelay, float healthMultiplier = 1f, float bossHealthScale = 1f)
         {
             _healthMultiplier = healthMultiplier;
+            _bossHealthScale = bossHealthScale;
             _groups.AddRange(groups);
             _spawnJitter = spawnJitter;
             _startDelay = startDelay;
@@ -41,6 +43,12 @@ namespace Game.Levels
         /// more than one, so creatures keep growing tougher while the player's towers grow stronger.
         /// </summary>
         public float HealthMultiplier => _healthMultiplier;
+
+        /// <summary>
+        /// The health of this wave's boss on top of <see cref="HealthMultiplier"/>: the solver sizes a boss on its own, so it
+        /// is not as feeble as a crowded wave's creatures have to be (round 64). One for a wave without a boss.
+        /// </summary>
+        public float BossHealthScale => _bossHealthScale;
 
         /// <summary>
         /// How far each spawn may drift from its scheduled moment, as a share of its group's interval. Zero spawns
