@@ -46,6 +46,8 @@ namespace Game.Levels
         private const float OuterBumpEndCells = 2.5f;
         // The colony rig's levelled pad fades out over this much of the field's edge, so it never lifts a playing cell.
         private const float RigPadEdgeFadeCells = 0.5f;
+        // Round 63: the base's level ground is guarded from the rig's pad over this many metres past the base's own margin.
+        private const float BasePadGuard = 0.5f;
 
         private static readonly Vector2Int[] Sides = { Vector2Int.right, Vector2Int.up, Vector2Int.left, Vector2Int.down };
 
@@ -59,6 +61,8 @@ namespace Game.Levels
         private readonly float[] _height;
         private readonly float[] _slope;
         private readonly float[] _roadMask;
+        // Round 63: how much of each point is the base's level ground (the colony rig's pad leaves it alone).
+        private readonly float[] _basePad;
 
         public TerrainField(LevelDefinition level, RoadShape road)
         {
@@ -85,10 +89,13 @@ namespace Game.Levels
             _height = new float[count];
             _slope = new float[count];
             _roadMask = new float[count];
+            _basePad = new float[count];
 
             Pools = LiquidShape.ForLevel(level);
             FillMasks(level);
             FillHeights(road);
+            // The base's pad first; the colony rig's pad (cut to its own footprint's lowest point) leaves the base's alone.
+            LevelBasePad(level);
             LevelColonyRigPad(level);
             FillSlopes();
         }
@@ -404,8 +411,44 @@ namespace Game.Levels
                     int i = Index(ix, iz);
                     float weight = 1f - TerrainNoise.SmoothStep(flat, outer, DistanceTo(centre, ix, iz));
                     weight *= TerrainNoise.SmoothStep(0f, RigPadEdgeFadeCells, OutsideAt(WorldX(ix), WorldZ(iz)));
-                    weight *= 1f - _roadMask[i];
+                    weight *= (1f - _roadMask[i]) * (1f - _basePad[i]);
                     _height[i] = Mathf.Lerp(_height[i], padHeight, weight);
+                }
+            }
+        }
+
+        // Round 63 (Remco: "the base is now in the ground"): the base stands past the road's end, where the land behind it can
+        // already roll up, so its back half sank into the slope to the deck (the plinth gone on that side). The ground under its
+        // footprint (and a margin) is levelled to the base's own height and blends back into the land round it; the road is
+        // left as it is.
+        private void LevelBasePad(LevelDefinition level)
+        {
+            BaseArtDefinition art = level.Theme != null ? level.Theme.BaseArt : null;
+            Vector2Int[] road = level.MainRoad;
+            if (art == null || art.Model == null || road == null || road.Length == 0)
+            {
+                return;
+            }
+
+            Vector3 centre = LevelVisualBuilder.BasePosition(level);
+            Quaternion facing = LevelVisualBuilder.BaseFacing(level);
+            float flat = art.GroundPadMargin;
+            float outer = flat + art.GroundPadBlend;
+            float reach = Mathf.Max(Mathf.Max(-art.FootprintMin.x, art.FootprintMax.x), Mathf.Max(-art.FootprintMin.y, art.FootprintMax.y)) * 1.5f + outer;
+            int minX = Mathf.Max(0, Mathf.FloorToInt((centre.x - reach - MinX) / Step));
+            int maxX = Mathf.Min(Nx - 1, Mathf.CeilToInt((centre.x + reach - MinX) / Step));
+            int minZ = Mathf.Max(0, Mathf.FloorToInt((centre.z - reach - MinZ) / Step));
+            int maxZ = Mathf.Min(Nz - 1, Mathf.CeilToInt((centre.z + reach - MinZ) / Step));
+            for (int iz = minZ; iz <= maxZ; iz++)
+            {
+                for (int ix = minX; ix <= maxX; ix++)
+                {
+                    int i = Index(ix, iz);
+                    float outside = art.DistanceOutside(new Vector3(WorldX(ix), centre.y, WorldZ(iz)), centre, facing);
+                    float weight = (1f - TerrainNoise.SmoothStep(flat, outer, outside)) * (1f - _roadMask[i]);
+                    // The rig's pad may run over the base's blend, never over its level ground (a narrow ramp, no crease).
+                    _basePad[i] = (1f - TerrainNoise.SmoothStep(flat, flat + BasePadGuard, outside)) * (1f - _roadMask[i]);
+                    _height[i] = Mathf.Lerp(_height[i], centre.y, weight);
                 }
             }
         }

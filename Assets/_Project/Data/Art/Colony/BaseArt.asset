@@ -46,10 +46,28 @@ MonoBehaviour:
   _exhaustSocket: Socket_ShuttleExhaust
   _shuttleRestSeconds: 16
   _shuttleAwaySeconds: 12
-  _shuttleFlightSeconds: 5
-  _shuttleClimb: 7
-  _shuttleDrift: 2.5
+  _shuttleFlightSeconds: 8
+  _shuttleClimb: 22
+  _shuttleDrift: 10
   _engineColor: {r: 0.55, g: 0.8, b: 1, a: 1}
+  _shuttleSpoolSeconds: 1.8
+  _shuttleTurnDegrees: 75
+  _shuttleBankDegrees: 26
+  _shuttleClimbPitch: 14
+  _shuttleShrinkShare: 0.55
+  _shuttlePlumeRadius: 0.07
+  _shuttlePlumeLength: 0.8
+  _shuttleLiftPlumeRadius: 0.045
+  _shuttleLiftPlumeLength: 0.45
+  _shuttlePlumeIntensity: 1.4
+  _shuttleIdleThrust: 0.35
+  _shuttleTrailSeconds: 1.6
+  _shuttleTrailWidth: 0.16
+  _shuttleDustRate: 70
+  _shuttleDustHeight: 2.5
+  _shuttleRoar: {fileID: 8300000, guid: 626a698ed9b7a9f4189415ebb654ef39, type: 3}
+  _shuttleRoarVolume: 0.2
+  _shuttleReturnShare: 0.6
   _bayDoorPrefix: Base_BayDoor
   _dockSocketPrefix: Socket_DroneBay
   _doorClosedDegrees: 100
@@ -57,6 +75,8 @@ MonoBehaviour:
   _dockSeconds: 1.2
   _footprintMin: {x: -2.6780002, y: -2.4880002}
   _footprintMax: {x: 2.6780002, y: 1.8123062}
+  _groundPadMargin: 0.5
+  _groundPadBlend: 2.5
   _turretMounts:
   - {x: 2.08, y: 0.34, z: 0.35999984}
   - {x: -2.08, y: 0.34, z: 0.3600002}

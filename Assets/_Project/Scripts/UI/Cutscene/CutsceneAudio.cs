@@ -128,7 +128,7 @@ namespace Game.UI
             }
 
             SoundSet set = _bank.Slots[slot].Clips;
-            gain = set.Gain;
+            gain = set.Gain * _bank.Slots[slot].TrimOrOne;
             return set[((index % set.Count) + set.Count) % set.Count];
         }
 
@@ -542,7 +542,7 @@ namespace Game.UI
                 if (!entry.IsEmpty)
                 {
                     fromBank = true;
-                    gain = entry.Clips.Gain;
+                    gain = entry.Clips.Gain * entry.TrimOrOne;
                     pitch = entry.Clips.Pitch;
                     return oneShot ? RandomVariant(slot, entry.Clips) : entry.Clips[_random.Next(entry.Clips.Count)];
                 }

@@ -168,3 +168,51 @@ MonoBehaviour:
     - {x: 0.14, y: 0}
   _flinchAttack: 0.07
   _flinchDecay: 0.45
+  _shiverTremor:
+    _lensRumble: 0.35
+    _buzzHertz: 11
+    _buzzHeight: 0.004
+    _hopEvery: 1.2
+    _hopSeconds: 0.2
+    _hopHeight: 0.025
+    _rockDegrees: 4
+  _brace:
+    _kneeDegrees: 14
+    _leanDegrees: 7
+    _swayDegrees: 6
+    _swayHertz: 1.1
+    _swayHertzSecond: 2.1
+    _swaySecondShare: 0.35
+    _armOutDegrees: 18
+    _headCounter: 0.6
+  _angrySeconds: 1.6
+  _angryClipRate: 0.9
+  _angryFace:
+  - _shape: Fear
+    _keys:
+    - {x: 0, y: 0.6}
+    - {x: 0.35, y: 0}
+  - _shape: Determined
+    _keys:
+    - {x: 0, y: 0.2}
+    - {x: 0.3, y: 1}
+    - {x: 2.6, y: 0.9}
+    - {x: 3.6, y: 0.4}
+  - _shape: Breath
+    _keys:
+    - {x: 0.25, y: 0}
+    - {x: 0.45, y: 0.8}
+    - {x: 0.9, y: 0.5}
+    - {x: 1.3, y: 0.8}
+    - {x: 1.9, y: 0}
+  _queenBurrow:
+    _spot: {x: 3.9, y: 0.5}
+    _openAt: 2.4
+    _scale: 1.7
+    _climbDelay: 0.35
+    _climbSeconds: 2.1
+    _climbDepth: 2.6
+    _climbForward: 0.9
+    _climbPitch: 42
+    _overLipDip: 7
+    _climbDustRate: 26

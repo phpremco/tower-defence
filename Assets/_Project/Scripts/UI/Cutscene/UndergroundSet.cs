@@ -40,6 +40,15 @@ namespace Game.UI
         private const float CreviceRange = 4.5f;
         private const float TrembleDegrees = 3f;
         private const float TrembleShift = 0.03f;
+        // Round 63: the clusters keep clear of the rock round them: probed on a grid through the body above its foot, shrunk a
+        // little to the cluster's shape, with room for the tremble; stepped towards the corridor until clear.
+        private const int CrystalProbeGrid = 4;
+        private const float CrystalFootHeight = 0.35f;
+        private const float CrystalShapeInset = 0.12f;
+        private const float CrystalClearMargin = 0.15f;
+        private const float CrystalClearStep = 0.15f;
+        private const int CrystalClearSteps = 16;
+        private static readonly float[] CrystalSideSteps = { 0f, 1f, -1f };
         private const float DustRate = 14f;
         private const int DustParticles = 300;
 
@@ -235,6 +244,7 @@ namespace Game.UI
                 float side = i % 2 == 0 ? -1f : 1f;
                 var position = new Vector3(side * (3.9f + CutsceneMath.Hash(i, 123) * 0.8f), FloorHeight + 0.05f, z);
                 Transform crystal = Piece(root, CavePiece.CrystalCluster, position, Quaternion.Euler(0f, CutsceneMath.Hash(i, 125) * 360f, 0f), 1.2f + CutsceneMath.Hash(i, 127) * 0.8f, false);
+                position = ClearOfRock(crystal, position);
                 _crystals.Add(crystal);
                 _crystalRest.Add(crystal.rotation);
                 _crystalPositions.Add(position);
@@ -388,6 +398,89 @@ namespace Game.UI
             }
 
             _rock.Clear();
+        }
+
+        // Round 63 (Remco: "the crystal in the cave is moving inside a stone"): a cluster may not reach into a wall or a boulder,
+        // with room for its tremble. Points through its upper body (its foot stands in the floor's rubble by design) are tested
+        // against the rock; the cluster takes the smallest step (towards the corridor first, then along it) that clears them all.
+        private Vector3 ClearOfRock(Transform crystal, Vector3 position)
+        {
+            Renderer renderer = crystal.GetComponentInChildren<Renderer>();
+            if (renderer == null || _rock.Count == 0)
+            {
+                return position;
+            }
+
+            Physics.SyncTransforms();
+            float inward = -Mathf.Sign(position.x);
+            for (int step = 0; step <= CrystalClearSteps; step++)
+            {
+                foreach (float along in CrystalSideSteps)
+                {
+                    crystal.position = position + new Vector3(inward * CrystalClearStep * step, 0f, along * CrystalClearStep * step);
+                    Physics.SyncTransforms();
+                    if (!Buried(renderer.bounds))
+                    {
+                        return crystal.position;
+                    }
+                }
+            }
+
+            Debug.LogWarning($"A cave crystal at {position} could not be cleared of the rock round it.");
+            crystal.position = position;
+            return position;
+        }
+
+        // True when a probe point of the cluster lies inside rock (with the margin round it): a ray from the corridor's axis
+        // meets rock before the point, and a ray from the point back towards the axis meets none (the rock's skin faces
+        // away from the point: the point is in the rock, not merely behind a boulder that stands in front of it).
+        private bool Buried(Bounds bounds)
+        {
+            Vector3 min = bounds.min;
+            Vector3 max = bounds.max;
+            min.y = Mathf.Max(min.y, FloorHeight + CrystalFootHeight);
+            Vector3 inset = (max - min) * CrystalShapeInset;
+            for (int ix = 0; ix <= CrystalProbeGrid; ix++)
+            {
+                for (int iy = 0; iy <= CrystalProbeGrid; iy++)
+                {
+                    for (int iz = 0; iz <= CrystalProbeGrid; iz++)
+                    {
+                        float fx = ix / (float)CrystalProbeGrid;
+                        float fy = iy / (float)CrystalProbeGrid;
+                        float fz = iz / (float)CrystalProbeGrid;
+                        var point = new Vector3(Mathf.Lerp(min.x + inset.x, max.x - inset.x, fx), Mathf.Lerp(min.y, max.y - inset.y, fy), Mathf.Lerp(min.z + inset.z, max.z - inset.z, fz));
+                        if (InsideRock(point))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private bool InsideRock(Vector3 point)
+        {
+            var origin = new Vector3(0f, point.y, point.z);
+            Vector3 toPoint = point - origin;
+            float distance = toPoint.magnitude;
+            if (distance <= CrystalClearMargin)
+            {
+                return false;
+            }
+
+            Vector3 direction = toPoint / distance;
+            // The margin: the point pushed out by it must clear too, so the tremble never carries the cluster into the rock.
+            float reach = distance + CrystalClearMargin;
+            if (!CastRock(new Ray(origin, direction), reach, out RaycastHit entry))
+            {
+                return false;
+            }
+
+            Vector3 far = origin + direction * reach;
+            return !CastRock(new Ray(far, -direction), reach - entry.distance, out RaycastHit _);
         }
 
         private Transform Piece(Transform root, CavePiece kind, Vector3 position, Quaternion rotation, float scale, bool rock)

@@ -942,20 +942,20 @@ MonoBehaviour:
       Strength: 0.6
       FadeIn: 0
     Layers:
-    - Sound: 63
-      From: 0
-      To: 0
-      Volume: 0.12
-      FadeIn: 0
-      FadeOut: 0
     - Sound: 41
       From: 0
-      To: 0
+      To: 2.6000001
       Volume: 0.3
       FadeIn: 1
+      FadeOut: 0.5
+    - Sound: 42
+      From: 2.2
+      To: 0
+      Volume: 0.3
+      FadeIn: 0.6
       FadeOut: 0
     ShakeRumble: 1
-    QuakeHold: 0.85
+    QuakeHold: 1
     Music: 0
     FadeIn: 1
     FadeOut: 0
@@ -1018,15 +1018,9 @@ MonoBehaviour:
       Clip: {fileID: 0}
       Strength: 0.8
       FadeIn: 0
-    Layers:
-    - Sound: 63
-      From: 0
-      To: 0
-      Volume: 0.12
-      FadeIn: 0
-      FadeOut: 0
+    Layers: []
     ShakeRumble: 0.85
-    QuakeHold: 0.75
+    QuakeHold: 0.85
     Music: 0
     FadeIn: 0
     FadeOut: 0
@@ -1096,6 +1090,12 @@ MonoBehaviour:
       Clip: {fileID: 0}
       Strength: 0.8
       FadeIn: 0
+    - At: 4.2
+      Kind: 0
+      Sound: 58
+      Clip: {fileID: 0}
+      Strength: 1
+      FadeIn: 0
     - At: 4.6
       Kind: 0
       Sound: 19
@@ -1115,12 +1115,6 @@ MonoBehaviour:
       Strength: 1
       FadeIn: 0
     Layers:
-    - Sound: 63
-      From: 0
-      To: 0
-      Volume: 0.12
-      FadeIn: 0
-      FadeOut: 0
     - Sound: 60
       From: 2.2
       To: 0
@@ -1162,17 +1156,17 @@ MonoBehaviour:
       Ease: 3
       Mode: 0
     Timing: 0
-    Seconds: 5.5
+    Seconds: 7.1
     CameraSeconds: 0
-    Dialogue: {fileID: 0}
-    DialogueDelay: 0
+    Dialogue: {fileID: 11400000, guid: 13e8df4f45dfcdc4084920ca583a826a, type: 2}
+    DialogueDelay: 3.7
     Cues: []
     Layers:
     - Sound: 63
       From: 0
       To: 0
       Volume: 0.12
-      FadeIn: 0
+      FadeIn: 2
       FadeOut: 0
     - Sound: 60
       From: 0
@@ -1180,14 +1174,8 @@ MonoBehaviour:
       Volume: 0.25
       FadeIn: 0
       FadeOut: 1.4
-    - Sound: 41
-      From: 0
-      To: 0.6
-      Volume: 0.35
-      FadeIn: 0
-      FadeOut: 0.3
     - Sound: 42
-      From: 0.3
+      From: 0
       To: 0
       Volume: 0.45
       FadeIn: 0.4
@@ -1239,12 +1227,6 @@ MonoBehaviour:
     Dialogue: {fileID: 11400000, guid: 97979f29e20e85e43991cc18b5f2fecf, type: 2}
     DialogueDelay: 6.5
     Cues:
-    - At: 0.4
-      Kind: 0
-      Sound: 9
-      Clip: {fileID: 0}
-      Strength: 0.5
-      FadeIn: 0
     - At: 4.3
       Kind: 0
       Sound: 43

@@ -40,8 +40,9 @@ namespace Game.Editor
             public readonly bool Loop;
             public readonly CutsceneSoundChannel Channel;
             public readonly CutsceneSound Fallback;
+            public readonly float Trim;
 
-            public IntroSlot(CutsceneSound sound, string folder, string name, bool loop = false, CutsceneSoundChannel channel = CutsceneSoundChannel.Effects, CutsceneSound fallback = CutsceneSound.None)
+            public IntroSlot(CutsceneSound sound, string folder, string name, bool loop = false, CutsceneSoundChannel channel = CutsceneSoundChannel.Effects, CutsceneSound fallback = CutsceneSound.None, float trim = 1f)
             {
                 Sound = sound;
                 Folder = folder;
@@ -49,6 +50,7 @@ namespace Game.Editor
                 Loop = loop;
                 Channel = channel;
                 Fallback = fallback;
+                Trim = trim;
             }
         }
 
@@ -95,7 +97,9 @@ namespace Game.Editor
             new IntroSlot(CutsceneSound.CrystalHum, IntroColony, "colony_crystal_hum_loop", true, CutsceneSoundChannel.Ambience),
             new IntroSlot(CutsceneSound.RadarPing, IntroColony, "colony_radar_ping"),
             new IntroSlot(CutsceneSound.BeaconBeep, IntroColony, "colony_beacon_beep", fallback: CutsceneSound.CoreIgnite),
-            new IntroSlot(CutsceneSound.QuakeLoop, IntroThreat, "threat_quake_rumble_loop", true),
+            // Round 63 (Remco: "only a faint rumble" under the shaking): the rumble sat at its slot's ceiling (0.617, the measured gain
+            // at full level), so the slot is lifted above the shared loudness: a low rumble is felt more than heard.
+            new IntroSlot(CutsceneSound.QuakeLoop, IntroThreat, "threat_quake_rumble_loop", true, trim: QuakeTrim),
             new IntroSlot(CutsceneSound.QuakeSwell, IntroThreat, "threat_quake_swell", fallback: CutsceneSound.Earthquake),
             new IntroSlot(CutsceneSound.GroundTear, IntroThreat, "threat_ground_tear", fallback: CutsceneSound.Emerge),
             new IntroSlot(CutsceneSound.EyesOpenWet, IntroThreat, "threat_eyes_open_wet"),
@@ -140,6 +144,13 @@ namespace Game.Editor
         private const float DripLevel = 0.2f;
         private const float StaticLevel = 0.15f;
         private const float DroneHumLevel = 0.3f;
+        // Round 63: the quake rumble's lift over its measured gain (0.617 x 1.6 = 0.99 of the source at full level, +4 dB).
+        private const float QuakeTrim = 1.6f;
+        // Round 63: the Queen's own burrow bursts (CutsceneCast.QueenBurrow), harder than the brood's.
+        private static readonly float QueenBurstSeconds = Game.Levels.QueenBurrow.Default.OpenAt + Game.UI.FieldSwarm.BurstAt;
+        // Round 63: in the first shiver shot his calm breathing turns fast as the tremor peaks (FieldSet: full strength at 0.4
+        // of the 7 s shot).
+        private const float ShiverFastBreath = 2.2f;
 
         // The builders land beside the base over the last 0.08 of the 18 s timelapse (FieldBase.ParkShare); the landing
         // clip starts at the hum's level, so the hum fades out under its first half second.
@@ -221,12 +232,13 @@ namespace Game.Editor
             switch (shot)
             {
                 case 9:
-                case 12:
                     return 0.75f;
+                case 12:
+                    return 0.85f;
                 case 10:
                     return 0.6f;
                 case 11:
-                    return 0.85f;
+                    return 1f;
                 case 13:
                     return 0.7f;
                 default:
@@ -287,6 +299,7 @@ namespace Game.Editor
                 slot.FindPropertyRelative("Loop").boolValue = spec.Loop;
                 slot.FindPropertyRelative("Channel").intValue = (int)spec.Channel;
                 slot.FindPropertyRelative("Fallback").intValue = (int)spec.Fallback;
+                slot.FindPropertyRelative("Trim").floatValue = spec.Trim;
                 List<AudioClip> clips = FindClips($"{AudioRoot}/{ApprovedFolder}/{IntroAudio}/{spec.Folder}", spec.Name, false);
                 FillSet(slot.FindPropertyRelative("Clips"), clips);
                 if (clips.Count == 0)
@@ -361,12 +374,14 @@ namespace Game.Editor
                     return new[]
                     {
                         Sound(BurstSeconds[0], CutsceneSound.GroundTear, 0.9f), Shake(BurstSeconds[0], BurstKick), Sound(BurstSeconds[1], CutsceneSound.GroundTear, 0.75f),
-                        Sound(BurstSeconds[2], CutsceneSound.GroundTear, 0.8f), Sound(4.6f, CutsceneSound.HeavySteps, 0.45f),
+                        Sound(BurstSeconds[2], CutsceneSound.GroundTear, 0.8f), Sound(QueenBurstSeconds, CutsceneSound.GroundTear, 1f),
+                        Sound(4.6f, CutsceneSound.HeavySteps, 0.45f),
                         Sound(5.9f, CutsceneSound.HeavySteps, 0.4f), Sound(QueenScreamSeconds, CutsceneSound.QueenRoar, 1f),
                     };
                 case 15:
                     // Round 43: no radio-call cue as Voss starts: the dialogue box's own squelch opens his line, the static holds under it.
-                    return new[] { Sound(0.4f, CutsceneSound.BossAlarm, 0.5f), Sound(GateArrival, CutsceneSound.Panting, 0.55f), Sound(5.4f, CutsceneSound.BuildClank, 0.35f) };
+                    // Round 63 (Remco: "no need to play the boss alarm noise in the intro"): no boss alarm; the levels keep theirs.
+                    return new[] { Sound(GateArrival, CutsceneSound.Panting, 0.55f), Sound(5.4f, CutsceneSound.BuildClank, 0.35f) };
                 case 16:
                     return new[]
                     {
@@ -451,18 +466,21 @@ namespace Game.Editor
                     return new[] { Hold(CutsceneSound.CaveDrips, 0f, DripLevel, 1.5f), Hold(CutsceneSound.CrystalHum, 0f, 0.5f, 1.5f) };
                 case 10:
                     return new[] { Hold(CutsceneSound.CaveDrips, 0f, DripLevel), Hold(CutsceneSound.CrystalHum, 0f, 0.4f) };
+                // Round 63 (Remco: "an annoying wind or water sound that doesn't make sense" while the ground shakes): no wind bed
+                // from the first shiver to the burrows bursting; the quake rumble carries those shots. It comes back (faded in) in
+                // the close-up on Spencer.
                 case 11:
-                    return new[] { Hold(CutsceneSound.WindPlain, 0f, WindLevel), Hold(CutsceneSound.BreathCalm, 0f, 0.3f, 1f) };
+                    return new[] { Span(CutsceneSound.BreathCalm, 0f, ShiverFastBreath + 0.4f, 0.3f, 1f, 0.5f), Hold(CutsceneSound.BreathFast, ShiverFastBreath, 0.3f, 0.6f) };
                 case 12:
-                    return new[] { Hold(CutsceneSound.WindPlain, 0f, WindLevel) };
+                    return new CutsceneLayer[0];
                 case 13:
-                    return new[] { Hold(CutsceneSound.WindPlain, 0f, WindLevel), Hold(CutsceneSound.SwarmChitter, BurstSeconds[0], SwarmChitterLevel, 2f) };
+                    return new[] { Hold(CutsceneSound.SwarmChitter, BurstSeconds[0], SwarmChitterLevel, 2f) };
                 case 14:
                     // The brood is behind the lens in his close-up: its chitter only trails off from the cut.
                     return new[]
                     {
-                        Hold(CutsceneSound.WindPlain, 0f, WindLevel), Span(CutsceneSound.SwarmChitter, 0f, 1.6f, ChitterLevel, 0f, 1.4f),
-                        Span(CutsceneSound.BreathCalm, 0f, FearFrom + 0.3f, BreathLevel, 0f, 0.3f), Hold(CutsceneSound.BreathFast, FearFrom, FastBreathLevel, 0.4f),
+                        Hold(CutsceneSound.WindPlain, 0f, WindLevel, 2f), Span(CutsceneSound.SwarmChitter, 0f, 1.6f, ChitterLevel, 0f, 1.4f),
+                        Hold(CutsceneSound.BreathFast, 0f, FastBreathLevel, 0.4f),
                     };
                 case 15:
                     return new[]

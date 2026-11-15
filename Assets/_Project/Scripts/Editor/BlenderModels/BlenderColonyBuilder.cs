@@ -234,6 +234,8 @@ namespace Game.Editor
         }
 
         // The base: the modules, the damage overlay and the wreck, all on the base's map set.
+        private const string ShuttleRoarPath = "Assets/_Project/Audio/Approved/Intro/Launch/launch_booster_burn_loop.wav";
+
         private static BaseArtDefinition BuildBase()
         {
             string asset = BlenderColonyCatalog.BaseAsset;
@@ -251,6 +253,8 @@ namespace Game.Editor
             so.FindProperty("_wreck").objectReferenceValue = BuildArt(BlenderColonyCatalog.BaseWreck, $"{folder}/{BlenderColonyCatalog.BaseWreck}.fbx", high, low, StructureLodScreenHeight);
             WriteFootprint(so, so.FindProperty("_model").objectReferenceValue as ModelArtDefinition);
             WriteFlag(so);
+            // Round 63: the shuttle's launch roar, Remco's approved booster burn (the opening's launch).
+            so.FindProperty("_shuttleRoar").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(ShuttleRoarPath);
             List<string> order = BlenderReport.Load($"{folder}/{asset}_report.json").Strings("timelapse_order");
             SerializedProperty modules = so.FindProperty("_timelapseOrder");
             modules.arraySize = order.Count;

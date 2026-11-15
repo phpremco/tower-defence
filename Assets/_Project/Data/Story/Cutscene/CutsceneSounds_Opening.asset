@@ -22,6 +22,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 1
     Fallback: 0
+    Trim: 1
   - Sound: 22
     Clips:
       _clips:
@@ -31,6 +32,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 23
     Clips:
       _clips:
@@ -40,6 +42,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 24
     Clips:
       _clips:
@@ -49,6 +52,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 25
     Clips:
       _clips:
@@ -58,6 +62,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 26
     Clips:
       _clips:
@@ -67,6 +72,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 18
+    Trim: 1
   - Sound: 27
     Clips:
       _clips:
@@ -76,6 +82,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 17
+    Trim: 1
   - Sound: 28
     Clips:
       _clips:
@@ -85,6 +92,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 29
     Clips:
       _clips:
@@ -94,6 +102,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 30
     Clips:
       _clips:
@@ -103,6 +112,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 31
     Clips:
       _clips:
@@ -112,6 +122,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 32
     Clips:
       _clips:
@@ -121,6 +132,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 33
     Clips:
       _clips:
@@ -130,6 +142,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 34
     Clips:
       _clips:
@@ -141,6 +154,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 18
+    Trim: 1
   - Sound: 35
     Clips:
       _clips:
@@ -150,6 +164,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 3
+    Trim: 1
   - Sound: 36
     Clips:
       _clips:
@@ -159,6 +174,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 18
+    Trim: 1
   - Sound: 37
     Clips:
       _clips:
@@ -168,6 +184,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 4
+    Trim: 1
   - Sound: 38
     Clips:
       _clips:
@@ -180,6 +197,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 10
+    Trim: 1
   - Sound: 39
     Clips:
       _clips:
@@ -192,6 +210,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 10
+    Trim: 1
   - Sound: 40
     Clips:
       _clips:
@@ -204,6 +223,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 10
+    Trim: 1
   - Sound: 41
     Clips:
       _clips:
@@ -213,6 +233,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 42
     Clips:
       _clips:
@@ -222,6 +243,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 43
     Clips:
       _clips:
@@ -231,6 +253,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 44
     Clips:
       _clips:
@@ -240,6 +263,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 45
     Clips:
       _clips:
@@ -249,6 +273,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 46
     Clips:
       _clips:
@@ -258,6 +283,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 47
     Clips:
       _clips:
@@ -267,6 +293,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 48
     Clips:
       _clips:
@@ -276,6 +303,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 49
     Clips:
       _clips:
@@ -285,6 +313,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 50
     Clips:
       _clips:
@@ -294,6 +323,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 0
     Fallback: 6
+    Trim: 1
   - Sound: 51
     Clips:
       _clips:
@@ -303,6 +333,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 52
     Clips:
       _clips:
@@ -312,6 +343,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 53
     Clips:
       _clips:
@@ -321,6 +353,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 0
     Fallback: 2
+    Trim: 1
   - Sound: 54
     Clips:
       _clips:
@@ -330,6 +363,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 1
     Fallback: 0
+    Trim: 1
   - Sound: 16
     Clips:
       _clips:
@@ -339,6 +373,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 55
     Clips:
       _clips:
@@ -348,6 +383,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 5
+    Trim: 1
   - Sound: 56
     Clips:
       _clips:
@@ -357,6 +393,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 0
     Fallback: 0
+    Trim: 1.6
   - Sound: 57
     Clips:
       _clips:
@@ -366,6 +403,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 1
+    Trim: 1
   - Sound: 58
     Clips:
       _clips:
@@ -376,6 +414,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 14
+    Trim: 1
   - Sound: 59
     Clips:
       _clips:
@@ -386,6 +425,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 60
     Clips:
       _clips:
@@ -395,6 +435,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 61
     Clips:
       _clips:
@@ -404,6 +445,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 12
+    Trim: 1
   - Sound: 62
     Clips:
       _clips:
@@ -413,6 +455,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 63
     Clips:
       _clips:
@@ -422,6 +465,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 1
     Fallback: 0
+    Trim: 1
   - Sound: 64
     Clips:
       _clips:
@@ -431,6 +475,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 1
     Fallback: 0
+    Trim: 1
   - Sound: 65
     Clips:
       _clips:
@@ -442,6 +487,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 1
     Fallback: 0
+    Trim: 1
   - Sound: 66
     Clips:
       _clips:
@@ -453,6 +499,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 67
     Clips:
       _clips:
@@ -465,6 +512,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 68
     Clips:
       _clips:
@@ -474,6 +522,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 69
     Clips:
       _clips:
@@ -485,6 +534,7 @@ MonoBehaviour:
     Loop: 0
     Channel: 0
     Fallback: 0
+    Trim: 1
   - Sound: 70
     Clips:
       _clips:
@@ -494,6 +544,7 @@ MonoBehaviour:
     Loop: 1
     Channel: 0
     Fallback: 0
+    Trim: 1
   _music:
   - Mood: 2
     Track:

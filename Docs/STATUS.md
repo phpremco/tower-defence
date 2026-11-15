@@ -9597,3 +9597,97 @@ the start (neither built). Crysium Vein Easy would move with the floor too (its 
 5. C1_03 Psycho and C1_04 Hard after their step win with the base whole: possibly a notch too easy for their names.
 6. The tower menu can open over the hero panel when the tower stands at the left edge of the view (seen in the still; older
    than this round).
+
+## Round 63: Remco's second playtest of the opening (the base's footing, the cave crystal, the quake, the Queen's burrow, Spencer's anger, the shuttle's launch) (2026-11-15)
+
+Not committed (the curator commits). No full generator run: focused steps only (`Tools/PlayTest/Scripts/ApplyRound63.cs`, then
+`ApplyCutsceneShots.cs` and `Tools/Generate/Opening Cutscene Sounds`). `ArtSource/Exports` and `Tools/Blender` untouched, no
+Blender, no packages, Game view resolution untouched. Remco was playing when the round began (his save changed twice in the
+first minutes); his save after he stopped, MD5 **463303aa28769c0934c10dc303967162**, was copied aside before every Play Mode run
+and restored after; verified identical after each run and at the end (`Tools/PlayTest/r63_save_md5.txt`); the dev backup
+untouched. Play runs strictly one after another, each waiting on the previous process.
+
+### 1. The base sank into the land behind the road's end (`TerrainField.LevelBasePad`, `BaseArtDefinition`)
+Not a round-59/60 regression: the base stands past the road's end, where the drawn landscape already rolls up; its back half was
+buried to the deck (probe `r63_base_probe.cs`: ground over the plinth's bottom up to **1.07 m** under the footprint; seen from the
+back, `r63_1_base_before_side.png`, only the deck and the tower showed). The ground under the footprint (plus a 0.5 m margin) is
+now levelled to the base's height and blends back over 2.5 m (`_groundPadMargin`, `_groundPadBlend`, data); the road is left
+alone. One fix for the cutscene and every level (same `TerrainField`). After: **0.002 m** (`r63_1_base_after_side.png`).
+
+### 2. The cave crystal in the rock (`UndergroundSet.ClearOfRock`)
+The right cluster stood half inside a boulder and trembled through it (`r63_2_cave_before*.png`). Every cluster is now tested at
+build on a 5x5x5 grid through its body above the foot against the rock colliders (inside = a ray from the corridor axis enters
+rock before the point and the ray back meets no rock, so a boulder merely in front does not count), with a 0.15 m margin for
+the tremble, and takes the smallest step (towards the corridor, then along it) that clears it. After: on the floor in front of
+the boulder (`r63_2_cave_after_crystal_x3.png`); no cluster needed the could-not-clear warning.
+
+### 3. The quake: picture and sound agree, Spencer braces, the wrong bed is gone
+- **Stones** (`FieldSet.PoseShiver`, data `CutsceneCast.ShiverTremor`): they were jumping |sin| at 17-45 Hz by 5 cm (a shaking
+  table). Now a 4 mm buzz plus one hop of a gravity arc (2.5 cm, 0.2 s) on each stone's own hashed beat, and a 4-degree rock; the
+  lens trembles a little with it (`LensRumble` 0.35 of the camera's rumble).
+- **Spencer** (`CutsceneHeroRig.Brace`, data `CutsceneCast.Brace`): over his stand in both shiver shots the knees give 14 deg (the
+  hips sink by what that lifts the feet, so the feet stay planted: max foot slide **0.9 mm per frame** in the played run), the
+  torso leans in 7 deg and sways 6 deg on two unrelated beats (1.1 / 2.1 Hz; 2.7 Hz jerked just over a degree per frame, caught by the new test), the arms come out 18 deg, the head counters 60 %
+  of the sway (spine moving **18 deg/s** on average through the shiver shots). `r63_3_shiver_after_brace.png`.
+- **The "wind or water" sound**: the played-run recorder (`r63_rec.cs`) found the haulers' fan hum at **0.62** under both shiver
+  shots, where no hauler is in the picture (and the wind bed at 0.18-0.25). The fans are silent in the shiver shots now (0.15
+  under the attack as before) and the wind bed is gone from the two shiver shots and the burst shot (it fades back in on
+  Spencer's close-up). His calm breathing turns fast as the tremor peaks.
+- **Rumble**: new `CutsceneSoundSlot.Trim` (0 = 1) lifts the quake slot over its measured gain: 1.6 x 0.617 = 0.99; the first
+  shiver shot holds it at full, the radar shot at 0.85. Played run, rumble source volume min-after-2s / mean / max: shot 11
+  **0.988 / 0.943 / 0.988** (round 60: 0.46 / 0.51 / 0.60), shot 12 0.840 / 0.851 / 0.988, burst shot 0.691 / 0.763 / 0.988.
+
+### 4. The Queen climbs out of her own burrow; no boss alarm in the intro
+- `CutsceneCast.QueenBurrow` (data): a 1.7x copy of the brood's living burrow opens at swarm clock 2.4 s on the road (3.9 m, 0.5 m
+  aside), bursts at 4.2 s with its own ground-tear cue (dust and slabs from the burrow's burst, more dust but not bigger puffs),
+  and 0.35 s later she climbs out over 2.1 s: from 2.6 m down, nose 42 deg up, hauling herself 0.9 m forward over the lip with a
+  7-degree dip, then level (`QueenBurrow.Climb`, pure, tested), while dust pours off her; her walk to the head of the brood
+  starts where the climb left her; the scream stays at 7.8 s. Her body is driven by the swarm clock (her view's own swell is
+  skipped), so a seek shows the same moment. Played run: first above the ground at 4.91 s, max move 0.054 m per frame, **0
+  pops**. The burrow closes behind her in the handoff with the others (four closing files now). `r63_4_queen_after_*.png`.
+- The gate shot's `BossAlarm` cue is removed; no shot of the opening cues or holds it (test). Levels keep their alarm.
+
+### 5. Spencer gets angry (`FieldSet.PoseActingReaction`, data `AngrySeconds`/`AngryClipRate`/`AngryFace`)
+After the startle back-step a new beat: his own `Point_Shout` clip on the upper body over the idle legs (1.4 s at 0.9, so the
+point holds to the draw), an angry face (fear drains in 0.35 s, `Determined` set, the mouth open on the shout), cross-faded in
+and out like every beat. His new line, in the dialogue system (opener squelch and Spencer's blips), types from 3.7 s:
+
+> **"No life forms, they said. No complications, they said!"**
+
+(It throws ORA's "No life forms detected. Expected complications: none." back at the planet.) The reaction shot is **+1.6 s**
+(5.5 -> 7.1 s). A line left open holds the shot; the swarm clock carries the shot's real length on into the stand and the
+handoff (`_reactHeld`, like round 39's `_standHeld`), so nothing jumps at the cut. `r63_5_angry_*.png`.
+
+### 6. The shuttle launches instead of vanishing (`BaseShuttleView`, `PlumeKit`, `BaseArtDefinition`)
+In the level the shuttle climbed 7 m in 5 s and shrank to nothing over the last third, still in the middle of the screen. Now:
+1.8 s spool-up on the pad (glow, soft plumes at both lift jets, dust off the pad, the roar swelling in), an eased lift-off
+(height grows with the square of time), a climbing turn of 75 deg with a 26-degree bank and the nose up 14 deg, the main engine's
+plume swinging from down to back, a vapour trail from the engine (tapered, fading to nothing), 22 m up and 10 m away in 8 s,
+shrinking over the last 55 % of the climb. Measured with the play camera (`r63_shuttle.cs`): 63 px on the pad, 89 px at 4 s,
+36 px at 6 s, 10 px at the top edge at 7 s, **out of the frame from 7.6 s** (viewport y 1.09) while 1.6 px; scale 0 only at the
+end of the climb, out of view. The return mirrors it, softer. Roar: Remco's approved `launch_booster_burn_loop` (0.2 of the
+effects volume, pauses with the game). The plumes share the cutscene's ExhaustPlume cone and material (moved into
+`Game.Core.PlumeKit`, which `ExhaustPlume` now uses too). All numbers on `BaseArtDefinition` (Shuttle header).
+
+### Checks
+- Recompile: 0 errors; the only warning the known CS0618 (`BalanceProbeTests.cs`).
+- **Played run of the whole opening** (`r63_play.sh`, HOLD=8): all 17 shots, handed off into the first level, **console 0
+  errors, 0 warnings**; launch swells 16/16 from 0. Run three times (the last on the final code, `Logs/r63/final2/`). Rig
+  recorder (r48): **0 yaw snaps** in every run, Mercer and the Queen 0 pops; the 2-3 pops per run are creatures standing at the
+  gate on the one frame the harness renders a still mid-hold (a frame hitch), plus once a Cragback's own Attack clip ramp at
+  the handoff roar (8-37-99-45 deg, inside the clip); none from this round. Frame time mean 7.24 ms, p95 11.59 ms.
+- Base probe on the final code: ground over the plinth's bottom **0.002 m** (before 1.07 m).
+- Level run (`r63_level.sh`): 0 errors, 0 warnings.
+- EditMode suite on w6 (`r34b_editmode_worker.sh 6 "Game.Tests"`): **922 tests, 870 passed, 52 skipped, 0 failed** (914 + 8). New `Round63Tests` (8): no boss alarm in the opening; no wind bed in the quake shots; the
+  rumble's trim; tremor and brace data (a tremor, never a 1-degree sway jerk per frame); the angry line (Spencer's, short, after
+  the startle, +1.6 s within the 2.5 s cap); the Queen's climb (deep and nose up to level, smooth per frame, her burst cued);
+  the base pad (no ground over the plinth in any campaign level); the shuttle data. The base pad first overlapped the colony rig's levelled notch on C1_01 (`ColonyRigTests` caught 4 cm); the base is levelled first now, the rig after.
+- Stills `ArtSource/Previews/QA/r63_*` (22), work frames and 2-4x crops in `Logs/r63/`.
+
+### Open points (round 63)
+1. Listen: the rumble now sits at the source's ceiling in the quake shots; the hauler hum and wind are gone there. If the quake
+   should be louder still, the next step is the mix (the effects channel), not the slot.
+2. The Queen's burst leaves a soft dust haze over her maw for about a second; dark against the night sky at the low lens.
+3. The angry line is held open by the dialogue like every other line; with auto-advance it reads for its own length.
+4. The base pad changes the drawn ground round every level's base (no gameplay cell changes; the road is untouched).
+5. The shuttle roar plays 2D at 0.2; with several bases on screen in a later mode it should become spatial.

@@ -68,6 +68,12 @@ namespace Game.Editor
         private const int HullLiveryAniso = 8;
         private const int HullLiverySize = 2048;
 
+        // Round 44's reaction shot; round 63 adds the angry beat (the cast's AngrySeconds) after the startle,
+        // which ends 0.3 s (FieldSet.ReactTurnAt) + Turn_Look_L (0.8 s) + Startle_Backstep (2.5 s) = 3.6 s into the shot; his line
+        // starts a beat after the point.
+        private const float ReactionSeconds = 5.5f;
+        private const float AngryLineDelay = 3.7f;
+
         // Round 39 (Remco: the brood must not leave until the gate line is read): the stand shot ends this soon after its dialogue,
         // so the roar and the retreat (the handoff shot) follow the click at once.
         private const float GateStandAfterRead = 0.6f;
@@ -120,12 +126,16 @@ namespace Game.Editor
                 Say(mercer, "ORA... what is this?"));
             DialogueDefinition radar = CreateDialogue("Dlg_Cut_Radar",
                 Say(ora, "Correction. Life forms detected. Many life forms."));
+            // Round 63 (Remco: he should be pissed off when the enemies show, "because they told him there are no enemies"): after
+            // the startle he throws ORA's own words back at the planet.
+            DialogueDefinition angry = CreateDialogue("Dlg_Cut_Angry",
+                Say(mercer, "No life forms, they said. No complications, they said!"));
             DialogueDefinition gate = CreateDialogue("Dlg_Cut_Gate",
                 Say(voss, "We can't go back. Earth is counting on us. Spencer, hold those gates!"),
                 Say(ora, "Standard defence systems ready. AI turrets can be deployed immediately."));
 
             CutsceneCast cast = CreateCutsceneCast(context);
-            ShotSpec[] shots = OpeningShots(earth, survey, orbit, landing, drill, shiver, radar, gate);
+            ShotSpec[] shots = OpeningShots(earth, survey, orbit, landing, drill, shiver, radar, angry, gate, cast.AngrySeconds);
             var cutscene = LoadOrCreate<CutsceneDefinition>(OpeningCutscenePath);
             var so = new SerializedObject(cutscene);
             so.FindProperty("_cast").objectReferenceValue = cast;
@@ -319,7 +329,7 @@ namespace Game.Editor
 
         // The prologue over the planet, then the field from landing to the first gate, with the dive underground
         // between the core lighting up and the ground starting to shake.
-        private static ShotSpec[] OpeningShots(DialogueDefinition earth, DialogueDefinition survey, DialogueDefinition orbit, DialogueDefinition landing, DialogueDefinition drill, DialogueDefinition shiver, DialogueDefinition radar, DialogueDefinition gate)
+        private static ShotSpec[] OpeningShots(DialogueDefinition earth, DialogueDefinition survey, DialogueDefinition orbit, DialogueDefinition landing, DialogueDefinition drill, DialogueDefinition shiver, DialogueDefinition radar, DialogueDefinition angry, DialogueDefinition gate, float angrySeconds)
         {
             var shots = new[]
             {
@@ -457,7 +467,9 @@ namespace Game.Editor
                 new ShotSpec
                 {
                     // Close on the commander at his dig site past the gate: he stares at them and cannot believe it.
-                    Set = CutsceneSet.Field, Action = CutsceneAction.MercerReacts, Seconds = 5.5f,
+                    // Round 63: his angry beat (CutsceneCast.AngrySeconds) between the startle and the draw lengthens the shot by its
+                    // length; his line types over it (a dialogue left open holds the shot, and the swarm clock runs on with it).
+                    Set = CutsceneSet.Field, Action = CutsceneAction.MercerReacts, Seconds = ReactionSeconds + angrySeconds, Dialogue = angry, DialogueDelay = AngryLineDelay,
                     Keys = new[]
                     {
                         // Docs/CUTSCENES_CONTINENTS.md section 8: between him and the creatures, about 27 degrees to his right at

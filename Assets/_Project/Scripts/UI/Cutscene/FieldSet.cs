@@ -106,9 +106,10 @@ namespace Game.UI
         private const float DrawTo = 0.6f;
         private const float LookAroundDegrees = 45f;
         private const float ShiverDustRate = 30f;
+        // The haulers' fan hum under the attack (they are far behind the lens there).
+        private const float AttackFanLoudness = 0.15f;
         private const int Pebbles = 9;
         private const float PebbleSize = 0.22f;
-        private const float PebbleJump = 0.05f;
         private const int VeinCrystals = 4;
         private const float VeinCrystalSize = 1.3f;
         private const float VeinClearance = 0.3f;
@@ -140,7 +141,7 @@ namespace Game.UI
         // Round 48: they did not quite (a pop of up to ~600 deg summed over the bones at a beat change): each change inside a shot
         // now cross-fades over this long, the clip it leaves running on under the new one.
         private const float HeroBeatFadeSeconds = 0.25f;
-        private const int ReactionBeats = 5;
+        private const int ReactionBeats = 6;
 
         // The share of the landing shot over which the beacon unfolds.
         private const float BeaconDeployFrom = 0.7f;
@@ -172,6 +173,7 @@ namespace Game.UI
 
         private readonly List<Transform> _pebbles = new List<Transform>();
         private readonly List<Vector3> _pebbleRest = new List<Vector3>();
+        private readonly List<Quaternion> _pebbleTurn = new List<Quaternion>();
         private CutsceneContext _context;
         private FieldLayout _layout;
         private VisualTheme _theme;
@@ -227,6 +229,8 @@ namespace Game.UI
         // How long the stand shot ran (its own length on a seek, longer while the player kept its dialogue open), so the
         // swarm clock runs on without a jump into the handoff.
         private float _standHeld;
+        // Round 63: the same for the reaction shot, which his angry line can hold open past its own length.
+        private float _reactHeld;
 
         public VisualTheme Theme => _theme;
 
@@ -264,6 +268,7 @@ namespace Game.UI
             _drones = new FieldDrones(root, _base.PadTop, heap, context, _theme, _base.CrystalTop, () => _base.ParkingSpot(_layout, heap), _layout.SurfaceAt);
             _swarm = new FieldSwarm(root, _layout, context);
             _standHeld = _standShotSeconds;
+            _reactHeld = _reactShotSeconds;
             if (context.Cast != null && context.Cast.Hero != null)
             {
                 _hero = new CutsceneHeroRig(root, context.Cast.Hero);
@@ -290,6 +295,12 @@ namespace Game.UI
             if (action != CutsceneAction.Handoff)
             {
                 _standHeld = _standShotSeconds;
+            }
+
+            // Round 63: likewise the reaction, held open by his angry line, carries its real length into the stand and the handoff.
+            if (action != CutsceneAction.GateStand && action != CutsceneAction.Handoff)
+            {
+                _reactHeld = _reactShotSeconds;
             }
         }
 
@@ -554,8 +565,11 @@ namespace Game.UI
                 return;
             }
 
+            // Round 63 (Remco: "an annoying wind or water sound that doesn't make sense" in the shiver shot): the haulers' fan hum
+            // ran at full under the dark shiver shots, where no hauler is in the picture; it is only heard where they fly in view.
             bool attack = AtOrAfter(CutsceneAction.SwarmPours);
-            _drones.Pose(_harvestSeconds + _coreSeconds + time, 1f, attack ? 0.15f : 1f, LaunchShare * _harvestSeconds);
+            float fans = At(CutsceneAction.GroundShivers) ? 0f : attack ? AttackFanLoudness : 1f;
+            _drones.Pose(_harvestSeconds + _coreSeconds + time, 1f, fans, LaunchShare * _harvestSeconds);
             _base.PoseCrystal(false, Vector3.zero, 1f);
         }
 
@@ -569,13 +583,14 @@ namespace Game.UI
                     break;
                 case CutsceneAction.MercerReacts:
                     clock = _swarmShotSeconds + time;
+                    _reactHeld = Mathf.Max(_reactHeld, time);
                     break;
                 case CutsceneAction.GateStand:
-                    clock = _swarmShotSeconds + _reactShotSeconds + time;
+                    clock = _swarmShotSeconds + _reactHeld + time;
                     _standHeld = Mathf.Max(_standHeld, time);
                     break;
                 case CutsceneAction.Handoff:
-                    clock = _swarmShotSeconds + _reactShotSeconds + _standHeld + time;
+                    clock = _swarmShotSeconds + _reactHeld + _standHeld + time;
                     break;
                 default:
                     clock = 0f;
@@ -583,7 +598,7 @@ namespace Game.UI
             }
 
             // The retreat starts from the handoff, which only begins once the gate dialogue is read; before it they hold.
-            _swarm.SetRetreat(At(CutsceneAction.Handoff) ? _swarmShotSeconds + _reactShotSeconds + _standHeld + HandoffRoarSeconds : float.PositiveInfinity);
+            _swarm.SetRetreat(At(CutsceneAction.Handoff) ? _swarmShotSeconds + _reactHeld + _standHeld + HandoffRoarSeconds : float.PositiveInfinity);
             _swarm.Pose(clock, time);
             if (AtOrAfter(CutsceneAction.SwarmPours))
             {
@@ -610,6 +625,8 @@ namespace Game.UI
                 case CutsceneAction.SwarmPours:
                     float scan = At(CutsceneAction.GroundShivers) ? Mathf.Sin(time * 1.4f) * LookAroundDegrees * CutsceneMath.Span(progress, 0.15f, 0.35f) : 0f;
                     Stand(_layout.DigSite, _layout.DigFacing, scan, 0f, time);
+                    // Round 63: he braces against the tremor: knees give, the body sways and the arms come out for balance.
+                    _hero.Brace(ShiverStrength(progress), time, _context.Cast != null ? _context.Cast.Brace : QuakeBrace.Default);
                     break;
                 case CutsceneAction.MercerReacts:
                     PoseReaction(time, progress);
@@ -695,7 +712,8 @@ namespace Game.UI
 
         // He looks aside at the ground he came to dig; at the first growl he turns to the brood (the turn clip, the root turned by
         // its own turn at the first frame), startles back from them with the hand going to the gun, draws into a nervous aim
-        // as the Queen roars, and holds it. Each clip starts where the last one ended.
+        // as the Queen roars, and holds it. Each clip starts where the last one ended. Round 63 (Remco: "they told him there are
+        // no enemies"): between the startle and the draw he gets angry: he points at them and shouts (his line types over it).
         private void PoseActingReaction(float time)
         {
             _hero.Root.gameObject.SetActive(true);
@@ -704,7 +722,8 @@ namespace Game.UI
             float turn = turnActing != null ? turnActing.StartTurn : 0f;
             float turnLength = _hero.ClipLength(ModelClipRole.TurnLookLeft);
             float startleAt = ReactTurnAt + turnLength;
-            float drawAt = startleAt + _hero.ClipLength(ModelClipRole.StartleBackstep);
+            float angryAt = startleAt + _hero.ClipLength(ModelClipRole.StartleBackstep);
+            float drawAt = angryAt + AngrySeconds;
             float aimAt = drawAt + _hero.ClipLength(ModelClipRole.DrawAimNervous);
             Beat(startleAt, time, CutsceneSound.Gasp, GaspVolume);
             Beat(drawAt, time, CutsceneSound.PistolDraw, DrawVolume);
@@ -712,8 +731,9 @@ namespace Game.UI
             _reactionStarts[0] = float.NegativeInfinity;
             _reactionStarts[1] = ReactTurnAt;
             _reactionStarts[2] = startleAt;
-            _reactionStarts[3] = drawAt;
-            _reactionStarts[4] = aimAt;
+            _reactionStarts[3] = angryAt;
+            _reactionStarts[4] = drawAt;
+            _reactionStarts[5] = aimAt;
             int beat = _reactionStarts.Length - 1;
             while (beat > 0 && time < _reactionStarts[beat])
             {
@@ -734,8 +754,11 @@ namespace Game.UI
             _hero.FadeFromHeld(share);
         }
 
+        // Round 63: how long the angry beat lasts (data); none without his point-and-shout clip, so the older staging is unchanged.
+        private float AngrySeconds => _hero.ClipLength(ModelClipRole.PointShout) > 0f && _context.Cast != null ? _context.Cast.AngrySeconds : 0f;
+
         // One beat of the reaction at this moment of the shot (a clip played once holds its last frame after its end), with its
-        // face at <paramref name="faceShare"/>: 0 idle, 1 the turn, 2 the startle, 3 the draw, 4 the nervous aim.
+        // face at <paramref name="faceShare"/>: 0 idle, 1 the turn, 2 the startle, 3 the anger, 4 the draw, 5 the nervous aim.
         private void PoseReactionBeat(int beat, float time, float brood, float turn, float faceShare)
         {
             float into = time - _reactionStarts[Mathf.Max(1, beat)];
@@ -754,8 +777,16 @@ namespace Game.UI
                     _hero.Face(ModelClipRole.StartleBackstep, into, faceShare);
                     return;
                 case 3:
+                    // The legs keep his weight on the spot; the arm points at them and the head jabs with the shout.
+                    _hero.PoseLayered(StartleEnd, brood, ModelClipRole.Idle, into, ModelClipRole.PointShout, into * _context.Cast.AngryClipRate, false);
+                    _hero.Face(ModelClipRole.PointShout, into * _context.Cast.AngryClipRate, faceShare);
+                    _hero.Face(_context.Cast.AngryFace, into, faceShare);
+                    return;
+                case 4:
                     _hero.PoseClip(StartleEnd, brood, ModelClipRole.DrawAimNervous, into, false, into >= _hero.EventOf(ModelClipRole.DrawAimNervous));
                     _hero.Face(ModelClipRole.DrawAimNervous, into, faceShare);
+                    // The anger does not drain at once: it sets the jaw through the draw.
+                    _hero.Face(_context.Cast.AngryFace, AngrySeconds + into, faceShare);
                     return;
                 default:
                     _hero.PoseClip(StartleEnd, brood, ModelClipRole.AimHoldNervous, into, true, true);
@@ -1025,24 +1056,57 @@ namespace Game.UI
             _eyes.Pose(opening, shut, time, _context.Camera);
         }
 
-        // The ground trembles under the commander's boots: dust rises and loose stones jump.
-
+        // The ground trembles under the commander's boots: dust rises and loose stones rattle. Round 63 (Remco: "the stones move
+        // like an extreme earthquake, but there is only a faint rumble and Spencer is totally still"): a tremor, not a
+        // shaking table. Each stone buzzes a few millimetres and now and then hops once, on its own hashed beat; the lens
+        // trembles a little with it, the rumble is louder (its slot's trim) and Spencer braces against it.
         private void PoseShiver(float time, float progress)
         {
             bool shivering = At(CutsceneAction.GroundShivers);
-            float strength = shivering ? CutsceneMath.Span(progress, 0.05f, 0.4f) : 0f;
+            float strength = ShiverStrength(progress);
             ParticleKit.SetRate(_shiverDust, ShiverDustRate * strength);
             if (shivering)
             {
-                // Round 44: the quake rumble follows the jumping stones.
+                // Round 44: the quake rumble follows the trembling stones.
                 _context.Tremble = strength;
+                _context.Rumble = Mathf.Max(_context.Rumble, strength * Quake.LensRumble);
             }
+
             for (int i = 0; i < _pebbles.Count; i++)
             {
                 _pebbles[i].gameObject.SetActive(shivering || After(CutsceneAction.GroundShivers));
-                float jump = Mathf.Abs(Mathf.Sin(time * (17f + i * 3.1f) + i)) * PebbleJump * strength;
-                _pebbles[i].position = _pebbleRest[i] + Vector3.up * jump;
+                _pebbles[i].SetPositionAndRotation(_pebbleRest[i] + Vector3.up * (PebbleLift(i, time) * strength), _pebbleTurn[i] * PebbleWobble(i, time, strength));
             }
+        }
+
+        private float ShiverStrength(float progress) => At(CutsceneAction.GroundShivers) ? CutsceneMath.Span(progress, 0.05f, 0.4f) : 0f;
+
+        private ShiverTremor Quake => _context.Cast != null ? _context.Cast.ShiverTremor : ShiverTremor.Default;
+
+        // A stone's height over its rest at full strength: a fine buzz on the ground plus, once per hashed beat, one hop of a
+        // gravity arc (so it lands, never floats).
+        private float PebbleLift(int i, float time)
+        {
+            ShiverTremor quake = Quake;
+            float buzz = (0.5f + 0.5f * Mathf.Sin(time * quake.BuzzHertz * (1f + 0.17f * i) + i * 2.3f)) * quake.BuzzHeight;
+            float period = quake.HopEvery * (0.75f + 0.5f * CutsceneMath.Hash(i, 47));
+            float phase = Mathf.Repeat(time + CutsceneMath.Hash(i, 49) * period, period);
+            float hop = 0f;
+            if (phase < quake.HopSeconds)
+            {
+                float u = phase / quake.HopSeconds;
+                hop = 4f * u * (1f - u) * quake.HopHeight * (0.6f + 0.4f * CutsceneMath.Hash(i, 51));
+            }
+
+            return buzz + hop;
+        }
+
+        // A stone rocks a few degrees about a level axis of its own while it rattles.
+        private Quaternion PebbleWobble(int i, float time, float strength)
+        {
+            float angle = Mathf.Sin(time * Quake.BuzzHertz * 0.6f + i) * Quake.RockDegrees * strength;
+            float axis = CutsceneMath.Hash(i, 53) * 360f;
+            return Quaternion.AngleAxis(angle, Quaternion.Euler(0f, axis, 0f) * Vector3.right);
         }
 
         private void BuildCapsule(Transform root)
@@ -1210,6 +1274,7 @@ namespace Game.UI
                 pebble.position = position;
                 _pebbles.Add(pebble);
                 _pebbleRest.Add(position);
+                _pebbleTurn.Add(pebble.rotation);
             }
         }
 

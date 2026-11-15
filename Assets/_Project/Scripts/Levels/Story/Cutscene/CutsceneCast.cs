@@ -116,6 +116,25 @@ namespace Game.Levels
         [SerializeField] [Min(0.01f)] private float _flinchAttack = 0.07f;
         [SerializeField] [Min(0.01f)] private float _flinchDecay = 0.45f;
 
+        [Header("Round 63: the quake, his anger, the Queen's burrow")]
+        [Tooltip("How the ground shivers under Spencer at full strength (stones, lens).")]
+        [SerializeField] private ShiverTremor _shiverTremor = new ShiverTremor();
+        [Tooltip("How Spencer braces against the shiver at full strength.")]
+        [SerializeField] private QuakeBrace _brace = new QuakeBrace();
+        [Tooltip("Seconds of the angry beat between his startle and his draw: he points at the brood and shouts his line. The reaction shot is this much longer.")]
+        [SerializeField] [Range(0f, 2.5f)] private float _angrySeconds = 1.6f;
+        [Tooltip("How fast the point-and-shout clip plays in the angry beat (above 1: a sharper jab).")]
+        [SerializeField] [Range(0.5f, 2f)] private float _angryClipRate = 0.9f;
+        [Tooltip("His face through the angry beat (seconds from its start): the fear gives way to anger, the jaw set, the mouth open on the shout.")]
+        [SerializeField] private FaceCurve[] _angryFace =
+        {
+            new FaceCurve("Fear", new Vector2(0f, 0.6f), new Vector2(0.35f, 0f)),
+            new FaceCurve("Determined", new Vector2(0f, 0.2f), new Vector2(0.3f, 1f), new Vector2(2.6f, 0.9f), new Vector2(3.6f, 0.4f)),
+            new FaceCurve("Breath", new Vector2(0.25f, 0f), new Vector2(0.45f, 0.8f), new Vector2(0.9f, 0.5f), new Vector2(1.3f, 0.8f), new Vector2(1.9f, 0f)),
+        };
+        [Tooltip("The Queen's own burrow: she climbs out of it instead of rising from bare ground.")]
+        [SerializeField] private QueenBurrow _queenBurrow = new QueenBurrow();
+
         public HeroDefinition Hero => _hero;
 
         /// <summary>The landing capsule's scale on the ground (the orbit shot keeps its own).</summary>
@@ -127,6 +146,12 @@ namespace Game.Levels
         public FaceCurve[] FlinchFace => _flinchFace ?? System.Array.Empty<FaceCurve>();
         public float FlinchAttack => _flinchAttack;
         public float FlinchDecay => _flinchDecay;
+        public ShiverTremor ShiverTremor => _shiverTremor ?? ShiverTremor.Default;
+        public QuakeBrace Brace => _brace ?? QuakeBrace.Default;
+        public float AngrySeconds => _angrySeconds;
+        public float AngryClipRate => _angryClipRate;
+        public FaceCurve[] AngryFace => _angryFace ?? System.Array.Empty<FaceCurve>();
+        public QueenBurrow QueenBurrow => _queenBurrow ?? QueenBurrow.Default;
 
         /// <summary>The commander's clip for stepping out of the capsule (round 39); the walk stands in while his model lacks it.</summary>
         public ModelClipRole CapsuleExitClip => _capsuleExitClip;

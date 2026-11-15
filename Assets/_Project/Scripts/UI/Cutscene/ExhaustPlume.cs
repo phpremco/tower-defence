@@ -1,3 +1,4 @@
+using Game.Core;
 using Game.Levels;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -12,13 +13,9 @@ namespace Game.UI
     /// </summary>
     public sealed class ExhaustPlume
     {
-        public const string ShaderName = "Game/ExhaustPlume";
+        public const string ShaderName = PlumeKit.ShaderName;
         public const string ShimmerShader = "Game/VfxDistortion";
 
-        private const int Sides = 18;
-        private const int Rings = 10;
-        // How far the cone opens: the tail is this many nozzle radii across more than the mouth (gas spreads in vacuum).
-        private const float Flare = 1.5f;
         private const float CoreWidth = 0.45f;
         private const float CoreLength = 0.4f;
         // The soft gas round the core is dimmer than the core, so the white-hot middle stands out of it.
@@ -32,7 +29,6 @@ namespace Game.UI
         private static readonly int ClockId = Shader.PropertyToID("_Clock");
         private static readonly Vector2 ShimmerScroll = new Vector2(0f, -1.6f);
 
-        private static Mesh _cone;
         private static Mesh _shimmerQuad;
         private static Texture2D _shimmerTexture;
 
@@ -51,10 +47,10 @@ namespace Game.UI
         public ExhaustPlume(Transform parent, string name, Color core, Color edge, float intensity, bool shimmer)
         {
             _intensity = intensity;
-            _outerMaterial = PlumeMaterial(core, edge, 2.2f, 1.3f, 0.35f, 0.45f);
-            _coreMaterial = PlumeMaterial(core, Color.Lerp(core, edge, 0.4f), 3.2f, 2.4f, 0.7f, 0.9f);
-            _outer = Cone(parent, name + "Plume", _outerMaterial);
-            _core = Cone(parent, name + "Core", _coreMaterial);
+            _outerMaterial = PlumeKit.Outer(core, edge);
+            _coreMaterial = PlumeKit.Core(core, edge);
+            _outer = PlumeKit.Cone(parent, name + "Plume", _outerMaterial);
+            _core = PlumeKit.Cone(parent, name + "Core", _coreMaterial);
             Color flareColour = Color.Lerp(core, edge, 0.5f);
             _flare = SpaceKit.Glow(parent, name + "Flare", flareColour, CutsceneSprite.EngineGlow);
             _flareMaterial = _flare.GetComponent<MeshRenderer>().sharedMaterial;
@@ -126,31 +122,6 @@ namespace Game.UI
             _shimmer?.gameObject.SetActive(on);
         }
 
-        private static Material PlumeMaterial(Color core, Color edge, float edgePower, float lengthFade, float coreLength, float diamonds)
-        {
-            Shader shader = Shader.Find(ShaderName);
-            var material = new Material(shader != null ? shader : Shader.Find("Universal Render Pipeline/Unlit")) { name = ShaderName };
-            material.SetColor("_CoreColor", core);
-            material.SetColor("_EdgeColor", edge);
-            material.SetFloat("_EdgePower", edgePower);
-            material.SetFloat("_LengthFade", lengthFade);
-            material.SetFloat("_CoreLength", coreLength);
-            material.SetFloat("_Diamonds", diamonds);
-            return material;
-        }
-
-        private static Transform Cone(Transform parent, string name, Material material)
-        {
-            var go = new GameObject(name);
-            go.transform.SetParent(parent, false);
-            go.AddComponent<MeshFilter>().sharedMesh = ConeMesh();
-            var renderer = go.AddComponent<MeshRenderer>();
-            renderer.sharedMaterial = material;
-            renderer.shadowCastingMode = ShadowCastingMode.Off;
-            renderer.receiveShadows = false;
-            return go.transform;
-        }
-
         private static Transform BuildShimmer(Transform parent, string name)
         {
             Shader shader = Shader.Find(ShimmerShader);
@@ -173,57 +144,6 @@ namespace Game.UI
             renderer.shadowCastingMode = ShadowCastingMode.Off;
             renderer.receiveShadows = false;
             return go.transform;
-        }
-
-        // A unit cone along +Z, its radius one at the mouth and opening towards the tail; UV.y runs along it.
-        private static Mesh ConeMesh()
-        {
-            if (_cone != null)
-            {
-                return _cone;
-            }
-
-            int columns = Sides + 1;
-            var vertices = new Vector3[columns * (Rings + 1)];
-            var normals = new Vector3[vertices.Length];
-            var uvs = new Vector2[vertices.Length];
-            for (int r = 0; r <= Rings; r++)
-            {
-                float z = (float)r / Rings;
-                float radius = 1f + Flare * Mathf.Pow(z, 0.7f);
-                float slope = Flare * 0.7f * Mathf.Pow(Mathf.Max(z, 0.02f), -0.3f);
-                for (int s = 0; s < columns; s++)
-                {
-                    float u = (float)s / Sides;
-                    float angle = u * Mathf.PI * 2f;
-                    var round = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f);
-                    int i = r * columns + s;
-                    vertices[i] = round * radius + Vector3.forward * z;
-                    normals[i] = (round - Vector3.forward * slope).normalized;
-                    uvs[i] = new Vector2(u, z);
-                }
-            }
-
-            var triangles = new int[Sides * Rings * 6];
-            int t = 0;
-            for (int r = 0; r < Rings; r++)
-            {
-                for (int s = 0; s < Sides; s++)
-                {
-                    int a = r * columns + s;
-                    int b = a + columns;
-                    triangles[t++] = a;
-                    triangles[t++] = b;
-                    triangles[t++] = a + 1;
-                    triangles[t++] = a + 1;
-                    triangles[t++] = b;
-                    triangles[t++] = b + 1;
-                }
-            }
-
-            _cone = new Mesh { name = "PlumeCone", vertices = vertices, normals = normals, uv = uvs, triangles = triangles };
-            _cone.RecalculateBounds();
-            return _cone;
         }
 
         // A unit quad from y 0 to 1 with white vertex colours (the distortion fades by their alpha).

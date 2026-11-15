@@ -55,6 +55,11 @@ namespace Game.UI
         private const string SpineBone = "Spine2";
         private const string UpperArmBone = "UpperArm_R";
         private const string ForearmBone = "Forearm_R";
+        // Round 63: the bones the quake brace bends (the legs as pairs, left then right).
+        private const string HipsBone = "Hips";
+        private const string UpperArmLeftBone = "UpperArm_L";
+        private static readonly string[] ThighBones = { "Thigh_L", "Thigh_R" };
+        private static readonly string[] ShinBones = { "Shin_L", "Shin_R" };
 
         // The disbelief: the torso leans back, the right hand comes up to the visor, the head tips up to take it in.
         private const float ReactLeanDegrees = 10f;
@@ -109,6 +114,11 @@ namespace Game.UI
         private readonly Quaternion[] _fadeRotations = new Quaternion[0];
         private bool _drawn;
         private readonly Transform[] _feet = new Transform[0];
+        private readonly Transform _hips;
+        private readonly Vector3 _hipsRest;
+        private readonly Transform _upperArmLeft;
+        private readonly Transform[] _thighs = new Transform[0];
+        private readonly Transform[] _shins = new Transform[0];
 
         // Round 48: the pose a beat change inside a shot blends from (every node of the model, and the root), so a new clip fades
         // in instead of popping; held and blended anew every frame, so a sought moment shows the same blend.
@@ -143,7 +153,13 @@ namespace Game.UI
                 _forearm = _art.Find(ForearmBone);
                 // The clips leave out bones they never move, so a turned bone keeps its turn into the next pose: the bones the
                 // reaction turns go back to their rest before every pose.
-                _overridden = new[] { _spine, _upperArm, _forearm, _neck };
+                _hips = _art.Find(HipsBone);
+                _hipsRest = _hips != null ? _hips.localPosition : Vector3.zero;
+                _upperArmLeft = _art.Find(UpperArmLeftBone);
+                _thighs = new[] { _art.Find(ThighBones[0]), _art.Find(ThighBones[1]) };
+                _shins = new[] { _art.Find(ShinBones[0]), _art.Find(ShinBones[1]) };
+                Transform[] feet = FindFeet(_art);
+                _overridden = new[] { _spine, _upperArm, _forearm, _neck, _upperArmLeft, _thighs[0], _thighs[1], _shins[0], _shins[1], feet[0], feet[1] };
                 _overriddenRest = new Quaternion[_overridden.Length];
                 for (int i = 0; i < _overridden.Length; i++)
                 {
@@ -527,6 +543,68 @@ namespace Game.UI
             Root.position -= Root.rotation * Vector3.forward * (FlinchStep * amount);
         }
 
+        /// <summary>
+        /// Round 63: braces him against a tremor on top of the pose just made (<paramref name="amount"/> 0..1): the knees give
+        /// with the hips sinking so the feet stay where they stood, the torso leans in and sways, the arms come out for balance
+        /// and the head counters the sway. Call after the pose; the next pose undoes it. Worked out from time alone, so a
+        /// sought moment shows the same brace.
+        /// </summary>
+        public void Brace(float amount, float time, Game.Levels.QuakeBrace brace)
+        {
+            if (_art == null || brace == null || amount <= 0f)
+            {
+                return;
+            }
+
+            Vector3 right = Root.rotation * Vector3.right;
+            Vector3 forward = Root.rotation * Vector3.forward;
+            BendKnees(brace.KneeDegrees * amount, right, forward);
+            float sway = brace.Sway(time) * brace.SwayDegrees * amount;
+            Turn(_spine, right, brace.LeanDegrees * amount);
+            Turn(_spine, forward, sway);
+            Turn(_neck, forward, -sway * brace.HeadCounter);
+            // Out from the body: the right arm turns about the facing one way, the left the other.
+            float armOut = brace.ArmOutDegrees * amount;
+            Turn(_upperArm, forward, armOut);
+            Turn(_upperArmLeft, forward, -armOut);
+        }
+
+        // Each thigh swings its knee forward, the shin back twice as far and the foot back level, so the leg folds in place;
+        // then the hips sink by what that lifted the feet, which plants them again. The swing's sign is the one that takes the
+        // knee forward, whatever the bones' own axes.
+        private void BendKnees(float degrees, Vector3 right, Vector3 forward)
+        {
+            if (_hips == null || degrees <= 0f || _feet.Length < 2 || _feet[0] == null || _feet[1] == null)
+            {
+                return;
+            }
+
+            Vector3 before = (_feet[0].position + _feet[1].position) * 0.5f;
+            for (int side = 0; side < _thighs.Length; side++)
+            {
+                Transform thigh = _thighs[side];
+                Transform shin = _shins[side];
+                if (thigh == null || shin == null)
+                {
+                    continue;
+                }
+
+                Vector3 knee = shin.position;
+                Turn(thigh, right, degrees);
+                float sign = Vector3.Dot(shin.position - knee, forward) >= 0f ? 1f : -1f;
+                if (sign < 0f)
+                {
+                    Turn(thigh, right, -2f * degrees);
+                }
+
+                Turn(shin, right, -2f * degrees * sign);
+                Turn(_feet[side], right, degrees * sign);
+            }
+
+            Vector3 after = (_feet[0].position + _feet[1].position) * 0.5f;
+            _hips.position -= after - before;
+        }
+
         /// <summary>The moment in a clip where its cue falls (the draw's grab, the stow's release), or zero.</summary>
         public float EventOf(ModelClipRole role)
         {
@@ -608,6 +686,11 @@ namespace Game.UI
 
         private void RestoreOverrides()
         {
+            if (_hips != null)
+            {
+                _hips.localPosition = _hipsRest;
+            }
+
             for (int i = 0; i < _overridden.Length; i++)
             {
                 if (_overridden[i] != null)

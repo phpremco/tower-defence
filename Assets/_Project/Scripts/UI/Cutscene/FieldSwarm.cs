@@ -25,7 +25,7 @@ namespace Game.UI
         private const float SpawnAge = 1.5f;
 
         // The burrows (README round 23): the opening clip's tremor, burst (1.8 s), maw up, the first creature at 2.53 s.
-        private const float BurstAt = 1.8f;
+        public const float BurstAt = 1.8f;
         private const float EmergeAt = 2.53f;
         private const float GlowRampSeconds = 1f;
         private const float FirstOpen = 0.4f;
@@ -64,7 +64,6 @@ namespace Game.UI
         private const float HoverBob = 0.18f;
         private const float HoverBobSeconds = 2.8f;
 
-        private const float QueenEmerge = 3.2f;
         private const float ScreamAt = 7.8f;
         private const float RingSecondsScream = 1.3f;
         private const float ScreamRadius = 6f;
@@ -92,6 +91,9 @@ namespace Game.UI
         private static readonly Color CrackColour = new Color(1f, 0.32f, 0.12f);
         private static readonly Color RingColour = new Color(1f, 0.35f, 0.2f);
         private static readonly Color FlashColour = new Color(1f, 0.45f, 0.18f);
+        // Round 63: the dust the Queen throws off climbing out of her burrow.
+        private static readonly Color ClimbDustColour = new Color(0.55f, 0.5f, 0.46f, 0.7f);
+        private const int ClimbDustParticles = 90;
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
         // Where the burrows break open: distance along the road from the entrance and to its side (negative: left).
@@ -102,8 +104,8 @@ namespace Game.UI
         private static readonly Vector2[] WalkerSpots = { new Vector2(5.6f, -2.2f), new Vector2(5.3f, 1.9f), new Vector2(3.9f, -3f), new Vector2(4f, 2.6f), new Vector2(6.4f, -1.2f), new Vector2(2.4f, 1.7f) };
         private static readonly Vector3[] FlyerSpots = { new Vector3(3.4f, 1.4f, 3f), new Vector3(3f, -1.8f, 2.6f) };
 
-        // The Queen climbs out a little behind the head of the group and walks up to it.
-        private static readonly Vector2 QueenRise = new Vector2(3.8f, 0.6f);
+        // The Queen climbs out of her own burrow (round 63: CutsceneCast.QueenBurrow) a little behind the head of the group and
+        // walks up to it.
         private static readonly Vector2 QueenStand = new Vector2(5.4f, 0f);
 
         private readonly List<Creature> _creatures = new List<Creature>();
@@ -119,6 +121,8 @@ namespace Game.UI
         private float _lastClock = -1f;
         private float _retreatAt = float.PositiveInfinity;
         private float _closeAt = float.PositiveInfinity;
+        private Burrow _queenBurrow;
+        private ParticleSystem _climbDust;
 
         /// <summary>One creature of the brood and its choreography: out of the ground, to its place, later a little closer.</summary>
         private sealed class Creature
@@ -132,6 +136,10 @@ namespace Game.UI
             public Vector3 Stand;
             public Vector3 Advance;
             public float Pace;
+            // Round 63: how long its climb out of the ground takes, and where its walk begins (the Queen hauls herself forward
+            // over the lip of her burrow as she climbs).
+            public float Rise = RiseSeconds;
+            public Vector3 WalkStart;
             public float AdvanceFrom;
             public float RetreatFrom = float.MaxValue;
             public float Hover;
@@ -139,8 +147,8 @@ namespace Game.UI
             public float NextSnap;
             public bool Active;
 
-            public float WalkFrom => Emerge + RiseSeconds;
-            public float WalkTo => WalkFrom + Vector3.Distance(Flat(From), Flat(Stand)) / Pace;
+            public float WalkFrom => Emerge + Rise;
+            public float WalkTo => WalkFrom + Vector3.Distance(Flat(WalkStart), Flat(Stand)) / Pace;
             public float AdvanceTo => AdvanceFrom + Vector3.Distance(Flat(Stand), Flat(Advance)) / AdvancePace;
             public float RetreatTo => RetreatFrom + Vector3.Distance(Flat(Advance), Flat(From)) / RetreatPace;
             public float GoneAt => RetreatTo + SinkSeconds;
@@ -349,6 +357,7 @@ namespace Game.UI
             }
 
             PoseQueen(clock, played);
+            PoseClimbDust(clock);
             SoundCloses(clock, played);
             _lastClock = clock;
         }
@@ -467,7 +476,8 @@ namespace Game.UI
                 go.SetActive(true);
                 creature.Enemy.Deactivate();
                 creature.Enemy.Initialize(creature.Definition, new[] { position, position + heading }, 1f, 1f, 0f, _targets, _structures, 1f, EnemyOrigin.Nest);
-                if (clock - creature.Emerge > SpawnAge)
+                // Round 63: the Queen climbs out of her burrow on the swarm clock (ClimbAt), never by the view's own swell.
+                if (clock - creature.Emerge > SpawnAge || (creature == _queen && _queenBurrow != null))
                 {
                     creature.View.SkipSpawn();
                 }
@@ -498,6 +508,16 @@ namespace Game.UI
         // Standing, the head keeps searching: a slow sway of the heading round the line to the gate.
         private Vector3 PositionAt(Creature creature, float clock, out Vector3 heading)
         {
+            if (creature == _queen)
+            {
+                if (clock < creature.WalkFrom && _queenBurrow != null)
+                {
+                    return ClimbAt(creature, clock, out heading);
+                }
+
+                creature.View.Tilt = Quaternion.identity;
+            }
+
             if (clock >= creature.RetreatFrom - RetreatTurnSeconds)
             {
                 return RetreatAt(creature, clock, out heading);
@@ -508,8 +528,8 @@ namespace Game.UI
             float turn;
             if (clock < creature.AdvanceFrom)
             {
-                position = Vector3.Lerp(creature.From, creature.Stand, CutsceneMath.Smooth(CutsceneMath.Span(clock, creature.WalkFrom, creature.WalkTo)));
-                travel = creature.Stand - creature.From;
+                position = Vector3.Lerp(creature.WalkStart, creature.Stand, CutsceneMath.Smooth(CutsceneMath.Span(clock, creature.WalkFrom, creature.WalkTo)));
+                travel = creature.Stand - creature.WalkStart;
                 turn = CutsceneMath.Smooth(CutsceneMath.Span(clock, creature.WalkTo, creature.WalkTo + TurnSeconds));
             }
             else
@@ -614,51 +634,10 @@ namespace Game.UI
 
         private void BuildBurrows(CutsceneContext context)
         {
-            SpawnOriginDefinition origins = context.FieldLevel.SpawnOrigins;
-            SpawnOriginArt art = origins != null ? origins.For(TerrainKind.Ground) : null;
-            bool low = context.ParticleScale < 1f;
-            ImpactVfxDefinition burst = origins != null ? origins.BurstVfx : null;
             for (int i = 0; i < BurrowSpots.Length; i++)
             {
-                Vector3 position = OnRoad(BurrowSpots[i]);
-                var root = new GameObject($"Burrow{i}").transform;
-                root.SetParent(Root, false);
-                // README round 23: yaw 0 keeps the burrow's camouflage in line with the ground texture.
-                root.position = position;
-                var burrow = new Burrow { Root = root, Open = FirstOpen + i * OpenGap, Index = i };
-                if (art != null)
-                {
-                    burrow.Model = ArtModel.CreateSampled(root, art.Model, ownMaterial: true);
-                    SpawnOriginView.KeepBoundsLive(burrow.Model);
-                    burrow.Glow = burrow.Model.Material.GetColor(EmissionColorId);
-                    burrow.Emerge = burrow.Model.Find("Emerge");
-                }
-
-                if (burrow.Emerge == null)
-                {
-                    burrow.Emerge = root;
-                }
-
-                Transform glow = burrow.Model != null ? burrow.Model.Find("Glow") : null;
-                if (glow == null)
-                {
-                    glow = root;
-                }
-
-                burrow.Light = AddLight(glow, FlashColour, LightRange);
-                burrow.Cracks = BuildCracks(root, i);
-                if (burst != null)
-                {
-                    burrow.Dust = CutsceneBursts.Burst(root, "BurstDust", Vector3.up * 0.2f, burst.DustSheet != null ? burst.DustSheet : burst.SmokeSheet, low, context.Scaled(BurstDust), burrow.Open + BurstAt, new Vector2(1.2f, 2.4f), new Vector2(0.8f, 2.4f), -0.05f, new Color(0.6f, 0.55f, 0.5f, 0.8f), 0.6f, VfxParticles.Frames.OverLife);
-                    burrow.Debris = CutsceneBursts.Burst(root, "BurstDebris", Vector3.up * 0.3f, burst.DebrisSheet, low, context.Scaled(BurstDebris), burrow.Open + BurstAt, new Vector2(0.12f, 0.3f), new Vector2(3f, 6.5f), 1.6f, Color.white, 0.4f, VfxParticles.Frames.RandomCell);
-                    var flash = new GameObject("BurstFlash").AddComponent<ImpactFlash>();
-                    flash.transform.SetParent(root, false);
-                    flash.Configure(new VfxQuality(context.ParticleScale, low, !low));
-                    flash.gameObject.SetActive(false);
-                    burrow.Flash = flash;
-                }
-
-                if (burrow.Model != null)
+                Burrow burrow = BuildBurrow(context, i, OnRoad(BurrowSpots[i]), FirstOpen + i * OpenGap, 1f);
+                if (burrow != null)
                 {
                     _burrows.Add(burrow);
                 }
@@ -668,6 +647,59 @@ namespace Game.UI
             {
                 Debug.LogWarning("The cutscene swarm has no burrow art (the level's ground spawn origin); no creature breaks out.");
             }
+        }
+
+        // One living burrow: the level's ground spawn origin, closed until its moment, with its cracks, light and burst; null
+        // without the art. Round 63: the Queen's is the same burrow at a larger scale.
+        private Burrow BuildBurrow(CutsceneContext context, int index, Vector3 position, float open, float scale)
+        {
+            SpawnOriginDefinition origins = context.FieldLevel.SpawnOrigins;
+            SpawnOriginArt art = origins != null ? origins.For(TerrainKind.Ground) : null;
+            if (art == null)
+            {
+                return null;
+            }
+
+            bool low = context.ParticleScale < 1f;
+            ImpactVfxDefinition burst = origins.BurstVfx;
+            var root = new GameObject($"Burrow{index}").transform;
+            root.SetParent(Root, false);
+            // README round 23: yaw 0 keeps the burrow's camouflage in line with the ground texture.
+            root.position = position;
+            root.localScale = Vector3.one * scale;
+            var burrow = new Burrow { Root = root, Open = open, Index = index };
+            burrow.Model = ArtModel.CreateSampled(root, art.Model, ownMaterial: true);
+            SpawnOriginView.KeepBoundsLive(burrow.Model);
+            burrow.Glow = burrow.Model.Material.GetColor(EmissionColorId);
+            burrow.Emerge = burrow.Model.Find("Emerge");
+            if (burrow.Emerge == null)
+            {
+                burrow.Emerge = root;
+            }
+
+            Transform glow = burrow.Model.Find("Glow");
+            if (glow == null)
+            {
+                glow = root;
+            }
+
+            burrow.Light = AddLight(glow, FlashColour, LightRange * scale);
+            burrow.Cracks = BuildCracks(root, index);
+            if (burst != null)
+            {
+                // A bigger burrow throws more dust, never bigger puffs (round 63: puffs grown with it hung as a dark cloud).
+                int dust = context.Scaled(Mathf.RoundToInt(BurstDust * scale));
+                int debris = context.Scaled(Mathf.RoundToInt(BurstDebris * scale));
+                burrow.Dust = CutsceneBursts.Burst(root, "BurstDust", Vector3.up * 0.2f, burst.DustSheet != null ? burst.DustSheet : burst.SmokeSheet, low, dust, burrow.Open + BurstAt, new Vector2(1.2f, 2.4f), new Vector2(0.8f, 2.4f), -0.05f, new Color(0.6f, 0.55f, 0.5f, 0.8f), 0.6f, VfxParticles.Frames.OverLife);
+                burrow.Debris = CutsceneBursts.Burst(root, "BurstDebris", Vector3.up * 0.3f, burst.DebrisSheet, low, debris, burrow.Open + BurstAt, new Vector2(0.12f, 0.3f), new Vector2(3f, 6.5f), 1.6f, Color.white, 0.4f, VfxParticles.Frames.RandomCell);
+                var flash = new GameObject("BurstFlash").AddComponent<ImpactFlash>();
+                flash.transform.SetParent(root, false);
+                flash.Configure(new VfxQuality(context.ParticleScale, low, !low));
+                flash.gameObject.SetActive(false);
+                burrow.Flash = flash;
+            }
+
+            return burrow;
         }
 
         // Fissures radiating from the opening, each a Blender crack strip that grows out from the maw.
@@ -718,8 +750,59 @@ namespace Game.UI
 
             if (cast.Screamer != null)
             {
-                _queen = Add(cast.Screamer, walkers + flyers, QueenEmerge, OnRoad(QueenRise), QueenStand, QueenPace, AdvanceAt, 0f);
+                AddQueen(cast, walkers + flyers);
             }
+        }
+
+        // Round 63 (Remco: "the queen appears out of nowhere"): her own, larger burrow tears open behind the head of the group,
+        // and once it has burst she climbs out of its maw; her walk to the head of the brood starts where the climb left her.
+        private void AddQueen(CutsceneCast cast, int index)
+        {
+            QueenBurrow spec = cast.QueenBurrow;
+            Burrow burrow = BuildBurrow(_context, BurrowSpots.Length, OnRoad(spec.Spot), spec.OpenAt, spec.Scale);
+            Vector3 maw = burrow != null ? _layout.Ground(burrow.Emerge.position) : OnRoad(spec.Spot);
+            float emerge = (burrow != null ? burrow.Open + BurstAt : spec.OpenAt) + spec.ClimbDelay;
+            _queen = Add(cast.Screamer, index, emerge, maw, QueenStand, QueenPace, AdvanceAt, 0f);
+            _queen.Rise = spec.ClimbSeconds;
+            Vector3 ahead = Flat(_queen.Stand - maw);
+            _queen.WalkStart = _layout.Ground(maw + (ahead.sqrMagnitude > 0.0001f ? ahead.normalized : Vector3.forward) * spec.ClimbForward);
+            if (burrow == null)
+            {
+                return;
+            }
+
+            _burrows.Add(burrow);
+            _queenBurrow = burrow;
+            _climbDust = ParticleKit.UseSmoke(ParticleKit.Create(burrow.Root, "ClimbDust", Vector3.up * 0.15f, ClimbDustColour, 0.7f, 1.5f, 0.25f, 0.6f, 0.4f, 1.2f, -0.03f, _context.Scaled(ClimbDustParticles), 0.9f));
+        }
+
+        // Her climb out of the maw: below the ground and nose up at first, hauling herself forward and over the lip, then level.
+        // From the swarm clock alone, so a seek shows the same moment; her tilt is laid on her body and cleared once she stands.
+        private Vector3 ClimbAt(Creature creature, float clock, out Vector3 heading)
+        {
+            QueenBurrow spec = _context.Cast.QueenBurrow;
+            float u = (clock - creature.Emerge) / creature.Rise;
+            spec.Climb(u, out float depth, out float forward, out float pitch);
+            heading = Flat(creature.WalkStart - creature.From);
+            heading = heading.sqrMagnitude > 0.0001f ? heading.normalized : Vector3.forward;
+            Vector3 position = _layout.Ground(creature.From + heading * forward);
+            position.y -= depth;
+            Vector3 right = Vector3.Cross(Vector3.up, heading);
+            creature.View.Tilt = Quaternion.AngleAxis(-pitch, right);
+            return position;
+        }
+
+        // Dust and grit pour off her while she climbs, most as her body clears the lip.
+        private void PoseClimbDust(float clock)
+        {
+            if (_climbDust == null || _queen == null)
+            {
+                return;
+            }
+
+            float u = (clock - _queen.Emerge) / _queen.Rise;
+            float rate = u > 0f && u < 1f ? Mathf.Sin(u * Mathf.PI) * _context.Cast.QueenBurrow.ClimbDustRate : 0f;
+            ParticleKit.SetRate(_climbDust, rate);
         }
 
         private void AddFromBurrow(EnemyDefinition definition, int index, Vector2 spot, float hover)
@@ -745,6 +828,7 @@ namespace Game.UI
                 Index = index,
                 Emerge = emerge,
                 From = from,
+                WalkStart = from,
                 Stand = OnRoad(spot),
                 Advance = OnRoad(spot + Vector2.right * AdvanceDistance),
                 Pace = pace,
