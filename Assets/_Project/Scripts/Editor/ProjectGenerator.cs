@@ -570,6 +570,9 @@ namespace Game.Editor
                 KeeperShader("SpaceSky", Game.UI.SpaceBackdrop.SkyShader),
                 KeeperShader("ExhaustPlume", Game.UI.ExhaustPlume.ShaderName),
                 KeeperShader("CutsceneSprites", Game.UI.SpriteBatch.ShaderName),
+                // Round 72: the other shaders the game finds by name at runtime.
+                KeeperShader("VfxDistortion", Game.UI.ExhaustPlume.ShimmerShader),
+                KeeperShader("VisorReflection", Game.UI.BossCutIn.ReflectionShader),
                 KeeperShader("TiltShift", TiltShiftShaderName),
                 KeeperShader("UnitLit", Game.Core.SurfaceMaterials.UnitShaderName),
                 KeeperShader("UnitLit_Emission", Game.Core.SurfaceMaterials.UnitShaderName, "_EMISSION"),
@@ -660,6 +663,7 @@ namespace Game.Editor
             so.FindProperty("_vfxLibrary").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Game.Combat.VfxLibrary>(VfxLibraryPath);
             so.FindProperty("_tiltShift").objectReferenceValue = _tiltShift;
             so.FindProperty("_uiSkin").objectReferenceValue = AssetDatabase.LoadAssetAtPath<UiSkin>(skinPath);
+            so.FindProperty("_credits").objectReferenceValue = AssetDatabase.LoadAssetAtPath<CreditsDefinition>(CreditsAssetPath);
             SerializedProperty keepers = so.FindProperty("_shaderKeepers");
             keepers.arraySize = keeperPaths.Length;
             for (int i = 0; i < keeperPaths.Length; i++)

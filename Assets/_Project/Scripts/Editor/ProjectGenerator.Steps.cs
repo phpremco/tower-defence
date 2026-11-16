@@ -96,6 +96,7 @@ namespace Game.Editor
             // The living spawn origins and route gates (README rounds 23, 25b), after the effect library for their burst.
             new GeneratorStep("Origin art", _ => BlenderOriginBuilder.Apply(BlenderOriginBuilder.SyncAndBuild())),
             // Round 69: every player-facing text field written above becomes a key, its English text goes to en.data.txt.
+            new GeneratorStep("Credits", _ => CreateCredits()),
             new GeneratorStep("Localisation", _ => LocalisationTables.Run()),
             new GeneratorStep("Scenes", GenerateScenes),
         };

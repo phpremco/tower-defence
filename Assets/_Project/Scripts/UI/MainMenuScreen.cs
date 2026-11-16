@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace Game.UI
 {
     /// <summary>
-    /// Main menu: Start, Options and (on platforms that allow it) Quit, on a dim panel along the left so the living
+    /// Main menu: Start, Codex, Options, Credits and (on platforms that allow it) Quit, on a dim panel along the left so the living
     /// scene behind it stays in view.
     /// </summary>
     public sealed class MainMenuScreen : ScreenBase
@@ -21,11 +21,18 @@ namespace Game.UI
         private const int SubtitleSize = 26;
         private static readonly Color PanelTint = new Color(0.02f, 0.03f, 0.06f, 0.66f);
         private static readonly Color SubtitleColor = new Color(0.75f, 0.85f, 1f, 0.85f);
+        private const int VersionSize = 22;
+        private const float VersionMargin = 24f;
+        private const float VersionWidth = 520f;
+        private const float VersionHeight = 32f;
+        private static readonly Color VersionColor = new Color(0.78f, 0.86f, 1f, 0.9f);
 
         private GameObject _menu;
         private Button _optionsButton;
         private Button _codexButton;
         private CodexView _codex;
+        private Button _creditsButton;
+        private CreditsView _credits;
 
         // The diorama behind the menu replaces the flat starfield.
         protected override bool Starfield => false;
@@ -62,11 +69,17 @@ namespace Game.UI
             }
 
             _optionsButton = UiKit.CreateButton(column, Loc.Get("menu.options"), OpenOptions);
+            if (Services.TryGet(out CreditsDefinition _))
+            {
+                _creditsButton = UiKit.CreateButton(column, Loc.Get("menu.credits"), OpenCredits);
+            }
+
             if (Platform.CanQuit)
             {
                 UiKit.CreateButton(column, Loc.Get("menu.quit"), Quit);
             }
 
+            AddVersion(root);
             SetFirstSelected(start);
         }
 
@@ -104,6 +117,34 @@ namespace Game.UI
         {
             _menu.SetActive(true);
             UiKit.Select(_codexButton);
+        }
+
+        private void OpenCredits()
+        {
+            if (_credits == null)
+            {
+                RectTransform root = UiKit.CreateRoot(transform, false);
+                _credits = gameObject.AddComponent<CreditsView>();
+                Services.TryGet(out IInputProvider input);
+                _credits.Initialize(root, Services.Get<CreditsDefinition>(), input, OnCreditsClosed);
+            }
+
+            _menu.SetActive(false);
+            _credits.Open();
+        }
+
+        private void OnCreditsClosed()
+        {
+            _menu.SetActive(true);
+            UiKit.Select(_creditsButton);
+        }
+
+        // Small in the bottom-right corner, so a screenshot or a bug report always says which build it came from.
+        private static void AddVersion(RectTransform root)
+        {
+            Text version = UiKit.CreateFixedText(root, Loc.Format("menu.version", BuildVersion.Current), VersionSize, TextAnchor.LowerRight, new Vector2(1f, 0f), new Vector2(-VersionMargin, VersionMargin), new Vector2(VersionWidth, VersionHeight));
+            version.color = VersionColor;
+            version.raycastTarget = false;
         }
 
         private static void Quit()

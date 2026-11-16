@@ -17,7 +17,7 @@ namespace Game.UI
     {
         private const string HeadBone = "Head";
         private const string FrameSprite = "ComicFrame";
-        private const string ReflectionShader = "Game/UI/VisorReflection";
+        public const string ReflectionShader = "Game/UI/VisorReflection";
         private const float PanelSize = 300f;
         // The picture sits inside the frame's ink band; the frame's 9-slice border is drawn at half its texture size.
         private const float FrameWidth = 22f;

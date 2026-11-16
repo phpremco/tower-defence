@@ -17,6 +17,8 @@ namespace Game.Editor
         private const string OutputFolder = "Builds/Windows";
         private const string ExecutableName = "TowerDefense.exe";
         private const string Il2CppOutputFolder = "Builds/WindowsIl2Cpp";
+        private const string Il2CppSmokeOutputFolder = "Builds/WindowsIl2CppSmoke";
+        private const string SmokeTestDefine = "TD_SMOKE_TEST";
         private const string Il2CppVariationsFolder = "PlaybackEngines/windowsstandalonesupport/Variations/win64_player_nondevelopment_il2cpp";
 
         [MenuItem("Tools/Build/Windows Player")]
@@ -51,7 +53,17 @@ namespace Game.Editor
         /// everyday build. Needs the editor's "Windows Build Support (IL2CPP)" module and the Visual Studio C++ tools.
         /// </summary>
         [MenuItem("Tools/Build/Windows Player (IL2CPP)")]
-        public static void BuildWindowsIl2Cpp()
+        public static void BuildWindowsIl2Cpp() => BuildIl2Cpp(Il2CppOutputFolder, new string[0]);
+
+        /// <summary>
+        /// Round 72: the same IL2CPP player with the TD_SMOKE_TEST define, into Builds/WindowsIl2CppSmoke, so the scripted
+        /// smoke test (<c>-autotest</c>, Game.Core.SmokeTestGate) can run in it. The define only opens that gate; the release
+        /// build above never has it. Not a development build, so the frame times match the release player.
+        /// </summary>
+        [MenuItem("Tools/Build/Windows Player (IL2CPP smoke test)")]
+        public static void BuildWindowsIl2CppSmoke() => BuildIl2Cpp(Il2CppSmokeOutputFolder, new[] { SmokeTestDefine });
+
+        private static void BuildIl2Cpp(string outputFolder, string[] extraDefines)
         {
             string variations = Path.Combine(EditorApplication.applicationContentsPath, Il2CppVariationsFolder);
             if (!Directory.Exists(variations))
@@ -76,13 +88,14 @@ namespace Game.Editor
                 PlayerSettings.fullScreenMode = FullScreenMode.FullScreenWindow;
                 PlayerSettings.defaultIsNativeResolution = true;
                 PlayerSettings.runInBackground = true;
-                Directory.CreateDirectory(Il2CppOutputFolder);
+                Directory.CreateDirectory(outputFolder);
                 var options = new BuildPlayerOptions
                 {
                     scenes = scenes,
-                    locationPathName = Path.Combine(Il2CppOutputFolder, ExecutableName),
+                    locationPathName = Path.Combine(outputFolder, ExecutableName),
                     target = BuildTarget.StandaloneWindows64,
                     options = BuildOptions.None,
+                    extraScriptingDefines = extraDefines,
                 };
                 Report(BuildPipeline.BuildPlayer(options));
             }

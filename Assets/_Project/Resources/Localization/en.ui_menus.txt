@@ -7,6 +7,8 @@ menu.start = Start
 menu.codex = Codex
 menu.options = Options
 menu.quit = Quit
+menu.credits = Credits
+menu.version = Version {0}
 
 # World map
 map.title_planet = Choose a region
@@ -203,3 +205,24 @@ sound.entry = {0}   ({1}x, gain {2:0.00})
 sound.previous = Previous
 sound.next = Next
 sound.back = Back
+
+# Credits screen (data: Data/Menu/Credits.asset, sources: Docs/LICENCES.md)
+credits.title = Credits
+credits.section.game = Made by
+credits.game.creator = Remco Borst\nGame design, story, direction and playtesting
+credits.section.tools = Made with
+credits.tools.unity = Unity 6 with the Universal Render Pipeline, the Input System and TextMesh Pro
+credits.tools.blender = Blender: every model, icon and painted panel is built by script
+credits.tools.ai = Code, the art pipeline and the synthesised sound effects were written with the help of Claude (Anthropic)
+credits.tools.music = Music generated with Google Gemini and looped for the game
+credits.section.fonts = Fonts
+credits.fonts.chakra = Chakra Petch by Cadson Demak and The Chakra Petch Project Authors\nSIL Open Font License 1.1
+credits.fonts.liberation = Liberation Sans (TextMesh Pro fallback font)\nSIL Open Font License 1.1
+credits.section.sound = Sound
+credits.sound.kenney = Sci-fi Sounds by Kenney (kenney.nl)\nCC0
+credits.sound.lentikula = Sci-Fi Weapon Shots by Lentikula (lentikula.itch.io)\nCC0
+credits.sound.pixabay = Sound effects from Pixabay (pixabay.com), among them laser weld and slime by freesound_community, laser charge by gregorquendel and goopy slime by floraphonic\nPixabay Content License
+credits.section.characters = Characters
+credits.characters.mpfb = Human base meshes, skins, eyes and expressions: MakeHuman system assets through MPFB (makehumancommunity.org)\nCC0
+credits.characters.hair = Hair bun by Rehman Polanski, after the MakeHuman Ponytail01 (MakeHuman community hair pack)\nCC0 (pack licence)
+credits.section.licences = Licence texts

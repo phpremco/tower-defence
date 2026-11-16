@@ -157,6 +157,7 @@ MonoBehaviour:
   _lowQuality: 0
   _tiltShift: {fileID: -8388426005950466126, guid: f288ae1f4751b564a96ac7587541f7a2, type: 2}
   _uiSkin: {fileID: 11400000, guid: d4565a92cfb0e50499db477f4e475879, type: 2}
+  _credits: {fileID: 11400000, guid: 0d6cd2d9550e35a44953de80fb6b36dc, type: 2}
   _sfxLibrary: {fileID: 11400000, guid: 5f1be42887d13f2459f669b308441306, type: 2}
   _vfxLibrary: {fileID: 11400000, guid: 63c78d02c2b4ca84396ba5da4ee9595f, type: 2}
   _shaderKeepers:
@@ -171,6 +172,10 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 29702942219eeba469dd72c3a1dd5c44, type: 2}
   - {fileID: 2100000, guid: 170fb39a4fe0ff44d85c7acca9d9e444, type: 2}
   - {fileID: 2100000, guid: ed5fb0186a676414681de9b921747c97, type: 2}
+  - {fileID: 2100000, guid: f2e2520b260481b4db631ccc30e3d0d1, type: 2}
+  - {fileID: 2100000, guid: 06739d05ab5625149a8c7f9b47486dab, type: 2}
+  - {fileID: 2100000, guid: 50fa688fefd4b2646830b9c682fed9c0, type: 2}
+  - {fileID: 2100000, guid: e52e1136d3b6a52419b60a371e5f5c10, type: 2}
   - {fileID: 2100000, guid: 9758d7b7021cd2d408b79e8c6998011f, type: 2}
   - {fileID: 2100000, guid: 363946bedc79dbc498669f92f78f688e, type: 2}
   - {fileID: 2100000, guid: 6e5aeada991bc1c48a6129d7f7d296a4, type: 2}

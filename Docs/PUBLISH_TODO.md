@@ -40,3 +40,22 @@ Lijst met alles wat geregeld moet worden vóór een release op Steam en later co
 - [ ] Pauzeren en hervatten bij onderbrekingen (Steam-overlay, controller weg).
 - [ ] Opties: resolutie, volledig scherm, volume-sliders, toetsen opnieuw toewijzen.
 - [ ] Lokalisatie (optioneel).
+
+## AI-content disclosure (draft, round 72 – Remco decides)
+
+Facts behind it: `Docs/LICENCES.md` section 6. Steam's content survey asks whether the game contains content made with generative AI during development ("pre-generated") and whether anything is generated live while playing; the answer is shown on the store page. Check the current wording of the survey and of Valve's rules before filling it in (they changed in 2024 and may have changed again); console holders ask similar questions.
+
+Draft answer, pre-generated content:
+
+> Deepwake was made by one developer with the help of AI tools. The music was generated with Google Gemini and edited into loops for the game. The game's code, the scripts that build its 3D models, icons and interface art, and the code that synthesises its sound effects were written with the help of Claude (Anthropic); no image or 3D-model generator was used, and every model is built procedurally in Blender. Human characters start from open MakeHuman (CC0) base meshes. The story was written by the developer. All AI-assisted content was reviewed and directed by the developer.
+
+Draft answer, live-generated content:
+
+> None. The game does not generate any content with AI while it runs.
+
+Choices for Remco before using it:
+- [ ] Is the name right ("Deepwake", or the series title)? Is "one developer" how you want to present it?
+- [ ] Music: read the Gemini / Google generative-AI terms that applied when the music was made (commercial use in a sold game, any attribution or labelling duty). The source mp3s carry Google's C2PA provenance and SynthID marks; the shipped loops do not (the WAV conversion dropped the metadata, the audio watermark may remain).
+- [ ] Decide whether "AI-assisted code" belongs in the disclosure at all (Steam's survey is about content players see and hear; mentioning it is the cautious choice).
+- [ ] Story and dialogue: confirm who wrote the in-game lines (your script vs lines drafted into the generator by Claude) and adjust the sentence.
+- [ ] Same text on the store page "About" and in the press kit, so nothing contradicts.

@@ -1224,3 +1224,26 @@ console and `Logs/probe_trace.txt`.
   in batch mode (the open editor is untouched), reports time and size, starts the player windowed at 1280x720 for the
   given seconds, closes it and greps `Logs/player_il2cpp.log` in the clone for exceptions. The player writes its saves
   under `LocalLow/DefaultCompany/Tower defense worker wN`, never Remco's folder.
+
+## Round 72: credits, crash log, IL2CPP smoke test (added 2026-11-16)
+
+- **Credits data only:** `unity command menu --path "Tools/Generate/Credits"` writes `Data/Menu/Credits.asset` (sections of
+  `credits.*` keys plus the two OFL texts) and sets it on the Boot scene's bootstrapper (it opens Boot on its own, saves it and
+  restores the scenes that were open). The full generator runs the data step before the scenes and wires it in `CreateBootScene`.
+- **Stills of the menu (version corner) and the credits screen:** `bash Tools/PlayTest/r72_shots.sh` (back up `progress.json`
+  first; delete the `settings.json` the run writes). `r72_credits.cs` (`probe`, `scroll <v>`, `stick <y>` in
+  `r72_credits_arg.txt`) reads and drives the page; `r72_selected.cs` prints the focused UI object.
+- **Crash log:** players (not the editor) append every logged exception to `crash.log` in `Application.persistentDataPath`
+  (`%USERPROFILE%\AppData\LocalLow\<company>\<product>\crash.log`), with version, scene, level and UTC time; 256 KB, then it is
+  rotated to `crash.1.log`; at most 10 entries per minute, the next entry says how many were left out. A tester sends that file
+  plus `Player.log` from the same folder.
+- **IL2CPP smoke build and scripted run:** `bash Tools/PlayTest/r72_il2cpp_smoke.sh <N> [skip-build]` mirrors the project into
+  worker clone wN, builds `Game.Editor.BuildScript.BuildWindowsIl2CppSmoke` (IL2CPP plus the `TD_SMOKE_TEST` define, output
+  `Builds/WindowsIl2CppSmoke`), empties the clone player's own save folder (`LocalLow/DefaultCompany/Tower defense worker wN`),
+  runs `TowerDefense.exe -autotest` (windowed 1280x720) until it quits by itself, then `-autotest-crashprobe` (one deliberate
+  exception that must land in `crash.log`), and prints the `[AutoTest]` lines, the exception count and the crash log. The
+  route and its checks live in `Game.UI.SmokeTestDriver`; a summary is also written to `autotest.txt` in the player's data
+  folder. `-autotest` does nothing in a release build (`Game.Core.SmokeTestGate`: editor, development or smoke build only).
+- **Shader keepers only:** `unity command menu --path "Tools/Generate/Shader Keepers"` writes the keeper materials (every
+  shader the game finds by name at runtime) and puts the whole list on the Boot scene. Run it whenever a new `Shader.Find`
+  name is added to `CreateShaderKeepers`; `ShaderKeeperTests` fails until then. A missing keeper only shows in a player build.

@@ -127,8 +127,9 @@ namespace Game.Boot
         {
             bool unlockAll = debug != null && debug.UnlockAllWeapons;
             bool infiniteMoney = debug != null && debug.InfiniteMoney;
-            // Calling the next wave early is part of the game, not a test switch.
-            const bool skipAllowed = true;
+            // Calling the next wave early is a test tool (round 72): its keys and the HUD icon exist only in developer mode,
+            // so a release build never shows them.
+            bool skipAllowed = debug != null && debug.DeveloperModeOn;
 
             ProgressService progress = Services.Get<ProgressService>();
             var upgrades = Services.Get<UpgradeCatalog>();

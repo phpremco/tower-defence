@@ -34,6 +34,7 @@ namespace Game.Boot
         [Tooltip("The tilt-shift full-screen pass on the PC renderer; switched off by profiles without depth of field.")]
         [SerializeField] private FullScreenPassRendererFeature _tiltShift;
         [SerializeField] private UiSkin _uiSkin;
+        [SerializeField] private CreditsDefinition _credits;
         [SerializeField] private SfxLibrary _sfxLibrary;
         [SerializeField] private Game.Combat.VfxLibrary _vfxLibrary;
 
@@ -49,6 +50,9 @@ namespace Game.Boot
 
         private void Awake()
         {
+            // First, so an exception anywhere in the boot already reaches the crash log.
+            CrashLogHook.Install();
+            SmokeTestDriver.StartIfRequested();
             // Boot is entered again after a restart, so release the previous input first.
             _input?.Dispose();
             Services.Clear();
@@ -90,6 +94,11 @@ namespace Game.Boot
             }
             Services.Register(_playtestSettings);
             Services.Register(_uiSkin);
+            if (_credits != null)
+            {
+                Services.Register(_credits);
+            }
+
             if (_sfxLibrary != null)
             {
                 Services.Register(_sfxLibrary);

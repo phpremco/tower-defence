@@ -466,6 +466,48 @@ namespace Game.Levels
             Refresh();
         }
 
+        /// <summary>
+        /// Builds a tower on the free build cell nearest the map centre, as a player would: the card is picked, the cursor
+        /// moves there and the same placement as a confirm press runs (money is spent). For the smoke test of a player
+        /// build, which cannot aim a cursor at a cell it does not know. False when no cell is free or the money is short.
+        /// </summary>
+        public bool TryBuildNearCentre(TowerDefinition definition, out Vector2Int cell)
+        {
+            cell = default;
+            if (definition == null || !FindFreeCellNearCentre(out cell))
+            {
+                return false;
+            }
+
+            _context.SelectedPathObject = null;
+            _context.SelectTower(definition);
+            MoveCursor(cell);
+            TryPlace();
+            return _towers.ContainsKey(cell);
+        }
+
+        private bool FindFreeCellNearCentre(out Vector2Int best)
+        {
+            best = default;
+            var centre = new Vector2Int(_map.Size.x / 2, _map.Size.y / 2);
+            int bestDistance = int.MaxValue;
+            for (int x = 0; x < _map.Size.x; x++)
+            {
+                for (int y = 0; y < _map.Size.y; y++)
+                {
+                    var cell = new Vector2Int(x, y);
+                    int distance = (cell - centre).sqrMagnitude;
+                    if (distance < bestDistance && CanBuildTower(cell) && !_towers.ContainsKey(cell))
+                    {
+                        best = cell;
+                        bestDistance = distance;
+                    }
+                }
+            }
+
+            return bestDistance != int.MaxValue;
+        }
+
         private void TryPlace()
         {
             if (_context.SelectedPathObject != null)

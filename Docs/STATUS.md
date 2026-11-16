@@ -10958,3 +10958,86 @@ had `"BindingOverrides":""`: the Nintendo swap is never written as a player over
 - A full playthrough of the IL2CPP player (menus, a level, saves, rebinding) and a run on weak hardware.
 - The pause menu's options cannot change the language in a level (by design: a language change reloads the main menu).
 - Individual graphics switches (RELEASE_GAPS 2.4).
+
+## Round 72: licence audit and credits screen, local crash log, scripted IL2CPP smoke test, skip wave developer-only (2026-11-16)
+
+Not committed. No full generator run (two targeted steps: `Tools/Generate/Credits`, `Tools/Generate/Shader Keepers`), no
+Blender, no packages, the Game view untouched, product name and save path unchanged. Remco's save (MD5
+42fbe06b38e133cecfe2014def5c833c) is unchanged; the two editor still runs each wrote a `settings.json`, deleted again. No
+audio file was replaced or removed.
+
+### What changed
+
+1. **Licence audit:** `Docs/LICENCES.md` lists every third-party asset (fonts, audio per folder, MakeHuman parts, models,
+   shaders, code, Unity packages) with source, licence, obligation and status, the AI-generated content facts and the
+   `warning.mp3` investigation. `Docs/CREDITS.md` gained MPFB/MakeHuman, Liberation Sans, the laser-charge and intro clips and
+   the clips without a recorded source, and no longer calls all of `Approved/` project-owned.
+2. **Credits screen** (main menu > Credits, between Options and Quit): `UI/CreditsView.cs` built from
+   `UI/CreditsDefinition.cs` + `CreditsSection.cs` (data `Data/Menu/Credits.asset`, all text `credits.*` keys in
+   `en.ui_menus.txt`), then the two OFL licence texts word for word (Chakra Petch and Liberation Sans; this is what makes the
+   font licences ship with the build). One page, one Back button; left stick, d-pad, WASD/arrows and the mouse wheel scroll;
+   B/Esc closes and the focus returns to Credits. Registered by the bootstrapper (`_credits`), wired by the generator.
+3. **Crash log** (`Core/CrashLog.cs`, `CrashContext.cs`, `Boot/CrashLogHook.cs`): players append every logged exception to
+   `crash.log` in the persistent data folder with version, scene, level/difficulty and UTC time; rotated to `crash.1.log` past
+   256 KB; at most 10 entries per minute, the next one says how many were left out; other log types return at the first
+   check (no allocation); write errors are swallowed. Not installed in the editor (its persistent folder is Remco's real one).
+4. **Version text:** `Core/BuildVersion.cs` ("0.1.0", "0.1.0 dev", "0.1.0 editor", plus " il2cpp"), shown small in the main
+   menu's bottom-right corner (`menu.version`) and written in every crash-log header.
+5. **Scripted smoke test of a player build:** `UI/SmokeTestDriver.cs`, gated by `Core/SmokeTestGate.cs` (`-autotest`, only
+   in the editor, a development build, or a build with the `TD_SMOKE_TEST` define from the new
+   `BuildScript.BuildWindowsIl2CppSmoke`; a release build ignores it). It presses keys through a virtual keyboard (Esc skips
+   the intro and conversations, P pauses), presses menu buttons by their localised label with a submit event, starts level 1
+   with the map's own call (the globe is not steered), builds a tower (`PlacementController.TryBuildNearCentre`, the same
+   placement as a confirm press), measures 30 s of frame times uncapped (`Core/FrameTimeSampler.cs`), then the same on Low,
+   and quits. The first failed check or 6 minutes end the route and the player quits by itself. `-autotest-crashprobe` logs
+   one deliberate exception and checks `crash.log`. Script: `Tools/PlayTest/r72_il2cpp_smoke.sh`.
+6. **Skip wave developer-only:** the HUD skip icon now follows developer mode like its keys (`LevelBootstrapper`:
+   `skipAllowed = DeveloperModeOn`); the editor keeps it (the playtest asset has developer mode on), release builds lose it.
+7. **Found by the smoke test and fixed: every player build was broken in a level.** The Boot scene's shader-keeper list was
+   older than the generator's: no `Game/ExhaustPlume` (and no `Game/CutsceneSprites`) keeper, so `Shader.Find` returned null
+   in the player, the base shuttle's plume threw while the level was built, the build coroutine stopped and the level stood
+   without HUD (the stuck "Tower defense worker w4" window Remco saw was that first run; the script's `taskkill //F` also
+   silently failed under `MSYS_NO_PATHCONV`, fixed). New `Tools/Generate/Shader Keepers` writes the keepers and the whole list
+   onto Boot; keepers added for `Game/VfxDistortion` and `Game/UI/VisorReflection` too. This applies to the Mono build as
+   well. `ShaderKeeperTests` guards it (every keeper on Boot, every shader found by name has one).
+
+### Verification
+
+- Compile clean (only the old CS0618 in `Tests/PlayMode/BalanceProbeTests.cs:611`).
+- EditMode on w6: **1106 / 1053 passed / 0 failed / 53 skipped** (1077 / 1024 / 0 / 53 in round 71; +29: `CrashLogTests` 23,
+  `CreditsTests` 4, `ShaderKeeperTests` 2).
+- Editor play (`r72_shots.sh`): menu with Credits, credits top/middle/licence, a virtual XInput stick scrolled the page
+  (1.0 -> 0.45), B closed it, focus back on Credits; console **0 errors, 0 warnings**. Stills `ArtSource/Previews/QA/r72_*`
+  (main_menu, credits_top, credits_middle, credits_licence; 1080 and 720). The version text is in the corner, but the still
+  harness renders the UI through the post stack, where the corner vignette and tilt-shift make it hard to see; in the game
+  the canvas is an overlay.
+- **IL2CPP smoke (w4, fresh save folder, windowed 1280x720, AMD RX 6800 XT, audio off in clones):** build 2 min 28 s, then
+  the whole route with 0 failed checks: intro skipped (2 Esc) -> level 1 hand-off -> Deploy -> P -> quit to map -> Esc to the
+  menu -> Options -> Display and graphics -> Controls -> back -> Credits (scrolled to the end) -> map -> loading screen ->
+  level 1 Easy -> Pulse Rifle built -> 30 s -> P -> quit -> menu -> Low -> again -> Quit. Player log **0 exceptions, 0
+  errors**, crash.log absent. Crash probe: crash.log written (`version 0.1.0 il2cpp`).
+  - **High:** 334 fps avg, median 2.9 ms, p95 4.0 ms, p99 5.0 ms, worst 33.8 ms (wave 2 of 12, 11 targets, running 100%).
+  - **Low:** 363 fps avg, median 2.6 ms, p95 3.8 ms, p99 4.5 ms, worst 22.2 ms (wave 2 of 12, 9 targets).
+  - Early waves on a strong GPU: no statement about weak hardware or late waves.
+- No player or worker Unity left; save MD5 unchanged; no `settings.json` in Remco's folder.
+
+### Decisions for Remco
+
+- `warning.mp3`: find its page (likely Pixabay, same encoder as the other downloads), replace it, or have a new alarm
+  synthesised (`Docs/LICENCES.md` section 7). Also `lavabubble.mp3`, `hero-death.mp3`, `slime_dies.mp3`: own recordings?
+- Voss's hair bun: AGPL3 header against CC0 pack metadata; check makehumancommunity.org node 2477 or swap the hair.
+- Gemini music terms and the Steam AI disclosure wording (draft in `Docs/PUBLISH_TODO.md`).
+- Credits "Made by Remco Borst" is a placeholder for how you want to be named (a studio name later?).
+- Remote crash reporting (not added): Unity Cloud Diagnostics (crash and exception reporting, needs a Unity Cloud project
+  id, no new code); Sentry for Unity (package, free tier, symbol upload for IL2CPP, needs a privacy note); Backtrace
+  (package, handles console crash dumps, paid above a tier); Steam's own minidump upload once Steamworks is in (native
+  crashes only). The local crash.log plus Player.log covers playtesters who send files. Native crashes write a dump via
+  UnityCrashHandler, not to crash.log.
+- The smoke player opens a visible window (frame times need a real window; `-batchmode` renders nothing). It now quits by
+  itself on the first failure or after 6 minutes.
+
+### Not done
+
+- Steering the planet globe in the smoke test (the level starts with the map's own `LevelLoader.Begin` call).
+- A run on weak hardware or the Steam Deck; late-wave frame times.
+- The release IL2CPP build itself was not rebuilt this round (only the smoke variant, which differs by the define).
