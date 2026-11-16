@@ -75,9 +75,9 @@ namespace Game.Tests
             {
                 Time.timeScale = context.Held ? 0f : SimulationSpeed;
                 // Call the waves early until the first air raid is on the field; the story is what is under test.
-                for (int i = 0; i < SkipsPerFrame && !context.Held && context.SkipWaveAllowed; i++)
+                for (int i = 0; i < SkipsPerFrame && !context.Held && context.FastForwardAllowed; i++)
                 {
-                    context.SkipWaveRequested.Raise();
+                    context.FastForwardWaveRequested.Raise();
                 }
 
                 yield return null;

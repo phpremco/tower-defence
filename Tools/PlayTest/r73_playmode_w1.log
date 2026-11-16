@@ -1,0 +1,4 @@
+== w1: PlayMode Game.Tests.WaveCallPlayTests (19:57:36)
+== w1 done in 0 min 26 s: result="Passed"
+name="CallingEarly_OverlapsTheWaves_PaysTheBonus_AndALostBaseStaysLost" fullname="Game.Tests.WaveCallPlayTests.CallingEarly_OverlapsTheWaves_PaysTheBonus_AndALostBaseStaysLost" result="Passed"
+save md5 before \42fbe06b38e133cecfe2014def5c833c after \42fbe06b38e133cecfe2014def5c833c

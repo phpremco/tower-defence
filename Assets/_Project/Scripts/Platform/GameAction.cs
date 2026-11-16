@@ -12,7 +12,7 @@ namespace Game.Platform
         Speed = 3,
         NextTower = 4,
         PreviousTower = 5,
-        SkipWave = 6,
+        CallWave = 6,
         Upgrade = 7,
         Repair = 8,
         Sell = 9,

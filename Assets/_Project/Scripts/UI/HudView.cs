@@ -11,7 +11,7 @@ namespace Game.UI
 {
     /// <summary>
     /// HUD built in code. A slim strip at the top holds the stats (base, wave) and the speed, pause and
-    /// skip icons; the card bar sits at the very bottom with the money and the status line just above it. The
+    /// call-next-wave icons; the card bar sits at the very bottom with the money and the status line just above it. The
     /// drones are bought from the base's own menu. Key and gamepad help lives in the options menu. It only reads
     /// LevelContext, except for passing on clicks.
     /// </summary>
@@ -51,6 +51,8 @@ namespace Game.UI
         private static readonly Color CountdownColor = new Color(0.75f, 0.85f, 1f);
         private static readonly Color CountdownUrgent = new Color(1f, 0.85f, 0.4f);
         private const int CountdownUrgentSeconds = 3;
+        // The "+X early" of a called wave starts under the countdown line and rises into it (the countdown is blank by then).
+        private const float BonusLineOffset = 1.6f;
         private static readonly Color SpeedActive = new Color(1f, 0.85f, 0.35f);
         private static readonly Color NormalFill = new Color(0.1f, 0.18f, 0.3f, 0.92f);
         private static readonly Color SelectedFill = new Color(0.22f, 0.5f, 0.9f, 0.96f);
@@ -78,6 +80,9 @@ namespace Game.UI
         private TowerButton[] _towerButtons;
         private bool _picturesChanged;
         private PathObjectButton[] _pathObjectButtons;
+
+        /// <summary>The call-next-wave icon and its bonus text, for tests and stills.</summary>
+        public WaveCallButton WaveCallButton { get; private set; }
 
         private struct TowerButton
         {
@@ -296,7 +301,7 @@ namespace Game.UI
             _statusText = CreateText(safe, "Status", TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, AboveBarY), UiKit.ReadableSize);
         }
 
-        // Speed, pause and (in the test mode) skip wave. The keys remain as shortcuts.
+        // Speed, pause and calling the next wave (every player since round 73). The keys remain as shortcuts.
         private void BuildIcons(RectTransform safe)
         {
             var go = new GameObject("Icons", typeof(RectTransform));
@@ -318,10 +323,9 @@ namespace Game.UI
             Button speed = AddIcon(row, IconType.Speed, _time.CycleSpeed);
             _speedIcon = speed.transform.Find("Icon").GetComponent<Image>();
             AddIcon(row, IconType.Pause, _time.TogglePause);
-            if (_context.SkipWaveAllowed)
-            {
-                AddIcon(row, IconType.SkipWave, () => _context.SkipWaveRequested.Raise());
-            }
+            Button call = AddIcon(row, IconType.SkipWave, _context.CallWaveRequested.Raise);
+            WaveCallButton = gameObject.AddComponent<WaveCallButton>();
+            WaveCallButton.Initialize(_context, call, safe, _font, new Vector2(0f, TopTextY - LineHeight * BonusLineOffset));
 
             if (_codex.Available)
             {

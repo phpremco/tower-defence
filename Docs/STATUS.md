@@ -11041,3 +11041,85 @@ audio file was replaced or removed.
 - Steering the planet globe in the smoke test (the level starts with the map's own `LevelLoader.Begin` call).
 - A run on weak hardware or the Steam Deck; late-wave frame times.
 - The release IL2CPP build itself was not rebuilt this round (only the smoke variant, which differs by the define).
+
+## Round 73: call next wave for every player, licence items resolved (2026-11-16)
+
+Not committed. No full generator run (one targeted step: `Tools/Generate/Wave Call`), no Blender, no packages, the Game view
+untouched, product name and save path unchanged. Remco's save (MD5 42fbe06b38e133cecfe2014def5c833c) was copied aside before the
+Play Mode runs and is unchanged after them; every `settings.json` the editor runs wrote was deleted.
+
+### What changed
+
+1. **Skip wave became "Call next wave"** (Remco's decision), for every player:
+   - Between waves, while the countdown runs, the player can send the next wave in at once, on top of whatever is still on the
+     field (waves overlap). A wave is never cut off: while a wave is still coming out, the call waits. The HUD icon (top right,
+     the old skip sprite) is lit when a call is accepted and dim otherwise, and carries the call's button glyph as a badge
+     (N on the keyboard, the View button on a pad, following device, pad family and rebinding).
+   - Input: the action `SkipWave` is renamed `CallWave` (same id, same bindings: N, and a **tap** of View; a hold of View stays
+     the overview). `GameAction.SkipWave` -> `GameAction.CallWave` (value 6). The developer gate on the keys
+     (`InputSystemProvider.DeveloperActions`) is gone. The controls page lists "Call next wave" for everyone, after Speed,
+     rebindable on both devices. `DefaultBindingTests` allows two actions on one control only as a tap/hold pair.
+   - Bonus: 1 coin per second left on the countdown, at most 8 per call, shown as a gold "+X early" that rises under the wave
+     line for 1.8 s (`hud.early_bonus`). The money is added as it is (not scaled by the difficulty's income share).
+   - Guard rails (`Levels/WaveCaller.cs`, why in `WaveCallBlock`): not before the first wave (the opening countdown is build
+     time, data switch `AllowBeforeFirstWave`), not while paused or while a story box, the codex, the briefing or the recon holds
+     the clock, not during a boss intro beat (`BossIntroDirector` holds the call through `LevelContext.HoldWaveCall`), not while
+     a wave spawns, not after the last wave, and a 4 s game-time cooldown after a call.
+   - Data: `Levels/WaveCallDefinition.cs`, asset `Data/Levels/WaveCall.asset` on the campaign catalog (`CampaignCatalog.WaveCall`;
+     a bare test level uses the field defaults). Generator step "Wave call" (`ProjectGenerator.WaveCall.cs`).
+   - The wave timeline is now a plain class (`Levels/WaveClock.cs`): countdowns, the running wave, and the win rule (every wave
+     started and spawned, nothing alive). `LevelController` drives it; the waiting player's timeline is unchanged.
+   - Overlap fix: a wave without a boss that starts while an earlier wave's boss still lives keeps that boss on the HUD
+     (`ComingBoss`, "BOSS" on the wave line), and `BossWaveStarted` is raised only by a wave that brings a boss.
+   - The old skip stays for tests and tools as the **developer fast-forward** (`LevelContext.FastForwardWaveRequested`,
+     `FastForwardAllowed` from developer mode): the rest of the running wave comes out at once and the next wave starts, no
+     bonus, no rules. No key or HUD icon. The PlayMode tests that used `SkipWaveRequested` use it under the new name.
+2. **Licences** (coordinator's note: Remco confirmed every downloaded sound effect is a free Pixabay download): `warning.mp3`,
+   `lavabubble.mp3`, `hero-death.mp3`, `slime_dies.mp3`, the intro and dialogue clips and the laser charge are marked resolved
+   (Pixabay Content License) in `Docs/LICENCES.md` (sections 2, 7, 8), `Docs/CREDITS.md` and `Docs/RELEASE_GAPS.md` (11.1 done);
+   Voss's hair bun is resolved as CC0 per `Docs/RESEARCH_LICENCES_CRASH.md` (Rehman Polanski stays credited). In-game credits
+   (`en.ui_menus.txt`): the Pixabay line now names the boss alarm, the lava, intro and dialogue clips; the hair line says CC0.
+
+### Numbers
+
+- `EarlyCallProbeTests` (best plan of Landing Site Easy, strategy 1, seeds 1-3, `Tools/PlayTest/r73_early_call.txt`): waiting,
+  every seed wins with 3 stars and the base at 600; calling every wave as soon as accepted, every seed **loses at wave 12**
+  (11 calls, 88 coins bonus each run, 9.2-10.1 % of the 874-959 coins of raw kill income). No errors, no stall. The balance
+  model and probes keep the waiting player as their baseline (`BalanceProbeTests.CallEarly` is off by default).
+- In the editor (Landing Site, Medium): a call with 7.9 s left paid +6 (the press lands a frame or so later), a second N right
+  after was refused (wave spawning), a View tap with 5.7 s left paid +4, a 0.4 s View hold called nothing.
+
+### Verification
+
+- Compile clean (only the old CS0618 in `Tests/PlayMode/BalanceProbeTests.cs`).
+- EditMode on w6: **1122 / 1069 passed / 0 failed / 53 skipped** (1106 / 1053 / 0 / 53 in round 72; +16 `WaveCallTests`, the developer-only binding test replaced by the call-wave one). A first run caught two things, both fixed: the rules asset sat in `Data/Waves`, where `WaveStorageTests` allows only level waves (moved to `Data/Levels`), and a too tight float tolerance in the new timeline test.
+- New EditMode tests: `WaveCallTests` (16 cases: bonus per second, rounding and cap; the rate; accept pays, counts and starts the
+  cooldown; cooldown refuses until it ran out; refused during a boss intro, a clock hold, the briefing and after the end; the
+  context's hold owners; first wave is build time unless the data allows it; refused while spawning and after the last wave;
+  the clock's countdown; overlapping waves are won only when the last wave has spawned and nothing lives; the waiting timeline),
+  `DefaultBindingTests.CallWave_IsBoundForEveryPlayer_OnBothDevices_AndRebindable` (replaces the developer-only test).
+- PlayMode on clones: `WaveCallPlayTests` (w1, passed: no call before wave 1; a call between waves starts wave 2 at once with
+  wave 1's creatures still on the field and pays the bonus; a second press is refused; a held call is refused; the base falling
+  with three waves on the field loses and stays lost) and `EarlyCallProbeTests` (w2, passed). The boss-arena and story PlayMode
+  tests that use the fast-forward were not re-run (renamed calls only).
+- Editor play (`r73_shots.sh`, `r73_pad_check.sh`): console **0 errors, 0 warnings**. Stills (1920x1080 and 1280x720) in
+  `ArtSource/Previews/QA/`: `r73_hud_call_keyboard` (lit icon with the N badge, "Next wave in 8s"), `r73_early_bonus_keyboard`
+  ("+6 early" under the wave line), `r73_hud_call_pad` (View badge), `r73_early_bonus_pad` ("+4 early"). New still helper
+  `r73_still.cs` draws the HUD over the graded picture (the round 72 stills were vignetted in the corners).
+- Save MD5 unchanged; no `settings.json` left; no worker Unity or player process left.
+
+### Open decisions for Remco
+
+- **Calling while a wave still spawns** is not allowed (only the countdown between waves can be cut short). Some games also let
+  you call during the spawn; that would need several waves spawning at once (a per-wave health scale on each creature).
+- **The first wave** cannot be called (its countdown is build time). One switch in `WaveCall.asset` opens it.
+- **Bonus size**: 1 coin/s, cap 8, about 9-10 % of a level's kill income if every wave is called. Raise it if calling should be
+  more tempting, or scale it by the difficulty's income share.
+- **Developer fast-forward** has no key or icon now (tests and tools only). Say if you want a developer key back.
+- The icon is the old skip sprite (a play-and-bar). A dedicated "call" icon would be a small Blender job.
+
+### Not done
+
+- A "call" sound of its own (the wave horn plays as for any wave start).
+- A note on the HUD that calling pays (only the "+X early" after a call tells the player).
+- Re-running the boss-arena PlayMode tests and the balance pipeline (the waiting baseline is unchanged by design).

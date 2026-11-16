@@ -36,7 +36,7 @@ namespace Game.Tests
             var laser = Tower("Laser");
             List<Tower> built = harness.Build(new[] { rifle, rocket, rifle, laser, cannon }, Towers, 0.3f, 2f);
             Assert.GreaterOrEqual(built.Count, Towers / 2, "too few towers could be built");
-            context.SkipWaveRequested.Raise();
+            context.FastForwardWaveRequested.Raise();
             Time.timeScale = SimulationSpeed;
 
             float started = Time.realtimeSinceStartup;

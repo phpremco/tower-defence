@@ -38,7 +38,7 @@ namespace Game.Tests
             public event Action SpeedToggled;
             public event Action NextTower { add { } remove { } }
             public event Action PreviousTower { add { } remove { } }
-            public event Action SkipWave { add { } remove { } }
+            public event Action CallWave { add { } remove { } }
             public event Action UpgradePressed { add { } remove { } }
             public event Action RepairPressed { add { } remove { } }
             public event Action SellPressed { add { } remove { } }

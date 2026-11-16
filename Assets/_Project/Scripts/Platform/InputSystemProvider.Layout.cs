@@ -16,12 +16,6 @@ namespace Game.Platform
         /// <summary>True while the pad's confirm and cancel are swapped for the layout in use (Nintendo).</summary>
         public bool ConfirmSwapped => _layoutSwap;
 
-        /// <summary>
-        /// Developer actions (skip wave) only fire with developer mode on; outside it their keys do nothing and the
-        /// controls page leaves them out. The HUD's skip button is a separate, player-facing control.
-        /// </summary>
-        public bool DeveloperActions { get; set; }
-
         // Called whenever the layout, the overrides or a reset changed what the pad bindings should be.
         private void ApplyLayoutDefaults()
         {

@@ -7,6 +7,7 @@ hud.wave = Wave {0}/{1}
 hud.wave_boss = Wave {0}/{1}  BOSS
 hud.first_wave_in = First wave in {0}s
 hud.next_wave_in = Next wave in {0}s
+hud.early_bonus = +{0} early
 hud.hero_down = {0} down {1}:{2:00}
 hud.card_name_price = {0}\n{1}
 hud.damage_tag = {0:0} DMG

@@ -1,0 +1,4 @@
+== w2: PlayMode Game.Tests.EarlyCallProbeTests (19:48:15)
+== w2 done in 2 min 42 s: result="Passed"
+name="LandingSiteEasy_BestPlan_CallingEveryWaveEarly_EndsCleanly_AndPaysAModestBonus" fullname="Game.Tests.EarlyCallProbeTests.LandingSiteEasy_BestPlan_CallingEveryWaveEarly_EndsCleanly_AndPaysAModestBonus" result="Passed"
+save md5 before \42fbe06b38e133cecfe2014def5c833c after \42fbe06b38e133cecfe2014def5c833c

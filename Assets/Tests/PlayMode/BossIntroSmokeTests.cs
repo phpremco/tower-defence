@@ -40,7 +40,7 @@ namespace Game.Tests
             BossIntroDefinition intro = Services.Get<CampaignCatalog>().Story.IntroFor(harness.Boss);
             Assert.IsNotNull(intro, "no intro for Gravemaw");
             harness.Build(new[] { Load("PulseRifle"), Load("Cannon") }, 6, 0.5f);
-            context.SkipWaveRequested.Raise();
+            context.FastForwardWaveRequested.Raise();
             var director = Object.FindAnyObjectByType<BossIntroDirector>();
             Assert.IsNotNull(director, "the HUD made no boss intro director");
 

@@ -225,6 +225,8 @@ namespace Game.UI
             _beat = new Beat { Watch = watch };
             Beats++;
             _time.SlowDown(this, intro.SlowFactor);
+            // The beat is a moment to look at the boss: no wave may be called in over it (round 73).
+            _context.HoldWaveCall(this);
             _skip = false;
             _skipListener = InputSystem.onAnyButtonPress.CallOnce(_ => _skip = true);
             _toast.Show(boss.Definition.DisplayName, ToastSeconds);
@@ -311,6 +313,8 @@ namespace Game.UI
             {
                 _time.EndSlowDown(this);
             }
+
+            _context?.ReleaseWaveCall(this);
 
             _answers.Clear();
             _cutIn.Hide();

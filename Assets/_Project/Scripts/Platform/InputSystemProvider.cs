@@ -23,7 +23,7 @@ namespace Game.Platform
         private const string SpeedAction = "Speed";
         private const string NextTowerAction = "NextTower";
         private const string PreviousTowerAction = "PreviousTower";
-        private const string SkipWaveAction = "SkipWave";
+        private const string CallWaveAction = "CallWave";
         private const string UpgradeAction = "Upgrade";
         private const string RepairAction = "Repair";
         private const string SellAction = "Sell";
@@ -52,7 +52,7 @@ namespace Game.Platform
         private readonly InputAction _speed;
         private readonly InputAction _nextTower;
         private readonly InputAction _previousTower;
-        private readonly InputAction _skipWave;
+        private readonly InputAction _callWave;
         private readonly InputAction _upgrade;
         private readonly InputAction _repair;
         private readonly InputAction _sell;
@@ -100,7 +100,7 @@ namespace Game.Platform
             _speed = _map.FindAction(SpeedAction, true);
             _nextTower = _map.FindAction(NextTowerAction, true);
             _previousTower = _map.FindAction(PreviousTowerAction, true);
-            _skipWave = _map.FindAction(SkipWaveAction, true);
+            _callWave = _map.FindAction(CallWaveAction, true);
             _upgrade = _map.FindAction(UpgradeAction, true);
             _repair = _map.FindAction(RepairAction, true);
             _sell = _map.FindAction(SellAction, true);
@@ -112,7 +112,7 @@ namespace Game.Platform
 
             _byGameAction = new[]
             {
-                _confirm, _cancel, _pause, _speed, _nextTower, _previousTower, _skipWave, _upgrade, _repair, _sell, _heroPost,
+                _confirm, _cancel, _pause, _speed, _nextTower, _previousTower, _callWave, _upgrade, _repair, _sell, _heroPost,
                 _heroAbility1, _heroAbility2, _overview, _codex,
             };
             _prompts = new string[_byGameAction.Length, DeviceKinds];
@@ -131,7 +131,7 @@ namespace Game.Platform
             _speed.performed += OnSpeed;
             _nextTower.performed += OnNextTower;
             _previousTower.performed += OnPreviousTower;
-            _skipWave.performed += OnSkipWave;
+            _callWave.performed += OnCallWave;
             _upgrade.performed += OnUpgrade;
             _repair.performed += OnRepair;
             _sell.performed += OnSell;
@@ -166,7 +166,7 @@ namespace Game.Platform
         public event Action SpeedToggled;
         public event Action NextTower;
         public event Action PreviousTower;
-        public event Action SkipWave;
+        public event Action CallWave;
         public event Action UpgradePressed;
         public event Action RepairPressed;
         public event Action SellPressed;
@@ -188,7 +188,7 @@ namespace Game.Platform
             _speed.performed -= OnSpeed;
             _nextTower.performed -= OnNextTower;
             _previousTower.performed -= OnPreviousTower;
-            _skipWave.performed -= OnSkipWave;
+            _callWave.performed -= OnCallWave;
             _upgrade.performed -= OnUpgrade;
             _repair.performed -= OnRepair;
             _sell.performed -= OnSell;
@@ -434,13 +434,7 @@ namespace Game.Platform
 
         private void OnPreviousTower(InputAction.CallbackContext _) => PreviousTower?.Invoke();
 
-        private void OnSkipWave(InputAction.CallbackContext _)
-        {
-            if (DeveloperActions)
-            {
-                SkipWave?.Invoke();
-            }
-        }
+        private void OnCallWave(InputAction.CallbackContext _) => CallWave?.Invoke();
 
         private void OnUpgrade(InputAction.CallbackContext _) => UpgradePressed?.Invoke();
 

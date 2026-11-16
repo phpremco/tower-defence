@@ -220,3 +220,4 @@ MonoBehaviour:
     StreakLength: 160
     RimColour: {r: 0.45, g: 0.62, b: 1, a: 1}
     RimIntensity: 0.6
+  _waveCall: {fileID: 11400000, guid: d86e48353bbf5d640ab9f2edd7cf854d, type: 2}

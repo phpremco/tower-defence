@@ -33,7 +33,8 @@ namespace Game.Platform
         event Action SpeedToggled;
         event Action NextTower;
         event Action PreviousTower;
-        event Action SkipWave;
+        /// <summary>The player calls the next wave in early (round 73); the level decides whether the call is allowed.</summary>
+        event Action CallWave;
         event Action UpgradePressed;
         event Action RepairPressed;
         event Action SellPressed;

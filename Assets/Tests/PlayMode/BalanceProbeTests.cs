@@ -394,6 +394,10 @@ namespace Game.Tests
             public int FlyerBaseHits;
             public float BaseDamage;
 
+            /// <summary>Waves the bot called early (round 73, only with <see cref="CallEarly"/>) and the bonus coins those calls paid.</summary>
+            public int EarlyCalls;
+            public int EarlyBonus;
+
             /// <summary>Coins spent on repairs in the run, and everything the run earned (start money and kills), for the share.</summary>
             public int RepairSpent;
             public int Earned;
@@ -589,6 +593,11 @@ namespace Game.Tests
                             nextBuy = BuyIntervalSeconds;
                             Act(context, spots, towers, gates, watch, owned, ledger, run);
                         }
+
+                        if (CallEarly && context.CanCallWave)
+                        {
+                            context.CallWaveRequested.Raise();
+                        }
                     }
 
                     if (step <= 0f && Time.timeScale > 0f)
@@ -656,6 +665,8 @@ namespace Game.Tests
                     FlyersKilled = trace.FlyersKilled,
                     FlyerBaseHits = trace.FlyerBaseHits,
                     BaseDamage = context.BaseHealth.Max - context.BaseHealth.Current,
+                    EarlyCalls = Object.FindAnyObjectByType<LevelController>()?.EarlyCalls ?? 0,
+                    EarlyBonus = Object.FindAnyObjectByType<LevelController>()?.EarlyBonusPaid ?? 0,
                 });
                 report.Add($"[Probe] {definition.DisplayName} on difficulty {difficulty} (seed {seed}, step {step:0.###}{(strategy == ProbeStrategy.Greedy ? string.Empty : ", " + strategy.Name)}): {context.Outcome}, wave {context.WaveNumber}/{context.WaveCount}, base {context.BaseHealth.Current:0}/{context.BaseHealth.Max:0}, towers {towers.Count}, upgrades {run.Upgrades}, money {context.Wallet.Money}, wear gates {watch.GateDamage:0} guns {watch.TowerDamage:0}, repairs bought {watch.RepairSpent}");
             }
@@ -829,6 +840,12 @@ namespace Game.Tests
 
         /// <summary>A step a test sets for its own runs (the step check); null takes the filter file's or the default.</summary>
         internal static float? StepOverride;
+
+        /// <summary>
+        /// Round 73: the bot calls every wave early, as soon as the level accepts the call (the balance baseline waits; this is
+        /// the optional risk a test measures). Off by default.
+        /// </summary>
+        internal static bool CallEarly;
 
         // Game seconds per frame: StepSeconds, or the "step=S" line of the filter file (to compare finer steps).
         private static float Step() => StepOverride ?? Setting("step", StepSeconds);

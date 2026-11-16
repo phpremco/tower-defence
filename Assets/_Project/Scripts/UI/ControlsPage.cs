@@ -39,12 +39,12 @@ namespace Game.UI
         private static readonly Color ActionColour = new Color(0.75f, 0.85f, 1f);
         private static readonly Color HintColour = new Color(0.7f, 0.76f, 0.85f);
 
-        // The order of the table; Skip wave is a developer tool and only listed in developer mode.
+        // The order of the table: calling the next wave sits with the clock controls.
         private static readonly GameAction[] Order =
         {
-            GameAction.Confirm, GameAction.Cancel, GameAction.Pause, GameAction.Speed, GameAction.NextTower,
-            GameAction.PreviousTower, GameAction.Upgrade, GameAction.Repair, GameAction.Sell, GameAction.HeroPost,
-            GameAction.HeroAbility1, GameAction.HeroAbility2, GameAction.Overview, GameAction.Codex, GameAction.SkipWave,
+            GameAction.Confirm, GameAction.Cancel, GameAction.Pause, GameAction.Speed, GameAction.CallWave,
+            GameAction.NextTower, GameAction.PreviousTower, GameAction.Upgrade, GameAction.Repair, GameAction.Sell, GameAction.HeroPost,
+            GameAction.HeroAbility1, GameAction.HeroAbility2, GameAction.Overview, GameAction.Codex,
         };
 
         private readonly List<Cell> _cells = new List<Cell>();
@@ -82,18 +82,12 @@ namespace Game.UI
             Services.TryGet(out _bindings);
             Services.TryGet(out _input);
             Services.TryGet(out _settings);
-            bool developer = Services.TryGet(out PlaytestSettings playtest) && playtest.DeveloperModeOn;
             string hero = HeroNaming.Campaign();
 
             float y = Top;
             Header(page, y);
             foreach (GameAction action in Order)
             {
-                if (action == GameAction.SkipWave && !developer)
-                {
-                    continue;
-                }
-
                 y -= RowHeight;
                 Text label = Label(page, string.Format(ActionName(action), hero), y, ActionColour);
                 label.alignment = TextAnchor.MiddleLeft;
@@ -341,7 +335,7 @@ namespace Game.UI
                 case GameAction.Speed: return Loc.Get("controls.action.speed");
                 case GameAction.NextTower: return Loc.Get("controls.action.next_tower");
                 case GameAction.PreviousTower: return Loc.Get("controls.action.previous_tower");
-                case GameAction.SkipWave: return Loc.Get("controls.action.skip_wave");
+                case GameAction.CallWave: return Loc.Get("controls.action.call_wave");
                 case GameAction.Upgrade: return Loc.Get("controls.action.upgrade");
                 case GameAction.Repair: return Loc.Get("controls.action.repair");
                 case GameAction.Sell: return Loc.Get("controls.action.sell");

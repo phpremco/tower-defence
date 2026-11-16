@@ -23,37 +23,42 @@ namespace Game.Levels
         private WaveDefinition[] _waves;
         private EnemySpawner _spawner;
         private WaveScheduler _scheduler;
-        private int _nextWaveIndex;
-        private bool _skipAllowed;
+        private WaveClock _clock;
+        private WaveCaller _caller;
+        private bool _fastForwardAllowed;
         private ProgressService _progress;
 
-        public void Initialize(LevelContext context, WaveDefinition[] waves, EnemySpawner spawner, IInputProvider input, ProgressService progress, bool skipAllowed, System.Random random = null)
+        public void Initialize(LevelContext context, WaveDefinition[] waves, EnemySpawner spawner, IInputProvider input, ProgressService progress, WaveCallDefinition callRules, bool fastForwardAllowed, System.Random random = null)
         {
             _random = random ?? new System.Random();
             _context = context;
             _waves = waves;
             _spawner = spawner;
             _input = input;
-            _skipAllowed = skipAllowed;
+            _fastForwardAllowed = fastForwardAllowed;
+            _clock = new WaveClock(StartDelays(waves));
+            _caller = new WaveCaller(callRules);
             _progress = progress;
 
-            _context.NextWaveCountdown = waves[0].StartDelay;
+            _context.NextWaveCountdown = _clock.Countdown;
             _origins = CreateOrigins(context, waves);
             _context.Origins = _origins;
             PublishRoutes(0);
             _context.BaseHealth.Died += OnBaseDied;
-            _input.SkipWave += OnSkipWave;
-            _context.SkipWaveRequested.Subscribe(OnSkipWave);
+            _input.CallWave += OnCallWave;
+            _context.CallWaveRequested.Subscribe(OnCallWave);
+            _context.FastForwardWaveRequested.Subscribe(OnFastForward);
         }
 
         private void OnDestroy()
         {
             if (_input != null)
             {
-                _input.SkipWave -= OnSkipWave;
+                _input.CallWave -= OnCallWave;
             }
 
-            _context?.SkipWaveRequested.Unsubscribe(OnSkipWave);
+            _context?.CallWaveRequested.Unsubscribe(OnCallWave);
+            _context?.FastForwardWaveRequested.Unsubscribe(OnFastForward);
         }
 
         private void Update()
@@ -65,24 +70,44 @@ namespace Game.Levels
 
             _spawner.Step(Time.deltaTime);
             _origins?.Advance(Time.deltaTime);
+            _caller.Tick(Time.deltaTime);
             if (_scheduler != null)
             {
                 SpawnDueEnemies(Time.deltaTime);
             }
-            else if (_nextWaveIndex < _waves.Length)
+            else if (_clock.Tick(Time.deltaTime))
             {
-                _context.NextWaveCountdown -= Time.deltaTime;
-                if (_context.NextWaveCountdown <= 0f)
-                {
-                    StartNextWave();
-                }
+                StartNextWave();
+            }
+            else
+            {
+                _context.NextWaveCountdown = _clock.Countdown;
             }
 
-            if (_scheduler == null && _nextWaveIndex >= _waves.Length && _spawner.Alive == 0)
+            if (_clock.IsCleared(_spawner.Alive))
             {
                 Finish(LevelOutcome.Won);
+                return;
             }
+
+            _context.WaveCallBlock = _caller.Check(WaveCallSituation.Of(_context), _clock);
         }
+
+        private static float[] StartDelays(WaveDefinition[] waves)
+        {
+            var delays = new float[waves.Length];
+            for (int i = 0; i < waves.Length; i++)
+            {
+                delays[i] = waves[i].StartDelay;
+            }
+
+            return delays;
+        }
+
+        /// <summary>How many waves the player called early in this level, and the coins those calls paid (for probes and tests).</summary>
+        public int EarlyCalls => _caller != null ? _caller.Calls : 0;
+
+        public int EarlyBonusPaid => _caller != null ? _caller.BonusPaid : 0;
 
         /// <summary>
         /// Why the level has not ended yet, for a stalled run (round 25): whether the wave is still spawning, the nest spawns
@@ -135,8 +160,9 @@ namespace Game.Levels
             if (_scheduler.IsFinished && _held.Count == 0)
             {
                 _scheduler = null;
-                _context.NextWaveCountdown = _nextWaveIndex < _waves.Length ? _waves[_nextWaveIndex].StartDelay : 0f;
-                PublishRoutes(_nextWaveIndex);
+                _clock.EndSpawning();
+                _context.NextWaveCountdown = _clock.Countdown;
+                PublishRoutes(_clock.Started);
                 _context.Changed.Raise();
             }
         }
@@ -149,7 +175,7 @@ namespace Game.Levels
                 return NestAssignment.None;
             }
 
-            return _origins.Wave(_nextWaveIndex - 1).NestOf(request.Group, request.Index);
+            return _origins.Wave(_clock.Started - 1).NestOf(request.Group, request.Index);
         }
 
         // Every nest spawn of every wave gets its nest now, so the origins any wave uses are marked from the start.
@@ -172,19 +198,22 @@ namespace Game.Levels
 
         private void StartNextWave()
         {
-            _scheduler = new WaveScheduler(_waves[_nextWaveIndex], _context.Difficulty, _random);
-            _origins?.BeginWave(_nextWaveIndex, _scheduler);
-            _spawner.WaveHealthScale = _waves[_nextWaveIndex].HealthMultiplier;
-            _spawner.WaveBossHealthScale = _waves[_nextWaveIndex].BossHealthScale;
-            PublishRoutes(_nextWaveIndex);
-            _nextWaveIndex++;
-            _context.WaveNumber = _nextWaveIndex;
+            int index = _clock.BeginWave();
+            WaveDefinition wave = _waves[index];
+            _scheduler = new WaveScheduler(wave, _context.Difficulty, _random);
+            _origins?.BeginWave(index, _scheduler);
+            _spawner.WaveHealthScale = wave.HealthMultiplier;
+            _spawner.WaveBossHealthScale = wave.BossHealthScale;
+            PublishRoutes(index);
+            _context.WaveNumber = _clock.Started;
             _context.NextWaveCountdown = 0f;
-            _context.ComingBoss = BossOf(_waves[_nextWaveIndex - 1]);
-            _context.BossWave = _context.ComingBoss != null;
+            // Waves overlap: a wave without a boss that starts while an earlier wave's boss still lives keeps that boss on the HUD.
+            EnemyDefinition boss = BossOf(wave);
+            _context.ComingBoss = boss != null || _context.BossesAlive == 0 ? boss : _context.ComingBoss;
+            _context.BossWave = boss != null || (_context.BossesAlive > 0 && _context.ComingBoss != null);
             _context.Changed.Raise();
             _context.WaveStarted.Raise();
-            if (_context.BossWave)
+            if (boss != null)
             {
                 _context.BossWaveStarted.Raise();
             }
@@ -221,9 +250,37 @@ namespace Game.Levels
             _context.RoutesChanged.Raise();
         }
 
-        private void OnSkipWave()
+        // The player's call (round 73): the next wave starts now, on top of whatever is still on the field, and the seconds the
+        // countdown had left are paid out. Only the countdown between waves can be cut short, so a wave is never cut off.
+        private void OnCallWave()
         {
-            if (!_skipAllowed || _context.Outcome != LevelOutcome.Running || _context.InputBlocked)
+            if (_context.Outcome != LevelOutcome.Running)
+            {
+                return;
+            }
+
+            WaveCallBlock block = _caller.Check(WaveCallSituation.Of(_context), _clock);
+            _context.WaveCallBlock = block;
+            if (block != WaveCallBlock.None)
+            {
+                return;
+            }
+
+            int bonus = _caller.Accept(_clock.Countdown);
+            if (bonus > 0)
+            {
+                _context.Wallet.Add(bonus);
+            }
+
+            StartNextWave();
+            _context.WaveCallBlock = _caller.Check(WaveCallSituation.Of(_context), _clock);
+            _context.WaveCalledEarly.Raise(bonus);
+        }
+
+        // Developer fast-forward for tests and tools: the rest of the running wave comes out at once and the next wave starts.
+        private void OnFastForward()
+        {
+            if (!_fastForwardAllowed || _context.Outcome != LevelOutcome.Running || _context.InputBlocked)
             {
                 return;
             }
@@ -233,7 +290,7 @@ namespace Game.Levels
                 SpawnDueEnemies(float.MaxValue, true);
             }
 
-            if (_nextWaveIndex < _waves.Length)
+            if (!_clock.AllStarted)
             {
                 StartNextWave();
             }
@@ -249,6 +306,7 @@ namespace Game.Levels
             }
 
             _context.Outcome = outcome;
+            _context.WaveCallBlock = WaveCallBlock.LevelOver;
             _context.Result = RewardCalculator.Compute(_context.Level, _context.Difficulty, _progress, outcome == LevelOutcome.Won, _context.BaseHealth.Fraction);
             if (!_context.Practice)
             {

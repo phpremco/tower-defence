@@ -96,7 +96,7 @@
                                          "initialStateCheck":  false
                                      },
                                      {
-                                         "name":  "SkipWave",
+                                         "name":  "CallWave",
                                          "type":  "Button",
                                          "id":  "86af8fa9-cf70-44c0-9993-c24109dd64e4",
                                          "expectedControlType":  "Button",
@@ -570,7 +570,7 @@
                                           "interactions":  "tap(duration=0.25)",
                                           "processors":  "",
                                           "groups":  "Gamepad",
-                                          "action":  "SkipWave",
+                                          "action":  "CallWave",
                                           "isComposite":  false,
                                           "isPartOfComposite":  false
                                       },
@@ -581,7 +581,7 @@
                                           "interactions":  "",
                                           "processors":  "",
                                           "groups":  "Keyboard&Mouse",
-                                          "action":  "SkipWave",
+                                          "action":  "CallWave",
                                           "isComposite":  false,
                                           "isPartOfComposite":  false
                                       },

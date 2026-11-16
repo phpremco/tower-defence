@@ -1,0 +1,10 @@
+Early wave calls, Landing Site Easy, best plan (strategy 1), 2026-11-16 19:50. Starting money 160.
+Income = coins earned in the level from kills (raw bounties, before the Easy income share), start money excluded.
+
+seed  play     outcome  stars  base  wave   income  calls  bonus  bonus/income  game s
+   1  waits    Won          3   600  12/12     959      0      0         0.0 %     346
+   1  calls    Lost         0     0  12/12     914     11     88         9.6 %     399
+   2  waits    Won          3   600  12/12     959      0      0         0.0 %     345
+   2  calls    Lost         0     0  12/12     954     11     88         9.2 %     411
+   3  waits    Won          3   600  12/12     959      0      0         0.0 %     469
+   3  calls    Lost         0     0  12/12     874     11     88        10.1 %     402

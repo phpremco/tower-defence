@@ -55,7 +55,7 @@ namespace Game.Tests
 
             List<Tower> built = Build(context, Towers);
             Assert.GreaterOrEqual(built.Count, Towers / 2, "too few towers could be built");
-            context.SkipWaveRequested.Raise();
+            context.FastForwardWaveRequested.Raise();
             Time.timeScale = 1f;
             Time.captureDeltaTime = Setting("step", StepSeconds);
 

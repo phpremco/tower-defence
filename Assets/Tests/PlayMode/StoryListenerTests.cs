@@ -112,7 +112,7 @@ namespace Game.Tests
             Assert.IsTrue(context.InputBlocked);
             Assert.AreEqual(0f, Time.timeScale);
             int wave = context.WaveNumber;
-            context.SkipWaveRequested.Raise();
+            context.FastForwardWaveRequested.Raise();
             Assert.AreEqual(wave, context.WaveNumber, "skip wave is ignored during a dialogue");
 
             for (int i = 0; i < 20 && context.Dialogue.IsPlaying; i++)

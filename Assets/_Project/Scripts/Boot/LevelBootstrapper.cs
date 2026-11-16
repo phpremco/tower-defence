@@ -127,9 +127,10 @@ namespace Game.Boot
         {
             bool unlockAll = debug != null && debug.UnlockAllWeapons;
             bool infiniteMoney = debug != null && debug.InfiniteMoney;
-            // Calling the next wave early is a test tool (round 72): its keys and the HUD icon exist only in developer mode,
-            // so a release build never shows them.
-            bool skipAllowed = debug != null && debug.DeveloperModeOn;
+            // Calling the next wave early is every player's action (round 73); the developer fast-forward (the rest of a wave out at
+            // once, no bonus) stays for tests and tools and only answers in developer mode.
+            bool fastForward = debug != null && debug.DeveloperModeOn;
+            WaveCallDefinition callRules = Services.TryGet(out CampaignCatalog rulesCatalog) && rulesCatalog.WaveCall != null ? rulesCatalog.WaveCall : WaveCallDefinition.Defaults;
 
             ProgressService progress = Services.Get<ProgressService>();
             var upgrades = Services.Get<UpgradeCatalog>();
@@ -167,7 +168,7 @@ namespace Game.Boot
             int money = startingMoney >= 0 ? startingMoney : Mathf.RoundToInt(level.StartingMoney * difficulty.StartingMoneyMultiplier);
             var wallet = new Wallet(money, infiniteMoney, difficulty.IncomeMultiplier);
             var baseHealth = new Health(level.BaseHealth + global.BaseHealthBonus);
-            var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, structures, projectiles, level.AvailableTowers, towers, towerModifiers, waves.Length, skipAllowed);
+            var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, structures, projectiles, level.AvailableTowers, towers, towerModifiers, waves.Length, fastForward);
             context.BriefingPending = briefing && level.Briefing.Length > 0;
             LevelSession session = Services.Get<LevelSession>();
             context.Practice = session.Practice;
@@ -210,7 +211,7 @@ namespace Game.Boot
             controllers.AddComponent<Game.Bosses.BossDirector>().Initialize(context, spawner, progress, waves);
             controllers.AddComponent<RouteVisibility>().Initialize(context, routes);
             var levelController = controllers.AddComponent<LevelController>();
-            levelController.Initialize(context, waves, spawner, input, progress, skipAllowed, session.RandomFor(LevelSession.WaveStream));
+            levelController.Initialize(context, waves, spawner, input, progress, callRules, fastForward, session.RandomFor(LevelSession.WaveStream));
             var placement = controllers.AddComponent<PlacementController>();
             placement.Initialize(context, input, _camera, root);
             controllers.AddComponent<HeroController>().Initialize(context, input, placement.Blockades, root);

@@ -20,6 +20,7 @@ namespace Game.Levels
         private readonly Dictionary<string, PlayerModifiers> _towerModifiers;
         // The same owner set the clock uses: closing one overlay never frees the camera while another still covers it.
         private readonly TimeHolds _cameraHolds = new TimeHolds();
+        private readonly TimeHolds _waveCallHolds = new TimeHolds();
 
         public LevelContext(
             LevelDefinition level,
@@ -33,7 +34,7 @@ namespace Game.Levels
             IReadOnlyList<TowerDefinition> availableTowers,
             Dictionary<string, PlayerModifiers> towerModifiers,
             int waveCount,
-            bool skipWaveAllowed)
+            bool fastForwardAllowed)
         {
             Level = level;
             Difficulty = difficulty;
@@ -46,7 +47,7 @@ namespace Game.Levels
             AvailableTowers = availableTowers;
             _towerModifiers = towerModifiers;
             WaveCount = waveCount;
-            SkipWaveAllowed = skipWaveAllowed;
+            FastForwardAllowed = fastForwardAllowed;
             AvailablePathObjects = level.PathObjects;
         }
 
@@ -72,8 +73,11 @@ namespace Game.Levels
 
         public int WaveCount { get; }
 
-        /// <summary>The test mode lets the player skip to the next wave.</summary>
-        public bool SkipWaveAllowed { get; }
+        /// <summary>
+        /// Developer mode lets tests and tools fast-forward a wave: the rest of the running wave comes out at once and the next
+        /// wave starts, with no bonus and none of the call rules (round 73; it was the skip wave of rounds 71-72).
+        /// </summary>
+        public bool FastForwardAllowed { get; }
 
         /// <summary>Number of the wave that started most recently, zero before the first wave.</summary>
         public int WaveNumber { get; set; }
@@ -89,7 +93,7 @@ namespace Game.Levels
         public bool Held { get; set; }
 
         /// <summary>
-        /// Gameplay input (placing, hero actions, skipping a wave, game speed) is ignored while this is true, so a key
+        /// Gameplay input (placing, hero actions, calling a wave, game speed) is ignored while this is true, so a key
         /// press meant for an overlay never also acts on the field underneath.
         /// </summary>
         public bool InputBlocked => Paused || Held;
@@ -160,7 +164,27 @@ namespace Game.Levels
         public GameEvent UpgradeRequested { get; } = new GameEvent();
         public GameEvent RepairRequested { get; } = new GameEvent();
         public GameEvent SellRequested { get; } = new GameEvent();
-        public GameEvent SkipWaveRequested { get; } = new GameEvent();
+        /// <summary>The player asks to call the next wave in now, on top of the creatures on the field (any player; the rules decide).</summary>
+        public GameEvent CallWaveRequested { get; } = new GameEvent();
+
+        /// <summary>Developer fast-forward, ignored unless <see cref="FastForwardAllowed"/>.</summary>
+        public GameEvent FastForwardWaveRequested { get; } = new GameEvent();
+
+        /// <summary>Why the next wave cannot be called now, or <see cref="Levels.WaveCallBlock.None"/>; updated by the level controller every frame.</summary>
+        public WaveCallBlock WaveCallBlock { get; set; } = WaveCallBlock.LevelOver;
+
+        public bool CanCallWave => WaveCallBlock == WaveCallBlock.None;
+
+        /// <summary>Raised with the bonus when a wave was called early (zero when the countdown had less than a coin left).</summary>
+        public GameEvent<int> WaveCalledEarly { get; } = new GameEvent<int>();
+
+        /// <summary>True while a beat that must not be cut short (a boss intro) holds the wave call.</summary>
+        public bool WaveCallHeld => _waveCallHolds.IsHeld;
+
+        /// <summary>Holds the wave call under this owner until <see cref="ReleaseWaveCall"/>; several owners may hold at once.</summary>
+        public void HoldWaveCall(object owner) => _waveCallHolds.Acquire(owner);
+
+        public void ReleaseWaveCall(object owner) => _waveCallHolds.Release(owner);
 
         /// <summary>Raised whenever an enemy is defeated, for audio and effects.</summary>
         public GameEvent EnemyDefeated { get; } = new GameEvent();

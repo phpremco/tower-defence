@@ -38,7 +38,7 @@ namespace Game.Tests
             var lavaBall = AssetDatabase.LoadAssetAtPath<PathObjectDefinition>("Assets/_Project/Data/PathObjects/LavaBall.asset");
             List<Tower> built = harness.Build(new[] { rifle, cannon }, Towers, 0.5f);
             Assert.GreaterOrEqual(built.Count, Towers / 2, "too few towers could be built");
-            context.SkipWaveRequested.Raise();
+            context.FastForwardWaveRequested.Raise();
             Time.timeScale = SimulationSpeed;
 
             float started = Time.realtimeSinceStartup;

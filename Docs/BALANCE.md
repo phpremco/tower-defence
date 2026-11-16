@@ -2591,3 +2591,23 @@ it nine times easier while the model does not. It is back at 3550 (`Tools/PlayTe
 Probe history: round 68 seed 1 `Tools/PlayTest/r68_finale_probe.txt`, Medium seeds 2 and 3
 `r68_finale_probe_medium_seeds23.txt`, after step 1 `r68_finale_probe_pass2.txt`, after step 2 `finale_probe.txt`. None of these bosses walks in Crystal Plains 1 to 6, so
 the levels' waves did not move (re-solved: identical).
+
+## Round 73: calling the next wave early (2026-11-16)
+
+Every player can call the next wave in while the countdown between waves runs (N on the keyboard, a tap of View on the pad,
+the HUD icon). The call pays 1 coin per second still on the countdown, at most 8 per call, with a 4 s cooldown; the opening
+countdown is build time (no call before wave 1). Data: `Data/Levels/WaveCall.asset` (generator: `ProjectGenerator.WaveCall.cs`).
+
+The balance model, the ledger and the probes keep the **waiting player** as the baseline: calling early is an optional risk.
+`EarlyCallProbeTests` measured it with the best searched plan of Landing Site Easy (strategy 1), the bot calling every wave as
+soon as the level accepts it (`Tools/PlayTest/r73_early_call.txt`):
+
+| seed | waits | calls every wave | calls | bonus | bonus / kill income |
+| --- | --- | --- | --- | --- | --- |
+| 1 | won, 3 stars, base 600 | lost at wave 12 | 11 | 88 | 9.6 % |
+| 2 | won, 3 stars, base 600 | lost at wave 12 | 11 | 88 | 9.2 % |
+| 3 | won, 3 stars, base 600 | lost at wave 12 | 11 | 88 | 10.1 % |
+
+Kill income is the raw bounties (914-959 coins, start money excluded, before the Easy income share of 0.8). No run crashed
+or stalled. The plan is tuned for the waiting pace and the bot does not adapt it, so calling everything loses the level: the
+bonus (88 coins, about one cheap gun) does not pay for the lost build time. Calling early is a risk, not an exploit.

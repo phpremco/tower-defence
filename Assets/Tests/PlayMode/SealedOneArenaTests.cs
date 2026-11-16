@@ -49,7 +49,7 @@ namespace Game.Tests
             Assert.Greater(gates.Count, 0, "the arena has no gates");
             var lines = new List<string>();
             context.BossAdapted.Subscribe(lines.Add);
-            context.SkipWaveRequested.Raise();
+            context.FastForwardWaveRequested.Raise();
             Time.timeScale = SimulationSpeed;
 
             float started = Time.realtimeSinceStartup;

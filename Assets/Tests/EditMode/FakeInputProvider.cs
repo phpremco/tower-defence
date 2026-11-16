@@ -21,7 +21,7 @@ namespace Game.Tests
 #pragma warning disable 67 // Part of the interface; no test presses these.
         public event Action NextTower;
         public event Action PreviousTower;
-        public event Action SkipWave;
+        public event Action CallWave;
         public event Action UpgradePressed;
         public event Action RepairPressed;
         public event Action SellPressed;

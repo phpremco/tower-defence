@@ -37,7 +37,7 @@ namespace Game.Tests
             var cannon = AssetDatabase.LoadAssetAtPath<TowerDefinition>("Assets/_Project/Data/Towers/Cannon.asset");
             List<Tower> built = harness.Build(new[] { rifle, rocket, cannon }, Towers, 0.3f);
             Assert.GreaterOrEqual(built.Count, Towers / 2, "too few towers could be built");
-            context.SkipWaveRequested.Raise();
+            context.FastForwardWaveRequested.Raise();
             Time.timeScale = SimulationSpeed;
 
             float started = Time.realtimeSinceStartup;

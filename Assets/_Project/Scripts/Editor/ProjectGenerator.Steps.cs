@@ -61,6 +61,7 @@ namespace Game.Editor
             // The upgrade screen's display stage from Blender (README round 27), worn through the UI skin.
             new GeneratorStep("Display stage art", _ => BlenderDisplayStageBuilder.Apply(BlenderDisplayStageBuilder.SyncAndBuild())),
             new GeneratorStep("Campaign", c => c.Campaign = CreateCampaign(c)),
+            new GeneratorStep("Wave call", c => CreateWaveCall(c.Campaign)),
             // The continent bosses (Docs/BOSSES.md), their Codex rows and the developer boss arena on the campaign.
             new GeneratorStep("Continent bosses", _ => GenerateContinentBosses()),
             new GeneratorStep("Waves", c => GenerateCampaignWaves(c.Campaign, c.Upgrades, c.Unlocks, c.Bestiary)),

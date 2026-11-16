@@ -1247,3 +1247,23 @@ console and `Logs/probe_trace.txt`.
 - **Shader keepers only:** `unity command menu --path "Tools/Generate/Shader Keepers"` writes the keeper materials (every
   shader the game finds by name at runtime) and puts the whole list on the Boot scene. Run it whenever a new `Shader.Find`
   name is added to `CreateShaderKeepers`; `ShaderKeeperTests` fails until then. A missing keeper only shows in a player build.
+
+## Round 73: call next wave (added 2026-11-16)
+
+- **Wave call rules only:** `unity command menu --path "Tools/Generate/Wave Call"` writes `Data/Levels/WaveCall.asset` (coins per
+  second saved, cap per call, cooldown, whether the first wave may be called) and sets it on the campaign catalog. The full
+  generator runs the same step after "Campaign". The numbers live in `ProjectGenerator.WaveCall.cs`.
+- **A PlayMode test on a silent clone:** `bash Tools/PlayTest/r73_playmode_worker.sh <N> <TestFilter>` syncs clone wN (own
+  product name, audio off), runs the filter headless and prints the results and the save MD5 before and after.
+  `Game.Tests.WaveCallPlayTests` (about 30 s) plays the call in Landing Site; `Game.Tests.EarlyCallProbeTests` (about 3 min)
+  plays the best Landing Site Easy plan waiting and calling every wave early on seeds 1-3 and writes
+  `Tools/PlayTest/r73_early_call.txt` in the clone (copy it back).
+- **Probe switch:** `BalanceProbeTests.CallEarly = true` makes the probe bot call every wave as soon as the level accepts it;
+  off by default, so the balance pipeline keeps the waiting player as its baseline.
+- **Stills of the HUD as the game shows it:** `Tools/PlayTest/r73_still.cs` (same `look_arg.txt` as `r70_still.cs`) renders the
+  field with its post stack and the canvases on their own camera without post, blended on the CPU, so the corner icons are
+  not vignetted. `bash Tools/PlayTest/r73_shots.sh` (back up `progress.json`, delete the `settings.json` it writes) makes the
+  `r73_*` stills; `r73_call.cs` reads and drives the call (`probe`, `flush`, `call`, `fast`, `key <name>`, `tap <control> <ms>`).
+  `r73_pad_check.sh` checks that a View tap calls and a 0.4 s hold does not.
+- Mind: a key press queued while the editor is paused by `step_frames.cs ... hold` is not delivered to the game; step once
+  without `hold` before a press.

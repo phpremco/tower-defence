@@ -51,6 +51,9 @@ namespace Game.Levels
         [SerializeField] private PlanetTextureSet _planetTextures;
         [Tooltip("Deep space behind the planet: galaxy band, nebula, stars, the sun and the rim light for ships.")]
         [SerializeField] private SpaceStyle _spaceStyle = new SpaceStyle();
+        [Header("Waves")]
+        [Tooltip("Calling the next wave early: the bonus per second saved, its cap and the cooldown between calls (round 73).")]
+        [SerializeField] private WaveCallDefinition _waveCall;
 
         public IReadOnlyList<MapRegion> Regions => _regions;
         public IReadOnlyList<MapNode> Nodes => _nodes;
@@ -61,6 +64,9 @@ namespace Game.Levels
 
         /// <summary>The developer boss arena, or null.</summary>
         public BossArenaDefinition BossArena => _bossArena;
+
+        /// <summary>The rules of calling the next wave early; null until the generator step has made the asset.</summary>
+        public WaveCallDefinition WaveCall => _waveCall;
 
         public PlanetStyle PlanetStyle => _planetStyle ?? (_planetStyle = PlanetStyle.Crys());
         public SpaceStyle SpaceStyle => _spaceStyle ?? (_spaceStyle = new SpaceStyle());
