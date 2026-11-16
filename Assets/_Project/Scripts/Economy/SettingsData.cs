@@ -11,7 +11,8 @@ namespace Game.Economy
     [Serializable]
     public sealed class SettingsData
     {
-        public const int CurrentVersion = 1;
+        // 2 (round 70): display, frame rate, quality, screen shake and key bindings.
+        public const int CurrentVersion = 2;
         public const string DefaultLanguage = "en";
 
         public int Version = CurrentVersion;
@@ -43,5 +44,31 @@ namespace Game.Economy
 
         /// <summary>Silences the game while its window is in the background; on by default.</summary>
         public bool MuteInBackground = true;
+
+        /// <summary>The window mode as a <c>Game.Platform.DisplayMode</c> number; borderless full screen by default.</summary>
+        public int DisplayMode = DefaultDisplayMode;
+
+        /// <summary>The chosen screen size; 0 by 0 (the default) keeps the desktop resolution.</summary>
+        public int ResolutionWidth;
+
+        public int ResolutionHeight;
+
+        /// <summary>Waits for the monitor between frames; on by default.</summary>
+        public bool VSync = true;
+
+        /// <summary>Frames per second at most when v-sync is off; 0 is no cap.</summary>
+        public int FrameRateCap;
+
+        /// <summary>The player's quality profile on PC: false is "High (PC)", true is "Low".</summary>
+        public bool LowQuality;
+
+        /// <summary>How hard camera kicks are, from 0 (none) to 100 (as designed).</summary>
+        public int ScreenShakePercent = 100;
+
+        /// <summary>Rebound keys and buttons as the Input System's override JSON; empty keeps the default bindings.</summary>
+        public string BindingOverrides = string.Empty;
+
+        // Borderless full screen: what the build has always started in (BuildScript).
+        private const int DefaultDisplayMode = 1;
     }
 }

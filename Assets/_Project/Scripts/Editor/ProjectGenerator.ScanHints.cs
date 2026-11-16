@@ -246,7 +246,17 @@ namespace Game.Editor
             return new ScanHint(enemy, dialogue);
         }
 
-        // Xbox-style names by default; the Nintendo table is there for the Switch profile (its south button is "B").
+        /// <summary>Round 70: only the button name tables (Xbox, PlayStation, Nintendo, keyboard) and their place on the skin.</summary>
+        [MenuItem("Tools/Generate/Button Prompt Tables")]
+        public static void GenerateButtonPromptTables()
+        {
+            GenerateButtonGlyphs();
+            AssetDatabase.SaveAssets();
+            Debug.Log("Generated the button prompt tables.");
+        }
+
+        // One names table per pad family; the pad in the player's hands picks one (a DualSense prints Cross, a Switch pad
+        // B for its south button). The keyboard table shortens key names for prompts and the drawn key caps.
         private static void GenerateButtonGlyphs()
         {
             ButtonGlyphTable xbox = WriteGlyphs("Glyphs_Xbox", PadLayout.Xbox,
@@ -259,9 +269,21 @@ namespace Game.Editor
                 new ButtonGlyph("leftShoulder", "L"), new ButtonGlyph("rightShoulder", "R"), new ButtonGlyph("leftTrigger", "ZL"), new ButtonGlyph("rightTrigger", "ZR"),
                 new ButtonGlyph("start", "+"), new ButtonGlyph("select", "-"), new ButtonGlyph("leftStickPress", "L-click"), new ButtonGlyph("rightStickPress", "R-click"),
                 new ButtonGlyph("leftStick", "L-stick"), new ButtonGlyph("rightStick", "R-stick"), new ButtonGlyph("dpad", "D-pad"));
+            ButtonGlyphTable playStation = WriteGlyphs("Glyphs_PlayStation", PadLayout.PlayStation,
+                new ButtonGlyph("buttonSouth", "Cross"), new ButtonGlyph("buttonEast", "Circle"), new ButtonGlyph("buttonWest", "Square"), new ButtonGlyph("buttonNorth", "Triangle"),
+                new ButtonGlyph("leftShoulder", "L1"), new ButtonGlyph("rightShoulder", "R1"), new ButtonGlyph("leftTrigger", "L2"), new ButtonGlyph("rightTrigger", "R2"),
+                new ButtonGlyph("start", "Options"), new ButtonGlyph("select", "Create"), new ButtonGlyph("leftStickPress", "L3"), new ButtonGlyph("rightStickPress", "R3"),
+                new ButtonGlyph("leftStick", "L-stick"), new ButtonGlyph("rightStick", "R-stick"), new ButtonGlyph("dpad", "D-pad"));
             ButtonGlyphTable keys = WriteGlyphs("Glyphs_Keyboard", PadLayout.Xbox,
                 new ButtonGlyph("escape", "Esc"), new ButtonGlyph("enter", "Enter"), new ButtonGlyph("space", "Space"), new ButtonGlyph("tab", "Tab"),
-                new ButtonGlyph("leftButton", "Click"), new ButtonGlyph("rightButton", "Right-click"));
+                new ButtonGlyph("leftButton", "Click"), new ButtonGlyph("rightButton", "Right-click"), new ButtonGlyph("middleButton", "Middle-click"),
+                new ButtonGlyph("backspace", "Bksp"), new ButtonGlyph("leftShift", "Shift"), new ButtonGlyph("rightShift", "Shift"),
+                new ButtonGlyph("leftCtrl", "Ctrl"), new ButtonGlyph("rightCtrl", "Ctrl"), new ButtonGlyph("leftAlt", "Alt"), new ButtonGlyph("rightAlt", "Alt"),
+                new ButtonGlyph("capsLock", "Caps"), new ButtonGlyph("delete", "Del"), new ButtonGlyph("insert", "Ins"), new ButtonGlyph("pageUp", "PgUp"),
+                new ButtonGlyph("pageDown", "PgDn"), new ButtonGlyph("home", "Home"), new ButtonGlyph("end", "End"), new ButtonGlyph("numpadEnter", "Num Enter"),
+                new ButtonGlyph("upArrow", "↑"), new ButtonGlyph("downArrow", "↓"), new ButtonGlyph("leftArrow", "←"), new ButtonGlyph("rightArrow", "→"),
+                new ButtonGlyph("backquote", "`"), new ButtonGlyph("contextMenu", "Menu"), new ButtonGlyph("printScreen", "PrtSc"), new ButtonGlyph("scrollLock", "ScrLk"),
+                new ButtonGlyph("pause", "Pause"), new ButtonGlyph("numLock", "NumLk"));
 
             var skin = AssetDatabase.LoadAssetAtPath<UiSkin>(SkinAssetPath);
             if (skin == null)
@@ -271,9 +293,10 @@ namespace Game.Editor
 
             var so = new SerializedObject(skin);
             SerializedProperty pads = so.FindProperty("_padGlyphs");
-            pads.arraySize = 2;
+            pads.arraySize = 3;
             pads.GetArrayElementAtIndex(0).objectReferenceValue = xbox;
             pads.GetArrayElementAtIndex(1).objectReferenceValue = nintendo;
+            pads.GetArrayElementAtIndex(2).objectReferenceValue = playStation;
             so.FindProperty("_keyGlyphs").objectReferenceValue = keys;
             so.FindProperty("_minReadableFontSize").intValue = MinReadableFontSize;
             so.ApplyModifiedPropertiesWithoutUndo();

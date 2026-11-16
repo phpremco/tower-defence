@@ -26,3 +26,55 @@ MonoBehaviour:
     Label: Click
   - Control: rightButton
     Label: Right-click
+  - Control: middleButton
+    Label: Middle-click
+  - Control: backspace
+    Label: Bksp
+  - Control: leftShift
+    Label: Shift
+  - Control: rightShift
+    Label: Shift
+  - Control: leftCtrl
+    Label: Ctrl
+  - Control: rightCtrl
+    Label: Ctrl
+  - Control: leftAlt
+    Label: Alt
+  - Control: rightAlt
+    Label: Alt
+  - Control: capsLock
+    Label: Caps
+  - Control: delete
+    Label: Del
+  - Control: insert
+    Label: Ins
+  - Control: pageUp
+    Label: PgUp
+  - Control: pageDown
+    Label: PgDn
+  - Control: home
+    Label: Home
+  - Control: end
+    Label: End
+  - Control: numpadEnter
+    Label: Num Enter
+  - Control: upArrow
+    Label: "\u2191"
+  - Control: downArrow
+    Label: "\u2193"
+  - Control: leftArrow
+    Label: "\u2190"
+  - Control: rightArrow
+    Label: "\u2192"
+  - Control: backquote
+    Label: '`'
+  - Control: contextMenu
+    Label: Menu
+  - Control: printScreen
+    Label: PrtSc
+  - Control: scrollLock
+    Label: ScrLk
+  - Control: pause
+    Label: Pause
+  - Control: numLock
+    Label: NumLk

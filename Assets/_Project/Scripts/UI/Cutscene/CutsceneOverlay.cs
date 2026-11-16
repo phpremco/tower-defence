@@ -58,6 +58,8 @@ namespace Game.UI
         private RectTransform _titleRect;
         private TextMeshProUGUI _hint;
         private TextMeshProUGUI _keys;
+        private Image _keyChip;
+        private Image _keyGlyph;
         private IInputProvider _input;
         private CanvasGroup _skipGroup;
         private Image _skipFrame;
@@ -316,9 +318,12 @@ namespace Game.UI
             rect.sizeDelta = new Vector2(KeyWidth, KeyHeight);
             rect.anchoredPosition = new Vector2(SkipInset, 0f);
 
+            _keyChip = chip;
             _keys = NewText(rect, "Label", KeySize, TextAlignmentOptions.Center);
             _keys.color = KeyText;
             Stretch(_keys.rectTransform);
+            // The button glyph takes the chip's place when the device has one; the printed name stays the fallback.
+            _keyGlyph = PromptGlyphs.CreateImage(rect, KeyHeight);
             if (Services.TryGet(out _input))
             {
                 _input.ActiveDeviceChanged += RefreshKeys;
@@ -336,7 +341,10 @@ namespace Game.UI
             }
 
             GameAction skip = _input.ActiveDevice == InputDeviceKind.Gamepad ? GameAction.Pause : GameAction.Cancel;
-            _keys.text = _input.PromptFor(skip);
+            Sprite glyph = PromptGlyphs.For(skip);
+            PromptGlyphs.Show(_keyGlyph, glyph);
+            _keyChip.enabled = glyph == null;
+            _keys.text = glyph == null ? _input.PromptFor(skip) : string.Empty;
         }
 
         private void OnDestroy()

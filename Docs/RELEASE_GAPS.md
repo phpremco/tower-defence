@@ -18,14 +18,14 @@ Legend:
 
 | Area | State |
 | --- | --- |
-| Options menu | Only audio, camera, radar and HUD margin. No display, graphics, language or accessibility settings. |
-| Controls | Hot-swap and prompts work. No remapping, no PlayStation names, text labels instead of button icons, one hardcoded controls page. |
+| Options menu | Audio, camera, radar, HUD margin, language; since round 70 a "Display and graphics" page (window mode, resolution with a 10 s keep prompt, v-sync, frame cap, High/Low quality, screen shake). No other accessibility settings yet. |
+| Controls | Since round 70: drawn button glyphs per pad family (Xbox, PlayStation, Nintendo, key caps) that follow the pad in use, rebinding per device with saved overrides, a controls page built from the bindings. Confirm on Nintendo still open (3.6). |
 | Gamepad navigation | Every screen has focus handling in code. Never verified on hardware; the radar click is mouse-only. |
 | Saves | Versioned and migrated; crash-safe since round 69 (atomic write, .bak fallback); settings in their own file. One slot, no reset, no cloud. |
 | Localisation | Plumbing done in round 69 (string tables, keys in code and data, Language option; English only, see Docs/LOCALISATION.md). The font has no Cyrillic or CJK. |
 | Pause and suspend | Done for PC. Console suspend/resume untested. |
 | Performance | Fine on PC (about 8 ms). 1,100 to 1,900 draw calls and 2.3 to 3.2 million triangles on the Low profile is too heavy for a Switch 1. |
-| Builds | One Windows Mono build script. No IL2CPP build has ever been made. Platform is picked by a checkbox, not by build target. |
+| Builds | Windows Mono build; an IL2CPP build method and link.xml exist since round 70 but no IL2CPP build has been made (module and C++ tools not installed). Platform is picked by a checkbox, not by build target. |
 | Stores | No Steamworks, no Epic, no console SDK. Achievements are a 40-item proposal with a null service. |
 | Legal | Credits file exists; one audio file has no known licence; AI-generated music needs a disclosure decision. |
 | Promised features | Tower upgrade paths (A/B at level 3) and the endless mode are not built. Only continent 1 of 6 has levels. |
@@ -66,9 +66,9 @@ What exists: master, music, effects and ambience sliders; camera speed; edge scr
 
 | # | Item | Status | Evidence | Effort | Priority |
 | --- | --- | --- | --- | --- | --- |
-| 2.1 | Display mode (full screen, borderless, windowed) and resolution on PC. No runtime code sets either; the build script fixes borderless at desktop resolution and the window is not resizable. (PT) | missing | no `Screen.SetResolution` anywhere; `Editor/BuildScript.cs:29`; `ProjectSettings.asset` `resizableWindow: 0` | M | DEMO |
-| 2.2 | V-sync and frame-rate cap. Nothing sets `vSyncCount` or `targetFrameRate`, so a fast PC runs unlimited and laptops get hot. | missing | grep finds neither | S | DEMO |
-| 2.3 | **Quality profile choice.** The Low profile exists but is a checkbox on the Boot scene (`_lowQuality: 0`), not a player option and not chosen from the build target. PC players on weak hardware and Steam Deck users cannot reach it. | partial | `Boot/Bootstrapper.cs:31,53`, `Scenes/Boot.unity:157` | M | DEMO |
+| 2.1 | Display mode (full screen, borderless, windowed) and resolution on PC. No runtime code sets either; the build script fixes borderless at desktop resolution and the window is not resizable. (PT) | done (round 70: Options, Display and graphics; sliders plus Apply and a 10 s keep-or-revert prompt; PC only through IPlatformSettings.HasDisplayOptions; window changes apply in a player build only) | no `Screen.SetResolution` anywhere; `Editor/BuildScript.cs:29`; `ProjectSettings.asset` `resizableWindow: 0` | M | DEMO |
+| 2.2 | V-sync and frame-rate cap. Nothing sets `vSyncCount` or `targetFrameRate`, so a fast PC runs unlimited and laptops get hot. | done (round 70: v-sync on by default, caps 30/60/120/unlimited; applied at boot and live, players only) | grep finds neither | S | DEMO |
+| 2.3 | **Quality profile choice.** The Low profile exists but is a checkbox on the Boot scene (`_lowQuality: 0`), not a player option and not chosen from the build target. PC players on weak hardware and Steam Deck users cannot reach it. | done for PC (round 70: Graphics quality High/Low, applied live through QualityProfileSwitch; the next level is built with it). The Boot checkbox still simulates the console (8.5) | `Boot/Bootstrapper.cs:31,53`, `Scenes/Boot.unity:157` | M | DEMO |
 | 2.4 | Individual graphics switches (bloom, depth of field, mist, particles, shadows). All are read-only properties of the two profile classes. | missing | `Platform/PcPlatformSettings.cs`, `SwitchPlatformSettings.cs` | M | STEAM |
 | 2.5 | Full options inside the pause menu. Only Sound and Camera are reachable mid-level. | partial | `UI/PauseMenuView.cs` | S | STEAM |
 | 2.6 | Language selector. See section 6. | done (round 69: Options, Language; lists every table, English only now) | - | S (once 6.1 exists) | STEAM |
@@ -79,14 +79,14 @@ What exists: master, music, effects and ambience sliders; camera speed; edge scr
 
 | # | Item | Status | Evidence | Effort | Priority |
 | --- | --- | --- | --- | --- | --- |
-| 3.1 | Key and button remapping. No rebinding code and no saved overrides. The prompt cache also assumes bindings never change (`InputSystemProvider` comment on `_prompts`), so it needs a reset when remapping arrives. (PT) | missing | no `PerformInteractiveRebinding` or `SaveBindingOverridesAsJson` in the project | M | STEAM |
-| 3.2 | **PlayStation names.** `PadLayout` has Xbox and Nintendo only, and the layout comes from the platform, not from the pad in the player's hands. A DualSense on PC shows A/B/X/Y. | missing | `Platform/PadLayout.cs`, `Settings/Input/Glyphs_*.asset` (Xbox, Nintendo, Keyboard) | S | STEAM |
-| 3.3 | **Button icons instead of text.** Prompts are strings ("A", "LT", "Esc"). Console platforms expect their own button artwork, and icons read faster. Needs a sprite per control per layout and a way to draw one inline. | missing | `Platform/ButtonGlyph.cs` holds a label string only | M | STEAM |
+| 3.1 | Key and button remapping. No rebinding code and no saved overrides. The prompt cache also assumes bindings never change (`InputSystemProvider` comment on `_prompts`), so it needs a reset when remapping arrives. (PT) | done (round 70: PerformInteractiveRebinding per action and device, swap on conflict so nothing is unbound, essentials guarded on load, reset to defaults, overrides JSON in settings.json; menu navigation itself still uses the default UI actions) | no `PerformInteractiveRebinding` or `SaveBindingOverridesAsJson` in the project | M | STEAM |
+| 3.2 | **PlayStation names.** `PadLayout` has Xbox and Nintendo only, and the layout comes from the platform, not from the pad in the player's hands. A DualSense on PC shows A/B/X/Y. | done (round 70: Glyphs_PlayStation, PadLayoutResolver picks the layout from the pad in use and swaps it live) | `Platform/PadLayout.cs`, `Settings/Input/Glyphs_*.asset` (Xbox, Nintendo, Keyboard) | S | STEAM |
+| 3.3 | **Button icons instead of text.** Prompts are strings ("A", "LT", "Esc"). Console platforms expect their own button artwork, and icons read faster. Needs a sprite per control per layout and a way to draw one inline. | done (round 70: glyphs drawn in code, GlyphPainter + StrokeFont; HUD quick bar badges, dialogue buttons, cutscene skip, map hint, controls page). Not yet in tower-menu and briefing texts that name keys in words (13.6) | `Platform/ButtonGlyph.cs` holds a label string only | M | STEAM |
 | 3.4 | Hot-swap between keyboard and pad. | done | `Platform/ActiveDeviceTracker.cs`, `IInputProvider.ActiveDeviceChanged`; used by `HeroQuickBar`, `HeroAbilityHud`, `DialogueView`, `CutsceneOverlay`, `WorldMapScreen` | - | - |
-| 3.5 | **The controls page is a hardcoded table with Xbox names.** It prints "A", "B", "LB / RB", "View", "Start" on every platform and would be wrong on a Switch and after remapping. It should be built from the bindings. | partial | `UI/OptionsOverlay.cs:46-65` (`ControlRows`) | S | STEAM |
+| 3.5 | **The controls page is a hardcoded table with Xbox names.** It prints "A", "B", "LB / RB", "View", "Start" on every platform and would be wrong on a Switch and after remapping. It should be built from the bindings. | done (round 70: ControlsPage is built from the live bindings and pad family) | `UI/OptionsOverlay.cs:46-65` (`ControlRows`) | S | STEAM |
 | 3.6 | Confirm and cancel on Nintendo. Confirm is bound to the south button, which is B on a Switch; players there expect A (east) to confirm. Needs a per-layout swap. A decision for Remco, then small. | missing | `GameInput.inputactions` (Confirm = `buttonSouth`), `Glyphs_Nintendo.asset` | S | CONSOLE |
 | 3.7 | Two actions share the Y button (game speed and Codex). It works because the Codex only listens during a scan hint, but it will confuse a remapping screen. | partial | `GameInput.inputactions` (Speed and Codex both `buttonNorth`) | S | NICE |
-| 3.8 | No control schemes in the action asset. Not needed today; the remapping UI and Steam Input both work better with a Gamepad and a Keyboard&Mouse scheme. | missing | `GameInput.inputactions` (`controlSchemes: []`) | S | STEAM |
+| 3.8 | No control schemes in the action asset. Not needed today; the remapping UI and Steam Input both work better with a Gamepad and a Keyboard&Mouse scheme. | done (round 70: Gamepad and Keyboard&Mouse schemes, every plain binding grouped) | `GameInput.inputactions` (`controlSchemes: []`) | S | STEAM |
 | 3.9 | Controller rumble. None. | missing | no `SetMotorSpeeds` in the project | S | NICE |
 | 3.10 | Left-handed or one-handed layouts, hold-versus-toggle for the overview. Covered by remapping for most players. | missing | - | S | NICE |
 
@@ -110,7 +110,7 @@ Nothing in this section exists yet. None of it is a hard store requirement on St
 
 | # | Item | Status | Evidence | Effort | Priority |
 | --- | --- | --- | --- | --- | --- |
-| 5.1 | **Screen shake strength.** `CameraShaker` has no option; quakes, boss pulses and explosions all shake. Also the simplest motion-sickness setting to add. | missing | `Levels/CameraShaker.cs` reads no setting | S | DEMO |
+| 5.1 | **Screen shake strength.** `CameraShaker` has no option; quakes, boss pulses and explosions all shake. Also the simplest motion-sickness setting to add. | done (round 70: Screen shake 0-100% scales every CameraShaker kick and the cutscene quakes) | `Levels/CameraShaker.cs` reads no setting | S | DEMO |
 | 5.2 | Flashes and photosensitivity. Bosses, lasers and the upgrade celebration flash. A "reduce flashes" switch, plus a check of the worst moments against the usual three-flashes-per-second guideline. | missing | no option; flashes in `Combat/ImpactFlash.cs`, `UI/UpgradeCelebration.cs` | M | STEAM |
 | 5.3 | Text size. The UI is laid out for 1920x1080 and scaled; round 32 measured about 13 px labels at 720p and round 64 notes 19 px labels on the loading screen. No player setting, and best-fit shrinking goes down to 14. | missing | `UI/UiKit.cs:18-19, 41`; `Docs/STATUS.md:4877, 9756` | M | STEAM (Deck), CONSOLE |
 | 5.4 | Colour-blind support. Enemy roles, tower ranges, valid and invalid build cells and difficulty marks lean on colour (the design asks for strong colour coding). Needs shapes or icons alongside colour, or alternative palettes. | missing | no option | M | STEAM |
@@ -155,9 +155,9 @@ Known numbers (`Docs/STATUS.md:1569-1573, 1649`, from `Tests/PlayMode/ModelPerfo
 
 | # | Item | Status | Evidence | Effort | Priority |
 | --- | --- | --- | --- | --- | --- |
-| 8.1 | **No IL2CPP build has ever been made.** The Windows player uses the default Mono backend (`scriptingBackend` lists only Android; `Builds/Windows` contains `MonoBleedingEdge`). Consoles are IL2CPP only. The code looks AOT-friendly, but that is a reading, not a test. | missing | `ProjectSettings/ProjectSettings.asset:840`, `Builds/Windows/` | S to try, M if it finds problems | STEAM |
+| 8.1 | **No IL2CPP build has ever been made.** The Windows player uses the default Mono backend (`scriptingBackend` lists only Android; `Builds/Windows` contains `MonoBleedingEdge`). Consoles are IL2CPP only. The code looks AOT-friendly, but that is a reading, not a test. | blocked (round 70: BuildScript.BuildWindowsIl2Cpp ready; the IL2CPP module and the Visual Studio C++ tools are not installed, see COMMANDS.md) | `ProjectSettings/ProjectSettings.asset:840`, `Builds/Windows/` | S to try, M if it finds problems | STEAM |
 | 8.2 | Reflection and dynamic code. None found in runtime scripts: no `System.Reflection`, `Activator`, `Type.GetType`, `dynamic`, expression trees or `[SerializeReference]`. `Services` uses a `Dictionary<Type, object>` with generics over reference types only, which is AOT-safe. `JsonUtility` is AOT-safe. | done | grep over `Scripts/` excluding `Editor/` | - | - |
-| 8.3 | Managed stripping. No stripping level set and no `link.xml`. The shader-variant keeper materials already guard the runtime-built materials. Test with the IL2CPP build in 8.1. | partial | `Bootstrapper._shaderKeepers`; no `link.xml` in `Assets/` | S | STEAM |
+| 8.3 | Managed stripping. No stripping level set and no `link.xml`. The shader-variant keeper materials already guard the runtime-built materials. Test with the IL2CPP build in 8.1. | partial (round 70: Assets/link.xml and stripping Low for the IL2CPP build; untested until 8.1 builds) | `Bootstrapper._shaderKeepers`; no `link.xml` in `Assets/` | S | STEAM |
 | 8.4 | **Release build configuration.** One build method, always the same options. Missing: a release variant (no development flag), a version stamp, and a check that developer switches are off. `PlaytestSettings.asset` currently has `_developerMode: 1`; `DeveloperMode.Resolve` ignores it outside development builds, which is the right guard, but the wave-skip key (N, View tap) and `InfiniteMoney` / `UnlockAllWeapons` have no such guard and rely on the asset values. | partial | `Editor/BuildScript.cs`, `Settings/PlaytestSettings.asset:15-17`, `Core/DeveloperMode.cs` | S | DEMO |
 | 8.5 | **Platform chosen at build time.** `Bootstrapper` picks `SwitchPlatformSettings` from a serialized checkbox. It should come from the build target (or a define), together with the save, achievement and input implementations. | missing | `Boot/Bootstrapper.cs:53` | S | STEAM |
 | 8.6 | Build targets beyond Windows: Linux or Steam Deck native (Proton usually suffices), macOS (needs notarisation and a Mac), demo build, console builds. (PT mentions SteamPipe.) | missing | `BuildScript` has `BuildWindows` only | S each for PC | STEAM / CONSOLE |
@@ -279,11 +279,11 @@ From `Docs/GAME_DESIGN.md`, `CLAUDE.md` and `Docs/STORY_ROADMAP.md`. Content vol
 
 1. **Crash-safe saves** (1.1, 1.2): a corrupt file currently stops the game at boot. S, DEMO. **Done in round 69.**
 2. **Company and product name** (8.11, PT): it is in the save path. S, DEMO.
-3. **First IL2CPP build plus smoke test** (8.1): never done; consoles depend on it. S to M, STEAM.
-4. **Display, v-sync and quality options** (2.1 to 2.3): none exist. M, DEMO.
+3. **First IL2CPP build plus smoke test** (8.1): never done; consoles depend on it. S to M, STEAM. **Round 70: build method ready, blocked on installing the IL2CPP module and the C++ tools.**
+4. **Display, v-sync and quality options** (2.1 to 2.3): none exist. M, DEMO. **Done in round 70.**
 5. **Real-hardware gamepad pass** (4.1): all pad testing so far was simulated. S, DEMO.
 6. **Unlicensed boss alarm and the AI-content disclosure** (11.1, 11.2). S, DEMO.
 7. **Crash reporting** (10.4): nothing reports failures from other machines. S to M, DEMO.
 8. **Localisation plumbing** (6.1, 6.2): no string table, and the font lacks Cyrillic and CJK. L, STEAM. **6.1 done in round 69; 6.2 (fonts) open.**
-9. **Remapping, PlayStation names and button icons** (3.1 to 3.3, 3.5). M, STEAM.
+9. **Remapping, PlayStation names and button icons** (3.1 to 3.3, 3.5). M, STEAM. **Done in round 70.**
 10. **Switch render budget** (7.1): the Low profile draws five to ten times what a Switch 1 handles. L, CONSOLE.

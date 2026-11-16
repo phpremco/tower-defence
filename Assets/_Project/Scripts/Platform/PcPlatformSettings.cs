@@ -1,27 +1,43 @@
 ﻿namespace Game.Platform
 {
-    /// <summary>The "High (PC)" quality profile.</summary>
+    /// <summary>
+    /// The PC platform: the "High (PC)" quality profile, or the player's "Low" choice under Options, which takes every
+    /// quality switch of the low profile (<see cref="SwitchPlatformSettings"/>) and keeps the PC's own window, quit and
+    /// margin behaviour.
+    /// </summary>
     public sealed class PcPlatformSettings : IPlatformSettings
     {
-        public string ProfileName => "High (PC)";
+        private static readonly IPlatformSettings LowProfile = new SwitchPlatformSettings();
 
-        public bool BloomEnabled => true;
+        private readonly bool _low;
 
-        public float BloomScale => 1f;
+        public PcPlatformSettings(bool lowQuality = false)
+        {
+            _low = lowQuality;
+        }
 
-        public bool HighQualityBloom => true;
+        /// <summary>True when the player picked the low profile.</summary>
+        public bool IsLowQuality => _low;
 
-        public bool FogEnabled => true;
+        public string ProfileName => _low ? "Low" : "High (PC)";
 
-        public bool DepthOfFieldEnabled => true;
+        public bool BloomEnabled => !_low || LowProfile.BloomEnabled;
 
-        public float ParticleScale => 1f;
+        public float BloomScale => _low ? LowProfile.BloomScale : 1f;
 
-        public bool DistortionEnabled => true;
+        public bool HighQualityBloom => !_low;
 
-        public bool LowDetailModels => false;
+        public bool FogEnabled => !_low;
 
-        public float LodBias => 1f;
+        public bool DepthOfFieldEnabled => !_low;
+
+        public float ParticleScale => _low ? LowProfile.ParticleScale : 1f;
+
+        public bool DistortionEnabled => !_low;
+
+        public bool LowDetailModels => _low;
+
+        public float LodBias => _low ? LowProfile.LodBias : 1f;
 
         public bool CanQuit => true;
 
@@ -29,5 +45,7 @@
         public float SafeMarginPercent => 0f;
 
         public PadLayout PadLayout => PadLayout.Xbox;
+
+        public bool HasDisplayOptions => true;
     }
 }

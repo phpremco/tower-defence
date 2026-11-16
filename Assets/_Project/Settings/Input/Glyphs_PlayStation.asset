@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 409909aafd4677143991bb5f4b50d463, type: 3}
+  m_Name: Glyphs_PlayStation
+  m_EditorClassIdentifier: Game.Platform::Game.Platform.ButtonGlyphTable
+  _layout: 2
+  _glyphs:
+  - Control: buttonSouth
+    Label: Cross
+  - Control: buttonEast
+    Label: Circle
+  - Control: buttonWest
+    Label: Square
+  - Control: buttonNorth
+    Label: Triangle
+  - Control: leftShoulder
+    Label: L1
+  - Control: rightShoulder
+    Label: R1
+  - Control: leftTrigger
+    Label: L2
+  - Control: rightTrigger
+    Label: R2
+  - Control: start
+    Label: Options
+  - Control: select
+    Label: Create
+  - Control: leftStickPress
+    Label: L3
+  - Control: rightStickPress
+    Label: R3
+  - Control: leftStick
+    Label: L-stick
+  - Control: rightStick
+    Label: R-stick
+  - Control: dpad
+    Label: D-pad

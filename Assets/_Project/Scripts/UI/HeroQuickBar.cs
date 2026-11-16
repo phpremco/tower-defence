@@ -25,6 +25,8 @@ namespace Game.UI
         private const float BarHeight = 10f;
         private const float BarGap = 6f;
         private const float IconSize = 68f;
+        private const float BadgeHeight = 32f;
+        private const float BadgeOverhang = 8f;
         private const float LabelHeight = 34f;
         private const float RowGap = 10f;
         private const int HeaderSize = 28;
@@ -52,6 +54,8 @@ namespace Game.UI
         private Image _healthFill;
         private readonly List<HeroAbilityButton> _abilities = new List<HeroAbilityButton>();
         private Text _postLabel;
+        private Image _postGlyph;
+        private readonly List<Image> _abilityGlyphs = new List<Image>();
         private float _nextRefresh;
 
         public void Initialize(LevelContext context, RectTransform parent)
@@ -100,10 +104,18 @@ namespace Game.UI
                 int pressed = slot;
                 Button button = Action(y, HeroAbilityHud.IconFor(state.Definition), state.Definition.Tint, () => _context.HeroAbilityRequested.Raise(pressed), out Text label);
                 _abilities.Add(new HeroAbilityButton(slot, state, button, label));
+                _abilityGlyphs.Add(AddBadge(button));
                 y -= IconSize + LabelHeight + RowGap;
             }
 
-            Action(y, IconFactory.Get(IconType.Hero), PostTint, () => _context.HeroPostRequested.Raise((_hero.PostIndex + 1) % _hero.PostCount), out _postLabel);
+            Button post = Action(y, IconFactory.Get(IconType.Hero), PostTint, () => _context.HeroPostRequested.Raise((_hero.PostIndex + 1) % _hero.PostCount), out _postLabel);
+            _postGlyph = AddBadge(post);
+            if (_input != null)
+            {
+                _input.ActiveDeviceChanged += RefreshGlyphs;
+            }
+
+            RefreshGlyphs();
             Refresh();
         }
 
@@ -188,18 +200,56 @@ namespace Game.UI
 
             HeroPanelStyle.FillHealth(_healthFill, _hero.IsDown ? 0f : _hero.Health.Current / _hero.Health.Max, LowHealthFraction, MidHealthFraction);
 
-            foreach (HeroAbilityButton ability in _abilities)
+            for (int i = 0; i < _abilities.Count; i++)
             {
+                HeroAbilityButton ability = _abilities[i];
                 bool ready = _hero.CanUse(ability.Slot);
                 bool affordable = HeroAbilityHud.Affordable(ability.State, _context.Wallet);
                 ability.Button.interactable = ready && affordable;
-                ability.Label.text = HeroAbilityHud.Label(ability.State, HeroAbilityHud.KeyFor(ability.Slot, _input));
+                // The badge on the icon names the button; without a glyph the key is printed in front of the name.
+                string key = _abilityGlyphs[i].enabled ? string.Empty : HeroAbilityHud.KeyFor(ability.Slot, _input);
+                ability.Label.text = HeroAbilityHud.Label(ability.State, key);
                 ability.Label.color = !ready ? DimColor : affordable ? TextColor : Unaffordable;
             }
 
             // The key follows the device in use, so a pad player reads X where a keyboard player reads H.
-            _postLabel.text = UiKit.Keyed(_input != null ? _input.PromptFor(GameAction.HeroPost) : string.Empty, Loc.Get("hero.next_post"));
+            string postKey = _postGlyph.enabled || _input == null ? string.Empty : _input.PromptFor(GameAction.HeroPost);
+            _postLabel.text = UiKit.Keyed(postKey, Loc.Get("hero.next_post"));
             _postLabel.color = _hero.IsDown ? DimColor : TextColor;
+        }
+
+        // A button glyph on the icon's lower right corner, like the badges on a console quick bar.
+        private static Image AddBadge(Button button)
+        {
+            Image badge = PromptGlyphs.CreateImage(button.GetComponent<RectTransform>(), BadgeHeight, "Badge");
+            RectTransform rect = badge.rectTransform;
+            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(1f, 0f);
+            rect.anchoredPosition = new Vector2(BadgeOverhang, -BadgeOverhang);
+            return badge;
+        }
+
+        // Only a device switch or a new pad family changes the badges, never the 0.1 s refresh.
+        private void RefreshGlyphs()
+        {
+            for (int i = 0; i < _abilities.Count; i++)
+            {
+                GameAction action = _abilities[i].Slot == 0 ? GameAction.HeroAbility1 : GameAction.HeroAbility2;
+                PromptGlyphs.Show(_abilityGlyphs[i], PromptGlyphs.For(action));
+            }
+
+            PromptGlyphs.Show(_postGlyph, PromptGlyphs.For(GameAction.HeroPost));
+            if (_root != null)
+            {
+                Refresh();
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (_input != null)
+            {
+                _input.ActiveDeviceChanged -= RefreshGlyphs;
+            }
         }
     }
 }

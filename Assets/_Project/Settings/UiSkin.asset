@@ -32,5 +32,6 @@ MonoBehaviour:
   _padGlyphs:
   - {fileID: 11400000, guid: c6d0a739d07b1cd45b8e38f62ee4388e, type: 2}
   - {fileID: 11400000, guid: 70c62eea3fef07b4e9d096fb781ab10c, type: 2}
+  - {fileID: 11400000, guid: 15f58e467edf726459767e449e015ea3, type: 2}
   _keyGlyphs: {fileID: 11400000, guid: 6bb391864dcbaa44897ba30bbba7ad78, type: 2}
   _minReadableFontSize: 27

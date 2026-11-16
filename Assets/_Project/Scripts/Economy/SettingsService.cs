@@ -16,6 +16,8 @@ namespace Game.Economy
         /// <summary>Saves before the settings split kept the options in the progress file under this key.</summary>
         public const string LegacyProgressKey = "progress";
 
+        private const int MaxPercent = 100;
+
         private readonly ISaveService _save;
         private bool _dirty;
 
@@ -86,6 +88,43 @@ namespace Game.Economy
             MarkChanged();
         }
 
+        /// <summary>Stores the window mode (a <see cref="DisplayMode"/>) and size; 0 by 0 keeps the desktop resolution.</summary>
+        public void SetDisplay(DisplayMode mode, int width, int height)
+        {
+            Data.DisplayMode = (int)mode;
+            Data.ResolutionWidth = Mathf.Max(0, width);
+            Data.ResolutionHeight = Mathf.Max(0, height);
+            MarkChanged();
+        }
+
+        public void SetFrameRate(bool vSync, int cap)
+        {
+            Data.VSync = vSync;
+            Data.FrameRateCap = Mathf.Max(0, cap);
+            MarkChanged();
+        }
+
+        public void SetLowQuality(bool low)
+        {
+            Data.LowQuality = low;
+            MarkChanged();
+        }
+
+        public void SetScreenShake(int percent)
+        {
+            Data.ScreenShakePercent = Mathf.Clamp(percent, 0, MaxPercent);
+            MarkChanged();
+        }
+
+        public void SetBindingOverrides(string json)
+        {
+            Data.BindingOverrides = json ?? string.Empty;
+            MarkChanged();
+        }
+
+        /// <summary>The camera kick factor the shake option asks for, 0 to 1.</summary>
+        public float ScreenShakeScale => Mathf.Clamp01(Data.ScreenShakePercent / (float)MaxPercent);
+
         /// <summary>Writes the options when something changed since the last write; cheap to call on every close.</summary>
         public void Flush()
         {
@@ -127,6 +166,17 @@ namespace Game.Economy
             {
                 data.LanguageCode = SettingsData.DefaultLanguage;
             }
+
+            if (data.DisplayMode < (int)DisplayMode.Fullscreen || data.DisplayMode > (int)DisplayMode.Windowed)
+            {
+                data.DisplayMode = (int)DisplayMode.Borderless;
+            }
+
+            data.ScreenShakePercent = Mathf.Clamp(data.ScreenShakePercent, 0, MaxPercent);
+            data.FrameRateCap = Mathf.Max(0, data.FrameRateCap);
+            data.ResolutionWidth = Mathf.Max(0, data.ResolutionWidth);
+            data.ResolutionHeight = Mathf.Max(0, data.ResolutionHeight);
+            data.BindingOverrides = data.BindingOverrides ?? string.Empty;
         }
     }
 }

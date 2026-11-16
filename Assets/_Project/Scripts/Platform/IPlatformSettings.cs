@@ -38,7 +38,13 @@
         /// </summary>
         float SafeMarginPercent { get; }
 
-        /// <summary>The face-button names prompts print on this platform.</summary>
+        /// <summary>The face-button names prompts print on this platform before a pad says otherwise.</summary>
         PadLayout PadLayout { get; }
+
+        /// <summary>
+        /// True where the player picks the window, resolution, v-sync, frame cap and quality profile (PC). A console runs
+        /// one fixed mode, so the options screen leaves those rows out there.
+        /// </summary>
+        bool HasDisplayOptions { get; }
     }
 }

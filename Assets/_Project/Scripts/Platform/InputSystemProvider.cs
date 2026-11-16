@@ -10,7 +10,7 @@ namespace Game.Platform
     /// which device the player uses (any button press, or the sticks), names actions for prompts from the bindings and
     /// the glyph tables, and reports the gamepad in use dropping out.
     /// </summary>
-    public sealed class InputSystemProvider : IInputProvider
+    public sealed partial class InputSystemProvider : IInputProvider, IInputBindings
     {
         private const string MapName = "Gameplay";
         private const string MoveAction = "Move";
@@ -59,10 +59,15 @@ namespace Game.Platform
         private readonly InputAction _overview;
         private readonly InputAction _codex;
 
-        // Indexed by GameAction; the prompt cache by action and device kind, filled on first use (bindings never change).
+        // Indexed by GameAction; the prompt cache by action and device kind, filled on first use and emptied when the
+        // bindings or the pad layout change.
         private readonly InputAction[] _byGameAction;
         private readonly string[,] _prompts;
-        private readonly ButtonGlyphTable _padGlyphs;
+        private readonly string[,] _paths;
+        private readonly Func<PadLayout, ButtonGlyphTable> _padTables;
+        private readonly PadLayout _defaultLayout;
+        private ButtonGlyphTable _padGlyphs;
+        private int _resolvedPadId = ActiveDeviceTracker.NoDevice;
         private readonly ButtonGlyphTable _keyGlyphs;
         private readonly ActiveDeviceTracker _devices;
         private readonly IDisposable _anyButton;
@@ -70,8 +75,19 @@ namespace Game.Platform
         /// <param name="padGlyphs">Names of the pad buttons for this platform's layout; null prints the Input System's names.</param>
         /// <param name="keyGlyphs">Short names of keys ("Esc"); null prints the Input System's names.</param>
         public InputSystemProvider(InputActionAsset asset, ButtonGlyphTable padGlyphs = null, ButtonGlyphTable keyGlyphs = null)
+            : this(asset, _ => padGlyphs, padGlyphs != null ? padGlyphs.Layout : PadLayout.Xbox, keyGlyphs)
         {
-            _padGlyphs = padGlyphs;
+        }
+
+        /// <param name="padTables">The names table of each pad layout; the pad in the player's hands picks one.</param>
+        /// <param name="defaultLayout">The layout before any pad was used, and for pads of no known family.</param>
+        /// <param name="keyGlyphs">Short names of keys ("Esc"); null prints the Input System's names.</param>
+        public InputSystemProvider(InputActionAsset asset, Func<PadLayout, ButtonGlyphTable> padTables, PadLayout defaultLayout, ButtonGlyphTable keyGlyphs)
+        {
+            _padTables = padTables;
+            _defaultLayout = defaultLayout;
+            ActivePadLayout = Gamepad.current != null ? PadLayoutResolver.ForDeviceLayout(Gamepad.current.layout, defaultLayout) : defaultLayout;
+            _padGlyphs = padTables?.Invoke(ActivePadLayout);
             _keyGlyphs = keyGlyphs;
             _map = asset.FindActionMap(MapName, true);
             _move = _map.FindAction(MoveAction, true);
@@ -100,6 +116,7 @@ namespace Game.Platform
                 _heroAbility1, _heroAbility2, _overview, _codex,
             };
             _prompts = new string[_byGameAction.Length, DeviceKinds];
+            _paths = new string[_byGameAction.Length, DeviceKinds];
 
             // A console has no keyboard: start on the pad there, so the first prompts are already right.
             bool padOnly = Keyboard.current == null && Gamepad.current != null;
@@ -181,6 +198,7 @@ namespace Game.Platform
             _pan.performed -= OnSteered;
             _anyButton.Dispose();
             InputSystem.onDeviceChange -= OnDeviceChange;
+            CancelRebind();
             _map.Disable();
         }
 
@@ -205,43 +223,93 @@ namespace Game.Platform
             return _prompts[index, kind];
         }
 
+        public PadLayout ActivePadLayout { get; private set; }
+
+        public string ControlPath(GameAction action, InputDeviceKind device)
+        {
+            int index = (int)action;
+            if (index < 0 || index >= _byGameAction.Length)
+            {
+                return string.Empty;
+            }
+
+            int kind = (int)device;
+            if (_paths[index, kind] == null)
+            {
+                int binding = PromptBinding(_byGameAction[index], device);
+                _paths[index, kind] = binding < 0 ? string.Empty : _byGameAction[index].bindings[binding].effectivePath;
+            }
+
+            return _paths[index, kind];
+        }
+
         // The first plain binding on the device: on the keyboard side a key before a mouse button, so Confirm reads "Enter".
         private string Describe(InputAction action, InputDeviceKind device)
         {
-            if (device == InputDeviceKind.Gamepad)
+            int binding = PromptBinding(action, device);
+            if (binding < 0)
             {
-                return Describe(action, GamepadLayout, _padGlyphs);
+                return string.Empty;
             }
 
-            string key = Describe(action, KeyboardLayout, _keyGlyphs);
-            if (key.Length == 0)
+            ButtonGlyphTable glyphs = device == InputDeviceKind.Gamepad ? _padGlyphs : _keyGlyphs;
+            if (glyphs != null && glyphs.TryGet(action.bindings[binding].effectivePath, out string label))
             {
-                key = Describe(action, MouseLayout, _keyGlyphs);
+                return label;
             }
 
-            return key.Length == 0 ? Describe(action, PointerLayout, _keyGlyphs) : key;
+            return action.GetBindingDisplayString(binding, InputBinding.DisplayStringOptions.DontIncludeInteractions);
         }
 
-        private static string Describe(InputAction action, string layout, ButtonGlyphTable glyphs)
+        private static int PromptBinding(InputAction action, InputDeviceKind device)
+        {
+            if (device == InputDeviceKind.Gamepad)
+            {
+                return FirstBinding(action, GamepadLayout);
+            }
+
+            int key = FirstBinding(action, KeyboardLayout);
+            if (key < 0)
+            {
+                key = FirstBinding(action, MouseLayout);
+            }
+
+            return key < 0 ? FirstBinding(action, PointerLayout) : key;
+        }
+
+        private static int FirstBinding(InputAction action, string layout)
         {
             ReadOnlyArray<InputBinding> bindings = action.bindings;
             for (int i = 0; i < bindings.Count; i++)
             {
                 InputBinding binding = bindings[i];
-                if (binding.isComposite || binding.isPartOfComposite || InputControlPath.TryGetDeviceLayout(binding.effectivePath) != layout)
+                if (!binding.isComposite && !binding.isPartOfComposite && IsOn(binding.effectivePath, layout))
                 {
-                    continue;
+                    return i;
                 }
-
-                if (glyphs != null && glyphs.TryGet(binding.effectivePath, out string label))
-                {
-                    return label;
-                }
-
-                return action.GetBindingDisplayString(i, InputBinding.DisplayStringOptions.DontIncludeInteractions);
             }
 
-            return string.Empty;
+            return -1;
+        }
+
+        // A rebind on a DualSense may store "<DualShockGamepad>/touchpadButton": still a pad binding.
+        private static bool IsOn(string path, string layout)
+        {
+            string device = InputControlPath.TryGetDeviceLayout(path);
+            return !string.IsNullOrEmpty(device) && (device == layout || InputSystem.IsFirstLayoutBasedOnSecond(device, layout));
+        }
+
+        // Bindings or the pad layout changed: every printed name and path is worked out again on its next use.
+        private void ForgetPrompts()
+        {
+            for (int action = 0; action < _byGameAction.Length; action++)
+            {
+                for (int kind = 0; kind < DeviceKinds; kind++)
+                {
+                    _prompts[action, kind] = null;
+                    _paths[action, kind] = null;
+                }
+            }
         }
 
         private void OnAnyButton(InputControl control) => Track(control.device);
@@ -264,10 +332,38 @@ namespace Game.Platform
                 return;
             }
 
-            if (_devices.Used(kind, device.deviceId))
+            bool changed = _devices.Used(kind, device.deviceId);
+            if (kind == InputDeviceKind.Gamepad)
+            {
+                changed |= FollowPad(device);
+            }
+
+            if (changed)
             {
                 ActiveDeviceChanged?.Invoke();
             }
+        }
+
+        // A DualSense picked up after an Xbox pad swaps the names and glyphs at once; prompts hear it as a device change.
+        private bool FollowPad(InputDevice pad)
+        {
+            // The sticks report every frame they move: the layout is only worked out when another pad takes over.
+            if (pad.deviceId == _resolvedPadId)
+            {
+                return false;
+            }
+
+            _resolvedPadId = pad.deviceId;
+            PadLayout layout = PadLayoutResolver.ForDeviceLayout(pad.layout, _defaultLayout);
+            if (layout == ActivePadLayout)
+            {
+                return false;
+            }
+
+            ActivePadLayout = layout;
+            _padGlyphs = _padTables?.Invoke(layout);
+            ForgetPrompts();
+            return true;
         }
 
         private void OnDeviceChange(InputDevice device, InputDeviceChange change)

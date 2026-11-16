@@ -7,6 +7,7 @@ using Game.Platform;
 using Game.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
 namespace Game.Boot
@@ -31,7 +32,7 @@ namespace Game.Boot
         [Tooltip("Use the Low (Switch) quality profile: softer bloom, no mist or depth of field, half the particles.")]
         [SerializeField] private bool _lowQuality;
         [Tooltip("The tilt-shift full-screen pass on the PC renderer; switched off by profiles without depth of field.")]
-        [SerializeField] private UnityEngine.Rendering.Universal.FullScreenPassRendererFeature _tiltShift;
+        [SerializeField] private FullScreenPassRendererFeature _tiltShift;
         [SerializeField] private UiSkin _uiSkin;
         [SerializeField] private SfxLibrary _sfxLibrary;
         [SerializeField] private Game.Combat.VfxLibrary _vfxLibrary;
@@ -52,26 +53,31 @@ namespace Game.Boot
             _input?.Dispose();
             Services.Clear();
 
-            IPlatformSettings platform = _lowQuality ? new SwitchPlatformSettings() : new PcPlatformSettings();
-            _input = new InputSystemProvider(_inputActions, _uiSkin.PadGlyphs(platform.PadLayout), _uiSkin.KeyGlyphs);
             var save = new FileSaveService(System.IO.Path.Combine(Application.persistentDataPath, SaveFolderName));
             // Settings first: on the first launch after the split they are read out of the old progress file.
             var settings = new SettingsService(save);
+            SettingsData data = settings.Data;
+
+            // The Boot checkbox simulates the console (fixed Low profile); on PC the player picks High or Low under Options.
+            IPlatformSettings platform = _lowQuality ? new SwitchPlatformSettings() : new PcPlatformSettings(data.LowQuality);
+            var input = new InputSystemProvider(_inputActions, _uiSkin.PadGlyphs, platform.PadLayout, _uiSkin.KeyGlyphs);
+            input.LoadOverrides(data.BindingOverrides);
+            _input = input;
             var progress = new ProgressService(save, _unlockTable.StartingTowerIds);
-            var localization = new StringTableService(settings.Data.LanguageCode);
+            var localization = new StringTableService(data.LanguageCode);
 
             Services.Register(_input);
+            Services.Register<IInputBindings>(input);
             Services.Register<ISaveService>(save);
             Services.Register(settings);
             Services.Register<ILocalizationService>(localization);
             Services.Register<IAchievementService>(new NullAchievementService());
-            Services.Register(platform);
-            IPlatformSettings quality = Services.Get<IPlatformSettings>();
-            Services.Register(new ModelQuality(quality.LowDetailModels));
-            QualitySettings.lodBias = quality.LodBias;
-            if (_tiltShift != null)
+            ApplyQuality(platform, _tiltShift);
+            if (platform.HasDisplayOptions)
             {
-                _tiltShift.SetActive(Services.Get<IPlatformSettings>().DepthOfFieldEnabled);
+                FullScreenPassRendererFeature tiltShift = _tiltShift;
+                Services.Register(new QualityProfileSwitch(data.LowQuality, low => ApplyQuality(new PcPlatformSettings(low), tiltShift)));
+                ApplyDisplay(data);
             }
 
             Services.Register(progress);
@@ -108,7 +114,6 @@ namespace Game.Boot
 
             // The listener carries the master level; the players multiply their own group in from the mix.
             var mix = new AudioMix();
-            SettingsData data = settings.Data;
             mix.Set(data.MasterVolumePercent / MaxVolumePercent, data.MusicVolumePercent / MaxVolumePercent, data.EffectsVolumePercent / MaxVolumePercent, data.AmbienceVolumePercent / MaxVolumePercent);
             Services.Register(mix);
             AudioListener.volume = mix.Master;
@@ -122,6 +127,32 @@ namespace Game.Boot
 
         // One object for the whole session (it survives scene loads): mute in the background, the settings write on quit,
         // and the controller banner. Boot is entered again after a restart, so an existing one is rebound, not doubled.
+        // A quality profile is the platform settings every screen and level reads, the model detail, the LOD bias and
+        // the tilt-shift pass; the options screen calls this again through the QualityProfileSwitch.
+        private static void ApplyQuality(IPlatformSettings platform, FullScreenPassRendererFeature tiltShift)
+        {
+            Services.Register(platform);
+            Services.Register(new ModelQuality(platform.LowDetailModels));
+            QualitySettings.lodBias = platform.LodBias;
+            if (tiltShift != null)
+            {
+                tiltShift.SetActive(platform.DepthOfFieldEnabled);
+            }
+        }
+
+        // The window is only set when the player chose something else than the build's own start (borderless at the
+        // desktop size), so Alt+Enter and a first launch behave as before.
+        private static void ApplyDisplay(SettingsData data)
+        {
+            var mode = (DisplayMode)data.DisplayMode;
+            if (mode != DisplayMode.Borderless || data.ResolutionWidth > 0)
+            {
+                DisplayOptions.ApplyWindow(mode, data.ResolutionWidth, data.ResolutionHeight);
+            }
+
+            DisplayOptions.ApplyFrameRate(data.VSync, data.FrameRateCap);
+        }
+
         private static void EnsureSessionObject()
         {
             if (_session == null)

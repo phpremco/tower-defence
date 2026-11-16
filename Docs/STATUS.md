@@ -10782,3 +10782,89 @@ migration itself. Two helper agents moved the UI literals of the menu screens an
 - Fonts: no change; Chakra Petch has no Cyrillic/CJK (`Docs/LOCALISATION.md`, RELEASE_GAPS 6.2/6.3).
 - Not done from the gap list: reset progress (1.6), save slots, `ISaveService` error results (1.10), pause on focus loss
   outside levels (9.4). The options column now has two more rows and scales down a little at 1080p (ColumnFit).
+
+## Round 70: display and graphics options, button glyphs per pad family, rebinding, IL2CPP prepared (2026-11-16)
+
+Not committed. No full generator run (one targeted step: `Tools/Generate/Button Prompt Tables`), no Blender, no packages,
+the Game view untouched, product name and save path unchanged. Remco's save (MD5 42fbe06b38e133cecfe2014def5c833c) was
+copied aside before the Play Mode runs and is unchanged after them; no `settings.json` existed at the start, so every one
+the runs wrote (with its `.bak`) was deleted again. All new player text is in `en.ui_options.txt` (`display.*`,
+`controls.*`, `options.display`).
+
+### What changed
+
+1. **Display and graphics page** (Options > "Display and graphics", `UI/DisplayOptionsPage.cs`): display mode (full screen /
+   borderless / windowed) and resolution (`Screen.resolutions`, one entry per size) as stepped sliders plus "Apply display
+   settings", which puts the mode on screen and opens "Keep these display settings?" (`UI/DisplayConfirmPrompt.cs`: Keep,
+   Revert, B/Esc reverts, 10 s in unscaled time reverts by itself); v-sync on/off; frame-rate cap 30/60/120/unlimited (the
+   label says when v-sync overrides it); graphics quality High/Low; screen shake 0-100%. The window, resolution, v-sync, cap
+   and quality rows show only where `IPlatformSettings.HasDisplayOptions` (PC); shake shows everywhere. Window and v-sync
+   changes are skipped inside the editor (`DisplayOptions`), so the Game view and the project's quality settings are never
+   touched; they apply in a player build, at boot (`Bootstrapper.ApplyDisplay`, the window only when the player chose
+   something other than borderless at desktop size) and live.
+2. **Quality profile for players:** `PcPlatformSettings(lowQuality)` takes every quality switch of the low profile and keeps
+   the PC's quit, margin and window behaviour; `QualityProfileSwitch` (registered by the bootstrapper on PC) re-registers the
+   platform settings and `ModelQuality` and sets the LOD bias and the tilt-shift pass at once; the next level is built with
+   it. The Boot checkbox `_lowQuality` still simulates the console (`SwitchPlatformSettings`, no choice).
+3. **Screen shake:** every `CameraShaker` kick and the cutscene shake cues are scaled by `SettingsService.ScreenShakeScale`.
+4. **Settings file** (`SettingsData` version 2): `DisplayMode`, `ResolutionWidth/Height` (0 = desktop), `VSync` (on),
+   `FrameRateCap` (0 = none), `LowQuality`, `ScreenShakePercent` (100), `BindingOverrides` (Input System override JSON).
+   Older files get the defaults (seen on the seed from Remco's progress file in the play runs: v-sync on, shake 100).
+5. **Pad families and hot-swap:** `PadLayout.PlayStation`; `PadLayoutResolver` reads the Input System layout chain of the
+   pad in use (DualShock/DualSense -> PlayStation, Switch Pro -> Nintendo, XInput -> Xbox, unknown -> the platform default);
+   `InputSystemProvider` follows it when a different pad presses a button or moves a stick, swaps the names table
+   (`Glyphs_PlayStation.asset` is new: Cross, Circle, Square, Triangle, L1/R1, L2/R2, Options, Create; the keyboard table
+   gained short names for modifiers, arrows and navigation keys) and raises `ActiveDeviceChanged`, so every prompt redraws.
+   Verified in Play Mode with virtual pads and real queued button events: keyboard -> DualSense (Cross) -> XInput (A) ->
+   DualSense again.
+6. **Button glyphs drawn in code** (`UI/Glyphs/`): `GlyphPainter` draws discs, pills, triggers, key caps, sticks, the d-pad
+   and a mouse with signed-distance edges; letters come from `StrokeFont` (A-Z, 0-9, key symbols, arrows); `GlyphCatalog`
+   maps a control to the Xbox letters in their colours, the PlayStation shapes, the Nintendo letters, or a key cap carrying
+   the key's name; `PromptGlyphs` caches one sprite per glyph. Used by: the hero quick bar (a badge on each icon), the
+   dialogue buttons (Voss and every speaker), the cutscene skip chip, the planet map help line (`PromptLine`: glyphs inside
+   the localised sentence, shrinks to fit), and the controls page. A missing glyph falls back to the printed name.
+7. **Controls page with rebinding** (`UI/ControlsPage.cs`, replaces the hardcoded Xbox table): every action with its pad and
+   keyboard glyph from the live bindings and the pad family in use; pick a cell, press a button or key (Esc cancels, 8 s
+   gives up); a control another action holds is swapped to that action, so nothing is ever unbound; "Reset to defaults";
+   the menu stops listening while it waits, so the press does not also click. Overrides go to `settings.json` when the
+   options close and load at boot; text that is unreadable or leaves confirm, cancel or pause without a control falls back
+   to the defaults (`InputSystemProvider.Rebinding.cs`, `IInputBindings`). The fixed controls (cursor, camera, zoom) are
+   listed under the table with their glyphs. Verified end to end with a virtual XInput pad: Confirm -> Y, Speed and Codex
+   swapped to A, overrides written to the settings file on closing the options.
+8. **Control schemes:** `GameInput.inputactions` has a Gamepad and a Keyboard&Mouse scheme and every plain binding a group.
+9. **IL2CPP prepared, not built:** `BuildScript.BuildWindowsIl2Cpp` (menu `Tools/Build/Windows Player (IL2CPP)`, output
+   `Builds/WindowsIl2Cpp`, backend IL2CPP and stripping Low for that build only, restored afterwards) and `Assets/link.xml`
+   (`Game.Economy`, `Game.Platform`, `Unity.InputSystem` kept whole). This editor has only the Mono player variations
+   (`windowsstandalonesupport/Variations` lists no `*_il2cpp`), and the machine has no Visual Studio C++ tools or Windows
+   SDK, so no build and no smoke test were possible. Install steps and the smoke-test recipe: `Docs/COMMANDS.md`, round 70.
+
+### Verification
+
+- Compile clean (the one console warning is the existing CS0618 in `Tests/PlayMode/BalanceProbeTests.cs:611`).
+- New EditMode tests (31 cases): `DisplaySettingsTests` (defaults, file round trip of every new field, out-of-range values,
+  older files, resolution dedupe and nearest size, caps and modes, the PC Low profile, the quality switch),
+  `RebindingTests` (defaults, assign + save + load on a fresh asset, swap on conflict, refusals, reset, broken JSON, JSON
+  that unbinds Confirm, the two schemes, every action bound), `PadLayoutTests` (DualSense, DualShock, Switch Pro and XInput
+  layouts, unknown pads, the chain, a table per layout on the skin, glyph families), `GlyphCoverageTests` (every action has
+  a drawable glyph in every family, face buttons differ per family, every keyboard key's name can be drawn, the painter
+  draws every shape inside its texture).
+- EditMode, whole suite on w6: **1057 / 1004 passed / 0 failed / 53 skipped** (1026 / 973 / 0 / 53 in round 69; +31 new cases).
+- Play (editor): Boot -> menu -> Options -> Display and graphics -> Apply (keep prompt) -> Revert -> Controls (Xbox) ->
+  virtual DualSense (PlayStation glyphs) -> rebind wait -> cancel -> level 1 (XInput pad) -> Voss line -> DualSense, and
+  the planet map with key caps and with PlayStation glyphs: console **0 errors, 0 warnings**. Stills at 1920x1080 and
+  1280x720 in `ArtSource/Previews/QA/r70_*.png` (options, display, keep_prompt, controls_xbox, controls_ps, rebind_wait,
+  level_hud_xbox, voss_xbox, voss_ps; map_hint_keys and map_hint_ps at 1080 only). Save MD5 unchanged; no worker Unity left.
+
+### Open decisions for Remco
+
+- **Confirm on a Switch pad** (RELEASE_GAPS 3.6): confirm stays on the south button for every family. On a Nintendo pad
+  that is B; Switch players expect A (east). A per-layout swap is small once decided.
+- Menus still navigate with the Input System's default UI actions (south submits, east cancels); rebinding changes the
+  game's actions (placement, hero, speed, pause, ...), not menu navigation. Fine for now; worth a look with Steam Input.
+- PlayStation "select" is drawn as a CREATE pill (the DualSense name); a DualShock 4 calls it SHARE.
+
+### Not done
+
+- The IL2CPP build and its smoke test (module and C++ tools missing; one-time install, then the recipe in COMMANDS.md).
+- Text that names keys in words (tower-menu hints, briefings, loading tips; RELEASE_GAPS 13.6) still prints words.
+- Individual graphics switches (bloom, mist, particles, shadows; 2.4) and the full options inside the pause menu (2.5).

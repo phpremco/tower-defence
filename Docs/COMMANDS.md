@@ -1178,3 +1178,32 @@ console and `Logs/probe_trace.txt`.
 - `Tools/PlayTest/r69_shots.sh`: main menu, options, level HUD, tower menu and a Voss line at 1920x1080 into
   `ArtSource/Previews/QA/r69_*.png` (back up the save first; it writes `settings.json`).
 - `click_button.cs` now prefers an exact label over a partial match ("Back" used to hit "Mute in background").
+
+## Round 70: display options, glyphs, rebinding, IL2CPP (added 2026-11-16)
+
+- **Stills of the options pages and glyphs:** `bash Tools/PlayTest/r70_shots.sh` (back up `progress.json` first; delete the
+  `settings.json` and `.bak` the run writes if none existed before). It captures every still twice, at 1920x1080 and
+  1280x720 (`r70_still.cs`, argument `"<png> <width> <height>"` in `look_arg.txt`; the camera target is set before the canvases
+  update, so the 720p still shows the real 720p layout).
+- **A virtual pad of any family:** write `DualSenseGamepadHID`, `XInputControllerWindows` or `SwitchProControllerHID` to
+  `Tools/PlayTest/r70_pad_arg.txt` and run `eval_file --file Tools/PlayTest/r70_pad.cs` (adds the pad and clicks its right
+  stick, so prompts switch to that family; `remove` takes the virtual pads away). `r70_press.cs` presses one control of it
+  (`buttonNorth` in `r70_press_arg.txt`) and reports where Confirm and Speed sit; `r70_rebind.cs` (`start`, `cancel`,
+  `probe` in `r70_rebind_arg.txt`) drives the controls page. Queued state events must be written per control
+  (`StateEvent.From` + `WriteValueIntoEvent`); a whole `GamepadState` fails on pads with their own state format (XInput).
+- The Input System's own rebinding timeout (`WithTimeout`) ended the wait at once in the unfocused editor; the controls
+  page times the wait itself in unscaled time (8 s).
+- **Button prompt tables only:** `unity command menu --path "Tools/Generate/Button Prompt Tables"` (Xbox, PlayStation,
+  Nintendo and keyboard tables onto the UI skin; the full generator runs the same step).
+- **IL2CPP Windows build:** `Tools/Build/Windows Player (IL2CPP)` or, editor closed (or from a clone),
+  `& $unity -batchmode -quit -projectPath . -executeMethod Game.Editor.BuildScript.BuildWindowsIl2Cpp -logFile Logs\build_il2cpp.log`.
+  Writes `Builds/WindowsIl2Cpp/TowerDefense.exe`; sets the IL2CPP backend and managed stripping "Low" for that build only
+  and puts both back after it, so the everyday build stays Mono. `Assets/link.xml` keeps `Game.Economy`, `Game.Platform` and
+  `Unity.InputSystem` whole (JsonUtility save types, binding strings and override JSON). **Not built yet (2026-11-16):** this
+  editor has only the Mono player variations, and the machine has no Visual Studio C++ tools or Windows SDK. Install both:
+  `"C:\Program Files\Unity Hub\Unity Hub.exe" -- --headless install-modules --version 6000.6.5f1 -m windows-il2cpp` and
+  `winget install Microsoft.VisualStudio.2022.BuildTools --override "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --passive"`.
+  Then build from a clone (`r34b_editmode_worker.sh` shows how a clone is synced) so the open editor is never touched, and
+  smoke-test the player headless-ish: `Builds\WindowsIl2Cpp\TowerDefense.exe -screen-fullscreen 0 -screen-width 1280
+  -screen-height 720 -logFile Logs\player_il2cpp.log`, close it after the main menu, and search the log for
+  `MissingMethodException`, `TypeLoadException`, `ExecutionEngineException` and `NullReferenceException`.

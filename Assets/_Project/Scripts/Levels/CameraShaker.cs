@@ -1,4 +1,6 @@
 using Game.Combat;
+using Game.Core;
+using Game.Economy;
 using Game.Enemies;
 using Game.Hero;
 using UnityEngine;
@@ -51,7 +53,17 @@ namespace Game.Levels
             }
         }
 
-        private void OnBossWave() => _rig.Shake(BossWaveQuake);
+        // Every kick goes through the player's screen-shake option (Options, 0 to 100%).
+        private void Kick(float strength)
+        {
+            float scale = Services.TryGet(out SettingsService settings) ? settings.ScreenShakeScale : 1f;
+            if (scale > 0f)
+            {
+                _rig.Shake(strength * scale);
+            }
+        }
+
+        private void OnBossWave() => Kick(BossWaveQuake);
 
         // A boss breaking out of the ground shakes harder than one stepping through the gate.
         private void OnEnemySpawned(Enemy enemy)
@@ -60,18 +72,18 @@ namespace Game.Levels
             BossDefinition boss = enemy.Definition.Boss;
             if (enemy.Definition.IsBoss && (boss == null || boss.Arrival == BossArrival.Wave))
             {
-                _rig.Shake(enemy.Origin == EnemyOrigin.Ground ? BossGroundEntrance : BossEntrance);
+                Kick(enemy.Origin == EnemyOrigin.Ground ? BossGroundEntrance : BossEntrance);
             }
         }
 
         // One kick per real impact of a continent boss; its own data says how hard.
-        private void OnBossImpact(float strength) => _rig.Shake(strength);
+        private void OnBossImpact(float strength) => Kick(strength);
 
-        private void OnHeroDown() => _rig.Shake(HeroDown);
+        private void OnHeroDown() => Kick(HeroDown);
 
-        private void OnBaseDied() => _rig.Shake(BaseDestroyed);
+        private void OnBaseDied() => Kick(BaseDestroyed);
 
-        private void OnStructureWrecked(Vector3 position) => _rig.Shake(StructureWreck);
+        private void OnStructureWrecked(Vector3 position) => Kick(StructureWreck);
 
         private void OnDestroy()
         {
@@ -109,7 +121,7 @@ namespace Game.Levels
                 return;
             }
 
-            _rig.Shake(strength);
+            Kick(strength);
             _nextBlastShake = Time.unscaledTime + BlastMinInterval;
         }
 
@@ -118,7 +130,7 @@ namespace Game.Levels
             // A besieged base is hit every second by every attacker; a kick every so often is enough.
             if (current < _lastBaseHealth && Time.unscaledTime >= _nextBaseShake)
             {
-                _rig.Shake(BaseHit);
+                Kick(BaseHit);
                 _nextBaseShake = Time.unscaledTime + BaseHitMinInterval;
             }
 
@@ -129,7 +141,7 @@ namespace Game.Levels
         {
             if (ability.Kind == HeroAbilityKind.Shockwave)
             {
-                _rig.Shake(Shockwave);
+                Kick(Shockwave);
             }
         }
     }

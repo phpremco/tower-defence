@@ -1,0 +1,10 @@
+<linker>
+  <!-- Round 70, prepared for the first IL2CPP build (not yet built: the IL2CPP module is not installed).
+       JsonUtility reads and writes the save and settings types through their fields only, so the linker could
+       treat fields it never sees assigned in code as unused; keep these assemblies whole. -->
+  <assembly fullname="Game.Economy" preserve="all"/>
+  <assembly fullname="Game.Platform" preserve="all"/>
+  <!-- The Input System finds layouts, processors and interactions by name at runtime (binding strings such as
+       "hold(duration=0.25)" and the rebinding overrides JSON). -->
+  <assembly fullname="Unity.InputSystem" preserve="all"/>
+</linker>

@@ -68,6 +68,10 @@ namespace Game.UI
         private const int BriefingSize = 26;
         private const int CaptionSize = 34;
         private const int HintSize = 24;
+        private const float HintBottom = 114f;
+        private const float HintWidth = 1760f;
+        private const float HintHeight = 44f;
+        private const string LeftStickPath = "<Gamepad>/leftStick";
         private static readonly Vector2 ViewHome = new Vector2(0f, 56f);
         private static readonly Color LockedColor = new Color(0.4f, 0.43f, 0.5f);
         private static readonly Color LockedPlate = new Color(0.22f, 0.24f, 0.3f);
@@ -130,7 +134,7 @@ namespace Game.UI
         private CanvasGroup _overview;
         private Text _title;
         private Text _caption;
-        private Text _hint;
+        private PromptLine _hint;
         private Button _planet;
         private Button _play;
         private Button _upgrades;
@@ -190,8 +194,7 @@ namespace Game.UI
             _overview = chrome.gameObject.AddComponent<CanvasGroup>();
             _title = UiKit.CreateFixedText(chrome, Loc.Get("map.title_planet"), UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(1200f, 100f));
             _caption = UiKit.CreateFixedText(chrome, string.Empty, CaptionSize, TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, 150f), new Vector2(1200f, 50f));
-            _hint = UiKit.CreateFixedText(chrome, string.Empty, Mathf.Max(HintSize, UiKit.ReadableSize), TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, 114f), new Vector2(1760f, 40f));
-            _hint.color = Muted;
+            _hint = CreateHintLine(chrome);
             RefreshHint();
             BuildSideButtons(chrome);
             BuildActionRow(chrome);
@@ -799,14 +802,34 @@ namespace Game.UI
             string cycle = $"{Prompt(GameAction.PreviousTower)} / {Prompt(GameAction.NextTower)}";
             string confirm = Prompt(GameAction.Confirm);
             string back = Prompt(GameAction.Cancel);
-            if (!_entered)
+            string[] names = { turn, cycle, confirm, back };
+            Sprite[][] glyphs =
             {
-                _hint.text = Loc.Format("map.hint_planet", turn, cycle, confirm, back);
-            }
-            else
-            {
-                _hint.text = pad ? Loc.Format("map.hint_region_pad", turn, cycle, confirm, back) : Loc.Format("map.hint_region_mouse", turn, cycle, confirm, back);
-            }
+                pad ? new[] { StickGlyph() } : null,
+                new[] { PromptGlyphs.For(GameAction.PreviousTower), PromptGlyphs.For(GameAction.NextTower) },
+                new[] { PromptGlyphs.For(GameAction.Confirm) },
+                new[] { PromptGlyphs.For(GameAction.Cancel) },
+            };
+            string template = !_entered ? Loc.Get("map.hint_planet") : pad ? Loc.Get("map.hint_region_pad") : Loc.Get("map.hint_region_mouse");
+            _hint.Set(template, glyphs, names);
+        }
+
+        // The planet turns with the left stick, which is no rebindable action: its glyph is drawn from the control itself.
+        private static Sprite StickGlyph()
+        {
+            PadLayout layout = Services.TryGet(out IInputBindings bindings) ? bindings.ActivePadLayout : PadLayout.Xbox;
+            return PromptGlyphs.ForControl(GlyphFamilies.For(InputDeviceKind.Gamepad, layout), LeftStickPath, Loc.Get("map.turn_stick"));
+        }
+
+        // The help line's box under the globe: the line shrinks to fit it when a translation runs long.
+        private static PromptLine CreateHintLine(RectTransform chrome)
+        {
+            var area = new GameObject("Hint", typeof(RectTransform)).GetComponent<RectTransform>();
+            area.SetParent(chrome, false);
+            area.anchorMin = area.anchorMax = area.pivot = new Vector2(0.5f, 0f);
+            area.anchoredPosition = new Vector2(0f, HintBottom);
+            area.sizeDelta = new Vector2(HintWidth, HintHeight);
+            return PromptLine.Create(area, Mathf.Max(HintSize, UiKit.ReadableSize), Muted);
         }
 
         private string Prompt(GameAction action) => _input != null ? _input.PromptFor(action) : string.Empty;

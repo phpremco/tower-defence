@@ -46,6 +46,8 @@ namespace Game.UI
         private const int NameSize = 26;
         private const int HeaderSize = 26;
         private const int ButtonTextSize = 26;
+        private const float GlyphHeight = 38f;
+        private const float GlyphInset = 10f;
         private const int ButtonTextMinSize = 22;
         private const int NextSlot = 0;
         private const int SkipSlot = 1;
@@ -124,6 +126,7 @@ namespace Game.UI
         private Image _arrow;
         private Image[] _buttonEdges;
         private TextMeshProUGUI[] _buttonLabels;
+        private Image[] _buttonGlyphs;
         private Button[] _buttons;
         private IInputProvider _input;
         private int _visibleButtons;
@@ -995,6 +998,7 @@ namespace Game.UI
         {
             _buttonEdges = new Image[ButtonIds.Length];
             _buttonLabels = new TextMeshProUGUI[ButtonIds.Length];
+            _buttonGlyphs = new Image[ButtonIds.Length];
             _buttons = new Button[ButtonIds.Length];
             FooterButton(NextSlot, Advance);
             FooterButton(SkipSlot, Skip);
@@ -1024,7 +1028,14 @@ namespace Game.UI
             _visibleButtons = codex ? ButtonIds.Length : CodexSlot;
             for (int slot = 0; slot < _buttons.Length; slot++)
             {
-                string key = _input != null ? _input.PromptFor(ButtonActions[slot]).ToUpperInvariant() : string.Empty;
+                // The glyph of the device in use when there is one; the printed key name in front of the word otherwise.
+                Sprite glyph = PromptGlyphs.For(ButtonActions[slot]);
+                PromptGlyphs.Show(_buttonGlyphs[slot], glyph);
+                RectTransform label = _buttonLabels[slot].rectTransform;
+                // The label keeps the same inset on every side (Stretch); the glyph pushes only its left edge.
+                float inset = label.offsetMin.y;
+                label.offsetMin = new Vector2(inset + (glyph != null ? GlyphInset + _buttonGlyphs[slot].rectTransform.sizeDelta.x : 0f), inset);
+                string key = glyph == null && _input != null ? _input.PromptFor(ButtonActions[slot]).ToUpperInvariant() : string.Empty;
                 _buttonLabels[slot].text = key.Length > 0 ? Loc.Format("dialogue.button_keyed", KeyColour, key, ButtonWord(slot)) : ButtonWord(slot);
             }
 
@@ -1088,6 +1099,13 @@ namespace Game.UI
             text.text = ButtonWord(slot);
             _buttonLabels[slot] = text;
             _buttons[slot] = button;
+
+            // The button glyph at the left end; the word keeps the rest of the button, centred in it.
+            Image glyph = PromptGlyphs.CreateImage(rect, GlyphHeight);
+            RectTransform glyphRect = glyph.rectTransform;
+            glyphRect.anchorMin = glyphRect.anchorMax = glyphRect.pivot = new Vector2(0f, 0.5f);
+            glyphRect.anchoredPosition = new Vector2(overhang + GlyphInset, 0f);
+            _buttonGlyphs[slot] = glyph;
         }
 
         private void Advance() => _player?.Advance();

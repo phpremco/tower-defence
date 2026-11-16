@@ -29,5 +29,7 @@ namespace Game.Platform
         public float SafeMarginPercent => 5f;
 
         public PadLayout PadLayout => PadLayout.Nintendo;
+
+        public bool HasDisplayOptions => false;
     }
 }

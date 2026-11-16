@@ -274,7 +274,8 @@ namespace Game.UI
                     _audio.Play(cue);
                     break;
                 case CueKind.Shake:
-                    _camera.Shake(cue.Strength);
+                    // The screen-shake option (Options) scales the cutscene quakes as well.
+                    _camera.Shake(cue.Strength * (Services.TryGet(out SettingsService settings) ? settings.ScreenShakeScale : 1f));
                     break;
             }
         }
