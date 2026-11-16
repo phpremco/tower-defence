@@ -1,0 +1,211 @@
+Headroom H: the largest uniform multiple of the creatures' health at which the reference player still wins
+(median over the seeds, range in brackets; the first multiple lost is within the precision above it).
+
+cell                  careless            sensible            skilled             fresh save (sensible) 
+Level_C1_01 Easy      1.62 (0.62-1.66)    1.16 (1.16-1.19)    1.75 (1.62-1.84)    1.19
+Level_C1_01 Medium    1.54 (0.54-1.54)    1.22 (1.19-1.26)    1.26 (0.10-1.36)    1.26
+Level_C1_01 Hard      1.00 (0.14-1.03)    0.84 (0.82-0.88)    1.14                0.82
+Level_C1_01 Psycho    0.52 (0.46-0.82)    0.53 (0.50-0.57)    1.16 (0.97-1.22)    0.54
+Level_C1_03 Easy      <0.10               0.41 (0.34-1.08)    1.26 (1.26-2.09)    0.34
+Level_C1_03 Medium    <0.10               0.84 (0.50-1.11)    1.58                0.84
+Level_C1_03 Hard      <0.10               0.54 (0.50-0.57)    1.58 (1.54-1.70)    0.50
+Level_C1_03 Psycho    <0.10               0.27 (0.18-0.36)    1.26 (1.08-1.32)    0.25
+
+Mono rows (one tower type), seed 1: H, and as a share of the sensible player's H (role pressure);
+dominance = best mono row / skilled.
+  Level_C1_01 Easy      Cannon 2.09 (1.79); PulseRifle 0.76 (0.65); dominance 1.19
+  Level_C1_01 Medium    Cannon 1.84 (1.50); PulseRifle 0.59 (0.48); dominance 1.46
+  Level_C1_01 Hard      Cannon 1.14 (1.36); Laser 0.54 (0.65); PulseRifle 0.56 (0.67); dominance 1.00
+  Level_C1_01 Psycho    Cannon 1.50 (2.83); Laser 0.37 (0.70); PulseRifle 0.40 (0.76); dominance 1.29
+  Level_C1_03 Easy      Cannon <0.10 (0.24); Laser <0.10 (0.24); PulseRifle 0.27 (0.65); dominance 0.21
+  Level_C1_03 Medium    Cannon <0.10 (0.12); Laser <0.10 (0.12); PulseRifle <0.10 (0.12); dominance 0.06
+  Level_C1_03 Hard      Cannon <0.10 (0.18); Laser <0.10 (0.18); PulseRifle <0.10 (0.18); dominance 0.06
+  Level_C1_03 Psycho    Cannon <0.10 (0.36); Laser <0.10 (0.36); PulseRifle <0.10 (0.36); dominance 0.08
+
+Spread over seeds (max / min - 1) per cell and ladder rung; the stop rule asks 5 % or less:
+  Level_C1_01 Easy      careless 168.7 % (n=3); sensible 2.6 % (n=3); skilled 13.5 % (n=3)
+  Level_C1_01 Medium    careless 182.7 % (n=3); sensible 5.2 % (n=3); skilled 7.9 % (n=2)
+  Level_C1_01 Hard      careless 621.8 % (n=3); sensible 7.9 % (n=3); skilled 0.0 % (n=3)
+  Level_C1_01 Psycho    careless 79.1 % (n=3); sensible 13.5 % (n=3); skilled 25.6 % (n=3)
+  Level_C1_03 Easy      sensible 220.8 % (n=3); skilled 66.0 % (n=3)
+  Level_C1_03 Medium    sensible 119.4 % (n=3); skilled 0.0 % (n=3)
+  Level_C1_03 Hard      sensible 13.5 % (n=3); skilled 10.7 % (n=3)
+  Level_C1_03 Psycho    sensible 103.3 % (n=3); skilled 22.5 % (n=3)
+  worst spread: 621.8 %
+
+Monotonicity (every unit with a scan: its runs sorted by multiple; one win->lose crossover = monotone):
+  Level_C1_01 Easy   careless         seed 1: monotone  1.00W 1.18W 1.34W 1.48W 1.50W 1.58W 1.66W 1.70L 1.75L 1.78L 1.84L 1.90L 2.10L 2.25L 2.44L
+  Level_C1_01 Easy   careless         seed 2: monotone  1.00W 1.15W 1.31W 1.44W 1.50W 1.54W 1.58W 1.62W 1.66L 1.74L 1.84L 1.85L 2.05L 2.25L 2.38L
+  Level_C1_01 Easy   careless         seed 3: monotone  0.44W 0.44W 0.50W 0.54W 0.55W 0.59W 0.60W 0.62W 0.63L 0.66L 0.67L 0.71L 0.78L 0.91L 1.00L
+  Level_C1_01 Easy   fresh            seed 1: monotone  0.85W 0.97W 1.00W 1.06W 1.11W 1.14W 1.16W 1.19W 1.22L 1.28L 1.37L 1.50L 1.51L 1.75L
+  Level_C1_01 Easy   mono-Cannon      seed 1: monotone  1.00W 1.48W 1.50W 1.69W 1.84W 1.86W 1.99W 2.03W 2.09W 2.14L 2.24L 2.25L 2.39L 2.64L 3.06L
+  Level_C1_01 Easy   mono-PulseRifle  seed 1: monotone  0.54W 0.61W 0.67W 0.67W 0.72W 0.74W 0.76W 0.78L 0.81L 0.82L 0.87L 0.96L 1.00L 1.11L
+  Level_C1_01 Easy   sensible         seed 1: monotone  0.85W 0.97W 1.00W 1.06W 1.11W 1.14W 1.16W 1.19W 1.22L 1.28L 1.37L 1.50L 1.51L 1.75L
+  Level_C1_01 Easy   sensible         seed 2: monotone  0.83W 0.94W 1.00W 1.04W 1.11W 1.11W 1.16W 1.19L 1.22L 1.25L 1.33L 1.47L 1.50L 1.71L
+  Level_C1_01 Easy   sensible         seed 3: monotone  0.83W 0.94W 1.00W 1.04W 1.11W 1.11W 1.16W 1.19L 1.22L 1.25L 1.33L 1.47L 1.50L 1.71L
+  Level_C1_01 Easy   skilled          seed 1: monotone  1.00W 1.15W 1.31W 1.44W 1.50W 1.54W 1.58W 1.62W 1.66L 1.74L 1.84L 1.85L 2.05L 2.25L 2.38L
+  Level_C1_01 Easy   skilled          seed 2: monotone  1.00W 1.24W 1.41W 1.50W 1.56W 1.66W 1.66W 1.75W 1.79L 1.84L 1.87L 2.00L 2.21L 2.25L 2.56L
+  Level_C1_01 Easy   skilled          seed 3: monotone  1.00W 1.30W 1.49W 1.50W 1.64W 1.75W 1.84W 1.88L 1.93L 1.97L 2.03L 2.10L 2.25L 2.33L 2.70L
+  Level_C1_01 Medium careless         seed 1: monotone  1.00W 1.09W 1.25W 1.37W 1.46W 1.50W 1.54W 1.58L 1.65L 1.66L 1.76L 1.84L 1.95L 2.25L 2.26L
+  Level_C1_01 Medium careless         seed 2: NOT MONOTONE (3 crossovers)  1.00W 1.09W 1.25W 1.37L 1.46L 1.50W 1.54W 1.58L 1.65L 1.66L 1.76L 1.84L 1.95L 2.25L 2.26L
+  Level_C1_01 Medium careless         seed 3: monotone  0.39W 0.44W 0.44W 0.49W 0.52W 0.54W 0.56L 0.57L 0.58L 0.60L 0.62L 0.67L 0.69L 0.80L 1.00L
+  Level_C1_01 Medium fresh            seed 1: monotone  0.89W 1.00W 1.02W 1.12W 1.20W 1.22W 1.26W 1.29L 1.35L 1.36L 1.44L 1.50L 1.59L 1.84L
+  Level_C1_01 Medium mono-Cannon      seed 1: monotone  1.00W 1.30W 1.49W 1.50W 1.64W 1.75W 1.84W 1.88L 1.93L 1.97L 2.03L 2.10L 2.25L 2.33L 2.70L
+  Level_C1_01 Medium mono-PulseRifle  seed 1: monotone  0.42W 0.44W 0.48W 0.52W 0.54W 0.56W 0.57W 0.59W 0.60L 0.63L 0.67L 0.67L 0.74L 0.86L 1.00L
+  Level_C1_01 Medium sensible         seed 1: monotone  0.89W 1.00W 1.02W 1.12W 1.20W 1.22W 1.26W 1.29L 1.35L 1.36L 1.44L 1.50L 1.59L 1.84L
+  Level_C1_01 Medium sensible         seed 2: monotone  0.85W 0.97W 1.00W 1.06W 1.11W 1.14W 1.16W 1.19W 1.22L 1.28L 1.37L 1.50L 1.51L 1.75L
+  Level_C1_01 Medium sensible         seed 3: monotone  0.87W 0.99W 1.00W 1.09W 1.17W 1.22W 1.26L 1.29L 1.31L 1.36L 1.40L 1.50L 1.55L 1.80L
+  Level_C1_01 Medium skilled          seed 1: monotone  0.96W 1.00W 1.10W 1.21W 1.22W 1.29W 1.36W 1.39L 1.43L 1.46L 1.50L 1.55L 1.72L 1.99L
+  Level_C1_01 Medium skilled          seed 2: monotone  0.89W 1.00W 1.02W 1.12W 1.20W 1.22W 1.26W 1.29L 1.35L 1.36L 1.44L 1.50L 1.59L 1.84L
+  Level_C1_01 Hard   careless         seed 1: NOT MONOTONE (3 crossovers)  0.71W 0.81W 0.89W 0.95L 1.00W 1.03L 1.05L 1.07L 1.11L 1.14L 1.22L 1.27L 1.47L 1.50L
+  Level_C1_01 Hard   careless         seed 2: monotone  0.73W 0.83W 0.91W 0.98W 1.00W 1.03W 1.05L 1.10L 1.11L 1.17L 1.22L 1.30L 1.50L 1.51L
+  Level_C1_01 Hard   careless         seed 3: monotone  0.10W 0.12W 0.13W 0.13W 0.14W 0.14W 0.14W 0.15L 0.15L 0.16L 0.16L 0.18L 0.20L 0.21L 0.30L 0.44L 0.67L 1.00L
+  Level_C1_01 Hard   fresh            seed 1: NOT MONOTONE (3 crossovers)  0.58W 0.66W 0.67W 0.73W 0.78L 0.82W 0.84L 0.86L 0.88L 0.90L 0.93L 1.00L 1.03L 1.20L
+  Level_C1_01 Hard   mono-Cannon      seed 1: monotone  0.80W 0.92W 1.00W 1.01W 1.08W 1.11W 1.14W 1.16L 1.22L 1.22L 1.30L 1.44L 1.50L 1.67L
+  Level_C1_01 Hard   mono-Laser       seed 1: NOT MONOTONE (3 crossovers)  0.39W 0.44W 0.44W 0.49L 0.52L 0.54W 0.56L 0.57L 0.58L 0.60L 0.62L 0.67L 0.69L 0.80L 1.00L
+  Level_C1_01 Hard   mono-PulseRifle  seed 1: monotone  0.40W 0.44W 0.45W 0.50W 0.53W 0.54W 0.56W 0.57L 0.60L 0.60L 0.64L 0.67L 0.71L 0.82L 1.00L
+  Level_C1_01 Hard   sensible         seed 1: NOT MONOTONE (3 crossovers)  0.58W 0.66W 0.67W 0.73W 0.78L 0.82W 0.84L 0.86L 0.88L 0.90L 0.93L 1.00L 1.03L 1.20L
+  Level_C1_01 Hard   sensible         seed 2: monotone  0.62W 0.67W 0.71W 0.79W 0.82W 0.84W 0.86W 0.88W 0.90L 0.95L 1.00L 1.01L 1.12L 1.29L
+  Level_C1_01 Hard   sensible         seed 3: monotone  0.59W 0.67W 0.68W 0.75W 0.80W 0.82W 0.84W 0.86L 0.90L 0.90L 0.96L 1.00L 1.06L 1.23L
+  Level_C1_01 Hard   skilled          seed 1: monotone  0.80W 0.92W 1.00W 1.01W 1.08W 1.11W 1.14W 1.16L 1.22L 1.22L 1.30L 1.44L 1.50L 1.67L
+  Level_C1_01 Hard   skilled          seed 2: monotone  0.80W 0.92W 1.00W 1.01W 1.08W 1.11W 1.14W 1.16L 1.22L 1.22L 1.30L 1.44L 1.50L 1.67L
+  Level_C1_01 Hard   skilled          seed 3: monotone  0.80W 0.92W 1.00W 1.01W 1.08W 1.11W 1.14W 1.16L 1.22L 1.22L 1.30L 1.44L 1.50L 1.67L
+  Level_C1_01 Psycho careless         seed 1: monotone  0.32W 0.37W 0.41W 0.43W 0.44W 0.46W 0.47L 0.49L 0.49L 0.52L 0.54L 0.58L 0.67L 0.67L 1.00L
+  Level_C1_01 Psycho careless         seed 2: monotone  0.58W 0.66W 0.67W 0.73W 0.78W 0.82W 0.84L 0.86L 0.88L 0.90L 0.93L 1.00L 1.03L 1.20L
+  Level_C1_01 Psycho careless         seed 3: monotone  0.37W 0.42W 0.44W 0.46W 0.49W 0.49W 0.52W 0.53L 0.54L 0.56L 0.59L 0.66L 0.67L 0.76L 1.00L
+  Level_C1_01 Psycho fresh            seed 1: NOT MONOTONE (3 crossovers)  0.39W 0.44W 0.44W 0.49W 0.52L 0.54W 0.56L 0.57L 0.58L 0.60L 0.62L 0.67L 0.69L 0.80L 1.00L
+  Level_C1_01 Psycho mono-Cannon      seed 1: NOT MONOTONE (3 crossovers)  1.00W 1.06W 1.22W 1.34L 1.43W 1.50W 1.54L 1.58L 1.61L 1.66L 1.72L 1.84L 1.90L 2.20L 2.25L
+  Level_C1_01 Psycho mono-Laser       seed 1: monotone  0.26W 0.30W 0.30W 0.33W 0.35W 0.36W 0.37W 0.38L 0.40L 0.40L 0.43L 0.44L 0.47L 0.55L 0.67L 1.00L
+  Level_C1_01 Psycho mono-PulseRifle  seed 1: NOT MONOTONE (5 crossovers)  0.28W 0.30W 0.33W 0.36L 0.36W 0.38L 0.40W 0.41L 0.42L 0.43L 0.44L 0.46L 0.51L 0.59L 0.67L 1.00L
+  Level_C1_01 Psycho sensible         seed 1: monotone  0.38W 0.43W 0.44W 0.47W 0.49W 0.51W 0.52W 0.53W 0.54L 0.57L 0.61L 0.67L 0.67L 0.78L 1.00L
+  Level_C1_01 Psycho sensible         seed 2: NOT MONOTONE (3 crossovers)  0.36W 0.41W 0.44W 0.45W 0.48W 0.49W 0.50W 0.52L 0.54L 0.54L 0.58W 0.64L 0.67L 0.74L 1.00L
+  Level_C1_01 Psycho sensible         seed 3: NOT MONOTONE (3 crossovers)  0.41W 0.44W 0.46W 0.51L 0.54W 0.55W 0.57W 0.59L 0.60L 0.61L 0.66L 0.67L 0.72L 0.84L 1.00L
+  Level_C1_01 Psycho skilled          seed 1: monotone  0.83W 0.94W 1.00W 1.04W 1.11W 1.11W 1.16W 1.19L 1.22L 1.25L 1.33L 1.47L 1.50L 1.71L
+  Level_C1_01 Psycho skilled          seed 2: monotone  0.87W 0.99W 1.00W 1.09W 1.17W 1.22W 1.26L 1.29L 1.31L 1.36L 1.40L 1.50L 1.55L 1.80L
+  Level_C1_01 Psycho skilled          seed 3: monotone  0.67W 0.69W 0.79W 0.82W 0.87W 0.90W 0.93W 0.95W 0.97W 1.00L 1.05L 1.12L 1.23L 1.43L
+  Level_C1_03 Easy   fresh            seed 1: monotone  0.24W 0.27W 0.30W 0.30W 0.32W 0.33W 0.34W 0.34L 0.36L 0.36L 0.38L 0.43L 0.44L 0.49L 0.67L 1.00L
+  Level_C1_03 Easy   mono-PulseRifle  seed 1: monotone  0.19W 0.20W 0.22W 0.24W 0.24W 0.25W 0.27W 0.27L 0.28L 0.29L 0.30L 0.31L 0.34L 0.39L 0.44L 0.67L 1.00L
+  Level_C1_03 Easy   sensible         seed 1: monotone  0.24W 0.27W 0.30W 0.30W 0.32W 0.33W 0.34W 0.34L 0.36L 0.36L 0.38L 0.43L 0.44L 0.49L 0.67L 1.00L
+  Level_C1_03 Easy   sensible         seed 2: NOT MONOTONE (2 crossovers)  0.76L 0.87W 0.96W 1.00W 1.03W 1.05W 1.08W 1.11L 1.16L 1.22L 1.23L 1.37L 1.50L 1.58L
+  Level_C1_03 Easy   sensible         seed 3: monotone  0.29W 0.30W 0.33W 0.36W 0.37W 0.39W 0.40W 0.41W 0.42L 0.44L 0.44L 0.47L 0.52L 0.60L 0.67L 1.00L
+  Level_C1_03 Easy   skilled          seed 1: monotone  1.00W 1.48W 1.50W 1.69W 1.84W 1.86W 1.99W 2.03W 2.09W 2.14L 2.24L 2.25L 2.39L 2.64L 3.06L
+  Level_C1_03 Easy   skilled          seed 2: monotone  0.89W 1.00W 1.02W 1.12W 1.20W 1.22W 1.26W 1.29L 1.35L 1.36L 1.44L 1.50L 1.59L 1.84L
+  Level_C1_03 Easy   skilled          seed 3: monotone  0.89W 1.00W 1.02W 1.12W 1.20W 1.22W 1.26W 1.29L 1.35L 1.36L 1.44L 1.50L 1.59L 1.84L
+  Level_C1_03 Medium fresh            seed 1: monotone  0.59W 0.67W 0.68W 0.75W 0.80W 0.82W 0.84W 0.86L 0.90L 0.90L 0.96L 1.00L 1.06L 1.23L
+  Level_C1_03 Medium sensible         seed 1: monotone  0.59W 0.67W 0.68W 0.75W 0.80W 0.82W 0.84W 0.86L 0.90L 0.90L 0.96L 1.00L 1.06L 1.23L
+  Level_C1_03 Medium sensible         seed 2: monotone  0.78W 0.90W 0.99W 1.00W 1.05W 1.11W 1.14L 1.16L 1.19L 1.22L 1.27L 1.40L 1.50L 1.63L
+  Level_C1_03 Medium sensible         seed 3: monotone  0.36W 0.41W 0.44W 0.45W 0.48W 0.49W 0.50W 0.52L 0.54L 0.54L 0.58L 0.64L 0.67L 0.74L 1.00L
+  Level_C1_03 Medium skilled          seed 1: monotone  1.00W 1.12W 1.28W 1.41W 1.50W 1.50W 1.58W 1.62L 1.66L 1.69L 1.81L 1.84L 2.00L 2.25L 2.32L
+  Level_C1_03 Medium skilled          seed 2: monotone  1.00W 1.12W 1.28W 1.41W 1.50W 1.50W 1.58W 1.62L 1.66L 1.69L 1.81L 1.84L 2.00L 2.25L 2.32L
+  Level_C1_03 Medium skilled          seed 3: monotone  1.00W 1.12W 1.28W 1.41W 1.50W 1.50W 1.58W 1.62L 1.66L 1.69L 1.81L 1.84L 2.00L 2.25L 2.32L
+  Level_C1_03 Hard   fresh            seed 1: monotone  0.36W 0.41W 0.44W 0.45W 0.48W 0.49W 0.50W 0.52L 0.54L 0.54L 0.58L 0.64L 0.67L 0.74L 1.00L
+  Level_C1_03 Hard   sensible         seed 1: monotone  0.39W 0.44W 0.44W 0.49W 0.52W 0.54W 0.56L 0.57L 0.58L 0.60L 0.62L 0.67L 0.69L 0.80L 1.00L
+  Level_C1_03 Hard   sensible         seed 2: monotone  0.36W 0.41W 0.44W 0.45W 0.48W 0.49W 0.50W 0.52L 0.54L 0.54L 0.58L 0.64L 0.67L 0.74L 1.00L
+  Level_C1_03 Hard   sensible         seed 3: NOT MONOTONE (3 crossovers)  0.41W 0.44W 0.46L 0.51W 0.54W 0.55W 0.57W 0.59L 0.60L 0.61L 0.66L 0.67L 0.72L 0.84L 1.00L
+  Level_C1_03 Hard   skilled          seed 1: monotone  1.00W 1.09W 1.25W 1.37W 1.46W 1.50W 1.54W 1.58L 1.65L 1.66L 1.76L 1.84L 1.95L 2.25L 2.26L
+  Level_C1_03 Hard   skilled          seed 2: monotone  1.00W 1.12W 1.28W 1.41W 1.50W 1.50W 1.58W 1.62L 1.66L 1.69L 1.81L 1.84L 2.00L 2.25L 2.32L
+  Level_C1_03 Hard   skilled          seed 3: monotone  1.00W 1.21W 1.38W 1.50W 1.52W 1.62W 1.66W 1.70W 1.75L 1.83L 1.84L 1.95L 2.16L 2.25L 2.50L
+  Level_C1_03 Psycho fresh            seed 1: NOT MONOTONE (5 crossovers)  0.18W 0.20W 0.20W 0.22W 0.24L 0.24W 0.25W 0.25L 0.27W 0.27L 0.28L 0.30L 0.31L 0.36L 0.44L 0.67L 1.00L
+  Level_C1_03 Psycho sensible         seed 1: NOT MONOTONE (5 crossovers)  0.26W 0.29W 0.30W 0.32W 0.35W 0.36W 0.37L 0.38L 0.39W 0.40L 0.42L 0.44L 0.46W 0.53L 0.67L 1.00L
+  Level_C1_03 Psycho sensible         seed 2: NOT MONOTONE (5 crossovers)  0.19W 0.20W 0.22L 0.24W 0.24W 0.26W 0.27W 0.27W 0.28L 0.29L 0.30L 0.31W 0.35L 0.40L 0.44L 0.67L 1.00L
+  Level_C1_03 Psycho sensible         seed 3: NOT MONOTONE (5 crossovers)  0.13W 0.13W 0.14W 0.16W 0.16W 0.17L 0.18W 0.18L 0.19L 0.19W 0.20L 0.20L 0.23L 0.26L 0.30L 0.44L 0.67L 1.00L
+  Level_C1_03 Psycho skilled          seed 1: NOT MONOTONE (3 crossovers)  0.89W 1.00W 1.02W 1.12W 1.20W 1.22W 1.26W 1.29L 1.35W 1.36L 1.44L 1.50L 1.59L 1.84L
+  Level_C1_03 Psycho skilled          seed 2: monotone  0.94W 1.00W 1.07W 1.18W 1.22W 1.26W 1.29W 1.32W 1.36L 1.42L 1.50L 1.51L 1.67L 1.94L
+  Level_C1_03 Psycho skilled          seed 3: monotone  0.76W 0.87W 0.96W 1.00W 1.03W 1.05W 1.08W 1.11L 1.16L 1.22L 1.23L 1.37L 1.50L 1.58L
+  78 units scanned, 17 not monotone
+
+Outcome band per cell and rung, every run of every seed pooled (bisection and scan): the lowest multiple lost and
+the highest multiple won. Lowest loss above highest win = a sharp edge; otherwise the overlap is the band in which
+the result depends on the seed or flips back (width = highest win / lowest loss - 1), with the wins and losses in it.
+  Level_C1_01 Easy      careless  band 0.63-1.66 (width 162 %): 15 won, 8 lost inside (45 runs)
+  Level_C1_01 Easy      sensible  band 1.19-1.19 (width 0 %): 2 won, 2 lost inside (48 runs)
+  Level_C1_01 Easy      skilled   band 1.66-1.84 (width 11 %): 5 won, 5 lost inside (45 runs)
+  Level_C1_01 Medium    careless  band 0.56-1.54 (width 176 %): 12 won, 11 lost inside (45 runs)
+  Level_C1_01 Medium    sensible  band 1.22-1.26 (width 3 %): 5 won, 2 lost inside (48 runs)
+  Level_C1_01 Medium    skilled   band 0.13-1.36 (width 929 %): 14 won, 9 lost inside (34 runs)
+  Level_C1_01 Hard      careless  band 0.15-1.03 (width 604 %): 10 won, 13 lost inside (46 runs)
+  Level_C1_01 Hard      sensible  band 0.78-0.88 (width 13 %): 10 won, 7 lost inside (48 runs)
+  Level_C1_01 Hard      skilled   sharp: won up to 1.14, lost from 1.16 (42 runs)
+  Level_C1_01 Psycho    careless  band 0.47-0.82 (width 75 %): 9 won, 15 lost inside (44 runs)
+  Level_C1_01 Psycho    sensible  band 0.51-0.58 (width 13 %): 8 won, 7 lost inside (52 runs)
+  Level_C1_01 Psycho    skilled   band 1.00-1.22 (width 22 %): 9 won, 5 lost inside (42 runs)
+  Level_C1_03 Easy      sensible  band 0.34-1.08 (width 213 %): 11 won, 23 lost inside (54 runs)
+  Level_C1_03 Easy      skilled   band 1.29-2.09 (width 62 %): 8 won, 14 lost inside (43 runs)
+  Level_C1_03 Medium    sensible  band 0.52-1.11 (width 114 %): 16 won, 17 lost inside (49 runs)
+  Level_C1_03 Medium    skilled   sharp: won up to 1.58, lost from 1.62 (45 runs)
+  Level_C1_03 Hard      sensible  band 0.46-0.57 (width 23 %): 11 won, 8 lost inside (52 runs)
+  Level_C1_03 Hard      skilled   band 1.58-1.70 (width 8 %): 4 won, 6 lost inside (45 runs)
+  Level_C1_03 Psycho    sensible  band 0.17-0.46 (width 170 %): 20 won, 25 lost inside (59 runs)
+  Level_C1_03 Psycho    skilled   band 1.11-1.35 (width 22 %): 10 won, 5 lost inside (42 runs)
+  widest band: 929 %
+
+Reruns (the same unit measured more than once: H per batch and worker):
+  Level_C1_01 Easy   sensible         seed 1 base 1: 1.19 (w4), 1.19 (w1)
+  Level_C1_01 Medium sensible         seed 1 base 1: 1.26 (w5), 1.26 (w2)
+  Level_C1_01 Hard   sensible         seed 1 base 1: 0.82 (w1), 0.82 (w3)
+  Level_C1_01 Psycho sensible         seed 1 base 1: 0.53 (w2), 0.53 (w4)
+  Level_C1_03 Easy   sensible         seed 1 base 1: 0.34 (w3), 0.34 (w5)
+  Level_C1_03 Medium sensible         seed 1 base 1: 0.84 (w4), 0.84 (w1)
+  Level_C1_03 Hard   sensible         seed 1 base 1: 0.54 (w5), 0.54 (w2)
+  Level_C1_03 Psycho sensible         seed 1 base 1: 0.36 (w1), 0.36 (w3)
+  8 units rerun, 0 with a different edge
+
+Rescaled cells (the cell's health times the factor, then measured again):
+  Level_C1_01 Hard   sensible   seed 1: factor 0.6720, H 1.19; before 0.82, so the target was 1.215: off by -1.7 %
+  Level_C1_01 Hard   sensible   seed 2: factor 0.6720, H 1.29; before 0.88, so the target was 1.311: off by -1.7 %
+  Level_C1_01 Hard   sensible   seed 3: factor 0.6720, H 1.26; before 0.84, so the target was 1.246: off by +0.8 %
+  Level_C1_03 Medium sensible   seed 1: factor 0.6720, H 1.22; before 0.84, so the target was 1.246: off by -1.7 %
+  Level_C1_03 Medium sensible   seed 2: factor 0.6720, H 1.62; before 1.11, so the target was 1.647: off by -1.7 %
+  Level_C1_03 Medium sensible   seed 3: factor 0.6720, H 0.76; before 0.50, so the target was 0.751: off by +0.8 %
+
+Leak line, seed 1 at the data (x1.00) and at the last multiple won: per wave how far its furthest creature got
+(percent of its road; B = that wave hit the base; . = no wave record). Result and base health at the end.
+  Level_C1_01 Easy      careless  data x1.00  10 11 11 11 11 11 14 11 11 11 11 11  won w12/12 base 600/600
+  Level_C1_01 Easy      careless  edge x1.66  11 11 10 11 11 11 14 11 11 12 18 12  won w12/12 base 600/600
+  Level_C1_01 Easy      sensible  data x1.00   9  9  9  9 10 11 13 11 10 11 12 14  won w12/12 base 600/600
+  Level_C1_01 Easy      sensible  edge x1.19   9  9  9  9 10 11 13 11 10 12 86 83  won w12/12 base 600/600
+  Level_C1_01 Easy      skilled   data x1.00  10  9 10 10 11 11 14 11 10 11 11 10  won w12/12 base 600/600
+  Level_C1_01 Easy      skilled   edge x1.62  11 10 11 11 11 11 14 11 11 12 99  B  won w12/12 base 277/600
+  Level_C1_01 Medium    careless  data x1.00  10 11 10 11 11 11 14 11 11 11 12 12  won w12/12 base 600/600
+  Level_C1_01 Medium    careless  edge x1.54  11 11 11 11 11 11 14 11 11 12 12 12  won w12/12 base 600/600
+  Level_C1_01 Medium    sensible  data x1.00  10 10 10 10 10 10 13 11 10 11 12 12  won w12/12 base 600/600
+  Level_C1_01 Medium    sensible  edge x1.26  11 10 10 10 10 11 14 11 10 12 86 13  won w12/12 base 600/600
+  Level_C1_01 Medium    skilled   data x1.00  10  9 10 10  8 10 14 11  9 11 11 10  won w12/12 base 600/600
+  Level_C1_01 Medium    skilled   edge x1.36  10  9 10 10 11 11 14 11 11 12 85 13  won w12/12 base 600/600
+  Level_C1_01 Hard      careless  data x1.00  11 11 11 11 11 12 15 14 18 12 12 12  won w12/12 base 700/700
+  Level_C1_01 Hard      careless  edge x1.00  11 11 11 11 11 12 15 14 18 12 12 12  won w12/12 base 700/700
+  Level_C1_01 Hard      sensible  data x1.00  11 11 11 11 11 14 60 99 99 74  B  .  lost w11/12 base 0/700
+  Level_C1_01 Hard      sensible  edge x0.82  10 11 10 11 11 12 15 12 85 12 86 13  won w12/12 base 700/700
+  Level_C1_01 Hard      skilled   data x1.00  11 10 11 10 11 11 14  9 12 12 11 11  won w12/12 base 700/700
+  Level_C1_01 Hard      skilled   edge x1.14  11 10 11 11 11 11 15 12 99 40 54  B  won w12/12 base 691/700
+  Level_C1_01 Psycho    careless  data x1.00  11 11 11 11 14 14 99 63 99 99 99  B  lost w12/12 base 0/700
+  Level_C1_01 Psycho    careless  edge x0.46  10 10 11 11 11 11 22 12 12 12 11 11  won w12/12 base 700/700
+  Level_C1_01 Psycho    sensible  data x1.00  11 11 12 12 12 86 99 85 99 99 86  B  lost w12/12 base 0/700
+  Level_C1_01 Psycho    sensible  edge x0.53  11 11 11 11 11 12 87 10 84 85 85 16  won w12/12 base 700/700
+  Level_C1_01 Psycho    skilled   data x1.00  11 10 11 10 12 12 89 38 83 42 13 10  won w12/12 base 700/700
+  Level_C1_01 Psycho    skilled   edge x1.16  11 11 11 10 12 12 99 75 83 68 66  B  won w12/12 base 185/700
+  Level_C1_03 Easy      careless  data x1.00  76 54 53 75 76 75 76 76 54 76 53 99  B  B  .  .  lost w14/16 base 0/700
+  Level_C1_03 Easy      sensible  data x1.00  58 58 56 57 57 71 57 56 57 55 55 99  B  B  .  .  lost w14/16 base 0/700
+  Level_C1_03 Easy      sensible  edge x0.34  58 58 55 56 56 56 56 55 55 55 54 99  B  B 79 50  won w16/16 base 297/700
+  Level_C1_03 Easy      skilled   data x1.00  56 56 55 56 56 56 56 55 56 57 57 81 57 56 83 55  won w16/16 base 700/700
+  Level_C1_03 Easy      skilled   edge x2.09  59 58 57 56 56 56 56 55 57 74 74 90 86 85 91 57  won w16/16 base 700/700
+  Level_C1_03 Medium    careless  data x1.00  75 54 53 54 53 53 76 54 54 53 99  B  B  .  .  .  lost w13/16 base 0/700
+  Level_C1_03 Medium    sensible  data x1.00  57 57 55 55 56 54 53 57 54 55 82 99  B  B  B  .  lost w15/16 base 0/700
+  Level_C1_03 Medium    sensible  edge x0.84  57 57 55 55 55 54 52 56 54 53 82 99  B 56 99  B  won w16/16 base 490/700
+  Level_C1_03 Medium    skilled   data x1.00  58 57 56 56 56 71 57 57 58 70 75 89 57 71 86 76  won w16/16 base 700/700
+  Level_C1_03 Medium    skilled   edge x1.58  74 60 56 74 75 74 74 74 60 74 79 96 86 87 99  B  won w16/16 base 700/700
+  Level_C1_03 Hard      careless  data x1.00  54 70 53 53 52 52 53 54 52 53 99  B  B  .  .  .  lost w13/16 base 0/700
+  Level_C1_03 Hard      sensible  data x1.00  57 57 55 56 55 54 41 56 53 59 99  B  B 99  B  .  lost w15/16 base 0/700
+  Level_C1_03 Hard      sensible  edge x0.54  56 56 55 55 55 53 41 55 43 56 99  B  B 99  B  B  won w16/16 base 36/700
+  Level_C1_03 Hard      skilled   data x1.00  58 58 56 56 56 73 59 56 56 75 99  B  B 99 86 77  won w16/16 base 700/700
+  Level_C1_03 Hard      skilled   edge x1.54  57 75 57 57 57 75 59 58 56 78 99  B  B 99 99  B  won w16/16 base 282/700
+  Level_C1_03 Psycho    careless  data x1.00  53 53 52 55 52 54 53 54 51 54 99  B  B  .  .  .  lost w13/16 base 0/800
+  Level_C1_03 Psycho    sensible  data x1.00  54 54 51 60 41 55 54 45 47 51 99  B  B  .  .  .  lost w13/16 base 0/800
+  Level_C1_03 Psycho    sensible  edge x0.36  52 52 40 55 40 42 54 42 42 52 82 88 51 89 99  B  won w16/16 base 744/800
+  Level_C1_03 Psycho    skilled   data x1.00  57 57 57 57 57 58 57 57 56 74 92 99  B 83 85 76  won w16/16 base 800/800
+  Level_C1_03 Psycho    skilled   edge x1.26  57 57 57 58 57 59 57 58 56 77 99 99  B  B  B  B  won w16/16 base 150/800
+
+Cost: 1389 runs in 116 bisections, 371 machine minutes of play (16 s a run, 12.0 runs a bisection); 3 batches, 82 wall-clock minutes in all.
+  batch 1794859842: 88 units on 5 workers, 73.8 min
+  batch 1794864307: 6 units on 5 workers, 3.7 min
+  batch 1794864529: 8 units on 5 workers, 4.2 min

@@ -410,6 +410,9 @@ namespace Game.Tests
             public Dictionary<(int Wave, string Source), float> AirDealt = new Dictionary<(int, string), float>();
             public Dictionary<int, float> AirHealth = new Dictionary<int, float>();
 
+            /// <summary>Per wave, how far along its road the furthest of its creatures got, 0 to 1 (see <see cref="BotRun.Reach"/>).</summary>
+            public Dictionary<int, float> Reach = new Dictionary<int, float>();
+
             /// <summary>The seed and step of the run, and its wave records for the calibration (<see cref="Game.Balance.CalibrationFit"/>).</summary>
             public int Seed;
             public float Step;
@@ -658,6 +661,7 @@ namespace Game.Tests
                     CoinSeconds = run.CoinSeconds,
                     AirDealt = run.AirDealt,
                     AirHealth = run.AirHealth,
+                    Reach = run.Reach,
                     Seed = seed,
                     Step = step,
                     Records = run.Records,
@@ -2367,6 +2371,9 @@ namespace Game.Tests
                 case PlayStyle.NearGate:
                     NaiveAct(context, spots, towers, owned, run);
                     break;
+                case PlayStyle.Sensible:
+                    SensibleAct(context, spots, towers, owned, run);
+                    break;
                 default:
                     AffordableAct(context, spots, towers, owned, run);
                     break;
@@ -2462,6 +2469,81 @@ namespace Game.Tests
             {
                 run.Purchases++;
             }
+        }
+
+        // The traits a player answers with a tower of its own, in the order the sensible player looks at them.
+        private static readonly EnemyTraits[] CounterTraits = { EnemyTraits.Armoured, EnemyTraits.Airborne };
+
+        // The sensible rung of the headroom ladder: when the wave being fought or the next one (the preview) brings armour or
+        // flyers and no standing tower is made for that (the role table of the combat rules), the cheapest owned counter comes
+        // first and the purse is kept for it; otherwise the affordable buyer's dearest step. It reads no balance model.
+        private static void SensibleAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run)
+        {
+            EnemyTraits coming = ComingCounterTraits(context);
+            foreach (EnemyTraits trait in CounterTraits)
+            {
+                if ((coming & trait) == 0 || towers.Exists(t => t.IsAlive && AnswersTrait(t.Definition, trait)))
+                {
+                    continue;
+                }
+
+                TowerDefinition counter = null;
+                foreach (TowerDefinition tower in context.AllTowers)
+                {
+                    bool fits = !tower.IsSupport && owned.Contains(tower.Id) && AnswersTrait(tower, trait);
+                    if (fits && (counter == null || tower.BuildCost < counter.BuildCost))
+                    {
+                        counter = tower;
+                    }
+                }
+
+                if (counter == null)
+                {
+                    continue;
+                }
+
+                if (context.Wallet.CanAfford(counter.BuildCost) && TryBuy(context, spots, towers, owned, t => t == counter, run))
+                {
+                    run.Purchases++;
+                }
+
+                return;
+            }
+
+            AffordableAct(context, spots, towers, owned, run);
+        }
+
+        private static bool AnswersTrait(TowerDefinition tower, EnemyTraits trait)
+        {
+            foreach (TowerRole role in tower.Roles)
+            {
+                if ((CombatRules.Answers(role) & trait) != 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Armour and flyers in the wave being fought and in the one after it: what the wave preview shows a player.
+        private static EnemyTraits ComingCounterTraits(LevelContext context)
+        {
+            WaveDefinition[] waves = context.Level.GetWaves(context.Difficulty);
+            EnemyTraits traits = EnemyTraits.None;
+            int current = Mathf.Max(0, context.WaveNumber - 1);
+            for (int w = current; waves != null && w <= current + 1 && w < waves.Length; w++)
+            {
+                foreach (SpawnGroup group in waves[w].Groups)
+                {
+                    if (group.Enemy != null)
+                    {
+                        traits |= (group.Enemy.HasArmor ? EnemyTraits.Armoured : EnemyTraits.None) | (group.Enemy.Flies ? EnemyTraits.Airborne : EnemyTraits.None);
+                    }
+                }
+            }
+
+            return traits;
         }
 
         private static Tower CheapestUpgrade(List<Tower> towers, int purse)

@@ -21,6 +21,9 @@ namespace Game.Tests
 
         /// <summary>Replays a written plan step by step (PlanReplayTests); decides nothing itself.</summary>
         Scripted = 4,
+
+        /// <summary>The affordable buyer who first buys the counter tower when the wave preview shows armour or flyers (the headroom ladder's sensible rung). No model.</summary>
+        Sensible = 5,
     }
 
     /// <summary>
@@ -84,7 +87,7 @@ namespace Game.Tests
         public int MinSkyGuns { get; private set; }
 
         /// <summary>True for the obvious family: it reads no balance model.</summary>
-        public bool Obvious => Style == PlayStyle.MonoRow || Style == PlayStyle.NearGate || Style == PlayStyle.Affordable;
+        public bool Obvious => Style == PlayStyle.MonoRow || Style == PlayStyle.NearGate || Style == PlayStyle.Affordable || Style == PlayStyle.Sensible;
 
         /// <summary>The ledger bot with this many sky guns standing before the first raid (round 61: the player who does buy air defence).</summary>
         public static ProbeStrategy WithSkyGuns(int count) => new ProbeStrategy("sky guns " + count) { MinSkyGuns = count };
@@ -100,6 +103,12 @@ namespace Game.Tests
 
         /// <summary>The careless player: the owned types in turn on the first free spots nearest the gate, random upgrades, no gadgets or drones.</summary>
         public static ProbeStrategy NaiveBot() => new ProbeStrategy("naive", naive: true, style: PlayStyle.NearGate);
+
+        /// <summary>
+        /// The sensible player of the headroom ladder (Docs/BALANCE_HEADROOM.md): the affordable buyer on role spots, who stands a
+        /// counter tower (by the role table of the combat rules) before anything else once the preview shows armour or flyers.
+        /// </summary>
+        public static ProbeStrategy SensibleBot() => new ProbeStrategy("sensible", roleSpots: true, style: PlayStyle.Sensible);
 
         /// <summary>Replays a plan; placed exactly where the plan says.</summary>
         public static ProbeStrategy Scripted(PlanSpec plan) => new ProbeStrategy("plan " + plan.Name, style: PlayStyle.Scripted, plan: plan);

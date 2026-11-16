@@ -18,11 +18,13 @@ namespace Game.Tests
     {
         private const int SeedSpread = 7919;
         private const float DroneLookupSeconds = 1f;
+        private const float MinRoadLength = 0.01f;
 
         private readonly System.Random _random;
         private readonly HashSet<Enemy> _watched = new HashSet<Enemy>();
         private readonly List<Game.Combat.ITargetable> _near = new List<Game.Combat.ITargetable>();
         private readonly Dictionary<Enemy, int> _spawnWave = new Dictionary<Enemy, int>();
+        private readonly Dictionary<Enemy, float> _roadLength = new Dictionary<Enemy, float>();
         private readonly Dictionary<Enemy, float> _lastHealth = new Dictionary<Enemy, float>();
         private readonly Dictionary<int, WaveRecord> _records = new Dictionary<int, WaveRecord>();
         private Game.Combat.TargetRegistry _targets;
@@ -94,6 +96,12 @@ namespace Game.Tests
         public readonly Dictionary<(int Wave, string Source), float> AirDealt = new Dictionary<(int, string), float>();
         public readonly Dictionary<int, float> AirHealth = new Dictionary<int, float>();
 
+        /// <summary>
+        /// The headroom probe's leak line: per wave, the furthest any creature that spawned in it got along its road, as a share
+        /// of that road (0 at its start, 1 at the base). A wave that reads 1 leaked.
+        /// </summary>
+        public readonly Dictionary<int, float> Reach = new Dictionary<int, float>();
+
         /// <summary>The wave records in order, for the calibration.</summary>
         public List<WaveRecord> Records
         {
@@ -140,6 +148,7 @@ namespace Game.Tests
                 if (enemy != null)
                 {
                     enemy.DamagedBy -= OnDamaged;
+                    enemy.ReachedEnd -= OnReachedEnd;
                 }
             }
 
@@ -169,6 +178,7 @@ namespace Game.Tests
                 }
             }
 
+            RecordReach();
             foreach (Tower tower in towers)
             {
                 Wear = Mathf.Max(Wear, 1f - tower.HealthFraction);
@@ -244,6 +254,66 @@ namespace Game.Tests
             }
         }
 
+        private void RecordReach()
+        {
+            foreach (Enemy enemy in _watched)
+            {
+                if (enemy != null && enemy.IsAlive && _roadLength.TryGetValue(enemy, out float length) && _spawnWave.TryGetValue(enemy, out int wave))
+                {
+                    NoteReach(wave, enemy.PathProgress / length);
+                }
+            }
+        }
+
+        private void NoteReach(int wave, float share)
+        {
+            share = Mathf.Clamp01(share);
+            if (!Reach.TryGetValue(wave, out float known) || share > known)
+            {
+                Reach[wave] = share;
+            }
+        }
+
+        private void OnReachedEnd(Enemy enemy) => NoteReach(_spawnWave.TryGetValue(enemy, out int wave) ? wave : Mathf.Max(1, _context.WaveNumber), 1f);
+
+        // The length of the road a creature walks or flies: the level's path of its kind that passes nearest to where it came up
+        // (a creature out of a nest joins its road halfway, and its progress counts from that road's start).
+        private float RoadLengthFor(Enemy enemy)
+        {
+            float best = float.MaxValue;
+            float length = 0f;
+            GridMap grid = _context.Level.Grid;
+            foreach (EnemyPath path in _context.Level.Paths)
+            {
+                if (path.Flying != enemy.Definition.Flies || path.Waypoints == null || path.Waypoints.Length < 2)
+                {
+                    continue;
+                }
+
+                float nearest = float.MaxValue;
+                float sum = 0f;
+                for (int i = 1; i < path.Waypoints.Length; i++)
+                {
+                    Vector3 a = grid.CellToWorld(path.Waypoints[i - 1]);
+                    Vector3 b = grid.CellToWorld(path.Waypoints[i]);
+                    sum += Vector3.Distance(a, b);
+                    Vector3 along = b - a;
+                    float t = along.sqrMagnitude > 0f ? Mathf.Clamp01(Vector3.Dot(enemy.Position - a, along) / along.sqrMagnitude) : 0f;
+                    Vector3 offset = enemy.Position - (a + along * t);
+                    offset.y = 0f;
+                    nearest = Mathf.Min(nearest, offset.magnitude);
+                }
+
+                if (nearest < best)
+                {
+                    best = nearest;
+                    length = sum;
+                }
+            }
+
+            return Mathf.Max(MinRoadLength, length);
+        }
+
         private WaveRecord RecordOf(int wave)
         {
             if (!_records.TryGetValue(wave, out WaveRecord record))
@@ -260,8 +330,10 @@ namespace Game.Tests
             if (_watched.Add(enemy))
             {
                 enemy.DamagedBy += OnDamaged;
+                enemy.ReachedEnd += OnReachedEnd;
             }
 
+            _roadLength[enemy] = RoadLengthFor(enemy);
             int wave = _context != null ? Mathf.Max(1, _context.WaveNumber) : 1;
             _spawnWave[enemy] = wave;
             _lastHealth[enemy] = enemy.Health != null ? enemy.Health.Current + enemy.Health.Armor : 0f;

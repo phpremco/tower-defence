@@ -11123,3 +11123,52 @@ Play Mode runs and is unchanged after them; every `settings.json` the editor run
 - A "call" sound of its own (the wave horn plays as for any wave start).
 - A note on the HUD that calling pays (only the "+X early" after a call tells the player).
 - Re-running the boss-arena PlayMode tests and the balance pipeline (the waiting baseline is unchanged by design).
+
+## Balance stage 1: the headroom metric tested (2026-11-16)
+
+Not committed. Test and tool code only: no gameplay or data change, the old pipeline untouched, no generator, no Blender, no
+packages, the Game view untouched. No Play Mode in the editor; every run was on the silent clones w1-w5 (EditMode on w6).
+Remco's save MD5 42fbe06b38e133cecfe2014def5c833c before and after every batch; no `settings.json`; no worker left running.
+Full write-up: Docs/BALANCE_HEADROOM.md. Commands: Docs/COMMANDS.md, "Balance stage 1: headroom".
+
+### What was built
+
+- `HeadroomProbeTests.Measure_Headroom` (PlayMode, explicit): the finale probe's bisection on an ordinary level. Per level,
+  difficulty, reference player and seed it finds the largest uniform health multiple the player still wins at (3 %
+  precision), through a runtime copy of the level; it records every run with a per-wave leak line and the base health.
+- Reference players that read no model: careless (`naive`), sensible (new `PlayStyle.Sensible`: the affordable buyer who
+  buys the counter tower by the role table when the preview shows armour or flyers), skilled (the best replayed plan's
+  build order as a fixed script), the mono rows, and the sensible player on a plain save.
+- `Tools/PlayTest/headroom.sh "<nodes>" "<difficulties>"` runs it on the clones and writes `headroom_records.txt` and
+  `headroom.txt` (`headroom_report.py`).
+
+### Result: stage 1 did not pass its stop rules
+
+Landing Site and Shard Ridge, four difficulties, seeds 1-3: 1450 runs, 87 minutes of wall clock.
+
+- **Monotonicity fails:** 17 of 78 scanned units have more than one win/lose crossover (flip-back zone 5 to 41 % wide).
+- **Reproducibility:** the same seed repeats exactly on another clone (8 of 8 edges). Across seeds H is within 5 % in only
+  3 of 20 cell-rungs (sensible 3-13 % on Landing Site, 13-221 % on Shard Ridge; skilled 0-66 %; careless 79-622 %).
+- **Sanity:** the Cannon row wins Landing Site Hard and Psycho (1.14, 1.50), off-role rows lose, every obvious row on Shard
+  Ridge loses at any health down to a tenth, skilled is above sensible in 8 of 8 cells. But careless beats sensible on
+  Landing Site, and H does not fall steadily from Easy to Psycho.
+- **Rescale:** per seed within 1.7 % of target; the cell's seed spread stays.
+- H medians (careless / sensible / skilled): Landing Site 1.62 / 1.16 / 1.75, 1.54 / 1.22 / 1.26, 1.00 / 0.84 / 1.14,
+  0.52 / 0.53 / 1.16; Shard Ridge <0.10 / 0.41 / 1.26, <0.10 / 0.84 / 1.58, <0.10 / 0.54 / 1.58, <0.10 / 0.27 / 1.26.
+
+### Verification
+
+- Compile clean. EditMode on w6: **1122 / 1069 passed / 0 failed / 53 skipped** (unchanged).
+- All worker batches passed with 0 probe errors.
+
+### Open decision for Remco
+
+Stage 2 (the 24-cell table replacing the gate) should not start as written. Proposed instead: a short stage that uses fixed
+build orders as the ruler (the most stable rung) on five seeds for the same two levels, and goes on only if the spread drops
+under about 10 %. Options and reasons are in Docs/BALANCE_HEADROOM.md, "What this means".
+
+### Not done
+
+- The other four levels. Why Shard Ridge Easy reads harder than Medium for the sensible player.
+- A pooled estimate over seeds (only median and range are reported).
+- No separate experiment on why edges flip back; the explanation in the write-up is read from the records.

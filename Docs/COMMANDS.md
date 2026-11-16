@@ -1267,3 +1267,32 @@ console and `Logs/probe_trace.txt`.
   `r73_pad_check.sh` checks that a View tap calls and a 0.4 s hold does not.
 - Mind: a key press queued while the editor is paused by `step_frames.cs ... hold` is not delivered to the game; step once
   without `hold` before a press.
+
+## Balance stage 1: headroom (added 2026-11-16)
+
+The measured replacement for the paper verdict (Docs/BALANCE_METHOD_REVIEW.md, results and method in Docs/BALANCE_HEADROOM.md):
+per level, difficulty, reference player and seed, the largest uniform multiple of the creatures' health that player still
+wins at, bisected in the real game. Test and tool code only; no data is written and the old pipeline is untouched.
+
+- **One command:** `bash Tools/PlayTest/headroom.sh "0,2" "0,1,2,3"` (campaign nodes, difficulties). It refreshes the worker
+  clones (`C:\Users\remco\TowerDefenseWorkers\wN`, silent, own save folder), deals the units over them, runs
+  `Game.Tests.HeadroomProbeTests.Measure_Headroom` headless, appends every run and edge to
+  `Tools/PlayTest/headroom_records.txt` and writes the table `Tools/PlayTest/headroom.txt`. The open editor is not used;
+  it may stay open, in or out of Play Mode. The save's MD5 is checked before and after.
+- **What it plays by default:** the ladder (`careless`, `sensible`, `skilled`) on seeds 1-3, plus the mono rows (`mono`) and
+  the sensible player on a plain save (`fresh`) on seed 1. Env: `HR_POLICIES`, `HR_SEEDS`, `HR_EXTRA`, `HR_EXTRA_SEEDS`,
+  `HR_PRECISION` (0.03), `HR_WORKERS` (default `workers.sh count`, 5 here), `HR_FIRST` (first clone), `HR_RECORDS`.
+- **Exact units:** `HR_UNITS="0:1:sensible:1,2:3:mono-Cannon:1" bash Tools/PlayTest/headroom.sh` (node:difficulty:policy:seed).
+- **Monotonicity scan:** `HR_SCAN="0.7,0.8,0.88,0.94,1.06,1.13,1.25,1.45"` plays those multiples of each measured edge after
+  the bisection; the report counts the win/lose crossovers per unit and pools the runs into an outcome band.
+- **Rescale check / what-if on a cell's scale:** `HR_BASE="2:1:1.28"` multiplies that cell's health by the factor before the
+  multiple (a runtime copy of the level; no asset changes). The report lists such cells against their unscaled H.
+- **Only the table again:** `bash Tools/PlayTest/headroom.sh report` (or `python Tools/PlayTest/headroom_report.py <records> <report>`).
+  A unit measured twice is kept twice in the records: the table takes the last, the "Reruns" section compares them.
+- **Cost:** about 16 s a run, 7 runs a bisection (13 with the scan); two levels, four difficulties, the default set with
+  the scan is 88 units, about 75 minutes on five clones.
+- **In the editor instead** (not needed normally): write `Tools/PlayTest/headroom_arg.txt` (`units=`, `precision=`, `scan=`,
+  `base=` lines, see `HeadroomProbeTests`) and run the explicit test; the probe installs an in-memory save, but back up
+  `progress.json` first as for any Play Mode run.
+- If a batch is stopped: kill the clones' Unity (command line contains `TowerDefenseWorkers`) and delete
+  `TowerDefenseWorkers\wN\Temp\UnityLockfile`, as for the other worker scripts.
