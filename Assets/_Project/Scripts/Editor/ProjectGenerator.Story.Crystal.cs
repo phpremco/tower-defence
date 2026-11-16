@@ -14,7 +14,7 @@ namespace Game.Editor
             // Proposed (2026-11-05): one drone kind per level, explained before the first wave; the drone panel lights its card.
             CreateDroneIntro("Dlg_L02_RepairDrone", context.RepairDrone,
                 Say(ora, "Repair drone cleared for launch. It welds damaged gates and turrets back together on its own."),
-                Say(voss, "It costs money, like a turret. Drones panel, bottom right: click its card. On a controller, put the cursor on the base and press A."),
+                Say(voss, "It costs money, like a turret. Drones panel, bottom right: pick its card, or put the cursor on the base and press {action:Confirm}."),
                 Say(mercer, "Someone to patch the gate while I hold it. Good."));
             CreateDroneIntro("Dlg_L03_HarvestDrone", context.HarvestDrone,
                 Say(ora, "Harvest drone available. It mines the crystal nodes and flies every load back to base."),

@@ -150,7 +150,7 @@ namespace Game.Editor
             ("Dlg_Scan_Roller", "Rollers curl up and roll three times faster than anything else. The Laser Turret's beam keeps up with them."),
             ("Dlg_Scan_Prowler", "When one Prowler falls, the rest of its pack rages and runs. Hit them together with the Cannon's splash."),
             (GateUpgradeTipId, "A gate under attack can be upgraded during the level: it gets tougher and grows a turret of its own."),
-            (MoveHeroTipId, "When another gate is being hammered, send Spencer there: Next post, or select that gate."),
+            (MoveHeroTipId, "When another gate is being hammered, send Spencer there: {action:HeroPost} for the next post, or select that gate."),
             (RearNestWarningId, "A rift can open behind the gates. Keep a turret in reach of it, or near the base."),
             (HighGroundTipId, $"Towers on high ground reach {HighGroundPercent} further. The bank round it is too steep to build on."),
             (UpgradeScreenTipId, "Research points buy permanent upgrade tiers between levels. A padlocked tier opens on a later continent."),
@@ -205,7 +205,7 @@ namespace Game.Editor
                 UpgradeTipHurtBelow, 0f),
             new GateTip(GateTipKind.MoveHero, CreateDialogue(MoveHeroTipId,
                 Say(voss, "Spencer, your gate is quiet, but another one is being hammered."),
-                Say(voss, "Go where the fight is. The jetpack gets you there in seconds: Next post, or select that gate and send Spencer."),
+                Say(voss, "Go where the fight is. The jetpack gets you there in seconds: {action:HeroPost} for the next post, or select that gate and send Spencer."),
                 Say(voss, "When the pressure shifts, shift with it. A blade at the right gate beats a turret at the wrong one.")),
                 MoveTipHurtBelow, MoveTipQuietAbove),
         };

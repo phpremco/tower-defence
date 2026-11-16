@@ -283,7 +283,7 @@ namespace Game.UI
             _quietUntil = float.MaxValue;
             SetMenuInput(false);
             PromptGlyphs.Show(cell.Glyph, null);
-            cell.Text.text = cell.Device == InputDeviceKind.Gamepad ? Loc.Get("controls.press_button") : Loc.Get("controls.press_key");
+            cell.Text.text = PromptText.ForText(cell.Device == InputDeviceKind.Gamepad ? Loc.Get("controls.press_button") : Loc.Get("controls.press_key"));
             yield return new WaitForSecondsRealtime(StartDelaySeconds);
 
             bool done = false;

@@ -16,6 +16,7 @@
                        "Game.UI",
                        "Game.Editor",
                        "Unity.InputSystem",
+                       "UnityEngine.UI",
                        "UnityEngine.TestRunner",
                        "UnityEditor.TestRunner"
                    ],

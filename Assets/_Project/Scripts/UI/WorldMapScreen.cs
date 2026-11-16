@@ -1002,7 +1002,7 @@ namespace Game.UI
             Text region = UiKit.CreateFixedText(rect, Loc.Format("map.region_heading", _catalog.Regions[_catalog.Nodes[_chosen].Region].DisplayName, level.RegionName), RegionNameSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -34f), new Vector2(width, 40f));
             region.color = Muted;
             UiKit.CreateFixedText(rect, level.DisplayName, LevelNameSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -76f), new Vector2(width, 70f));
-            Text briefing = UiKit.CreateFixedText(rect, level.Briefing, BriefingSize, TextAnchor.UpperLeft, new Vector2(0.5f, 1f), new Vector2(0f, -160f), new Vector2(width, 190f));
+            Text briefing = UiKit.CreateFixedText(rect, PromptText.ForText(level.Briefing), BriefingSize, TextAnchor.UpperLeft, new Vector2(0.5f, 1f), new Vector2(0f, -160f), new Vector2(width, 190f));
             briefing.horizontalOverflow = HorizontalWrapMode.Wrap;
             briefing.color = Muted;
             UiKit.CreateFixedText(rect, Loc.Get("map.choose_difficulty"), 30, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, DifficultyTop + 46f), new Vector2(width, 40f));

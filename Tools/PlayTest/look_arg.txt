@@ -1,1 +1,1 @@
-ArtSource/Previews/QA/r69_voss_dialogue.png
+ArtSource/Previews/QA/r71_pause_controls_720.png 1280 720

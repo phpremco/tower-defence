@@ -370,7 +370,7 @@ namespace Game.UI
             LoadingTip tip = _tips[_tip];
             _tipSpeaker.text = Loc.Format("loading.tip_speaker", tip.Speaker.ToUpperInvariant());
             _tipSpeaker.color = tip.Colour;
-            _tipText.text = tip.Text;
+            _tipText.text = PromptText.ForText(tip.Text);
         }
 
         private void OnDestroy()

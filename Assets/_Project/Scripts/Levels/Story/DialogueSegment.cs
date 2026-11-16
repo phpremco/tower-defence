@@ -27,6 +27,6 @@ namespace Game.Levels
 
         public string Text => Loc.Get(_text);
 
-        public int Length => Text.Length;
+        public int Length => PromptTokens.VisibleLength(Text);
     }
 }

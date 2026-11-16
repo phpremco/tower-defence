@@ -54,7 +54,7 @@ namespace Game.UI
             UiKit.CreateFixedText(rect, level.DisplayName, TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -76f), new Vector2(width, 70f));
             if (!told)
             {
-                Text body = UiKit.CreateFixedText(rect, level.Briefing, BodySize, TextAnchor.UpperLeft, new Vector2(0.5f, 1f), new Vector2(0f, -170f), new Vector2(width, 240f));
+                Text body = UiKit.CreateFixedText(rect, PromptText.ForText(level.Briefing), BodySize, TextAnchor.UpperLeft, new Vector2(0.5f, 1f), new Vector2(0f, -170f), new Vector2(width, 240f));
                 body.horizontalOverflow = HorizontalWrapMode.Wrap;
             }
 

@@ -1207,3 +1207,20 @@ console and `Logs/probe_trace.txt`.
   smoke-test the player headless-ish: `Builds\WindowsIl2Cpp\TowerDefense.exe -screen-fullscreen 0 -screen-width 1280
   -screen-height 720 -logFile Logs\player_il2cpp.log`, close it after the main menu, and search the log for
   `MissingMethodException`, `TypeLoadException`, `ExecutionEngineException` and `NullReferenceException`.
+
+## Round 71: Nintendo confirm swap, button tokens, options in the pause menu, IL2CPP build (added 2026-11-16)
+
+- **Stills and pad checks:** `bash Tools/PlayTest/r71_shots.sh` (back up `progress.json` first; delete the `settings.json`
+  and `.bak` the run writes if none existed before). It adds a virtual Switch Pro pad (`r70_pad.cs`), prints where confirm
+  and cancel sit for the game and for the menus (`r71_probe.cs`), presses real queued buttons (`r70_press.cs`: B on the
+  controls page goes back, A advances a dialogue, B skips it), shows a real dialogue asset with a button token
+  (`r71_dialogue.cs` with the asset name in `r71_dialogue_arg.txt`, `r71_goto_line.cs` to its second line), and opens the
+  options from the pause menu (`r71_pause.cs` with `on`/`off` in `r71_pause_arg.txt`). Removing a virtual pad pauses the
+  level (lost controller), so the harness resumes it each time.
+- **Pad family in code:** `InputSystemProvider.UsePadLayout(PadLayout.Nintendo)` switches names, glyphs and the confirm
+  convention as if that pad were picked up (tests use it; a Steam Input layer could too).
+- **IL2CPP Windows build plus smoke run, from a clone:** `bash Tools/PlayTest/r71_il2cpp_build.sh <N> [seconds]` mirrors the
+  project into worker clone wN (own product name, audio off), builds with `Game.Editor.BuildScript.BuildWindowsIl2Cpp`
+  in batch mode (the open editor is untouched), reports time and size, starts the player windowed at 1280x720 for the
+  given seconds, closes it and greps `Logs/player_il2cpp.log` in the clone for exceptions. The player writes its saves
+  under `LocalLow/DefaultCompany/Tower defense worker wN`, never Remco's folder.

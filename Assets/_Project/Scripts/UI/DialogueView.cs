@@ -122,6 +122,7 @@ namespace Game.UI
         private TextMeshProUGUI _headerRight;
         private TextMeshProUGUI _body;
         private TextMeshProUGUI _ghost;
+        private int _promptVisible;
         private RectTransform _barLayer;
         private Image _arrow;
         private Image[] _buttonEdges;
@@ -668,6 +669,14 @@ namespace Game.UI
                         _redacted.Add(new Vector2Int(index, index + text.Length));
                         break;
                     default:
+                        if (PromptText.HasToken(text))
+                        {
+                            AppendPrompts(text);
+                            plain.Append(PromptText.Plain(text));
+                            index += _promptVisible;
+                            continue;
+                        }
+
                         AppendLiteral(text);
                         break;
                 }
@@ -686,6 +695,17 @@ namespace Game.UI
             _ghost.fontSize = _body.fontSize;
             _meshDirty = true;
             LayoutBars(0);
+        }
+
+        // Button tokens ("{action:Confirm}") become the glyph of the device in use, drawn inline from the glyph sheet.
+        private void AppendPrompts(string text)
+        {
+            _builder.Append(PromptText.ForTmp(text, out _promptVisible, out bool glyphs));
+            if (glyphs)
+            {
+                _body.spriteAsset = GlyphSpriteAtlas.Asset;
+                _ghost.spriteAsset = GlyphSpriteAtlas.Asset;
+            }
         }
 
         private void AppendLiteral(string text)

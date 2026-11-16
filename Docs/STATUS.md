@@ -10868,3 +10868,93 @@ the runs wrote (with its `.bak`) was deleted again. All new player text is in `e
 - The IL2CPP build and its smoke test (module and C++ tools missing; one-time install, then the recipe in COMMANDS.md).
 - Text that names keys in words (tower-menu hints, briefings, loading tips; RELEASE_GAPS 13.6) still prints words.
 - Individual graphics switches (bloom, mist, particles, shadows; 2.4) and the full options inside the pause menu (2.5).
+
+## Round 71: Nintendo confirm swap, clean default bindings, button tokens in text, full options in the pause menu, IL2CPP build (2026-11-16)
+
+Not committed. No full generator run, no Blender, no packages, the Game view untouched, product name and save path
+unchanged. Remco's save (MD5 42fbe06b38e133cecfe2014def5c833c) was copied aside before the Play Mode runs and is unchanged
+after them; no `settings.json` existed at the start, so every one the runs wrote (with its `.bak`) was deleted again (each
+had `"BindingOverrides":""`: the Nintendo swap is never written as a player override).
+
+### What changed
+
+1. **Nintendo confirm swap** (Remco approved): on the Nintendo layout A (east) confirms and B (south) goes back.
+   - `Platform/PadLayoutRules.cs`: the convention per layout (`ConfirmsEast`, `ConfirmPath`, `CancelPath`).
+   - `Platform/InputSystemProvider.Layout.cs`: the pad bindings of Confirm and Cancel get a pair of *layout* overrides
+     while a Nintendo pad is in use. They follow the pad family live, are lifted out whenever the overrides are saved, come
+     back after a reset or a load, and step aside when the player has rebound confirm or cancel on the pad (the player's
+     choice always wins; a pad rebind that touches confirm or cancel makes the swapped pair the player's own).
+     `UsePadLayout(PadLayout)` switches the family as if such a pad were picked up (tests; a Steam Input layer later).
+   - Menus: `UI/UiConfirmLayout.cs` (attached by `UiKit.EnsureEventSystem`) rebuilds the UI module's submit and cancel
+     (Enter/numpad Enter and Esc by name, one pad binding each) and moves the pad binding with the layout, so menu
+     navigation swaps too. Glyphs follow by themselves (positional): Confirm shows A, Cancel B.
+2. **Default binding conflicts:** Codex keeps sharing the speed button (Y / Triangle / X) on the pad, on purpose: it only
+   listens during a scan, when the clock is held and speed does nothing; the controls page says "Codex (on a scan; may
+   share a button)". Skip wave is developer-only: `InputSystemProvider.DeveloperActions` (set by the bootstrapper from
+   developer mode) gates its keys; the controls page already hid it outside developer mode. The HUD skip icon is
+   unchanged (a player control). `DefaultBindingTests`: no two always-active actions share a default control per scheme.
+3. **Button tokens instead of key words** (RELEASE_GAPS 13.6): tables write `{action:Confirm}` or
+   `{control:<Keyboard>/escape}`. `Core/Localization/PromptTokens.cs` finds them (the typewriter counts one as one
+   character); `UI/Glyphs/PromptText.cs` draws them: inline glyph sprites in dialogue (`UI/Glyphs/GlyphSpriteAtlas.cs`, a
+   runtime TextMeshPro sprite sheet of every glyph drawn so far), the printed name in the key colour in legacy text
+   (loading tips, briefings, the controls page's rebind wait). Converted: the repair-drone line ("... press
+   {action:Confirm}", was "click its card ... press A"), the move-Spencer line and loading tip ("{action:HeroPost} for the
+   next post"), the rebind wait ("({control:<Keyboard>/escape} cancels)"); the generator spec carries the same text.
+   Docs: `Docs/LOCALISATION.md` "Button tokens".
+4. **Options in the pause menu** (RELEASE_GAPS 2.5): the pause menu's Sound and Camera pages are replaced by one Options
+   button that opens the full options panel (`OptionsOverlay.OpenInLevel`) over the paused level: volumes, mute, camera,
+   radar, HUD margin, display and graphics, controls with rebinding. Language, sound test, intro replay and story viewer
+   are left out in a level (they leave it). B/Esc steps back page by page and then to the pause menu; the clock stays at 0;
+   resuming with Start closes the options and writes the settings.
+5. **IL2CPP Windows build** (the curator installed the module and the VS 2022 C++ Build Tools): built from worker clone
+   w4 with `BuildScript.BuildWindowsIl2Cpp` in batch mode (`Tools/PlayTest/r71_il2cpp_build.sh`), the open editor never
+   touched, no editor restart needed. **Build succeeded in 16 min 0 s** (most of it the first shader-variant compile in
+   that clone). Output `w4/Builds/WindowsIl2Cpp`: 2.5 GB in all, of which `TowerDefense_Data` 1.5 GB, the do-not-ship
+   `TowerDefense_BackUpThisFolder_ButDontShipItWithYourGame` 0.9 GB, `GameAssembly.dll` 34 MB, `UnityPlayer.dll` 37 MB.
+   **Smoke run:** the player (windowed 1280x720, its own save folder "Tower defense worker w4", audio off as in every clone)
+   booted on a fresh save into the opening cutscene: planet, ORA's dialogue with the drawn ESC/ENTER key caps, the skip
+   chip; 760 MB working set after 40 s; player log **0 exceptions** (no MissingMethod, TypeLoad, ExecutionEngine or null
+   references). The only warnings are URP's own: the Gaussian and Bokeh depth-of-field and Panini projection post shaders
+   are stripped (the game uses its own tilt-shift pass, not URP depth of field). Nothing to fix for stripping or
+   reflection so far. The screen check was one desktop screenshot, deleted after looking.
+
+### Verification
+
+- Compile clean (0 errors, 0 warnings after the last recompile).
+- New EditMode tests (+20 cases in the suite total): `ConfirmLayoutTests` (convention per family, swap never saved, A/B glyphs on Nintendo,
+  unrelated rebind keeps the swap layout-owned, rebinding confirm adopts it and survives save and load, reset brings it
+  back, menu submit/cancel follow the layout with Enter and Esc kept), `DefaultBindingTests` (no shared default control
+  per scheme among always-active actions; Codex shares only the speed button and only on the pad; developer actions off
+  by default), `PromptTokenTests` (no raw key or button word in any English table string outside seven device labels,
+  every token parses, walking, visible length, plain/legacy/TextMeshPro rendering).
+- EditMode, whole suite on w6: **1077 / 1024 passed / 0 failed / 53 skipped** (1057 / 1004 / 0 / 53 in round 70).
+- Play (editor, `Tools/PlayTest/r71_shots.sh`, virtual Switch Pro and XInput pads with real queued presses): main menu and
+  level both report game confirm/cancel and menu submit/cancel on east/south for the Switch pad and south/east for XInput;
+  B (south) on the Switch pad stepped back from the controls page; A (east) advanced Voss's drone dialogue and B skipped it;
+  on XInput A (south) advanced it; pause > Options opened over the level at time scale 0, B went controls page > options
+  column > pause menu (still paused). Console **0 errors, 0 warnings**. Stills (1920x1080 and 1280x720) in
+  `ArtSource/Previews/QA/`: `r71_controls_nintendo` (Confirm A, Cancel B, Pause +), `r71_hint_nintendo` (the Voss line with
+  an inline A glyph), `r71_hint_xbox` (green A), `r71_pause_options`, `r71_pause_controls`. The keyboard form of the same
+  line (an ENTER key cap) was checked with a probe of the dialogue text (sprite in the parsed text), not as a still.
+- Found and fixed on the way: the editor enters Play Mode without a domain reload, so the glyph sheet's static index
+  outlived its destroyed sprite asset and the first Nintendo still printed the raw `<sprite>` tag; the atlas now rebuilds
+  itself when its asset is gone.
+- Save MD5 unchanged (42fbe06b38e133cecfe2014def5c833c); the four `settings.json` files the play runs wrote were deleted
+  (each with empty binding overrides); no worker Unity or player process left.
+
+### Open decisions for Remco
+
+- **Skip wave on the HUD**: the keys (N, View tap) are developer-only now; the HUD skip icon is still there for every
+  player (memory: "the skip button is real"). Keep it, or make it a developer tool too?
+- **Codex sharing the speed button** on the pad is kept (safe, documented). If you would rather give it its own button,
+  there is no free face button: it would have to move to a hold or a d-pad press (the d-pad steers the cursor).
+- **"Down: buttons"** in the map hints names a direction in words; left as is (not a key name). "Click a level ..." stays
+  in the mouse-only variant of that hint.
+- The Nintendo swap gives way entirely once the player rebinds confirm or cancel on the pad (the player's layout then
+  applies to every pad family). Simple and predictable; per-family overrides would be the alternative.
+
+### Not done
+
+- A full playthrough of the IL2CPP player (menus, a level, saves, rebinding) and a run on weak hardware.
+- The pause menu's options cannot change the language in a level (by design: a language change reloads the main menu).
+- Individual graphics switches (RELEASE_GAPS 2.4).

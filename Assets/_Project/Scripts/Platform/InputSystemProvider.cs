@@ -143,6 +143,7 @@ namespace Game.Platform
             _pan.performed += OnSteered;
             _anyButton = InputSystem.onAnyButtonPress.Call(OnAnyButton);
             InputSystem.onDeviceChange += OnDeviceChange;
+            ApplyLayoutDefaults();
             _map.Enable();
         }
 
@@ -354,7 +355,23 @@ namespace Game.Platform
             }
 
             _resolvedPadId = pad.deviceId;
-            PadLayout layout = PadLayoutResolver.ForDeviceLayout(pad.layout, _defaultLayout);
+            return SetPadLayout(PadLayoutResolver.ForDeviceLayout(pad.layout, _defaultLayout));
+        }
+
+        /// <summary>
+        /// Switches the pad family as if a pad of it had been picked up: names, glyphs and the confirm convention follow.
+        /// For a platform layer that knows the family better than the device layout (Steam Input), and for tests.
+        /// </summary>
+        public void UsePadLayout(PadLayout layout)
+        {
+            if (SetPadLayout(layout))
+            {
+                ActiveDeviceChanged?.Invoke();
+            }
+        }
+
+        private bool SetPadLayout(PadLayout layout)
+        {
             if (layout == ActivePadLayout)
             {
                 return false;
@@ -362,6 +379,7 @@ namespace Game.Platform
 
             ActivePadLayout = layout;
             _padGlyphs = _padTables?.Invoke(layout);
+            ApplyLayoutDefaults();
             ForgetPrompts();
             return true;
         }
@@ -416,7 +434,13 @@ namespace Game.Platform
 
         private void OnPreviousTower(InputAction.CallbackContext _) => PreviousTower?.Invoke();
 
-        private void OnSkipWave(InputAction.CallbackContext _) => SkipWave?.Invoke();
+        private void OnSkipWave(InputAction.CallbackContext _)
+        {
+            if (DeveloperActions)
+            {
+                SkipWave?.Invoke();
+            }
+        }
 
         private void OnUpgrade(InputAction.CallbackContext _) => UpgradePressed?.Invoke();
 

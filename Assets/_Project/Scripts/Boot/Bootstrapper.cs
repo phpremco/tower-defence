@@ -62,6 +62,7 @@ namespace Game.Boot
             IPlatformSettings platform = _lowQuality ? new SwitchPlatformSettings() : new PcPlatformSettings(data.LowQuality);
             var input = new InputSystemProvider(_inputActions, _uiSkin.PadGlyphs, platform.PadLayout, _uiSkin.KeyGlyphs);
             input.LoadOverrides(data.BindingOverrides);
+            input.DeveloperActions = _playtestSettings != null && _playtestSettings.DeveloperModeOn;
             _input = input;
             var progress = new ProgressService(save, _unlockTable.StartingTowerIds);
             var localization = new StringTableService(data.LanguageCode);

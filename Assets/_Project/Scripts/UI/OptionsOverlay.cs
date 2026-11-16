@@ -12,10 +12,13 @@ namespace Game.UI
     /// <summary>Options panel over the main menu: the four volume sliders, mute in the background, camera speed, edge
     /// scrolling, radar, HUD margin and language (kept in the settings file, written when the panel closes), the
     /// display and graphics page, the controls page with rebinding, the sound test and a replay of the opening
-    /// cutscene.</summary>
+    /// cutscene. The same panel opens from the pause menu inside a level, without the rows that leave it.</summary>
     public sealed class OptionsOverlay : MonoBehaviour
     {
-        private MainMenuScreen _owner;
+        // In front of the HUD, the pause menu and the dialogue box when opened inside a level.
+        private const int LevelSortingOrder = 100;
+
+        private System.Action _closed;
         private GameObject _panel;
         private ControlsPage _controls;
         private RectTransform _displayColumn;
@@ -41,15 +44,50 @@ namespace Game.UI
         private const float BottomMargin = 40f;
         private const float ColumnSpacing = 24f;
 
+        /// <summary>Opens over the main menu; closing hands the focus back to it.</summary>
         public void Open(MainMenuScreen owner)
         {
-            _owner = owner;
+            Build(owner.ShowMenu, false);
+        }
+
+        /// <summary>
+        /// Opens over the pause menu of a running level, which stays paused underneath. The rows that leave the level
+        /// (language, which reloads the main menu, the sound test, the intro replay and the story viewer) are left out.
+        /// </summary>
+        public void OpenInLevel(System.Action closed)
+        {
+            Build(closed, true);
+        }
+
+        /// <summary>True while a key or button is being rebound: the owner leaves every press to the options.</summary>
+        public bool Busy => _controls != null && _controls.Busy;
+
+        /// <summary>Closes the options as Back would (the settings are written once).</summary>
+        public void Close()
+        {
+            // Sliders and switches change the settings in memory; closing the screen writes them once.
+            _settings?.Flush();
+            Destroy(_panel);
+            System.Action closed = _closed;
+            _closed = null;
+            Destroy(this);
+            closed?.Invoke();
+        }
+
+        private void Build(System.Action closed, bool inLevel)
+        {
+            _closed = closed;
             Services.TryGet(out _settings);
             Services.TryGet(out _localization);
             Services.TryGet(out AudioMix mix);
 
-            RectTransform root = UiKit.CreateRoot(transform);
+            RectTransform root = UiKit.CreateRoot(transform, !inLevel);
             _panel = root.parent.gameObject;
+            if (inLevel)
+            {
+                _panel.GetComponent<Canvas>().sortingOrder = LevelSortingOrder;
+            }
+
             var background = new GameObject("Dim", typeof(RectTransform)).AddComponent<Image>();
             background.transform.SetParent(root, false);
             background.color = new Color(0.04f, 0.05f, 0.08f, 0.9f);
@@ -69,19 +107,16 @@ namespace Game.UI
             Services.TryGet(out CameraControls cameraControls);
             new CameraOptionControls(_settings, cameraControls ?? new CameraControls()).Build(_column);
             new HudMarginControl(_settings).Build(_column);
-            UiKit.CreateButton(_column, LanguageLabel(), OnLanguagePressed);
-            _displayButton = UiKit.CreateButton(_column, Loc.Get("options.display"), ShowDisplay);
-            _controlsButton = UiKit.CreateButton(_column, Loc.Get("options.controls"), ShowControls);
-            _soundButton = UiKit.CreateButton(_column, Loc.Get("options.sound_test"), ShowSoundBoard);
-            if (OpeningCutscene() != null)
+            if (!inLevel)
             {
-                UiKit.CreateButton(_column, Loc.Get("options.replay_intro"), ReplayIntro);
+                UiKit.CreateButton(_column, LanguageLabel(), OnLanguagePressed);
             }
 
-            // Developer tools only when developer mode is on (editor or development build; never in a release build).
-            if (Services.TryGet(out PlaytestSettings playtest) && playtest.DeveloperModeOn)
+            _displayButton = UiKit.CreateButton(_column, Loc.Get("options.display"), ShowDisplay);
+            _controlsButton = UiKit.CreateButton(_column, Loc.Get("options.controls"), ShowControls);
+            if (!inLevel)
             {
-                _storyButton = UiKit.CreateButton(_column, Loc.Get("options.story_viewer"), ShowStoryViewer);
+                AddMenuOnlyRows();
             }
 
             UiKit.CreateButton(_column, Loc.Get("common.back"), Close);
@@ -298,13 +333,20 @@ namespace Game.UI
             return 0;
         }
 
-        private void Close()
+        // The sound test, the intro replay and the developer tools belong to the main menu only.
+        private void AddMenuOnlyRows()
         {
-            // Sliders and switches change the settings in memory; closing the screen writes them once.
-            _settings?.Flush();
-            Destroy(_panel);
-            _owner.ShowMenu();
-            Destroy(this);
+            _soundButton = UiKit.CreateButton(_column, Loc.Get("options.sound_test"), ShowSoundBoard);
+            if (OpeningCutscene() != null)
+            {
+                UiKit.CreateButton(_column, Loc.Get("options.replay_intro"), ReplayIntro);
+            }
+
+            // Developer tools only when developer mode is on (editor or development build; never in a release build).
+            if (Services.TryGet(out PlaytestSettings playtest) && playtest.DeveloperModeOn)
+            {
+                _storyButton = UiKit.CreateButton(_column, Loc.Get("options.story_viewer"), ShowStoryViewer);
+            }
         }
     }
 }

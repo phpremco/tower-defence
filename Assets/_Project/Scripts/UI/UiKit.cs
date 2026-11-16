@@ -147,6 +147,7 @@ namespace Game.UI
             var go = new GameObject("EventSystem", typeof(EventSystem));
             var module = go.AddComponent<InputSystemUIInputModule>();
             module.AssignDefaultActions();
+            UiConfirmLayout.Attach(module);
         }
 
         /// <summary>Creates a scaled canvas and returns a root inside the safe area.</summary>

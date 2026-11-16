@@ -18,8 +18,8 @@ namespace Game.UI
         private const float PanelWidth = 760f;
         // The panel keeps this far from the safe area edges and shrinks as a whole on a window narrower than it.
         private const float SafeMargin = 24f;
-        // Header plus six buttons (Resume, Codex, Sound, Camera, Restart, Quit) with their gaps and the page margins.
-        private const float PanelHeight = 920f;
+        // Header plus five buttons (Resume, Codex, Options, Restart, Quit) with their gaps and the page margins.
+        private const float PanelHeight = 800f;
         private const float ButtonGap = 20f;
         private static readonly Color Dim = new Color(0f, 0f, 0f, 0.65f);
         private static readonly Color PanelTint = new Color(0.14f, 0.22f, 0.4f, 0.97f);
@@ -31,10 +31,8 @@ namespace Game.UI
         private GameObject _panel;
         private GameObject _mainPage;
         private GameObject _confirmPage;
-        private GameObject _soundPage;
-        private Button _soundBack;
-        private GameObject _cameraPage;
-        private Selectable _cameraFirst;
+        private Button _optionsButton;
+        private OptionsOverlay _options;
         private Button _resume;
         private Button _keepPlaying;
         private Button _codexButton;
@@ -43,6 +41,7 @@ namespace Game.UI
         private bool _wasOpen;
         private bool _codexWasOpen;
         private bool _codexFromMenu;
+        private int _optionsClosedFrame = -1;
 
         /// <param name="codex">The level codex, or null when the level has none; the pause menu is how a gamepad reaches it.</param>
         public void Initialize(LevelContext context, RectTransform safeRoot, TimeController time, IInputProvider input, CodexView codex)
@@ -88,8 +87,7 @@ namespace Game.UI
                 _codexButton = AddButton(main, Loc.Get("pause.codex"), OpenCodex);
             }
 
-            AddButton(main, Loc.Get("pause.sound"), ShowSound);
-            AddButton(main, Loc.Get("pause.camera"), ShowCamera);
+            _optionsButton = AddButton(main, Loc.Get("pause.options"), OpenOptions);
             AddButton(main, Loc.Get("pause.restart"), Restart);
             AddButton(main, Loc.Get("pause.quit_to_map"), ShowConfirm);
 
@@ -101,39 +99,6 @@ namespace Game.UI
             AddButton(confirm, Loc.Get("pause.quit_yes"), QuitToMap);
             _keepPlaying = AddButton(confirm, Loc.Get("pause.quit_no"), ShowMain);
             _confirmPage.SetActive(false);
-
-            // The volume groups, so the mix can be fixed without leaving the level.
-            _soundPage = CreatePage(panel.rectTransform, Loc.Get("pause.sound"));
-            RectTransform sound = _soundPage.GetComponent<RectTransform>();
-            Services.TryGet(out SettingsService settings);
-            Services.TryGet(out AudioMix mix);
-            var volumes = new VolumeControls(settings, mix);
-            volumes.Build(sound);
-            foreach (LayoutElement element in sound.GetComponentsInChildren<LayoutElement>())
-            {
-                if (element.GetComponent<Button>() != null)
-                {
-                    element.preferredHeight = UiKit.ButtonHeight;
-                }
-            }
-
-            _soundBack = AddButton(sound, Loc.Get("common.back"), ShowMain);
-            _soundPage.SetActive(false);
-
-            // Pan speed and edge scrolling, so a camera that feels slow can be fixed mid-fight.
-            _cameraPage = CreatePage(panel.rectTransform, Loc.Get("pause.camera"));
-            RectTransform cameraRect = _cameraPage.GetComponent<RectTransform>();
-            Services.TryGet(out CameraControls cameraControls);
-            var cameraOptions = new CameraOptionControls(settings, cameraControls ?? new CameraControls());
-            cameraOptions.Build(cameraRect);
-            foreach (Button button in cameraRect.GetComponentsInChildren<Button>())
-            {
-                button.GetComponent<LayoutElement>().preferredHeight = UiKit.ButtonHeight;
-            }
-
-            _cameraFirst = cameraOptions.First;
-            AddButton(cameraRect, Loc.Get("common.back"), ShowMain);
-            _cameraPage.SetActive(false);
 
             _root.SetActive(false);
         }
@@ -171,6 +136,12 @@ namespace Game.UI
         private void Refresh()
         {
             bool open = _context.Paused && _context.Outcome == LevelOutcome.Running;
+            // Resumed (Start) or ended while the options lay on top: they close with the menu and write the settings.
+            if (!open && _options != null)
+            {
+                _options.Close();
+            }
+
             _root.SetActive(open);
 
             if (_codexButton != null)
@@ -190,15 +161,20 @@ namespace Game.UI
         // True while the book lies over the menu, and in the frame it closed (its B press must not also close the menu).
         private bool CodexOwnsInput => _codex != null && (_codex.IsOpen || _codex.ClosedThisFrame);
 
+        // The options take every press while open, and in the frame their Back closed them.
+        private bool OptionsOwnInput => _options != null || _optionsClosedFrame == Time.frameCount;
+
         // A mouse click on the dim clears the focus; give it back so the gamepad can still move through the menu. While the
         // book lies on top the focus is the book's; when it closes, the focus comes back to the button that opened it.
         private void Update()
         {
             bool codexOpen = _codex != null && _codex.IsOpen;
-            // The book's page is partly see-through: the menu's buttons would show through it, so they step aside meanwhile.
-            if (_panel.activeSelf == codexOpen)
+            // The book's page and the options are partly see-through: the menu's buttons would show through them, so they
+            // step aside meanwhile.
+            bool covered = codexOpen || _options != null;
+            if (_panel.activeSelf == covered)
             {
-                _panel.SetActive(!codexOpen);
+                _panel.SetActive(!covered);
             }
 
             if (_codexWasOpen && !codexOpen && _root.activeSelf)
@@ -213,7 +189,7 @@ namespace Game.UI
             }
 
             _codexWasOpen = codexOpen;
-            if (_root.activeSelf && !codexOpen)
+            if (_root.activeSelf && !covered)
             {
                 UiKit.KeepFocus(ref _lastFocus);
             }
@@ -227,18 +203,23 @@ namespace Game.UI
             _codex.Open();
         }
 
-        private void ShowSound()
+        // The full options (sound, camera, HUD, display, controls) over the paused level; the clock stays stopped under them.
+        private void OpenOptions()
         {
-            _mainPage.SetActive(false);
-            _soundPage.SetActive(true);
-            UiKit.Select(_soundBack);
+            _options = gameObject.AddComponent<OptionsOverlay>();
+            _options.OpenInLevel(OnOptionsClosed);
         }
 
-        private void ShowCamera()
+        private void OnOptionsClosed()
         {
-            _mainPage.SetActive(false);
-            _cameraPage.SetActive(true);
-            UiKit.Select(_cameraFirst);
+            _options = null;
+            _optionsClosedFrame = Time.frameCount;
+            if (_root.activeSelf)
+            {
+                _panel.SetActive(true);
+                UiKit.Select(_optionsButton);
+                _lastFocus = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+            }
         }
 
         private static void FlushSettings()
@@ -251,11 +232,7 @@ namespace Game.UI
 
         private void ShowMain()
         {
-            // The sound and camera pages change the settings in memory only; leaving them writes the file once.
-            FlushSettings();
             _confirmPage.SetActive(false);
-            _soundPage.SetActive(false);
-            _cameraPage.SetActive(false);
             _mainPage.SetActive(true);
             // A pause pressed while the book is open lies under it: the focus stays in the book until it closes.
             if (_codex == null || !_codex.IsOpen)
@@ -274,12 +251,12 @@ namespace Game.UI
         // Back or Escape steps out of the quit question first, then closes the menu.
         private void OnCancelled()
         {
-            if (!_root.activeSelf || CodexOwnsInput)
+            if (!_root.activeSelf || CodexOwnsInput || OptionsOwnInput)
             {
                 return;
             }
 
-            if (_confirmPage.activeSelf || _soundPage.activeSelf || _cameraPage.activeSelf)
+            if (_confirmPage.activeSelf)
             {
                 ShowMain();
             }

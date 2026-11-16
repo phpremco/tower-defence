@@ -55,6 +55,25 @@ namespace Game.UI
             return ForControl(GlyphFamilies.For(device, layout), path, input.PromptFor(action, device));
         }
 
+        /// <summary>What the glyph of an action on the active device looks like (for text that draws it inline); false without a binding.</summary>
+        public static bool TrySpec(GameAction action, out GlyphSpec spec)
+        {
+            spec = default;
+            if (!Services.TryGet(out IInputBindings bindings) || !Services.TryGet(out IInputProvider input))
+            {
+                return false;
+            }
+
+            string path = bindings.ControlPath(action, input.ActiveDevice);
+            if (string.IsNullOrEmpty(path))
+            {
+                return false;
+            }
+
+            spec = GlyphCatalog.Describe(GlyphFamilies.For(input.ActiveDevice, bindings.ActivePadLayout), path, input.PromptFor(action));
+            return true;
+        }
+
         /// <summary>The glyph of a control path in a family; <paramref name="label"/> names a key or an unknown pad control.</summary>
         public static Sprite ForControl(GlyphFamily family, string path, string label)
         {

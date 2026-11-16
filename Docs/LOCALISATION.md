@@ -56,6 +56,21 @@ key in the asset. Running it again is safe: a field that already holds its key k
    builds its text when it opens).
 4. Run the EditMode tests: `LocalisationTests.OtherLanguages_CarryExactlyTheEnglishKeys` lists missing and extra keys.
 
+## Button tokens (round 71)
+
+A text never names a key or button in words ("press A", "Esc", "click"): the pad family, the keyboard and rebinding all
+change what the right word is. Write a token instead; the UI draws it as the glyph of the device in use.
+
+- `{action:Confirm}`: a game action by its `GameAction` name (`Confirm`, `Cancel`, `Pause`, `Speed`, `HeroPost`, ...).
+  It follows rebinding and the pad family (on a Nintendo pad Confirm is A, on a DualSense Cross, on the keyboard Enter).
+- `{control:<Keyboard>/escape}`: a fixed control that is no rebindable action (an Input System control path).
+- Dialogue (TextMeshPro) shows the glyph inline, one character wide for the typewriter (`GlyphSpriteAtlas`); legacy
+  text (loading tips, briefings, the controls page) shows the printed name in the key colour (`PromptText.ForText`).
+- Tokens go in texts read with `Loc.Get` (and in data text): `Loc.Format` would read their braces as placeholders.
+- Translators keep the token exactly as written and may move it within the sentence.
+- `PromptTokenTests` fails on a raw key or button name in any table string (outside a short allowlist of labels that
+  name a device or a fixed keyboard control, each shown only with that device), and on a token that names no action.
+
 ## Checks (EditMode, `LocalisationTests`)
 
 - Every table parses without bad lines or duplicate keys.
@@ -79,5 +94,6 @@ key in the asset. Running it again is safe: a field that already holds its key k
 - **Not converted** (developer-facing or not text): validation messages, Debug logs, balance and probe reports, the
   story viewer's developer labels where they are asset ids, creature names in the sound test (from asset names), enemy
   element names in the Codex (enum names), symbol-only labels (`+50`, `-20%`). Button prompt labels come from the glyph
-  assets (`Settings/Input/Glyphs_*.asset`) and are per pad layout, not per language.
+  assets (`Settings/Input/Glyphs_*.asset`) and are per pad layout, not per language; sentences name buttons through
+  tokens (above).
 - **Number formatting** follows the current culture as before (`string.Format`).

@@ -90,20 +90,24 @@ namespace Game.Platform
         {
             CancelRebind();
             _map.RemoveAllBindingOverrides();
+            _layoutSwap = false;
+            ApplyLayoutDefaults();
             BindingsUpdated();
         }
 
         public string SaveOverrides()
         {
-            string json = _map.asset != null ? _map.asset.SaveBindingOverridesAsJson() : _map.SaveBindingOverridesAsJson();
+            string json = SaveWithoutLayoutSwap();
             return HasOverrides(json) ? json : string.Empty;
         }
 
         public bool LoadOverrides(string json)
         {
             _map.RemoveAllBindingOverrides();
+            _layoutSwap = false;
             if (string.IsNullOrWhiteSpace(json))
             {
+                ApplyLayoutDefaults();
                 BindingsUpdated();
                 return true;
             }
@@ -138,6 +142,7 @@ namespace Game.Platform
                 _map.RemoveAllBindingOverrides();
             }
 
+            ApplyLayoutDefaults();
             BindingsUpdated();
             return ok;
         }
@@ -161,6 +166,7 @@ namespace Game.Platform
                 return false;
             }
 
+            AdoptLayoutSwap(action, device, path);
             target.ApplyBindingOverride(binding, path);
             SwapAway(action, device, path, before);
             BindingsUpdated();
