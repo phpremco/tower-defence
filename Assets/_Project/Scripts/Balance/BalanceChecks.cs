@@ -67,11 +67,29 @@ namespace Game.Balance
             return failures;
         }
 
-        /// <summary>Mean pressure of a level's plain waves after the opening: what the player meets on an ordinary wave.</summary>
+        /// <summary>
+        /// Mean pressure of a level's plain waves after the opening: what the player meets on an ordinary wave. A boss wave is
+        /// none, and neither is a wave that asks for a counter tower (round 68): both aim above the curve on purpose.
+        /// </summary>
         public static float PlainMean(IReadOnlyList<WaveLine> lines)
         {
             float sum = 0f;
             int count = 0;
+            for (int i = OpeningWaves; i < lines.Count; i++)
+            {
+                if (!lines[i].Boss && !lines[i].CounterCheck)
+                {
+                    sum += lines[i].Pressure;
+                    count++;
+                }
+            }
+
+            if (count > 0)
+            {
+                return sum / count;
+            }
+
+            // A level whose every wave after the opening asks for a counter has no plain wave left: its mean is theirs.
             for (int i = OpeningWaves; i < lines.Count; i++)
             {
                 if (!lines[i].Boss)

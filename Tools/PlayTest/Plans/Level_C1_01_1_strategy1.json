@@ -66,10 +66,15 @@
             "Threat": "boss",
             "Tower": "PulseRifle",
             "Weight": 1.6556456089019775
+        },
+        {
+            "Threat": "pack",
+            "Tower": "Cannon",
+            "Weight": 1.863077998161316
         }
     ],
     "UpgradeBias": 1.0700000524520874,
-    "TowersBeforeUpgrades": 3,
+    "TowersBeforeUpgrades": 2,
     "MineCoverBelow": 1.2999999523162842,
     "MineOnBoss": true,
     "FieldCoverBelow": 1.2000000476837158,

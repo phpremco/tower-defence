@@ -15,7 +15,7 @@ MonoBehaviour:
   _displayName: Shattered
   _layer: 1
   _flies: 0
-  _maxHealth: 14100
+  _maxHealth: 14300
   _armor: 2000
   _speed: 0.5
   _reward: 3068
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2.5
   _attackInterval: 1.4
   _gateStrikes: 0
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5

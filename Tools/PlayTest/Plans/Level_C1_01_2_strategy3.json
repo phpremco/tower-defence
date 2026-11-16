@@ -41,10 +41,10 @@
             ],
             "Y": [
                 2,
-                2,
+                7,
                 6,
                 14,
-                7,
+                2,
                 6,
                 14,
                 2
@@ -53,53 +53,48 @@
         {
             "Tower": "Laser",
             "X": [
-                9,
-                8,
                 10,
                 9,
-                11,
-                6,
+                8,
                 12,
-                30
+                11,
+                30,
+                6,
+                9
             ],
             "Y": [
                 6,
                 6,
                 6,
-                2,
+                6,
                 6,
                 14,
-                6,
-                14
+                14,
+                2
             ]
         }
     ],
     "Weights": [
         {
-            "Threat": "swarm",
-            "Tower": "Cannon",
-            "Weight": 1.1869227886199951
-        },
-        {
-            "Threat": "pack",
-            "Tower": "PulseRifle",
-            "Weight": 0.8082160949707031
+            "Threat": "air",
+            "Tower": "Laser",
+            "Weight": 1.6144905090332031
         },
         {
             "Threat": "boss",
-            "Tower": "PulseRifle",
-            "Weight": 2.486556053161621
+            "Tower": "Laser",
+            "Weight": 1.9986435174942017
         }
     ],
-    "UpgradeBias": 1.2999999523162842,
+    "UpgradeBias": 0.6299999952316284,
     "TowersBeforeUpgrades": 4,
-    "MineCoverBelow": 0.0,
-    "MineOnBoss": true,
+    "MineCoverBelow": 1.0,
+    "MineOnBoss": false,
     "FieldCoverBelow": 1.0,
-    "HarvesterCover": 1.5,
-    "HarvesterShare": 0.6000000238418579,
-    "RepairDroneWear": 0.10000000149011612,
-    "AttackDroneAfterTowers": 8,
-    "GateUpgradeBias": 1.2000000476837158,
+    "HarvesterCover": 1.0,
+    "HarvesterShare": 0.4000000059604645,
+    "RepairDroneWear": 0.5,
+    "AttackDroneAfterTowers": 0,
+    "GateUpgradeBias": 0.0,
     "AllowSell": false
 }

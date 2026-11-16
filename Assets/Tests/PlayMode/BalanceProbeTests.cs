@@ -805,6 +805,28 @@ namespace Game.Tests
         // The seed of every run: ProbeSeed, or the "seed=N" line of the filter file.
         private static int Seed() => (int)Setting("seed", ProbeSeed);
 
+        /// <summary>
+        /// The filter line "rows=mono" (round 68): the yardstick plays only its rows of one tower type, which is all the grace
+        /// windows read, so a tuning pass over every cell takes minutes. The records of such a pass are no calibration set.
+        /// </summary>
+        internal static bool MonoRowsOnly()
+        {
+            if (!System.IO.File.Exists(FilterPath))
+            {
+                return false;
+            }
+
+            foreach (string line in System.IO.File.ReadAllLines(FilterPath))
+            {
+                if (line.Trim() == "rows=mono")
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>A step a test sets for its own runs (the step check); null takes the filter file's or the default.</summary>
         internal static float? StepOverride;
 

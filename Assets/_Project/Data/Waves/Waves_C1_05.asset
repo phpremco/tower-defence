@@ -41,6 +41,7 @@ MonoBehaviour:
         Stagger: 5.46
       _healthMultiplier: 1.021
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -67,6 +68,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.677
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -100,6 +102,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.682
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -133,6 +136,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.56
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -166,6 +170,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.372
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -206,6 +211,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.177
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -253,6 +259,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.281
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -293,6 +300,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.319
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -347,6 +355,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.007
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -408,6 +417,7 @@ MonoBehaviour:
         Stagger: 5.2
       _healthMultiplier: 1.525
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -490,6 +500,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.9084961
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -579,6 +590,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.589
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -633,6 +645,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 0.728
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -729,6 +742,7 @@ MonoBehaviour:
         Stagger: 10.4
       _healthMultiplier: 2.168
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -818,6 +832,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 4.0787473
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -956,6 +971,7 @@ MonoBehaviour:
         Stagger: 15.6
       _healthMultiplier: 2.765
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1066,6 +1082,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.432
       _bossHealthScale: 1.594
+      _counterCheck: 0
   - Difficulty: {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}
     Waves:
     - _startDelay: 10
@@ -1094,6 +1111,7 @@ MonoBehaviour:
         Stagger: 5.46
       _healthMultiplier: 1.345
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1120,6 +1138,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.749
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1153,6 +1172,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 2.216
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1179,6 +1199,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 0.326
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1212,6 +1233,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.808
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1252,6 +1274,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.551
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1299,6 +1322,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.688
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1346,6 +1370,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.189
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1400,6 +1425,7 @@ MonoBehaviour:
         Stagger: 1.3
       _healthMultiplier: 1.409
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1468,6 +1494,7 @@ MonoBehaviour:
         Stagger: 5.2
       _healthMultiplier: 2.01
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1550,6 +1577,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 2.5148952
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1632,6 +1660,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 2.094
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1700,6 +1729,7 @@ MonoBehaviour:
         Stagger: 2.6
       _healthMultiplier: 0.96
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1803,6 +1833,7 @@ MonoBehaviour:
         Stagger: 10.4
       _healthMultiplier: 2.857
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1892,6 +1923,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 5.3738437
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1967,6 +1999,7 @@ MonoBehaviour:
         Stagger: 3.8999999
       _healthMultiplier: 1.678
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2077,6 +2110,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.886
       _bossHealthScale: 1.182
+      _counterCheck: 0
   - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
     Waves:
     - _startDelay: 10
@@ -2105,6 +2139,7 @@ MonoBehaviour:
         Stagger: 5.46
       _healthMultiplier: 1.427
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2131,6 +2166,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 2.465
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2164,6 +2200,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 2.351
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2190,6 +2227,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 0.346
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2223,6 +2261,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.919
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2249,6 +2288,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 2.1
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2296,6 +2336,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.792
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2343,6 +2384,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.261
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2397,6 +2439,7 @@ MonoBehaviour:
         Stagger: 2.6
       _healthMultiplier: 1.495
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2465,6 +2508,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.763
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2533,6 +2577,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.957
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2629,6 +2674,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.314
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2690,6 +2736,7 @@ MonoBehaviour:
         Stagger: 2.6
       _healthMultiplier: 1.018
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2779,6 +2826,7 @@ MonoBehaviour:
         Stagger: 7.7999997
       _healthMultiplier: 3.031
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2868,6 +2916,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 5.7016478
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2950,6 +2999,7 @@ MonoBehaviour:
         Stagger: 5.2
       _healthMultiplier: 1.78
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3060,6 +3110,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 2.002
       _bossHealthScale: 2.469
+      _counterCheck: 0
   - Difficulty: {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
     Waves:
     - _startDelay: 10
@@ -3088,6 +3139,7 @@ MonoBehaviour:
         Stagger: 5.46
       _healthMultiplier: 1.414
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3114,6 +3166,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.758
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3147,6 +3200,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 2.33
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3173,6 +3227,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 0.343
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3206,6 +3261,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 0.691
       _bossHealthScale: 2.653
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3232,6 +3288,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.817
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3279,6 +3336,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.775
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3326,6 +3384,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.25
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3373,6 +3432,7 @@ MonoBehaviour:
         Stagger: 2.6
       _healthMultiplier: 1.481
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3434,6 +3494,7 @@ MonoBehaviour:
         Stagger: 1.3
       _healthMultiplier: 1.946
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3502,6 +3563,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.927
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3605,6 +3667,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 0.964
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3666,6 +3729,7 @@ MonoBehaviour:
         Stagger: 1.3
       _healthMultiplier: 1.009
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3755,6 +3819,7 @@ MonoBehaviour:
         Stagger: 10.4
       _healthMultiplier: 3.004
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3844,6 +3909,7 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 5.650596
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3926,6 +3992,7 @@ MonoBehaviour:
         Stagger: 5.2
       _healthMultiplier: 1.764
       _bossHealthScale: 1
+      _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -4043,3 +4110,4 @@ MonoBehaviour:
         Stagger: 0
       _healthMultiplier: 1.984
       _bossHealthScale: 2.213
+      _counterCheck: 0

@@ -152,7 +152,10 @@ namespace Game.Editor
                     // Roles (round 21a): packs for the Cannon, loose runners for rate of fire, plated Cragbacks, raids for the Flak.
                     Troops = new[]
                     {
-                        Join("Skitter", 1, 2.4f, 0.42f, pack: 6), Join("Skitter", 2, 2f, LooseRunners, loose: true), Join("Cragback", 4, 1.3f, 2.5f),
+                        Join("Skitter", 1, 2.4f, 0.42f, pack: 6), Join("Skitter", 2, 2f, LooseRunners, loose: true),
+                        // Round 68 (the grace window): on Easy and Medium the Cragbacks walk in from wave 8, so the window opens
+                        // where the waves are big enough to end a row of light guns within it; Hard and Psycho keep wave 4.
+                        Join("Cragback", 8, 1.3f, 2.5f, maxDifficulty: Medium), Join("Cragback", 4, 1.3f, 2.5f, minDifficulty: Hard),
                         Join("Wisp", 8, 1.4f, 1.3f),
                         // Round 34b (Remco): the plated pack from wave 3 on Hard and Psycho, as on Glass Meadows.
                         Join("Cragback", 3, 1.5f, 2f, minDifficulty: Hard, pack: 3),

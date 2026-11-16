@@ -85,6 +85,7 @@ namespace Game.Tests
         public IEnumerator Measure_Yardstick_ObviousFamily()
         {
             var results = new List<BalanceProbeTests.ProbeResult>();
+            bool monoOnly = BalanceProbeTests.MonoRowsOnly();
             List<int> seeds = BalanceProbeTests.Seeds();
             foreach (int node in BalanceProbeTests.ExistingLevels(false))
             {
@@ -108,13 +109,18 @@ namespace Game.Tests
                             yield return BalanceProbeTests.Probe(run, ProbeStrategy.Mono(tower), results, seed);
                         }
 
+                        if (monoOnly)
+                        {
+                            continue;
+                        }
+
                         yield return BalanceProbeTests.Probe(run, ProbeStrategy.NaiveBot(), results, seed);
                         yield return BalanceProbeTests.Probe(run, ProbeStrategy.AffordableBot, results, seed);
                         yield return BalanceProbeTests.Probe(run, ProbeStrategy.CreativeBot(), results, seed);
                     }
 
                     // One fresh-save sanity cell (the curator, round 22d): a new player with no upgrades can start the campaign.
-                    if (node == FreshSanityNode && difficulty == FreshSanityDifficulty)
+                    if (node == FreshSanityNode && difficulty == FreshSanityDifficulty && !monoOnly)
                     {
                         foreach (int seed in seeds)
                         {

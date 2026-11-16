@@ -504,7 +504,7 @@ namespace Game.Levels
         /// <summary>A stored wave as the model reads it, with the creatures from the model's own table.</summary>
         public static WaveSpec Spec(WaveDefinition wave, IDictionary<string, EnemyStats> enemies)
         {
-            var spec = new WaveSpec { StartDelay = wave.StartDelay, HealthMultiplier = wave.HealthMultiplier, BossHealthScale = wave.BossHealthScale };
+            var spec = new WaveSpec { StartDelay = wave.StartDelay, HealthMultiplier = wave.HealthMultiplier, BossHealthScale = wave.BossHealthScale, CounterCheck = wave.CounterCheck };
             foreach (SpawnGroup group in wave.Groups)
             {
                 if (group.Enemy == null)

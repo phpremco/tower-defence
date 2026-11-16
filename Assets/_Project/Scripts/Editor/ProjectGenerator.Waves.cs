@@ -195,6 +195,7 @@ namespace Game.Editor
             wave.FindPropertyRelative("_spawnJitter").floatValue = WaveDefinition.DefaultSpawnJitter;
             wave.FindPropertyRelative("_healthMultiplier").floatValue = spec.HealthMultiplier;
             wave.FindPropertyRelative("_bossHealthScale").floatValue = spec.BossHealthScale;
+            wave.FindPropertyRelative("_counterCheck").boolValue = spec.CounterCheck;
             SerializedProperty array = wave.FindPropertyRelative("_groups");
             array.arraySize = spec.Groups.Count;
             for (int g = 0; g < spec.Groups.Count; g++)

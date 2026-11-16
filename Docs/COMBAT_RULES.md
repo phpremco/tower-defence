@@ -1,6 +1,6 @@
 # COMBAT_RULES.md
 
-The combat rules of Deepwake, since round 67 (2026-11-15). One page that shows who is for what.
+The combat rules of Deepwake, since round 67 (2026-11-15); the growth layer of section 6 since round 68 (2026-11-16). One page that shows who is for what.
 
 Remco's model has two layers:
 
@@ -184,10 +184,63 @@ After a creature trait that needs a counter (armour, air) first appears in a lev
 | May hold (waves) | 2 | 1 | 1 | 0 |
 | Must have lost within (waves after that) | 4 | 4 | 3 | 3 |
 
-Proposal, data in the rules asset (`_graceWaves`, `_fallWithinWaves`). The pipeline checks it as played
-(`balance_pipeline.sh grace` -> `Tools/PlayTest/grace_windows.txt`): for every cell, the yardstick's rows of one tower type
-that is not made for the trait, from the wave the trait first appears. The results per cell are in Docs/BALANCE.md,
-"Round 67".
+One table (`Game.Balance.GrowthWindow`): the generator writes it into the rules asset (`_graceWaves`, `_fallWithinWaves`)
+and onto every wave script.
+
+### How a level makes it happen (round 68)
+
+- **The window opens on the first wave a plated troop walks in.** Through the grace waves the troops come as the script
+  writes them: a few, so guns that are not made for armour can still deal with them.
+- **Then they grow.** With every wave past the window the plated troops come in greater numbers, by the level's growth
+  factor per wave (`armourgrowth` in `Tools/PlayTest/wave_tuning.txt`, per level and difficulty), through the waves a row
+  must fall in; after that they stay as they are. They also close ranks (packs of three, a tight file from a nest), so a
+  blast catches several.
+- **A grown wave aims above the level's curve** by as much as it has grown, so the extra bodies keep their toughness. It
+  is marked as a *counter check* (`WaveDefinition.CounterCheck`) and is left out of the mean of the plain waves, as a boss
+  wave is: the ordinary waves stay on the human curve, the counter checks sit above it on purpose. The cap "no wave asks
+  more than the player with the hero can hold" still applies to them.
+- The same lever exists for flyers (`airgrowth`: the raids, the sprinkle and flying troops). It is built (the composer and the solver) but
+  set on no level yet (see below).
+- **Composition is the second lever**: when a trait opens its window long before the waves are big enough to end a row in
+  it, the troop can walk in later on the easier difficulties (`Join(..., maxDifficulty: Medium)` next to a Hard troop from
+  the old wave; round 68 on Shard Ridge). The window opens on the first plated troop of that difficulty.
+
+Why head count and not a share of the wave: a Cragback walks at 0.6 cells a second down a road of a hundred cells, so
+light fire has minutes on it. Measured: with every non-rush wave nine tenths plated at the old wave size, a Gun Turret row
+still won Landing Site Easy without losing a gate. Armour only forces the counter when there is more of it than light
+fire can strip in the time the walk gives, and that is a matter of how much, not of what share.
+
+### The gate (a failing test)
+
+`CombatRulesTests.NoRowWithoutTheCounter_OutlastsItsWindow_AsPlayed` reads the yardstick's rows of one tower type
+(`balance_pipeline.sh measure`, then `grace` -> `Tools/PlayTest/grace_windows.txt`) and fails when
+
+1. a row without the counter tower **wins** a level whose window closes before the last wave (no exception anywhere), or
+2. a row falls later than the window plus its cell's **allowance** (`GraceWindows.Allowances`: cell, trait, waves late at
+   most, reason).
+
+State after round 68: no row without the counter wins any of the 24 cells (round 67: the Gun Turret row won Landing Site
+Easy and Medium and Glass Meadows Easy, the Laser row Glass Meadows Easy). 94 rows: 56 in time, 1 early, 29 late inside
+an allowance, 8 not judged. The allowances (`GraceWindows.Allowances`, each with its reason in the code):
+
+| Cells | Trait | Late by at most | Why |
+| --- | --- | --- | --- |
+| Landing Site Medium 1, Hard 2, Psycho 3; Glass Meadows Easy 1, Hard 1, Psycho 3 | armour | 1 to 3 waves | Growth is at the measured edge of what a mixed plan still wins. The rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave. |
+| Glass Meadows Medium 1 | armour | 1 wave | At the old scale 1.15 with growth no searched plan won (best 0/3). Scale 1.07 with growth 1.3 ends the row in time, but the best plan then wins 2/3 and the creative bot 0/3; the cell keeps scale 1.0 and growth 1.2 (both 3/3). |
+| Shard Ridge Easy 1, Medium 1 | armour | 1 wave | The Cragbacks now walk in from wave 8 on Easy and Medium (was 4: five waves late); the row falls to the first raid, one wave after the window. |
+| Shard Ridge Hard 6, Psycho 7 | armour | 6 to 7 waves | Remco's plated pack from wave 3 (round 34b) opens the window early and the troops stay few until the raids. Growth 1.5 left no plan winning, growth 1.2 moved no row and cost the creative bot Hard and Psycho. |
+| Quartz Flats Easy 2 | armour | 2 waves | Growth 1.5 left no searched plan winning (best 0/3); the row falls to the raid of wave 8 and after. |
+| Fault Line Easy, Quartz Flats Medium and Psycho, Crysium Vein Medium | air | 1 wave | The row falls to the raid one wave after the window closes. A bigger raid there costs the mixed plan its margin (these are the cells the creative bot already loses seeds on). |
+
+What stands in the way of closing the rest: on Shard Ridge Hard and Psycho the early plated pack is Remco's choice (a later
+pack, or the window counted from the first *grown* plated wave, would close it; his call); on Landing Site and Glass
+Meadows plated troops in the rush and boss waves of the window; the raid one wave earlier on the four air cells.
+
+A row of the counter tower is not judged by the window: the **Cannon row still wins Landing Site** (every difficulty) and
+Glass Meadows Easy, Medium and Psycho, because those levels send nothing the Cannon is off-role for in numbers. Round 68
+tried the one in-roster trait, swarm: a loose stream of Skitters on Landing Site Hard and Psycho (weight 3 from wave 4) and
+the swarm lever at 2.5 both left the Cannon row at 3/3 (a level-1 Cannon clears a swarm only 1.5x slower than a Gun Turret
+per coin) and cost the creative bot Hard. Options in Docs/STATUS.md, round 68.
 
 ## 7. Changing a rule
 

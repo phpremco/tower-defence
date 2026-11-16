@@ -75,6 +75,105 @@ namespace Game.Editor
             /// <summary>The earliest wave a lost run of the row fell at; zero when every run won.</summary>
             public int EarliestFall { get; }
             public Verdict Verdict { get; }
+
+            /// <summary>The last wave the row may fall at: the trait's first wave, the grace waves and the waves it must fall within.</summary>
+            public int Deadline(CombatRules rules) => FirstWave + rules.GraceWaves(Difficulty) + rules.FallWithinWaves(Difficulty) - 1;
+        }
+
+        /// <summary>A cell and trait whose rows may fall later than the window says, by how many waves at most, and why (round 68).</summary>
+        public readonly struct Allowance
+        {
+            public Allowance(string level, int difficulty, EnemyTraits trait, int wavesLate, string reason)
+            {
+                Level = level;
+                Difficulty = difficulty;
+                Trait = trait;
+                WavesLate = wavesLate;
+                Reason = reason;
+            }
+
+            public string Level { get; }
+            public int Difficulty { get; }
+            public EnemyTraits Trait { get; }
+            public int WavesLate { get; }
+            public string Reason { get; }
+        }
+
+        private const string RaidEndsIt = "on Hard and Psycho the plated pack walks in from wave 3 (Remco, round 34b) and the troops stay few until the raids: growth strong enough to end a row by the window left no searched plan winning (round 68, growth 1.5: best plan 0/3; growth 1.2 moved no row and cost the creative bot Hard and Psycho), so the row falls to the first raid instead";
+        private const string LateCragbacks = "the Cragbacks walk in from wave 8 on Easy and Medium (round 68, was wave 4: five waves late); the row falls to the first raid, one wave after the window";
+        private const string MediumScale = "at the old scale 1.15 with growth no searched plan won (best 0/3); scale 1.07 with growth 1.3 ends the row in time but leaves the best plan 2/3 and the creative bot 0/3, so the cell keeps scale 1.0 and growth 1.2 (best plan and creative bot 3/3)";
+        private const string EdgeOfGrowth = "growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave";
+        private const string OneRaidLate = "the row falls to the raid one wave after the window closes; a bigger raid there costs the mixed plan its margin (Quartz Flats and Fault Line are the cells the creative bot already loses seeds on)";
+
+        /// <summary>
+        /// The cells that do not meet the window yet, each with the most waves its rows may be late and the reason. A row later
+        /// than its allowance fails the gate (<c>CombatRulesTests</c>), and so does a row without the counter that wins a level:
+        /// that has no allowance anywhere. Measured in round 68; shorten an allowance when a cell is tuned further.
+        /// </summary>
+        public static readonly Allowance[] Allowances =
+        {
+            new Allowance("Level_C1_01", 1, EnemyTraits.Armoured, 1, EdgeOfGrowth),
+            new Allowance("Level_C1_01", 2, EnemyTraits.Armoured, 2, EdgeOfGrowth),
+            new Allowance("Level_C1_01", 3, EnemyTraits.Armoured, 3, EdgeOfGrowth),
+            new Allowance("Level_C1_02", 0, EnemyTraits.Armoured, 1, EdgeOfGrowth),
+            new Allowance("Level_C1_02", 1, EnemyTraits.Armoured, 1, MediumScale),
+            new Allowance("Level_C1_02", 2, EnemyTraits.Armoured, 1, EdgeOfGrowth),
+            new Allowance("Level_C1_02", 3, EnemyTraits.Armoured, 3, EdgeOfGrowth),
+            new Allowance("Level_C1_03", 0, EnemyTraits.Armoured, 1, LateCragbacks),
+            new Allowance("Level_C1_03", 1, EnemyTraits.Armoured, 1, LateCragbacks),
+            new Allowance("Level_C1_03", 2, EnemyTraits.Armoured, 6, RaidEndsIt),
+            new Allowance("Level_C1_03", 3, EnemyTraits.Armoured, 7, RaidEndsIt),
+            new Allowance("Level_C1_04", 0, EnemyTraits.Airborne, 1, OneRaidLate),
+            new Allowance("Level_C1_05", 0, EnemyTraits.Armoured, 2, "growth 1.5 here left no searched plan winning (round 68: best plan 0/3); the row falls to the raid of wave 8 and the waves after it"),
+            new Allowance("Level_C1_05", 1, EnemyTraits.Airborne, 1, OneRaidLate),
+            new Allowance("Level_C1_05", 3, EnemyTraits.Airborne, 1, OneRaidLate),
+            new Allowance("Level_C1_06", 1, EnemyTraits.Airborne, 1, OneRaidLate),
+        };
+
+        /// <summary>The allowance of a cell and trait, or null.</summary>
+        public static Allowance? AllowanceFor(string level, int difficulty, EnemyTraits trait)
+        {
+            foreach (Allowance allowance in Allowances)
+            {
+                if (allowance.Level == level && allowance.Difficulty == difficulty && allowance.Trait == trait)
+                {
+                    return allowance;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// What breaks the gate: a row without the counter that wins a level whose window closes before the last wave, and a row
+        /// that falls later than the window plus its cell's allowance. Empty when the growth layer holds.
+        /// </summary>
+        public static List<string> Breaks(CombatRules rules)
+        {
+            var breaks = new List<string>();
+            foreach (Row row in Rows(rules))
+            {
+                if (row.Verdict != Verdict.Late)
+                {
+                    continue;
+                }
+
+                string cell = Invariant($"{row.Level} {Names[row.Difficulty]}, {row.Trait}, {row.Tower} row");
+                if (row.Wins * 2 > row.Runs || row.EarliestFall == 0)
+                {
+                    breaks.Add(cell + Invariant($": wins {row.Wins}/{row.Runs} without the counter tower"));
+                    continue;
+                }
+
+                int late = row.EarliestFall - row.Deadline(rules);
+                Allowance? allowance = AllowanceFor(row.Level, row.Difficulty, row.Trait);
+                if (allowance == null || late > allowance.Value.WavesLate)
+                {
+                    breaks.Add(cell + Invariant($": fell at wave {row.EarliestFall}, {late} after the window (allowed: {(allowance == null ? 0 : allowance.Value.WavesLate)})"));
+                }
+            }
+
+            return breaks;
         }
 
         /// <summary>The verdict for one row: the wave it fell at against the trait's first wave and the difficulty's window.</summary>
@@ -230,7 +329,14 @@ namespace Game.Editor
                 counts[(int)row.Verdict]++;
                 string fell = row.EarliestFall > 0 ? "w" + row.EarliestFall : "-";
                 string held = row.EarliestFall >= row.FirstWave ? (row.EarliestFall - row.FirstWave).ToString() : row.EarliestFall == 0 ? "all" : "-";
-                text.Append(Invariant($"| {row.Level.Replace("Level_", string.Empty)} {Names[row.Difficulty]} | {row.Trait} | w{row.FirstWave} of {row.Waves} | {row.Tower} | {row.Wins}/{row.Runs} | {fell} | {held} | {Words(row.Verdict)} |\n"));
+                text.Append(Invariant($"| {row.Level.Replace("Level_", string.Empty)} {Names[row.Difficulty]} | {row.Trait} | w{row.FirstWave} of {row.Waves} | {row.Tower} | {row.Wins}/{row.Runs} | {fell} | {held} | {Words(row.Verdict)}{Allowed(row, rules)} |\n"));
+            }
+
+            List<string> breaks = Breaks(rules);
+            text.Append(Invariant($"\nGate (CombatRulesTests): {(breaks.Count == 0 ? "holds" : breaks.Count + " breaks")}. No row without the counter may win; a late row needs an allowance with a reason (GraceWindows.Allowances).\n"));
+            foreach (string line in breaks)
+            {
+                text.Append("- BREAK: ").Append(line).Append('\n');
             }
 
             text.Append(Invariant($"\n{rows.Count} rows: {counts[(int)Verdict.InTime]} in time, {counts[(int)Verdict.Early]} early, {counts[(int)Verdict.Late]} late, {counts[(int)Verdict.NotJudged]} not judged.\n"));
@@ -238,6 +344,16 @@ namespace Game.Editor
         }
 
         private static readonly string[] Names = { "Easy", "Medium", "Hard", "Psycho" };
+
+        // A late row inside its cell's allowance says so, with the reason.
+        private static string Allowed(Row row, CombatRules rules)
+        {
+            Allowance? allowance = row.Verdict == Verdict.Late ? AllowanceFor(row.Level, row.Difficulty, row.Trait) : null;
+            int late = row.EarliestFall - row.Deadline(rules);
+            return allowance != null && row.EarliestFall > 0 && late <= allowance.Value.WavesLate
+                ? Invariant($" ({late} late, allowed {allowance.Value.WavesLate}: {allowance.Value.Reason})")
+                : string.Empty;
+        }
 
         private static string Words(Verdict verdict)
         {

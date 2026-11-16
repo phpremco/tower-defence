@@ -121,7 +121,88 @@ namespace Game.Balance
             }
         }
 
-        public static WaveSpec Compose(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int number, float health, int secondRoad, BalanceRules rules)
+        public static WaveSpec Compose(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int number, float health, int secondRoad, BalanceRules rules) =>
+            Compose(script, enemies, difficulty, number, health, secondRoad, rules, GrowthOn(script, enemies, difficulty, number, secondRoad, rules));
+
+        /// <summary>
+        /// What a counter trait's troops gain on one wave (round 68, the growth layer of the combat rules): 1 up to the end of the
+        /// grace window after the trait's first wave, then the script's growth factor per wave, capped. A defence without the
+        /// counter tower may hold the first waves of a trait and must lose a few waves later; the player's own curve does not
+        /// move, because the solver sizes the wave against a player who buys the counter.
+        /// </summary>
+        public readonly struct TraitGrowth
+        {
+            public TraitGrowth(float armour, float air)
+            {
+                Armour = armour;
+                Air = air;
+            }
+
+            public float Armour { get; }
+            public float Air { get; }
+
+            public static TraitGrowth None => new TraitGrowth(1f, 1f);
+        }
+
+        /// <summary>The most a trait's troops may gain over what the script writes: past it a wave would be nothing else.</summary>
+        public const float MaxTraitGrowth = 6f;
+
+        // The pack a plated troop walks in once it has grown past its grace window.
+        private const int GrownPack = 3;
+
+        public static TraitGrowth GrowthOn(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int number, int secondRoad, BalanceRules rules)
+        {
+            float armour = script.ArmourGrowthFor(difficulty);
+            float air = script.AirGrowthFor(difficulty);
+            if (armour == 1f && air == 1f)
+            {
+                return TraitGrowth.None;
+            }
+
+            int grace = script.GraceWavesFor(difficulty);
+            return new TraitGrowth(
+                Grown(armour, number, armour == 1f ? 0 : FirstTraitWave(script, enemies, difficulty, secondRoad, rules, false), grace, script.FallWithinWavesFor(difficulty)),
+                Grown(air, number, air == 1f ? 0 : FirstTraitWave(script, enemies, difficulty, secondRoad, rules, true), grace, script.FallWithinWavesFor(difficulty)));
+        }
+
+        // The troops grow wave by wave through the window the defence without the counter must fall in, then stay as they are.
+        private static float Grown(float growth, int number, int first, int grace, int fallWithin)
+        {
+            int past = first > 0 ? Math.Min(number - first - grace + 1, Math.Max(1, fallWithin)) : 0;
+            return growth == 1f || past <= 0 ? 1f : Math.Min(MaxTraitGrowth, (float)Math.Pow(growth, past));
+        }
+
+        /// <summary>
+        /// The first wave (from 1) a troop with the trait walks or flies in on this difficulty, as the script composes it without
+        /// growth (bosses apart: the window is about the troops a counter tower is bought for); zero when none does. Remembered
+        /// on the script per difficulty and raid floor, because the solver composes a wave thousands of times.
+        /// </summary>
+        public static int FirstTraitWave(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int secondRoad, BalanceRules rules, bool air)
+        {
+            long key = ((long)script.FirstAirWaveFloorFor(difficulty) << 8) | ((long)difficulty << 1) | (air ? 1L : 0L);
+            if (script.FirstTraitWaves.TryGetValue(key, out int first))
+            {
+                return first;
+            }
+
+            first = 0;
+            for (int number = 1; number <= script.Waves && first == 0; number++)
+            {
+                foreach (GroupSpec group in Compose(script, enemies, difficulty, number, 1f, secondRoad, rules, TraitGrowth.None).Groups)
+                {
+                    if (!group.Enemy.IsBoss && (air ? group.Enemy.Flies : group.Enemy.Armor > 0f))
+                    {
+                        first = number;
+                        break;
+                    }
+                }
+            }
+
+            script.FirstTraitWaves[key] = first;
+            return first;
+        }
+
+        private static WaveSpec Compose(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int number, float health, int secondRoad, BalanceRules rules, TraitGrowth growth)
         {
             var random = new Random(Seed(script.Key, difficulty, number - 1));
             float budget = script.BudgetOf(number);
@@ -144,28 +225,28 @@ namespace Game.Balance
             switch (kind)
             {
                 case Kind.Rush:
-                    shortfall = Fill(result, budget * RushBudget, Cheapest(open, 2, enemies, rules), RushTempo, secondRoad, random, script, difficulty, number, enemies, rules);
+                    shortfall = Fill(result, budget * RushBudget, Cheapest(open, 2, enemies, rules), RushTempo, secondRoad, random, growth, script, difficulty, number, enemies, rules);
                     break;
                 case Kind.Heavy:
                     TroopSpec heavy = Toughest(open, enemies, rules);
                     if (heavy != null)
                     {
-                        shortfall = Fill(result, budget * HeavyShare, new List<TroopSpec> { heavy }, HeavyTempo, secondRoad, random, script, difficulty, number, enemies, rules);
-                        shortfall += Fill(result, budget * (1f - HeavyShare), Without(open, heavy), 1f, secondRoad, random, script, difficulty, number, enemies, rules);
+                        shortfall = Fill(result, budget * HeavyShare, new List<TroopSpec> { heavy }, HeavyTempo, secondRoad, random, growth, script, difficulty, number, enemies, rules);
+                        shortfall += Fill(result, budget * (1f - HeavyShare), Without(open, heavy), 1f, secondRoad, random, growth, script, difficulty, number, enemies, rules);
                     }
 
                     break;
                 case Kind.Air:
-                    AddFlyers(result, flyer, budget * AirShare * script.AirRaidScaleFor(difficulty), 0f, script.FlyerInterval, rules);
-                    shortfall = Fill(result, budget * AirGroundShare, open, 1f, secondRoad, random, script, difficulty, number, enemies, rules);
+                    AddFlyers(result, flyer, budget * AirShare * script.AirRaidScaleFor(difficulty) * growth.Air, 0f, script.FlyerInterval, rules);
+                    shortfall = Fill(result, budget * AirGroundShare, open, 1f, secondRoad, random, growth, script, difficulty, number, enemies, rules);
                     break;
                 case Kind.Ambush when pools.Count > 0:
                     float ambush = AmbushSharePerDifficulty[Math.Min(difficulty, AmbushSharePerDifficulty.Length - 1)];
-                    shortfall = Fill(result, budget * (1f - ambush), open, 1f, secondRoad, random, script, difficulty, number, enemies, rules);
-                    shortfall += Fill(result, budget * ambush, pools, 1f, secondRoad, random, script, difficulty, number, enemies, rules, AmbushDelaySeconds);
+                    shortfall = Fill(result, budget * (1f - ambush), open, 1f, secondRoad, random, growth, script, difficulty, number, enemies, rules);
+                    shortfall += Fill(result, budget * ambush, pools, 1f, secondRoad, random, growth, script, difficulty, number, enemies, rules, AmbushDelaySeconds);
                     break;
                 default:
-                    shortfall = Fill(result, budget, open, 1f, secondRoad, random, script, difficulty, number, enemies, rules);
+                    shortfall = Fill(result, budget, open, 1f, secondRoad, random, growth, script, difficulty, number, enemies, rules);
                     break;
             }
 
@@ -182,7 +263,7 @@ namespace Game.Balance
             // On the harder difficulties the sky stays contested between the air raids.
             if (HasSprinkle(script, difficulty, number))
             {
-                AddFlyers(result, flyer, budget * SprinkleShare, TroopStagger * 2f, FlyerInterval, rules);
+                AddFlyers(result, flyer, budget * SprinkleShare * growth.Air, TroopStagger * 2f, FlyerInterval, rules);
             }
 
             if (boss != null)
@@ -191,7 +272,22 @@ namespace Game.Balance
             }
 
             AddTeasers(result, script, number, enemies);
+            wave.CounterCheck = growth.Armour > 1f && HasPlatedTroops(result);
             return wave;
+        }
+
+        /// <summary>Whether plated troops (bosses apart) come in these groups.</summary>
+        public static bool HasPlatedTroops(List<GroupSpec> groups)
+        {
+            foreach (GroupSpec group in groups)
+            {
+                if (!group.Enemy.IsBoss && group.Enemy.Armor > 0f)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         // A teaser walks in a little after the wave opens, through the main gate or along the north flight route.
@@ -301,7 +397,7 @@ namespace Game.Balance
             var list = new List<TroopSpec>();
             foreach (TroopSpec troop in troops)
             {
-                if (troop.FirstWave <= number && troop.MinDifficulty <= difficulty && (troop.Source != 0) == pools)
+                if (troop.FirstWave <= number && troop.MinDifficulty <= difficulty && difficulty <= troop.MaxDifficulty && (troop.Source != 0) == pools)
                 {
                     list.Add(troop);
                 }
@@ -346,7 +442,7 @@ namespace Game.Balance
 
         // Spends a budget over troops by weight, leaning towards tougher creatures as the level goes on; gate troops are
         // cut into clusters over the lanes, pool and nest troops surface as one group.
-        private static float Fill(List<GroupSpec> output, float budget, List<TroopSpec> troops, float tempo, int secondRoad, Random random, WaveScriptSpec script, int difficulty, int number, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules, float extraDelay = 0f)
+        private static float Fill(List<GroupSpec> output, float budget, List<TroopSpec> troops, float tempo, int secondRoad, Random random, TraitGrowth growth, WaveScriptSpec script, int difficulty, int number, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules, float extraDelay = 0f)
         {
             if (troops.Count == 0 || budget <= 0f)
             {
@@ -372,7 +468,8 @@ namespace Game.Balance
 
                 float threat = Threat.Of(enemy, rules);
                 float share = budget * Weight(troop, bias, enemies, rules) * PlatedLever(troop, script, difficulty, enemies) * SwarmLever(troop, troops, script, difficulty, enemies) / totalWeight;
-                int wanted = (int)Math.Round(share / threat);
+                // Growth past a grace window adds bodies on top of the troop's share: the other troops of the wave keep theirs.
+                int wanted = (int)Math.Round(share * Grown(troop, growth, enemies) / threat);
                 int count = Math.Min(MaxGroupCount, Math.Max(share >= threat * MinShare ? 1 : 0, wanted));
                 if (wanted > MaxGroupCount)
                 {
@@ -399,12 +496,16 @@ namespace Game.Balance
                     Source = troop.Source,
                     Path = Road,
                 };
+                // Round 68: plated troops that have grown past their grace window close ranks (packs at the gate, a tight file from
+                // a nest), so a blast catches several and light fire, one target at a time, falls behind.
+                bool ranks = enemy.Armor > 0f && growth.Armour > 1f;
                 if (troop.Source == 0)
                 {
-                    Scatter(group, random.Next(0, 1000), LanesFor(enemy, secondRoad), output, troop.Pack, troop.Loose);
+                    Scatter(group, random.Next(0, 1000), LanesFor(enemy, secondRoad), output, ranks ? Math.Max(troop.Pack, GrownPack) : troop.Pack, troop.Loose && !ranks);
                 }
                 else
                 {
+                    group.Interval *= ranks ? PackInnerIntervalShare : 1f;
                     output.Add(group);
                 }
 
@@ -422,6 +523,13 @@ namespace Game.Balance
         {
             EnemyStats enemy = Get(enemies, troop.Enemy);
             return enemy != null && enemy.Armor > 0f ? script.PlatedBiasFor(difficulty) : 1f;
+        }
+
+        // Round 68, growth: a plated troop and a flying troop come in greater numbers with every wave past their trait's grace window.
+        private static float Grown(TroopSpec troop, TraitGrowth growth, IReadOnlyDictionary<string, EnemyStats> enemies)
+        {
+            EnemyStats enemy = Get(enemies, troop.Enemy);
+            return enemy == null ? 1f : (enemy.Armor > 0f ? growth.Armour : 1f) * (enemy.Flies ? growth.Air : 1f);
         }
 
         // Round 27, the swarm lever: troops without armour and no heavier than twice the lightest troop of the fill weigh more on the

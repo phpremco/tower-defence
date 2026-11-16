@@ -75,7 +75,7 @@ parse_filter() {
       difficulties=*) DIFFS_F="${line#difficulties=}" ;;
       seeds=*) SEEDS_F="${line#seeds=}" ;;
       cells=*) CELLS_F="${line#cells=}" ;;
-      step=*|seed=*) EXTRA_F="${EXTRA_F:-}$line"$'\n' ;;
+      step=*|seed=*|rows=*) EXTRA_F="${EXTRA_F:-}$line"$'\n' ;;
       *) echo "unknown filter line: $line" >&2; exit 1 ;;
     esac
   done

@@ -2504,3 +2504,90 @@ Reading it:
 
 The check is a report, not a test: it says where the level layer does not yet follow the rule, cell by cell. The verdict
 logic is tested (`CombatRulesTests.TheGraceWindow_ShrinksWithTheDifficulty_AndJudgesARow`).
+
+## Round 68: the level layer, growth past the grace window (2026-11-16)
+
+The page for the rule: Docs/COMBAT_RULES.md section 6. The tables: `Tools/PlayTest/grace_windows.txt`,
+`Tools/PlayTest/acceptance.txt`, `Tools/PlayTest/Plans/README.md`. All on calibration 2026-11-15 21:53 (inputs 5fea0658,
+factors kept, re-stamped after the finale apply).
+
+### Levers per level (`Tools/PlayTest/wave_tuning.txt` and `LevelSpecs.Crystal.cs`)
+
+| Level | Lever | Easy | Medium | Hard | Psycho |
+| --- | --- | --- | --- | --- | --- |
+| Landing Site (C1_01) | armourgrowth | 1.4 (was none; scale 0.87 -> 0.8) | 1.4 | 1.5 | 1.5 |
+| Glass Meadows (C1_02) | armourgrowth | 1.3 | 1.2 (scale 1.15 -> 1.0) | 1.5 | 1.5 |
+| Shard Ridge (C1_03) | composition | Cragbacks from wave 8 (was 4) | from wave 8 | as before (pack from 3) | as before |
+| Fault Line, Quartz Flats, Crysium Vein | none | | | | |
+
+Tried and taken back: growth 1.5 on Shard Ridge and Quartz Flats (first agent: best plan 0/3); growth 1.2 on Shard Ridge
+(no row fell earlier, the creative bot lost Hard and Psycho); the swarm lever 2.5 and a loose Skitter stream on Landing
+Site Hard and Psycho (the Cannon row still 3/3, the creative bot lost Hard); a thinner boss crowd (0.35) on Quartz Flats
+Medium and Hard (the creative bot still lost the last wave); Glass Meadows Medium at scale 1.07 with growth 1.3 (row in
+time, best plan 2/3, creative bot 0/3).
+
+### Grace windows (rows of one tower type without the counter)
+
+| | Round 67 | Takeover (first agent) | End of round 68 |
+| --- | --- | --- | --- |
+| Rows that win a level | 4 (Gun Turret: Landing Site Easy and Medium, Glass Meadows Easy; Laser: Glass Meadows Easy) | 0 | 0 |
+| In time / early / late / not judged | 56 / 1 / 29 / 8 | 57 / 1 / 28 / 8 | 56 / 1 / 29 / 8 |
+| Late rows outside an allowance (the gate) | no gate | 0 | 0 |
+| Waves of allowance summed over the cells | - | 39 | 33 |
+
+Per cell (armour unless noted; the row's fall wave against the window's last wave):
+
+| Cell | Round 67 | Now |
+| --- | --- | --- |
+| Landing Site Easy | Gun row wins | Gun falls w12, in time |
+| Landing Site Medium | Gun row wins | Gun falls w12, 1 late (allowed) |
+| Landing Site Hard / Psycho | Gun w12 late; Laser w10 / w11 | same, 2 / 3 late (allowed) |
+| Glass Meadows Easy | Gun and Laser win | both fall w12, 1 late (allowed) |
+| Glass Meadows Medium | Gun / Laser w10 in time | Gun w11 (1 late, allowed), Laser w10 in time |
+| Glass Meadows Hard / Psycho | w10 late | Hard w10 1 late; Psycho Gun w11 3 late (allowed) |
+| Shard Ridge Easy / Medium | w14 / w13, 5 late | window opens w8: 1 late each (allowed) |
+| Shard Ridge Hard / Psycho | w13, 6 / 7 late | unchanged (allowed) |
+| Fault Line, Quartz Flats, Crysium Vein | as round 67 | unchanged (round 67 air cells 1 late, Quartz Flats Easy armour 2 late, allowed) |
+
+### Acceptance, play and the bots
+
+- **Acceptance 8 of 24** (round 67: 10; at takeover 7). Pass: Landing Site Easy, Shard Ridge Medium, Fault Line Hard,
+  Quartz Flats Medium and Hard, Crysium Vein Medium, Hard and Psycho. Lost against round 67: Landing Site Medium (tutorial:
+  only one replayed plan wins, the best 2/3) and Glass Meadows Easy (the Easy rule "two of three obvious kinds win" counts
+  the mono rows as one kind: with the off-role rows now losing by design, the kind loses even though the Cannon row wins;
+  open decision). Regained: Landing Site Easy (scale 0.8 with growth 1.4: best plan 3/3, 3 stars).
+- **README 24 of 24**: every cell has a replayed plan that wins on most seeds. Best plan 3/3 in 23 cells, 2/3 in Landing
+  Site Medium.
+- **Creative bot** (round 67 -> now): Glass Meadows Medium 3/3 -> 3/3 (it was 1/3 at takeover), Landing Site Hard 3/3,
+  Quartz Flats Medium 1/3 (unchanged), Quartz Flats Hard 0/3 (unchanged), Fault Line Medium 1/3 (unchanged). The Quartz
+  Flats losses are the last wave (the Core Wisp): the searched plans win it, the bot does not buy enough Flak; a thinner
+  crowd did not help.
+- Bands: `BalanceLedgerTests` pass (every wave inside its difficulty band; counter-check waves are left out of the plain
+  mean, as boss waves are).
+
+### Finale probe (continent bosses)
+
+Probed on all four difficulties (seed 1), Medium also on seeds 2 and 3 (`finale_workers.sh 1:2 1:3`, new): the Frost Warden
+lost at its data health on Medium on every seed (holds x0.85 to x0.92) and the Rotbloom held x8.9 on every seed. Two apply
+steps (the health moves at most x3 per apply, hold share 0.85):
+
+| Boss | Round 67 | Step 1 | Step 2 (data now) |
+| --- | --- | --- | --- |
+| Gravemaw | 43250 | 43500 | 43750 |
+| Cinder Matriarch | 10400 | 13450 | 14700 |
+| Frost Warden | 6950 | 5000 | 5050 |
+| Rotbloom | 3550 | 10650 | 28200, then back to 3550 (below) |
+| Shattered | 14100 | 14200 | 14300 |
+| Sealed One | 31050 | 26400 | 25450 |
+
+Boss health shares unchanged (Hard and Psycho keep the designer's 1.25; the probe would write 1.45). The verification probe
+after step 2 (`Tools/PlayTest/finale_probe.txt`): every boss won at its data health on all four difficulties (Medium
+holds x1.18 for five of them) except the **Rotbloom**: at 28200 it lost on Medium (holds x0.92), and on paper 28200 asks 6.8
+times the hero cap (`ContinentFinaleTests`). Before round 67 the probe had it at x1.18 for 3550; since round 67 play makes
+it nine times easier while the model does not. It is back at 3550 (`Tools/PlayTest/Scripts/R68Rotbloom.cs`) and named in
+`ContinentFinaleTests.PaperHeldBosses` with that reason: an open point (its petals in the model or in the game). A later
+`balance_pipeline.sh finale` would raise it again; skip it or re-set it with that script.
+
+Probe history: round 68 seed 1 `Tools/PlayTest/r68_finale_probe.txt`, Medium seeds 2 and 3
+`r68_finale_probe_medium_seeds23.txt`, after step 1 `r68_finale_probe_pass2.txt`, after step 2 `finale_probe.txt`. None of these bosses walks in Crystal Plains 1 to 6, so
+the levels' waves did not move (re-solved: identical).

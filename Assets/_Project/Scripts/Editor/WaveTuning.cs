@@ -16,9 +16,13 @@ namespace Game.Editor
         /// <summary>The share of a boss wave's budget its crowd keeps (round 65); zero leaves it to the rules.</summary>
         public float BossCrowd;
 
-        public static ScriptLever None => new ScriptLever { Plated = 1f, Swarm = 1f, Tempo = 1f, Raid = 0, BossCrowd = 0f };
+        /// <summary>Growth of plated troops and of flyers per wave past the grace window (round 68); 1 is none.</summary>
+        public float ArmourGrowth;
+        public float AirGrowth;
 
-        public bool IsNone => Plated == 1f && Swarm == 1f && Tempo == 1f && Raid == 0 && BossCrowd == 0f;
+        public static ScriptLever None => new ScriptLever { Plated = 1f, Swarm = 1f, Tempo = 1f, Raid = 0, BossCrowd = 0f, ArmourGrowth = 1f, AirGrowth = 1f };
+
+        public bool IsNone => Plated == 1f && Swarm == 1f && Tempo == 1f && Raid == 0 && BossCrowd == 0f && ArmourGrowth == 1f && AirGrowth == 1f;
     }
 
     /// <summary>
@@ -26,7 +30,7 @@ namespace Game.Editor
     /// calibrated to (1 = the curve; 1.15 = fifteen percent harder), and since round 22e the script-level levers for cells the
     /// scale cannot move (the curator's decision 4): plated troops weighted up, a faster tempo, an early raid, and since
     /// round 65 a thinner crowd on the boss waves. Kept in Tools/PlayTest/wave_tuning.txt ("Key difficulty scale" and
-    /// "Key difficulty plated|swarm|tempo|raid|bosscrowd value" per line), written by
+    /// "Key difficulty plated|swarm|tempo|raid|bosscrowd|armourgrowth|airgrowth value" per line; the last two are round 68's growth past the grace window), written by
     /// the builder stage for failing cells only, read by <see cref="WaveScripts"/> every time the scripts are built, so the
     /// generator, the BalanceLab tool and the tests all see the same tuned scripts. Pure C#.
     /// </summary>
@@ -38,6 +42,8 @@ namespace Game.Editor
         private const string TempoKey = "tempo";
         private const string RaidKey = "raid";
         private const string BossCrowdKey = "bosscrowd";
+        private const string ArmourGrowthKey = "armourgrowth";
+        private const string AirGrowthKey = "airgrowth";
 
         /// <summary>Applies the file's scales and levers to the scripts (a script not listed keeps 1 on every difficulty).</summary>
         public static void Apply(IEnumerable<WaveScriptSpec> scripts)
@@ -52,6 +58,8 @@ namespace Game.Editor
                 var tempo = new float[4];
                 var raid = new int[4];
                 var bossCrowd = new float[4];
+                var armourGrowth = new float[4];
+                var airGrowth = new float[4];
                 bool any = false;
                 bool anyLever = false;
                 for (int d = 0; d < values.Length; d++)
@@ -64,6 +72,8 @@ namespace Game.Editor
                     tempo[d] = lever.Tempo;
                     raid[d] = lever.Raid;
                     bossCrowd[d] = lever.BossCrowd;
+                    armourGrowth[d] = lever.ArmourGrowth;
+                    airGrowth[d] = lever.AirGrowth;
                     anyLever |= !lever.IsNone;
                 }
 
@@ -73,6 +83,10 @@ namespace Game.Editor
                 script.Tempo = anyLever ? tempo : new[] { 1f };
                 script.RaidWave = anyLever ? raid : new[] { 0 };
                 script.BossCrowd = anyLever ? bossCrowd : new[] { 0f };
+                script.ArmourGrowth = anyLever ? armourGrowth : new[] { 1f };
+                script.AirGrowth = anyLever ? airGrowth : new[] { 1f };
+                script.GraceWaves = GrowthWindow.GraceWaves;
+                script.FallWithinWaves = GrowthWindow.FallWithinWaves;
             }
         }
 
@@ -119,6 +133,12 @@ namespace Game.Editor
                         break;
                     case BossCrowdKey:
                         lever.BossCrowd = value;
+                        break;
+                    case ArmourGrowthKey:
+                        lever.ArmourGrowth = value;
+                        break;
+                    case AirGrowthKey:
+                        lever.AirGrowth = value;
                         break;
                 }
 
@@ -167,6 +187,16 @@ namespace Game.Editor
                 if (pair.Value.BossCrowd != 0f)
                 {
                     lines.Add(cell + BossCrowdKey + " " + pair.Value.BossCrowd.ToString("0.###", CultureInfo.InvariantCulture));
+                }
+
+                if (pair.Value.ArmourGrowth != 1f)
+                {
+                    lines.Add(cell + ArmourGrowthKey + " " + pair.Value.ArmourGrowth.ToString("0.###", CultureInfo.InvariantCulture));
+                }
+
+                if (pair.Value.AirGrowth != 1f)
+                {
+                    lines.Add(cell + AirGrowthKey + " " + pair.Value.AirGrowth.ToString("0.###", CultureInfo.InvariantCulture));
                 }
             }
 

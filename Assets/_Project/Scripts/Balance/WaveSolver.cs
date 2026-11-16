@@ -26,10 +26,14 @@ namespace Game.Balance
         private const float MaxDrop = 0.7f;
 
         /// <summary>The pressure the solver aims a wave at, on Medium.</summary>
-        public static float Target(WaveScriptSpec script, int number, BalanceRules rules) => TargetOn(script, SolveDifficulty, number, rules);
+        public static float Target(WaveScriptSpec script, int number, BalanceRules rules, float airGrowth = 1f) => TargetOn(script, SolveDifficulty, number, rules, airGrowth);
 
-        /// <summary>The Medium target curve, read with the wave kinds and bosses of the given difficulty.</summary>
-        public static float TargetOn(WaveScriptSpec script, int difficulty, int number, BalanceRules rules)
+        /// <summary>
+        /// The Medium target curve, read with the wave kinds and bosses of the given difficulty. A raid that has grown past its
+        /// grace window (<paramref name="airGrowth"/>, <see cref="WaveComposer.GrowthOn"/>) aims as much higher as it has more
+        /// flyers, so they keep their toughness, as with the raid scale of the script.
+        /// </summary>
+        public static float TargetOn(WaveScriptSpec script, int difficulty, int number, BalanceRules rules, float airGrowth = 1f)
         {
             float phase = script.Waves > 1 ? (number - 1) / (float)(script.Waves - 1) : 0f;
             float target = rules.TargetPressure * (rules.EarlyTargetShare + (rules.LateTargetShare - rules.EarlyTargetShare) * phase);
@@ -57,10 +61,27 @@ namespace Game.Balance
                 case WaveComposer.Kind.Ambush:
                     return target * rules.AmbushFactor;
                 case WaveComposer.Kind.Air:
-                    return target * rules.AirFactor * script.AirRaidScaleFor(difficulty);
+                    return target * rules.AirFactor * script.AirRaidScaleFor(difficulty) * airGrowth;
                 default:
                     return target;
             }
+        }
+
+        /// <summary>
+        /// How much higher a wave aims once its plated troops have grown past their grace window (round 68): as much as they
+        /// have grown in number (<see cref="WaveComposer.GrowthOn"/>), so the extra bodies keep the toughness of the first
+        /// ones, as with a raid and its scale. One for a wave without plated troops. The human calibration then sets the level
+        /// of the whole curve, so the level asks no more in all; it asks it where the armour is.
+        /// </summary>
+        public static float ArmourAim(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int number, int secondRoad, BalanceRules rules)
+        {
+            float growth = WaveComposer.GrowthOn(script, enemies, difficulty, number, secondRoad, rules).Armour;
+            if (growth <= 1f)
+            {
+                return 1f;
+            }
+
+            return WaveComposer.Compose(script, enemies, difficulty, number, 1f, secondRoad, rules).CounterCheck ? growth : 1f;
         }
 
         /// <summary>One health multiplier per wave, solved on Medium against the player the level expects there.</summary>
@@ -78,7 +99,7 @@ namespace Game.Balance
                 purse.Begin(timing);
                 float carried = purse.Carried(timing);
                 int money = purse.Money(i, script.Waves);
-                float target = Target(script, number, rules);
+                float target = Target(script, number, rules, WaveComposer.GrowthOn(script, enemies, SolveDifficulty, number, secondRoad, rules).Air) * ArmourAim(script, enemies, SolveDifficulty, number, secondRoad, rules);
                 bool boss = WaveComposer.BossOn(script, SolveDifficulty, number) != null;
                 // The same creature should not change much from one wave to the next: the multiplier follows the recent
                 // trend within a band, so a wave that is light for its kind stays light instead of growing a wall.
@@ -144,14 +165,17 @@ namespace Game.Balance
                 purse.Begin(timing);
                 float carried = purse.Carried(timing);
                 int money = purse.Money(i, script.Waves);
+                float airGrowth = WaveComposer.GrowthOn(script, enemies, d, number, secondRoad, rules).Air;
+                float armourAim = ArmourAim(script, enemies, d, number, secondRoad, rules);
                 bool changed = WaveComposer.KindOf(script, d, number) != WaveComposer.KindOf(script, SolveDifficulty, number)
                     || WaveComposer.BossOn(script, d, number) != WaveComposer.BossOn(script, SolveDifficulty, number)
                     || WaveComposer.HasSprinkle(script, d, number) != WaveComposer.HasSprinkle(script, SolveDifficulty, number)
-                    || (WaveComposer.KindOf(script, d, number) == WaveComposer.Kind.Air && script.AirRaidScaleFor(d) != script.AirRaidScaleFor(SolveDifficulty))
+                    || (WaveComposer.KindOf(script, d, number) == WaveComposer.Kind.Air && script.AirRaidScaleFor(d) * airGrowth != script.AirRaidScaleFor(SolveDifficulty) * WaveComposer.GrowthOn(script, enemies, SolveDifficulty, number, secondRoad, rules).Air)
+                    || armourAim != ArmourAim(script, enemies, SolveDifficulty, number, secondRoad, rules)
                     || WaveComposer.KindOf(script, d, number) == WaveComposer.Kind.Ambush;
                 if (changed)
                 {
-                    float target = TargetOn(script, d, number, rules) * share;
+                    float target = TargetOn(script, d, number, rules, airGrowth) * share * armourAim;
                     healths[i] = (float)Math.Round(BisectOn(script, enemies, level, difficulty, secondRoad, rules, number, money, held, carried, target, MinHealth, MaxHealth), 3);
                 }
 
@@ -160,7 +184,7 @@ namespace Game.Balance
                 // at that point (an extra boss wave earns less); such a wave is solved on its own like a changed one.
                 if (!changed && WaveComposer.BossOn(script, d, number) == null && line.Pressure > rules.MaxPressure(d))
                 {
-                    float target = TargetOn(script, d, number, rules) * share;
+                    float target = TargetOn(script, d, number, rules, airGrowth) * share * armourAim;
                     healths[i] = (float)Math.Round(BisectOn(script, enemies, level, difficulty, secondRoad, rules, number, money, held, carried, target, MinHealth, healths[i]), 3);
                     line = Ledger.EvaluateWave(level, WaveComposer.Compose(script, enemies, d, number, healths[i], secondRoad, rules), difficulty, money, rules, held, null, carried);
                 }

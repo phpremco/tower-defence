@@ -95,10 +95,10 @@ namespace Game.Editor
         private const float HelperHorizonSeconds = 120f;
         private const int FreeHelperCoins = 100;
 
-        // Growth (Remco 2026-11-15): after a creature trait first appears, a defence without its counter tower may hold this
-        // many waves on Easy, Medium, Hard and Psycho, and must have lost within the second list's waves after that.
-        private static readonly int[] GraceWaves = { 2, 1, 1, 0 };
-        private static readonly int[] FallWithinWaves = { 4, 4, 3, 3 };
+        // Growth (Remco 2026-11-15): after a creature trait first appears, a defence without its counter tower may hold a few
+        // waves and must have lost a few waves after that. The table is Game.Balance.GrowthWindow: the wave scripts read it too.
+        private static int[] GraceWaves => Game.Balance.GrowthWindow.GraceWaves;
+        private static int[] FallWithinWaves => Game.Balance.GrowthWindow.FallWithinWaves;
 
         private static DamageRule Rule(DamageType type, float armour, float air, string reason) =>
             new DamageRule { Type = type, Armour = armour, Air = air, Reason = reason };

@@ -1,0 +1,22 @@
+Finale probe as played 2026-11-16 03:00 (round 22f): creative bot, seed 2, the finale player of FinaleModel on the boss's arena field. calibration 2026-11-16 02:55 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs 5fea0658 (current)
+Per boss and difficulty: holds = the largest boss health multiple (1 = the data) the finale player still beat; as-is = the run at the data's health;
+share and health as the data had them when the probe ran. Lines starting with 'cell' are read by ContinentFinaleTests and the finale apply stage.
+
+  Gravemaw         Medium  money  1367 research  276 towers 6: holds x1.18 (x1.00 won base 800/800, x1.40 lost base 0/800, x1.18 won base 800/800, x1.29 lost base 0/800, x1.23 lost base 0/800)
+  CinderMatriarch  Medium  money  1367 research  276 towers 7: holds x1.40 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 lost base 0/800, x1.52 lost base 0/800)
+  FrostWarden      Medium  money  1367 research  276 towers 7: holds x0.92 (x1.00 lost base 0/800, x0.71 won base 800/800, x0.85 won base 800/800, x0.92 won base 800/800)
+  Rotbloom         Medium  money  1367 research  276 towers 7: holds x8.91 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 won base 800/800, x2.74 won base 800/800, x3.84 won base 800/800, x5.38 won base 800/800, x7.53 won base 800/800, x10.54 lost base 0/800, x8.91 won base 800/800, x9.69 lost base 0/800, x9.29 lost base 0/800)
+  Shattered        Medium  money  1367 research  276 towers 7: holds x1.00 (x1.00 won base 800/800, x1.40 lost base 0/800, x1.18 lost base 0/800, x1.09 lost base 0/800)
+  SealedOne        Medium  money  1367 research  276 towers 7: holds x1.13 (x1.00 won base 800/800, x1.40 lost base 0/800, x1.18 lost base 0/800, x1.09 won base 800/800, x1.13 won base 800/800)
+cell|CinderMatriarch|1|1.4|won|1|1|10400|5
+cell|CinderMatriarch|1|1.4|won|1|1|10400|5
+cell|FrostWarden|1|0.845|lost|0|1|6950|4
+cell|FrostWarden|1|0.919|lost|0|1|6950|4
+cell|Gravemaw|1|1.134|won|1|1|43250|5
+cell|Gravemaw|1|1.183|won|1|1|43250|5
+cell|Rotbloom|1|8.909|won|1|1|3550|11
+cell|Rotbloom|1|8.909|won|1|1|3550|11
+cell|SealedOne|1|1.134|won|1|1|31050|5
+cell|SealedOne|1|1|won|1|1|31050|4
+cell|Shattered|1|1.183|won|1|1|14100|5
+cell|Shattered|1|1|won|1|1|14100|4

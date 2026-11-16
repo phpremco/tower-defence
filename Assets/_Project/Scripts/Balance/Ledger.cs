@@ -82,6 +82,9 @@ namespace Game.Balance
     {
         public int Wave;
         public bool Boss;
+
+        /// <summary>The wave asks for a counter tower (WaveSpec.CounterCheck): no plain wave.</summary>
+        public bool CounterCheck;
         public int Money;
         public int Towers;
         public float GroundHealth;
@@ -207,6 +210,7 @@ namespace Game.Balance
             {
                 Purchase = defence.Purchase,
                 Boss = load.HasBoss,
+                CounterCheck = load.CounterCheck,
                 Money = money,
                 Towers = defence.Towers,
                 GroundHealth = load.StreamHealth + load.BossHealth,

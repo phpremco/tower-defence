@@ -354,6 +354,101 @@ namespace Game.Tests
         }
 
         [Test]
+        public void NoRowWithoutTheCounter_OutlastsItsWindow_AsPlayed()
+        {
+            CombatRules rules = Rules();
+            if (GraceWindows.Rows(rules).Count == 0)
+            {
+                Assert.Ignore("No yardstick rows (Tools/PlayTest/calibration_records.txt): run balance_pipeline.sh measure first.");
+            }
+
+            List<string> breaks = GraceWindows.Breaks(rules);
+            Assert.IsEmpty(breaks, "the growth layer does not hold (Docs/COMBAT_RULES.md section 6): " + string.Join("; ", breaks));
+        }
+
+        [Test]
+        public void EveryAllowance_HasAReason_AndNoneForgivesARowThatWins()
+        {
+            foreach (GraceWindows.Allowance allowance in GraceWindows.Allowances)
+            {
+                Assert.IsNotEmpty(allowance.Reason, $"{allowance.Level} {allowance.Difficulty} {allowance.Trait} needs a reason");
+                Assert.Greater(allowance.WavesLate, 0, $"{allowance.Level} {allowance.Difficulty} {allowance.Trait}: an allowance of no waves is no allowance");
+            }
+        }
+
+        [Test]
+        public void PlatedTroops_ComeAsWrittenThroughTheWindow_AndGrowAfterIt()
+        {
+            var enemies = new Dictionary<string, Game.Balance.EnemyStats>
+            {
+                ["Soft"] = new Game.Balance.EnemyStats { Id = "Soft", Health = 20f, Speed = 1f },
+                ["Plated"] = new Game.Balance.EnemyStats { Id = "Plated", Health = 60f, Armor = 160f, Speed = 0.6f },
+            };
+            Game.Balance.WaveScriptSpec Script(float growth) => new Game.Balance.WaveScriptSpec
+            {
+                Key = "Growth", Waves = 12, Budget = 40f, FinalBudget = 40f,
+                Troops = new[]
+                {
+                    new Game.Balance.TroopSpec { Enemy = "Soft", FirstWave = 1, Weight = 1f },
+                    new Game.Balance.TroopSpec { Enemy = "Plated", FirstWave = 4, Weight = 1f },
+                },
+                ArmourGrowth = new[] { growth },
+                GraceWaves = new[] { 2 },
+                FallWithinWaves = new[] { 3 },
+            };
+            var rules = new Game.Balance.BalanceRules();
+            int Plated(Game.Balance.WaveScriptSpec script, int number)
+            {
+                int count = 0;
+                foreach (Game.Balance.GroupSpec group in Game.Balance.WaveComposer.Compose(script, enemies, 0, number, 1f, -1, rules).Groups)
+                {
+                    count += group.Enemy.Armor > 0f ? group.Count : 0;
+                }
+
+                return count;
+            }
+
+            Game.Balance.WaveScriptSpec plain = Script(1f);
+            Game.Balance.WaveScriptSpec grown = Script(1.5f);
+            Assert.AreEqual(4, Game.Balance.WaveComposer.FirstTraitWave(grown, enemies, 0, -1, rules, false), "the window opens on the first plated wave");
+            for (int number = 1; number <= 5; number++)
+            {
+                Assert.AreEqual(Plated(plain, number), Plated(grown, number), $"wave {number}: inside the grace window the troops come as written");
+                Assert.IsFalse(Game.Balance.WaveComposer.Compose(grown, enemies, 0, number, 1f, -1, rules).CounterCheck, $"wave {number} asks for no counter yet");
+            }
+
+            Assert.Greater(Plated(grown, 6), Plated(plain, 6), "the first wave after the window brings more of them");
+            Assert.Greater(Plated(grown, 8), Plated(grown, 6), "and they keep growing through the waves a row must fall in");
+            Assert.AreEqual(Mathf.Pow(1.5f, 3f), Game.Balance.WaveComposer.GrowthOn(grown, enemies, 0, 8, -1, rules).Armour, 0.001f, "three waves of growth: the waves a row must fall in");
+            Assert.AreEqual(Game.Balance.WaveComposer.GrowthOn(grown, enemies, 0, 8, -1, rules).Armour, Game.Balance.WaveComposer.GrowthOn(grown, enemies, 0, 12, -1, rules).Armour, "then they stay as they are");
+            Assert.IsTrue(Game.Balance.WaveComposer.Compose(grown, enemies, 0, 8, 1f, -1, rules).CounterCheck, "a grown wave is a counter check: off the mean of the plain waves");
+            Assert.IsFalse(Game.Balance.WaveComposer.Compose(plain, enemies, 0, 8, 1f, -1, rules).CounterCheck);
+        }
+
+        [Test]
+        public void ATroopWithAHardestDifficulty_StaysOffTheHarderOnes()
+        {
+            var enemies = new Dictionary<string, Game.Balance.EnemyStats>
+            {
+                ["Soft"] = new Game.Balance.EnemyStats { Id = "Soft", Health = 20f, Speed = 1f },
+                ["Plated"] = new Game.Balance.EnemyStats { Id = "Plated", Health = 60f, Armor = 160f, Speed = 0.6f },
+            };
+            var script = new Game.Balance.WaveScriptSpec
+            {
+                Key = "Late", Waves = 12, Budget = 40f, FinalBudget = 40f,
+                Troops = new[]
+                {
+                    new Game.Balance.TroopSpec { Enemy = "Soft", FirstWave = 1, Weight = 1f },
+                    new Game.Balance.TroopSpec { Enemy = "Plated", FirstWave = 8, Weight = 1f, MaxDifficulty = 1 },
+                    new Game.Balance.TroopSpec { Enemy = "Plated", FirstWave = 4, Weight = 1f, MinDifficulty = 2 },
+                },
+            };
+            var rules = new Game.Balance.BalanceRules();
+            Assert.AreEqual(8, Game.Balance.WaveComposer.FirstTraitWave(script, enemies, 1, -1, rules, false), "Medium: the plated troop comes from wave 8");
+            Assert.AreEqual(4, Game.Balance.WaveComposer.FirstTraitWave(script, enemies, 2, -1, rules, false), "Hard: only the Hard troop, from wave 4");
+        }
+
+        [Test]
         public void TheReports_AreWritten()
         {
             CombatRules rules = Rules();

@@ -75,6 +75,9 @@ namespace Game.Balance
         public int KillMoney;
         public bool HasBoss;
 
+        /// <summary>The wave asks for a counter tower (WaveSpec.CounterCheck).</summary>
+        public bool CounterCheck;
+
         /// <summary>Creatures of the ground stream and bosses in the wave (after the difficulty's count share), for the leak model.</summary>
         public int GroundCount;
         public int BossCount;
@@ -139,6 +142,7 @@ namespace Game.Balance
         public static WaveLoad Of(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules, float gateHealth)
         {
             var load = new WaveLoad();
+            load.CounterCheck = wave.CounterCheck;
             float span = 0f;
             float airSpan = 0f;
             float speed = 0f;

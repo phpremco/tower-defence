@@ -1146,3 +1146,22 @@ console and `Logs/probe_trace.txt`.
   `r62_variant_worker.sh`; the project's own file stays 0), and the probe sets `AudioListener.volume = 0` in batch mode.
   A new clone script that plays must do the same. `r34b_editmode_worker.sh` leaves audio on: an EditMode run plays
   nothing, and `AudioTests` build clips, which fails with audio disabled.
+
+## Round 68: growth, a few cells at a time (added 2026-11-16)
+
+- Change a lever in `Tools/PlayTest/wave_tuning.txt` (`Key difficulty armourgrowth|airgrowth value`, besides scale,
+  plated, swarm, tempo, raid, bosscrowd) or a troop in `LevelSpecs.Crystal.cs` (`Join(..., maxDifficulty: Medium)` for a
+  troop that comes later on Easy and Medium only), recompile, then solve:
+  `unity command run_script --file Tools/PlayTest/Scripts/ApplyRound68.cs --entry ApplyRound68.Run --timeout_ms 900000 --timeout 960`.
+  A lever on Medium moves every difficulty of that level (the others derive from Medium's solve): measure all four.
+- `bash Tools/PlayTest/r68_chain.sh "0:0,1:1"` (node:difficulty list) runs measure, the plan search per cell, the replay and
+  the acceptance on the clones and dedupes `plan_records.txt`; then `bash Tools/PlayTest/balance_pipeline.sh grace readme`
+  in the editor. 16 cells take about 30 minutes.
+- `bash Tools/PlayTest/r68_rows.sh` prints every cell's mono rows from the yardstick (wins and the wave they fell at).
+- A quick yardstick of the mono rows only: the filter line `rows=mono` (`workers.sh run measure 5 "cells=..." "rows=mono"`);
+  its records are no calibration set.
+- `bash Tools/PlayTest/finale_workers.sh 1:2 1:3` probes Medium on seeds 2 and 3 (difficulty:seed); it overwrites
+  `finale_probe.txt` with those cells only, so copy the report aside first.
+- If a chain is stopped, kill the clones' Unity (`Get-CimInstance Win32_Process -Filter "Name='Unity.exe'"` with
+  `TowerDefenseWorkers` in the command line) and delete `TowerDefenseWorkers\wN\Temp\UnityLockfile`, or the next run finds
+  every worker "missing".

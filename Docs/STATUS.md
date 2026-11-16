@@ -10609,3 +10609,102 @@ The curator had stopped the first measure; it was restarted after the change (no
 - The impact baseline (`snapshot`) was not retaken; no finale probe (no continent boss, no finale rule changed; the
   continent bosses meet the same armour and air shares from the towers of Crystal Plains 1 to 6 as before, except the
   hero's blaster and the base turret in the air).
+
+## Round 68: the level layer on top of the combat rules: growth past the grace window (2026-11-16)
+
+### Round 68 – state at takeover (02:00)
+
+The first agent of this round was cut off by a rate limit at about 01:30 without a handover; its work is in the
+uncommitted tree (HEAD 9bd7afad, round 67). Reconstructed from the diff, `Logs/r68/` and `Tools/PlayTest/`:
+
+- **Built (code):** the growth layer. `Game.Balance.GrowthWindow` (one table for the window: Easy 2/4, Medium 1/4, Hard
+  1/3, Psycho 0/3; `ProjectGenerator.Damage.cs` reads it), `WaveScriptSpec.ArmourGrowth` / `AirGrowth` / `GraceWaves` /
+  `FallWithinWaves`, `WaveComposer.GrowthOn` / `FirstTraitWave` (plated troops come as written through the window, then
+  gain the growth factor per wave through the fall-within waves, capped at 6x, and close ranks in packs of three),
+  `WaveSolver.ArmourAim` (a grown wave aims above the curve by its growth), `CounterCheck` on `WaveSpec` /
+  `WaveDefinition` / `WaveLoad` / ledger lines (left out of `BalanceChecks.PlainMean`), the levers `armourgrowth` /
+  `airgrowth` in `WaveTuning`, the gate `GraceWindows.Breaks` with 15 `Allowances` (cell, trait, waves late, reason), three
+  new `CombatRulesTests`, a `rows=mono` filter line for a quick yardstick (`BalanceProbeTests.MonoRowsOnly`,
+  `workers.sh`), `ApplyRound61.cs` made compile-safe (the removed `_airDamageFactor` write is gone), `ApplyRound68.cs`
+  (runs the solve stage and lists the growth).
+- **Data:** `wave_tuning.txt` armourgrowth on Landing Site (1.3 / 1.4 / 1.5 / 1.5) and Glass Meadows (1.3 / 1.2 / 1.5 /
+  1.5); growth 1.5 was tried on Shard Ridge and Quartz Flats and taken off again (best plan 0/3). Waves re-solved (every
+  wave carries `_counterCheck`; only C1_01 and C1_02 change in content).
+- **Pipeline runs:** full yardstick 23:43 (432 runs), then measure + search + replay on changed cells in four chains
+  (last 01:16-01:22), acceptance and grace after each; finale probe 00:48 (24 cells, not applied); impact baseline retaken
+  00:5x (`snapshot`, inputs 5fea0658, 217 paper rows); EditMode on w6 at 01:22: **990 / 937 passed / 0 failed / 53 skipped**.
+- **Where it stood:** the grace gate holds (94 rows: 57 in time, 1 early, 28 late all inside an allowance, 8 not judged;
+  no row without the counter wins any cell, round 67 had four winning rows). But acceptance fell from 10 to **7 of 24**
+  (Landing Site Easy and Medium and Glass Meadows Easy lost their pass) and **Glass Meadows Medium has no winning plan**
+  (best plan 0/3): that is the first thing to repair. Finale probe: Frost Warden Medium lost at the data's health
+  (holds x0.85), Rotbloom holds x9 to x14 (far too soft). Not written: Round 68 in STATUS/BALANCE, the finale HP report.
+- Save MD5 42fbe06b38e133cecfe2014def5c833c at takeover; no worker Unity left running; editor stopped.
+
+### What the second agent did (02:00 - 03:40)
+
+Not committed. No full generator run (the solve via `Tools/PlayTest/Scripts/ApplyRound68.cs`), no Blender, no packages, the
+Game view untouched. Remco's save (MD5 42fbe06b38e133cecfe2014def5c833c) copied aside before the one Play Mode run and
+restored after; identical at every check. Pipeline play runs only on the clones w1 to w6 (silent: `m_DisableAudio: 1` on
+w1 to w5, checked before the first batch; w6 keeps audio for the EditMode `AudioTests`). The numbers: Docs/BALANCE.md
+"Round 68"; the rule and its allowances: Docs/COMBAT_RULES.md section 6.
+
+1. **Glass Meadows Medium playable again**: scale 1.15 -> 1.0 with growth 1.2: best plan 0/3 -> 3/3, the creative bot
+   1/3 -> 3/3. (1.07 with growth 1.3 ended the Gun row in time but left the best plan 2/3 and the bot 0/3.)
+2. **Landing Site Easy passes again**: scale 0.87 -> 0.8 with growth 1.3 -> 1.4: best plan 3/3 with three stars, the Gun row
+   still falls on the last wave.
+3. **Shard Ridge Easy and Medium**: composition, the second lever. The Cragbacks walk in from wave 8 there (Hard and Psycho
+   keep wave 4 and Remco's pack from 3): the window now opens where the waves can end a row; 5 waves late -> 1. New:
+   `TroopSpec.MaxDifficulty` (and `Join(..., maxDifficulty:)`, `WaveScripts.Medium`) so a troop can come later on the
+   easier difficulties only; test `CombatRulesTests.ATroopWithAHardestDifficulty_StaysOffTheHarderOnes`.
+4. **The gate**: `GraceWindows.Allowances` re-measured: Glass Meadows Medium 1 (new, with the scale trade as reason),
+   Glass Meadows Psycho 2 -> 3, Shard Ridge Easy and Medium 5 -> 1, Shard Ridge Hard/Psycho reasons rewritten (Remco's
+   early pack). Gate holds: no off-role row wins a level, every late row is inside its allowance. 33 allowed waves in all
+   (39 at takeover).
+5. **Tried and taken back** (each one chain on the clones): growth 1.2 on Shard Ridge (no row fell earlier, creative bot lost
+   Hard and Psycho); the swarm lever 2.5 and a loose Skitter stream on Landing Site Hard/Psycho (the Cannon row kept 3/3);
+   boss crowd 0.35 on Quartz Flats Medium/Hard (creative bot still lost the last wave).
+6. **Finale**: the first agent's probe (Frost Warden lost on Medium, Rotbloom held x8.9) confirmed on Medium seeds 2 and 3
+   (`finale_workers.sh` now takes `difficulty:seed`), then two apply steps and a verification probe. Boss health:
+   Gravemaw 43250 -> 43750, Cinder Matriarch 10400 -> 14700, Frost Warden 6950 -> 5050, Shattered 14100 -> 14300, Sealed
+   One 31050 -> 25450; every one of them wins on all four difficulties in the probe. Rotbloom: 28200 lost in play and broke the
+   paper cap 6.8x; back to 3550 and named in `ContinentFinaleTests.PaperHeldBosses` (open point below).
+7. **Tools**: `Tools/PlayTest/r68_chain.sh "<node:diff,...>"` (measure, search per cell, replay, acceptance on the clones;
+   dedupes `plan_records.txt`: a worker's records carry the cells it did not replay, so a filtered replay used to merge
+   them up to five times; one acceptance run read C1_04/C1_06 as 15/15 before that was found and fixed),
+   `Tools/PlayTest/Scripts/R68Rotbloom.cs`. Impact baseline retaken after the waves settled (221 paper rows, inputs
+   5fea0658).
+
+### Verification
+
+- Compile clean (no `error CS` after the last recompile; no new warnings seen in the editor log).
+- EditMode, whole suite on w6 after the last change: **991 / 938 passed / 0 failed / 53 skipped** (990 at takeover; +1 test).
+- Play: Boot scene in the editor for 25 s, console 0 errors, 0 warnings; save restored and identical.
+- Pipeline: every changed cell measured, searched and replayed (chains 5 to 8 in `Logs/r68/`), 0 probe errors; README
+  24 of 24; acceptance 8 of 24; grace gate holds.
+
+### Open decisions for Remco
+
+1. **The Easy acceptance rule and the grace window disagree.** Easy wants two of the three obvious kinds (mono rows,
+   naive, affordable) to win, and nobody to fall before the last third. With the window, the off-role mono rows and a buyer
+   of cheap light guns must lose, so the mono kind (pooled) loses even where the Cannon row wins, and on long levels the
+   rows fall before the last third. Glass Meadows Easy fails only on this; Shard Ridge, Fault Line, Quartz Flats and
+   Crysium Vein Easy failed on it before. Proposal: judge the mono kind by its best row (the counter's), and let the
+   window replace "before the last third" for rows without the counter.
+2. **The Cannon row on Landing Site and Glass Meadows**: the only in-roster trait the Cannon is off-role for is swarm, and
+   a level-1 Cannon is only 1.5x behind the Gun Turret per coin on a swarm (6x at level 3). Options: (a) a Roller teaser
+   (fast: the Cannon cannot hit it) on Landing Site Hard/Psycho, a creature from later in Crystal Plains; (b) flyers on
+   Landing Site Hard/Psycho (needs the Flak, which the player does not own there: not allowed by the brief); (c) accept it:
+   the Cannon is the answer to everything those levels send.
+3. **Shard Ridge Hard and Psycho stay 6 and 7 waves late** because of your plated pack from wave 3 (round 34b). Keep the
+   pack (and the allowance), move it to wave 7, or count the window from the first grown wave.
+4. **The Rotbloom**: play says 3550 is nine times too little since round 67, the model says 4800 is the most. Which one is
+   wrong (its closed petals, its Oozers) is the next look.
+5. Quartz Flats Medium/Hard and Fault Line Medium: the creative bot still loses the last wave (searched plans win); a
+   lighter last boss or a bot that buys Flak earlier.
+
+### Not done
+
+- No new growth on Fault Line, Quartz Flats or Crysium Vein (their armour rows are in time or allowed; air growth built,
+  set nowhere).
+- `Tools/BalanceLab` not touched.
+- The finale stage does not know `PaperHeldBosses`; running it re-raises the Rotbloom.

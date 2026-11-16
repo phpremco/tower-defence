@@ -286,7 +286,7 @@ MonoBehaviour:
   _expectedUpgradeBonus: 0
   _balanceTargetScale:
   - 0.658
-  - 1.15
+  - 1
   - 1
   - 0.757
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}

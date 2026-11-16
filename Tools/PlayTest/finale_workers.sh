@@ -24,7 +24,9 @@ i=0
 for d in "${DIFFS[@]}"; do
   i=$((i + 1))
   dir="$(cygpath -u "$ROOT\\w$i")"
-  printf 'difficulties=%s\n' "$d" > "$dir/Tools/PlayTest/probe_arg.txt"
+  # Round 68: "difficulty:seed" probes that difficulty on another seed (the probe is deterministic per seed). Merge such a
+  # run by hand: its cells carry no seed.
+  if [ "${d#*:}" != "$d" ]; then printf 'difficulties=%s\nseed=%s\n' "${d%%:*}" "${d#*:}"; else printf 'difficulties=%s\n' "$d"; fi > "$dir/Tools/PlayTest/probe_arg.txt"
   rm -f "$dir/$REPORT" "$dir/Logs/results.xml"
   echo "  w$i: difficulty $d"
   "$UNITY" -batchmode -job-worker-count "$JOB_WORKERS" -timestamps -projectPath "$ROOT\\w$i" -runTests -testPlatform PlayMode -testFilter "$TEST" \

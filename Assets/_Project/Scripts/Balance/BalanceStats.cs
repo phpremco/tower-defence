@@ -295,6 +295,13 @@ namespace Game.Balance
         /// sizes it against the player's firepower (<see cref="BalanceRules.LevelBossHealthFloor"/>, <see cref="BalanceRules.LevelBossAlone"/>).
         /// </summary>
         public float BossHealthScale = 1f;
+
+        /// <summary>
+        /// True for a wave whose plated troops have grown past their grace window (round 68, WaveComposer.GrowthOn): the wave
+        /// that asks for the counter tower. It aims above the level's curve by its growth, so the mean of the plain waves
+        /// (BalanceChecks.PlainMean) leaves it out, as it leaves a boss wave out; the cap with the hero still holds it.
+        /// </summary>
+        public bool CounterCheck;
     }
 }
 

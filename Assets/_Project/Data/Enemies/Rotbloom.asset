@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2.5
   _attackInterval: 1.4
   _gateStrikes: 0
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5

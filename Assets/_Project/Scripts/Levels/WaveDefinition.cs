@@ -20,6 +20,9 @@ namespace Game.Levels
         [SerializeField] [Min(0.1f)] private float _healthMultiplier = 1f;
         [SerializeField] [Min(0.1f)] private float _bossHealthScale = 1f;
 
+        [Tooltip("The wave asks for a counter tower: its plated troops have grown past their grace window. For the balance checks only; the game does not read it.")]
+        [SerializeField] private bool _counterCheck;
+
         /// <summary>Unity's serializer builds waves through this constructor, so the field defaults apply.</summary>
         public WaveDefinition()
         {
@@ -49,6 +52,12 @@ namespace Game.Levels
         /// is not as feeble as a crowded wave's creatures have to be (round 64). One for a wave without a boss.
         /// </summary>
         public float BossHealthScale => _bossHealthScale;
+
+        /// <summary>
+        /// True for a wave whose plated troops have grown past their grace window (round 68): the balance checks leave it out
+        /// of the mean of the plain waves, as they leave a boss wave out. The game itself does not read it.
+        /// </summary>
+        public bool CounterCheck => _counterCheck;
 
         /// <summary>
         /// How far each spawn may drift from its scheduled moment, as a share of its group's interval. Zero spawns
