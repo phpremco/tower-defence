@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8b67168339ad1c47b77ab1544b96093, type: 3}
   m_Name: Ability_Shockwave
   m_EditorClassIdentifier: Game.Hero::Game.Hero.HeroAbilityDefinition
-  _displayName: Shockwave
+  _displayName: data.heroAbility.Ability_Shockwave.displayName
   _kind: 0
   _cooldown: 20
   _moneyCost: 0
@@ -30,4 +30,4 @@ MonoBehaviour:
     _gain: 1
     _pitch: 1
   _impactVfx: {fileID: 0}
-  _description: A ring of force around Spencer that hits everything close by, on the ground and in the air.
+  _description: data.heroAbility.Ability_Shockwave.description

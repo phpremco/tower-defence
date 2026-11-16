@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4195afed974a6db4bb0968bc3af5e766, type: 3}
   m_Name: Laser
   m_EditorClassIdentifier: Game.Towers::Game.Towers.TowerDefinition
-  _displayName: Laser Turret
+  _displayName: data.tower.Laser.displayName
   _targets: 1
   _levels:
   - Cost: 130
@@ -33,7 +33,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
-    StepName: Focused lens
+    StepName: data.tower.Laser.levels.1.stepName
     Step: 1
   - Cost: 100
     Damage: 13.333333
@@ -43,7 +43,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
-    StepName: Overcharged emitter
+    StepName: data.tower.Laser.levels.2.stepName
     Step: 2
   _projectileSpeed: 400
   _splashRadius: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
   _damageType: 2
   _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _roles: 01000000i
-  _roleLine: 'Light fire in one beam: the Gun Turret''s job with nearly three times the firepower in one cell. Glances off armour; cannot aim up.'
+  _roleLine: data.tower.Laser.roleLine
   _retargetRadius: 0
   _homing: 1
   _fuseRadius: 0

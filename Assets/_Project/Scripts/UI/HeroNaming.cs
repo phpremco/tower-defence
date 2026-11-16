@@ -10,8 +10,6 @@ namespace Game.UI
     /// </summary>
     public static class HeroNaming
     {
-        private const string Fallback = "Commander";
-
         /// <summary>The hero of this level, else the campaign's.</summary>
         public static string Of(LevelContext context)
         {
@@ -33,7 +31,7 @@ namespace Game.UI
         {
             if (!Services.TryGet(out CampaignCatalog catalog))
             {
-                return Fallback;
+                return Loc.Get("hero.fallback_name");
             }
 
             foreach (MapNode node in catalog.Nodes)
@@ -44,7 +42,7 @@ namespace Game.UI
                 }
             }
 
-            return Fallback;
+            return Loc.Get("hero.fallback_name");
         }
     }
 }

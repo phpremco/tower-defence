@@ -54,7 +54,7 @@ namespace Game.PathObjects
         /// <summary>One or two lines for the loadout screen on what this weapon does and where it goes.</summary>
         [SerializeField] [TextArea] private string _description = string.Empty;
 
-        public string DisplayName => _displayName;
+        public string DisplayName => Loc.Get(_displayName);
         public PathObjectKind Kind => _kind;
         public PathObjectPlacement Placement => _placement;
         public TargetLayers Targets => _targets;
@@ -75,7 +75,7 @@ namespace Game.PathObjects
         public ModelArtDefinition Art => _art;
         public PathObjectEffect Effect => _effect;
         public Game.Combat.ImpactVfxDefinition ImpactVfx => _impactVfx;
-        public string Description => _description;
+        public string Description => Loc.Get(_description);
 
         private void OnValidate()
         {

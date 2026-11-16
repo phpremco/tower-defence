@@ -1,4 +1,5 @@
-﻿using Game.Levels;
+﻿using Game.Core;
+using Game.Levels;
 using Game.Towers;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -207,10 +208,12 @@ namespace Game.UI
             bool hasHero = _context.Hero != null;
             _thirdIcon.sprite = IconFactory.Get(tower.CanBeSold ? IconType.Sell : IconType.Hero);
             _sell.interactable = tower.CanBeSold || (hasHero && !IsHeroHere(tower));
-            _upgradePrice.text = tower.CanUpgrade ? $"Upgrade\n{tower.NextUpgradeCost}" : "MAX\nlevel";
-            string repairVerb = tower.IsWrecked ? "Rebuild" : "Repair";
-            _repairPrice.text = tower.NeedsRepair ? $"{repairVerb}\n{tower.RepairCost}" : "Repair\n-";
-            _sellPrice.text = tower.CanBeSold ? (tower.IsWrecked ? "Scrap\n+" : "Sell\n+") + tower.SellValue : IsHeroHere(tower) ? $"{HeroNaming.Of(_context)}\nhere" : $"Send\n{HeroNaming.Of(_context)}";
+            _upgradePrice.text = tower.CanUpgrade ? Loc.Format("tower_menu.upgrade", tower.NextUpgradeCost) : Loc.Get("tower_menu.upgrade_max");
+            _repairPrice.text = !tower.NeedsRepair ? Loc.Get("tower_menu.repair_none")
+                : tower.IsWrecked ? Loc.Format("tower_menu.rebuild", tower.RepairCost) : Loc.Format("tower_menu.repair", tower.RepairCost);
+            _sellPrice.text = tower.CanBeSold
+                ? tower.IsWrecked ? Loc.Format("tower_menu.scrap", tower.SellValue) : Loc.Format("tower_menu.sell", tower.SellValue)
+                : IsHeroHere(tower) ? Loc.Format("tower_menu.hero_here", HeroNaming.Of(_context)) : Loc.Format("tower_menu.send_hero", HeroNaming.Of(_context));
 
             // The combine icon only appears when a neighbouring tower forms a recipe with this one.
             CombineRecipe offer = _context.CombineOffer;
@@ -221,7 +224,7 @@ namespace Game.UI
                 bool canCombine = _context.Wallet.CanAfford(offer.Cost);
                 _combine.interactable = canCombine;
                 // The result's name on the button, so the player knows what the two towers turn into.
-                _combinePrice.text = $"{offer.Result.DisplayName}\n{offer.Cost}";
+                _combinePrice.text = Loc.Format("tower_menu.combine", offer.Result.DisplayName, offer.Cost);
                 _combinePrice.color = canCombine ? TextColor : TooExpensive;
             }
             // Grey when there is nothing to buy, red when there is but the player cannot pay yet.
@@ -229,14 +232,16 @@ namespace Game.UI
             _repairPrice.color = canRepair ? TextColor : tower.NeedsRepair ? TooExpensive : Unavailable;
 
             // A wrecked gate comes back at once when paid for; a wrecked tower is scrapped and built again.
-            string wreck = tower.Definition.BlocksGroundEnemies ? "wrecked - rebuild restores it at once, full health, same level" : "wrecked";
-            string state = tower.IsWrecked ? wreck : $"HP {Mathf.CeilToInt(tower.Health.Current)}/{Mathf.CeilToInt(tower.Health.Max)}";
+            string wreck = tower.Definition.BlocksGroundEnemies ? Loc.Get("tower_menu.wrecked_gate") : Loc.Get("tower_menu.wrecked");
+            string state = tower.IsWrecked ? wreck : Loc.Format("tower_menu.health", Mathf.CeilToInt(tower.Health.Current), Mathf.CeilToInt(tower.Health.Max));
             // What it does against ground and sky, from its data: a gun that aims up but barely hurts flyers says so here.
             string reach = TargetRead.Label(tower.Definition);
             // A tower on raised ground says what the height gives it (round 65), from the level's terrain rules.
             TerrainRules rules = _context.Level.TerrainRules;
-            string ground = rules != null && tower.GroundRange > 1f ? $"  -  High ground: {rules.HighGroundLabel} range" : string.Empty;
-            _info.text = $"{tower.Definition.DisplayName}  {(tower.CanUpgrade ? $"Lv {tower.LevelIndex + 1}" : "MAX")}  {state}{(reach.Length > 0 ? "  -  " + reach : string.Empty)}{ground}" + UpgradePreview(tower);
+            string ground = rules != null && tower.GroundRange > 1f ? "  -  " + Loc.Format("level.high_ground_range", rules.HighGroundLabel) : string.Empty;
+            string level = tower.CanUpgrade ? Loc.Format("tower_menu.level", tower.LevelIndex + 1) : Loc.Get("tower_menu.level_max");
+            string notes = (reach.Length > 0 ? "  -  " + reach : string.Empty) + ground;
+            _info.text = Loc.Format("tower_menu.info", tower.Definition.DisplayName, level, state, notes) + UpgradePreview(tower);
 
             if (!_wasOpen)
             {
@@ -249,7 +254,7 @@ namespace Game.UI
 
         // Shows the next upgrade step by name with the one thing it changes (round 67), so the player can judge it before paying.
         private static string UpgradePreview(Tower tower) =>
-            tower.CanUpgrade ? "\nNext: " + TowerStepText.Next(tower.Definition, tower.LevelIndex) : string.Empty;
+            tower.CanUpgrade ? Loc.Format("tower_menu.next_step", TowerStepText.Next(tower.Definition, tower.LevelIndex)) : string.Empty;
 
         // The press that opened the menu (A or Enter on the tower) still counts as "submitted this frame" for the UI, so
         // an icon focused in that frame was bought at once: the focus waits for the next frame. After that the focus is

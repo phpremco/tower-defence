@@ -1,3 +1,4 @@
+using Game.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,7 +17,6 @@ namespace Game.UI
         private const float SlideDistance = 24f;
         private const float FadeSeconds = 0.3f;
         private const int TextSize = 24;
-        private const string Prefix = "NEW CODEX ENTRY  ·  ";
         private static readonly Color Backdrop = new Color(0.05f, 0.1f, 0.16f, 0.9f);
         private static readonly Color Ink = new Color(0.55f, 0.9f, 1f);
 
@@ -48,7 +48,7 @@ namespace Game.UI
 
         public void Show(string entry, float seconds)
         {
-            _text.text = Prefix + entry.ToUpperInvariant();
+            _text.text = Loc.Format("codex.toast_new_entry", entry.ToUpperInvariant());
             _left = seconds;
             _shown = 0f;
             _panel.gameObject.SetActive(true);

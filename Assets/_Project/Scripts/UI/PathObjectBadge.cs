@@ -1,3 +1,4 @@
+using Game.Core;
 using Game.PathObjects;
 using UnityEngine;
 
@@ -44,11 +45,11 @@ namespace Game.UI
         {
             switch (effect)
             {
-                case PathObjectEffect.Slow: return "Slows";
-                case PathObjectEffect.Blast: return "Area blast";
-                case PathObjectEffect.Roll: return "Rolls and burns";
-                case PathObjectEffect.Patrol: return "Patrols the road";
-                default: return "Trap";
+                case PathObjectEffect.Slow: return Loc.Get("gadget.effect.slow");
+                case PathObjectEffect.Blast: return Loc.Get("gadget.effect.blast");
+                case PathObjectEffect.Roll: return Loc.Get("gadget.effect.roll");
+                case PathObjectEffect.Patrol: return Loc.Get("gadget.effect.patrol");
+                default: return Loc.Get("gadget.effect.trap");
             }
         }
     }

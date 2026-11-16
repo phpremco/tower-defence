@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8b67168339ad1c47b77ab1544b96093, type: 3}
   m_Name: Ability_GateRepair
   m_EditorClassIdentifier: Game.Hero::Game.Hero.HeroAbilityDefinition
-  _displayName: Repair
+  _displayName: data.heroAbility.Ability_GateRepair.displayName
   _kind: 1
   _cooldown: 25
   _moneyCost: 30
@@ -20,6 +20,8 @@ MonoBehaviour:
   _radius: 0
   _fraction: 0.4
   _targets: 3
+  _damageType: 0
+  _rules: {fileID: 0}
   _requiresPerk: {fileID: 0}
   _icon: {fileID: 0}
   _tint: {r: 0.35, g: 0.9, b: 0.5, a: 1}
@@ -28,4 +30,4 @@ MonoBehaviour:
     _gain: 1
     _pitch: 1
   _impactVfx: {fileID: 0}
-  _description: Spencer welds the gate he guards, giving back 40% of its health.
+  _description: data.heroAbility.Ability_GateRepair.description

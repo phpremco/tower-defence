@@ -74,10 +74,6 @@ namespace Game.UI
         private const float BaseIconScale = 0.5f;
         private const float DroneIconScale = 2.6f;
         private const float DroneIconLift = 0.55f;
-        private const string TowersHeading = "Towers";
-        private const string OthersHeading = "Commander, base and drones";
-        private const string ResearchLabel = "Research";
-        private const string PowerLabel = "Power";
         private static readonly Color PanelTint = new Color(0.1f, 0.16f, 0.3f, 0.95f);
         private static readonly Color TileTint = new Color(0.14f, 0.22f, 0.4f, 1f);
         private static readonly Color TileChosen = new Color(0.25f, 0.5f, 0.85f, 1f);
@@ -197,7 +193,7 @@ namespace Game.UI
             MeasureTowerMaxima();
             CollectSubjects();
 
-            Text title = UiKit.CreateFixedText(root, "Base upgrades", UiKit.TitleSize, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(Margin, -28f), new Vector2(900f, 90f));
+            Text title = UiKit.CreateFixedText(root, Loc.Get("upgrade.title"), UiKit.TitleSize, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(Margin, -28f), new Vector2(900f, 90f));
             title.fontSize = 56;
             _researchText = UiKit.CreateFixedText(root, string.Empty, CurrencySize, TextAnchor.UpperRight, new Vector2(1f, 1f), new Vector2(-Margin, -40f), new Vector2(400f, 44f));
             _powerText = UiKit.CreateFixedText(root, string.Empty, CurrencySize, TextAnchor.UpperRight, new Vector2(1f, 1f), new Vector2(-Margin, -84f), new Vector2(400f, 44f));
@@ -207,7 +203,7 @@ namespace Game.UI
             BuildGrid(root);
             BuildPanel(root);
 
-            Button back = UiKit.CreateButton(root, "Back to map", () => Go(SceneNames.WorldMap));
+            Button back = UiKit.CreateButton(root, Loc.Get("upgrade.back_to_map"), () => Go(SceneNames.WorldMap));
             Destroy(back.GetComponent<LayoutElement>());
             RectTransform backRect = back.GetComponent<RectTransform>();
             backRect.anchorMin = new Vector2(0f, 0f);
@@ -335,31 +331,31 @@ namespace Game.UI
                 case SubjectKind.Tower when subject.Tower != null:
                 {
                     TowerLevel top = subject.Tower.GetLevel(subject.Tower.MaxLevelIndex);
-                    subject.Stats.Add(Stat("Damage", top.Damage, UpgradeTarget.TowerDamage, "0", string.Empty, _maxTowerDamage));
-                    subject.Stats.Add(Stat("Range", top.Range, UpgradeTarget.TowerRange, "0.0", string.Empty, _maxTowerRange));
-                    subject.Stats.Add(Stat("Fire rate", 1f / top.FireInterval, UpgradeTarget.TowerFireRate, "0.0", "/s", _maxTowerRate));
-                    subject.Stats.Add(Stat("Health", subject.Tower.MaxHealth, UpgradeTarget.TowerHealth, "0", string.Empty, _maxTowerHealth));
+                    subject.Stats.Add(Stat(Loc.Get("upgrade.stat.damage"), top.Damage, UpgradeTarget.TowerDamage, "0", string.Empty, _maxTowerDamage));
+                    subject.Stats.Add(Stat(Loc.Get("upgrade.stat.range"), top.Range, UpgradeTarget.TowerRange, "0.0", string.Empty, _maxTowerRange));
+                    subject.Stats.Add(Stat(Loc.Get("upgrade.stat.fire_rate"), 1f / top.FireInterval, UpgradeTarget.TowerFireRate, "0.0", Loc.Get("upgrade.suffix_per_second"), _maxTowerRate));
+                    subject.Stats.Add(Stat(Loc.Get("upgrade.stat.health"), subject.Tower.MaxHealth, UpgradeTarget.TowerHealth, "0", string.Empty, _maxTowerHealth));
                     break;
                 }
 
                 case SubjectKind.Commander when subject.Hero != null:
-                    subject.Stats.Add(Stat("Health", subject.Hero.MaxHealth, UpgradeTarget.HeroHealth, "0", string.Empty));
-                    subject.Stats.Add(Stat("Blade", subject.Hero.Damage, UpgradeTarget.HeroDamage, "0", string.Empty));
-                    subject.Stats.Add(Stat("Healing", subject.Hero.RegenPerSecond, UpgradeTarget.HeroRegen, "0.0", "/s"));
+                    subject.Stats.Add(Stat(Loc.Get("upgrade.stat.health"), subject.Hero.MaxHealth, UpgradeTarget.HeroHealth, "0", string.Empty));
+                    subject.Stats.Add(Stat(Loc.Get("upgrade.stat.blade"), subject.Hero.Damage, UpgradeTarget.HeroDamage, "0", string.Empty));
+                    subject.Stats.Add(Stat(Loc.Get("upgrade.stat.healing"), subject.Hero.RegenPerSecond, UpgradeTarget.HeroRegen, "0.0", Loc.Get("upgrade.suffix_per_second")));
                     // The armour is a share taken off every hit: it starts at nothing and each tier adds to it.
-                    subject.Stats.Add(Flat("Armour", 0f, UpgradeTarget.HeroArmour, "0%"));
-                    subject.Stats.Add(Plain("Reach", subject.Hero.Reach, "0.0"));
+                    subject.Stats.Add(Flat(Loc.Get("upgrade.stat.armour"), 0f, UpgradeTarget.HeroArmour, "0%"));
+                    subject.Stats.Add(Plain(Loc.Get("upgrade.stat.reach"), subject.Hero.Reach, "0.0"));
                     break;
 
                 case SubjectKind.Base:
                 {
                     LevelDefinition first = FirstLevel();
                     TowerDefinition gate = FindGate();
-                    subject.Stats.Add(Flat("Base armour", first != null ? first.BaseHealth : 0f, UpgradeTarget.BaseHealth, "0"));
-                    subject.Stats.Add(Flat("Gun level", 0f, UpgradeTarget.BaseWeapon, "0"));
+                    subject.Stats.Add(Flat(Loc.Get("upgrade.stat.base_armour"), first != null ? first.BaseHealth : 0f, UpgradeTarget.BaseHealth, "0"));
+                    subject.Stats.Add(Flat(Loc.Get("upgrade.stat.gun_level"), 0f, UpgradeTarget.BaseWeapon, "0"));
                     if (gate != null)
                     {
-                        subject.Stats.Add(Stat("Gate health", gate.MaxHealth, UpgradeTarget.BlockadeHealth, "0", string.Empty));
+                        subject.Stats.Add(Stat(Loc.Get("upgrade.stat.gate_health"), gate.MaxHealth, UpgradeTarget.BlockadeHealth, "0", string.Empty));
                     }
 
                     break;
@@ -368,23 +364,23 @@ namespace Game.UI
                 case SubjectKind.Drone when subject.Drone != null:
                 {
                     DroneDefinition drone = subject.Drone;
-                    subject.Stats.Add(Stat("Speed", drone.Speed, UpgradeTarget.DroneSpeed, "0.0", string.Empty));
-                    subject.Stats.Add(Stat("Armour", drone.MaxHealth, UpgradeTarget.DroneArmour, "0", string.Empty));
+                    subject.Stats.Add(Stat(Loc.Get("upgrade.stat.speed"), drone.Speed, UpgradeTarget.DroneSpeed, "0.0", string.Empty));
+                    subject.Stats.Add(Stat(Loc.Get("upgrade.stat.armour"), drone.MaxHealth, UpgradeTarget.DroneArmour, "0", string.Empty));
                     switch (drone.Kind)
                     {
                         case DroneKind.Repair:
-                            subject.Stats.Add(Stat("Repair", drone.RepairPerSecond, UpgradeTarget.DroneOutput, "0.0", "/s"));
+                            subject.Stats.Add(Stat(Loc.Get("upgrade.stat.repair"), drone.RepairPerSecond, UpgradeTarget.DroneOutput, "0.0", Loc.Get("upgrade.suffix_per_second")));
                             break;
                         case DroneKind.Harvest:
-                            subject.Stats.Add(Stat("Per trip", drone.HarvestValue, UpgradeTarget.DroneOutput, "0", string.Empty));
+                            subject.Stats.Add(Stat(Loc.Get("upgrade.stat.per_trip"), drone.HarvestValue, UpgradeTarget.DroneOutput, "0", string.Empty));
                             break;
                         default:
-                            subject.Stats.Add(Stat("Damage", drone.Damage, UpgradeTarget.DroneOutput, "0.0", string.Empty));
-                            subject.Stats.Add(Stat("Fire rate", 1f / drone.FireInterval, UpgradeTarget.DroneTempo, "0.0", "/s"));
+                            subject.Stats.Add(Stat(Loc.Get("upgrade.stat.damage"), drone.Damage, UpgradeTarget.DroneOutput, "0.0", string.Empty));
+                            subject.Stats.Add(Stat(Loc.Get("upgrade.stat.fire_rate"), 1f / drone.FireInterval, UpgradeTarget.DroneTempo, "0.0", Loc.Get("upgrade.suffix_per_second")));
                             break;
                     }
 
-                    subject.Stats.Add(Flat("At once", drone.MaxActive, UpgradeTarget.DroneCount, "0"));
+                    subject.Stats.Add(Flat(Loc.Get("upgrade.stat.at_once"), drone.MaxActive, UpgradeTarget.DroneCount, "0"));
                     break;
                 }
             }
@@ -457,9 +453,9 @@ namespace Game.UI
         private void BuildGrid(RectTransform root)
         {
             float y = GridTop;
-            y = BuildSection(root, TowersHeading, s => s.Kind == SubjectKind.Tower, y);
+            y = BuildSection(root, Loc.Get("upgrade.heading_towers"), s => s.Kind == SubjectKind.Tower, y);
             y += SectionGap;
-            BuildSection(root, OthersHeading, s => s.Kind != SubjectKind.Tower, y);
+            BuildSection(root, Loc.Get("upgrade.heading_others"), s => s.Kind != SubjectKind.Tower, y);
         }
 
         private float BuildSection(RectTransform root, string heading, System.Predicate<Subject> filter, float y)
@@ -703,7 +699,7 @@ namespace Game.UI
 
             _header.text = subject.Name;
             _header.color = subject.Locked ? Muted : Color.Lerp(subject.Glow, Color.white, 0.35f);
-            _subtitle.text = subject.Locked ? "Not found yet. Beat the level that holds this weapon." : Subtitle(subject);
+            _subtitle.text = subject.Locked ? Loc.Get("upgrade.weapon_not_found") : Subtitle(subject);
             ShowPreview(subject);
             RefreshPanel();
         }
@@ -716,7 +712,7 @@ namespace Game.UI
                 bool air = (subject.Tower.Targets & TargetLayers.Air) != 0;
                 TargetReadKind read = TargetRead.Of(subject.Tower);
                 string weak = read == TargetReadKind.AirWeak || read == TargetReadKind.GroundWeak ? " (" + TargetRead.Label(read).ToLowerInvariant() + ")" : string.Empty;
-                return "Shoots " + (ground && air ? "ground and air" : air ? "air" : "ground") + weak;
+                return ground && air ? Loc.Format("upgrade.shoots_ground_air", weak) : air ? Loc.Format("upgrade.shoots_air", weak) : Loc.Format("upgrade.shoots_ground", weak);
             }
 
             return subject.Description ?? string.Empty;
@@ -744,8 +740,8 @@ namespace Game.UI
 
         private void RefreshAll()
         {
-            _researchText.text = $"{ResearchLabel} {Progress.Data.ResearchPoints}";
-            _powerText.text = $"{PowerLabel} {Progress.Data.PowerCurrency}";
+            _researchText.text = Loc.Format("upgrade.research_balance", Progress.Data.ResearchPoints);
+            _powerText.text = Loc.Format("upgrade.power_balance", Progress.Data.PowerCurrency);
             foreach (Subject subject in _subjects)
             {
                 subject.Locked = subject.Tower != null && !Progress.IsTowerUnlocked(subject.Tower.Id);
@@ -827,7 +823,7 @@ namespace Game.UI
             StatLine stat = StatFor(subject, upgrade);
             if (maxed)
             {
-                row.Change.text = stat != null ? ValueOf(subject, stat, null).ToString(stat.Format) + stat.Suffix + "   at the top" : "At the top";
+                row.Change.text = stat != null ? Loc.Format("upgrade.change_top_value", ValueOf(subject, stat, null).ToString(stat.Format) + stat.Suffix) : Loc.Get("upgrade.change_top");
                 row.Change.color = Gold;
             }
             else if (waiting)
@@ -837,17 +833,19 @@ namespace Game.UI
             }
             else if (stat != null)
             {
-                row.Change.text = $"{ValueOf(subject, stat, null).ToString(stat.Format)}{stat.Suffix}  >  {ValueOf(subject, stat, upgrade).ToString(stat.Format)}{stat.Suffix}";
+                string from = ValueOf(subject, stat, null).ToString(stat.Format) + stat.Suffix;
+                string to = ValueOf(subject, stat, upgrade).ToString(stat.Format) + stat.Suffix;
+                row.Change.text = Loc.Format("upgrade.change_values", from, to);
                 row.Change.color = Better;
             }
             else
             {
-                row.Change.text = $"+{Mathf.RoundToInt(upgrade.BonusPerLevel * 100f)}% per level";
+                row.Change.text = Loc.Format("upgrade.change_per_level", Mathf.RoundToInt(upgrade.BonusPerLevel * 100f));
                 row.Change.color = Better;
             }
 
             row.Change.rectTransform.sizeDelta = new Vector2(maxed || waiting ? RowChangeWideWidth : RowChangeWidth, RowHeight);
-            row.Cost.text = maxed || waiting ? string.Empty : $"{cost} {(power ? "power" : "research")}";
+            row.Cost.text = maxed || waiting ? string.Empty : power ? Loc.Format("upgrade.cost_power", cost) : Loc.Format("upgrade.cost_research", cost);
             row.Cost.color = maxed ? Muted : affordable ? (power ? PipPower : PipOn) : TooPoor;
 
             Color on = power ? PipPower : PipOn;
@@ -869,8 +867,8 @@ namespace Game.UI
         {
             int continent = _catalog.ContinentOpening(tier);
             return continent >= 0 && continent < _campaign.Regions.Count
-                ? $"tier {tier} opens on {_campaign.Regions[continent].DisplayName}"
-                : $"tier {tier} is not open yet";
+                ? Loc.Format("upgrade.tier_opens_on", tier, _campaign.Regions[continent].DisplayName)
+                : Loc.Format("upgrade.tier_not_open", tier);
         }
 
         // The note at the top of the panel names the first locked tier of the chosen subject, or hides when none is locked.
@@ -933,7 +931,7 @@ namespace Game.UI
                 Points = power ? _powerText : _researchText,
                 PointsFrom = pointsBefore,
                 PointsTo = power ? Progress.Data.PowerCurrency : Progress.Data.ResearchPoints,
-                PointsLabel = power ? PowerLabel : ResearchLabel,
+                PointsLabel = power ? Loc.Get("upgrade.power_label") : Loc.Get("upgrade.research_label"),
                 Mastered = subject.TileStar.enabled && !masteredBefore,
                 TileStar = subject.TileStar,
             };

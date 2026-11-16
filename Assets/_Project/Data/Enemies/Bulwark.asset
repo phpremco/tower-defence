@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: Bulwark
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Bulwark
+  _displayName: data.enemy.Bulwark.displayName
   _layer: 1
   _flies: 0
   _maxHealth: 155
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 1.6
   _attackInterval: 1.6
   _gateStrikes: 0
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5
@@ -52,4 +54,4 @@ MonoBehaviour:
   _deathStyle: 2
   _art: {fileID: 11400000, guid: 77dab90e012086345986a032f8c46708, type: 2}
   _voice: {fileID: 11400000, guid: 5156e7fa6ed1d2248a625a346379a9cd, type: 2}
-  _description: Shield bearer with a crystal sword. Natural shields soak damage; it hacks at towers and gates in its way.
+  _description: data.enemy.Bulwark.description

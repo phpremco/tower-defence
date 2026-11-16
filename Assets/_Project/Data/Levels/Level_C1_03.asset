@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8958006deeb6df4da81c42bf88e3809, type: 3}
   m_Name: Level_C1_03
   m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelDefinition
-  _displayName: Shard Ridge
-  _regionName: Shard ridge
-  _briefing: A ridge of crystal shards, and a second track comes up out of the south. Keep an eye on the sky.
+  _displayName: data.level.Level_C1_03.displayName
+  _regionName: data.level.Level_C1_03.regionName
+  _briefing: data.level.Level_C1_03.briefing
   _gridSize: {x: 40, y: 22}
   _cellSize: 1
   _theme: {fileID: 11400000, guid: 2b3698d73d1aed84c9f6833070abf482, type: 2}

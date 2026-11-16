@@ -1372,7 +1372,7 @@ MonoBehaviour:
     FadeOut: 1.4
     Letterbox: 0
     Overlay: 0
-    TitleCard: Defend the base
+    TitleCard: data.cutscene.Cutscene_Opening.shots.16.titleCard
     Lighting:
       Exposure: 0.5
       KeyColour: {r: 0.62, g: 0.72, b: 1, a: 1}

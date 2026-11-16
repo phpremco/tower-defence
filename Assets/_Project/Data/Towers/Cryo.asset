@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4195afed974a6db4bb0968bc3af5e766, type: 3}
   m_Name: Cryo
   m_EditorClassIdentifier: Game.Towers::Game.Towers.TowerDefinition
-  _displayName: Cryo
+  _displayName: data.tower.Cryo.displayName
   _targets: 3
   _levels:
   - Cost: 90
@@ -33,7 +33,7 @@ MonoBehaviour:
     SlowFactor: 0.35
     SlowSeconds: 2
     SupportScale: 0
-    StepName: Deeper chill
+    StepName: data.tower.Cryo.levels.1.stepName
     Step: 4
   - Cost: 160
     Damage: 2
@@ -43,7 +43,7 @@ MonoBehaviour:
     SlowFactor: 0.35
     SlowSeconds: 2
     SupportScale: 0
-    StepName: Extended nozzle
+    StepName: data.tower.Cryo.levels.2.stepName
     Step: 3
   _projectileSpeed: 12
   _splashRadius: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
   _damageType: 2
   _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _roles: 05000000i
-  _roleLine: 'Control: slows what passes, so every other gun has longer. Its own damage is a token.'
+  _roleLine: data.tower.Cryo.roleLine
   _retargetRadius: 0
   _homing: 1
   _fuseRadius: 0

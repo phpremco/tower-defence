@@ -393,7 +393,7 @@ namespace Game.UI
             ShowAbilities(false);
             PlaceColumns(1);
             LinkNavigation(false);
-            _postLabel.text = $"Move {HeroNaming.Of(_context)} here";
+            _postLabel.text = Loc.Format("hero.move_here", HeroNaming.Of(_context));
             _postLabel.color = TextColor;
         }
 
@@ -414,19 +414,19 @@ namespace Game.UI
             if (_hero.IsDown)
             {
                 int seconds = Mathf.CeilToInt(_hero.ReviveRemaining);
-                _state.text = $"Down, back in {seconds / 60}:{seconds % 60:00}";
+                _state.text = Loc.Format("hero.down_back_in", seconds / 60, seconds % 60);
                 _state.color = DownColor;
             }
             else
             {
-                string where = _hero.IsWalking ? $"On the way to {postName}" : $"At {postName}";
-                _state.text = $"{where}    HP {Mathf.CeilToInt(_hero.Health.Current)} / {Mathf.CeilToInt(_hero.Health.Max)}";
+                string where = _hero.IsWalking ? Loc.Format("hero.on_the_way", postName) : Loc.Format("hero.at_post", postName);
+                _state.text = Loc.Format("hero.state", where, Mathf.CeilToInt(_hero.Health.Current), Mathf.CeilToInt(_hero.Health.Max));
                 _state.color = TextColor;
             }
 
             HeroPanelStyle.FillHealth(_healthFill, _hero.IsDown ? 0f : _hero.Health.Current / _hero.Health.Max, LowHealthFraction, MidHealthFraction);
 
-            _postLabel.text = "Next post";
+            _postLabel.text = Loc.Get("hero.next_post");
             _postLabel.color = _hero.IsDown ? DimColor : TextColor;
 
             foreach (HeroAbilityButton ability in _abilities)

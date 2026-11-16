@@ -1,3 +1,4 @@
+using Game.Core;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -74,7 +75,7 @@ namespace Game.UI
             _blob = Raw(scope, "Mass", DialogueArt.Radial, HostileColour, BlobSize);
             BuildContacts(scope);
 
-            TextMeshProUGUI header = Text(scope, "Header", HeaderSize, "PERIMETER SCAN");
+            TextMeshProUGUI header = Text(scope, "Header", HeaderSize, Loc.Get("radar.perimeter_scan"));
             header.rectTransform.anchoredPosition = new Vector2(0f, Size * 0.5f + 26f);
             _count = Text(scope, "Count", CountSize, string.Empty);
             _count.rectTransform.anchoredPosition = new Vector2(0f, -Size * 0.5f - 28f);
@@ -126,7 +127,7 @@ namespace Game.UI
             if (shownCount != _shownCount)
             {
                 _shownCount = shownCount;
-                _count.text = shownCount >= 0 ? $"CONTACTS  {shownCount}" : "CONTACTS  ???";
+                _count.text = shownCount >= 0 ? Loc.Format("radar.contacts", shownCount) : Loc.Get("radar.contacts_unknown");
             }
 
             _count.color = progress < MassAt ? TextColour : HostileColour;

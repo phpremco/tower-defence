@@ -8,14 +8,14 @@ namespace Game.UI
     /// <summary>
     /// The camera options the options panel and the pause menu share: a "Camera speed" slider (a factor on the default
     /// pan speed, for keys, stick and screen edge alike), an edge-scrolling switch, and the HUD radar (a switch and a size
-    /// slider). The level camera and the HUD hear every change at once; the progress file keeps speed and size in percents.
+    /// slider). The level camera and the HUD hear every change at once; the settings keep speed and size in percents.
     /// </summary>
     public sealed class CameraOptionControls
     {
         private const float PercentScale = 100f;
         private const int SnapPercent = 10;
 
-        private readonly ProgressService _progress;
+        private readonly SettingsService _settings;
         private readonly CameraControls _controls;
         private Slider _slider;
         private Text _speedLabel;
@@ -24,9 +24,9 @@ namespace Game.UI
         private Text _radarSizeLabel;
         private Text _radarLabel;
 
-        public CameraOptionControls(ProgressService progress, CameraControls controls)
+        public CameraOptionControls(SettingsService settings, CameraControls controls)
         {
-            _progress = progress;
+            _settings = settings;
             _controls = controls;
         }
 
@@ -77,13 +77,13 @@ namespace Game.UI
         private void StoreRadar(bool on, float scale)
         {
             _controls.SetRadar(on, scale);
-            _progress?.SetRadar(_controls.RadarOn, Percent(_controls.RadarScale));
+            _settings?.SetRadar(_controls.RadarOn, Percent(_controls.RadarScale));
         }
 
         private void Store(float scale, bool edgeScrolling)
         {
             _controls.Set(scale, edgeScrolling);
-            _progress?.SetCameraControls(Percent(_controls.SpeedScale), _controls.EdgeScrolling);
+            _settings?.SetCameraControls(Percent(_controls.SpeedScale), _controls.EdgeScrolling);
         }
 
         private static float ToSlider(float scale)
@@ -93,14 +93,14 @@ namespace Game.UI
 
         private static int Percent(float scale) => Mathf.RoundToInt(scale * PercentScale);
 
-        private static string SpeedLabel(int percent) => $"Camera speed   {percent}%";
+        private static string SpeedLabel(int percent) => Loc.Format("options.camera_speed", percent);
 
-        private static string EdgeLabel(bool on) => on ? "Edge scrolling   On" : "Edge scrolling   Off";
+        private static string EdgeLabel(bool on) => on ? Loc.Get("options.edge_scrolling_on") : Loc.Get("options.edge_scrolling_off");
 
         private static float ToRadarSlider(float scale) => Mathf.InverseLerp(CameraControls.MinRadarScale, CameraControls.MaxRadarScale, scale);
 
-        private static string RadarLabel(bool on) => on ? "Radar   On" : "Radar   Off";
+        private static string RadarLabel(bool on) => on ? Loc.Get("options.radar_on") : Loc.Get("options.radar_off");
 
-        private static string RadarSizeLabel(int percent) => $"Radar size   {percent}%";
+        private static string RadarSizeLabel(int percent) => Loc.Format("options.radar_size", percent);
     }
 }

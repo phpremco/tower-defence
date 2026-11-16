@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Intro_Gravemaw
   m_EditorClassIdentifier: Game.Levels::Game.Levels.BossIntroDefinition
   _boss: {fileID: 11400000, guid: ab9724850781eea4ca1772822888c137, type: 2}
-  _heroLine: That's... that's our drill. That WAS our drill.
+  _heroLine: data.bossIntro.Intro_Gravemaw.heroLine
   _answer: {fileID: 11400000, guid: a90b133247e935745b563d6f7fee0975, type: 2}
   _repeatBarks:
-  - Oh good. The drill-eater's back.
-  - It's back. Keep the guns apart.
+  - data.bossIntro.Intro_Gravemaw.repeatBarks.0
+  - data.bossIntro.Intro_Gravemaw.repeatBarks.1
   _barks:
   - Moment: 0
-    Line: Did it just THROW my turret?!
+    _line: data.bossIntro.Intro_Gravemaw.barks.0.line
   - Moment: 1
-    Line: Where'd it go? ...I hate it when they go quiet.
+    _line: data.bossIntro.Intro_Gravemaw.barks.1.line
   _cutInTint: {r: 1, g: 0.52, b: 0.18, a: 1}
   _slowFactor: 0.25
   _focusSeconds: 0.5

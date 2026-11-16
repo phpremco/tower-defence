@@ -1,3 +1,4 @@
+using Game.Core;
 using Game.Economy;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,12 +13,12 @@ namespace Game.UI
     {
         private const int StepPercent = 1;
 
-        private readonly ProgressService _progress;
+        private readonly SettingsService _settings;
         private Text _label;
 
-        public HudMarginControl(ProgressService progress)
+        public HudMarginControl(SettingsService settings)
         {
-            _progress = progress;
+            _settings = settings;
         }
 
         public Slider Build(RectTransform column)
@@ -32,10 +33,10 @@ namespace Game.UI
         {
             int percent = Mathf.RoundToInt(value * SafeFrame.MaxMarginPercent / StepPercent) * StepPercent;
             UiKit.SafeMarginPercent = percent;
-            _progress?.SetHudMargin(percent);
+            _settings?.SetHudMargin(percent);
             _label.text = Label(percent);
         }
 
-        private static string Label(int percent) => $"HUD margin   {percent}%";
+        private static string Label(int percent) => Loc.Format("options.hud_margin", percent);
     }
 }

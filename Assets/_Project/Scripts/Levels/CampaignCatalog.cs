@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Game.Core;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Levels
 {
@@ -8,7 +10,10 @@ namespace Game.Levels
     [Serializable]
     public struct MapNode
     {
-        public string DisplayName;
+        // A localisation key since round 69 (Docs/LOCALISATION.md); DisplayName is the text in the player's language.
+        [FormerlySerializedAs("DisplayName")] [SerializeField] private string _displayName;
+
+        public string DisplayName => Loc.Get(_displayName);
 
         /// <summary>Where the level lies on the globe, in degrees: longitude -180..180 (east positive), latitude -90..90 (north positive).</summary>
         public float Longitude;

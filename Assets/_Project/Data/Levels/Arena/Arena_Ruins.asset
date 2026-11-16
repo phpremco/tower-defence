@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8958006deeb6df4da81c42bf88e3809, type: 3}
   m_Name: Arena_Ruins
   m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelDefinition
-  _displayName: Fault Line, the old ruins
-  _regionName: Fault line
-  _briefing: The plain splits open here. Rifts run beside the road and things climb out of them, on foot and on wings.
+  _displayName: data.level.Arena_Ruins.displayName
+  _regionName: data.level.Arena_Ruins.regionName
+  _briefing: data.level.Arena_Ruins.briefing
   _gridSize: {x: 40, y: 22}
   _cellSize: 1
   _theme: {fileID: 11400000, guid: 0810032134cf0074d9fd6d37c90316da, type: 2}
@@ -284,7 +284,7 @@ MonoBehaviour:
     NewTower: {fileID: 0}
     Source: 0
     Story: 
-    Credit: Field upgrade from engineering
+    Credit: data.level.Arena_Ruins.reward.credit
     NewPathObjects: []
     HeroPerk: {fileID: 11400000, guid: 4924755077ca88e4ca26d1f55cbf6df4, type: 2}
   _starBaseHealthFractions:

@@ -1,5 +1,7 @@
 using System;
+using Game.Core;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Levels
 {
@@ -10,7 +12,10 @@ namespace Game.Levels
     [Serializable]
     public struct MapRegion
     {
-        public string DisplayName;
+        // A localisation key since round 69 (Docs/LOCALISATION.md); DisplayName is the text in the player's language.
+        [FormerlySerializedAs("DisplayName")] [SerializeField] private string _displayName;
+
+        public string DisplayName => Loc.Get(_displayName);
 
         /// <summary>The middle of the continent, in degrees: longitude -180..180 (east positive), latitude -90..90.</summary>
         public float Longitude;

@@ -69,7 +69,7 @@ namespace Game.Editor
             {
                 ContinentSpec continent = ContinentTable[i];
                 SerializedProperty element = regionArray.GetArrayElementAtIndex(i);
-                element.FindPropertyRelative("DisplayName").stringValue = continent.Name;
+                element.FindPropertyRelative("_displayName").stringValue = continent.Name;
                 element.FindPropertyRelative("Longitude").floatValue = continent.Longitude;
                 element.FindPropertyRelative("Latitude").floatValue = continent.Latitude;
                 element.FindPropertyRelative("RadiusDegrees").floatValue = continent.Radius;
@@ -102,7 +102,7 @@ namespace Game.Editor
             for (int i = 0; i < nodes.Count; i++)
             {
                 SerializedProperty element = nodeArray.GetArrayElementAtIndex(i);
-                element.FindPropertyRelative("DisplayName").stringValue = nodes[i].Name;
+                element.FindPropertyRelative("_displayName").stringValue = nodes[i].Name;
                 element.FindPropertyRelative("Longitude").floatValue = nodes[i].Place.Longitude;
                 element.FindPropertyRelative("Latitude").floatValue = nodes[i].Place.Latitude;
                 element.FindPropertyRelative("Region").intValue = nodes[i].Region;

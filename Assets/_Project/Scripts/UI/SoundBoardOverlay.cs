@@ -49,7 +49,7 @@ namespace Game.UI
             RectTransform root = UiKit.CreateRoot(transform);
             _panel = root.parent.gameObject;
             CoverScreen.Add(UiKit.CreatePanel(root, "Dim", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Color(0.04f, 0.05f, 0.08f, 0.92f)).rectTransform);
-            UiKit.CreateFixedText(root, "Sound test", UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TitleTop), new Vector2(1200f, 120f));
+            UiKit.CreateFixedText(root, Loc.Get("sound.title"), UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TitleTop), new Vector2(1200f, 120f));
             _pageText = UiKit.CreateFixedText(root, string.Empty, UiKit.BodySize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TitleTop - 90f), new Vector2(1200f, 60f));
             _column = UiKit.CreateColumn(root, RowSpacing);
             _column.anchoredPosition = new Vector2(0f, ColumnDrop);
@@ -100,13 +100,13 @@ namespace Game.UI
                 Destroy(_column.GetChild(i).gameObject);
             }
 
-            _pageText.text = $"Page {_page + 1} of {pages}   -   {_entries.Count} sounds";
+            _pageText.text = Loc.Format("sound.page_counter", _page + 1, pages, _entries.Count);
             Button first = null;
             int start = _page * PageSize;
             for (int i = start; i < Mathf.Min(_entries.Count, start + PageSize); i++)
             {
                 Entry entry = _entries[i];
-                Button button = UiKit.CreateButton(_column, $"{entry.Label}   ({entry.Set.Count}x, gain {entry.Set.Gain:0.00})", () => Play(entry));
+                Button button = UiKit.CreateButton(_column, Loc.Format("sound.entry", entry.Label, entry.Set.Count, entry.Set.Gain), () => Play(entry));
                 button.GetComponent<LayoutElement>().preferredHeight = RowHeight;
                 RectTransform buttonRect = button.GetComponent<RectTransform>();
                 buttonRect.sizeDelta = new Vector2(buttonRect.sizeDelta.x, RowHeight);
@@ -121,9 +121,9 @@ namespace Game.UI
             layout.childForceExpandWidth = true;
             layout.childControlHeight = false;
             row.gameObject.AddComponent<LayoutElement>().preferredHeight = UiKit.ButtonHeight;
-            UiKit.CreateButton(row, "Previous", () => ShowPage(_page - 1));
-            UiKit.CreateButton(row, "Next", () => ShowPage(_page + 1));
-            UiKit.CreateButton(row, "Back", Close);
+            UiKit.CreateButton(row, Loc.Get("sound.previous"), () => ShowPage(_page - 1));
+            UiKit.CreateButton(row, Loc.Get("sound.next"), () => ShowPage(_page + 1));
+            UiKit.CreateButton(row, Loc.Get("sound.back"), Close);
             UiKit.Select(first != null ? first : row.GetComponentInChildren<Button>());
         }
 

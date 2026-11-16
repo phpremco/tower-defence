@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f387d1c485e6f1840ae929304219d834, type: 3}
   m_Name: Tesla_FireRate
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
-  _displayName: Fire rate
+  _displayName: data.upgrade.Tesla_FireRate.displayName
   _target: 2
   _towerId: Tesla
   _droneId: 
-  _groupName: Tesla
+  _groupName: data.upgrade.Tesla_FireRate.groupName
   _costs: 060000000c000000120000001a00000024000000300000003e0000004f0000006200000078000000i
   _currency: 0
   _groupDescription: 

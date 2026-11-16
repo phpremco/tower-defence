@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8958006deeb6df4da81c42bf88e3809, type: 3}
   m_Name: Level_C1_02
   m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelDefinition
-  _displayName: Glass Meadows
-  _regionName: Glass meadows
-  _briefing: 'Crystal grass to the horizon. The swarms come in numbers now, many and weak: fast guns will count more than heavy ones.'
+  _displayName: data.level.Level_C1_02.displayName
+  _regionName: data.level.Level_C1_02.regionName
+  _briefing: data.level.Level_C1_02.briefing
   _gridSize: {x: 38, y: 22}
   _cellSize: 1
   _theme: {fileID: 11400000, guid: 40ae810acaddbc642b44b578228afc46, type: 2}
@@ -311,8 +311,8 @@ MonoBehaviour:
     PowerCurrency: 3
     NewTower: {fileID: 11400000, guid: 5f0a1ed8305cb7345b7d18570f93c7c9, type: 2}
     Source: 2
-    Story: Dr. Voss had anti-air guns built. Just in case, she says.
-    Credit: Built on Dr. Voss's orders
+    Story: data.level.Level_C1_02.reward.story
+    Credit: data.level.Level_C1_02.reward.credit
     NewPathObjects: []
     HeroPerk: {fileID: 0}
   _starBaseHealthFractions:

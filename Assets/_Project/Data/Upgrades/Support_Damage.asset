@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f387d1c485e6f1840ae929304219d834, type: 3}
   m_Name: Support_Damage
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
-  _displayName: Damage
+  _displayName: data.upgrade.Support_Damage.displayName
   _target: 0
   _towerId: Support
   _droneId: 
-  _groupName: Support
+  _groupName: data.upgrade.Support_Damage.groupName
   _costs: 050000000a0000000f000000160000001e0000002800000034000000420000005200000064000000i
   _currency: 0
   _groupDescription: 

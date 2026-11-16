@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f387d1c485e6f1840ae929304219d834, type: 3}
   m_Name: Base_Weapon
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
-  _displayName: Base turrets
+  _displayName: data.upgrade.Base_Weapon.displayName
   _target: 5
   _towerId: 
   _droneId: 
-  _groupName: Base
+  _groupName: data.upgrade.Base_Weapon.groupName
   _costs: 0c0000001400000020000000i
   _currency: 0
-  _groupDescription: The base and the gates that hold the roads
+  _groupDescription: data.upgrade.Base_Weapon.groupDescription
   _bonusPerLevel: 1
   _continent: 0

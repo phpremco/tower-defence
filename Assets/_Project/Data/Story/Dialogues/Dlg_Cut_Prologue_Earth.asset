@@ -16,12 +16,15 @@ MonoBehaviour:
   - Id: Dlg_Cut_Prologue_Earth.01
     Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
     Segments:
-    - Text: 'The year is 2053. Earth is empty. Lithium, cobalt, rare earth metals: the last mines have been dug down to bedrock.'
+    - _text: data.dialogue.Dlg_Cut_Prologue_Earth.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Cut_Prologue_Earth.02
     Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
     Segments:
-    - Text: No raw materials means no batteries, no chips, no energy. Humanity's hunger for technology has outgrown what this planet can still give.
+    - _text: data.dialogue.Dlg_Cut_Prologue_Earth.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
+  _introducedDrones: []
+  _codexEntry: {fileID: 0}
+  _loadingTip: 

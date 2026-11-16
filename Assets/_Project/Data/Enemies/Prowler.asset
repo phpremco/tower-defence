@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: Prowler
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Prowler
+  _displayName: data.enemy.Prowler.displayName
   _layer: 1
   _flies: 0
   _maxHealth: 62
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2.5
   _attackInterval: 1
   _gateStrikes: 0
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5
@@ -52,4 +54,4 @@ MonoBehaviour:
   _deathStyle: 0
   _art: {fileID: 11400000, guid: 56b99676ee5f0c74e9f130b93f4aabb4, type: 2}
   _voice: {fileID: 11400000, guid: 9e978155aac60cd4a92c11084220a6cc, type: 2}
-  _description: Pack hunter. When a pack mate falls the rest run in a rage; kill them fast or not at all.
+  _description: data.enemy.Prowler.description

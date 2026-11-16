@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e706d5645a1442842bfb75c7f3e12043, type: 3}
   m_Name: Speaker_Nti
   m_EditorClassIdentifier: Game.Levels::Game.Levels.SpeakerDefinition
-  _displayName: Nova Terra Industries
+  _displayName: data.speaker.Speaker_Nti.displayName
   _roleColour: {r: 0.62, g: 0.7, b: 0.85, a: 1}
   _frame: 2
   _portrait: 3

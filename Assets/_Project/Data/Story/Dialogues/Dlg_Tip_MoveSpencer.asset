@@ -16,21 +16,21 @@ MonoBehaviour:
   - Id: Dlg_Tip_MoveSpencer.01
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Spencer, your gate is quiet, but another one is being hammered.
+    - _text: data.dialogue.Dlg_Tip_MoveSpencer.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Tip_MoveSpencer.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: 'Go where the fight is. The jetpack gets you there in seconds: Next post, or select that gate and send Spencer.'
+    - _text: data.dialogue.Dlg_Tip_MoveSpencer.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Tip_MoveSpencer.03
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: When the pressure shifts, shift with it. A blade at the right gate beats a turret at the wrong one.
+    - _text: data.dialogue.Dlg_Tip_MoveSpencer.lines.2.segments.0.text
       Style: 0
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 0}
-  _loadingTip: 'When another gate is being hammered, send Spencer there: Next post, or select that gate.'
+  _loadingTip: data.dialogue.Dlg_Tip_MoveSpencer.loadingTip

@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f387d1c485e6f1840ae929304219d834, type: 3}
   m_Name: Hero_Armour
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
-  _displayName: Armour
+  _displayName: data.upgrade.Hero_Armour.displayName
   _target: 15
   _towerId: 
   _droneId: 
-  _groupName: Spencer
+  _groupName: data.upgrade.Hero_Armour.groupName
   _costs: 050000000a0000000f000000160000001e0000002800000034000000420000005200000064000000i
   _currency: 0
-  _groupDescription: Spencer, who holds the gates
+  _groupDescription: data.upgrade.Hero_Armour.groupDescription
   _bonusPerLevel: 0.05
   _continent: 0

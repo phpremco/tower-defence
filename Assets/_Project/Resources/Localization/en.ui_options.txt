@@ -1,0 +1,98 @@
+# English: options, pause menu, controls page and system notices. Format: Docs/LOCALISATION.md
+
+# Shared
+common.back = Back
+
+# Options
+options.title = Options
+options.volume.master = Master volume   {0}%
+options.volume.music = Music volume   {0}%
+options.volume.effects = Effects volume   {0}%
+options.volume.ambience = Ambience volume   {0}%
+options.mute_background_on = Mute in background   On
+options.mute_background_off = Mute in background   Off
+options.camera_speed = Camera speed   {0}%
+options.edge_scrolling_on = Edge scrolling   On
+options.edge_scrolling_off = Edge scrolling   Off
+options.radar_on = Radar   On
+options.radar_off = Radar   Off
+options.radar_size = Radar size   {0}%
+options.hud_margin = HUD margin   {0}%
+options.language = Language   {0}
+options.controls = Controls
+options.sound_test = Sound test
+options.replay_intro = Replay intro
+options.story_viewer = Story viewer (dev)
+
+# Controls page ({0} is the commander's name)
+controls.header_action = Action
+controls.header_pad = Gamepad
+controls.header_keys = Keyboard and mouse
+controls.cursor = Move the cursor
+controls.cursor_pad = Left stick / D-pad
+controls.cursor_keys = Mouse
+controls.camera = Move the camera
+controls.camera_pad = Right stick
+controls.camera_keys = WASD / arrow keys
+controls.zoom = Zoom
+controls.zoom_pad = L3 / R3
+controls.zoom_keys = - / +   Mouse wheel
+controls.overview = Overview (hold)
+controls.overview_pad = View (hold), A: go there
+controls.overview_keys = Tab (hold), click: go there
+controls.radar = Radar (top right)
+controls.radar_pad = -
+controls.radar_keys = Click: send the camera there
+controls.confirm = Confirm
+controls.confirm_pad = A
+controls.confirm_keys = Enter   Left click
+controls.cancel = Cancel / back
+controls.cancel_pad = B
+controls.cancel_keys = Esc   Right click
+controls.switch_tower = Switch tower or street weapon
+controls.switch_tower_pad = LB / RB
+controls.switch_tower_keys = Q / E
+controls.tower_icons = Tower icons
+controls.tower_icons_pad = A on a tower, stick, A
+controls.tower_icons_keys = Click a tower, or U / R / X
+controls.send_hero = Send {0} to a blockade
+controls.send_hero_pad = Its third icon
+controls.send_hero_keys = X on the blockade
+controls.hero_post = {0}: next post
+controls.hero_post_pad = X
+controls.hero_post_keys = H
+controls.hero_abilities = {0}: shockwave / repair
+controls.hero_abilities_pad = LT / RT
+controls.hero_abilities_keys = F / G
+controls.drones = Drones
+controls.drones_pad = A on the base doorstep
+controls.drones_keys = Click a card (bottom right)
+controls.codex = Codex
+controls.codex_pad = Start, then Codex;  Y on a scan
+controls.codex_keys = Book icon (top right);  C on a scan
+controls.speed = Game speed
+controls.speed_pad = Y
+controls.speed_keys = Space
+controls.pause = Pause
+controls.pause_pad = Start
+controls.pause_keys = P
+controls.skip_wave = Skip wave (test)
+controls.skip_wave_pad = View (tap)
+controls.skip_wave_keys = N
+
+# Pause menu
+pause.title = Paused
+pause.resume = Resume
+pause.codex = Codex
+pause.sound = Sound
+pause.camera = Camera
+pause.restart = Restart level
+pause.quit_to_map = Quit to map
+pause.quit_question = Quit to the map?
+pause.quit_warning = Progress in this level will be lost.
+pause.quit_yes = Yes, quit
+pause.quit_no = No, keep playing
+
+# Controller notice
+system.controller_lost = Controller disconnected. Reconnect it to continue.
+system.controller_back = Controller connected.

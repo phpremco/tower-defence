@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Game.Core;
 using Game.Economy;
 using Game.Hero;
 using Game.PathObjects;
@@ -29,14 +30,14 @@ namespace Game.Levels
             return new LevelResult
             {
                 Won = true,
-                Credit = unlocksAnything && !string.IsNullOrEmpty(reward.Credit) ? reward.Credit : null,
+                Credit = unlocksAnything && !string.IsNullOrEmpty(reward.Credit) ? Loc.Get(reward.Credit) : null,
                 Stars = StarsFor(level, baseHealthFraction),
                 RewardsAlreadyEarned = earnedBefore,
                 ResearchPoints = earnedBefore ? 0 : Mathf.RoundToInt(reward.ResearchPoints * difficulty.RewardMultiplier),
                 PowerCurrency = earnedBefore ? 0 : Mathf.RoundToInt(reward.PowerCurrency * difficulty.PowerCurrencyMultiplier),
                 NewTower = giveWeapon ? reward.NewTower : null,
                 Source = giveWeapon ? reward.Source : UnlockSource.None,
-                Story = giveWeapon ? reward.Story : null,
+                Story = giveWeapon && reward.Story != null ? Loc.Get(reward.Story) : null,
                 NewPathObjects = gadgets,
                 HeroPerk = perk,
             };

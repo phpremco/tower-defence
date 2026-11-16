@@ -44,7 +44,7 @@ namespace Game.Editor
             public BossBark[] Barks { get; }
         }
 
-        private static BossBark Bark(BossMoment moment, string line) => new BossBark { Moment = moment, Line = line };
+        private static BossBark Bark(BossMoment moment, string line) => new BossBark(moment, line);
 
         private static IntroSpec[] BossIntros() => new[]
         {
@@ -133,7 +133,7 @@ namespace Game.Editor
                 {
                     SerializedProperty bark = barks.GetArrayElementAtIndex(i);
                     bark.FindPropertyRelative("Moment").enumValueIndex = (int)spec.Barks[i].Moment;
-                    bark.FindPropertyRelative("Line").stringValue = spec.Barks[i].Line;
+                    bark.FindPropertyRelative("_line").stringValue = spec.Barks[i].Key;
                 }
 
                 so.ApplyModifiedPropertiesWithoutUndo();

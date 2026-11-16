@@ -372,7 +372,7 @@ namespace Game.Levels
                 // A wrecked tower has nothing left but its scrap value, so one click takes it: no menu in between.
                 if (tower.IsWrecked && tower.CanBeSold)
                 {
-                    _cellMessage = $"Scrapped for {tower.SellValue}";
+                    _cellMessage = Loc.Format("placement.scrapped_for", tower.SellValue);
                     RemoveForMoney(tower);
                     Refresh();
                     return;
@@ -979,10 +979,10 @@ namespace Game.Levels
         {
             if (valid)
             {
-                return $"{definition.DisplayName} ({definition.Cost})";
+                return Loc.Format("placement.in_hand", definition.DisplayName, definition.Cost);
             }
 
-            return CanPlacePathObject(definition, _cursor) ? "Not enough money" : "Cannot place here";
+            return CanPlacePathObject(definition, _cursor) ? Loc.Get("placement.not_enough_money") : Loc.Get("placement.cannot_place");
         }
 
         // Works out whether the selected tower has a neighbour it can be combined with, so the menu can offer it.
@@ -1056,31 +1056,29 @@ namespace Game.Levels
             Destroy(tower.gameObject);
         }
 
-        private const string SlopeStatus = "Too steep: the slope of the high ground holds no tower";
-
         private string DescribeBlockedCell()
         {
             if (_context.SelectedPathObject != null)
             {
-                return _context.SelectedPathObject.Placement == PathObjectPlacement.Road ? "This goes on the road" : "This goes next to the road";
+                return _context.SelectedPathObject.Placement == PathObjectPlacement.Road ? Loc.Get("placement.goes_on_road") : Loc.Get("placement.goes_beside_road");
             }
 
             if (_context.SelectedTower == null)
             {
-                return "Pick a tower first";
+                return Loc.Get("placement.pick_tower");
             }
 
             if (_buildGrid.IsRoad(_cursor))
             {
-                return "Towers cannot be built on the road";
+                return Loc.Get("placement.not_on_road");
             }
 
             if (_buildGrid.IsSlope(_cursor))
             {
-                return SlopeStatus;
+                return Loc.Get("placement.too_steep");
             }
 
-            return _buildGrid.IsBlocked(_cursor) ? "Something is in the way here" : "Cannot build here";
+            return _buildGrid.IsBlocked(_cursor) ? Loc.Get("placement.in_the_way") : Loc.Get("placement.cannot_build");
         }
 
         private string PlacingStatus(TowerDefinition selected, bool valid)
@@ -1090,32 +1088,32 @@ namespace Game.Levels
                 // The tower in hand, its price and what it does against ground and sky (the cards only carry two badges).
                 string reach = TargetRead.Label(selected);
                 string ground = HighGroundNote(_cursor);
-                return $"{selected.DisplayName} ({selected.BuildCost})" + (reach.Length > 0 ? "  -  " + reach : string.Empty) + (ground.Length > 0 ? "  -  " + ground : string.Empty);
+                return Loc.Format("placement.in_hand", selected.DisplayName, selected.BuildCost) + (reach.Length > 0 ? "  -  " + reach : string.Empty) + (ground.Length > 0 ? "  -  " + ground : string.Empty);
             }
 
             if (_context.ClosedPads.Contains(_cursor))
             {
-                return "Overgrown: burn it clean first";
+                return Loc.Get("placement.overgrown");
             }
 
             if (_buildGrid.IsSlope(_cursor))
             {
-                return SlopeStatus;
+                return Loc.Get("placement.too_steep");
             }
 
             if (!_buildGrid.CanBuild(_cursor))
             {
-                return "Cannot build here";
+                return Loc.Get("placement.cannot_build");
             }
 
-            return "Not enough money";
+            return Loc.Get("placement.not_enough_money");
         }
 
         // What the cell under the cursor adds to a tower's reach, in the words of the status line; empty on the plain.
         private string HighGroundNote(Vector2Int cell)
         {
             TerrainRules rules = _context.Level.TerrainRules;
-            return rules != null && TerrainBalance.RangeMultiplier(_context.Level, cell) > 1f ? $"High ground: {rules.HighGroundLabel} range" : string.Empty;
+            return rules != null && TerrainBalance.RangeMultiplier(_context.Level, cell) > 1f ? Loc.Format("level.high_ground_range", rules.HighGroundLabel) : string.Empty;
         }
     }
 }

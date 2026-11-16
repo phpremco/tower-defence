@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4195afed974a6db4bb0968bc3af5e766, type: 3}
   m_Name: Cannon
   m_EditorClassIdentifier: Game.Towers::Game.Towers.TowerDefinition
-  _displayName: Cannon
+  _displayName: data.tower.Cannon.displayName
   _targets: 1
   _levels:
   - Cost: 100
@@ -33,7 +33,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
-    StepName: Heavier shells
+    StepName: data.tower.Cannon.levels.1.stepName
     Step: 1
   - Cost: 155
     Damage: 118.26088
@@ -43,7 +43,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
-    StepName: High-explosive filler
+    StepName: data.tower.Cannon.levels.2.stepName
     Step: 1
   _projectileSpeed: 5
   _splashRadius: 1.2
@@ -51,7 +51,7 @@ MonoBehaviour:
   _damageType: 0
   _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _roles: 0200000003000000i
-  _roleLine: 'Blast: breaks bunched groups and strips armour. Cannot aim up, and its shell lands where a runner was.'
+  _roleLine: data.tower.Cannon.roleLine
   _retargetRadius: 0
   _homing: 0
   _fuseRadius: 0

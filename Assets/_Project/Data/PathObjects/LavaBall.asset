@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2863d1c450a864c43ab21ab187d5bc12, type: 3}
   m_Name: LavaBall
   m_EditorClassIdentifier: Game.PathObjects::Game.PathObjects.PathObjectDefinition
-  _displayName: Lava ball
+  _displayName: data.pathObject.LavaBall.displayName
   _kind: 2
   _placement: 0
   _targets: 1
@@ -31,4 +31,4 @@ MonoBehaviour:
   _art: {fileID: 11400000, guid: 77942d9ecf16af042aec0047165b16b5, type: 2}
   _effect: 3
   _impactVfx: {fileID: 0}
-  _description: Dropped on the road, it rolls on towards the base and burns every walker it touches along the way.
+  _description: data.pathObject.LavaBall.description

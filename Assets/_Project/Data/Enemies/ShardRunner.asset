@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: ShardRunner
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Shard Runner
+  _displayName: data.enemy.ShardRunner.displayName
   _layer: 1
   _flies: 0
   _maxHealth: 300
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2
   _attackInterval: 1.2
   _gateStrikes: 0
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5
@@ -52,4 +54,4 @@ MonoBehaviour:
   _deathStyle: 0
   _art: {fileID: 11400000, guid: 5488cc5f94d4f6a4fa5a0cabe1c969cb, type: 2}
   _voice: {fileID: 11400000, guid: 76b4b81d3d902754e93f31e425c05634, type: 2}
-  _description: 'A shard of the Shattered on two long legs: it runs the second road.'
+  _description: data.enemy.ShardRunner.description

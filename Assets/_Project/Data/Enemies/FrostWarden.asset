@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: FrostWarden
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Frost Warden
+  _displayName: data.enemy.FrostWarden.displayName
   _layer: 1
   _flies: 0
   _maxHealth: 5050
@@ -55,4 +55,4 @@ MonoBehaviour:
   _deathStyle: 2
   _art: {fileID: 11400000, guid: 27a340f67e9aa11459d177e6bd36cc78, type: 2}
   _voice: {fileID: 11400000, guid: 9f48f9484ed50fb4eb6251c43be60c71, type: 2}
-  _description: A guardian of ice that freezes your defence in place.
+  _description: data.enemy.FrostWarden.description

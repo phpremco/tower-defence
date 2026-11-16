@@ -58,7 +58,7 @@ namespace Game.Tests
             Assert.AreEqual(ProgressMigrator.CurrentVersion, progress.Data.Version);
             Assert.AreEqual(140, progress.Data.ResearchPoints);
             Assert.AreEqual(22, progress.Data.PowerCurrency);
-            Assert.AreEqual(60, progress.Data.MasterVolumePercent);
+            Assert.AreEqual(60, new SettingsService(new JsonMemorySave { Json = VersionOneJson }).Data.MasterVolumePercent, "the volume moves to the settings file");
             Assert.AreEqual(2, progress.GetUpgradeLevel("PulseRifle_Damage"));
             Assert.AreEqual(1, progress.GetUpgradeLevel("Cryo_Range"), "dormant upgrades stay saved, unrefunded");
             CollectionAssert.AreEqual(new[] { "Mine" }, progress.Loadout);

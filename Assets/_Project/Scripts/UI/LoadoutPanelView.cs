@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Game.Core;
 using Game.Economy;
 using Game.Levels;
 using Game.PathObjects;
@@ -107,17 +108,17 @@ namespace Game.UI
             _panel = panel.gameObject;
 
             float width = PanelWidth - Side * 2f;
-            Text where = UiKit.CreateFixedText(rect, $"{level.DisplayName}   {difficulty.DisplayName}", SubtitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -34f), new Vector2(width, 40f));
+            Text where = UiKit.CreateFixedText(rect, Loc.Format("loadout.where", level.DisplayName, difficulty.DisplayName), SubtitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -34f), new Vector2(width, 40f));
             where.color = Muted;
-            UiKit.CreateFixedText(rect, "Street weapons", TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -76f), new Vector2(width, 70f));
-            Text note = UiKit.CreateFixedText(rect, $"Take up to {LoadoutSize} along; you buy and place them in the level.", NoteSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -146f), new Vector2(width, 34f));
+            UiKit.CreateFixedText(rect, Loc.Get("loadout.title"), TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -76f), new Vector2(width, 70f));
+            Text note = UiKit.CreateFixedText(rect, Loc.Format("loadout.note", LoadoutSize), NoteSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -146f), new Vector2(width, 34f));
             note.color = Muted;
 
             BuildList(rect, catalogue);
 
             _count = UiKit.CreateFixedText(rect, string.Empty, NoteSize, TextAnchor.UpperCenter, new Vector2(0.5f, 0f), new Vector2(0f, ListBottom - 34f), new Vector2(width, 34f));
-            Button deploy = BottomButton(rect, "Deploy", Deploy, 24f + UiKit.ButtonHeight + 12f);
-            Button back = BottomButton(rect, "Back", Back, 24f);
+            Button deploy = BottomButton(rect, Loc.Get("loadout.deploy"), Deploy, 24f + UiKit.ButtonHeight + 12f);
+            Button back = BottomButton(rect, Loc.Get("loadout.back"), Back, 24f);
             Button first = _rows.Count > 0 ? _rows[0].Button : null;
             deploy.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnUp = _rows.Count > 0 ? _rows[_rows.Count - 1].Button : null, selectOnDown = back };
             back.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnUp = deploy };
@@ -341,7 +342,7 @@ namespace Game.UI
             description.horizontalOverflow = HorizontalWrapMode.Wrap;
             description.verticalOverflow = VerticalWrapMode.Truncate;
 
-            Text cost = UiKit.CreateFixedText(rect, $"{definition.Cost} money", NameSize, TextAnchor.UpperRight, new Vector2(1f, 1f), new Vector2(-Inset - TickSize - Inset, -Inset), new Vector2(CostWidth, 32f));
+            Text cost = UiKit.CreateFixedText(rect, Loc.Format("loadout.cost", definition.Cost), NameSize, TextAnchor.UpperRight, new Vector2(1f, 1f), new Vector2(-Inset - TickSize - Inset, -Inset), new Vector2(CostWidth, 32f));
             cost.horizontalOverflow = HorizontalWrapMode.Overflow;
 
             Image tick = Icon(rect, IconType.Check, Tick, TickSize);
@@ -402,7 +403,7 @@ namespace Game.UI
                 _rows[i].Tick.enabled = chosen;
             }
 
-            _count.text = _chosen.Count == LoadoutSize ? $"{_chosen.Count} of {LoadoutSize} chosen: ready to deploy" : $"{_chosen.Count} of {LoadoutSize} chosen";
+            _count.text = _chosen.Count == LoadoutSize ? Loc.Format("loadout.count_full", _chosen.Count, LoadoutSize) : Loc.Format("loadout.count", _chosen.Count, LoadoutSize);
         }
     }
 }

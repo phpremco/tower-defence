@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19a4e9763e5c17b419f71f74ea442792, type: 3}
   m_Name: Easy
   m_EditorClassIdentifier: Game.Levels::Game.Levels.DifficultyProfile
-  _displayName: Easy
+  _displayName: data.difficultyProfile.Easy.displayName
   _healthMultiplier: 0.68
   _countMultiplier: 0.9
   _spawnIntervalMultiplier: 1.2
@@ -22,3 +22,4 @@ MonoBehaviour:
   _incomeMultiplier: 0.8
   _startingMoneyMultiplier: 0.8
   _bossHealthShare: 0.8
+  _bossEscortShare: 1

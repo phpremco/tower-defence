@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: Skitter
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Skitter
+  _displayName: data.enemy.Skitter.displayName
   _layer: 1
   _flies: 0
   _maxHealth: 11
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2.5
   _attackInterval: 1.1
   _gateStrikes: 0
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5
@@ -52,4 +54,4 @@ MonoBehaviour:
   _deathStyle: 0
   _art: {fileID: 11400000, guid: c21501357c0b47e40975816108fbfb48, type: 2}
   _voice: {fileID: 11400000, guid: a784414339eab3c4a8902eafebda7316, type: 2}
-  _description: 'Ant swarm. Weak alone and dangerous in crowds: a shell thins a pack, but a long stream of ants asks for rate of fire along the road. Bites gates and Spencer.'
+  _description: data.enemy.Skitter.description

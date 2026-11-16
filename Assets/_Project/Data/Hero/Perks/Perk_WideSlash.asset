@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47513c70ed5d8844e90f6c831d66611b, type: 3}
   m_Name: Perk_WideSlash
   m_EditorClassIdentifier: Game.Hero::Game.Hero.HeroPerkDefinition
-  _displayName: Wide Slash
+  _displayName: data.heroPerk.Perk_WideSlash.displayName
   _slot: 1
-  _description: A wider sweep of the laser blade that hits several enemies at once.
+  _description: data.heroPerk.Perk_WideSlash.description
+  _rangedIntervalMultiplier: 1
+  _reloadMultiplier: 1

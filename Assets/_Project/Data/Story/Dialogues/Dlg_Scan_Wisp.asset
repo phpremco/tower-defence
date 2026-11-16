@@ -16,15 +16,15 @@ MonoBehaviour:
   - Id: Dlg_Scan_Wisp.01
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: 'I scanned that glow. Pure energy, almost no mass: it dies fast, but it hits a gate hard.'
+    - _text: data.dialogue.Dlg_Scan_Wisp.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Scan_Wisp.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Stop it early. The Laser Turret fires fast enough to catch it; ground and air guns both reach it.
+    - _text: data.dialogue.Dlg_Scan_Wisp.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 11400000, guid: 5cc35a59ea77e874c8b7b50dab908bc2, type: 2}
-  _loadingTip: 'Wisps die fast but hit a gate hard. Stop them early: the Laser Turret fires fast enough to catch them.'
+  _loadingTip: data.dialogue.Dlg_Scan_Wisp.loadingTip

@@ -34,7 +34,7 @@ namespace Game.Tests
                 line.FindPropertyRelative("Speaker").objectReferenceValue = speaker;
                 SerializedProperty segments = line.FindPropertyRelative("Segments");
                 segments.arraySize = 1;
-                segments.GetArrayElementAtIndex(0).FindPropertyRelative("Text").stringValue = texts[i];
+                segments.GetArrayElementAtIndex(0).FindPropertyRelative("_text").stringValue = texts[i];
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();

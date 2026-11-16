@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Game.Core;
 using Game.Drones;
 using Game.Hero;
 using Game.PathObjects;
@@ -83,9 +84,9 @@ namespace Game.Levels
         [SerializeField] private StoryTrigger[] _story = new StoryTrigger[0];
 
         public string Id => name;
-        public string DisplayName => _displayName;
-        public string RegionName => _regionName;
-        public string Briefing => _briefing;
+        public string DisplayName => Loc.Get(_displayName);
+        public string RegionName => Loc.Get(_regionName);
+        public string Briefing => Loc.Get(_briefing);
         public Vector2Int GridSize => _gridSize;
         public float CellSize => _cellSize;
         public VisualTheme Theme => _theme;

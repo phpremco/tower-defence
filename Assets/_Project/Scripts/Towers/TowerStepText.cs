@@ -1,3 +1,4 @@
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Towers
@@ -8,6 +9,8 @@ namespace Game.Towers
     /// </summary>
     public static class TowerStepText
     {
+        private const string RefitGap = "   ";
+
         /// <summary>The line for the step that leads from a level to the next; empty at the top level.</summary>
         public static string Next(TowerDefinition tower, int levelIndex)
         {
@@ -18,7 +21,7 @@ namespace Game.Towers
 
             TowerLevel now = tower.GetLevel(levelIndex);
             TowerLevel next = tower.GetLevel(levelIndex + 1);
-            return $"{next.StepName}: {Change(tower, now, next)}";
+            return $"{Loc.Get(next.StepName)}: {Change(tower, now, next)}";
         }
 
         private static string Change(TowerDefinition tower, TowerLevel now, TowerLevel next)
@@ -26,15 +29,15 @@ namespace Game.Towers
             switch (next.Step)
             {
                 case TowerStep.Damage:
-                    return $"damage {now.Damage:0.#} > {next.Damage:0.#}";
+                    return Loc.Format("tower.step.damage", now.Damage, next.Damage);
                 case TowerStep.FireRate:
-                    return $"shots/s {1f / now.FireInterval:0.0} > {1f / next.FireInterval:0.0}";
+                    return Loc.Format("tower.step.fire_rate", 1f / now.FireInterval, 1f / next.FireInterval);
                 case TowerStep.Range:
-                    return $"range {now.Range:0.0} > {next.Range:0.0}";
+                    return Loc.Format("tower.step.range", now.Range, next.Range);
                 case TowerStep.Slow:
-                    return $"slows to {Percent(Slow(tower, now))} > {Percent(Slow(tower, next))} speed";
+                    return Loc.Format("tower.step.slow", Percent(Slow(tower, now)), Percent(Slow(tower, next)));
                 case TowerStep.Support:
-                    return $"boost x{Scale(now):0.#} > x{Scale(next):0.#}";
+                    return Loc.Format("tower.step.boost", Scale(now), Scale(next));
                 default:
                     return Refit(now, next);
             }
@@ -46,22 +49,22 @@ namespace Game.Towers
             string text = string.Empty;
             if (!Mathf.Approximately(now.Damage, next.Damage))
             {
-                text += $"damage {now.Damage:0.#} > {next.Damage:0.#}   ";
+                text += Loc.Format("tower.step.damage", now.Damage, next.Damage) + RefitGap;
             }
 
             if (!Mathf.Approximately(now.Range, next.Range))
             {
-                text += $"range {now.Range:0.0} > {next.Range:0.0}   ";
+                text += Loc.Format("tower.step.range", now.Range, next.Range) + RefitGap;
             }
 
             if (!Mathf.Approximately(now.FireInterval, next.FireInterval))
             {
-                text += $"shots/s {1f / now.FireInterval:0.0} > {1f / next.FireInterval:0.0}   ";
+                text += Loc.Format("tower.step.fire_rate", 1f / now.FireInterval, 1f / next.FireInterval) + RefitGap;
             }
 
             if (next.HealthBonus > 0f)
             {
-                text += $"+{next.HealthBonus:0} HP";
+                text += Loc.Format("tower.step.health", next.HealthBonus);
             }
 
             return text.TrimEnd();

@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Intro_FrostWarden
   m_EditorClassIdentifier: Game.Levels::Game.Levels.BossIntroDefinition
   _boss: {fileID: 11400000, guid: 241eba79783ca9e439c2085aca9748d4, type: 2}
-  _heroLine: Those fists are bigger than my gate. Why are they bigger than my gate?
+  _heroLine: data.bossIntro.Intro_FrostWarden.heroLine
   _answer: {fileID: 11400000, guid: 4cab979b54395e841bc564ef03a1b07d, type: 2}
   _repeatBarks:
-  - Big, cold and back. Light it up.
-  - The fists are back. Fire on the armour!
+  - data.bossIntro.Intro_FrostWarden.repeatBarks.0
+  - data.bossIntro.Intro_FrostWarden.repeatBarks.1
   _barks:
   - Moment: 4
-    Line: My gate's an ice cube. Fantastic.
+    _line: data.bossIntro.Intro_FrostWarden.barks.0.line
   - Moment: 5
-    Line: Armour's off! Hit it with everything!
+    _line: data.bossIntro.Intro_FrostWarden.barks.1.line
   _cutInTint: {r: 0.55, g: 0.85, b: 1, a: 1}
   _slowFactor: 0.25
   _focusSeconds: 0.5

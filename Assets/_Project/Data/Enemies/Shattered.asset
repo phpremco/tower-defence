@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: Shattered
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Shattered
+  _displayName: data.enemy.Shattered.displayName
   _layer: 1
   _flies: 0
   _maxHealth: 14300
@@ -56,4 +56,4 @@ MonoBehaviour:
   _deathStyle: 2
   _art: {fileID: 11400000, guid: a3bef3b68bb45c74d9895e1e946f61b7, type: 2}
   _voice: {fileID: 11400000, guid: 52315d80303c7ce499235f83fb4b4a32, type: 2}
-  _description: A crystal giant that splits apart when it takes damage.
+  _description: data.enemy.Shattered.description

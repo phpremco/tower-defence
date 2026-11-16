@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47513c70ed5d8844e90f6c831d66611b, type: 3}
   m_Name: Perk_QuickReload
   m_EditorClassIdentifier: Game.Hero::Game.Hero.HeroPerkDefinition
-  _displayName: Quick Reload
+  _displayName: data.heroPerk.Perk_QuickReload.displayName
   _slot: 0
-  _description: Spencer reloads his pistol in half the time.
+  _description: data.heroPerk.Perk_QuickReload.description
   _rangedIntervalMultiplier: 1
   _reloadMultiplier: 0.5

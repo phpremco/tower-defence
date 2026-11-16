@@ -19,8 +19,6 @@ namespace Game.UI
     /// </summary>
     public sealed class WorldMapScreen : ScreenBase
     {
-        private const string Title = "Choose a region";
-        private const string RegionTitle = "Choose a level";
         private const float GlobeSize = 1100f;
         private const int GlobeTexture = 2048;
         private const int CloudTexture = 1024;
@@ -70,7 +68,6 @@ namespace Game.UI
         private const int BriefingSize = 26;
         private const int CaptionSize = 34;
         private const int HintSize = 24;
-        private const string HintGap = "     ";
         private static readonly Vector2 ViewHome = new Vector2(0f, 56f);
         private static readonly Color LockedColor = new Color(0.4f, 0.43f, 0.5f);
         private static readonly Color LockedPlate = new Color(0.22f, 0.24f, 0.3f);
@@ -191,7 +188,7 @@ namespace Game.UI
             chrome.offsetMin = Vector2.zero;
             chrome.offsetMax = Vector2.zero;
             _overview = chrome.gameObject.AddComponent<CanvasGroup>();
-            _title = UiKit.CreateFixedText(chrome, Title, UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(1200f, 100f));
+            _title = UiKit.CreateFixedText(chrome, Loc.Get("map.title_planet"), UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(1200f, 100f));
             _caption = UiKit.CreateFixedText(chrome, string.Empty, CaptionSize, TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, 150f), new Vector2(1200f, 50f));
             _hint = UiKit.CreateFixedText(chrome, string.Empty, Mathf.Max(HintSize, UiKit.ReadableSize), TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, 114f), new Vector2(1760f, 40f));
             _hint.color = Muted;
@@ -496,10 +493,10 @@ namespace Game.UI
             fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            _planet = UiKit.CreateButton(row, "Planet", LeaveRegion);
-            _play = UiKit.CreateButton(row, "Play level", PlayFocused);
-            _upgrades = UiKit.CreateButton(row, "Upgrades", () => Go(SceneNames.Base));
-            _back = UiKit.CreateButton(row, "Main menu", () => Go(SceneNames.MainMenu));
+            _planet = UiKit.CreateButton(row, Loc.Get("map.planet"), LeaveRegion);
+            _play = UiKit.CreateButton(row, Loc.Get("map.play_level"), PlayFocused);
+            _upgrades = UiKit.CreateButton(row, Loc.Get("map.upgrades"), () => Go(SceneNames.Base));
+            _back = UiKit.CreateButton(row, Loc.Get("map.main_menu"), () => Go(SceneNames.MainMenu));
             foreach (Button button in row.GetComponentsInChildren<Button>())
             {
                 button.GetComponent<RectTransform>().sizeDelta = new Vector2(ActionWidth, UiKit.ButtonHeight);
@@ -748,7 +745,7 @@ namespace Game.UI
             _region = index;
             MapRegion region = _catalog.Regions[index];
             int total = _catalog.NodeCount(index);
-            string status = total == 0 ? "   -   coming soon" : $"   -   {CampaignRules.CompletedInRegion(_catalog, index, Progress)} / {total} levels";
+            string status = total == 0 ? Loc.Get("map.coming_soon_suffix") : Loc.Format("map.region_status", CampaignRules.CompletedInRegion(_catalog, index, Progress), total);
             _caption.text = region.DisplayName + status;
             _caption.color = _badges[index].Open ? Color.white : Muted;
             _globe.Highlight(index, region.Colour, _badges[index].Open, region.Direction, region.RadiusDegrees);
@@ -763,7 +760,7 @@ namespace Game.UI
             }
 
             _entered = true;
-            _title.text = RegionTitle;
+            _title.text = Loc.Get("map.title_region");
             FocusRegion(index);
             foreach (Marker badge in _badges)
             {
@@ -798,14 +795,18 @@ namespace Game.UI
             }
 
             bool pad = _input != null && _input.ActiveDevice == InputDeviceKind.Gamepad;
-            string turn = pad ? "Stick" : "Arrow keys";
+            string turn = pad ? Loc.Get("map.turn_stick") : Loc.Get("map.turn_keys");
             string cycle = $"{Prompt(GameAction.PreviousTower)} / {Prompt(GameAction.NextTower)}";
             string confirm = Prompt(GameAction.Confirm);
             string back = Prompt(GameAction.Cancel);
-            _hint.text = _entered
-                ? $"{turn} left / right or {cycle}: previous and next level{HintGap}{confirm}: play{HintGap}{back}: back to the planet{HintGap}Down: buttons" +
-                  (pad ? string.Empty : $"{HintGap}Click a level to select it, click again to play")
-                : $"{turn}: turn the planet{HintGap}{cycle}: previous and next region{HintGap}{confirm}: enter the region{HintGap}{back}: back";
+            if (!_entered)
+            {
+                _hint.text = Loc.Format("map.hint_planet", turn, cycle, confirm, back);
+            }
+            else
+            {
+                _hint.text = pad ? Loc.Format("map.hint_region_pad", turn, cycle, confirm, back) : Loc.Format("map.hint_region_mouse", turn, cycle, confirm, back);
+            }
         }
 
         private string Prompt(GameAction action) => _input != null ? _input.PromptFor(action) : string.Empty;
@@ -814,7 +815,7 @@ namespace Game.UI
         private void LeaveRegion()
         {
             _entered = false;
-            _title.text = Title;
+            _title.text = Loc.Get("map.title_planet");
             _focused = -1;
             foreach (Marker marker in _markers)
             {
@@ -860,8 +861,8 @@ namespace Game.UI
             _focused = index;
             MapNode node = _catalog.Nodes[index];
             Marker marker = _markers[index];
-            string status = node.Level == null ? "   -   coming soon" : marker.Open ? string.Empty : "   -   locked";
-            _caption.text = $"{index + 1}. {node.DisplayName}{status}";
+            string status = node.Level == null ? Loc.Get("map.coming_soon_suffix") : marker.Open ? string.Empty : Loc.Get("map.locked_suffix");
+            _caption.text = Loc.Format("map.node_caption", index + 1, node.DisplayName, status);
             _caption.color = marker.Open ? Color.white : Muted;
             if (_play != null)
             {
@@ -975,13 +976,13 @@ namespace Game.UI
             _regionPanel = panel.gameObject;
 
             float width = PanelWidth - 80f;
-            Text region = UiKit.CreateFixedText(rect, $"{_catalog.Regions[_catalog.Nodes[_chosen].Region].DisplayName}   -   {level.RegionName}", RegionNameSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -34f), new Vector2(width, 40f));
+            Text region = UiKit.CreateFixedText(rect, Loc.Format("map.region_heading", _catalog.Regions[_catalog.Nodes[_chosen].Region].DisplayName, level.RegionName), RegionNameSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -34f), new Vector2(width, 40f));
             region.color = Muted;
             UiKit.CreateFixedText(rect, level.DisplayName, LevelNameSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -76f), new Vector2(width, 70f));
             Text briefing = UiKit.CreateFixedText(rect, level.Briefing, BriefingSize, TextAnchor.UpperLeft, new Vector2(0.5f, 1f), new Vector2(0f, -160f), new Vector2(width, 190f));
             briefing.horizontalOverflow = HorizontalWrapMode.Wrap;
             briefing.color = Muted;
-            UiKit.CreateFixedText(rect, "Choose a difficulty", 30, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, DifficultyTop + 46f), new Vector2(width, 40f));
+            UiKit.CreateFixedText(rect, Loc.Get("map.choose_difficulty"), 30, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, DifficultyTop + 46f), new Vector2(width, 40f));
 
             Button first = null;
             float y = DifficultyTop;
@@ -992,7 +993,7 @@ namespace Game.UI
                 y -= UiKit.ButtonHeight + DifficultyGap;
             }
 
-            Button back = UiKit.CreateButton(rect, "Back", CloseRegion);
+            Button back = UiKit.CreateButton(rect, Loc.Get("map.back"), CloseRegion);
             Destroy(back.GetComponent<LayoutElement>());
             RectTransform backRect = back.GetComponent<RectTransform>();
             backRect.anchorMin = new Vector2(0.5f, 0f);

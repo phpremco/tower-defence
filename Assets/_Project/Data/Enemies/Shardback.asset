@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: Shardback
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Shardback
+  _displayName: data.enemy.Shardback.displayName
   _layer: 1
   _flies: 0
   _maxHealth: 90
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2.6
   _attackInterval: 1.9
   _gateStrikes: 0
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5
@@ -52,4 +54,4 @@ MonoBehaviour:
   _deathStyle: 0
   _art: {fileID: 11400000, guid: e245d2f8de4be3649a1befd912a31a8b, type: 2}
   _voice: {fileID: 11400000, guid: b1a9930c59796f346a65afc0cecb727b, type: 2}
-  _description: Ice beetle under a crust of shards. Slow and heavily armoured; spits frost at the towers it passes.
+  _description: data.enemy.Shardback.description

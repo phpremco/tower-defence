@@ -273,12 +273,12 @@ namespace Game.UI
             RectTransform rect = panel.rectTransform;
             rect.sizeDelta = new Vector2(PanelWidth, PanelHeight);
 
-            Text title = UiKit.CreateFixedText(rect, "Codex", TitleSize, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(Padding, -Padding), new Vector2(300f, TabHeight));
+            Text title = UiKit.CreateFixedText(rect, Loc.Get("codex.title"), TitleSize, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(Padding, -Padding), new Vector2(300f, TabHeight));
             title.color = Gold;
 
-            _recipesTab = Tab(rect, "Combinations", 0, () => ShowPage(Page.Recipes));
-            _enemiesTab = Tab(rect, "Enemies", 1, () => ShowPage(Page.Enemies));
-            _close = UiKit.CreateButton(rect, "Close", Close);
+            _recipesTab = Tab(rect, Loc.Get("codex.tab_recipes"), 0, () => ShowPage(Page.Recipes));
+            _enemiesTab = Tab(rect, Loc.Get("codex.tab_enemies"), 1, () => ShowPage(Page.Enemies));
+            _close = UiKit.CreateButton(rect, Loc.Get("codex.close"), Close);
             Destroy(_close.GetComponent<LayoutElement>());
             RectTransform closeRect = _close.GetComponent<RectTransform>();
             closeRect.anchorMin = new Vector2(1f, 1f);
@@ -410,7 +410,7 @@ namespace Game.UI
                 {
                     EnemyDefinition enemy = _shownEnemies[i];
                     name = enemy.DisplayName;
-                    note = (enemy.IsBoss ? "Boss" : enemy.Flies ? "Air" : "Ground") + ProtectionNote(enemy);
+                    note = (enemy.IsBoss ? Loc.Get("codex.kind_boss") : enemy.Flies ? Loc.Get("codex.kind_air") : Loc.Get("codex.kind_ground")) + ProtectionNote(enemy);
                 }
 
                 _rows.Add(Row(name, note, () => Show(index)));
@@ -448,12 +448,12 @@ namespace Game.UI
             else
             {
                 _detailName.text = string.Empty;
-                _detailText.text = "Nothing known yet.";
+                _detailText.text = Loc.Get("codex.nothing_known");
             }
         }
 
         // The list already says which creatures carry armour, so the player spots them without opening each.
-        private static string ProtectionNote(EnemyDefinition enemy) => enemy.HasArmor ? ", armoured" : string.Empty;
+        private static string ProtectionNote(EnemyDefinition enemy) => enemy.HasArmor ? Loc.Get("codex.armoured_suffix") : string.Empty;
 
         private Button Row(string name, string note, UnityEngine.Events.UnityAction onClick)
         {
@@ -556,7 +556,7 @@ namespace Game.UI
 
             float textTop = -(PreviewSize + DetailGap);
             PlaceText(0f, textTop);
-            _detailName.text = $"{recipe.First.DisplayName} + {recipe.Second.DisplayName} = {recipe.Result.DisplayName}";
+            _detailName.text = Loc.Format("codex.recipe_name", recipe.First.DisplayName, recipe.Second.DisplayName, recipe.Result.DisplayName);
             _detailText.text = DescribeRecipe(recipe);
         }
 
@@ -566,37 +566,36 @@ namespace Game.UI
             TowerDefinition b = recipe.Second;
             TowerDefinition r = recipe.Result;
             _builder.Clear();
-            _builder.Append("Build the two towers on neighbouring cells, open one of them and choose Combine. Cost ").Append(recipe.Cost).Append(" on top of what both towers are worth.\n");
-            _builder.Append("The hybrid takes the lower of the two levels: a level 2 and a level 1 make a level 1 hybrid, which upgrades on from there.\n\n");
+            _builder.Append(Loc.Format("codex.recipe_how", recipe.Cost)).Append('\n');
+            _builder.Append(Loc.Get("codex.recipe_hybrid_level")).Append("\n\n");
             for (int level = 0; level <= r.MaxLevelIndex; level++)
             {
-                _builder.Append("Level ").Append(level + 1).Append(":  damage per second ")
-                    .Append(Dps(a, level)).Append(" + ").Append(Dps(b, level)).Append("  >  ").Append(Dps(r, level));
+                _builder.Append(Loc.Format("codex.recipe_level_dps", level + 1, Dps(a, level), Dps(b, level), Dps(r, level)));
                 if (level > 0)
                 {
-                    _builder.Append("   (upgrade ").Append(r.GetLevel(level).Cost).Append(')');
+                    _builder.Append(Loc.Format("codex.recipe_upgrade_cost", r.GetLevel(level).Cost));
                 }
 
                 _builder.Append('\n');
             }
 
-            _builder.Append("\nRange ").Append(a.GetLevel(0).Range.ToString("0.0")).Append(" and ").Append(b.GetLevel(0).Range.ToString("0.0")).Append("  >  ").Append(r.GetLevel(0).Range.ToString("0.0"));
-            _builder.Append("\nHits: ").Append(Targets(r));
+            _builder.Append('\n').Append(Loc.Format("codex.recipe_range", a.GetLevel(0).Range.ToString("0.0"), b.GetLevel(0).Range.ToString("0.0"), r.GetLevel(0).Range.ToString("0.0")));
+            _builder.Append('\n').Append(Loc.Format("codex.recipe_hits", Targets(r)));
             if (r.SplashRadius > 0f)
             {
-                _builder.Append("   Splash ").Append(r.SplashRadius.ToString("0.0"));
+                _builder.Append(Loc.Format("codex.recipe_splash", r.SplashRadius.ToString("0.0")));
                 if (r.SplashTargets > 0)
                 {
-                    _builder.Append(" (hits up to ").Append(r.SplashTargets).Append(" creatures)");
+                    _builder.Append(Loc.Format("codex.recipe_splash_targets", r.SplashTargets));
                 }
             }
 
             if (r.SlowFactor < 1f)
             {
-                _builder.Append("   Slows to ").Append(Mathf.RoundToInt(r.SlowFactor * 100f)).Append('%');
+                _builder.Append(Loc.Format("codex.recipe_slows", Mathf.RoundToInt(r.SlowFactor * 100f)));
             }
 
-            _builder.Append("\n\nGain: ").Append(Gain(a, b, r));
+            _builder.Append("\n\n").Append(Loc.Format("codex.recipe_gain", Gain(a, b, r)));
             return _builder.ToString();
         }
 
@@ -610,7 +609,7 @@ namespace Game.UI
         {
             bool ground = (tower.Targets & TargetLayers.Ground) != 0;
             bool air = (tower.Targets & TargetLayers.Air) != 0;
-            return ground && air ? "ground and air" : air ? "air only" : "ground only";
+            return ground && air ? Loc.Get("codex.targets_both") : air ? Loc.Get("codex.targets_air") : Loc.Get("codex.targets_ground");
         }
 
         // One line on what the player buys with the recipe: more damage in one cell, and whatever the parents lacked.
@@ -619,22 +618,22 @@ namespace Game.UI
             float parents = DpsValue(a, 0) + DpsValue(b, 0);
             int percent = parents > 0f ? Mathf.RoundToInt((DpsValue(r, 0) / parents - 1f) * 100f) : 0;
             var text = new StringBuilder();
-            text.Append(percent >= 0 ? "+" : string.Empty).Append(percent).Append("% damage over both parents, in one cell");
+            text.Append(Loc.Format("codex.gain_damage", (percent >= 0 ? "+" : string.Empty) + percent));
             bool parentsBoth = ((a.Targets | b.Targets) & TargetLayers.Air) != 0 && ((a.Targets | b.Targets) & TargetLayers.Ground) != 0;
             bool eachBoth = (a.Targets & TargetLayers.Air) != 0 && (a.Targets & TargetLayers.Ground) != 0;
             if ((r.Targets & TargetLayers.Air) != 0 && (r.Targets & TargetLayers.Ground) != 0 && (!parentsBoth || !eachBoth))
             {
-                text.Append(", hits ground and air");
+                text.Append(Loc.Get("codex.gain_both_layers"));
             }
 
             if (r.SplashRadius > Mathf.Max(a.SplashRadius, b.SplashRadius))
             {
-                text.Append(", wider splash");
+                text.Append(Loc.Get("codex.gain_wider_splash"));
             }
 
             if (r.SlowFactor < 1f)
             {
-                text.Append(", slows what it hits");
+                text.Append(Loc.Get("codex.gain_slows"));
             }
 
             text.Append('.');
@@ -669,7 +668,7 @@ namespace Game.UI
             _previews[0].ShowEnemy(enemy);
 
             PlaceText(BigPreviewSize + DetailGap, 0f);
-            _detailName.text = enemy.DisplayName + (enemy.IsBoss ? "  (boss)" : string.Empty);
+            _detailName.text = enemy.IsBoss ? Loc.Format("codex.boss_name", enemy.DisplayName) : enemy.DisplayName;
             _detailText.text = DescribeEnemy(enemy);
         }
 
@@ -691,70 +690,73 @@ namespace Game.UI
                 return;
             }
 
-            _builder.Append("\n\nPhases: ");
-            for (int i = 0; i < boss.Phases.Length; i++)
+            var phases = new string[boss.Phases.Length];
+            for (int i = 0; i < phases.Length; i++)
             {
-                _builder.Append(i > 0 ? ", " : string.Empty).Append(boss.Phases[i].Name);
+                phases[i] = boss.PhaseName(i);
             }
 
-            _builder.Append("\nSignature: ").Append(boss.SignatureText);
-            _builder.Append("\nSee it coming: ").Append(boss.TelegraphText);
-            _builder.Append("\nHow to beat it: ").Append(boss.CounterText);
+            _builder.Append("\n\n").Append(Loc.Format("codex.boss_phases", string.Join(", ", phases)));
+            _builder.Append('\n').Append(Loc.Format("codex.boss_signature", boss.SignatureText));
+            _builder.Append('\n').Append(Loc.Format("codex.boss_telegraph", boss.TelegraphText));
+            _builder.Append('\n').Append(Loc.Format("codex.boss_counter", boss.CounterText));
         }
 
         private string DescribeEnemy(EnemyDefinition enemy)
         {
             _builder.Clear();
-            _builder.Append(enemy.Flies ? "Flies: only weapons that hit the air reach it." : "Walks the road: ground weapons hit it.").Append('\n');
-            _builder.Append("Health ").Append(Mathf.RoundToInt(enemy.MaxHealth));
+            _builder.Append(enemy.Flies ? Loc.Get("codex.enemy_flies") : Loc.Get("codex.enemy_walks")).Append('\n');
+            _builder.Append(Loc.Format("codex.enemy_health", Mathf.RoundToInt(enemy.MaxHealth)));
             if (enemy.HasArmor)
             {
-                _builder.Append("   Armour ").Append(Mathf.RoundToInt(enemy.Armor)).Append(" (nothing hurts the body while it lasts: heavy shells strip it, light fire only chips it)");
+                _builder.Append(Loc.Format("codex.enemy_armour", Mathf.RoundToInt(enemy.Armor)));
                 // The field shows the armour as a blue line over the green health line (ProtectionBar).
-                _builder.Append("\nIn the field: the blue line over its health is the armour left; sparks fly while a hit works on it.");
+                _builder.Append('\n').Append(Loc.Get("codex.enemy_armour_in_field"));
             }
 
-            _builder.Append("\nSpeed ").Append(enemy.Speed.ToString("0.0")).Append("   Bounty ").Append(enemy.Reward).Append("   Base damage ").Append(enemy.BaseDamage).Append('\n');
+            _builder.Append('\n').Append(Loc.Format("codex.enemy_stats", enemy.Speed.ToString("0.0"), enemy.Reward, enemy.BaseDamage)).Append('\n');
 
             // A continent boss's own mechanic decides what it does to towers; the signature below says it.
-            string towers = enemy.AttackDamage > 0f ? $"damages them ({enemy.AttackDamage:0} per hit)" : enemy.Boss != null && enemy.Boss.Signature != BossSignature.None ? "see its signature" : "leaves them alone";
-            _builder.Append("Towers: ").Append(towers);
-            _builder.Append("   Gates and ").Append(HeroNaming.Of(_context)).Append(": ").Append(enemy.BlockadeDamage > 0f ? $"{enemy.BlockadeDamage:0} per hit" : "no");
+            string towers = enemy.AttackDamage > 0f ? Loc.Format("codex.towers_damaged", enemy.AttackDamage) : enemy.Boss != null && enemy.Boss.Signature != BossSignature.None ? Loc.Get("codex.towers_see_signature") : Loc.Get("codex.towers_left_alone");
+            _builder.Append(Loc.Format("codex.enemy_towers", towers));
+            string gates = enemy.BlockadeDamage > 0f ? Loc.Format("codex.gates_per_hit", enemy.BlockadeDamage) : Loc.Get("codex.gates_no");
+            _builder.Append(Loc.Format("codex.enemy_gates", HeroNaming.Of(_context), gates));
             if (enemy.GateStrikes > 0)
             {
-                _builder.Append("   Strikes a gate ").Append(enemy.GateStrikes).Append(" times in passing");
+                _builder.Append(Loc.Format("codex.enemy_gate_strikes", enemy.GateStrikes));
             }
 
             _builder.Append('\n');
             if (enemy.Rolls)
             {
-                _builder.Append("Curls up and rolls at ").Append(enemy.RollSpeedMultiplier.ToString("0.0")).Append("x speed.\n");
+                _builder.Append(Loc.Format("codex.enemy_rolls", enemy.RollSpeedMultiplier.ToString("0.0"))).Append('\n');
             }
 
             if (enemy.LeavesTrail)
             {
-                _builder.Append("Leaves a trail for ").Append(Mathf.RoundToInt(enemy.TrailSeconds)).Append("s that hurries others").Append(enemy.TrailDamagePerSecond > 0f ? $" and burns {HeroNaming.Of(_context)} and the gates" : string.Empty).Append(".\n");
+                string burns = enemy.TrailDamagePerSecond > 0f ? Loc.Format("codex.enemy_trail_burns", HeroNaming.Of(_context)) : string.Empty;
+                _builder.Append(Loc.Format("codex.enemy_trail", Mathf.RoundToInt(enemy.TrailSeconds), burns)).Append('\n');
             }
 
             if (enemy.Rages)
             {
-                _builder.Append("Rages at ").Append(enemy.RageSpeedMultiplier.ToString("0.0")).Append("x speed when a pack mate dies nearby.\n");
+                _builder.Append(Loc.Format("codex.enemy_rages", enemy.RageSpeedMultiplier.ToString("0.0"))).Append('\n');
             }
 
             if (enemy.Element != Element.None)
             {
-                _builder.Append("Element: ").Append(enemy.Element).Append(".\n");
+                _builder.Append(Loc.Format("codex.enemy_element", enemy.Element)).Append('\n');
             }
 
             if (enemy.IsBoss && enemy.Abilities.Length > 0)
             {
-                _builder.Append("Powers: ");
-                for (int i = 0; i < enemy.Abilities.Length; i++)
+                var powers = new string[enemy.Abilities.Length];
+                for (int i = 0; i < powers.Length; i++)
                 {
-                    _builder.Append(i > 0 ? ", " : string.Empty).Append(enemy.Abilities[i] != null ? enemy.Abilities[i].DisplayName : "?");
+                    powers[i] = enemy.Abilities[i] != null ? enemy.Abilities[i].DisplayName : "?";
                 }
 
-                _builder.Append(".\n");
+                _builder.Append(Loc.Format("codex.enemy_powers", string.Join(", ", powers))).Append('\n');
             }
 
             if (!string.IsNullOrEmpty(enemy.Description))

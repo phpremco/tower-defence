@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4195afed974a6db4bb0968bc3af5e766, type: 3}
   m_Name: Artillery
   m_EditorClassIdentifier: Game.Towers::Game.Towers.TowerDefinition
-  _displayName: Artillery
+  _displayName: data.tower.Artillery.displayName
   _targets: 3
   _levels:
   - Cost: 0
@@ -33,7 +33,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
-    StepName: Heavier shells
+    StepName: data.tower.Artillery.levels.1.stepName
     Step: 1
   - Cost: 320
     Damage: 148.57144
@@ -43,7 +43,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
-    StepName: Autoloader
+    StepName: data.tower.Artillery.levels.2.stepName
     Step: 2
   _projectileSpeed: 8
   _splashRadius: 1.8
@@ -51,7 +51,7 @@ MonoBehaviour:
   _damageType: 0
   _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _roles: 020000000300000004000000i
-  _roleLine: 'Cannon and Flak in one: a big blast for groups and armour that also bursts among flyers.'
+  _roleLine: data.tower.Artillery.roleLine
   _retargetRadius: 0
   _homing: 1
   _fuseRadius: 0

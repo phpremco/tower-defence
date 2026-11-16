@@ -16,18 +16,21 @@ MonoBehaviour:
   - Id: Dlg_Cut_Orbit.01
     Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
     Segments:
-    - Text: 'Nova Terra Industries sends the first expedition: Operation New Dawn. After three years in cryosleep, the mothership reaches orbit.'
+    - _text: data.dialogue.Dlg_Cut_Orbit.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Cut_Orbit.02
     Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
     Segments:
-    - Text: 'The plan: build bases on several continents, mine the resources and ship them home. Field scout Cole Spencer, call sign Pathfinder, goes down first.'
+    - _text: data.dialogue.Dlg_Cut_Orbit.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Cut_Orbit.03
     Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
     Segments:
-    - Text: 'All systems nominal. No life forms detected. Expected complications: none. Welcome to S-69-CRYS, Commander.'
+    - _text: data.dialogue.Dlg_Cut_Orbit.lines.2.segments.0.text
       Style: 0
     GlitchIntensity: 0
+  _introducedDrones: []
+  _codexEntry: {fileID: 0}
+  _loadingTip: 

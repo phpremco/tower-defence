@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Intro_Rotbloom
   m_EditorClassIdentifier: Game.Levels::Game.Levels.BossIntroDefinition
   _boss: {fileID: 11400000, guid: c1b8cbc5173ce3c40a1f3c8b904ff18d, type: 2}
-  _heroLine: Has that flower been watching us this whole time?
+  _heroLine: data.bossIntro.Intro_Rotbloom.heroLine
   _answer: {fileID: 11400000, guid: 794222b2f8e26d449ad357cf9493d5a5, type: 2}
   _repeatBarks:
-  - The flower again. Burn it clean.
-  - It grew back. Of course it grew back.
+  - data.bossIntro.Intro_Rotbloom.repeatBarks.0
+  - data.bossIntro.Intro_Rotbloom.repeatBarks.1
   _barks:
   - Moment: 6
-    Line: Get these weeds off my guns!
+    _line: data.bossIntro.Intro_Rotbloom.barks.0.line
   - Moment: 7
-    Line: It's walking. The flower is walking.
+    _line: data.bossIntro.Intro_Rotbloom.barks.1.line
   _cutInTint: {r: 0.62, g: 1, b: 0.3, a: 1}
   _slowFactor: 0.25
   _focusSeconds: 0.5

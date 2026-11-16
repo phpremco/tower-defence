@@ -45,7 +45,7 @@ namespace Game.Enemies
 
         public float DampenedShare => _dampenedShare;
         public bool DrainsGates => _drainsGates;
-        public string AdaptLine => _adaptLine;
+        public string AdaptLine => Loc.Get(_adaptLine);
         public string[] PhaseLooks => _phaseLooks ?? new string[0];
         public float RiftRoadShare => _riftRoadShare;
         public float RiftSeconds => _riftSeconds;

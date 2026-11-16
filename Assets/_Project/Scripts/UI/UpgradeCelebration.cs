@@ -77,7 +77,7 @@ namespace Game.UI
             if (cue.PreviewFrame != null)
             {
                 StartCoroutine(Flash(cue.PreviewFrame));
-                StartCoroutine(Banner(cue.PreviewFrame, cue.Mastered ? "MASTERED" : "UPGRADED", cue.Mastered ? MasteredColor : UpgradedColor));
+                StartCoroutine(Banner(cue.PreviewFrame, cue.Mastered ? Loc.Get("upgrade.banner_mastered") : Loc.Get("upgrade.banner_upgraded"), cue.Mastered ? MasteredColor : UpgradedColor));
             }
 
             if (cue.Pip != null)
@@ -247,7 +247,7 @@ namespace Game.UI
                 t += Time.unscaledDeltaTime;
                 float p = Mathf.Clamp01(t / PointsSeconds);
                 int shown = Mathf.RoundToInt(Mathf.Lerp(cue.PointsFrom, cue.PointsTo, p));
-                cue.Points.text = $"{cue.PointsLabel} {shown}";
+                cue.Points.text = Loc.Format("upgrade.points_tally", cue.PointsLabel, shown);
                 if (t >= nextTick)
                 {
                     nextTick += TickInterval;
@@ -257,7 +257,7 @@ namespace Game.UI
                 yield return null;
             }
 
-            cue.Points.text = $"{cue.PointsLabel} {cue.PointsTo}";
+            cue.Points.text = Loc.Format("upgrade.points_tally", cue.PointsLabel, cue.PointsTo);
         }
 
         private static IEnumerator PopStar(Image star)

@@ -16,12 +16,15 @@ MonoBehaviour:
   - Id: Dlg_L03_Won.01
     Speaker: {fileID: 11400000, guid: 5caf20e24e6050f40b85b8db1269e8c2, type: 2}
     Segments:
-    - Text: Doc, that 'just to be safe' just saved us. Thanks.
+    - _text: data.dialogue.Dlg_L03_Won.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_L03_Won.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Honestly, I was hoping I'd be wrong.
+    - _text: data.dialogue.Dlg_L03_Won.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
+  _introducedDrones: []
+  _codexEntry: {fileID: 0}
+  _loadingTip: 

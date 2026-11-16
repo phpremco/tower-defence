@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.Bosses;
+using Game.Core;
 using Game.Enemies;
 using Game.Hero;
 using Game.Levels;
@@ -178,7 +179,7 @@ namespace Game.UI
             }
             else
             {
-                Say(BossIntroRules.Pick(watch.Intro.RepeatBarks, UnityEngine.Random.value));
+                Say(Loc.Get(BossIntroRules.Pick(watch.Intro.RepeatBarks, UnityEngine.Random.value)));
             }
         }
 

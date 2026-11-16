@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4195afed974a6db4bb0968bc3af5e766, type: 3}
   m_Name: Rocket
   m_EditorClassIdentifier: Game.Towers::Game.Towers.TowerDefinition
-  _displayName: Flak Turret
+  _displayName: data.tower.Rocket.displayName
   _targets: 2
   _levels:
   - Cost: 120
@@ -33,7 +33,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
-    StepName: Heavier bursts
+    StepName: data.tower.Rocket.levels.1.stepName
     Step: 1
   - Cost: 105
     Damage: 27.5
@@ -43,7 +43,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
-    StepName: Faster loaders
+    StepName: data.tower.Rocket.levels.2.stepName
     Step: 2
   _projectileSpeed: 14
   _splashRadius: 1.1
@@ -51,7 +51,7 @@ MonoBehaviour:
   _damageType: 0
   _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _roles: 04000000i
-  _roleLine: 'Air defence: the one gun that lands in full on flyers. Cannot hit the ground.'
+  _roleLine: data.tower.Rocket.roleLine
   _retargetRadius: 1.5
   _homing: 1
   _fuseRadius: 0.6

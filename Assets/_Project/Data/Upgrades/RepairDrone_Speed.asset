@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f387d1c485e6f1840ae929304219d834, type: 3}
   m_Name: RepairDrone_Speed
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
-  _displayName: Flight speed
+  _displayName: data.upgrade.RepairDrone_Speed.displayName
   _target: 9
   _towerId: 
   _droneId: RepairDrone
-  _groupName: Repair drone
+  _groupName: data.upgrade.RepairDrone_Speed.groupName
   _costs: 0300000006000000090000000d00000012000000180000001f00000028000000310000003c000000i
   _currency: 1
-  _groupDescription: Bought with money in the level. Flies to the most damaged tower, gate or base and repairs it.
+  _groupDescription: data.upgrade.RepairDrone_Speed.groupDescription
   _bonusPerLevel: 0.2
   _continent: 0

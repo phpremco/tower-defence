@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4195afed974a6db4bb0968bc3af5e766, type: 3}
   m_Name: PulseRifle
   m_EditorClassIdentifier: Game.Towers::Game.Towers.TowerDefinition
-  _displayName: Gun Turret
+  _displayName: data.tower.PulseRifle.displayName
   _targets: 3
   _levels:
   - Cost: 50
@@ -33,7 +33,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
-    StepName: Faster cycling
+    StepName: data.tower.PulseRifle.levels.1.stepName
     Step: 2
   - Cost: 65
     Damage: 10
@@ -43,7 +43,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
-    StepName: Heavier rounds
+    StepName: data.tower.PulseRifle.levels.2.stepName
     Step: 1
   _projectileSpeed: 30
   _splashRadius: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
   _damageType: 1
   _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _roles: 01000000i
-  _roleLine: 'Light fire, cheap: streams of small creatures, runners and soft bodies. Only chips armour, and lands a fifth in the air.'
+  _roleLine: data.tower.PulseRifle.roleLine
   _retargetRadius: 0
   _homing: 1
   _fuseRadius: 0

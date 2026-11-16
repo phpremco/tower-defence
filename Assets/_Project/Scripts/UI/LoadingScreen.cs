@@ -215,7 +215,7 @@ namespace Game.UI
         // Top left, one under the other with air between: the small label, the level's name, where it lies and how hard, a rule.
         private void BuildHeader(RectTransform frame, LevelDefinition level, DifficultyProfile difficulty, string place, Color accent)
         {
-            Text label = Plain(frame, "DEPLOYING TO", LabelSize, new Vector2(0f, 1f), Vector2.zero, new Vector2(TextWidth, 40f));
+            Text label = Plain(frame, Loc.Get("loading.deploying_to"), LabelSize, new Vector2(0f, 1f), Vector2.zero, new Vector2(TextWidth, 40f));
             label.color = accent;
             UiKit.CreateFixedText(frame, level.DisplayName.ToUpperInvariant(), TitleSize, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(0f, -48f), new Vector2(TextWidth, 110f));
             string where = string.IsNullOrEmpty(place) ? difficulty.DisplayName : $"{place}  ·  {difficulty.DisplayName}";
@@ -254,7 +254,7 @@ namespace Game.UI
 
         private void BuildBar(RectTransform safe, Color accent)
         {
-            Text loading = Plain(safe, "LOADING", LabelSize, Vector2.zero, new Vector2(0f, 22f), new Vector2(400f, 40f));
+            Text loading = Plain(safe, Loc.Get("loading.loading"), LabelSize, Vector2.zero, new Vector2(0f, 22f), new Vector2(400f, 40f));
             loading.color = Dim;
             _percent = Plain(safe, "0%", LabelSize, new Vector2(1f, 0f), new Vector2(0f, 22f), new Vector2(200f, 40f));
             _percent.color = accent;
@@ -368,7 +368,7 @@ namespace Game.UI
             }
 
             LoadingTip tip = _tips[_tip];
-            _tipSpeaker.text = tip.Speaker.ToUpperInvariant() + "  ·  FIELD ADVICE";
+            _tipSpeaker.text = Loc.Format("loading.tip_speaker", tip.Speaker.ToUpperInvariant());
             _tipSpeaker.color = tip.Colour;
             _tipText.text = tip.Text;
         }

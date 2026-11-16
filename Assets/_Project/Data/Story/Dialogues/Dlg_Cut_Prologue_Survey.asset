@@ -16,18 +16,21 @@ MonoBehaviour:
   - Id: Dlg_Cut_Prologue_Survey.01
     Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
     Segments:
-    - Text: 'Yet there is hope. With AI, spaceflight advanced more in a few years than in the century before: new drives, self-building ships, telescopes that scan thousands of worlds at once.'
+    - _text: data.dialogue.Dlg_Cut_Prologue_Survey.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Cut_Prologue_Survey.02
     Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
     Segments:
-    - Text: 'One world stands out: S-69-CRYS. Its soil is full of the metals we need, and everywhere lie crystals we cannot place. They give off a faint, constant energy, as if they never run dry.'
+    - _text: data.dialogue.Dlg_Cut_Prologue_Survey.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Cut_Prologue_Survey.03
     Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
     Segments:
-    - Text: 'Breathable air, liquid water, a stable climate: every ingredient for life. Yet no cities, no lights, no signals. Nothing moves. A few strange heat sources below the surface were written off as volcanic activity.'
+    - _text: data.dialogue.Dlg_Cut_Prologue_Survey.lines.2.segments.0.text
       Style: 0
     GlitchIntensity: 0
+  _introducedDrones: []
+  _codexEntry: {fileID: 0}
+  _loadingTip: 

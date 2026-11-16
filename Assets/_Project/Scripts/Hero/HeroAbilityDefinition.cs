@@ -49,7 +49,7 @@ namespace Game.Hero
         [SerializeField] [TextArea] private string _description = string.Empty;
 
         public string Id => name;
-        public string DisplayName => _displayName;
+        public string DisplayName => Loc.Get(_displayName);
         public HeroAbilityKind Kind => _kind;
         public float Cooldown => _cooldown;
         public int MoneyCost => _moneyCost;
@@ -65,7 +65,7 @@ namespace Game.Hero
         public Color Tint => _tint;
         public SoundSet Sound => _sound;
         public ImpactVfxDefinition ImpactVfx => _impactVfx;
-        public string Description => _description;
+        public string Description => Loc.Get(_description);
 
         /// <summary>Null when the ability has every value its kind needs, otherwise what is missing.</summary>
         public string Problem()

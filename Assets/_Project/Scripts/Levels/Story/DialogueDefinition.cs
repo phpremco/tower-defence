@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Core;
 using Game.Drones;
 using Game.Enemies;
 using UnityEngine;
@@ -26,7 +27,7 @@ namespace Game.Levels
         public IReadOnlyList<DroneDefinition> IntroducedDrones => _introducedDrones ?? NoDrones;
 
         /// <summary>The advice as the loading screen shows it, or empty when this conversation gives none.</summary>
-        public string LoadingTip => _loadingTip ?? string.Empty;
+        public string LoadingTip => Loc.Get(_loadingTip);
 
         /// <summary>The Codex entry the box links to, or null for a conversation without one.</summary>
         public EnemyDefinition CodexEntry => _codexEntry;

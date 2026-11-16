@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: ShardCrawler
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Shard Crawler
+  _displayName: data.enemy.ShardCrawler.displayName
   _layer: 1
   _flies: 0
   _maxHealth: 300
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2
   _attackInterval: 1.2
   _gateStrikes: 0
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5
@@ -52,4 +54,4 @@ MonoBehaviour:
   _deathStyle: 0
   _art: {fileID: 11400000, guid: 1f2f1818a1527584f84d1fbe77d59ebe, type: 2}
   _voice: {fileID: 11400000, guid: 819727259db69864cbc07fbcae461bfb, type: 2}
-  _description: 'A shard of the Shattered on six legs: it keeps to the giant''s road.'
+  _description: data.enemy.ShardCrawler.description

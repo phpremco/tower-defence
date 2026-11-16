@@ -160,20 +160,20 @@ namespace Game.Core
         /// <summary>Every set with its label, for the sound board and the content tests.</summary>
         public (string Label, SoundSet Set)[] Sets() => new[]
         {
-            ("Pulse shot", _pulseShots), ("Heavy shot", _heavyShots), ("Rocket launch", _rocketLaunches), ("Cryo shot", _cryoShots),
-            ("Tesla shot", _teslaShots), ("Rail shot", _railShots), ("Flak shot", _flakShots), ("Flak burst", _flakBursts), ("Cannon explosion", _cannonExplosions),
-            ("Rocket explosion", _rocketExplosions), ("Mine explosion", _mineExplosions), ("Gate explosion", _gateExplosions),
-            ("Base explosion", _baseExplosions), ("Tower break", _towerBreaks), ("Structure hit", _structureHits), ("Decor smash", _decorSmashes),
-            ("Base alert", _baseAlerts), ("Upgrade", _upgrades), ("Scrap pickup", _scrapPickups), ("Cash", _cash),
-            ("Freeze", _freezes), ("Acid sizzle", _acidSizzles), ("Steam burst", _steamBursts),
-            ("Earthquake", _earthquakes), ("Distant blast", _distantBlasts), ("Cart loop", _cartLoops), ("Fireball loop", _fireballLoops),
-            ("Hero blaster", _heroBlasters), ("Saber swing", _saberSwings), ("Saber hit", _saberHits), ("Saber hum", _saberHums),
-            ("Hero pulse", _heroPulses), ("Hero step", _heroSteps), ("Hero death", _heroDeaths), ("Hero fall", _heroFalls),
-            ("Drone fan", _droneFanLoops), ("Drone repair", _droneRepairLoops), ("Drone harvest", _droneHarvestLoops),
-            ("Drone laser", _droneLasers), ("Enemy death", _enemyDeaths), ("Heavy steps", _heavySteps), ("Wings", _wingLoops),
-            ("Large wings", _largeWingLoops), ("Water", _waterLoops), ("Lava", _lavaLoops), ("Rift", _riftLoops), ("Steam", _steamLoops),
-            ("Leaves", _leavesLoops), ("Icy wind", _icyWindLoops), ("Boss laser", _bossLaserLoops), ("Beam loop", _beamLoops), ("Boss alarm", _bossAlarms), ("Wave drums", _waveDrums),
-            ("Menu music", _menuMusic), ("Game music", _gameMusic), ("Boss music", _bossMusic),
+            (Loc.Get("sound_set.pulse_shot"), _pulseShots), (Loc.Get("sound_set.heavy_shot"), _heavyShots), (Loc.Get("sound_set.rocket_launch"), _rocketLaunches), (Loc.Get("sound_set.cryo_shot"), _cryoShots),
+            (Loc.Get("sound_set.tesla_shot"), _teslaShots), (Loc.Get("sound_set.rail_shot"), _railShots), (Loc.Get("sound_set.flak_shot"), _flakShots), (Loc.Get("sound_set.flak_burst"), _flakBursts), (Loc.Get("sound_set.cannon_explosion"), _cannonExplosions),
+            (Loc.Get("sound_set.rocket_explosion"), _rocketExplosions), (Loc.Get("sound_set.mine_explosion"), _mineExplosions), (Loc.Get("sound_set.gate_explosion"), _gateExplosions),
+            (Loc.Get("sound_set.base_explosion"), _baseExplosions), (Loc.Get("sound_set.tower_break"), _towerBreaks), (Loc.Get("sound_set.structure_hit"), _structureHits), (Loc.Get("sound_set.decor_smash"), _decorSmashes),
+            (Loc.Get("sound_set.base_alert"), _baseAlerts), (Loc.Get("sound_set.upgrade"), _upgrades), (Loc.Get("sound_set.scrap_pickup"), _scrapPickups), (Loc.Get("sound_set.cash"), _cash),
+            (Loc.Get("sound_set.freeze"), _freezes), (Loc.Get("sound_set.acid_sizzle"), _acidSizzles), (Loc.Get("sound_set.steam_burst"), _steamBursts),
+            (Loc.Get("sound_set.earthquake"), _earthquakes), (Loc.Get("sound_set.distant_blast"), _distantBlasts), (Loc.Get("sound_set.cart_loop"), _cartLoops), (Loc.Get("sound_set.fireball_loop"), _fireballLoops),
+            (Loc.Get("sound_set.hero_blaster"), _heroBlasters), (Loc.Get("sound_set.saber_swing"), _saberSwings), (Loc.Get("sound_set.saber_hit"), _saberHits), (Loc.Get("sound_set.saber_hum"), _saberHums),
+            (Loc.Get("sound_set.hero_pulse"), _heroPulses), (Loc.Get("sound_set.hero_step"), _heroSteps), (Loc.Get("sound_set.hero_death"), _heroDeaths), (Loc.Get("sound_set.hero_fall"), _heroFalls),
+            (Loc.Get("sound_set.drone_fan"), _droneFanLoops), (Loc.Get("sound_set.drone_repair"), _droneRepairLoops), (Loc.Get("sound_set.drone_harvest"), _droneHarvestLoops),
+            (Loc.Get("sound_set.drone_laser"), _droneLasers), (Loc.Get("sound_set.enemy_death"), _enemyDeaths), (Loc.Get("sound_set.heavy_steps"), _heavySteps), (Loc.Get("sound_set.wings"), _wingLoops),
+            (Loc.Get("sound_set.large_wings"), _largeWingLoops), (Loc.Get("sound_set.water"), _waterLoops), (Loc.Get("sound_set.lava"), _lavaLoops), (Loc.Get("sound_set.rift"), _riftLoops), (Loc.Get("sound_set.steam"), _steamLoops),
+            (Loc.Get("sound_set.leaves"), _leavesLoops), (Loc.Get("sound_set.icy_wind"), _icyWindLoops), (Loc.Get("sound_set.boss_laser"), _bossLaserLoops), (Loc.Get("sound_set.beam_loop"), _beamLoops), (Loc.Get("sound_set.boss_alarm"), _bossAlarms), (Loc.Get("sound_set.wave_drums"), _waveDrums),
+            (Loc.Get("sound_set.menu_music"), _menuMusic), (Loc.Get("sound_set.game_music"), _gameMusic), (Loc.Get("sound_set.boss_music"), _bossMusic),
         };
     }
 }

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8958006deeb6df4da81c42bf88e3809, type: 3}
   m_Name: Level_C1_05
   m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelDefinition
-  _displayName: Quartz Flats
-  _regionName: Quartz flats
-  _briefing: The quartz flats, open and wide. The road winds through the dig sites; keep an eye on the cracks.
+  _displayName: data.level.Level_C1_05.displayName
+  _regionName: data.level.Level_C1_05.regionName
+  _briefing: data.level.Level_C1_05.briefing
   _gridSize: {x: 40, y: 22}
   _cellSize: 1
   _theme: {fileID: 11400000, guid: 9d43117d685f16049b662e289e1998d9, type: 2}
@@ -301,7 +301,7 @@ MonoBehaviour:
     NewTower: {fileID: 0}
     Source: 0
     Story: 
-    Credit: Crysium prototypes by Dr. Voss
+    Credit: data.level.Level_C1_05.reward.credit
     NewPathObjects:
     - {fileID: 11400000, guid: a45e44668f4551d47aa88a90cbcf8b62, type: 2}
     - {fileID: 11400000, guid: ad32ed5b399e7b649bb629f157969cdc, type: 2}

@@ -16,21 +16,21 @@ MonoBehaviour:
   - Id: Dlg_Tip_HighGround.01
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: 'Good, the first turret stands. Now look for the rises: ground with a glowing seam round its bank.'
+    - _text: data.dialogue.Dlg_Tip_HighGround.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Tip_HighGround.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: 'That is high ground. A turret on top of it sees further: 10% more range. The range ring shows it before you build.'
+    - _text: data.dialogue.Dlg_Tip_HighGround.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Tip_HighGround.03
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: The bank itself is too steep for a turret, so only the top counts. Take it where the road passes close.
+    - _text: data.dialogue.Dlg_Tip_HighGround.lines.2.segments.0.text
       Style: 0
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 0}
-  _loadingTip: Towers on high ground reach 10% further. The bank round it is too steep to build on.
+  _loadingTip: data.dialogue.Dlg_Tip_HighGround.loadingTip

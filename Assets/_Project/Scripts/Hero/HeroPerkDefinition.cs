@@ -1,3 +1,4 @@
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Hero
@@ -21,9 +22,9 @@ namespace Game.Hero
         [SerializeField] [Range(0.1f, 1f)] private float _reloadMultiplier = 1f;
 
         public string Id => name;
-        public string DisplayName => _displayName;
+        public string DisplayName => Loc.Get(_displayName);
         public HeroPerkSlot Slot => _slot;
-        public string Description => _description;
+        public string Description => Loc.Get(_description);
         public float RangedIntervalMultiplier => _rangedIntervalMultiplier;
         public float ReloadMultiplier => _reloadMultiplier;
 

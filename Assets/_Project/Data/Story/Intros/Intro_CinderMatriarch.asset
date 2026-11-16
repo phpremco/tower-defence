@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Intro_CinderMatriarch
   m_EditorClassIdentifier: Game.Levels::Game.Levels.BossIntroDefinition
   _boss: {fileID: 11400000, guid: 3110a316c339d8c468f29b380d71c64a, type: 2}
-  _heroLine: Okay. The lava has legs now. Great.
+  _heroLine: data.bossIntro.Intro_CinderMatriarch.heroLine
   _answer: {fileID: 11400000, guid: d4d4f6894fa999a49be2c0b615384888, type: 2}
   _repeatBarks:
-  - She's back for the cold ones.
-  - Lava with legs. Again.
+  - data.bossIntro.Intro_CinderMatriarch.repeatBarks.0
+  - data.bossIntro.Intro_CinderMatriarch.repeatBarks.1
   _barks:
   - Moment: 2
-    Line: She really doesn't like the cold, huh.
+    _line: data.bossIntro.Intro_CinderMatriarch.barks.0.line
   - Moment: 3
-    Line: Are those... eggs? Shoot the eggs! SHOOT THE EGGS!
+    _line: data.bossIntro.Intro_CinderMatriarch.barks.1.line
   _cutInTint: {r: 1, g: 0.36, b: 0.1, a: 1}
   _slowFactor: 0.25
   _focusSeconds: 0.5

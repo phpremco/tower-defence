@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19a4e9763e5c17b419f71f74ea442792, type: 3}
   m_Name: Medium
   m_EditorClassIdentifier: Game.Levels::Game.Levels.DifficultyProfile
-  _displayName: Medium
+  _displayName: data.difficultyProfile.Medium.displayName
   _healthMultiplier: 1
   _countMultiplier: 1
   _spawnIntervalMultiplier: 1
@@ -21,3 +21,5 @@ MonoBehaviour:
   _structureDamageMultiplier: 0.75
   _incomeMultiplier: 0.95
   _startingMoneyMultiplier: 1
+  _bossHealthShare: 1
+  _bossEscortShare: 1

@@ -1,3 +1,4 @@
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Enemies
@@ -21,7 +22,7 @@ namespace Game.Enemies
         [SerializeField] [Range(0.05f, 1f)] private float _triggerFraction = 0.25f;
         [SerializeField] private Color _color = new Color(1f, 0.4f, 0.3f);
 
-        public string DisplayName => _displayName;
+        public string DisplayName => Loc.Get(_displayName);
         public BossAbilityKind Kind => _kind;
 
         /// <summary>Seconds between two uses.</summary>

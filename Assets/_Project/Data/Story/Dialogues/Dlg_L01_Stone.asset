@@ -16,15 +16,15 @@ MonoBehaviour:
   - Id: Dlg_L01_Stone.01
     Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
     Segments:
-    - Text: Heavy contact. Dense mineral hide, slow-moving.
+    - _text: data.dialogue.Dlg_L01_Stone.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_L01_Stone.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Use the cannon. Heavy shells for heavy hides.
+    - _text: data.dialogue.Dlg_L01_Stone.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
-  _loadingTip: Cragbacks wear armour that bullets and beams barely scratch. A Cannon's heavy shells strip it.
+  _loadingTip: data.dialogue.Dlg_L01_Stone.loadingTip

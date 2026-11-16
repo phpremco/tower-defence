@@ -60,6 +60,7 @@ namespace Game.UI
         private void OnDestroy()
         {
             _context?.Changed.Unsubscribe(Refresh);
+            FlushSettings();
             if (_input != null)
             {
                 _input.Cancelled -= OnCancelled;
@@ -79,34 +80,34 @@ namespace Game.UI
             FitInsideParent.Add(panel.rectTransform, SafeMargin);
             _panel = panel.gameObject;
 
-            _mainPage = CreatePage(panel.rectTransform, "Paused");
+            _mainPage = CreatePage(panel.rectTransform, Loc.Get("pause.title"));
             RectTransform main = _mainPage.GetComponent<RectTransform>();
-            _resume = AddButton(main, "Resume", () => _time.TogglePause());
+            _resume = AddButton(main, Loc.Get("pause.resume"), () => _time.TogglePause());
             if (_codex != null)
             {
-                _codexButton = AddButton(main, "Codex", OpenCodex);
+                _codexButton = AddButton(main, Loc.Get("pause.codex"), OpenCodex);
             }
 
-            AddButton(main, "Sound", ShowSound);
-            AddButton(main, "Camera", ShowCamera);
-            AddButton(main, "Restart level", Restart);
-            AddButton(main, "Quit to map", ShowConfirm);
+            AddButton(main, Loc.Get("pause.sound"), ShowSound);
+            AddButton(main, Loc.Get("pause.camera"), ShowCamera);
+            AddButton(main, Loc.Get("pause.restart"), Restart);
+            AddButton(main, Loc.Get("pause.quit_to_map"), ShowConfirm);
 
-            _confirmPage = CreatePage(panel.rectTransform, "Quit to the map?");
+            _confirmPage = CreatePage(panel.rectTransform, Loc.Get("pause.quit_question"));
             RectTransform confirm = _confirmPage.GetComponent<RectTransform>();
-            Text warning = UiKit.CreateText(confirm, "Progress in this level will be lost.", 30, TextAnchor.MiddleCenter);
+            Text warning = UiKit.CreateText(confirm, Loc.Get("pause.quit_warning"), 30, TextAnchor.MiddleCenter);
             UiKit.WrapInBox(warning);
             warning.gameObject.AddComponent<LayoutElement>().preferredHeight = 70f;
-            AddButton(confirm, "Yes, quit", QuitToMap);
-            _keepPlaying = AddButton(confirm, "No, keep playing", ShowMain);
+            AddButton(confirm, Loc.Get("pause.quit_yes"), QuitToMap);
+            _keepPlaying = AddButton(confirm, Loc.Get("pause.quit_no"), ShowMain);
             _confirmPage.SetActive(false);
 
             // The volume groups, so the mix can be fixed without leaving the level.
-            _soundPage = CreatePage(panel.rectTransform, "Sound");
+            _soundPage = CreatePage(panel.rectTransform, Loc.Get("pause.sound"));
             RectTransform sound = _soundPage.GetComponent<RectTransform>();
-            Services.TryGet(out ProgressService progress);
+            Services.TryGet(out SettingsService settings);
             Services.TryGet(out AudioMix mix);
-            var volumes = new VolumeControls(progress, mix);
+            var volumes = new VolumeControls(settings, mix);
             volumes.Build(sound);
             foreach (LayoutElement element in sound.GetComponentsInChildren<LayoutElement>())
             {
@@ -116,14 +117,14 @@ namespace Game.UI
                 }
             }
 
-            _soundBack = AddButton(sound, "Back", ShowMain);
+            _soundBack = AddButton(sound, Loc.Get("common.back"), ShowMain);
             _soundPage.SetActive(false);
 
             // Pan speed and edge scrolling, so a camera that feels slow can be fixed mid-fight.
-            _cameraPage = CreatePage(panel.rectTransform, "Camera");
+            _cameraPage = CreatePage(panel.rectTransform, Loc.Get("pause.camera"));
             RectTransform cameraRect = _cameraPage.GetComponent<RectTransform>();
             Services.TryGet(out CameraControls cameraControls);
-            var cameraOptions = new CameraOptionControls(progress, cameraControls ?? new CameraControls());
+            var cameraOptions = new CameraOptionControls(settings, cameraControls ?? new CameraControls());
             cameraOptions.Build(cameraRect);
             foreach (Button button in cameraRect.GetComponentsInChildren<Button>())
             {
@@ -131,7 +132,7 @@ namespace Game.UI
             }
 
             _cameraFirst = cameraOptions.First;
-            AddButton(cameraRect, "Back", ShowMain);
+            AddButton(cameraRect, Loc.Get("common.back"), ShowMain);
             _cameraPage.SetActive(false);
 
             _root.SetActive(false);
@@ -240,8 +241,18 @@ namespace Game.UI
             UiKit.Select(_cameraFirst);
         }
 
+        private static void FlushSettings()
+        {
+            if (Services.TryGet(out SettingsService settings))
+            {
+                settings.Flush();
+            }
+        }
+
         private void ShowMain()
         {
+            // The sound and camera pages change the settings in memory only; leaving them writes the file once.
+            FlushSettings();
             _confirmPage.SetActive(false);
             _soundPage.SetActive(false);
             _cameraPage.SetActive(false);

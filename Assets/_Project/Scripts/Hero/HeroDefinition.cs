@@ -59,7 +59,7 @@ namespace Game.Hero
         [Tooltip("The imported (Blender) look; empty keeps the procedural figure.")]
         [SerializeField] private HeroArtDefinition _art;
 
-        public string DisplayName => _displayName;
+        public string DisplayName => Loc.Get(_displayName);
         public float MaxHealth => _maxHealth;
         public float WalkSpeed => _walkSpeed;
         public bool Flies => _flies;

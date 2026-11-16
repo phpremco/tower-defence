@@ -25,7 +25,7 @@ namespace Game.Levels
         [SerializeField] private SoundSet _typingBlips = new SoundSet();
 
         public string Id => name;
-        public string DisplayName => _displayName;
+        public string DisplayName => Loc.Get(_displayName);
         public Color RoleColour => _roleColour;
         public SpeakerFrame Frame => _frame;
         public PortraitModel Portrait => _portrait;

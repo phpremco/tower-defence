@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: Mireleech
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Mireleech
+  _displayName: data.enemy.Mireleech.displayName
   _layer: 1
   _flies: 0
   _maxHealth: 80
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2.4
   _attackInterval: 1.1
   _gateStrikes: 0
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5
@@ -52,4 +54,4 @@ MonoBehaviour:
   _deathStyle: 0
   _art: {fileID: 11400000, guid: 560154c119ed12045a2e4bf933a6405b, type: 2}
   _voice: {fileID: 11400000, guid: 11962b7c75056aa459e5e17bd93ab5cd, type: 2}
-  _description: Marsh leech. Quick and low, it leaves a slick of mud that hurries everything that follows it.
+  _description: data.enemy.Mireleech.description

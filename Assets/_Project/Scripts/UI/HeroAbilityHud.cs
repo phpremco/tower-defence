@@ -1,3 +1,4 @@
+using Game.Core;
 using Game.Economy;
 using Game.Hero;
 using Game.Platform;
@@ -36,11 +37,10 @@ namespace Game.UI
             HeroAbilityDefinition ability = state.Definition;
             if (!state.Ready)
             {
-                return $"{ability.DisplayName} {state.SecondsLeft}s";
+                return Loc.Format("hero.ability_cooldown", ability.DisplayName, state.SecondsLeft);
             }
 
-            string price = ability.MoneyCost > 0 ? $" {ability.MoneyCost}" : string.Empty;
-            return UiKit.Keyed(key, $"{ability.DisplayName}{price}");
+            return UiKit.Keyed(key, ability.MoneyCost > 0 ? Loc.Format("hero.ability_price", ability.DisplayName, ability.MoneyCost) : ability.DisplayName);
         }
 
         public static bool Affordable(HeroAbilityState state, Wallet wallet) => wallet.CanAfford(state.Definition.MoneyCost);

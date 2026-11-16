@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: HiveQueen
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Hive Queen
+  _displayName: data.enemy.HiveQueen.displayName
   _layer: 1
   _flies: 0
   _maxHealth: 3200
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2.5
   _attackInterval: 1.2
   _gateStrikes: 0
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5
@@ -54,4 +56,4 @@ MonoBehaviour:
   _deathStyle: 0
   _art: {fileID: 11400000, guid: 5e3f26eb4819f844795567de71d3a89a, type: 2}
   _voice: {fileID: 11400000, guid: 190b415658643e24e891ab57a140ec00, type: 2}
-  _description: 'The hive queen: pulses that shake the field and an endless brood.'
+  _description: data.enemy.HiveQueen.description

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: Frostbat
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Frostbat
+  _displayName: data.enemy.Frostbat.displayName
   _layer: 2
   _flies: 1
   _maxHealth: 31
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2.8
   _attackInterval: 1.3
   _gateStrikes: 2
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5
@@ -52,4 +54,4 @@ MonoBehaviour:
   _deathStyle: 1
   _art: {fileID: 11400000, guid: 37b91b7342d66a042b9b4dea3b8a91e4, type: 2}
   _voice: {fileID: 11400000, guid: b7db4a03f3e0b51489c2fb8c68244940, type: 2}
-  _description: Element bat. Rises from ice nests, spits bolts of its element at the towers it passes and crashes back into its element when it falls. Air only.
+  _description: data.enemy.Frostbat.description

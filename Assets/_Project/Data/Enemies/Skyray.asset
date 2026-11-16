@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: Skyray
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Skyray
+  _displayName: data.enemy.Skyray.displayName
   _layer: 2
   _flies: 1
   _maxHealth: 80
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2.2
   _attackInterval: 1.4
   _gateStrikes: 3
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5
@@ -52,4 +54,4 @@ MonoBehaviour:
   _deathStyle: 1
   _art: {fileID: 11400000, guid: a0952af47561f6f44a2880aa4d1d6e94, type: 2}
   _voice: {fileID: 11400000, guid: ba193554eb5b67d4086928e29663c888, type: 2}
-  _description: Flying ray with a spiked tail. Lashes gates from the air; only anti-air weapons reach it.
+  _description: data.enemy.Skyray.description

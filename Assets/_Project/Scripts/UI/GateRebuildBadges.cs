@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Core;
 using Game.Levels;
 using Game.Towers;
 using UnityEngine;
@@ -33,6 +34,7 @@ namespace Game.UI
             public RectTransform Rect;
             public Text Label;
             public RectTransform Tail;
+            public int ShownPrice = -1;
         }
 
         private readonly Dictionary<Tower, Badge> _badges = new Dictionary<Tower, Badge>();
@@ -107,7 +109,13 @@ namespace Game.UI
             badge.Rect.anchoredPosition = local + offset;
             PointTail(badge, offset);
             int price = gate.RepairCost;
-            badge.Label.text = $"Rebuild  {price}";
+            // Written only when the price changes, so a wreck on screen does not build a new string every frame.
+            if (price != badge.ShownPrice)
+            {
+                badge.ShownPrice = price;
+                badge.Label.text = Loc.Format("hud.gate_rebuild", price);
+            }
+
             badge.Label.color = _context.Wallet.CanAfford(price) ? Affordable : TooExpensive;
         }
 

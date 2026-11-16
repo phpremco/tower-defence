@@ -1,0 +1,2 @@
+# English: shared texts. Format and rules: Docs/LOCALISATION.md
+language.name = English

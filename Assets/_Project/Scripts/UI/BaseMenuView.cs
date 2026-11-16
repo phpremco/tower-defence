@@ -1,3 +1,4 @@
+using Game.Core;
 using Game.Drones;
 using Game.Levels;
 using UnityEngine;
@@ -53,7 +54,6 @@ namespace Game.UI
         private const float HighlightPad = 7f;
         private const float NewTagHeight = 32f;
         private const int NewTagSize = 20;
-        private const string NewTagText = "NEW";
         private static readonly Color HighlightColour = new Color(1f, 0.82f, 0.25f);
 
         private LevelContext _context;
@@ -131,7 +131,7 @@ namespace Game.UI
             UiKit.CreatePanel(_panel, "Backdrop", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Backdrop);
             _header = CreateLabel(new Vector2(0f, 1f), new Vector2(Padding, -Padding - HeaderHeight * 0.5f), TextAnchor.MiddleLeft, new Vector2(width - Padding * 2f, HeaderHeight), Mathf.Max(HeaderSize, UiKit.ReadableSize));
             _header.rectTransform.pivot = new Vector2(0f, 0.5f);
-            _header.text = "Drones";
+            _header.text = Loc.Get("base.drones_header");
             _header.color = HeaderColor;
             BuildDescription(width);
 
@@ -200,7 +200,7 @@ namespace Game.UI
             entry.Role = CreateRole(rect, drone);
             entry.Label = CreateLabel(new Vector2(0f, 0f), new Vector2(x + CardWidth * 0.5f, Padding + LabelHeight * 0.5f), TextAnchor.MiddleCenter, new Vector2(CardWidth + CardGap, LabelHeight), Mathf.Max(LabelSize, UiKit.ReadableSize));
             entry.NewTag = CreateLabel(new Vector2(0f, 0f), new Vector2(x + CardWidth * 0.5f, Padding + LabelHeight + CardHeight + HeaderHeight * 0.5f), TextAnchor.MiddleCenter, new Vector2(CardWidth, NewTagHeight), Mathf.Max(NewTagSize, UiKit.ReadableSize));
-            entry.NewTag.text = NewTagText;
+            entry.NewTag.text = Loc.Get("base.new_tag");
             entry.NewTag.color = HighlightColour;
             entry.NewTag.fontStyle = FontStyle.Bold;
             entry.NewTag.gameObject.SetActive(false);
@@ -349,7 +349,7 @@ namespace Game.UI
             }
 
             DroneDefinition drone = _buttons[card].Drone;
-            _descriptionText.text = $"<b><color=#{ColorUtility.ToHtmlStringRGB(_buttons[card].Role.color)}>{drone.DisplayName}</color></b>\n{drone.Summary}";
+            _descriptionText.text = Loc.Format("base.drone_description", ColorUtility.ToHtmlStringRGB(_buttons[card].Role.color), drone.DisplayName, drone.Summary);
         }
 
         // Drones are small, so the picture blows them up and lifts them into the frame the renderer uses for towers.
@@ -423,7 +423,7 @@ namespace Game.UI
             bool affordable = _context.Wallet.Money >= entry.Drone.Cost;
             entry.Button.interactable = affordable && !full;
             // The picture names the drone; the label only carries what changes: the price and how many are out.
-            entry.Label.text = full ? $"max {active}/{max}" : $"{entry.Drone.Cost}   {active}/{max}";
+            entry.Label.text = full ? Loc.Format("base.drone_count_full", active, max) : Loc.Format("base.drone_count", entry.Drone.Cost, active, max);
             // Grey when the limit is reached, red when there is room but not enough money.
             entry.Label.color = full ? Unavailable : affordable ? TextColor : TooExpensive;
         }

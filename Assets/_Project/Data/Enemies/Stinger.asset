@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: Stinger
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Stinger
+  _displayName: data.enemy.Stinger.displayName
   _layer: 1
   _flies: 0
   _maxHealth: 80
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2.6
   _attackInterval: 2
   _gateStrikes: 0
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5
@@ -52,4 +54,4 @@ MonoBehaviour:
   _deathStyle: 0
   _art: {fileID: 11400000, guid: c0e76813f175eca4a831672ab4a69458, type: 2}
   _voice: {fileID: 11400000, guid: 754f95f33aa3b104fbf29d77b68a2e21, type: 2}
-  _description: Scorpion in glowing armour plates. Its acid tail stings the towers it passes; heavy single shots strip the armour.
+  _description: data.enemy.Stinger.description

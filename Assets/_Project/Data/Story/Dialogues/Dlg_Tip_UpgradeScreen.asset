@@ -16,27 +16,27 @@ MonoBehaviour:
   - Id: Dlg_Tip_UpgradeScreen.01
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Welcome to the research bay. Every level you clear pays research points, and a harder difficulty pays more.
+    - _text: data.dialogue.Dlg_Tip_UpgradeScreen.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Tip_UpgradeScreen.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Spend them here on tiers. Each tier makes a turret, the base or the gates better for good; the drones take power instead.
+    - _text: data.dialogue.Dlg_Tip_UpgradeScreen.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Tip_UpgradeScreen.03
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: A padlock means that tier opens on a later continent. Crystal Plains opens the first 4; there are ten.
+    - _text: data.dialogue.Dlg_Tip_UpgradeScreen.lines.2.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Tip_UpgradeScreen.04
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: 'And do look after Spencer: a repair drone that mends him faster, and armour that takes the edge off every hit.'
+    - _text: data.dialogue.Dlg_Tip_UpgradeScreen.lines.3.segments.0.text
       Style: 0
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 0}
-  _loadingTip: Research points buy permanent upgrade tiers between levels. A padlocked tier opens on a later continent.
+  _loadingTip: data.dialogue.Dlg_Tip_UpgradeScreen.loadingTip

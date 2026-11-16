@@ -16,15 +16,15 @@ MonoBehaviour:
   - Id: Dlg_Scan_Roller.01
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: I barely got a scan. It curls into a ball and rolls three times faster than anything else.
+    - _text: data.dialogue.Dlg_Scan_Roller.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Scan_Roller.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: 'The Laser Turret''s beam is instant, so it keeps up. Better still: slow it down before it rolls past.'
+    - _text: data.dialogue.Dlg_Scan_Roller.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 11400000, guid: 92fb551ff76be8f4ab4ecfbd0f621e77, type: 2}
-  _loadingTip: Rollers curl up and roll three times faster than anything else. The Laser Turret's beam keeps up with them.
+  _loadingTip: data.dialogue.Dlg_Scan_Roller.loadingTip

@@ -128,8 +128,9 @@ namespace Game.UI
         private IInputProvider _input;
         private int _visibleButtons;
 
-        // What each footer button says and which action it names, so its prompt follows the device in use.
-        private static readonly string[] ButtonWords = { "NEXT", "SKIP", "CODEX" };
+        // Each footer button's object name and the action it names, so its prompt follows the device in use. Its words
+        // come from the string table (ButtonWord).
+        private static readonly string[] ButtonIds = { "NEXT", "SKIP", "CODEX" };
         private static readonly GameAction[] ButtonActions = { GameAction.Confirm, GameAction.Cancel, GameAction.Codex };
 
         private SpeakerDefinition _speaker;
@@ -583,13 +584,13 @@ namespace Game.UI
             _nameTag.sizeDelta = new Vector2(_name.GetPreferredValues(displayName).x + NameTagPadding * 2f + Overhang * 2f, NameTagHeight + Overhang * 2f);
             if (_frame == SpeakerFrame.Transmission)
             {
-                _headerLeft.text = "INCOMING TRANSMISSION   //   " + displayName;
-                _headerRight.text = "ENCRYPTED CHANNEL";
+                _headerLeft.text = Loc.Format("dialogue.header_transmission", displayName);
+                _headerRight.text = Loc.Get("dialogue.header_encrypted");
             }
             else
             {
-                _headerLeft.text = displayName + "   //   LOG ENTRY";
-                _headerRight.text = "● PLAYBACK";
+                _headerLeft.text = Loc.Format("dialogue.header_log", displayName);
+                _headerRight.text = Loc.Get("dialogue.header_playback");
             }
 
             float top = TextTop + (hasHeader ? HeaderHeight : 0f);
@@ -992,9 +993,9 @@ namespace Game.UI
 
         private void BuildFooter()
         {
-            _buttonEdges = new Image[ButtonWords.Length];
-            _buttonLabels = new TextMeshProUGUI[ButtonWords.Length];
-            _buttons = new Button[ButtonWords.Length];
+            _buttonEdges = new Image[ButtonIds.Length];
+            _buttonLabels = new TextMeshProUGUI[ButtonIds.Length];
+            _buttons = new Button[ButtonIds.Length];
             FooterButton(NextSlot, Advance);
             FooterButton(SkipSlot, Skip);
             FooterButton(CodexSlot, OpenCodex);
@@ -1020,21 +1021,31 @@ namespace Game.UI
 
             bool codex = _player != null && _player.CanOpenCodex;
             _buttons[CodexSlot].gameObject.SetActive(codex);
-            _visibleButtons = codex ? ButtonWords.Length : CodexSlot;
+            _visibleButtons = codex ? ButtonIds.Length : CodexSlot;
             for (int slot = 0; slot < _buttons.Length; slot++)
             {
                 string key = _input != null ? _input.PromptFor(ButtonActions[slot]).ToUpperInvariant() : string.Empty;
-                _buttonLabels[slot].text = key.Length > 0 ? $"<color={KeyColour}>{key}</color>  {ButtonWords[slot]}" : ButtonWords[slot];
+                _buttonLabels[slot].text = key.Length > 0 ? Loc.Format("dialogue.button_keyed", KeyColour, key, ButtonWord(slot)) : ButtonWord(slot);
             }
 
             RectTransform arrow = _arrow.rectTransform;
             arrow.anchoredPosition = new Vector2(-(Overhang + Inset + (ButtonWidth + ButtonGap) * _visibleButtons + ArrowSize), FooterCentre());
         }
 
+        private static string ButtonWord(int slot)
+        {
+            switch (slot)
+            {
+                case NextSlot: return Loc.Get("dialogue.button_next");
+                case SkipSlot: return Loc.Get("dialogue.button_skip");
+                default: return Loc.Get("dialogue.button_codex");
+            }
+        }
+
         private void FooterButton(int slot, UnityEngine.Events.UnityAction action)
         {
             int fromRight = slot;
-            string label = ButtonWords[slot];
+            string label = ButtonIds[slot];
             var fill = NewChild<Image>(_box, label + "Button");
             fill.sprite = DialogueArt.Panel;
             fill.type = Image.Type.Sliced;
@@ -1074,7 +1085,7 @@ namespace Game.UI
             text.fontSizeMin = ButtonTextMinSize;
             text.characterSpacing = SmallSpacing;
             Stretch(text.rectTransform, overhang);
-            text.text = label;
+            text.text = ButtonWord(slot);
             _buttonLabels[slot] = text;
             _buttons[slot] = button;
         }

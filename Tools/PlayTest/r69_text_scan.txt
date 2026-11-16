@@ -1,0 +1,44 @@
+    1  BalanceCalibration :: _factorsFrom   e.g. BalanceCalibration: 2026-11-15 21:53
+    1  BalanceCalibration :: _measuredOn   e.g. BalanceCalibration: 2026-11-16 03:13
+   23  BossAbilityDefinition :: _displayName   e.g. AcidRain: Acid Rain
+    6  BossDefinition :: _counterText   e.g. CinderMatriarchBoss: Use a cheap cold tower far from the road as bait so she walks a long way past your firepow
+    4  BossDefinition :: _phases.Array.data[].Name   e.g. GravemawBoss: Deep burrow
+    6  BossDefinition :: _recognition._adaptLine   e.g. CinderMatriarchBoss: Adaptation detected: {0} signature dampened
+    6  BossDefinition :: _signatureText   e.g. CinderMatriarchBoss: Her shell is plated lava that heavy fire must break; every so often it goes molten for fiv
+    6  BossDefinition :: _telegraphText   e.g. CinderMatriarchBoss: She rises out of the largest lava pool. When she sets out she rears up, a thin line of hea
+   12  BossIntroDefinition :: _barks.Array.data[].Line   e.g. Intro_CinderMatriarch: She really doesn't like the cold, huh.
+    6  BossIntroDefinition :: _heroLine   e.g. Intro_CinderMatriarch: Okay. The lava has legs now. Great.
+   12  BossIntroDefinition :: _repeatBarks.Array.data[]   e.g. Intro_CinderMatriarch: She's back for the cold ones.
+   20  CampaignCatalog :: _nodes.Array.data[].DisplayName   e.g. CampaignCatalog: Landing Site
+    5  CampaignCatalog :: _regions.Array.data[].DisplayName   e.g. CampaignCatalog: Crystal Plains
+    8  CombatRules :: _damage.Array.data[].Reason   e.g. CombatRules: A blast strips armour point for point and bursts among flyers. (A shell still cannot be ai
+    1  CombatRules :: _exceptions.Array.data[].Reason   e.g. CombatRules: The Flak's airburst is fragments, not a shell: it is the air specialist and no anti-armour
+    6  CombatRules :: _scenarios.Array.data[].Reason   e.g. CombatRules: A stream of a dozen Skitters, a blast apart: every hit bigger than one of them is wasted, 
+    4  CutsceneCast :: _cargoFlights.Array.data[]._cargo   e.g. CutsceneCast: Base modules for the landing site
+    1  CutsceneCast :: _pathfinderFlight._cargo   e.g. CutsceneCast: Spencer, the pathfinder
+    1  CutsceneDefinition :: _shots.Array.data[].TitleCard   e.g. Cutscene_Opening: Defend the base
+   95  DialogueDefinition :: _lines.Array.data[].Segments.Array.data[].Text   e.g. Dlg_Cut_Angry: No life forms, they said. No complications, they said!
+   13  DialogueDefinition :: _loadingTip   e.g. Dlg_L01_Stone: Cragbacks wear armour that bullets and beams barely scratch. A Cannon's heavy shells strip
+    3  DroneDefinition :: _displayName   e.g. AttackDrone: Attack drone
+    3  DroneDefinition :: _summary   e.g. AttackDrone: Hunts the creature furthest down the road and shoots it from the air.
+   40  EnemyDefinition :: _description   e.g. AcidEmpress: The scorpion queen: acid rain on the towers and plates that grow back.
+   19  EnemyDefinition :: _displayName   e.g. AcidEmpress: Acid Empress
+    2  HeroAbilityDefinition :: _description   e.g. Ability_GateRepair: Spencer welds the gate he guards, giving back 40% of its health.
+    3  HeroPerkDefinition :: _description   e.g. Perk_FieldRepair: Spencer repairs the gate and the turrets around him.
+    3  HeroPerkDefinition :: _displayName   e.g. Perk_FieldRepair: Field Repair
+    1  HeroWeaponDefinition :: _displayName   e.g. Weapon_EnergySword: Energy sword
+   10  LevelDefinition :: _briefing   e.g. Arena_Bog: Crystal grass to the horizon. The swarms come in numbers now, many and weak: fast guns wil
+   10  LevelDefinition :: _displayName   e.g. Arena_Bog: Glass Meadows, rotting
+   25  LevelDefinition :: _paths.Array.data[].Name   e.g. Arena_Bog: North air route
+   10  LevelDefinition :: _regionName   e.g. Arena_Bog: Glass meadows
+    7  LevelDefinition :: _reward.Credit   e.g. Arena_Bog: Built on Dr. Voss's orders
+    3  LevelDefinition :: _reward.Story   e.g. Arena_Bog: Dr. Voss had anti-air guns built. Just in case, she says.
+    5  PathObjectDefinition :: _description   e.g. ExplosiveBarrel: Stands beside the road. When the enemy passes close it bursts, and the blast reaches far a
+    4  PathObjectDefinition :: _displayName   e.g. GroundDrone: Ground drone
+    2  SpeakerDefinition :: _displayName   e.g. Speaker_Nti: Nova Terra Industries
+    6  TowerDefinition :: _displayName   e.g. BaseTurret: Base Turret
+   25  TowerDefinition :: _levels.Array.data[].StepName   e.g. Artillery: Heavier shells
+   13  TowerDefinition :: _roleLine   e.g. Artillery: Cannon and Flak in one: a big blast for groups and armour that also bursts among flyers.
+   23  UpgradeDefinition :: _displayName   e.g. Artillery_FireRate: Fire rate
+   10  UpgradeDefinition :: _groupDescription   e.g. AttackDrone_Speed: Bought with money in the level. Hunts the enemy furthest down the road and shoots it from 
+   24  UpgradeDefinition :: _groupName   e.g. AttackDrone_Output: Attack drone

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: Gravemaw
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Gravemaw
+  _displayName: data.enemy.Gravemaw.displayName
   _layer: 1
   _flies: 0
   _maxHealth: 43750
@@ -55,4 +55,4 @@ MonoBehaviour:
   _deathStyle: 2
   _art: {fileID: 11400000, guid: 35a2768c8527a1d468bbeffb09fa0fa4, type: 2}
   _voice: {fileID: 11400000, guid: 268a8454231a2f049a9eb2d69b1b6cd5, type: 2}
-  _description: 'The planet''s digging maw: it answers the colony''s drill with a drill of its own.'
+  _description: data.enemy.Gravemaw.description

@@ -1,3 +1,4 @@
+using Game.Core;
 using Game.Levels;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,7 +23,6 @@ namespace Game.UI
         private const int LabelSize = 28;
         private const float MarkerLift = 0.5f;
         private const float LingerSeconds = 6f;
-        private const string Label = "BEHIND THE GATE";
         private static readonly Color Warning = new Color(1f, 0.55f, 0.25f);
 
         private LevelContext _context;
@@ -50,7 +50,7 @@ namespace Game.UI
             _ringImage = CreateIcon(root, "RearNestRing", IconType.Ring, RingSize);
             _ring = _ringImage.rectTransform;
             _arrow = CreateIcon(root, "RearNestArrow", IconType.Arrow, ArrowSize).rectTransform;
-            Text text = UiKit.CreateFixedText(root, Label, LabelSize, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(LabelWidth, LabelHeight));
+            Text text = UiKit.CreateFixedText(root, Loc.Get("hud.rear_nest_marker"), LabelSize, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(LabelWidth, LabelHeight));
             text.color = Warning;
             text.raycastTarget = false;
             _label = text.rectTransform;

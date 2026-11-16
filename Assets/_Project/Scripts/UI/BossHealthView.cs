@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Core;
 using Game.Enemies;
 using Game.Levels;
 using Game.Towers;
@@ -48,7 +49,6 @@ namespace Game.UI
         private const int NoticeSize = 20;
         private const float NoticeSeconds = 5f;
         private const float NoticeFade = 1f;
-        private const string OraPrefix = "ORA: ";
         private static readonly Color OraColour = new Color(0.35f, 0.85f, 1f);
         // A learned weapon's icon is shown greyed out: that weapon does only part of its damage now.
         private static readonly Color DimmedIcon = new Color(0.72f, 0.72f, 0.78f, 0.8f);
@@ -241,7 +241,7 @@ namespace Game.UI
             if (phase != _phase)
             {
                 _phase = phase;
-                _label.text = $"{_boss.Definition.DisplayName.ToUpperInvariant()}  -  {boss.PhaseName(phase).ToUpperInvariant()}";
+                _label.text = Loc.Format("boss.phase_line", _boss.Definition.DisplayName.ToUpperInvariant(), boss.PhaseName(phase).ToUpperInvariant());
             }
         }
 
@@ -366,7 +366,7 @@ namespace Game.UI
 
         private void OnAdapted(string line)
         {
-            _notice.text = OraPrefix + line;
+            _notice.text = Loc.Format("boss.ora_notice", line);
             _noticeLeft = NoticeSeconds;
         }
 

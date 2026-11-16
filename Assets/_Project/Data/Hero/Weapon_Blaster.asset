@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9b3f8fa2080cc345866740d85c198f7, type: 3}
   m_Name: Weapon_Blaster
   m_EditorClassIdentifier: Game.Hero::Game.Hero.HeroWeaponDefinition
-  _displayName: Blaster
+  _displayName: data.heroWeapon.Weapon_Blaster.displayName
   _kind: 1
   _style: 1
   _damage: 4

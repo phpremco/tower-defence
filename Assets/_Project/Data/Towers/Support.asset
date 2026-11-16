@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4195afed974a6db4bb0968bc3af5e766, type: 3}
   m_Name: Support
   m_EditorClassIdentifier: Game.Towers::Game.Towers.TowerDefinition
-  _displayName: Support
+  _displayName: data.tower.Support.displayName
   _targets: 1
   _levels:
   - Cost: 120
@@ -33,7 +33,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
-    StepName: Extended relay
+    StepName: data.tower.Support.levels.1.stepName
     Step: 3
   - Cost: 200
     Damage: 0
@@ -43,7 +43,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 2
-    StepName: Stronger signal
+    StepName: data.tower.Support.levels.2.stepName
     Step: 5
   _projectileSpeed: 1
   _splashRadius: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
   _damageType: 0
   _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _roles: 06000000i
-  _roleLine: 'Booster: the guns around it reach further and fire faster. It fires nothing itself.'
+  _roleLine: data.tower.Support.roleLine
   _retargetRadius: 0
   _homing: 1
   _fuseRadius: 0

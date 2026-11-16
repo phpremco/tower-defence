@@ -16,15 +16,15 @@ MonoBehaviour:
   - Id: Dlg_Scan_Prowler.01
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Pack hunters. When one falls, the rest go into a rage and run.
+    - _text: data.dialogue.Dlg_Scan_Prowler.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Scan_Prowler.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: So don't pick them off one by one. The Cannon's splash hits the whole pack at once.
+    - _text: data.dialogue.Dlg_Scan_Prowler.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
-  _loadingTip: When one Prowler falls, the rest of its pack rages and runs. Hit them together with the Cannon's splash.
+  _loadingTip: data.dialogue.Dlg_Scan_Prowler.loadingTip

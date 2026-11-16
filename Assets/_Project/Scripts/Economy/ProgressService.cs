@@ -223,44 +223,6 @@ namespace Game.Economy
             Save();
         }
 
-        public void SetVolume(int percent)
-        {
-            Data.MasterVolumePercent = percent;
-            Save();
-        }
-
-        /// <summary>Stores all four volume groups at once, in percent.</summary>
-        public void SetVolumes(int master, int music, int effects, int ambience)
-        {
-            Data.MasterVolumePercent = master;
-            Data.MusicVolumePercent = music;
-            Data.EffectsVolumePercent = effects;
-            Data.AmbienceVolumePercent = ambience;
-            Save();
-        }
-
-        /// <summary>Stores the camera options: pan speed in percent of the default, and edge scrolling on or off.</summary>
-        public void SetCameraControls(int speedPercent, bool edgeScrolling)
-        {
-            Data.CameraSpeedPercent = speedPercent;
-            Data.EdgeScrollingOff = !edgeScrolling;
-            Save();
-        }
-
-        /// <summary>Stores the radar options: shown or not, and its size in percent of the default.</summary>
-        public void SetRadar(bool on, int sizePercent)
-        {
-            Data.RadarOff = !on;
-            Data.RadarSizePercent = sizePercent;
-            Save();
-        }
-
-        public void SetHudMargin(int percent)
-        {
-            Data.HudMarginPercent = percent;
-            Save();
-        }
-
         /// <summary>The street weapons chosen last time, by asset name.</summary>
         public IReadOnlyList<string> Loadout => Data.LoadoutIds;
 

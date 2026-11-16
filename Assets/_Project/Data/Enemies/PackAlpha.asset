@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: PackAlpha
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Pack Alpha
+  _displayName: data.enemy.PackAlpha.displayName
   _layer: 1
   _flies: 0
   _maxHealth: 800
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2
   _attackInterval: 0.9
   _gateStrikes: 0
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 4
   _rollSeconds: 1.5
   _rollSpeedMultiplier: 2.2
@@ -53,4 +55,4 @@ MonoBehaviour:
   _deathStyle: 0
   _art: {fileID: 11400000, guid: 6008deb61071106438cfa5f18b8fffc5, type: 2}
   _voice: {fileID: 11400000, guid: b27127c04e6955b46a6318550d68fff9, type: 2}
-  _description: 'The alpha: a howl that sends the whole pack running.'
+  _description: data.enemy.PackAlpha.description

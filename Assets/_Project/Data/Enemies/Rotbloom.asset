@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: Rotbloom
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Rotbloom
+  _displayName: data.enemy.Rotbloom.displayName
   _layer: 1
   _flies: 0
   _maxHealth: 3550
@@ -56,4 +56,4 @@ MonoBehaviour:
   _deathStyle: 2
   _art: {fileID: 11400000, guid: 99df6b02bb070e548b33f16b0e3f6f40, type: 2}
   _voice: {fileID: 11400000, guid: bc3fc522c2b044849a7ef510ba9ca716, type: 2}
-  _description: A walking flower of rot that makes the map itself hostile.
+  _description: data.enemy.Rotbloom.description

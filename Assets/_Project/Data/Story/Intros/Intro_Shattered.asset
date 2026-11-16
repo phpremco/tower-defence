@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Intro_Shattered
   m_EditorClassIdentifier: Game.Levels::Game.Levels.BossIntroDefinition
   _boss: {fileID: 11400000, guid: bec538117011ce7439f9fb36705a3193, type: 2}
-  _heroLine: Doc... was that door supposed to open?
+  _heroLine: data.bossIntro.Intro_Shattered.heroLine
   _answer: {fileID: 11400000, guid: 0d55a9cc617cf7844bc6c985404d76d0, type: 2}
   _repeatBarks:
-  - Glass giant. Cover every road.
-  - It's back in one piece. For now.
+  - data.bossIntro.Intro_Shattered.repeatBarks.0
+  - data.bossIntro.Intro_Shattered.repeatBarks.1
   _barks:
   - Moment: 8
-    Line: Three of them. Of course there are three of them.
+    _line: data.bossIntro.Intro_Shattered.barks.0.line
   - Moment: 9
-    Line: And they're... putting themselves back together. Wonderful.
+    _line: data.bossIntro.Intro_Shattered.barks.1.line
   _cutInTint: {r: 0.85, g: 0.6, b: 1, a: 1}
   _slowFactor: 0.25
   _focusSeconds: 0.5

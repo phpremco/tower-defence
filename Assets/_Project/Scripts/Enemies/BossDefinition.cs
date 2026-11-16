@@ -1,3 +1,4 @@
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Enemies
@@ -77,13 +78,13 @@ namespace Game.Enemies
         }
 
         /// <summary>What its mechanic does, for the Codex.</summary>
-        public string SignatureText => _signatureText;
+        public string SignatureText => Loc.Get(_signatureText);
 
         /// <summary>How to see it coming, for the Codex.</summary>
-        public string TelegraphText => _telegraphText;
+        public string TelegraphText => Loc.Get(_telegraphText);
 
         /// <summary>How to beat it, for the Codex.</summary>
-        public string CounterText => _counterText;
+        public string CounterText => Loc.Get(_counterText);
 
         /// <summary>The phase a boss is in at a health share: the last whose start it has dropped to.</summary>
         public int PhaseAt(float healthFraction)
@@ -100,7 +101,7 @@ namespace Game.Enemies
             return phase;
         }
 
-        public string PhaseName(int phase) => phase >= 0 && phase < _phases.Length ? _phases[phase].Name : string.Empty;
+        public string PhaseName(int phase) => phase >= 0 && phase < _phases.Length ? Loc.Get(_phases[phase].Name) : string.Empty;
 
         /// <summary>
         /// Seconds of the whole defence's firepower its mechanic takes away over one fight, for the balance ledger: each

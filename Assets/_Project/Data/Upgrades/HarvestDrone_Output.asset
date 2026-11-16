@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f387d1c485e6f1840ae929304219d834, type: 3}
   m_Name: HarvestDrone_Output
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
-  _displayName: Yield per trip
+  _displayName: data.upgrade.HarvestDrone_Output.displayName
   _target: 11
   _towerId: 
   _droneId: HarvestDrone
-  _groupName: Harvest drone
+  _groupName: data.upgrade.HarvestDrone_Output.groupName
   _costs: 04000000080000000c0000001200000018000000200000002a000000350000004200000050000000i
   _currency: 1
   _groupDescription: 

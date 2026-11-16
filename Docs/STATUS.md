@@ -10708,3 +10708,77 @@ w1 to w5, checked before the first batch; w6 keeps audio for the EditMode `Audio
   set nowhere).
 - `Tools/BalanceLab` not touched.
 - The finale stage does not know `PaperHeldBosses`; running it re-raises the Rotbloom.
+
+## Round 69: crash-safe saves, settings in their own file, string tables (English only) (2026-11-16)
+
+Not committed. No full generator run (one targeted step: `Tools/Generate/Localisation Tables`), no Blender, no packages
+(no Unity Localization package: an own string-table system), the Game view untouched, save folder and product name
+unchanged. Remco's save (MD5 42fbe06b38e133cecfe2014def5c833c) copied aside before the one Play Mode run; after it the
+`settings.json` (+ `.bak`) the run wrote were removed again, so the folder is as it was and his first launch does the
+migration itself. Two helper agents moved the UI literals of the menu screens and of the in-level UI; the rest was done here.
+
+### What changed
+
+1. **Crash-safe saves** (`Platform/FileSaveService.cs`): writes go to `<key>.json.tmp`, then `File.Replace` swaps it in
+   and keeps the previous good file as `<key>.json.bak`. Loading catches empty, whitespace, truncated and malformed files
+   (JsonUtility's `ArgumentException`) and IO errors: the damaged file is copied to `<key>.json.damaged`, the backup is
+   loaded with a warning, and with no usable backup the key loads as missing (fresh save, warning). Boot can no longer
+   throw on a bad save.
+2. **Settings split** (`Economy/SettingsData.cs`, `SettingsService.cs`): volumes, camera speed, edge scrolling, radar,
+   HUD margin, plus the new language and mute-in-background, live in `settings.json`. First boot after the split reads the
+   old progress file as `SettingsData` (same field names) and writes `settings.json` at once; the fields are gone from
+   `ProgressData` (the next progress save drops them; `ProgressData.Version` unchanged, nothing else in it moves). Setters
+   only change memory and raise `Changed`; `Flush()` writes when the options panel closes (Back, B/Esc, replay intro,
+   language change, destroy), when the pause menu leaves its Sound/Camera page or closes, and on quit.
+3. **Localisation plumbing** (`Core/Localization/`: `Loc`, `ILocalizationService`, `StringTableService`,
+   `StringTableParser`, `LanguageInfo`; tables in `Resources/Localization/<lang>.<part>.txt`): 426 UI keys (menus 182, level
+   156, options/pause/controls 87, core 1) and 554 data keys, 980 strings in all, English text unchanged. Definitions keep
+   keys in their text fields and resolve them in their getters; `DialogueSegment`, `BossBark`, `MapNode` and `MapRegion`
+   got a private field (`FormerlySerializedAs`) behind a resolving property; struct fields read in one place
+   (`CutsceneShot.TitleCard`, `TowerLevel.StepName`, `BossPhase.Name`, level reward credit/story, repeat barks) are
+   resolved there. The generator keeps its English spec; its new last data step "Localisation"
+   (`Editor/LocalisationTables.cs`) turns every text field into a key and writes `en.data.txt`; property paths for
+   segments, barks and map names updated in the generator. `Editor/LocalisationImportWatcher.cs` drops the editor's cached
+   tables when a table imports. How to add a language: `Docs/LOCALISATION.md`.
+4. **Options**: new rows "Mute in background   On/Off" (default on, `Boot/AppFocusAudio.cs` silences the listener while
+   the window has no focus) and "Language   English" (steps through every table; a change reloads the main menu). The
+   controls page is built from keys when it opens.
+5. **Controller notice** (`UI/ControllerNotice.cs`, persistent "Session" object made by the bootstrapper): "Controller
+   disconnected. Reconnect it to continue." on `DeviceLost`, "Controller connected." for 2.5 s on `DeviceRegained`.
+
+### Verification
+
+- Compile clean (the one console warning is the existing CS0618 in `Tests/PlayMode/BalanceProbeTests.cs:611`).
+- Migration on a COPY of Remco's save (`Tools/PlayTest/Scripts/R69MigrationCheck.cs`, temp folder): loading leaves the file
+  byte-identical; settings seeded (his values are the defaults: 100/70/100/80, camera 100, radar on 100, margin -1) with
+  language "en" and mute on; after one progress save every progress field is the same (v2, research 27, power 11, intro
+  seen, 22 story flags, 3 seen bosses, 4 towers, 6 completions, 6 star records, 3 upgrades, Perk_QuickReload), only the
+  option fields left the file, `.bak` written. Fixture tests cover non-default values.
+- Moved-text check: every letter literal removed from the scripts was found again in a table (452 fragments; the eight
+  leftovers are parser artefacts of nested interpolations, checked by hand).
+- Play (editor, Boot -> main menu -> Options -> Level 1 -> towers -> tower menu -> a Voss line): console **0 errors, 0
+  warnings**; stills at 1920x1080 in `ArtSource/Previews/QA/r69_main_menu.png`, `r69_options.png`, `r69_level_hud.png`,
+  `r69_tower_menu.png`, `r69_voss_dialogue.png`; English as before. The play run clicked "Mute in background" by mistake
+  (`click_button.cs` matched "Back" inside it): the flush on close wrote it, which is how the debounce showed itself; the
+  helper now prefers an exact label.
+- EditMode, whole suite on w6 after the last change: **1026 / 973 passed / 0 failed / 53 skipped** (991 / 938 / 0 / 53 in
+  round 68; +35 tests: `SaveSafetyTests` 14, `LocalisationTests` 21). The first run had 34 failures, all from this round
+  and fixed: the story test helper wrote the old segment field name `Text`; an editor-side table cache filled during the
+  asset import before `en.data.txt` arrived (now dropped by `LocalisationImportWatcher`); tests and balance tools read
+  `MapNode.DisplayName` raw (now a resolving property); the scanner took local `CreateText("Header")` object names for UI
+  text (it now looks at `UiKit.*` calls).
+- Second Play run after those fixes: 0 errors, 0 warnings, same stills; save MD5 unchanged, `settings.json` removed again;
+  no worker Unity left.
+
+### Left hardcoded or open
+
+- Developer-facing text stays English in code on purpose: validation messages, logs, balance/probe reports, the story
+  viewer's asset ids, `PlaytestSettings`, `DeveloperMode`, boss brain state strings. Creature names in the sound test come
+  from asset names, enemy element names in the Codex from the enum; symbol-only labels (`+50`, `-20%`, `+10%`).
+- Button prompts ("A", "Esc") come from the glyph assets per pad layout, not from the tables.
+- `BossCutIn` shows **"MERCER"** (now `boss.cut_in_name`): the hero is Spencer since round 47; kept identical as asked,
+  probably a leftover to fix (use `HeroNaming`).
+- The working title "Tower Defence" on the main menu is now `menu.title` (translatable), pending the naming decision.
+- Fonts: no change; Chakra Petch has no Cyrillic/CJK (`Docs/LOCALISATION.md`, RELEASE_GAPS 6.2/6.3).
+- Not done from the gap list: reset progress (1.6), save slots, `ISaveService` error results (1.10), pause on focus loss
+  outside levels (9.4). The options column now has two more rows and scales down a little at 1080p (ColumnFit).

@@ -151,7 +151,7 @@ namespace Game.UI
             rect.sizeDelta = new Vector2(PanelWidth, PanelHeight);
             _fit = FitInsideParent.Add(rect, SafeMargin);
 
-            Text title = UiKit.CreateFixedText(rect, result.Won ? "Victory" : "Defeat", 96, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(PanelWidth - 2f * TextInset, 120f));
+            Text title = UiKit.CreateFixedText(rect, result.Won ? Loc.Get("result.victory") : Loc.Get("result.defeat"), 96, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(PanelWidth - 2f * TextInset, 120f));
             title.color = result.Won ? Gold : new Color(1f, 0.55f, 0.5f);
 
             string subtitle = $"{_context.Level.DisplayName}  -  {_context.Difficulty.DisplayName}";
@@ -167,15 +167,13 @@ namespace Game.UI
         {
             BuildStars(rect, result.Stars);
 
-            string rewards = $"Research points  +{result.ResearchPoints}";
-            if (result.PowerCurrency > 0)
-            {
-                rewards += $"      Power  +{result.PowerCurrency}";
-            }
+            string rewards = result.PowerCurrency > 0
+                ? Loc.Format("result.rewards_with_power", result.ResearchPoints, result.PowerCurrency)
+                : Loc.Format("result.rewards", result.ResearchPoints);
 
             if (result.RewardsAlreadyEarned)
             {
-                rewards = "Points for this difficulty were earned before.\nBeat it on a harder setting for more.";
+                rewards = Loc.Get("result.rewards_earned_before");
             }
 
             string unlocks = UnlockLine(result);
@@ -211,14 +209,14 @@ namespace Game.UI
                     names[i] = result.NewPathObjects[i].DisplayName;
                 }
 
-                parts.Add($"New gadgets: {string.Join(", ", names)}");
+                parts.Add(Loc.Format("result.new_gadgets", string.Join(", ", names)));
             }
 
             if (result.HeroPerk != null)
             {
                 // The hero is named from data (the level's hero), never written into the screen.
                 string hero = HeroNaming.Of(_context);
-                parts.Add($"{hero} learns {result.HeroPerk.DisplayName}");
+                parts.Add(Loc.Format("result.hero_learns", hero, result.HeroPerk.DisplayName));
             }
 
             // The weapon panel shows the credit under its heading; without a weapon it closes this line.
@@ -232,7 +230,7 @@ namespace Game.UI
 
         private static Button BuildLoss(RectTransform rect)
         {
-            UiKit.CreateFixedText(rect, "The base has fallen.\nUpgrade your defences and try again.", 40, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -280f), new Vector2(PanelWidth - 2f * TextInset, 200f));
+            UiKit.CreateFixedText(rect, Loc.Get("result.base_fallen"), 40, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -280f), new Vector2(PanelWidth - 2f * TextInset, 200f));
             return null;
         }
 
@@ -276,8 +274,8 @@ namespace Game.UI
             preview.ShowTower(result.NewTower);
 
             string source = !string.IsNullOrEmpty(result.Credit) ? result.Credit
-                : result.Source == UnlockSource.StolenAlienTech ? "Stolen alien technology" : "Intel from the home planet";
-            Text heading = UiKit.CreateFixedText(rect, $"New weapon: {result.NewTower.DisplayName}", 44, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(60f + PreviewSize + 40f, -470f), new Vector2(PanelWidth - PreviewSize - 140f, 60f));
+                : result.Source == UnlockSource.StolenAlienTech ? Loc.Get("result.source_alien_tech") : Loc.Get("result.source_home_intel");
+            Text heading = UiKit.CreateFixedText(rect, Loc.Format("result.new_weapon", result.NewTower.DisplayName), 44, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(60f + PreviewSize + 40f, -470f), new Vector2(PanelWidth - PreviewSize - 140f, 60f));
             heading.color = Gold;
             UiKit.CreateFixedText(rect, source, 30, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(60f + PreviewSize + 40f, -535f), new Vector2(PanelWidth - PreviewSize - 140f, 40f)).color = Muted;
             if (!string.IsNullOrEmpty(result.Story))
@@ -306,9 +304,9 @@ namespace Game.UI
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             // One order on victory and defeat, so the hands learn it; the focus starts on what this outcome most likely wants.
-            Button again = AddButton(row, "Play again", PlayAgain);
-            Button upgrades = AddButton(row, "Upgrades", () => Go(SceneNames.Base));
-            AddButton(row, "Back to map", () => Go(SceneNames.WorldMap));
+            Button again = AddButton(row, Loc.Get("result.play_again"), PlayAgain);
+            Button upgrades = AddButton(row, Loc.Get("result.upgrades"), () => Go(SceneNames.Base));
+            AddButton(row, Loc.Get("result.back_to_map"), () => Go(SceneNames.WorldMap));
             UiKit.Select(won ? upgrades : again);
         }
 

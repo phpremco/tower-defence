@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Game.Core;
+using UnityEngine;
 
 namespace Game.Levels
 {
@@ -20,7 +21,7 @@ namespace Game.Levels
         [Tooltip("Share of a continent boss's escort call that comes out on this difficulty (round 30: Psycho carries Hard's boss health share, so its escorts are lighter instead of the boss).")]
         [SerializeField] [Range(0f, 1f)] private float _bossEscortShare = 1f;
 
-        public string DisplayName => _displayName;
+        public string DisplayName => Loc.Get(_displayName);
         public float HealthMultiplier => _healthMultiplier;
         public float CountMultiplier => _countMultiplier;
         public float SpawnIntervalMultiplier => _spawnIntervalMultiplier;

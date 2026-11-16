@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: SkySovereign
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Sky Sovereign
+  _displayName: data.enemy.SkySovereign.displayName
   _layer: 2
   _flies: 1
   _maxHealth: 1000
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2.5
   _attackInterval: 1.1
   _gateStrikes: 8
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5
@@ -53,4 +55,4 @@ MonoBehaviour:
   _deathStyle: 1
   _art: {fileID: 11400000, guid: 41b4aaea1f41bb743a1b7a5307f5fb04, type: 2}
   _voice: {fileID: 11400000, guid: b02e62e959e506a40bfe8e7e9734d240, type: 2}
-  _description: 'The ray sovereign: a tail laser swept across the field from the air.'
+  _description: data.enemy.SkySovereign.description

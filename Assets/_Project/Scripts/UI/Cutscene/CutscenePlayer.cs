@@ -209,7 +209,7 @@ namespace Game.UI
             _audio.PoseLayers(time, delta);
             PoseRig();
             _overlay.SetFade(ShotFade(shot, time));
-            _overlay.SetTitle(shot.TitleCard, TitleAlpha(shot, time));
+            _overlay.SetTitle(Loc.Get(shot.TitleCard), TitleAlpha(shot, time));
             _overlay.Radar.Tick(time, progress);
         }
 

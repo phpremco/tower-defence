@@ -249,7 +249,7 @@ namespace Game.UI
             BuildKeyChip(rect, art);
 
             TextMeshProUGUI label = NewText(rect, "Label", SkipSize, TextAlignmentOptions.Center);
-            label.text = "SKIP";
+            label.text = Loc.Get("cutscene.skip");
             label.characterSpacing = 8f;
             label.color = HintColour;
             Stretch(label.rectTransform);
@@ -290,7 +290,7 @@ namespace Game.UI
             button.onClick.AddListener(() => onSkipClicked?.Invoke());
 
             _hint = NewText(safe, "SkipHint", HintSize, TextAlignmentOptions.Right);
-            _hint.text = "Press again to skip";
+            _hint.text = Loc.Get("cutscene.skip_hint");
             _hint.color = HintColour;
             _hint.alpha = 0f;
             RectTransform hint = _hint.rectTransform;

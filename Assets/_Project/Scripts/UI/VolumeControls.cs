@@ -7,22 +7,21 @@ namespace Game.UI
 {
     /// <summary>
     /// The four volume sliders (master, music, effects, ambience) that the options panel and the pause menu share.
-    /// The mix hears every change at once and the progress file keeps it in whole percents.
+    /// The mix hears every change at once and the settings keep it in whole percents (written when the screen closes).
     /// </summary>
     public sealed class VolumeControls
     {
         private const int Max = 100;
         private const int SnapPercent = 5;
 
-        private readonly ProgressService _progress;
+        private readonly SettingsService _settings;
         private readonly AudioMix _mix;
         private readonly Slider[] _sliders = new Slider[4];
         private readonly Text[] _labels = new Text[4];
-        private static readonly string[] Names = { "Master", "Music", "Effects", "Ambience" };
 
-        public VolumeControls(ProgressService progress, AudioMix mix)
+        public VolumeControls(SettingsService settings, AudioMix mix)
         {
-            _progress = progress;
+            _settings = settings;
             _mix = mix;
         }
 
@@ -45,7 +44,7 @@ namespace Game.UI
         {
             int[] values = Values();
             values[group] = Mathf.Clamp(Mathf.RoundToInt(value * Max / SnapPercent) * SnapPercent, 0, Max);
-            _progress.SetVolumes(values[0], values[1], values[2], values[3]);
+            _settings?.SetVolumes(values[0], values[1], values[2], values[3]);
             _mix.Set(values[0] / (float)Max, values[1] / (float)Max, values[2] / (float)Max, values[3] / (float)Max);
             AudioListener.volume = _mix.Master;
             _labels[group].text = Label(group, values[group]);
@@ -53,10 +52,19 @@ namespace Game.UI
 
         private int[] Values()
         {
-            ProgressData data = _progress.Data;
+            SettingsData data = _settings != null ? _settings.Data : new SettingsData();
             return new[] { data.MasterVolumePercent, data.MusicVolumePercent, data.EffectsVolumePercent, data.AmbienceVolumePercent };
         }
 
-        private static string Label(int group, int percent) => $"{Names[group]} volume   {percent}%";
+        private static string Label(int group, int percent)
+        {
+            switch (group)
+            {
+                case 0: return Loc.Format("options.volume.master", percent);
+                case 1: return Loc.Format("options.volume.music", percent);
+                case 2: return Loc.Format("options.volume.effects", percent);
+                default: return Loc.Format("options.volume.ambience", percent);
+            }
+        }
     }
 }

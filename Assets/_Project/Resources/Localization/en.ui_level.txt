@@ -1,0 +1,181 @@
+# English: in-level UI and gameplay texts. Format: Docs/LOCALISATION.md
+
+# HUD (UI/HudView.cs, GateRebuildBadges.cs, RearNestMarkerView.cs)
+hud.base = Base {0}/{1}
+hud.money = Money {0}
+hud.wave = Wave {0}/{1}
+hud.wave_boss = Wave {0}/{1}  BOSS
+hud.first_wave_in = First wave in {0}s
+hud.next_wave_in = Next wave in {0}s
+hud.hero_down = {0} down {1}:{2:00}
+hud.card_name_price = {0}\n{1}
+hud.damage_tag = {0:0} DMG
+hud.gate_rebuild = Rebuild  {0}
+hud.rear_nest_marker = BEHIND THE GATE
+
+# Tower menu (UI/TowerMenuView.cs)
+tower_menu.upgrade = Upgrade\n{0}
+tower_menu.upgrade_max = MAX\nlevel
+tower_menu.repair = Repair\n{0}
+tower_menu.rebuild = Rebuild\n{0}
+tower_menu.repair_none = Repair\n-
+tower_menu.sell = Sell\n+{0}
+tower_menu.scrap = Scrap\n+{0}
+tower_menu.hero_here = {0}\nhere
+tower_menu.send_hero = Send\n{0}
+tower_menu.combine = {0}\n{1}
+tower_menu.wrecked = wrecked
+tower_menu.wrecked_gate = wrecked - rebuild restores it at once, full health, same level
+tower_menu.health = HP {0}/{1}
+tower_menu.level = Lv {0}
+tower_menu.level_max = MAX
+# {0} name, {1} level, {2} health or wreck state, {3} the ground/sky and high-ground notes
+tower_menu.info = {0}  {1}  {2}{3}
+tower_menu.next_step = \nNext: {0}
+
+# Towers (Towers/TargetRead.cs, Towers/TowerStepText.cs)
+tower.reach.ground_only = Ground only
+tower.reach.air_only = Air only
+tower.reach.ground_and_air = Ground and air
+tower.reach.air_weak = Air: weak
+tower.reach.ground_weak = Ground: weak
+tower.step.damage = damage {0:0.#} > {1:0.#}
+tower.step.fire_rate = shots/s {0:0.0} > {1:0.0}
+tower.step.range = range {0:0.0} > {1:0.0}
+tower.step.slow = slows to {0} > {1} speed
+tower.step.boost = boost x{0:0.#} > x{1:0.#}
+tower.step.health = +{0:0} HP
+
+# Terrain (shared by the tower menu and the placement status line)
+level.high_ground_range = High ground: {0} range
+
+# Placement status line (Levels/PlacementController.cs)
+placement.in_hand = {0} ({1})
+placement.scrapped_for = Scrapped for {0}
+placement.not_enough_money = Not enough money
+placement.cannot_place = Cannot place here
+placement.cannot_build = Cannot build here
+placement.too_steep = Too steep: the slope of the high ground holds no tower
+placement.goes_on_road = This goes on the road
+placement.goes_beside_road = This goes next to the road
+placement.pick_tower = Pick a tower first
+placement.not_on_road = Towers cannot be built on the road
+placement.in_the_way = Something is in the way here
+placement.overgrown = Overgrown: burn it clean first
+
+# Street weapons (UI/PathObjectBadge.cs)
+gadget.effect.slow = Slows
+gadget.effect.blast = Area blast
+gadget.effect.roll = Rolls and burns
+gadget.effect.patrol = Patrols the road
+gadget.effect.trap = Trap
+
+# Hero (UI/HeroNaming.cs, HeroPanelView.cs, HeroQuickBar.cs, HeroAbilityHud.cs, Levels/HeroController.cs)
+hero.fallback_name = Commander
+hero.post_gate = Blockade {0}
+hero.post_base = Base
+hero.next_post = Next post
+hero.move_here = Move {0} here
+hero.down_timer = Down  {0}:{1:00}
+hero.down_back_in = Down, back in {0}:{1:00}
+hero.on_the_way = On the way to {0}
+hero.at_post = At {0}
+hero.state = {0}    HP {1} / {2}
+hero.ability_cooldown = {0} {1}s
+hero.ability_price = {0} {1}
+
+# Boss (UI/BossHealthView.cs, BossMarkerView.cs, BossCutIn.cs)
+boss.phase_line = {0}  -  {1}
+boss.ora_notice = ORA: {0}
+boss.marker = BOSS
+boss.cut_in_name = SPENCER
+
+# Dialogue box (UI/DialogueView.cs)
+dialogue.header_transmission = INCOMING TRANSMISSION   //   {0}
+dialogue.header_encrypted = ENCRYPTED CHANNEL
+dialogue.header_log = {0}   //   LOG ENTRY
+dialogue.header_playback = â— PLAYBACK
+# {0} the key colour, {1} the key or pad button, {2} the button word
+dialogue.button_keyed = <color={0}>{1}</color>  {2}
+dialogue.button_next = NEXT
+dialogue.button_skip = SKIP
+dialogue.button_codex = CODEX
+
+# Cutscenes (UI/Cutscene/CutsceneOverlay.cs, RadarOverlay.cs)
+cutscene.skip = SKIP
+cutscene.skip_hint = Press again to skip
+radar.perimeter_scan = PERIMETER SCAN
+radar.contacts = CONTACTS  {0}
+radar.contacts_unknown = CONTACTS  ???
+
+# Sound test labels (Core/SfxLibrary.cs, Core/CreatureVoice.cs)
+sound_set.pulse_shot = Pulse shot
+sound_set.heavy_shot = Heavy shot
+sound_set.rocket_launch = Rocket launch
+sound_set.cryo_shot = Cryo shot
+sound_set.tesla_shot = Tesla shot
+sound_set.rail_shot = Rail shot
+sound_set.flak_shot = Flak shot
+sound_set.flak_burst = Flak burst
+sound_set.cannon_explosion = Cannon explosion
+sound_set.rocket_explosion = Rocket explosion
+sound_set.mine_explosion = Mine explosion
+sound_set.gate_explosion = Gate explosion
+sound_set.base_explosion = Base explosion
+sound_set.tower_break = Tower break
+sound_set.structure_hit = Structure hit
+sound_set.decor_smash = Decor smash
+sound_set.base_alert = Base alert
+sound_set.upgrade = Upgrade
+sound_set.scrap_pickup = Scrap pickup
+sound_set.cash = Cash
+sound_set.freeze = Freeze
+sound_set.acid_sizzle = Acid sizzle
+sound_set.steam_burst = Steam burst
+sound_set.earthquake = Earthquake
+sound_set.distant_blast = Distant blast
+sound_set.cart_loop = Cart loop
+sound_set.fireball_loop = Fireball loop
+sound_set.hero_blaster = Hero blaster
+sound_set.saber_swing = Saber swing
+sound_set.saber_hit = Saber hit
+sound_set.saber_hum = Saber hum
+sound_set.hero_pulse = Hero pulse
+sound_set.hero_step = Hero step
+sound_set.hero_death = Hero death
+sound_set.hero_fall = Hero fall
+sound_set.drone_fan = Drone fan
+sound_set.drone_repair = Drone repair
+sound_set.drone_harvest = Drone harvest
+sound_set.drone_laser = Drone laser
+sound_set.enemy_death = Enemy death
+sound_set.heavy_steps = Heavy steps
+sound_set.wings = Wings
+sound_set.large_wings = Large wings
+sound_set.water = Water
+sound_set.lava = Lava
+sound_set.rift = Rift
+sound_set.steam = Steam
+sound_set.leaves = Leaves
+sound_set.icy_wind = Icy wind
+sound_set.boss_laser = Boss laser
+sound_set.beam_loop = Beam loop
+sound_set.boss_alarm = Boss alarm
+sound_set.wave_drums = Wave drums
+sound_set.menu_music = Menu music
+sound_set.game_music = Game music
+sound_set.boss_music = Boss music
+sound_set.voice.move = move
+sound_set.voice.steps = steps
+sound_set.voice.roll = roll
+sound_set.voice.screech = screech
+sound_set.voice.growl = growl
+sound_set.voice.attack = attack
+sound_set.voice.impact = impact
+sound_set.voice.pulse = pulse
+sound_set.voice.volley = volley
+sound_set.voice.volley_impact = volley impact
+sound_set.voice.rally = rally
+sound_set.voice.regrow = regrow
+sound_set.voice.spawn = spawn
+sound_set.voice.laser = laser

@@ -18,6 +18,7 @@ namespace Game.Boot
     public sealed class Bootstrapper : MonoBehaviour
     {
         private const string SaveFolderName = "Saves";
+        private const string SessionObjectName = "Session";
         private const float MaxVolumePercent = 100f;
         private const float PercentScale = 100f;
 
@@ -40,6 +41,7 @@ namespace Game.Boot
         [SerializeField] private Material[] _shaderKeepers = new Material[0];
 
         private static IInputProvider _input;
+        private static GameObject _session;
 
         /// <summary>The materials that keep the runtime shader variants alive in a build.</summary>
         public IReadOnlyList<Material> ShaderKeepers => _shaderKeepers;
@@ -53,10 +55,15 @@ namespace Game.Boot
             IPlatformSettings platform = _lowQuality ? new SwitchPlatformSettings() : new PcPlatformSettings();
             _input = new InputSystemProvider(_inputActions, _uiSkin.PadGlyphs(platform.PadLayout), _uiSkin.KeyGlyphs);
             var save = new FileSaveService(System.IO.Path.Combine(Application.persistentDataPath, SaveFolderName));
+            // Settings first: on the first launch after the split they are read out of the old progress file.
+            var settings = new SettingsService(save);
             var progress = new ProgressService(save, _unlockTable.StartingTowerIds);
+            var localization = new StringTableService(settings.Data.LanguageCode);
 
             Services.Register(_input);
             Services.Register<ISaveService>(save);
+            Services.Register(settings);
+            Services.Register<ILocalizationService>(localization);
             Services.Register<IAchievementService>(new NullAchievementService());
             Services.Register(platform);
             IPlatformSettings quality = Services.Get<IPlatformSettings>();
@@ -96,12 +103,12 @@ namespace Game.Boot
             }
 
             UiKit.Skin = _uiSkin;
-            UiKit.SafeMarginPercent = SafeFrame.Effective(progress.Data.HudMarginPercent, platform.SafeMarginPercent);
+            UiKit.SafeMarginPercent = SafeFrame.Effective(settings.Data.HudMarginPercent, platform.SafeMarginPercent);
             MoneyPopup.Font = _uiSkin.Font;
 
             // The listener carries the master level; the players multiply their own group in from the mix.
             var mix = new AudioMix();
-            ProgressData data = progress.Data;
+            SettingsData data = settings.Data;
             mix.Set(data.MasterVolumePercent / MaxVolumePercent, data.MusicVolumePercent / MaxVolumePercent, data.EffectsVolumePercent / MaxVolumePercent, data.AmbienceVolumePercent / MaxVolumePercent);
             Services.Register(mix);
             AudioListener.volume = mix.Master;
@@ -110,6 +117,22 @@ namespace Game.Boot
             cameraControls.Set(data.CameraSpeedPercent / PercentScale, !data.EdgeScrollingOff);
             cameraControls.SetRadar(!data.RadarOff, data.RadarSizePercent / PercentScale);
             Services.Register(cameraControls);
+            EnsureSessionObject();
+        }
+
+        // One object for the whole session (it survives scene loads): mute in the background, the settings write on quit,
+        // and the controller banner. Boot is entered again after a restart, so an existing one is rebound, not doubled.
+        private static void EnsureSessionObject()
+        {
+            if (_session == null)
+            {
+                _session = new GameObject(SessionObjectName);
+                DontDestroyOnLoad(_session);
+                _session.AddComponent<AppFocusAudio>();
+                _session.AddComponent<ControllerNotice>();
+            }
+
+            _session.GetComponent<ControllerNotice>().Bind(_input);
         }
 
         // The first launch opens with the cutscene and drops into the first level; every later one goes to the menu.

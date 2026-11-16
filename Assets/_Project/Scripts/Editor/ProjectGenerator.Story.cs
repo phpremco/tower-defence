@@ -156,7 +156,7 @@ namespace Game.Editor
                 for (int s = 0; s < lines[i].Segments.Length; s++)
                 {
                     SerializedProperty segment = segments.GetArrayElementAtIndex(s);
-                    segment.FindPropertyRelative("Text").stringValue = lines[i].Segments[s].Text;
+                    segment.FindPropertyRelative("_text").stringValue = lines[i].Segments[s].Key;
                     segment.FindPropertyRelative("Style").enumValueIndex = (int)lines[i].Segments[s].Style;
                 }
             }

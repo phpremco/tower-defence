@@ -1,3 +1,4 @@
+using Game.Core;
 using Game.Enemies;
 using Game.Levels;
 using UnityEngine;
@@ -20,7 +21,6 @@ namespace Game.UI
         private const float MarkerLift = 2.8f;
         private const float PulseRate = 5f;
         private const float PulseDepth = 0.12f;
-        private const string Label = "BOSS";
         // The boss bar (BossHealthView) hangs this far down from the top of the safe area with its name and phase line:
         // while it shows, the marker stays below it so the two never overlap.
         private const float BarClearance = 185f;
@@ -53,7 +53,7 @@ namespace Game.UI
             _arrow.anchorMax = new Vector2(0.5f, 0.5f);
             _arrow.sizeDelta = new Vector2(ArrowSize, ArrowSize);
 
-            Text text = UiKit.CreateFixedText(root, Label, LabelSize, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(LabelWidth, LabelHeight));
+            Text text = UiKit.CreateFixedText(root, Loc.Get("boss.marker"), LabelSize, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(LabelWidth, LabelHeight));
             text.color = Warning;
             _label = text.rectTransform;
 

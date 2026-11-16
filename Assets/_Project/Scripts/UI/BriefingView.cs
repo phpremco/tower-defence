@@ -1,3 +1,4 @@
+using Game.Core;
 using Game.Levels;
 using UnityEngine;
 using UnityEngine.UI;
@@ -57,7 +58,7 @@ namespace Game.UI
                 body.horizontalOverflow = HorizontalWrapMode.Wrap;
             }
 
-            Button deploy = UiKit.CreateButton(rect, "Deploy", Deploy);
+            Button deploy = UiKit.CreateButton(rect, Loc.Get("briefing.deploy"), Deploy);
             Destroy(deploy.GetComponent<LayoutElement>());
             RectTransform deployRect = deploy.GetComponent<RectTransform>();
             deployRect.anchorMin = new Vector2(0.5f, 0f);

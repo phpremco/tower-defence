@@ -16,6 +16,9 @@ MonoBehaviour:
   - Id: Dlg_Cut_Shiver.01
     Speaker: {fileID: 11400000, guid: 5caf20e24e6050f40b85b8db1269e8c2, type: 2}
     Segments:
-    - Text: ORA... what is this?
+    - _text: data.dialogue.Dlg_Cut_Shiver.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
+  _introducedDrones: []
+  _codexEntry: {fileID: 0}
+  _loadingTip: 

@@ -52,11 +52,11 @@ namespace Game.Towers
         {
             switch (kind)
             {
-                case TargetReadKind.GroundOnly: return "Ground only";
-                case TargetReadKind.AirOnly: return "Air only";
-                case TargetReadKind.GroundAndAir: return "Ground and air";
-                case TargetReadKind.AirWeak: return "Air: weak";
-                case TargetReadKind.GroundWeak: return "Ground: weak";
+                case TargetReadKind.GroundOnly: return Loc.Get("tower.reach.ground_only");
+                case TargetReadKind.AirOnly: return Loc.Get("tower.reach.air_only");
+                case TargetReadKind.GroundAndAir: return Loc.Get("tower.reach.ground_and_air");
+                case TargetReadKind.AirWeak: return Loc.Get("tower.reach.air_weak");
+                case TargetReadKind.GroundWeak: return Loc.Get("tower.reach.ground_weak");
                 default: return string.Empty;
             }
         }

@@ -1,0 +1,205 @@
+# English: menu and meta screens. Format: Docs/LOCALISATION.md
+
+# Main menu
+menu.title = Tower Defence
+menu.subtitle = The planet does not want us here.
+menu.start = Start
+menu.codex = Codex
+menu.options = Options
+menu.quit = Quit
+
+# World map
+map.title_planet = Choose a region
+map.title_region = Choose a level
+map.coming_soon_suffix =    -   coming soon
+map.locked_suffix =    -   locked
+map.region_status =    -   {0} / {1} levels
+map.turn_stick = Stick
+map.turn_keys = Arrow keys
+map.hint_planet = {0}: turn the planet     {1}: previous and next region     {2}: enter the region     {3}: back
+map.hint_region_pad = {0} left / right or {1}: previous and next level     {2}: play     {3}: back to the planet     Down: buttons
+map.hint_region_mouse = {0} left / right or {1}: previous and next level     {2}: play     {3}: back to the planet     Down: buttons     Click a level to select it, click again to play
+map.planet = Planet
+map.play_level = Play level
+map.upgrades = Upgrades
+map.main_menu = Main menu
+map.choose_difficulty = Choose a difficulty
+map.back = Back
+map.node_caption = {0}. {1}{2}
+map.region_heading = {0}   -   {1}
+
+# Loadout (street weapons)
+loadout.title = Street weapons
+loadout.note = Take up to {0} along; you buy and place them in the level.
+loadout.deploy = Deploy
+loadout.back = Back
+loadout.cost = {0} money
+loadout.count = {0} of {1} chosen
+loadout.count_full = {0} of {1} chosen: ready to deploy
+loadout.where = {0}   {1}
+
+# Level briefing
+briefing.deploy = Deploy
+
+# Loading screen
+loading.deploying_to = DEPLOYING TO
+loading.loading = LOADING
+loading.tip_speaker = {0}  ·  FIELD ADVICE
+
+# Result screen
+result.victory = Victory
+result.defeat = Defeat
+result.rewards = Research points  +{0}
+result.rewards_with_power = Research points  +{0}      Power  +{1}
+result.rewards_earned_before = Points for this difficulty were earned before.\nBeat it on a harder setting for more.
+result.new_gadgets = New gadgets: {0}
+result.hero_learns = {0} learns {1}
+result.base_fallen = The base has fallen.\nUpgrade your defences and try again.
+result.source_alien_tech = Stolen alien technology
+result.source_home_intel = Intel from the home planet
+result.new_weapon = New weapon: {0}
+result.play_again = Play again
+result.upgrades = Upgrades
+result.back_to_map = Back to map
+
+# Upgrade screen
+upgrade.banner_mastered = MASTERED
+upgrade.banner_upgraded = UPGRADED
+upgrade.title = Base upgrades
+upgrade.back_to_map = Back to map
+upgrade.heading_towers = Towers
+upgrade.heading_others = Commander, base and drones
+upgrade.research_label = Research
+upgrade.power_label = Power
+upgrade.research_balance = Research {0}
+upgrade.power_balance = Power {0}
+upgrade.weapon_not_found = Not found yet. Beat the level that holds this weapon.
+upgrade.shoots_ground_air = Shoots ground and air{0}
+upgrade.shoots_air = Shoots air{0}
+upgrade.shoots_ground = Shoots ground{0}
+upgrade.change_top_value = {0}   at the top
+upgrade.change_top = At the top
+upgrade.change_values = {0}  >  {1}
+upgrade.change_per_level = +{0}% per level
+upgrade.cost_power = {0} power
+upgrade.cost_research = {0} research
+upgrade.tier_opens_on = tier {0} opens on {1}
+upgrade.tier_not_open = tier {0} is not open yet
+upgrade.suffix_per_second = /s
+upgrade.stat.damage = Damage
+upgrade.stat.range = Range
+upgrade.stat.fire_rate = Fire rate
+upgrade.stat.health = Health
+upgrade.stat.blade = Blade
+upgrade.stat.healing = Healing
+upgrade.stat.armour = Armour
+upgrade.stat.reach = Reach
+upgrade.stat.base_armour = Base armour
+upgrade.stat.gun_level = Gun level
+upgrade.stat.gate_health = Gate health
+upgrade.stat.speed = Speed
+upgrade.stat.repair = Repair
+upgrade.stat.per_trip = Per trip
+upgrade.stat.at_once = At once
+upgrade.points_tally = {0} {1}
+
+# Codex
+codex.toast_new_entry = NEW CODEX ENTRY  ·  {0}
+codex.title = Codex
+codex.tab_recipes = Combinations
+codex.tab_enemies = Enemies
+codex.close = Close
+codex.kind_boss = Boss
+codex.kind_air = Air
+codex.kind_ground = Ground
+codex.armoured_suffix = , armoured
+codex.nothing_known = Nothing known yet.
+codex.recipe_name = {0} + {1} = {2}
+codex.recipe_how = Build the two towers on neighbouring cells, open one of them and choose Combine. Cost {0} on top of what both towers are worth.
+codex.recipe_hybrid_level = The hybrid takes the lower of the two levels: a level 2 and a level 1 make a level 1 hybrid, which upgrades on from there.
+codex.recipe_level_dps = Level {0}:  damage per second {1} + {2}  >  {3}
+codex.recipe_upgrade_cost =    (upgrade {0})
+codex.recipe_range = Range {0} and {1}  >  {2}
+codex.recipe_hits = Hits: {0}
+codex.recipe_splash =    Splash {0}
+codex.recipe_splash_targets =  (hits up to {0} creatures)
+codex.recipe_slows =    Slows to {0}%
+codex.recipe_gain = Gain: {0}
+codex.targets_both = ground and air
+codex.targets_air = air only
+codex.targets_ground = ground only
+codex.gain_damage = {0}% damage over both parents, in one cell
+codex.gain_both_layers = , hits ground and air
+codex.gain_wider_splash = , wider splash
+codex.gain_slows = , slows what it hits
+codex.boss_name = {0}  (boss)
+codex.boss_phases = Phases: {0}
+codex.boss_signature = Signature: {0}
+codex.boss_telegraph = See it coming: {0}
+codex.boss_counter = How to beat it: {0}
+codex.enemy_flies = Flies: only weapons that hit the air reach it.
+codex.enemy_walks = Walks the road: ground weapons hit it.
+codex.enemy_health = Health {0}
+codex.enemy_armour =    Armour {0} (nothing hurts the body while it lasts: heavy shells strip it, light fire only chips it)
+codex.enemy_armour_in_field = In the field: the blue line over its health is the armour left; sparks fly while a hit works on it.
+codex.enemy_stats = Speed {0}   Bounty {1}   Base damage {2}
+codex.towers_damaged = damages them ({0:0} per hit)
+codex.towers_see_signature = see its signature
+codex.towers_left_alone = leaves them alone
+codex.enemy_towers = Towers: {0}
+codex.gates_per_hit = {0:0} per hit
+codex.gates_no = no
+codex.enemy_gates =    Gates and {0}: {1}
+codex.enemy_gate_strikes =    Strikes a gate {0} times in passing
+codex.enemy_rolls = Curls up and rolls at {0}x speed.
+codex.enemy_trail = Leaves a trail for {0}s that hurries others{1}.
+codex.enemy_trail_burns =  and burns {0} and the gates
+codex.enemy_rages = Rages at {0}x speed when a pack mate dies nearby.
+codex.enemy_element = Element: {0}.
+codex.enemy_powers = Powers: {0}.
+
+# Base alarm and drone menu
+base.alert_under_attack = BASE UNDER ATTACK!
+base.drones_header = Drones
+base.new_tag = NEW
+base.drone_description = <b><color=#{0}>{1}</color></b>\n{2}
+base.drone_count = {0}   {1}/{2}
+base.drone_count_full = max {0}/{1}
+
+# Story viewer (developer)
+story.page_cutscenes = Cutscenes
+story.page_arena = Boss arena
+story.page_scans = Voss scans
+story.page_level = Level {0}: {1}
+story.entry_play_cutscene = Play cutscene: {0}
+story.entry_shot = Shot {0}: {1}
+story.entry_dialogue = {0}: {1}
+story.entry_rear_nest = First rift behind a gate: {0}
+story.entry_gate_tip = Gate tip ({0}): {1}
+story.entry_high_ground = First tower in a level with high ground: {0}
+story.entry_upgrade_screen = First visit to the upgrade screen: {0}
+story.entry_fight = Fight {0} ({1})
+story.entry_boss_intro = Intro of {0}: {1}
+story.entry_briefing = Briefing
+story.moment_level_start = Level start
+story.moment_wave = Wave {0}
+story.moment_first_of = First {0}
+story.moment_first_sighting = First sighting
+story.moment_boss_appears = Boss appears
+story.moment_boss_defeated = Boss defeated
+story.moment_level_won = Level won
+story.moment_first_gadget = First gadget
+story.title = Story viewer
+story.page_counter = {0}   ({1} of {2})
+story.empty = No story in the campaign data
+story.previous = Previous
+story.next = Next
+story.back = Back
+
+# Sound test
+sound.title = Sound test
+sound.page_counter = Page {0} of {1}   -   {2} sounds
+sound.entry = {0}   ({1}x, gain {2:0.00})
+sound.previous = Previous
+sound.next = Next
+sound.back = Back

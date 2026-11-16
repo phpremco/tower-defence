@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Game.Core;
+using UnityEngine;
 
 namespace Game.Economy
 {
@@ -39,13 +40,13 @@ namespace Game.Economy
 
         /// <summary>True when the upgrade belongs to a continent's budget and is offered on the upgrade screen.</summary>
         public bool IsInCampaign => _continent >= 0;
-        public string DisplayName => _displayName;
+        public string DisplayName => Loc.Get(_displayName);
         public UpgradeTarget Target => _target;
         public string TowerId => _towerId;
         public string DroneId => _droneId;
-        public string GroupName => _groupName;
+        public string GroupName => Loc.Get(_groupName);
         public UpgradeCurrency Currency => _currency;
-        public string GroupDescription => _groupDescription;
+        public string GroupDescription => Loc.Get(_groupDescription);
         public float BonusPerLevel => _bonusPerLevel;
         public int MaxLevel => _costs.Length;
 

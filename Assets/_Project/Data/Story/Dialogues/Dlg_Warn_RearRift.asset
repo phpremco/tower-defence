@@ -16,21 +16,21 @@ MonoBehaviour:
   - Id: Dlg_Warn_RearRift.01
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Wait, that reading is behind our gate. A rift is opening past the defences.
+    - _text: data.dialogue.Dlg_Warn_RearRift.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Warn_RearRift.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Whatever crawls out never meets the gate. Keep a turret in reach of it, or near the base.
+    - _text: data.dialogue.Dlg_Warn_RearRift.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Warn_RearRift.03
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: And watch the whole map. I doubt this is the last one that opens where we don't expect it.
+    - _text: data.dialogue.Dlg_Warn_RearRift.lines.2.segments.0.text
       Style: 0
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 0}
-  _loadingTip: A rift can open behind the gates. Keep a turret in reach of it, or near the base.
+  _loadingTip: data.dialogue.Dlg_Warn_RearRift.loadingTip

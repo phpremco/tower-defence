@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Core;
 using Game.Enemies;
 
 namespace Game.Levels
@@ -11,9 +12,10 @@ namespace Game.Levels
     /// </summary>
     public sealed class StoryIndex
     {
-        public const string CutscenePageTitle = "Cutscenes";
-        public const string ArenaPageTitle = "Boss arena";
-        public const string ScanPageTitle = "Voss scans";
+        // Properties, not constants: the titles are shown in the current language, and checks compare pages by them.
+        public static string CutscenePageTitle => Loc.Get("story.page_cutscenes");
+        public static string ArenaPageTitle => Loc.Get("story.page_arena");
+        public static string ScanPageTitle => Loc.Get("story.page_scans");
 
         public enum EntryKind
         {
@@ -106,14 +108,14 @@ namespace Game.Levels
             var page = new Page(CutscenePageTitle);
             if (opening != null)
             {
-                page.Entries.Add(new Entry($"Play cutscene: {opening.Id}", EntryKind.Cutscene, opening, null, null));
+                page.Entries.Add(new Entry(Loc.Format("story.entry_play_cutscene", opening.Id), EntryKind.Cutscene, opening, null, null));
                 var listed = new HashSet<DialogueDefinition>();
                 for (int i = 0; i < opening.Shots.Count; i++)
                 {
                     DialogueDefinition dialogue = opening.Shots[i].Dialogue;
                     if (dialogue != null && listed.Add(dialogue))
                     {
-                        page.Entries.Add(new Entry($"Shot {i + 1}: {dialogue.Id}", EntryKind.Dialogue, null, dialogue, null));
+                        page.Entries.Add(new Entry(Loc.Format("story.entry_shot", i + 1, dialogue.Id), EntryKind.Dialogue, null, dialogue, null));
                     }
                 }
             }
@@ -135,32 +137,32 @@ namespace Game.Levels
             {
                 if (hint.Dialogue != null)
                 {
-                    string label = hint.Enemy != null ? $"First {hint.Enemy.DisplayName}" : "First sighting";
-                    page.Entries.Add(new Entry($"{label}: {hint.Dialogue.Id}", EntryKind.Dialogue, null, hint.Dialogue, null));
+                    string label = hint.Enemy != null ? Loc.Format("story.moment_first_of", hint.Enemy.DisplayName) : Loc.Get("story.moment_first_sighting");
+                    page.Entries.Add(new Entry(Loc.Format("story.entry_dialogue", label, hint.Dialogue.Id), EntryKind.Dialogue, null, hint.Dialogue, null));
                 }
             }
 
             if (story.RearNestWarning != null)
             {
-                page.Entries.Add(new Entry($"First rift behind a gate: {story.RearNestWarning.Id}", EntryKind.Dialogue, null, story.RearNestWarning, null));
+                page.Entries.Add(new Entry(Loc.Format("story.entry_rear_nest", story.RearNestWarning.Id), EntryKind.Dialogue, null, story.RearNestWarning, null));
             }
 
             foreach (GateTip tip in story.GateTips)
             {
                 if (tip.Dialogue != null)
                 {
-                    page.Entries.Add(new Entry($"Gate tip ({tip.Kind}): {tip.Dialogue.Id}", EntryKind.Dialogue, null, tip.Dialogue, null));
+                    page.Entries.Add(new Entry(Loc.Format("story.entry_gate_tip", tip.Kind, tip.Dialogue.Id), EntryKind.Dialogue, null, tip.Dialogue, null));
                 }
             }
 
             if (story.HighGroundTip != null)
             {
-                page.Entries.Add(new Entry($"First tower in a level with high ground: {story.HighGroundTip.Id}", EntryKind.Dialogue, null, story.HighGroundTip, null));
+                page.Entries.Add(new Entry(Loc.Format("story.entry_high_ground", story.HighGroundTip.Id), EntryKind.Dialogue, null, story.HighGroundTip, null));
             }
 
             if (story.UpgradeScreenTip != null)
             {
-                page.Entries.Add(new Entry($"First visit to the upgrade screen: {story.UpgradeScreenTip.Id}", EntryKind.Dialogue, null, story.UpgradeScreenTip, null));
+                page.Entries.Add(new Entry(Loc.Format("story.entry_upgrade_screen", story.UpgradeScreenTip.Id), EntryKind.Dialogue, null, story.UpgradeScreenTip, null));
             }
 
             _pages.Add(page);
@@ -179,11 +181,11 @@ namespace Game.Levels
             foreach (EnemyDefinition boss in arena.Bosses)
             {
                 LevelDefinition level = arena.LevelFor(boss);
-                page.Entries.Add(new Entry($"Fight {boss.DisplayName} ({level.DisplayName})", EntryKind.BossArena, null, null, null, boss));
+                page.Entries.Add(new Entry(Loc.Format("story.entry_fight", boss.DisplayName, level.DisplayName), EntryKind.BossArena, null, null, null, boss));
                 DialogueDefinition answer = story != null && story.IntroFor(boss) != null ? story.IntroFor(boss).Answer : null;
                 if (answer != null)
                 {
-                    page.Entries.Add(new Entry($"Intro of {boss.DisplayName}: {answer.Id}", EntryKind.Dialogue, null, answer, null));
+                    page.Entries.Add(new Entry(Loc.Format("story.entry_boss_intro", boss.DisplayName, answer.Id), EntryKind.Dialogue, null, answer, null));
                 }
             }
 
@@ -192,10 +194,10 @@ namespace Game.Levels
 
         private void AddLevel(LevelDefinition level, int number)
         {
-            var page = new Page($"Level {number}: {level.DisplayName}");
+            var page = new Page(Loc.Format("story.page_level", number, level.DisplayName));
             if (!string.IsNullOrWhiteSpace(level.Briefing))
             {
-                page.Entries.Add(new Entry("Briefing", EntryKind.Briefing, null, null, level.Briefing));
+                page.Entries.Add(new Entry(Loc.Get("story.entry_briefing"), EntryKind.Briefing, null, null, level.Briefing));
             }
 
             var listed = new HashSet<DialogueDefinition>();
@@ -203,7 +205,7 @@ namespace Game.Levels
             {
                 if (trigger.Dialogue != null && listed.Add(trigger.Dialogue))
                 {
-                    page.Entries.Add(new Entry($"{Moment(trigger)}: {trigger.Dialogue.Id}", EntryKind.Dialogue, null, trigger.Dialogue, null));
+                    page.Entries.Add(new Entry(Loc.Format("story.entry_dialogue", Moment(trigger), trigger.Dialogue.Id), EntryKind.Dialogue, null, trigger.Dialogue, null));
                 }
             }
 
@@ -215,13 +217,13 @@ namespace Game.Levels
         {
             switch (trigger.Kind)
             {
-                case StoryTriggerKind.LevelStart: return "Level start";
-                case StoryTriggerKind.WaveStart: return $"Wave {trigger.Wave}";
-                case StoryTriggerKind.FirstSighting: return trigger.Enemy != null ? $"First {trigger.Enemy.DisplayName}" : "First sighting";
-                case StoryTriggerKind.BossSpawn: return "Boss appears";
-                case StoryTriggerKind.BossDefeated: return "Boss defeated";
-                case StoryTriggerKind.LevelWon: return "Level won";
-                case StoryTriggerKind.FirstUse: return trigger.PathObject != null ? $"First {trigger.PathObject.DisplayName}" : "First gadget";
+                case StoryTriggerKind.LevelStart: return Loc.Get("story.moment_level_start");
+                case StoryTriggerKind.WaveStart: return Loc.Format("story.moment_wave", trigger.Wave);
+                case StoryTriggerKind.FirstSighting: return trigger.Enemy != null ? Loc.Format("story.moment_first_of", trigger.Enemy.DisplayName) : Loc.Get("story.moment_first_sighting");
+                case StoryTriggerKind.BossSpawn: return Loc.Get("story.moment_boss_appears");
+                case StoryTriggerKind.BossDefeated: return Loc.Get("story.moment_boss_defeated");
+                case StoryTriggerKind.LevelWon: return Loc.Get("story.moment_level_won");
+                case StoryTriggerKind.FirstUse: return trigger.PathObject != null ? Loc.Format("story.moment_first_of", trigger.PathObject.DisplayName) : Loc.Get("story.moment_first_gadget");
                 default: return trigger.Kind.ToString();
             }
         }

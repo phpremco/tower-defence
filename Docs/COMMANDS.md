@@ -1165,3 +1165,16 @@ console and `Logs/probe_trace.txt`.
 - If a chain is stopped, kill the clones' Unity (`Get-CimInstance Win32_Process -Filter "Name='Unity.exe'"` with
   `TowerDefenseWorkers` in the command line) and delete `TowerDefenseWorkers\wN\Temp\UnityLockfile`, or the next run finds
   every worker "missing".
+
+## Round 69: saves, settings, string tables (added 2026-11-16)
+
+- Saves: `progress.json` and `settings.json` in `%USERPROFILE%\AppData\LocalLow\DefaultCompany\Tower defense\Saves`, each
+  with a `.bak` (the previous good write). A file that fails to parse is copied to `<name>.json.damaged` and the backup is
+  loaded. To reset the options only, delete `settings.json` (and its `.bak`): the next boot writes the defaults.
+- Data texts to keys after a generator change without the full generator: `unity command menu --path "Tools/Generate/Localisation Tables" --timeout 300`
+  (also the generator's last data step "Localisation"); see `Docs/LOCALISATION.md`.
+- `Tools/PlayTest/Scripts/R69TextScan.cs` (run_script, read only) lists every string field with words in the assets;
+  `R69MigrationCheck.cs` runs the settings split on a copy of the real save in the temp folder and reports the fields.
+- `Tools/PlayTest/r69_shots.sh`: main menu, options, level HUD, tower menu and a Voss line at 1920x1080 into
+  `ArtSource/Previews/QA/r69_*.png` (back up the save first; it writes `settings.json`).
+- `click_button.cs` now prefers an exact label over a partial match ("Back" used to hit "Mute in background").

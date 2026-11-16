@@ -80,9 +80,9 @@ namespace Game.Drones
         [Tooltip("The imported (Blender) model with its Idle, Fly and Work clips; empty keeps the procedural drone.")]
         [SerializeField] private ModelArtDefinition _art;
 
-        public string DisplayName => _displayName;
-        public string Role => _role;
-        public string Summary => _summary;
+        public string DisplayName => Loc.Get(_displayName);
+        public string Role => Loc.Get(_role);
+        public string Summary => Loc.Get(_summary);
         public DroneKind Kind => _kind;
         public float Speed => _speed;
         public float MaxHealth => _maxHealth;
@@ -109,9 +109,11 @@ namespace Game.Drones
 
         private void OnValidate()
         {
-            if (string.IsNullOrWhiteSpace(_role) || _role.Length > MaxRoleLength)
+            // The asset holds a localisation key; the length limit is on the text the card shows.
+            string role = Role;
+            if (string.IsNullOrWhiteSpace(role) || role.Length > MaxRoleLength)
             {
-                Debug.LogWarning($"Drone '{name}' needs a role of 1 to {MaxRoleLength} letters for its card, not '{_role}'.", this);
+                Debug.LogWarning($"Drone '{name}' needs a role of 1 to {MaxRoleLength} letters for its card, not '{role}'.", this);
             }
 
             _profileCache.Clear();

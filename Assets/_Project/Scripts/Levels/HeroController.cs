@@ -16,7 +16,6 @@ namespace Game.Levels
     /// </summary>
     public sealed class HeroController : MonoBehaviour
     {
-        private const string BaseName = "Base";
         private const float SpotHeight = 0.07f;
         private const float SpotAlpha = 0.16f;
         private const float SpotMargin = 0.1f;
@@ -57,7 +56,7 @@ namespace Game.Levels
                 Vector3 stand = blockades[i].Position - along * grid.CellSize;
                 posts.Add(new HeroPost(blockades[i], stand, -along));
                 cells[i] = StandCell(spots[i].Cell, along);
-                names[i] = $"Blockade {i + 1}";
+                names[i] = Loc.Format("hero.post_gate", i + 1);
                 CreateSpotMarker(stand, along, road.Width, grid.CellSize, parent);
             }
 
@@ -68,7 +67,7 @@ namespace Game.Levels
             Vector3 baseStand = basePosition - baseAlong * grid.CellSize;
             posts.Add(new HeroPost(context.Base, baseStand, -baseAlong));
             cells[blockades.Count] = StandCell(baseCell, baseAlong);
-            names[blockades.Count] = BaseName;
+            names[blockades.Count] = Loc.Get("hero.post_base");
             CreateSpotMarker(baseStand, baseAlong, road.Width, grid.CellSize, parent);
 
             var go = new GameObject("Hero");

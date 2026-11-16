@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9b3f8fa2080cc345866740d85c198f7, type: 3}
   m_Name: Weapon_EnergySword
   m_EditorClassIdentifier: Game.Hero::Game.Hero.HeroWeaponDefinition
-  _displayName: Energy sword
+  _displayName: data.heroWeapon.Weapon_EnergySword.displayName
   _kind: 0
   _style: 0
   _damage: 18

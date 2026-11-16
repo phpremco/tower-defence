@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: Wisp
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Wisp
+  _displayName: data.enemy.Wisp.displayName
   _layer: 3
   _flies: 0
   _maxHealth: 36
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2.5
   _attackInterval: 1.2
   _gateStrikes: 0
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5
@@ -52,4 +54,4 @@ MonoBehaviour:
   _deathStyle: 3
   _art: {fileID: 11400000, guid: 6f28477d0433e9448a6b0287b4271b0b, type: 2}
   _voice: {fileID: 11400000, guid: 07af71919e53a5c448e0931b08479a06, type: 2}
-  _description: Ball of energy walking the road. Low health, high damage, stopped by gates, hit by ground and air guns alike.
+  _description: data.enemy.Wisp.description

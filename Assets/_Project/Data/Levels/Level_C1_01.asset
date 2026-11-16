@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8958006deeb6df4da81c42bf88e3809, type: 3}
   m_Name: Level_C1_01
   m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelDefinition
-  _displayName: Landing Site
-  _regionName: South-west coast
-  _briefing: The landing site on the south-west coast. Something is climbing out of the cracks in the plain and coming up the road. Hold the gates.
+  _displayName: data.level.Level_C1_01.displayName
+  _regionName: data.level.Level_C1_01.regionName
+  _briefing: data.level.Level_C1_01.briefing
   _gridSize: {x: 36, y: 20}
   _cellSize: 1
   _theme: {fileID: 11400000, guid: 217f8804341b7fa498b71395b91f4a36, type: 2}
@@ -243,8 +243,8 @@ MonoBehaviour:
     PowerCurrency: 3
     NewTower: {fileID: 11400000, guid: f69753d29cadbce43960e80e6a300c68, type: 2}
     Source: 2
-    Story: 'Dr. Voss rebuilt a mining laser into a turret: it fires fast but light, made for swarms.'
-    Credit: Rebuilt by Dr. Voss's lab
+    Story: data.level.Level_C1_01.reward.story
+    Credit: data.level.Level_C1_01.reward.credit
     NewPathObjects: []
     HeroPerk: {fileID: 0}
   _starBaseHealthFractions:

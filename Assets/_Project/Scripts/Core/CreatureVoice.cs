@@ -77,9 +77,9 @@ namespace Game.Core
         /// <summary>Every set with its label, for the sound board and the content tests.</summary>
         public (string Label, SoundSet Set)[] Sets() => new[]
         {
-            ("move", _moveLoop), ("steps", _steps), ("roll", _rollLoop), ("screech", _screeches), ("growl", _growls),
-            ("attack", _attacks), ("impact", _impacts), ("pulse", _pulse), ("volley", _volleyLaunch),
-            ("volley impact", _volleyImpact), ("rally", _rally), ("regrow", _regrow), ("spawn", _spawn), ("laser", _laserStart),
+            (Loc.Get("sound_set.voice.move"), _moveLoop), (Loc.Get("sound_set.voice.steps"), _steps), (Loc.Get("sound_set.voice.roll"), _rollLoop), (Loc.Get("sound_set.voice.screech"), _screeches), (Loc.Get("sound_set.voice.growl"), _growls),
+            (Loc.Get("sound_set.voice.attack"), _attacks), (Loc.Get("sound_set.voice.impact"), _impacts), (Loc.Get("sound_set.voice.pulse"), _pulse), (Loc.Get("sound_set.voice.volley"), _volleyLaunch),
+            (Loc.Get("sound_set.voice.volley_impact"), _volleyImpact), (Loc.Get("sound_set.voice.rally"), _rally), (Loc.Get("sound_set.voice.regrow"), _regrow), (Loc.Get("sound_set.voice.spawn"), _spawn), (Loc.Get("sound_set.voice.laser"), _laserStart),
         };
     }
 }

@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f387d1c485e6f1840ae929304219d834, type: 3}
   m_Name: Hero_RepairDrone
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
-  _displayName: Repair drone
+  _displayName: data.upgrade.Hero_RepairDrone.displayName
   _target: 14
   _towerId: 
   _droneId: 
-  _groupName: Spencer
+  _groupName: data.upgrade.Hero_RepairDrone.groupName
   _costs: 050000000a0000000f000000160000001e0000002800000034000000420000005200000064000000i
   _currency: 0
-  _groupDescription: Spencer, who holds the gates
+  _groupDescription: data.upgrade.Hero_RepairDrone.groupDescription
   _bonusPerLevel: 0.25
   _continent: 0

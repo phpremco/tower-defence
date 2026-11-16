@@ -16,6 +16,9 @@ MonoBehaviour:
   - Id: Dlg_L02_Start.01
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: We rebuilt the laser module. It fires fast, but light. Perfect against swarms.
+    - _text: data.dialogue.Dlg_L02_Start.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
+  _introducedDrones: []
+  _codexEntry: {fileID: 0}
+  _loadingTip: 

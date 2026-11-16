@@ -16,15 +16,15 @@ MonoBehaviour:
   - Id: Dlg_Scan_Skyray.01
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Scan done. All wing and a spiked tail, and it stays in the air the whole way.
+    - _text: data.dialogue.Dlg_Scan_Skyray.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Scan_Skyray.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: 'Ground guns can''t touch it. The Flak Turret can: build one where it crosses the gates.'
+    - _text: data.dialogue.Dlg_Scan_Skyray.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 11400000, guid: 892c4a380bece3a478c63202c6d940c9, type: 2}
-  _loadingTip: Skyrays never land, so ground guns can't touch them. Build a Flak Turret where they cross the gates.
+  _loadingTip: data.dialogue.Dlg_Scan_Skyray.loadingTip

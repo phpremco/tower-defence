@@ -11,28 +11,8 @@ namespace Game.Economy
         public int Version;
         public int ResearchPoints;
         public int PowerCurrency;
-        public int MasterVolumePercent = 100;
-        public int MusicVolumePercent = 70;
-        public int EffectsVolumePercent = 100;
-        public int AmbienceVolumePercent = 80;
-
-        /// <summary>The camera pan speed as a percent of the default; saves from before the option load the default.</summary>
-        public int CameraSpeedPercent = 100;
-
-        /// <summary>Off by choice: false (the default) keeps edge scrolling on, also for older saves.</summary>
-        public bool EdgeScrollingOff;
-
-        /// <summary>Off by choice: false (the default) shows the HUD radar, also for older saves.</summary>
-        public bool RadarOff;
-
-        /// <summary>The radar size as a percent of the default; older saves load the default.</summary>
-        public int RadarSizePercent = 100;
-
-        /// <summary>
-        /// The HUD margin on every screen edge as a percent of the screen, chosen under Options; -1 (the default, also for
-        /// older saves) keeps the platform's own title-safe margin.
-        /// </summary>
-        public int HudMarginPercent = -1;
+        // The options (volumes, camera, radar, HUD margin) lived here until the settings split (round 69); they are in SettingsData
+        // now, which reads them from an older progress file once (SettingsService).
 
         public bool IntroSeen;
 

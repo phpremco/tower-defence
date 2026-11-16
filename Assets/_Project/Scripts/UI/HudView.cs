@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
 using Game.Core;
 using Game.Levels;
 using Game.PathObjects;
@@ -57,7 +56,6 @@ namespace Game.UI
         private static readonly Color SelectedFill = new Color(0.22f, 0.5f, 0.9f, 0.96f);
         private static readonly Color Backdrop = new Color(0.05f, 0.09f, 0.16f, 0.7f);
 
-        private readonly StringBuilder _builder = new StringBuilder(128);
         private readonly List<RaycastResult> _hits = new List<RaycastResult>();
         private PointerEventData _pointerData;
         private Game.Platform.IInputProvider _input;
@@ -222,7 +220,7 @@ namespace Game.UI
             }
 
             _heroSecondsShown = seconds;
-            _heroText.text = seconds < 0 ? string.Empty : $"{HeroNaming.Of(_context)} down {seconds / 60}:{seconds % 60:00}";
+            _heroText.text = seconds < 0 ? string.Empty : Loc.Format("hud.hero_down", HeroNaming.Of(_context), seconds / 60, seconds % 60);
         }
 
         // The level's dialogue player draws through this box. Without a player (a tool scene) there is no box.
@@ -461,7 +459,7 @@ namespace Game.UI
         // A one-shot trap is bought for one number, so the card says how hard it hits, next to the effect badge.
         private static void DamageTag(RectTransform card, float damage)
         {
-            Text tag = UiKit.CreateFixedText(card, $"{damage:0} DMG", UiKit.ReadableSize, TextAnchor.UpperRight, new Vector2(1f, 1f), new Vector2(-CardInset, -CardInset), new Vector2(DamageTagWidth, BadgeRow));
+            Text tag = UiKit.CreateFixedText(card, Loc.Format("hud.damage_tag", damage), UiKit.ReadableSize, TextAnchor.UpperRight, new Vector2(1f, 1f), new Vector2(-CardInset, -CardInset), new Vector2(DamageTagWidth, BadgeRow));
             UiKit.KeepReadable(tag);
             tag.color = new Color(1f, 0.75f, 0.35f);
             tag.raycastTarget = false;
@@ -548,10 +546,10 @@ namespace Game.UI
         {
             _waveText.text = WaveLine();
             _waveText.color = _context.BossWave && _context.NextWaveCountdown <= 0f ? BossWarning : TextColor;
-            _baseText.text = $"Base {Mathf.CeilToInt(_context.BaseHealth.Current)}/{Mathf.CeilToInt(_context.BaseHealth.Max)}";
+            _baseText.text = Loc.Format("hud.base", Mathf.CeilToInt(_context.BaseHealth.Current), Mathf.CeilToInt(_context.BaseHealth.Max));
             // The hero timer follows the base text on the same line, however wide the numbers get.
             _heroText.rectTransform.anchoredPosition = new Vector2(Margin + _baseText.preferredWidth + HeroTextGap, TopTextY);
-            _moneyText.text = $"Money {_context.Wallet.Money}";
+            _moneyText.text = Loc.Format("hud.money", _context.Wallet.Money);
             _statusText.text = _context.Status;
             RefreshSpeed();
             if (_codexButton != null)
@@ -585,7 +583,7 @@ namespace Game.UI
                 entry.Fill.color = selected ? SelectedFill : NormalFill;
                 entry.Label.color = affordable ? TextColor : Unaffordable;
                 string price = entry.Tower.BuildCost.ToString();
-                entry.Label.text = pictured ? price : $"{entry.Tower.DisplayName}\n{price}";
+                entry.Label.text = pictured ? price : Loc.Format("hud.card_name_price", entry.Tower.DisplayName, price);
                 PriceStrip(entry.Label, pictured);
             }
         }
@@ -601,21 +599,16 @@ namespace Game.UI
                 bool pictured = entry.Picture.enabled;
                 entry.Fill.color = selected ? SelectedFill : NormalFill;
                 entry.Label.color = affordable ? TextColor : Unaffordable;
-                entry.Label.text = pictured ? entry.Definition.Cost.ToString() : $"{entry.Definition.DisplayName}\n{entry.Definition.Cost}";
+                entry.Label.text = pictured ? entry.Definition.Cost.ToString() : Loc.Format("hud.card_name_price", entry.Definition.DisplayName, entry.Definition.Cost);
                 PriceStrip(entry.Label, pictured);
             }
         }
 
         private string WaveLine()
         {
-            _builder.Clear();
-            _builder.Append("Wave ").Append(_context.WaveNumber).Append('/').Append(_context.WaveCount);
-            if (_context.BossWave && _context.NextWaveCountdown <= 0f)
-            {
-                _builder.Append("  BOSS");
-            }
-
-            return _builder.ToString();
+            return _context.BossWave && _context.NextWaveCountdown <= 0f
+                ? Loc.Format("hud.wave_boss", _context.WaveNumber, _context.WaveCount)
+                : Loc.Format("hud.wave", _context.WaveNumber, _context.WaveCount);
         }
 
         // Rebuilt only when the shown second changes; blank while a wave is on its way.
@@ -634,9 +627,7 @@ namespace Game.UI
                 return;
             }
 
-            _builder.Clear();
-            _builder.Append(_context.WaveNumber == 0 ? "First wave in " : "Next wave in ").Append(seconds).Append('s');
-            _countdownText.text = _builder.ToString();
+            _countdownText.text = _context.WaveNumber == 0 ? Loc.Format("hud.first_wave_in", seconds) : Loc.Format("hud.next_wave_in", seconds);
             _countdownText.color = seconds <= CountdownUrgentSeconds ? CountdownUrgent : CountdownColor;
         }
     }

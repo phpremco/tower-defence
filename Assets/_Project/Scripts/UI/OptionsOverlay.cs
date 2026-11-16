@@ -1,4 +1,5 @@
-﻿using Game.Core;
+﻿using System.Collections.Generic;
+using Game.Core;
 using Game.Economy;
 using Game.Levels;
 using Game.Platform;
@@ -8,8 +9,9 @@ using UnityEngine.UI;
 
 namespace Game.UI
 {
-    /// <summary>Options panel over the main menu: the four volume sliders and the camera speed and edge scrolling
-    /// (stored in the saved progress), the controls, the sound test and a replay of the opening cutscene.</summary>
+    /// <summary>Options panel over the main menu: the four volume sliders, mute in the background, camera speed, edge
+    /// scrolling, radar, HUD margin and language (kept in the settings file, written when the panel closes), the
+    /// controls, the sound test and a replay of the opening cutscene.</summary>
     public sealed class OptionsOverlay : MonoBehaviour
     {
         private MainMenuScreen _owner;
@@ -21,8 +23,11 @@ namespace Game.UI
         private Button _storyButton;
         private Text _title;
         private SoundBoardOverlay _soundBoard;
+        private Button _muteButton;
         private bool _storyOpen;
         private IInputProvider _input;
+        private SettingsService _settings;
+        private ILocalizationService _localization;
 
         // The title sits at the top of the safe area and the column hangs a clear gap under it; the column shrinks to
         // fit above the bottom margin when the screen is short, so the title never runs into the first slider.
@@ -42,33 +47,41 @@ namespace Game.UI
         private static readonly Color HeaderColour = new Color(1f, 0.85f, 0.4f);
         private static readonly Color ActionColour = new Color(0.75f, 0.85f, 1f);
 
-        private static readonly string[,] ControlRows =
+        // Built when the page opens, not at class load, so the texts come from the language the player chose.
+        private static string[,] ControlRows()
         {
-            { "Move the cursor", "Left stick / D-pad", "Mouse" },
-            { "Move the camera", "Right stick", "WASD / arrow keys" },
-            { "Zoom", "L3 / R3", "- / +   Mouse wheel" },
-            { "Overview (hold)", "View (hold), A: go there", "Tab (hold), click: go there" },
-            { "Radar (top right)", "-", "Click: send the camera there" },
-            { "Confirm", "A", "Enter   Left click" },
-            { "Cancel / back", "B", "Esc   Right click" },
-            { "Switch tower or street weapon", "LB / RB", "Q / E" },
-            { "Tower icons", "A on a tower, stick, A", "Click a tower, or U / R / X" },
-            { "Send {0} to a blockade", "Its third icon", "X on the blockade" },
-            { "{0}: next post", "X", "H" },
-            { "{0}: shockwave / repair", "LT / RT", "F / G" },
-            { "Drones", "A on the base doorstep", "Click a card (bottom right)" },
-            { "Codex", "Start, then Codex;  Y on a scan", "Book icon (top right);  C on a scan" },
-            { "Game speed", "Y", "Space" },
-            { "Pause", "Start", "P" },
-            { "Skip wave (test)", "View (tap)", "N" },
-        };
+            return new[,]
+            {
+                { Loc.Get("controls.cursor"), Loc.Get("controls.cursor_pad"), Loc.Get("controls.cursor_keys") },
+                { Loc.Get("controls.camera"), Loc.Get("controls.camera_pad"), Loc.Get("controls.camera_keys") },
+                { Loc.Get("controls.zoom"), Loc.Get("controls.zoom_pad"), Loc.Get("controls.zoom_keys") },
+                { Loc.Get("controls.overview"), Loc.Get("controls.overview_pad"), Loc.Get("controls.overview_keys") },
+                { Loc.Get("controls.radar"), Loc.Get("controls.radar_pad"), Loc.Get("controls.radar_keys") },
+                { Loc.Get("controls.confirm"), Loc.Get("controls.confirm_pad"), Loc.Get("controls.confirm_keys") },
+                { Loc.Get("controls.cancel"), Loc.Get("controls.cancel_pad"), Loc.Get("controls.cancel_keys") },
+                { Loc.Get("controls.switch_tower"), Loc.Get("controls.switch_tower_pad"), Loc.Get("controls.switch_tower_keys") },
+                { Loc.Get("controls.tower_icons"), Loc.Get("controls.tower_icons_pad"), Loc.Get("controls.tower_icons_keys") },
+                { Loc.Get("controls.send_hero"), Loc.Get("controls.send_hero_pad"), Loc.Get("controls.send_hero_keys") },
+                { Loc.Get("controls.hero_post"), Loc.Get("controls.hero_post_pad"), Loc.Get("controls.hero_post_keys") },
+                { Loc.Get("controls.hero_abilities"), Loc.Get("controls.hero_abilities_pad"), Loc.Get("controls.hero_abilities_keys") },
+                { Loc.Get("controls.drones"), Loc.Get("controls.drones_pad"), Loc.Get("controls.drones_keys") },
+                { Loc.Get("controls.codex"), Loc.Get("controls.codex_pad"), Loc.Get("controls.codex_keys") },
+                { Loc.Get("controls.speed"), Loc.Get("controls.speed_pad"), Loc.Get("controls.speed_keys") },
+                { Loc.Get("controls.pause"), Loc.Get("controls.pause_pad"), Loc.Get("controls.pause_keys") },
+                { Loc.Get("controls.skip_wave"), Loc.Get("controls.skip_wave_pad"), Loc.Get("controls.skip_wave_keys") },
+            };
+        }
 
-        private static readonly string[] ControlHeaders = { "Action", "Gamepad", "Keyboard and mouse" };
+        private static string[] ControlHeaders()
+        {
+            return new[] { Loc.Get("controls.header_action"), Loc.Get("controls.header_pad"), Loc.Get("controls.header_keys") };
+        }
 
         public void Open(MainMenuScreen owner)
         {
             _owner = owner;
-            Services.TryGet(out ProgressService progress);
+            Services.TryGet(out _settings);
+            Services.TryGet(out _localization);
             Services.TryGet(out AudioMix mix);
 
             RectTransform root = UiKit.CreateRoot(transform);
@@ -83,28 +96,30 @@ namespace Game.UI
             rect.offsetMax = Vector2.zero;
             CoverScreen.Add(rect);
 
-            _title = UiKit.CreateFixedText(root, "Options", UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TitleTop), new Vector2(1200f, TitleHeight));
+            _title = UiKit.CreateFixedText(root, Loc.Get("options.title"), UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TitleTop), new Vector2(1200f, TitleHeight));
             _column = UiKit.CreateColumn(root, 24f);
             ColumnFit.Attach(_column, -TitleTop + TitleHeight + TitleGap, BottomMargin);
-            var volumes = new VolumeControls(progress, mix);
+            var volumes = new VolumeControls(_settings, mix);
             volumes.Build(_column);
+            _muteButton = UiKit.CreateButton(_column, MuteLabel(), OnMuteToggled);
             Services.TryGet(out CameraControls cameraControls);
-            new CameraOptionControls(progress, cameraControls ?? new CameraControls()).Build(_column);
-            new HudMarginControl(progress).Build(_column);
-            _controlsButton = UiKit.CreateButton(_column, "Controls", ShowControls);
-            _soundButton = UiKit.CreateButton(_column, "Sound test", ShowSoundBoard);
+            new CameraOptionControls(_settings, cameraControls ?? new CameraControls()).Build(_column);
+            new HudMarginControl(_settings).Build(_column);
+            UiKit.CreateButton(_column, LanguageLabel(), OnLanguagePressed);
+            _controlsButton = UiKit.CreateButton(_column, Loc.Get("options.controls"), ShowControls);
+            _soundButton = UiKit.CreateButton(_column, Loc.Get("options.sound_test"), ShowSoundBoard);
             if (OpeningCutscene() != null)
             {
-                UiKit.CreateButton(_column, "Replay intro", ReplayIntro);
+                UiKit.CreateButton(_column, Loc.Get("options.replay_intro"), ReplayIntro);
             }
 
             // Developer tools only when developer mode is on (editor or development build; never in a release build).
             if (Services.TryGet(out PlaytestSettings playtest) && playtest.DeveloperModeOn)
             {
-                _storyButton = UiKit.CreateButton(_column, "Story viewer (dev)", ShowStoryViewer);
+                _storyButton = UiKit.CreateButton(_column, Loc.Get("options.story_viewer"), ShowStoryViewer);
             }
 
-            UiKit.CreateButton(_column, "Back", Close);
+            UiKit.CreateButton(_column, Loc.Get("common.back"), Close);
             UiKit.Select(volumes.First);
 
             BuildControlsPage(root);
@@ -117,6 +132,7 @@ namespace Game.UI
 
         private void OnDestroy()
         {
+            _settings?.Flush();
             if (_input != null)
             {
                 _input.Cancelled -= OnCancelled;
@@ -159,16 +175,18 @@ namespace Game.UI
             page.offsetMax = Vector2.zero;
 
             string hero = HeroNaming.Campaign();
+            string[,] controlRows = ControlRows();
+            string[] controlHeaders = ControlHeaders();
             string gold = ColorUtility.ToHtmlStringRGB(HeaderColour);
-            int rows = ControlRows.GetLength(0);
-            for (int column = 0; column < ControlHeaders.Length; column++)
+            int rows = controlRows.GetLength(0);
+            for (int column = 0; column < controlHeaders.Length; column++)
             {
                 // The header line in gold through rich text, so it stays a line of the same text as the rows below it.
                 var lines = new System.Text.StringBuilder();
-                lines.Append("<color=#").Append(gold).Append('>').Append(ControlHeaders[column]).Append("</color>");
+                lines.Append("<color=#").Append(gold).Append('>').Append(controlHeaders[column]).Append("</color>");
                 for (int row = 0; row < rows; row++)
                 {
-                    lines.Append('\n').Append(string.Format(ControlRows[row, column], hero));
+                    lines.Append('\n').Append(string.Format(controlRows[row, column], hero));
                 }
 
                 float centre = ColumnLeft[column] + ColumnWidth[column] * 0.5f;
@@ -181,7 +199,7 @@ namespace Game.UI
                 text.color = column == 0 ? ActionColour : Color.white;
             }
 
-            Button back = UiKit.CreateButton(page, "Back", HideControls);
+            Button back = UiKit.CreateButton(page, Loc.Get("common.back"), HideControls);
             RectTransform backRect = back.GetComponent<RectTransform>();
             backRect.anchorMin = new Vector2(0.5f, 0f);
             backRect.anchorMax = new Vector2(0.5f, 0f);
@@ -243,6 +261,11 @@ namespace Game.UI
         // The opening cutscene plays again from the start and returns to the main menu; it never touches the save.
         private static void ReplayIntro()
         {
+            if (Services.TryGet(out SettingsService settings))
+            {
+                settings.Flush();
+            }
+
             CutsceneDefinition cutscene = OpeningCutscene();
             if (cutscene == null)
             {
@@ -258,8 +281,69 @@ namespace Game.UI
             return Services.TryGet(out CampaignCatalog catalog) && catalog.Story != null ? catalog.Story.OpeningCutscene : null;
         }
 
+        // Mute in the background: on by default; the switch takes effect the next time the window loses focus.
+        private void OnMuteToggled()
+        {
+            if (_settings == null)
+            {
+                return;
+            }
+
+            _settings.SetMuteInBackground(!_settings.Data.MuteInBackground);
+            UiKit.SetLabel(_muteButton, MuteLabel());
+        }
+
+        private string MuteLabel()
+        {
+            bool mute = _settings == null || _settings.Data.MuteInBackground;
+            return mute ? Loc.Get("options.mute_background_on") : Loc.Get("options.mute_background_off");
+        }
+
+        // The language button steps through every language that has a table. All screens build their text when they
+        // open, so a new language reloads the main menu instead of refreshing each label in place.
+        private void OnLanguagePressed()
+        {
+            IReadOnlyList<LanguageInfo> languages = _localization != null ? _localization.Languages : null;
+            if (languages == null || languages.Count < 2)
+            {
+                return;
+            }
+
+            int next = (IndexOf(languages, _localization.CurrentLanguage) + 1) % languages.Count;
+            string code = languages[next].Code;
+            if (!_localization.SetLanguage(code))
+            {
+                return;
+            }
+
+            _settings?.SetLanguage(code);
+            _settings?.Flush();
+            SceneManager.LoadScene(SceneNames.MainMenu);
+        }
+
+        private string LanguageLabel()
+        {
+            string current = Loc.Get("language.name");
+            return Loc.Format("options.language", current);
+        }
+
+        private static int IndexOf(IReadOnlyList<LanguageInfo> languages, string code)
+        {
+            for (int i = 0; i < languages.Count; i++)
+            {
+                if (languages[i].Code == code)
+                {
+                    return i;
+                }
+            }
+
+            return 0;
+        }
+
         private void Close()
         {
+            // Sliders and switches change the settings in memory; closing the screen writes them once.
+            _settings?.Flush();
             Destroy(_panel);
             _owner.ShowMenu();
             Destroy(this);

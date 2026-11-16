@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: RollerKing
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Roller King
+  _displayName: data.enemy.RollerKing.displayName
   _layer: 1
   _flies: 0
   _maxHealth: 1100
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 2.5
   _attackInterval: 1.2
   _gateStrikes: 0
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 3
   _rollSeconds: 3
   _rollSpeedMultiplier: 2.8
@@ -53,4 +55,4 @@ MonoBehaviour:
   _deathStyle: 0
   _art: {fileID: 11400000, guid: 48bf8a21d9a57c042bc7ba7d9f75452d, type: 2}
   _voice: {fileID: 11400000, guid: 7a2601f2a9a57244b8f7a019e6f50dc7, type: 2}
-  _description: 'The roller king: a quake with every landing.'
+  _description: data.enemy.RollerKing.description

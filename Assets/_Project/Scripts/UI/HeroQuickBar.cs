@@ -176,7 +176,7 @@ namespace Game.UI
             if (_hero.IsDown)
             {
                 int seconds = Mathf.CeilToInt(_hero.ReviveRemaining);
-                _name.text = $"Down  {seconds / 60}:{seconds % 60:00}";
+                _name.text = Loc.Format("hero.down_timer", seconds / 60, seconds % 60);
                 _name.color = DownColor;
             }
             else
@@ -198,7 +198,7 @@ namespace Game.UI
             }
 
             // The key follows the device in use, so a pad player reads X where a keyboard player reads H.
-            _postLabel.text = UiKit.Keyed(_input != null ? _input.PromptFor(GameAction.HeroPost) : string.Empty, "Next post");
+            _postLabel.text = UiKit.Keyed(_input != null ? _input.PromptFor(GameAction.HeroPost) : string.Empty, Loc.Get("hero.next_post"));
             _postLabel.color = _hero.IsDown ? DimColor : TextColor;
         }
     }

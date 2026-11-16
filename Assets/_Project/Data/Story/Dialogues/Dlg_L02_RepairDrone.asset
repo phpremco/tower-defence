@@ -16,20 +16,22 @@ MonoBehaviour:
   - Id: Dlg_L02_RepairDrone.01
     Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
     Segments:
-    - Text: Repair drone cleared for launch. It welds damaged gates and turrets back together on its own.
+    - _text: data.dialogue.Dlg_L02_RepairDrone.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_L02_RepairDrone.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: 'It costs money, like a turret. Drones panel, bottom right: click its card. On a controller, put the cursor on the base and press A.'
+    - _text: data.dialogue.Dlg_L02_RepairDrone.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_L02_RepairDrone.03
     Speaker: {fileID: 11400000, guid: 5caf20e24e6050f40b85b8db1269e8c2, type: 2}
     Segments:
-    - Text: Someone to patch the gate while I hold it. Good.
+    - _text: data.dialogue.Dlg_L02_RepairDrone.lines.2.segments.0.text
       Style: 0
     GlitchIntensity: 0
   _introducedDrones:
   - {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
+  _codexEntry: {fileID: 0}
+  _loadingTip: 

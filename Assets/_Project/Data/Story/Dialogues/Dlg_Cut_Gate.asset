@@ -16,12 +16,15 @@ MonoBehaviour:
   - Id: Dlg_Cut_Gate.01
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: We can't go back. Earth is counting on us. Spencer, hold those gates!
+    - _text: data.dialogue.Dlg_Cut_Gate.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Cut_Gate.02
     Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
     Segments:
-    - Text: Standard defence systems ready. AI turrets can be deployed immediately.
+    - _text: data.dialogue.Dlg_Cut_Gate.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
+  _introducedDrones: []
+  _codexEntry: {fileID: 0}
+  _loadingTip: 

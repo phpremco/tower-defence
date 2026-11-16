@@ -46,7 +46,7 @@ namespace Game.Hero
         /// <summary>Colour of the blade, the bolt and the muzzle glow.</summary>
         [SerializeField] private Color _color = new Color(0.3f, 0.95f, 1f);
 
-        public string DisplayName => _displayName;
+        public string DisplayName => Loc.Get(_displayName);
         public HeroWeaponKind Kind => _kind;
         public HeroWeaponStyle Style => _style;
         public float Damage => _damage;

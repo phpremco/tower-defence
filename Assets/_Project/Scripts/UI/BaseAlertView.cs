@@ -1,3 +1,4 @@
+using Game.Core;
 using Game.Levels;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,7 +23,6 @@ namespace Game.UI
         private const float PulseRate = 6f;
         private const float PulseDepth = 0.14f;
         private const float BlinkRate = 3f;
-        private const string Label = "BASE UNDER ATTACK!";
         private static readonly Color Warning = new Color(1f, 0.4f, 0.32f);
 
         private LevelContext _context;
@@ -54,7 +54,7 @@ namespace Game.UI
             _arrow.anchorMax = new Vector2(0.5f, 0.5f);
             _arrow.sizeDelta = new Vector2(ArrowSize, ArrowSize);
 
-            _text = UiKit.CreateFixedText(root, Label, LabelSize, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(LabelWidth, LabelHeight));
+            _text = UiKit.CreateFixedText(root, Loc.Get("base.alert_under_attack"), LabelSize, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(LabelWidth, LabelHeight));
             _text.color = Warning;
             _label = _text.rectTransform;
             Show(false);

@@ -40,7 +40,6 @@ namespace Game.UI
         private const float RimDistance = 0.7f;
         private const float RimLift = 0.25f;
         private const int LabelSize = 22;
-        private const string Label = "MERCER";
 
         // The visor glass relative to the head bone (metres, the figure's frame) and its half size, measured on the
         // Mercer export: the reflection is laid over exactly that part of the picture.
@@ -98,7 +97,7 @@ namespace Game.UI
             Inset(_picture.rectTransform, FrameWidth);
             BuildReflection();
             BuildFrame(backing);
-            _label = UiKit.CreateFixedText(_panel, Label, LabelSize, TextAnchor.LowerLeft, new Vector2(0f, 0f), new Vector2(FrameWidth + 8f, FrameWidth + 4f), new Vector2(PanelSize * 0.6f, 32f));
+            _label = UiKit.CreateFixedText(_panel, Loc.Get("boss.cut_in_name"), LabelSize, TextAnchor.LowerLeft, new Vector2(0f, 0f), new Vector2(FrameWidth + 8f, FrameWidth + 4f), new Vector2(PanelSize * 0.6f, 32f));
             _panel.gameObject.SetActive(false);
         }
 

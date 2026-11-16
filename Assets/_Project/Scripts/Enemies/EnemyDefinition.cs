@@ -76,7 +76,7 @@ namespace Game.Enemies
         [SerializeField] private CreatureVoice _voice;
         [SerializeField] [TextArea] private string _description = string.Empty;
 
-        public string DisplayName => _displayName;
+        public string DisplayName => Loc.Get(_displayName);
 
         /// <summary>Which towers may shoot this creature: ground guns, air guns or both.</summary>
         public TargetLayers Layer => _layer;
@@ -196,7 +196,7 @@ namespace Game.Enemies
         public CreatureVoice Voice => _voice;
 
         /// <summary>What the codex says about this creature: its habit and how to answer it.</summary>
-        public string Description => _description;
+        public string Description => Loc.Get(_description);
 
         private void OnValidate()
         {

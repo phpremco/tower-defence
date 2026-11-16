@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: RotSporePod
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: Rot Spore Pod
+  _displayName: data.enemy.RotSporePod.displayName
   _layer: 2
   _flies: 1
   _maxHealth: 20
@@ -27,6 +27,8 @@ MonoBehaviour:
   _attackRange: 0.5
   _attackInterval: 1
   _gateStrikes: 0
+  _turnRate: 60
+  _bankDegrees: 28
   _walkSeconds: 0
   _rollSeconds: 0
   _rollSpeedMultiplier: 2.5
@@ -52,4 +54,4 @@ MonoBehaviour:
   _deathStyle: 0
   _art: {fileID: 11400000, guid: 4d2449b892c64484daf69641d36faaa2, type: 2}
   _voice: {fileID: 11400000, guid: f60e0380b8dbaa84a9ec8dccfd2bcdd8, type: 2}
-  _description: A spore pod Rotbloom fires at your pads. Shoot it down in the air and the pad stays clean.
+  _description: data.enemy.RotSporePod.description

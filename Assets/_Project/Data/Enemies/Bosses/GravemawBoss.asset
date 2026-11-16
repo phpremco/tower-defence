@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: GravemawBoss
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.BossDefinition
   _phases:
-  - Name: Surface
+  - Name: data.boss.GravemawBoss.phases.0.name
     StartsAt: 1
-  - Name: Burrow
+  - Name: data.boss.GravemawBoss.phases.1.name
     StartsAt: 0.75
-  - Name: Deep burrow
+  - Name: data.boss.GravemawBoss.phases.2.name
     StartsAt: 0.5
-  - Name: Enraged
+  - Name: data.boss.GravemawBoss.phases.3.name
     StartsAt: 0.25
   _arrival: 1
   _signature: 1
@@ -114,6 +114,7 @@ MonoBehaviour:
     _warnShare: 0.08
     _flyBackSeconds: 0.6
     _expectedSplitSeconds: 18
+    _gateSetBack: 3
     _shellBones:
     - Shell_1
     - Shell_2
@@ -135,7 +136,7 @@ MonoBehaviour:
   _recognition:
     _dampenedShare: 0.5
     _drainsGates: 1
-    _adaptLine: 'Adaptation detected: {0} signature dampened'
+    _adaptLine: data.boss.GravemawBoss.recognition.adaptLine
     _phaseLooks:
     - Phase1
     - Phase2
@@ -175,6 +176,7 @@ MonoBehaviour:
   _impactKick: 0.35
   _mechanicClipRate: 1.4
   _resultHoldSeconds: 0
-  _signatureText: 'Rock plates cover it: heavy fire must strip the armour before anything reaches the body, and now and then Skitters pour out of its flanks. At three quarters, half and a quarter of its health it dives under the ground. A crack line runs round your towers to the tower that hurt it most; it breaks out beside it and throws that tower. The tower lands tilted, loses 40% of its health and stays silent for a few seconds, but it is not destroyed. It takes quicksand as a shortcut, climbs over rocks and onto gates, and can hide in a pool for a few seconds.'
-  _telegraphText: The crack glows warm orange and runs ahead of it, the ground rumbles louder as it comes up, and the tower it is after gets a pulsing red ring three seconds before it breaks out.
-  _counterText: 'Spread your damage over several towers, so no single tower draws it. Sell or move the ringed tower in time, or put a mine on the crack line: a mine that goes off while it burrows leaves it stunned on the surface. Below a quarter it moves faster and its cracks send up Skitters.'
+  _difficultyHealth: []
+  _signatureText: data.boss.GravemawBoss.signatureText
+  _telegraphText: data.boss.GravemawBoss.telegraphText
+  _counterText: data.boss.GravemawBoss.counterText

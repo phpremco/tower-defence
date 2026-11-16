@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f387d1c485e6f1840ae929304219d834, type: 3}
   m_Name: CryoBeam_FireRate
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
-  _displayName: Fire rate
+  _displayName: data.upgrade.CryoBeam_FireRate.displayName
   _target: 2
   _towerId: CryoBeam
   _droneId: 
-  _groupName: Cryo Beam
+  _groupName: data.upgrade.CryoBeam_FireRate.groupName
   _costs: 0a000000130000001d0000002a0000003a0000004d000000640000007f0000009d000000c0000000i
   _currency: 0
   _groupDescription: 

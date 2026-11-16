@@ -16,20 +16,22 @@ MonoBehaviour:
   - Id: Dlg_L04_AttackDrone.01
     Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
     Segments:
-    - Text: Attack drone available. It hunts whatever slips past the turrets, on the ground or in the air.
+    - _text: data.dialogue.Dlg_L04_AttackDrone.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_L04_AttackDrone.02
     Speaker: {fileID: 11400000, guid: 5caf20e24e6050f40b85b8db1269e8c2, type: 2}
     Segments:
-    - Text: A gun that comes to me. That second road just got easier.
+    - _text: data.dialogue.Dlg_L04_AttackDrone.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_L04_AttackDrone.03
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Same panel, same money. Up to three can fly at once.
+    - _text: data.dialogue.Dlg_L04_AttackDrone.lines.2.segments.0.text
       Style: 0
     GlitchIntensity: 0
   _introducedDrones:
   - {fileID: 11400000, guid: fb56937d94918464f8d78565425ee115, type: 2}
+  _codexEntry: {fileID: 0}
+  _loadingTip: 

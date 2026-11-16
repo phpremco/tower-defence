@@ -62,7 +62,7 @@ namespace Game.UI
             _panel = _root.parent.gameObject;
             CoverScreen.Add(UiKit.CreatePanel(_root, "Dim", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Dim).rectTransform);
             _list = NewLayer("List");
-            UiKit.CreateFixedText(_list, "Story viewer", UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TitleTop), new Vector2(1200f, TitleHeight));
+            UiKit.CreateFixedText(_list, Loc.Get("story.title"), UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TitleTop), new Vector2(1200f, TitleHeight));
             _pageText = UiKit.CreateFixedText(_list, string.Empty, UiKit.BodySize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -PageTop), new Vector2(1400f, PageHeight));
             _column = UiKit.CreateColumn(_list, RowSpacing);
             ColumnFit.Attach(_column, ColumnTop, BottomMargin);
@@ -125,7 +125,7 @@ namespace Game.UI
             _briefing = layer.gameObject;
             UiKit.CreatePanel(layer, "Card", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-BriefingWidth * 0.5f, -BriefingHeight * 0.5f), new Vector2(BriefingWidth * 0.5f, BriefingHeight * 0.5f), Color.white);
             _briefingText = UiKit.CreateFixedText(layer, string.Empty, BriefingSize, TextAnchor.UpperLeft, new Vector2(0.5f, 0.5f), new Vector2(0f, 40f), new Vector2(BriefingWidth - 120f, BriefingHeight - 200f));
-            _briefingBack = UiKit.CreateButton(layer, "Back", HideBriefing);
+            _briefingBack = UiKit.CreateButton(layer, Loc.Get("story.back"), HideBriefing);
             RectTransform back = _briefingBack.GetComponent<RectTransform>();
             back.anchorMin = back.anchorMax = back.pivot = new Vector2(0.5f, 0.5f);
             back.sizeDelta = new Vector2(UiKit.ButtonWidth * 0.5f, UiKit.ButtonHeight);
@@ -146,7 +146,7 @@ namespace Game.UI
             if (_index.Pages.Count > 0)
             {
                 StoryIndex.Page shown = _index.Pages[_page];
-                _pageText.text = $"{shown.Title}   ({_page + 1} of {pages})";
+                _pageText.text = Loc.Format("story.page_counter", shown.Title, _page + 1, pages);
                 foreach (StoryIndex.Entry entry in shown.Entries)
                 {
                     Button button = null;
@@ -157,7 +157,7 @@ namespace Game.UI
             }
             else
             {
-                _pageText.text = "No story in the campaign data";
+                _pageText.text = Loc.Get("story.empty");
             }
 
             var row = new GameObject("Row", typeof(RectTransform)).GetComponent<RectTransform>();
@@ -168,9 +168,9 @@ namespace Game.UI
             layout.childForceExpandWidth = true;
             layout.childControlHeight = false;
             row.gameObject.AddComponent<LayoutElement>().preferredHeight = UiKit.ButtonHeight;
-            UiKit.CreateButton(row, "Previous", () => ShowPage(_page - 1));
-            UiKit.CreateButton(row, "Next", () => ShowPage(_page + 1));
-            UiKit.CreateButton(row, "Back", Close);
+            UiKit.CreateButton(row, Loc.Get("story.previous"), () => ShowPage(_page - 1));
+            UiKit.CreateButton(row, Loc.Get("story.next"), () => ShowPage(_page + 1));
+            UiKit.CreateButton(row, Loc.Get("story.back"), Close);
             UiKit.Select(first != null ? first : row.GetComponentInChildren<Button>());
         }
 

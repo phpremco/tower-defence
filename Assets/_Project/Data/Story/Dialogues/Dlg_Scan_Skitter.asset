@@ -16,15 +16,15 @@ MonoBehaviour:
   - Id: Dlg_Scan_Skitter.01
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Scan's in. Ant-like swarmers, weak one by one, dangerous in numbers.
+    - _text: data.dialogue.Dlg_Scan_Skitter.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Scan_Skitter.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Packs bunch up, so the Cannon's shells thin them. Loose runners want the Gun Turret's rate of fire.
+    - _text: data.dialogue.Dlg_Scan_Skitter.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-  _loadingTip: 'Skitters are weak alone and come in packs: the Cannon''s shells thin a pack, the Gun Turret picks off loose runners.'
+  _loadingTip: data.dialogue.Dlg_Scan_Skitter.loadingTip

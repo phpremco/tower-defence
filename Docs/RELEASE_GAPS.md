@@ -21,8 +21,8 @@ Legend:
 | Options menu | Only audio, camera, radar and HUD margin. No display, graphics, language or accessibility settings. |
 | Controls | Hot-swap and prompts work. No remapping, no PlayStation names, text labels instead of button icons, one hardcoded controls page. |
 | Gamepad navigation | Every screen has focus handling in code. Never verified on hardware; the radar click is mouse-only. |
-| Saves | Versioned and migrated. Not crash-safe: a corrupt file throws at boot. One slot, no reset, no cloud. |
-| Localisation | Nothing. All text is English literals in code and generated assets. The font has no Cyrillic or CJK. |
+| Saves | Versioned and migrated; crash-safe since round 69 (atomic write, .bak fallback); settings in their own file. One slot, no reset, no cloud. |
+| Localisation | Plumbing done in round 69 (string tables, keys in code and data, Language option; English only, see Docs/LOCALISATION.md). The font has no Cyrillic or CJK. |
 | Pause and suspend | Done for PC. Console suspend/resume untested. |
 | Performance | Fine on PC (about 8 ms). 1,100 to 1,900 draw calls and 2.3 to 3.2 million triangles on the Low profile is too heavy for a Switch 1. |
 | Builds | One Windows Mono build script. No IL2CPP build has ever been made. Platform is picked by a checkbox, not by build target. |
@@ -49,11 +49,11 @@ Legend:
 
 | # | Item | Status | Evidence | Effort | Priority |
 | --- | --- | --- | --- | --- | --- |
-| 1.1 | **A corrupt or half-written save stops the game at boot.** `TryLoad` calls `JsonUtility.FromJson` with no try/catch; `ProgressService` is constructed in `Bootstrapper.Awake`, so the exception leaves the Boot scene with no services. | missing | `Platform/FileSaveService.cs:33`, `Economy/ProgressService.cs:17` | S | DEMO |
-| 1.2 | Atomic write (temp file, replace, `.bak` fallback). Today `File.WriteAllText` writes straight over the only copy. (PT) | missing | `Platform/FileSaveService.cs:21` | S | DEMO |
+| 1.1 | **A corrupt or half-written save stops the game at boot.** `TryLoad` calls `JsonUtility.FromJson` with no try/catch; `ProgressService` is constructed in `Bootstrapper.Awake`, so the exception leaves the Boot scene with no services. | done (round 69: parse errors fall back to the .bak, then to a fresh save with a warning; the damaged file is kept as .damaged) | `Platform/FileSaveService.cs:33`, `Economy/ProgressService.cs:17` | S | DEMO |
+| 1.2 | Atomic write (temp file, replace, `.bak` fallback). Today `File.WriteAllText` writes straight over the only copy. (PT) | done (round 69: temp file, File.Replace with .bak) | `Platform/FileSaveService.cs:21` | S | DEMO |
 | 1.3 | Save version and migrations. | done | `Economy/ProgressMigrator.cs` (two steps), `ProgressData.Version` | - | - |
-| 1.4 | **Settings live in the progress file.** Volumes, camera speed, radar and HUD margin are fields of `ProgressData`. A "new game" would wipe them, and a cloud save would copy one machine's settings to another. Split into `settings.json` (local) and `progress.json` (cloud). | missing | `Economy/ProgressData.cs:14-35` | S | STEAM |
-| 1.5 | **Every slider step writes the save file.** Each setter in `ProgressService` calls `Save()`. Harmless on PC; consoles limit how often a game may write, so settings should save when the page closes. | partial | `Economy/ProgressService.cs:185-270` | S | CONSOLE |
+| 1.4 | **Settings live in the progress file.** Volumes, camera speed, radar and HUD margin are fields of `ProgressData`. A "new game" would wipe them, and a cloud save would copy one machine's settings to another. Split into `settings.json` (local) and `progress.json` (cloud). | done (round 69: settings.json via SettingsService, seeded once from an older progress file) | `Economy/ProgressData.cs:14-35` | S | STEAM |
+| 1.5 | **Every slider step writes the save file.** Each setter in `ProgressService` calls `Save()`. Harmless on PC; consoles limit how often a game may write, so settings should save when the page closes. | done (round 69: settings save when the options or pause page closes, and on quit) | `Economy/ProgressService.cs:185-270` | S | CONSOLE |
 | 1.6 | New game / reset progress. The only way today is deleting the file by hand (`Docs/COMMANDS.md:113`). | missing | no reset in `ProgressService`, no button in `OptionsOverlay` | S | STEAM |
 | 1.7 | Multiple save slots. One fixed key, `"progress"`. Not required by any store; on consoles saves are per user account anyway. A design choice for Remco. | missing | `ProgressService.cs:10` | M | NICE |
 | 1.8 | Mid-level save and resume. Quitting a level loses it (the pause menu warns about this). Levels are long by design, so this matters most on a handheld that gets put to sleep; sleep itself is covered by suspend. | missing | `UI/PauseMenuView.cs` ("Progress in this level will be lost.") | L | NICE |
@@ -71,7 +71,7 @@ What exists: master, music, effects and ambience sliders; camera speed; edge scr
 | 2.3 | **Quality profile choice.** The Low profile exists but is a checkbox on the Boot scene (`_lowQuality: 0`), not a player option and not chosen from the build target. PC players on weak hardware and Steam Deck users cannot reach it. | partial | `Boot/Bootstrapper.cs:31,53`, `Scenes/Boot.unity:157` | M | DEMO |
 | 2.4 | Individual graphics switches (bloom, depth of field, mist, particles, shadows). All are read-only properties of the two profile classes. | missing | `Platform/PcPlatformSettings.cs`, `SwitchPlatformSettings.cs` | M | STEAM |
 | 2.5 | Full options inside the pause menu. Only Sound and Camera are reachable mid-level. | partial | `UI/PauseMenuView.cs` | S | STEAM |
-| 2.6 | Language selector. See section 6. | missing | - | S (once 6.1 exists) | STEAM |
+| 2.6 | Language selector. See section 6. | done (round 69: Options, Language; lists every table, English only now) | - | S (once 6.1 exists) | STEAM |
 | 2.7 | Volume sliders. | done | `UI/VolumeControls.cs`, `Core/AudioMix.cs` | - | - |
 | 2.8 | HUD safe margin option. | done | `UI/HudMarginControl.cs`, `UI/SafeFrame.cs` | - | - |
 
@@ -122,7 +122,7 @@ Nothing in this section exists yet. None of it is a hard store requirement on St
 
 | # | Item | Status | Evidence | Effort | Priority |
 | --- | --- | --- | --- | --- | --- |
-| 6.1 | **No string table.** UI text is English literals passed to `UiKit.CreateButton/CreateText` (about 70 call sites in `Scripts/UI`, plus composed strings). Names and descriptions sit in ScriptableObjects (`_displayName`, `_description` in about 40 definitions). Story, cutscene, scan-hint, boss-intro and loading-tip text is written as literals in the generator (`Editor/ProjectGenerator.Story.Crystal.cs`, `.Cutscene.cs`, `.ScanHints.cs`, `.BossIntros.cs`) and baked into assets. Needs: a key per string, a table per language, a lookup service, and text that refreshes on a language change. Unity's Localization package would be a new package (ask first); a small own table is also enough for this amount of text. | missing | no "locali", "language" or "translate" in any runtime script | L | STEAM (if more than English ships) |
+| 6.1 | **No string table.** UI text is English literals passed to `UiKit.CreateButton/CreateText` (about 70 call sites in `Scripts/UI`, plus composed strings). Names and descriptions sit in ScriptableObjects (`_displayName`, `_description` in about 40 definitions). Story, cutscene, scan-hint, boss-intro and loading-tip text is written as literals in the generator (`Editor/ProjectGenerator.Story.Crystal.cs`, `.Cutscene.cs`, `.ScanHints.cs`, `.BossIntros.cs`) and baked into assets. Needs: a key per string, a table per language, a lookup service, and text that refreshes on a language change. Unity's Localization package would be a new package (ask first); a small own table is also enough for this amount of text. | done (round 69, English only; Docs/LOCALISATION.md) | `Core/Localization/`, `Resources/Localization/*.txt`, `Editor/LocalisationTables.cs` | L | STEAM (if more than English ships) |
 | 6.2 | **The font covers Latin, Thai and Vietnamese only.** Chakra Petch has no Cyrillic, Chinese, Japanese or Korean. Russian, Simplified Chinese and Japanese are among the biggest non-English audiences on Steam and Switch. Needs fallback fonts with matching weight. | missing | `Art/UI/Fonts/ChakraPetch-*.ttf` | M | STEAM (per language) |
 | 6.3 | Two text systems. Most screens use legacy `UnityEngine.UI.Text`; dialogue and cutscenes use TextMeshPro. Font fallback, rich text and line breaking for Asian languages work differently in each, so a CJK release means moving the rest to TextMeshPro or maintaining two font setups. | partial | TMPro only in `UI/DialogueView.cs`, `UI/UiKit.cs`, `UI/Cutscene/*` | L | STEAM (CJK only) |
 | 6.4 | Layout that survives longer text. Many labels have fixed pixel boxes and the controls page has fixed column positions; German and French run 20 to 35 % longer. Best-fit hides some of it by shrinking text, which makes 5.3 worse. | missing | `UI/OptionsOverlay.cs:40-41`, fixed sizes throughout `Scripts/UI` | M | STEAM (if translated) |
@@ -173,10 +173,10 @@ Known numbers (`Docs/STATUS.md:1569-1573, 1649`, from `Tests/PlayMode/ModelPerfo
 | --- | --- | --- | --- | --- | --- |
 | 9.1 | Pause when the window loses focus or the OS suspends the app. | done | `Levels/TimeController.cs:102-116` | - | - |
 | 9.2 | Pause when the pad in use disconnects; resume stays manual. | done | `IInputProvider.DeviceLost`, `TimeController.cs:54` | - | - |
-| 9.3 | **A "reconnect controller" message.** The game pauses, but nothing tells the player why or which pad to pick up; `DeviceRegained` has no listener. Consoles require a clear prompt. | partial | `DeviceRegained` is raised in `InputSystemProvider` and used nowhere else | S | CONSOLE |
+| 9.3 | **A "reconnect controller" message.** The game pauses, but nothing tells the player why or which pad to pick up; `DeviceRegained` has no listener. Consoles require a clear prompt. | done (round 69: banner on DeviceLost, "connected" on DeviceRegained) | `UI/ControllerNotice.cs` | S | CONSOLE |
 | 9.4 | Interruptions outside a level. The pause logic lives in `TimeController`, which only exists in a level. Menus are static, so that is fine, but cutscenes and the intro keep playing (and keep their sound) when focus is lost. | partial | only `TimeController` implements `OnApplicationFocus` | S | STEAM |
 | 9.5 | Steam overlay. Opening it does not always take focus away; pausing on the overlay callback needs Steamworks. (PT) | missing | - | S | STEAM |
-| 9.6 | Audio on focus loss. `runInBackground` is on and nothing mutes audio when the window is in the background. | missing | `BuildScript.cs:31`; no `AudioListener.pause` | S | STEAM |
+| 9.6 | Audio on focus loss. `runInBackground` is on and nothing mutes audio when the window is in the background. | done (round 69: option "Mute in background", on by default) | `Boot/AppFocusAudio.cs` | S | STEAM |
 | 9.7 | Console suspend and resume, user sign-out, docking and undocking (resolution and safe-area change mid-game). `SafeAreaFitter` already follows resolution changes each frame. The rest cannot be tested without a devkit. | partial | `UI/SafeAreaFitter.cs` | M | CONSOLE |
 
 ## 10. Achievements, stats and crash reporting
@@ -277,13 +277,13 @@ From `Docs/GAME_DESIGN.md`, `CLAUDE.md` and `Docs/STORY_ROADMAP.md`. Content vol
 
 ## Top ten
 
-1. **Crash-safe saves** (1.1, 1.2): a corrupt file currently stops the game at boot. S, DEMO.
+1. **Crash-safe saves** (1.1, 1.2): a corrupt file currently stops the game at boot. S, DEMO. **Done in round 69.**
 2. **Company and product name** (8.11, PT): it is in the save path. S, DEMO.
 3. **First IL2CPP build plus smoke test** (8.1): never done; consoles depend on it. S to M, STEAM.
 4. **Display, v-sync and quality options** (2.1 to 2.3): none exist. M, DEMO.
 5. **Real-hardware gamepad pass** (4.1): all pad testing so far was simulated. S, DEMO.
 6. **Unlicensed boss alarm and the AI-content disclosure** (11.1, 11.2). S, DEMO.
 7. **Crash reporting** (10.4): nothing reports failures from other machines. S to M, DEMO.
-8. **Localisation plumbing** (6.1, 6.2): no string table, and the font lacks Cyrillic and CJK. L, STEAM.
+8. **Localisation plumbing** (6.1, 6.2): no string table, and the font lacks Cyrillic and CJK. L, STEAM. **6.1 done in round 69; 6.2 (fonts) open.**
 9. **Remapping, PlayStation names and button icons** (3.1 to 3.3, 3.5). M, STEAM.
 10. **Switch render budget** (7.1): the Low profile draws five to ten times what a Switch 1 handles. L, CONSOLE.

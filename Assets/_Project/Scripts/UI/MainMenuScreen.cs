@@ -12,8 +12,6 @@ namespace Game.UI
     /// </summary>
     public sealed class MainMenuScreen : ScreenBase
     {
-        private const string Title = "Tower Defence";
-        private const string Subtitle = "The planet does not want us here.";
         private const float PanelWidth = 660f;
         private const float Margin = 90f;
         private const float TitleTop = -80f;
@@ -46,8 +44,8 @@ namespace Game.UI
 
             UiKit.CreatePanel(root, "MenuPanel", new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(-40f, -40f), new Vector2(PanelWidth, 40f), PanelTint);
 
-            UiKit.CreateFixedText(root, Title, UiKit.TitleSize, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(Margin, TitleTop), new Vector2(1000f, 110f));
-            Text subtitle = UiKit.CreateFixedText(root, Subtitle, SubtitleSize, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(Margin + 4f, SubtitleTop), new Vector2(1000f, 50f));
+            UiKit.CreateFixedText(root, Loc.Get("menu.title"), UiKit.TitleSize, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(Margin, TitleTop), new Vector2(1000f, 110f));
+            Text subtitle = UiKit.CreateFixedText(root, Loc.Get("menu.subtitle"), SubtitleSize, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(Margin + 4f, SubtitleTop), new Vector2(1000f, 50f));
             subtitle.color = SubtitleColor;
 
             RectTransform column = UiKit.CreateColumn(root, 24f);
@@ -57,16 +55,16 @@ namespace Game.UI
             column.anchoredPosition = new Vector2(Margin, ColumnDrop);
             column.sizeDelta = new Vector2(ColumnWidth, 0f);
 
-            Button start = UiKit.CreateButton(column, "Start", () => Go(SceneNames.WorldMap));
+            Button start = UiKit.CreateButton(column, Loc.Get("menu.start"), () => Go(SceneNames.WorldMap));
             if (HasCodex())
             {
-                _codexButton = UiKit.CreateButton(column, "Codex", OpenCodex);
+                _codexButton = UiKit.CreateButton(column, Loc.Get("menu.codex"), OpenCodex);
             }
 
-            _optionsButton = UiKit.CreateButton(column, "Options", OpenOptions);
+            _optionsButton = UiKit.CreateButton(column, Loc.Get("menu.options"), OpenOptions);
             if (Platform.CanQuit)
             {
-                UiKit.CreateButton(column, "Quit", Quit);
+                UiKit.CreateButton(column, Loc.Get("menu.quit"), Quit);
             }
 
             SetFirstSelected(start);

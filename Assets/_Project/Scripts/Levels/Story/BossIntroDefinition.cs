@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Core;
 using Game.Enemies;
 using UnityEngine;
 
@@ -48,8 +49,9 @@ namespace Game.Levels
         [SerializeField] [Min(0f)] private float _barkCooldownSeconds = 14f;
 
         public EnemyDefinition Boss => _boss;
-        public string HeroLine => _heroLine;
+        public string HeroLine => Loc.Get(_heroLine);
         public DialogueDefinition Answer => _answer;
+        /// <summary>Localisation keys; resolve a picked one with <see cref="Loc.Get"/>.</summary>
         public IReadOnlyList<string> RepeatBarks => _repeatBarks ?? NoLines;
         public IReadOnlyList<BossBark> Barks => _barks ?? NoBarks;
         public Color CutInTint => _cutInTint;

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53b97c862ec52554ebcf8c45b107e540, type: 3}
   m_Name: AttackDrone
   m_EditorClassIdentifier: Game.Drones::Game.Drones.DroneDefinition
-  _displayName: Attack drone
-  _role: Attack
-  _summary: Hunts the creature furthest down the road and shoots it from the air.
+  _displayName: data.drone.AttackDrone.displayName
+  _role: data.drone.AttackDrone.role
+  _summary: data.drone.AttackDrone.summary
   _kind: 2
   _speed: 4.5
   _maxHealth: 35

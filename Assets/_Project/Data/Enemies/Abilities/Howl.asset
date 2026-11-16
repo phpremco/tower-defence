@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f080a65ffb7423e41bb2e97dd8bf4df7, type: 3}
   m_Name: Howl
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.BossAbilityDefinition
-  _displayName: Howl
+  _displayName: data.bossAbility.Howl.displayName
   _kind: 4
   _interval: 12
   _firstDelay: 5

@@ -16,15 +16,15 @@ MonoBehaviour:
   - Id: Dlg_Scan_Mossbat.01
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: That big flyer is shedding bats. Same species as the stone ones, I think. Fascinating.
+    - _text: data.dialogue.Dlg_Scan_Mossbat.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Scan_Mossbat.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Air only as well. Keep a Flak Turret in reach of wherever it goes.
+    - _text: data.dialogue.Dlg_Scan_Mossbat.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 11400000, guid: e7eac3a0449156148a0d557255fa8f98, type: 2}
-  _loadingTip: Mossbats are shed in flight by the big flyers. Keep a Flak Turret in reach of wherever those go.
+  _loadingTip: data.dialogue.Dlg_Scan_Mossbat.loadingTip

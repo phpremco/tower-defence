@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4195afed974a6db4bb0968bc3af5e766, type: 3}
   m_Name: Blockade
   m_EditorClassIdentifier: Game.Towers::Game.Towers.TowerDefinition
-  _displayName: Blockade
+  _displayName: data.tower.Blockade.displayName
   _targets: 1
   _levels:
   - Cost: 60
@@ -33,7 +33,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
-    StepName: Armed gate
+    StepName: data.tower.Blockade.levels.1.stepName
     Step: 6
   - Cost: 150
     Damage: 11
@@ -43,7 +43,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
-    StepName: Fortified gate
+    StepName: data.tower.Blockade.levels.2.stepName
     Step: 6
   _projectileSpeed: 12
   _splashRadius: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
   _damageType: 1
   _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _roles: 00000000i
-  _roleLine: Holds the road. Its gun helps; it replaces no tower.
+  _roleLine: data.tower.Blockade.roleLine
   _retargetRadius: 0
   _homing: 1
   _fuseRadius: 0

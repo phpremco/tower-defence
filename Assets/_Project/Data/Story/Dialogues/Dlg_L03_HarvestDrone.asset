@@ -16,20 +16,22 @@ MonoBehaviour:
   - Id: Dlg_L03_HarvestDrone.01
     Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
     Segments:
-    - Text: Harvest drone available. It mines the crystal nodes and flies every load back to base.
+    - _text: data.dialogue.Dlg_L03_HarvestDrone.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_L03_HarvestDrone.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Every load is money. Buy it early from the Drones panel and it pays for itself.
+    - _text: data.dialogue.Dlg_L03_HarvestDrone.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_L03_HarvestDrone.03
     Speaker: {fileID: 11400000, guid: 5caf20e24e6050f40b85b8db1269e8c2, type: 2}
     Segments:
-    - Text: So the crystals buy the bullets. Fine by me.
+    - _text: data.dialogue.Dlg_L03_HarvestDrone.lines.2.segments.0.text
       Style: 0
     GlitchIntensity: 0
   _introducedDrones:
   - {fileID: 11400000, guid: 369a11c383f30ee44bc444c28fda4318, type: 2}
+  _codexEntry: {fileID: 0}
+  _loadingTip: 

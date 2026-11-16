@@ -100,7 +100,7 @@ namespace Game.Towers
         [SerializeField] private GateArtDefinition _gateArt;
 
         public string Id => name;
-        public string DisplayName => _displayName;
+        public string DisplayName => Loc.Get(_displayName);
         public TargetLayers Targets => _targets;
         public float ProjectileSpeed => _projectileSpeed;
         public float SplashRadius => _splashRadius;
@@ -118,7 +118,7 @@ namespace Game.Towers
         public System.Collections.Generic.IReadOnlyList<TowerRole> Roles => _roles;
 
         /// <summary>The role in one line.</summary>
-        public string RoleLine => _roleLine;
+        public string RoleLine => Loc.Get(_roleLine);
 
         /// <summary>True when any of its roles answers creatures of this trait.</summary>
         public bool Answers(EnemyTraits trait)

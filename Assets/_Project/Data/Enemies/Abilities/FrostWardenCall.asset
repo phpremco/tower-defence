@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f080a65ffb7423e41bb2e97dd8bf4df7, type: 3}
   m_Name: FrostWardenCall
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.BossAbilityDefinition
-  _displayName: Frost Warden Call
+  _displayName: data.bossAbility.FrostWardenCall.displayName
   _kind: 2
   _interval: 25
   _firstDelay: 12.5

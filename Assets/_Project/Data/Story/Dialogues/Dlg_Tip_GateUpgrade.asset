@@ -16,21 +16,21 @@ MonoBehaviour:
   - Id: Dlg_Tip_GateUpgrade.01
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: 'That gate is taking hits. You can reinforce it right now: select the gate and upgrade it.'
+    - _text: data.dialogue.Dlg_Tip_GateUpgrade.lines.0.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Tip_GateUpgrade.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Every gate level makes it tougher and adds a small turret of its own. A gate that holds longer gives every gun around it more time to shoot.
+    - _text: data.dialogue.Dlg_Tip_GateUpgrade.lines.1.segments.0.text
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Tip_GateUpgrade.03
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: Upgrade the gate where they pile up first. A repair patches it; an upgrade makes it worth defending.
+    - _text: data.dialogue.Dlg_Tip_GateUpgrade.lines.2.segments.0.text
       Style: 0
     GlitchIntensity: 0
   _introducedDrones: []
   _codexEntry: {fileID: 0}
-  _loadingTip: 'A gate under attack can be upgraded during the level: it gets tougher and grows a turret of its own.'
+  _loadingTip: data.dialogue.Dlg_Tip_GateUpgrade.loadingTip
