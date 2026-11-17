@@ -124,5 +124,34 @@ namespace Game.Tests.EditMode
             Assert.AreEqual(FirstContinentCells, cells.Count, "every cell of the first continent sends a counter trait");
             TestContext.WriteLine($"{warnings.Count} affordability warnings, see {AffordabilityReport.ReportPath}");
         }
+
+        [Test]
+        public void FirstFlyers_WhereTheRuleHolds_ArePayableFromBounties()
+        {
+            // The first-flyer rule (BalanceRules.FlyersAfterBounties, round 77): on the difficulties it names the wave solver moves
+            // the first flyers until the bounties pay for a sky gun. This reads the stored waves, so it fails when the rule or
+            // the data went out of step (run the solve stage).
+            var catalog = AssetDatabase.LoadAssetAtPath<CampaignCatalog>(CampaignPath);
+            Assert.IsNotNull(catalog, "run the generator first");
+            Game.Balance.BalanceRules rules = Game.Balance.BalanceRules.Default;
+            var failures = new List<string>();
+            int judged = 0;
+            foreach (CounterAffordability.Row row in CounterAffordability.Rows(catalog, AssetDatabase.LoadAssetAtPath<Game.Economy.UnlockTable>("Assets/_Project/Data/Unlocks/UnlockTable.asset").StartingTowerIds, AffordabilityReport.FirstContinentNodes))
+            {
+                if (row.Trait != EnemyTraits.Airborne || !rules.FlyersAfterBountiesFor(row.Difficulty) || row.Verdict == CounterAffordability.Verdict.NoCounterOwned)
+                {
+                    continue;
+                }
+
+                judged++;
+                if (row.Verdict != CounterAffordability.Verdict.Payable)
+                {
+                    failures.Add(CounterAffordability.Warning(row));
+                }
+            }
+
+            Assert.Greater(judged, 0, "the first continent sends flyers on Easy and Medium");
+            Assert.IsEmpty(failures, string.Join("\n", failures));
+        }
     }
 }

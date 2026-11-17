@@ -51,6 +51,11 @@ public static class BossLab
                 field.SetValue(rules, Array.ConvertAll(kv[1].Trim().Split(','), Parse));
                 notes.Add($"{field.Name} = {kv[1].Trim()}");
             }
+            else if (field != null && field.FieldType == typeof(bool[]))
+            {
+                field.SetValue(rules, Array.ConvertAll(kv[1].Trim().Split(','), bool.Parse));
+                notes.Add($"{field.Name} = {kv[1].Trim()}");
+            }
         }
 
         CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, rules, calibration);

@@ -1,0 +1,81 @@
+Measured with: bot 2:90273749; data 4db4c3a3; game code 5e66c0ee
+
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 11 of 12 curves monotone = 91.7%  ->  FAIL
+  skilled        6 of 6   curves (100%); 0 of 24 steps drop by more than the tolerance
+  sensible       5 of 6   curves (83%); 1 of 24 steps drop by more than the tolerance
+  the same check on other scores (all rungs): P 11 of 12; A 12 of 12; R+D (furthest creature) 11 of 12; D 10 of 12; won/lost 12 of 12
+  curves that are not monotone (P per multiple, the drops marked):
+    Fault Line Medium     sensible     seed 1: 0.8:0.83 0.9:1.41 1:1.46 1.12:1.48 1.25:0.93!  (worst drop -0.544)
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 0 of 2 cells within the limit  ->  FAIL
+  cell                  skilled                   sensible                  
+  Fault Line Medium     12.3% (abs 0.111, n=3)    70.7% (abs 0.619, n=3)
+  Quartz Flats Medium   500.7% (abs 1.034, n=3)   34.9% (abs 0.094, n=3)
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  skilled                           sensible                          
+  Fault Line Medium     0.902 (0.896-1.008) 3/3           0.875 (0.841-1.460) 3/3
+  Quartz Flats Medium   0.206 (0.186-1.220) 2/3           0.271 (0.236-0.331) 3/3
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  skilled
+    Fault Line Medium     x0.8 0.83 (0.82-1.00) 3/3 | x0.9 0.86 (0.85-1.02) 3/3 | x1 0.90 (0.90-1.01) 3/3 | x1.12 1.08 (1.02-1.09) 3/3 | x1.25 1.24 (1.15-1.28) 3/3
+    Quartz Flats Medium   x0.8 0.15 (0.15-0.16) 3/3 | x0.9 0.16 (0.16-0.17) 3/3 | x1 0.21 (0.19-1.22) 2/3 | x1.12 1.22 (1.22-1.23) 0/3 | x1.25 1.26 (1.24-1.26) 0/3
+  sensible
+    Fault Line Medium     x0.8 0.83 (0.81-0.83) 3/3 | x0.9 0.85 (0.85-1.41) 3/3 | x1 0.88 (0.84-1.46) 3/3 | x1.12 1.01 (0.92-1.48) 3/3 | x1.25 0.99 (0.93-1.09) 3/3
+    Quartz Flats Medium   x0.8 0.23 (0.21-0.26) 3/3 | x0.9 0.26 (0.22-0.27) 3/3 | x1 0.27 (0.24-0.33) 3/3 | x1.12 0.31 (0.31-0.34) 3/3 | x1.25 1.22 (1.22-1.23) 0/3
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  skilled     Fault Line Medium     A 0.812 (0.810-0.814)  D 0.09 (0.08-0.20)  leaked 0.156 (0.153-0.194)
+  skilled     Quartz Flats Medium   A 0.206 (0.186-0.220)  D 0.00 (0.00-1.00)  leaked 0.051 (0.051-0.054)
+  sensible    Fault Line Medium     A 0.831 (0.829-0.838)  D 0.05 (0.01-0.62)  leaked 0.145 (0.136-0.156)
+  sensible    Quartz Flats Medium   A 0.180 (0.178-0.187)  D 0.09 (0.06-0.14)  leaked 0.035 (0.030-0.045)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<0.8' / '>1.25' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  skilled
+    Fault Line Medium     median >1.25  pooled >1.25  per seed: >1.25 >1.25 >1.25                    spread -
+    Quartz Flats Medium   median 1.06   pooled 1.06   per seed: 0.95 1.06 1.06                       spread 12% (n=3)
+  sensible
+    Fault Line Medium     median >1.25  pooled >1.25  per seed: 0.89 >1.25 >1.25                     spread -
+    Quartz Flats Medium   median 1.17   pooled 1.17   per seed: 1.18 1.17 1.17                       spread 0% (n=3)
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x0.8   x0.9   x1     x1.12  x1.25  H50
+  skilled     Fault Line Medium     3/3    3/3    3/3    3/3    3/3    >1.25
+  skilled     Quartz Flats Medium   3/3    3/3    2/3    0/3    0/3    1.03
+  sensible    Fault Line Medium     3/3    3/3    3/3    3/3    3/3    >1.25
+  sensible    Quartz Flats Medium   3/3    3/3    3/3    3/3    0/3    1.18
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  skilled     Fault Line Medium      82  79  77  79  80  84  91  76  82  83  80  77  76  78  84  89
+                                    base hit: w13 3/3, w16 3/3
+  skilled     Quartz Flats Medium     6   7   7   8   9  33   8  41   9  34   9   9  48  10  32  28  51
+                                    base hit: w17 1/3
+  sensible    Fault Line Medium      83  80  80  80  81  84  92  79  88  85  84  81  82  83  84  90
+                                    base hit: w10 1/3, w11 2/3, w13 2/3, w16 2/3
+  sensible    Quartz Flats Medium     8   9   8   9  10  43   9  32  10  39  10  10  42  11  33  10  13
+                                    base hit: w11 3/3, w16 1/3
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  skilled     Fault Line Medium     won w16/16; built 10, upgrades 7, left 100, earned 1261, repairs 45
+                                    w1 build Cannon@32,6; w1 build Rocket@34,9; w3 build PulseRifle@29,5; w6 upgrade@29,5; w7 upgrade@29,5; w10 build PulseRifle@28,6; w13 build PulseRifle@29,6; w13 upgrade@29,6; w13 upgrade@28,6; w13 build PulseRifle@32,5; w14 upgrade@32,5; w14 build PulseRifle@36,6
+  skilled     Quartz Flats Medium   lost w17/17; built 13, upgrades 11, left 21, earned 1595, repairs 23
+                                    w1 build Cannon@3,11; w1 build Rocket@34,3; w1 build PulseRifle@3,15; w2 upgrade@3,15; w6 gate gates@4,8; w7 upgrade@34,3; w9 build PulseRifle@3,16; w10 build PulseRifle@7,11; w11 build Rocket@32,3; w12 build Cannon@20,6; w13 upgrade@7,11; w13 upgrade@3,16
+  sensible    Fault Line Medium     won w16/16; built 9, upgrades 5, left 16, earned 1261, repairs 24
+                                    w1 build Cannon@32,5; w3 build PulseRifle@32,6; w6 build Rocket@34,9; w6 upgrade@32,6; w10 build Cannon@33,6; w13 build Rocket@33,9; w13 upgrade@32,5; w14 build PulseRifle@29,5; w15 upgrade@29,5; w16 upgrade@34,9; w16 build PulseRifle@30,9; w16 build Rocket@35,9
+  sensible    Quartz Flats Medium   won w17/17; built 13, upgrades 9, left 37, earned 1762, repairs 120
+                                    w1 build Cannon@7,11; w1 build PulseRifle@7,10; w2 upgrade@7,10; w4 build PulseRifle@8,10; w5 build Cannon@8,7; w7 build Rocket@34,4; w8 upgrade@8,10; w10 build Cannon@30,5; w11 build Rocket@35,4; w12 build PulseRifle@6,11; w12 upgrade@6,11; w13 build PulseRifle@8,11
+
+Cost: 60 runs, 24 machine minutes of play (24 s a run), 0 reference runs for the typical scripts; 1 batches, 7 wall-clock minutes in all.
+  batch 1794902613: 12 units on 5 workers, 6.9 min

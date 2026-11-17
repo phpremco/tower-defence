@@ -24,6 +24,13 @@ namespace Game.Editor
             public readonly float Power;
             public readonly float StructureDamage;
 
+            /// <summary>
+            /// The structure damage factor on top of <see cref="StructureDamage"/> (Remco, round 77): what creatures do to the
+            /// base, gates, towers and the hero is scaled once more by this in play. The wave solver and the siege model keep
+            /// reading <see cref="StructureDamage"/> alone, so softer bites are not answered with tougher creatures.
+            /// </summary>
+            public readonly float StructureFactor;
+
             /// <summary>In-level income (bounties, harvested ore) as a share of what creatures and mines pay.</summary>
             public readonly float Income;
 
@@ -36,8 +43,9 @@ namespace Game.Editor
             /// <summary>Share of a continent boss's escort call released (round 30: Psycho carries Hard's boss, lighter escorts).</summary>
             public readonly float BossEscort;
 
-            public Difficulty(string id, string displayName, float health, float count, float interval, float research, float power, float structureDamage, float income, float startMoney, float bossHealth, float bossEscort = 1f)
+            public Difficulty(string id, string displayName, float health, float count, float interval, float research, float power, float structureDamage, float income, float startMoney, float bossHealth, float bossEscort = 1f, float structureFactor = 1f)
             {
+                StructureFactor = structureFactor;
                 Id = id;
                 DisplayName = displayName;
                 Health = health;
@@ -119,6 +127,14 @@ namespace Game.Editor
         // campaign's Psycho cells.
         private const float PsychoStartMoney = 3f;
 
+        // Round 77 (Remco): a creature that reaches the base, a gate or a tower keeps biting (stopping would look like a bug),
+        // but on Easy and Medium it bites at a share of what the siege was calibrated with, so one unshot creature costs
+        // health instead of the level. Both come out at 0.45 of a creature's damage (Medium 0.75 x 0.6, Easy 0.6 x 0.75):
+        // Medium at 0.6 is the value measured with the frozen reference players (0.8 beside it; Docs/STATUS.md, round 77), and
+        // Easy never bites harder than Medium. Hard and Psycho keep their bites.
+        private const float EasyStructureFactor = 0.75f;
+        private const float MediumStructureFactor = 0.6f;
+
         // Round 30 (Remco): money may go to x3 at most; the Psycho finale player still lost to Gravemaw, the Matriarch and the
         // Sealed One at Hard's boss share (holds x0.85-1.0), so Psycho's escort calls release this share of their count (the
         // finale probe sets it; the boss itself stays Hard's).
@@ -129,8 +145,8 @@ namespace Game.Editor
         // waves to the human curve (CampaignModel.BuildWaves). The asset ids stay; only Psycho shows another name.
         public static Difficulty[] Difficulties => new[]
         {
-            new Difficulty("Easy", "Easy", 0.68f, 0.9f, 1.2f, Rules.ResearchMultipliers[0], Rules.PowerMultipliers[0], 0.6f, EasyIncome, EasyStartMoney, EasyBossHealth),
-            new Difficulty("Medium", "Medium", 1f, 1f, 1f, Rules.ResearchMultipliers[1], Rules.PowerMultipliers[1], 0.75f, MediumIncome, 1f, MediumBossHealth),
+            new Difficulty("Easy", "Easy", 0.68f, 0.9f, 1.2f, Rules.ResearchMultipliers[0], Rules.PowerMultipliers[0], 0.6f, EasyIncome, EasyStartMoney, EasyBossHealth, structureFactor: EasyStructureFactor),
+            new Difficulty("Medium", "Medium", 1f, 1f, 1f, Rules.ResearchMultipliers[1], Rules.PowerMultipliers[1], 0.75f, MediumIncome, 1f, MediumBossHealth, structureFactor: MediumStructureFactor),
             new Difficulty("Hard", "Hard", 1.15f, 1.3f, 0.85f, Rules.ResearchMultipliers[2], Rules.PowerMultipliers[2], 1f, HardIncome, 1f, HardBossHealth),
             new Difficulty("Psycho", "Crazy", 1.65f, 1.65f, 0.7f, Rules.ResearchMultipliers[3], Rules.PowerMultipliers[3], 1.4f, PsychoIncome, PsychoStartMoney, PsychoBossHealth, PsychoBossEscort),
         };

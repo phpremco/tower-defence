@@ -2703,7 +2703,7 @@ MonoBehaviour:
         Stagger: 0
         Nest: 0
       _healthMultiplier: 0.705
-      _bossHealthScale: 1.586
+      _bossHealthScale: 1.555
       _counterCheck: 0
   - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
     Waves:

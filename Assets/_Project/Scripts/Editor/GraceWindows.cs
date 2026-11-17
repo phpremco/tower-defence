@@ -105,6 +105,12 @@ namespace Game.Editor
         private const string EdgeOfGrowth = "growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave";
         private const string OneRaidLate = "the row falls to the raid one wave after the window closes; a bigger raid there costs the mixed plan its margin (Quartz Flats and Fault Line are the cells the creative bot already loses seeds on)";
 
+        // Round 77 (Remco): creatures bite every structure softer on Easy and Medium (DifficultyProfile.StructureDamageFactor), so a
+        // row without the counter keeps its guns and its base a wave or two longer. Measured on base and gates alone the rows were
+        // as late, so the towers are not the cause. Every such row still loses all three seeds.
+        private const string SofterBites = "the structure damage factor (round 77) softens every bite on Easy and Medium: the row keeps its base a wave or two longer than the window, and still loses every seed";
+        private const string SofterBitesLaterRaids = "the structure damage factor (round 77) softens every bite, and the first-flyer rule moved the raids that used to end the row (first raid wave 6, was 3 and 4); the row still loses every seed";
+
         /// <summary>
         /// The cells that do not meet the window yet, each with the most waves its rows may be late and the reason. A row later
         /// than its allowance fails the gate (<c>CombatRulesTests</c>), and so does a row without the counter that wins a level:
@@ -116,17 +122,21 @@ namespace Game.Editor
             new Allowance("Level_C1_01", 2, EnemyTraits.Armoured, 2, EdgeOfGrowth),
             new Allowance("Level_C1_01", 3, EnemyTraits.Armoured, 3, EdgeOfGrowth),
             new Allowance("Level_C1_02", 0, EnemyTraits.Armoured, 1, EdgeOfGrowth),
-            new Allowance("Level_C1_02", 1, EnemyTraits.Armoured, 1, MediumScale),
+            new Allowance("Level_C1_02", 1, EnemyTraits.Armoured, 2, MediumScale + "; round 77: " + SofterBites),
             new Allowance("Level_C1_02", 2, EnemyTraits.Armoured, 1, EdgeOfGrowth),
             new Allowance("Level_C1_02", 3, EnemyTraits.Armoured, 3, EdgeOfGrowth),
             new Allowance("Level_C1_03", 0, EnemyTraits.Armoured, 1, LateCragbacks),
-            new Allowance("Level_C1_03", 1, EnemyTraits.Armoured, 1, LateCragbacks),
+            new Allowance("Level_C1_03", 1, EnemyTraits.Armoured, 2, LateCragbacks + "; round 77: " + SofterBites),
             new Allowance("Level_C1_03", 2, EnemyTraits.Armoured, 6, RaidEndsIt),
             new Allowance("Level_C1_03", 3, EnemyTraits.Armoured, 7, RaidEndsIt),
-            new Allowance("Level_C1_04", 0, EnemyTraits.Airborne, 1, OneRaidLate),
+            new Allowance("Level_C1_04", 0, EnemyTraits.Armoured, 1, SofterBites),
+            new Allowance("Level_C1_04", 0, EnemyTraits.Airborne, 2, OneRaidLate + "; round 77: " + SofterBites),
+            new Allowance("Level_C1_04", 1, EnemyTraits.Airborne, 2, SofterBitesLaterRaids),
             new Allowance("Level_C1_05", 0, EnemyTraits.Armoured, 2, "growth 1.5 here left no searched plan winning (round 68: best plan 0/3); the row falls to the raid of wave 8 and the waves after it"),
+            new Allowance("Level_C1_05", 1, EnemyTraits.Armoured, 3, SofterBitesLaterRaids),
             new Allowance("Level_C1_05", 1, EnemyTraits.Airborne, 1, OneRaidLate),
             new Allowance("Level_C1_05", 3, EnemyTraits.Airborne, 1, OneRaidLate),
+            new Allowance("Level_C1_06", 0, EnemyTraits.Airborne, 1, SofterBites),
             new Allowance("Level_C1_06", 1, EnemyTraits.Airborne, 1, OneRaidLate),
         };
 

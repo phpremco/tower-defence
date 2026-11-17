@@ -1,0 +1,69 @@
+Boss lab 2026-11-17 09:22; overrides: LevelBossAlone = 0.2,0.25,0.4,0.45
+Per boss wave: boss health as spawned (stored), the wave's multiplier and the boss's own scale (stored), boss alone / whole wave pressure with the hero (cap).
+
+C1_01 Easy: human surplus 1.75x (curve 1.75x), waves moved against the stored set 0/12, total health 12084 (x1.000 of the stored set)
+  w12 BroodMother       524 hp (stored   524) | wave x0.856 boss x1.000 (stored x0.856 x1.000) | alone 0.27, wave 1.00 (cap 1.00) | money 640
+C1_01 Medium: human surplus 1.52x (curve 1.52x), waves moved against the stored set 0/12, total health 17102 (x1.000 of the stored set)
+  w12 BroodMother       698 hp (stored   698) | wave x0.776 boss x1.000 (stored x0.776 x1.000) | alone 0.29, wave 1.15 (cap 1.15) | money 788
+C1_01 Hard: human surplus 0.95x (curve 0.95x), waves moved against the stored set 0/12, total health 28969 (x1.000 of the stored set)
+  w8  BroodMother       931 hp (stored   931) | wave x0.671 boss x1.341 (stored x0.671 x1.341) | alone 0.63, wave 1.25 (cap 1.25) | money 505
+  w12 BroodMother      1075 hp (stored  1075) | wave x1.039 boss x1.000 (stored x1.039 x1.000) | alone 0.29, wave 1.25 (cap 1.25) | money 1241
+C1_01 Psycho: human surplus 1.14x (curve 1.14x), waves moved against the stored set 0/12, total health 65335 (x1.000 of the stored set)
+  w5  BroodMother      1336 hp (stored  1336) | wave x0.792 boss x1.136 (stored x0.792 x1.136) | alone 0.51, wave 0.67 (cap 1.35) | money 750
+  w8  BroodMother      1871 hp (stored  1871) | wave x1.260 boss x1.000 (stored x1.260 x1.000) | alone 0.46, wave 1.35 (cap 1.35) | money 1140
+  w12 BroodMother      2009 hp (stored  2009) | wave x1.353 boss x1.000 (stored x1.353 x1.000) | alone 0.29, wave 1.35 (cap 1.35) | money 1960
+C1_02 Easy: human surplus 2.10x (curve 2.10x), waves moved against the stored set 0/12, total health 12743 (x1.000 of the stored set)
+  w12 BroodMother       716 hp (stored   716) | wave x1.170 boss x1.000 (stored x1.170 x1.000) | alone 0.29, wave 1.00 (cap 1.00) | money 684
+C1_02 Medium: human surplus 1.13x (curve 1.13x), waves moved against the stored set 0/12, total health 28974 (x1.000 of the stored set)
+  w12 BroodMother      1196 hp (stored  1196) | wave x1.329 boss x1.000 (stored x1.329 x1.000) | alone 0.41, wave 1.15 (cap 1.15) | money 816
+C1_02 Hard: human surplus 0.96x (curve 0.94x), waves moved against the stored set 0/12, total health 36459 (x1.000 of the stored set)
+  w9  CoreWisp          631 hp (stored   631) | wave x0.914 boss x1.000 (stored x0.914 x1.000) | alone 0.28, wave 1.25 (cap 1.25) | money 639
+  w12 BroodMother      1373 hp (stored  1373) | wave x1.327 boss x1.000 (stored x1.327 x1.000) | alone 0.25, wave 1.25 (cap 1.25) | money 1306
+C1_02 Psycho: human surplus 1.04x (curve 1.04x), waves moved against the stored set 0/12, total health 81179 (x1.000 of the stored set)
+  w5  BroodMother      2054 hp (stored  2054) | wave x1.383 boss x1.000 (stored x1.383 x1.000) | alone 0.54, wave 0.83 (cap 1.35) | money 788
+  w9  CoreWisp         1460 hp (stored  1460) | wave x1.475 boss x1.000 (stored x1.475 x1.000) | alone 0.29, wave 1.35 (cap 1.35) | money 1334
+  w12 BroodMother      2042 hp (stored  2042) | wave x1.375 boss x1.000 (stored x1.375 x1.000) | alone 0.21, wave 1.35 (cap 1.35) | money 2094
+C1_03 Easy: human surplus 1.70x (curve 1.70x), waves moved against the stored set 0/16, total health 11278 (x1.000 of the stored set)
+  w16 BroodMother       667 hp (stored   667) | wave x0.256 boss x4.255 (stored x0.256 x4.255) | alone 0.20, wave 0.56 (cap 1.00) | money 995
+C1_03 Medium: human surplus 1.47x (curve 1.47x), waves moved against the stored set 1/16, total health 16499 (x0.989 of the stored set)
+  w16 BroodMother       950 hp (stored  1140) | wave x0.244 boss x4.327 (stored x0.244 x5.193) | alone 0.25, wave 0.85 (cap 1.15) | money 1212
+C1_03 Hard: human surplus 1.40x (curve 1.40x), waves moved against the stored set 0/16, total health 17765 (x1.000 of the stored set)
+  w10 CoreWisp         1043 hp (stored  1043) | wave x0.923 boss x1.637 (stored x0.923 x1.637) | alone 0.40, wave 0.78 (cap 1.25) | money 689
+  w16 BroodMother      1645 hp (stored  1645) | wave x0.213 boss x7.460 (stored x0.213 x7.460) | alone 0.33, wave 1.15 (cap 1.25) | money 1468
+C1_03 Psycho: human surplus 1.35x (curve 1.35x), waves moved against the stored set 0/16, total health 36515 (x1.000 of the stored set)
+  w6  BroodMother      2048 hp (stored  2048) | wave x1.014 boss x1.360 (stored x1.014 x1.360) | alone 0.45, wave 0.64 (cap 1.35) | money 828
+  w10 CoreWisp         2118 hp (stored  2118) | wave x1.227 boss x1.744 (stored x1.227 x1.744) | alone 0.45, wave 0.86 (cap 1.35) | money 1090
+  w16 BroodMother      3455 hp (stored  3455) | wave x0.331 boss x7.030 (stored x0.331 x7.030) | alone 0.45, wave 0.99 (cap 1.35) | money 2046
+C1_04 Easy: human surplus 1.54x (curve 1.54x), waves moved against the stored set 0/16, total health 5651 (x1.000 of the stored set)
+  w16 StormMatriarch    286 hp (stored   286) | wave x0.600 boss x1.000 (stored x0.600 x1.000) | alone 0.45, wave 0.64 (cap 1.00) | money 833
+C1_04 Medium: human surplus 1.10x (curve 1.10x), waves moved against the stored set 0/16, total health 15184 (x1.000 of the stored set)
+  w16 StormMatriarch   1070 hp (stored  1070) | wave x1.529 boss x1.000 (stored x1.529 x1.000) | alone 0.73, wave 1.11 (cap 1.15) | money 988
+C1_04 Hard: human surplus 1.01x (curve 1.01x), waves moved against the stored set 0/16, total health 24307 (x1.000 of the stored set)
+  w10 BroodMother       931 hp (stored   931) | wave x0.205 boss x4.390 (stored x0.205 x4.390) | alone 0.63, wave 1.24 (cap 1.25) | money 641
+  w16 StormMatriarch   1240 hp (stored  1240) | wave x1.540 boss x1.000 (stored x1.540 x1.000) | alone 0.75, wave 1.02 (cap 1.25) | money 1406
+C1_04 Psycho: human surplus 1.32x (curve 1.33x), waves moved against the stored set 0/16, total health 62228 (x1.000 of the stored set)
+  w5  CoreWisp         1028 hp (stored  1028) | wave x0.935 boss x1.111 (stored x0.935 x1.111) | alone 0.45, wave 0.72 (cap 1.35) | money 834
+  w10 BroodMother      1336 hp (stored  1336) | wave x0.769 boss x1.170 (stored x0.769 x1.170) | alone 0.35, wave 1.08 (cap 1.35) | money 1187
+  w16 StormMatriarch   3418 hp (stored  3418) | wave x2.959 boss x1.000 (stored x2.959 x1.000) | alone 0.82, wave 1.36 (cap 1.35) | money 2166
+C1_05 Easy: human surplus 2.00x (curve 2.00x), waves moved against the stored set 0/17, total health 22465 (x1.000 of the stored set)
+  w17 CoreWisp          931 hp (stored   931) | wave x1.432 boss x1.594 (stored x1.432 x1.594) | alone 0.20, wave 0.59 (cap 1.00) | money 1345
+C1_05 Medium: human surplus 1.43x (curve 1.43x), waves moved against the stored set 1/17, total health 35124 (x0.994 of the stored set)
+  w17 CoreWisp         1315 hp (stored  1529) | wave x2.191 boss x1.000 (stored x2.191 x1.163) | alone 0.26, wave 0.93 (cap 1.15) | money 1661
+C1_05 Hard: human surplus 1.36x (curve 1.36x), waves moved against the stored set 0/17, total health 63330 (x1.000 of the stored set)
+  w11 StormMatriarch   1575 hp (stored  1575) | wave x1.957 boss x1.000 (stored x1.957 x1.000) | alone 0.88, wave 0.88 (cap 1.25) | money 1064
+  w17 CoreWisp         3411 hp (stored  3411) | wave x2.002 boss x2.469 (stored x2.002 x2.469) | alone 0.40, wave 1.12 (cap 1.25) | money 2503
+C1_05 Psycho: human surplus 1.69x (curve 1.68x), waves moved against the stored set 0/17, total health 105503 (x1.000 of the stored set)
+  w5  BroodMother      2722 hp (stored  2722) | wave x0.691 boss x2.653 (stored x0.691 x2.653) | alone 0.45, wave 0.79 (cap 1.35) | money 999
+  w11 StormMatriarch   2226 hp (stored  2226) | wave x1.927 boss x1.000 (stored x1.927 x1.000) | alone 0.80, wave 0.87 (cap 1.35) | money 1847
+  w17 CoreWisp         4347 hp (stored  4347) | wave x1.984 boss x2.213 (stored x1.984 x2.213) | alone 0.37, wave 1.00 (cap 1.35) | money 3536
+C1_06 Easy: human surplus 1.97x (curve 1.97x), waves moved against the stored set 0/18, total health 11760 (x1.000 of the stored set)
+  w18 PackAlpha         653 hp (stored   653) | wave x0.432 boss x2.779 (stored x0.432 x2.779) | alone 0.20, wave 0.53 (cap 1.00) | money 1288
+C1_06 Medium: human surplus 1.37x (curve 1.37x), waves moved against the stored set 1/18, total health 24501 (x0.999 of the stored set)
+  w18 PackAlpha         877 hp (stored   895) | wave x0.705 boss x1.555 (stored x0.705 x1.586) | alone 0.25, wave 0.99 (cap 1.15) | money 1436
+C1_06 Hard: human surplus 1.34x (curve 1.34x), waves moved against the stored set 0/18, total health 44301 (x1.000 of the stored set)
+  w12 CoreWisp         1415 hp (stored  1415) | wave x1.448 boss x1.416 (stored x1.448 x1.416) | alone 0.40, wave 1.10 (cap 1.25) | money 1000
+  w18 PackAlpha        2311 hp (stored  2311) | wave x0.726 boss x3.460 (stored x0.726 x3.460) | alone 0.34, wave 1.15 (cap 1.25) | money 2320
+C1_06 Psycho: human surplus 1.43x (curve 1.43x), waves moved against the stored set 0/18, total health 98422 (x1.000 of the stored set)
+  w7  StormMatriarch   2980 hp (stored  2980) | wave x2.580 boss x1.000 (stored x2.580 x1.000) | alone 0.92, wave 0.85 (cap 1.35) | money 1102
+  w12 CoreWisp         2327 hp (stored  2327) | wave x2.351 boss x1.000 (stored x2.351 x1.000) | alone 0.34, wave 1.01 (cap 1.35) | money 1839
+  w18 PackAlpha        1760 hp (stored  1760) | wave x1.064 boss x1.253 (stored x1.064 x1.253) | alone 0.17, wave 1.00 (cap 1.35) | money 3211

@@ -148,11 +148,14 @@ namespace Game.Balance
             LevelFacts facts = Facts[levelIndex];
             // The script (with the builder's tuning) is the source of the target scale at generation; the asset records it for the checks.
             Levels[levelIndex].TargetScale = script.TargetScale;
-            // The raid floor is this solve's to set (the Easy raid rule below), never the script's.
+            // The flyer floors are this solve's to set (the Easy raid rule and the first-flyer rule below), never the script's.
             script.FirstAirWaveFloor = new[] { 0 };
+            script.FlyingTroopFloor = new[] { 0 };
             int medium = Math.Min(WaveSolver.SolveDifficulty, Difficulties.Count - 1);
             healths = WaveSolver.Solve(script, Enemies, ReferenceInputFor(levelIndex, medium), Difficulties[medium], facts.SecondRoad, Rules);
             var sets = new List<List<WaveSpec>>();
+            int mediumFloor = 0;
+            int mediumTroopFloor = 0;
             for (int d = 0; d < Difficulties.Count; d++)
             {
                 float[] own = SolveDifficulty(levelIndex, script, d, medium, healths, out float[] bossScales);
@@ -164,15 +167,121 @@ namespace Game.Balance
                     int floor = EasyRaidFloor(levelIndex, ComposedWaves(script, d, own, facts.SecondRoad, bossScales));
                     if (first != int.MaxValue && floor > first)
                     {
-                        script.FirstAirWaveFloor = FloorPerDifficulty(floor);
+                        script.FirstAirWaveFloor = WithFloor(script.FirstAirWaveFloor, d, floor);
                         own = SolveDifficulty(levelIndex, script, d, medium, healths, out bossScales);
                     }
                 }
 
+                if (Rules.FlyersAfterBountiesFor(d))
+                {
+                    own = HoldFlyersUntilPayable(levelIndex, script, d, medium, healths, own, ref bossScales);
+                }
+
                 sets.Add(ComposedWaves(script, d, own, facts.SecondRoad, bossScales));
+                if (d == medium)
+                {
+                    // The difficulties after Medium copy the Medium curve wave by wave as the solver wrote it, raids as written
+                    // (WaveSolver.SolveVariant compares their waves with Medium's); Medium's own floor would make them read
+                    // moved raids against an unmoved curve, so it is set aside until every difficulty is composed.
+                    mediumFloor = script.FirstAirWaveFloorFor(d);
+                    mediumTroopFloor = script.FlyingTroopFloorFor(d);
+                    SetFlyerFloors(script, d, 0, 0);
+                }
             }
 
+            SetFlyerFloors(script, medium, mediumFloor, mediumTroopFloor);
             return sets;
+        }
+
+        /// <summary>
+        /// The first-flyer rule (<see cref="BalanceRules.FlyersAfterBounties"/>, round 77): while the first flyers of a difficulty
+        /// come before the bounties pay for a sky gun (<see cref="CounterPurse"/>: every wave before the first flyer wave plus
+        /// the grace waves, through the income share), the difficulty's flyer floors go up a wave (the raids move together, the
+        /// flying troops wait) and the difficulty is solved again. A player who owns no gun made for the sky has nothing to pay
+        /// for; the level validator's affordability table names that cell instead.
+        /// </summary>
+        private float[] HoldFlyersUntilPayable(int levelIndex, WaveScriptSpec script, int d, int medium, float[] healths, float[] own, ref float[] bossScales)
+        {
+            int price = CheapestSkyGunCost(InputFor(levelIndex, d), true);
+            int secondRoad = Facts[levelIndex].SecondRoad;
+            while (price >= 0)
+            {
+                List<WaveSpec> waves = ComposedWaves(script, d, own, secondRoad, bossScales);
+                int first = FirstFlyerWave(waves);
+                if (first == 0 || CounterPurse.PayableFromBounties(KillCoins(waves, d, CounterPurse.DeadlineWave(first, d, waves.Count) - 1), price))
+                {
+                    break;
+                }
+
+                int floor = first + 1;
+                if (floor > script.Waves)
+                {
+                    // Nothing left to move: only the flyers a last boss brings along are this late.
+                    break;
+                }
+
+                // An earlier rule's raid floor (Easy) is never lowered.
+                SetFlyerFloors(script, d, Math.Max(floor, script.FirstAirWaveFloorFor(d)), floor);
+                own = SolveDifficulty(levelIndex, script, d, medium, healths, out bossScales);
+            }
+
+            return own;
+        }
+
+        // The first wave (1-based) that sends a flyer, bosses aside (a boss carries its own fight); 0 for none. As
+        // Game.Levels.CounterAffordability.FirstWave reads the stored waves.
+        private static int FirstFlyerWave(IReadOnlyList<WaveSpec> waves)
+        {
+            for (int w = 0; w < waves.Count; w++)
+            {
+                foreach (GroupSpec group in waves[w].Groups)
+                {
+                    if (group.Enemy != null && !group.Enemy.IsBoss && group.Enemy.Flies)
+                    {
+                        return w + 1;
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        // The bounties of the first waveCount waves through the difficulty's income share, every creature killed, as
+        // Game.Levels.CounterAffordability.KillCoins counts them on the stored waves.
+        private int KillCoins(IReadOnlyList<WaveSpec> waves, int d, int waveCount)
+        {
+            long bounty = 0;
+            for (int w = 0; w < waveCount && w < waves.Count; w++)
+            {
+                foreach (GroupSpec group in waves[w].Groups)
+                {
+                    if (group.Enemy != null)
+                    {
+                        bounty += (long)(group.Enemy.IsBoss ? group.Count : Math.Max(1, (int)Math.Ceiling(group.Count * Difficulties[d].Count))) * group.Enemy.Reward;
+                    }
+                }
+            }
+
+            return CounterPurse.KillCoins(bounty, Difficulties[d].Income);
+        }
+
+        // One difficulty's flyer floors on the script (raids, flying troops); the other difficulties keep theirs.
+        private void SetFlyerFloors(WaveScriptSpec script, int d, int raidFloor, int troopFloor)
+        {
+            script.FirstAirWaveFloor = WithFloor(script.FirstAirWaveFloor, d, raidFloor);
+            script.FlyingTroopFloor = WithFloor(script.FlyingTroopFloor, d, troopFloor);
+        }
+
+        private int[] WithFloor(int[] current, int d, int floor)
+        {
+            var floors = new int[Math.Max(1, Difficulties.Count)];
+            for (int i = 0; i < floors.Length; i++)
+            {
+                floors[i] = current != null && i < current.Length ? current[i] : 0;
+            }
+
+            floors[d] = floor;
+            return floors;
         }
 
         /// <summary>The first difficulty, where the raid rule applies.</summary>
@@ -187,7 +296,7 @@ namespace Game.Balance
         public int EasyRaidFloor(int levelIndex, IReadOnlyList<WaveSpec> easyWaves)
         {
             LevelInput input = InputFor(levelIndex, EasyDifficulty);
-            int cost = CheapestSkyGunCost(input);
+            int cost = CheapestSkyGunCost(input, false);
             int none = easyWaves.Count + 1;
             if (cost < 0)
             {
@@ -206,8 +315,9 @@ namespace Game.Balance
             return none;
         }
 
-        // The cheapest sky gun the player brings: an air-only gun when owned, else the cheapest gun that reaches the air; -1 for none.
-        private static int CheapestSkyGunCost(LevelInput input)
+        // The cheapest sky gun the player brings: an air-only gun when owned, else the cheapest gun that reaches the air (not
+        // when only a gun made for the sky counts: the counter a player buys against flyers); -1 for none.
+        private static int CheapestSkyGunCost(LevelInput input, bool madeForTheSky)
         {
             int airOnly = -1;
             int reaches = -1;
@@ -227,14 +337,7 @@ namespace Game.Balance
                 reaches = reaches < 0 ? cost : Math.Min(reaches, cost);
             }
 
-            return airOnly >= 0 ? airOnly : reaches;
-        }
-
-        private int[] FloorPerDifficulty(int easyFloor)
-        {
-            var floors = new int[Math.Max(1, Difficulties.Count)];
-            floors[EasyDifficulty] = easyFloor;
-            return floors;
+            return airOnly >= 0 || madeForTheSky ? airOnly : reaches;
         }
 
         // The solver's multipliers of one difficulty, trimmed to the human curve, and the bosses' own scales (round 64; null when
@@ -243,7 +346,11 @@ namespace Game.Balance
         private float[] SolveDifficulty(int levelIndex, WaveScriptSpec script, int d, int medium, float[] healths, out float[] bossScales)
         {
             int secondRoad = Facts[levelIndex].SecondRoad;
-            float[] solved = d == medium ? healths : WaveSolver.SolveVariant(script, Enemies, ReferenceInputFor(levelIndex, d), Difficulties[d], healths, secondRoad, Rules);
+            // Medium is the solver's own curve. With its raids moved by a flyer floor that curve no longer fits its waves (a raid's
+            // multiplier on a plain wave), so Medium is solved again on the moved script; the other difficulties keep the first curve.
+            float[] solved = d != medium ? WaveSolver.SolveVariant(script, Enemies, ReferenceInputFor(levelIndex, d), Difficulties[d], healths, secondRoad, Rules)
+                : script.FirstAirWaveFloorFor(d) > 0 || script.FlyingTroopFloorFor(d) > 0 ? WaveSolver.Solve(script, Enemies, ReferenceInputFor(levelIndex, d), Difficulties[d], secondRoad, Rules)
+                : healths;
             bossScales = null;
             if (!Rules.CalibrateToHuman)
             {

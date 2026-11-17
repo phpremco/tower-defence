@@ -130,7 +130,8 @@ namespace Game.Levels
             Interval = difficulty.SpawnIntervalMultiplier,
             Research = difficulty.RewardMultiplier,
             Power = difficulty.PowerCurrencyMultiplier,
-            StructureDamage = difficulty.StructureDamageMultiplier,
+            // Without the structure damage factor: the model sizes waves against the siege it was calibrated with.
+            StructureDamage = difficulty.CalibratedStructureDamage,
             Income = difficulty.IncomeMultiplier,
             StartMoney = difficulty.StartingMoneyMultiplier,
             BossHealth = difficulty.BossHealthShare,

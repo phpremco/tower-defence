@@ -179,7 +179,7 @@ namespace Game.Balance
         /// </summary>
         public static int FirstTraitWave(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int secondRoad, BalanceRules rules, bool air)
         {
-            long key = ((long)script.FirstAirWaveFloorFor(difficulty) << 8) | ((long)difficulty << 1) | (air ? 1L : 0L);
+            long key = ((long)script.FlyingTroopFloorFor(difficulty) << 24) | ((long)script.FirstAirWaveFloorFor(difficulty) << 8) | ((long)difficulty << 1) | (air ? 1L : 0L);
             if (script.FirstTraitWaves.TryGetValue(key, out int first))
             {
                 return first;
@@ -216,8 +216,8 @@ namespace Game.Balance
                 budget *= crowd > 0f ? crowd : rules.BossWaveShare;
             }
 
-            List<TroopSpec> open = Unlocked(script.Troops, number, difficulty, false);
-            List<TroopSpec> pools = Unlocked(script.Troops, number, difficulty, true);
+            List<TroopSpec> open = Unlocked(script, enemies, number, difficulty, false);
+            List<TroopSpec> pools = Unlocked(script, enemies, number, difficulty, true);
             EnemyStats flyer = Get(enemies, script.Flyer);
             // A troop capped at the largest group size cannot take its whole share; what it could not buy makes every
             // creature of the wave tougher instead of the crowd larger.
@@ -392,12 +392,15 @@ namespace Game.Balance
             return floor > 0 && first != int.MaxValue ? Math.Max(0, floor - first) : 0;
         }
 
-        private static List<TroopSpec> Unlocked(TroopSpec[] troops, int number, int difficulty, bool pools)
+        // The troops a wave may draw from. A flying troop also waits for the difficulty's floor of its own (WaveScriptSpec.FlyingTroopFloor).
+        private static List<TroopSpec> Unlocked(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int number, int difficulty, bool pools)
         {
             var list = new List<TroopSpec>();
-            foreach (TroopSpec troop in troops)
+            int floor = script.FlyingTroopFloorFor(difficulty);
+            foreach (TroopSpec troop in script.Troops)
             {
-                if (troop.FirstWave <= number && troop.MinDifficulty <= difficulty && difficulty <= troop.MaxDifficulty && (troop.Source != 0) == pools)
+                if (troop.FirstWave <= number && troop.MinDifficulty <= difficulty && difficulty <= troop.MaxDifficulty && (troop.Source != 0) == pools
+                    && (number >= floor || !(Get(enemies, troop.Enemy)?.Flies ?? false)))
                 {
                     list.Add(troop);
                 }

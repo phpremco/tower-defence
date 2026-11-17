@@ -1052,7 +1052,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 5.2000003
         Nest: 0
-      _healthMultiplier: 1.297
+      _healthMultiplier: 1.319
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1090,20 +1090,12 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0.6
         Nest: 0
-      _healthMultiplier: 1.267
+      _healthMultiplier: 1.288
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
-      - Enemy: {fileID: 11400000, guid: 892c4a380bece3a478c63202c6d940c9, type: 2}
-        Count: 1
-        PathIndex: 1
-        Source: 0
-        Interval: 0.45
-        Delay: 0
-        Stagger: 0
-        Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 6
         PathIndex: 3
@@ -1113,7 +1105,15 @@ MonoBehaviour:
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 2
+        Count: 6
+        PathIndex: 0
+        Source: 0
+        Interval: 0.2
+        Delay: 0
+        Stagger: 2.4
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 5
         PathIndex: 3
         Source: 0
         Interval: 2
@@ -1121,14 +1121,14 @@ MonoBehaviour:
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 2
+        Count: 5
         PathIndex: 0
         Source: 0
         Interval: 2
         Delay: 2.5
         Stagger: 1
         Nest: 0
-      _healthMultiplier: 0.395
+      _healthMultiplier: 1.44
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1174,7 +1174,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 1
         Nest: 0
-      _healthMultiplier: 1.351
+      _healthMultiplier: 1.658
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1220,7 +1220,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 1
         Nest: 0
-      _healthMultiplier: 1.669
+      _healthMultiplier: 2.155
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1258,7 +1258,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 1
         Nest: 0
-      _healthMultiplier: 0.531
+      _healthMultiplier: 0.54
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1304,7 +1304,7 @@ MonoBehaviour:
         Delay: 19
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.747
+      _healthMultiplier: 1.776
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1366,7 +1366,7 @@ MonoBehaviour:
         Delay: 7.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.253
+      _healthMultiplier: 1.508
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1420,7 +1420,7 @@ MonoBehaviour:
         Delay: 5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.67
+      _healthMultiplier: 1.698
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1490,7 +1490,7 @@ MonoBehaviour:
         Delay: 5
         Stagger: 2.6
         Nest: 0
-      _healthMultiplier: 1.417
+      _healthMultiplier: 1.508
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1568,7 +1568,7 @@ MonoBehaviour:
         Delay: 7.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.223
+      _healthMultiplier: 1.244
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1638,7 +1638,7 @@ MonoBehaviour:
         Delay: 7.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.842
+      _healthMultiplier: 1.539
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1740,7 +1740,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0.6
         Nest: 0
-      _healthMultiplier: 1.3024099
+      _healthMultiplier: 1.7215763
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1842,7 +1842,7 @@ MonoBehaviour:
         Delay: 7.5
         Stagger: 2.5
         Nest: 0
-      _healthMultiplier: 0.991
+      _healthMultiplier: 1.34
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1920,7 +1920,7 @@ MonoBehaviour:
         Delay: 7.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.59
+      _healthMultiplier: 2.092
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -2014,7 +2014,7 @@ MonoBehaviour:
         Delay: 19
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.59
+      _healthMultiplier: 1.529
       _bossHealthScale: 1
       _counterCheck: 0
   - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}

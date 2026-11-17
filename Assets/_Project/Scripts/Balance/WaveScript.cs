@@ -111,11 +111,22 @@ namespace Game.Balance
         /// <summary>
         /// Per difficulty, the earliest wave the first air raid may come on (0 = as written): the difficulty's raids shift together
         /// until the first reaches it, and a floor past the last wave removes them. The solver owns it (the Easy raid rule, round
-        /// 22f, <see cref="CampaignModel.EasyRaidFloor"/>: no raid before the expected player can afford a sky gun, plus a wave).
+        /// 22f, <see cref="CampaignModel.EasyRaidFloor"/>: no raid before the expected player can afford a sky gun, plus a wave;
+        /// the first-flyer rule, round 77, <see cref="BalanceRules.FlyersAfterBounties"/>).
         /// </summary>
         public int[] FirstAirWaveFloor = { 0 };
 
         public int FirstAirWaveFloorFor(int difficulty) => FirstAirWaveFloor == null || FirstAirWaveFloor.Length == 0 ? 0 : FirstAirWaveFloor[difficulty < FirstAirWaveFloor.Length ? difficulty : FirstAirWaveFloor.Length - 1];
+
+        /// <summary>
+        /// Per difficulty, the earliest wave a flying troop may join (0 = as written). The solver owns it: the first-flyer rule
+        /// (round 77, <see cref="BalanceRules.FlyersAfterBounties"/>) holds the troops back with the raids, because it is about
+        /// the first flyer a player meets, whatever sends it. Apart from <see cref="FirstAirWaveFloor"/>: the Easy raid rule
+        /// moves raids only and leaves a nest's few flyers where the script wrote them.
+        /// </summary>
+        public int[] FlyingTroopFloor = { 0 };
+
+        public int FlyingTroopFloorFor(int difficulty) => FlyingTroopFloor == null || FlyingTroopFloor.Length == 0 ? 0 : FlyingTroopFloor[difficulty < FlyingTroopFloor.Length ? difficulty : FlyingTroopFloor.Length - 1];
 
         /// <summary>
         /// The builder bot's lever (round 22, WaveTuning): a scale on the human target pressure per difficulty (Easy to Psycho; a

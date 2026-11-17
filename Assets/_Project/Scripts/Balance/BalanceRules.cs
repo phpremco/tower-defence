@@ -350,7 +350,7 @@ namespace Game.Balance
         /// pressure is the sky's, and the sky guns the ledger buys for it stay out of the purse for the rest of the level).
         /// When the wave as a whole then asks more than the hero cap, its crowd gives way and the boss keeps its health.
         /// </summary>
-        public float[] LevelBossAlone = { 0.2f, 0.3f, 0.4f, 0.45f };
+        public float[] LevelBossAlone = { 0.2f, 0.25f, 0.4f, 0.45f };
 
         public float LevelBossAloneFor(int difficulty) => LevelBossAlone.Length == 0 ? 0f : LevelBossAlone[System.Math.Min(difficulty, LevelBossAlone.Length - 1)];
 
@@ -397,6 +397,18 @@ namespace Game.Balance
         /// gets no raid. <see cref="CampaignModel.EasyRaidFloor"/> derives the floor from the ledger's purse walk at every solve.
         /// </summary>
         public int EasyRaidMarginWaves = 1;
+
+        /// <summary>
+        /// The first-flyer rule per difficulty, Easy to Psycho (Remco, round 77): where true, no flyer comes before the bounties
+        /// pay for one gun made for the sky. The wave that sky gun must stand in is the first flyer wave plus the grace waves
+        /// (<see cref="CounterPurse"/>, the affordability check of round 76), and the bounties of every wave before it must
+        /// reach the cheapest owned sky gun's price; the solver moves the raids and holds the flying troops until they do
+        /// (<see cref="CampaignModel.BuildWaves"/>). So a player who spent the opening on ground guns can still earn the
+        /// counter in time. Hard and Psycho players are expected to know the level and keep the coins back.
+        /// </summary>
+        public bool[] FlyersAfterBounties = { true, true, false, false };
+
+        public bool FlyersAfterBountiesFor(int difficulty) => FlyersAfterBounties.Length > 0 && FlyersAfterBounties[System.Math.Min(difficulty, FlyersAfterBounties.Length - 1)];
 
         /// <summary>
         /// The finale probe (round 22f) finds the boss health multiple the creative reference bot just beats on Medium; the data

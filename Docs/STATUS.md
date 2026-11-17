@@ -11942,3 +11942,179 @@ bot stamp and the calibration's inputs are untouched; the round's own copies are
 - The plan search is still blind to a rear rift; the skilled rung's pick still comes from round 68's `plan_records.txt`
   (the best strategy on that data, played on today's).
 - A wave preview, a softer base rule, later first flyers: all Remco's decisions, nothing built.
+
+## Round 77: structure damage factor, first flyers after the bounties, a lighter Medium boss factor, Rotbloom at 28200 (2026-11-17)
+
+Not committed. Remco's four decisions of 2026-11-17 as factors and rules in data, one at a time, each measured alone with
+the frozen bot (stamp `bot=2:90273749`; the probe and bot code are untouched). Every run on the silent clones w1-w5
+(EditMode on w6); the open editor only for recompiles, the solve stage and report scripts, each after `editor_status` read
+`playMode: stopped`. Save MD5 42fbe06b38e133cecfe2014def5c833c before and after every batch, no `settings.json`, no worker
+left. Commands: Docs/COMMANDS.md, "Round 77".
+
+### 1. The structure damage factor
+
+- **A multiplier already existed**: `DifficultyProfile._structureDamageMultiplier`, 0.6 / 0.75 / 1 / 1.4 (Easy to Psycho),
+  on every bite (base, gates, towers, hero, boss powers). Remco's guess "0.6 on Easy and Medium" was made without knowing
+  that, so it was read as a factor on top.
+- **The multiplier cannot be the lever.** The siege model reads it, and Medium is the solver's base curve: setting Medium
+  to 0.45 re-solved all four difficulties of all six levels (Medium +2 to +7 % health, Hard and Psycho moved too). So the
+  solver answered softer bites with tougher creatures. The factor is therefore a field of its own:
+  `DifficultyProfile._structureDamageFactor` (Range 0.1 to 1, `OnValidate` warns outside it), in play
+  `StructureDamageMultiplier` = multiplier x factor (every caller unchanged), and the balance model reads
+  `CalibratedStructureDamage` (the multiplier alone, `BalanceLedger.Stats`). With that the solve moves no wave for the factor.
+- **Values** (`BalanceSheet.EasyStructureFactor` 0.75, `MediumStructureFactor` 0.6): both difficulties bite at 0.45 of a
+  creature's damage (Easy 0.6 x 0.75, Medium 0.75 x 0.6); Hard 1 and Psycho 1.4 unchanged. Easy was given 0.75 only so it
+  never bites harder than Medium; it was won everywhere before and after.
+- **Measured on Medium** (overlay of `Medium.asset`, 180 runs each; seeds won at x0.8 / 0.9 / 1 / 1.12 / 1.25):
+
+| Cell | Rung | 0.75 (round 76) | factor 0.8 (bites 0.6) | **factor 0.6 (bites 0.45)** | 0.6 on base and gates only |
+| --- | --- | --- | --- | --- | --- |
+| Landing Site Medium | skilled | 3 3 2 2 0 | 3 3 3 1 1 | 3 3 3 2 0 | 3 3 3 3 1 |
+| Glass Meadows Medium | sensible | 3 2 2 0 0 | 3 3 2 1 0 | 3 3 3 0 0 | 3 3 3 0 0 |
+| Glass Meadows Medium | skilled | 3 3 3 3 1 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Medium | sensible | 2 1 1 1 0 | 3 1 1 1 1 | **3 3 3 3 3** | 3 1 1 1 1 |
+| Fault Line Medium | skilled | 3 3 3 3 2 | 3 3 3 3 2 | 3 3 3 3 3 | 3 3 3 3 2 |
+| Quartz Flats Medium | sensible | 1 0 0 0 0 | 3 0 0 0 0 | 3 0 0 0 0 | 3 0 0 0 0 |
+| Quartz Flats Medium | skilled | 3 3 3 2 0 | 3 3 3 2 1 | 3 3 3 3 0 | 3 3 3 3 1 |
+| Medium, runs won of 180 | | 134 | 146 | **155** | 149 |
+| lost in the last wave from a base at 90 %+ | | 28 of 46 lost | 22 of 34 | 25 of 25 | 22 of 31 |
+
+  (Landing Site sensible, Shard Ridge and Crysium Vein: 15 of 15 or one seed more in every column.)
+- 0.6 wins most and is the only value that ends Fault Line Medium's resting Skyray (sensible 1 of 3 to 3 of 3 at the data).
+  That fix comes from the softer bites on **towers** (the Flak survives): on base and gates alone the cell stays 1 of 3.
+  Quartz Flats Medium's finale is untouched by any factor: wave 17 takes the whole base in one wave at every value.
+- **The grace windows are distorted by any softening, and leaving the towers out does not help** (the brief's fallback was
+  built and measured: 9 breaks against 10). A row without the counter falls by losing its base, so softer bites keep it a
+  wave or two longer. No row wins. Seven allowances were added or lengthened, each with its reason in
+  `GraceWindows.Allowances` and in Docs/COMBAT_RULES.md section 6: Glass Meadows Medium 1 -> 2 and Shard Ridge Medium 1 -> 2
+  (armour), Fault Line Easy 1 (armour, new) and 1 -> 2 (air), Crysium Vein Easy 1 (air, new), Fault Line Medium 2 (air, new),
+  Quartz Flats Medium 3 (armour, new; the last two also carry the moved raids of item 2). **Remco's call**: accept the later
+  falls, or take the factor off Easy (three of the seven go away) or back to 0.8 on Medium.
+
+### 2. First flyers on Easy and Medium only after the bounties pay one sky gun
+
+- `BalanceRules.FlyersAfterBounties = { true, true, false, false }`, applied by `CampaignModel.BuildWaves` at every solve
+  (`HoldFlyersUntilPayable`): while the first flyer wave plus the grace waves comes before the bounties reach the cheapest
+  owned sky gun's price, the raids move a wave later together and flying troops wait (`WaveScriptSpec.FlyingTroopFloor`, new,
+  apart from the Easy raid rule's floor, which stays as it was). The purse rule is one definition for the solver and the
+  check: `Game.Balance.CounterPurse` (new), used by `CounterAffordability`. Medium is solved again from scratch when its raids
+  move; the Medium floor is set aside while Hard and Psycho are solved, so they copy the unmoved curve.
+- **What moved:** only Fault Line Medium and Quartz Flats Medium (the lab and the solve agree: every Easy, Hard and Psycho
+  wave identical). Fault Line Medium first Skyray wave 3 -> 6 (raids 6, 9, 12, 15; total health x1.14); Quartz Flats Medium
+  4 -> 6 (raids 6, 10, 15, Shalebats now in the ambush waves 8 and 13; total health x0.92, last wave x1.886 -> x2.191).
+- `affordability.txt`: both Medium flyer warnings are gone (4 -> 3 warnings: Fault Line Hard and Psycho as decided, and a
+  new one, Quartz Flats Medium **armour**: the re-solve brings the first Cragback in wave 4, bounties 98 against the
+  Cannon's 100). New gate `CounterAffordabilityTests.FirstFlyers_WhereTheRuleHolds_ArePayableFromBounties` (fails, not warns).
+- **Measured** (after item 1; 60 runs): Fault Line Medium both rungs 3 3 3 3 3 before and after. Quartz Flats Medium
+  sensible 3 0 0 0 0 -> **3 3 3 3 0**; skilled 3 3 3 3 0 -> **3 3 2 0 0** (worse: see item 3).
+
+### 3. Bosses: factors instead of exceptions
+
+- **Audit: there is no per-level boss health number.** `_bossHealthScale` in the wave assets (Quartz Flats Medium 1.18
+  among them) is the solver's output of four per-difficulty rules of round 64/65: a floor (`LevelBossHealthFloor`
+  0.5 / 0.75 / 0.9 / 0.9 of book health), a share of the expected player's firepower the boss must ask alone
+  (`LevelBossAlone` 0.2 / 0.3 / 0.4 / 0.45), a growth cap and a most-alone cap. That is already "a factor per difficulty
+  times the level's budget at that wave". Flying bosses (Storm Matriarch) simply follow their wave.
+- **The per-level numbers that do exist** are in `Tools/PlayTest/wave_tuning.txt`: a builder scale on 17 of 24 cells
+  (Easy 0.66 to 0.87, Medium 0.757 to 1, Hard 0.658 to 1, Psycho 0.45 to 0.757), `bosscrowd 0.35` on Shard Ridge Hard and
+  Psycho, and the plated / swarm / tempo / raid / armourgrowth levers; plus `AirRaidScale` per level in the level specs.
+  None was touched: replacing 17 scales by one ladder is a re-balance of the continent, proposed below, not done.
+- **Changed, as a rule:** `LevelBossAlone` Medium 0.3 -> 0.25. On paper (BossLab) it moves three boss waves and nothing
+  else: Shard Ridge Medium Brood Mother 1140 -> 950 hp, Quartz Flats Medium Core Wisp 1529 -> 1315, Crysium Vein Medium
+  Pack Alpha 895 -> 877. Measured (90 runs): Quartz Flats Medium sensible 3 3 3 3 0 -> 3 3 3 3 2, skilled unchanged
+  (3 3 2 0 0); Shard Ridge and Crysium Vein Medium 15 of 15 for both rungs before and after.
+- **Quartz Flats Medium's finale is not a boss-health problem.** Trace of the skilled rung's lost seed: the Core Wisp dies
+  at 0.99 of the road and the base still falls in wave 17; the crowd of that wave (x2.19) with the hero down takes it.
+  The sensible rung now wins the cell at the data (0 of 3 -> 3 of 3) through items 1 and 2. The skilled rung went from
+  3 of 3 to 2 of 3 at the data because it plays the strategy picked from round 68's `plan_records.txt` (raids at 4, 8,
+  13, 16); replayed on today's data the cell's best searched plan wins 3 of 3 (`r77_acceptance_moved_cells.txt`). The pick
+  is part of the frozen bot, so it was not refreshed.
+- Continent bosses: not touched. The factor of item 1 makes them easier on Easy and Medium (finale probe, below).
+
+### 4. Rotbloom
+
+- **Round 76's report was wrong on one point:** the 3550 was not a lost commit. Round 68 set it back on purpose
+  (`R68Rotbloom.cs`: at 28200 the probe lost Medium at x0.92 and the paper cap was broken 6.8 times) and named it in
+  `ContinentFinaleTests.PaperHeldBosses`.
+- Restored as decided: generator spec (`ProjectGenerator.Bosses.cs`) and asset 28200 (`Tools/PlayTest/Scripts/R77Rotbloom.cs`).
+  Finale probe at 28200 on today's data: **won on all four difficulties**, holds Easy x1.52, Medium x1.00, Hard x1.00,
+  Psycho x1.18 (round 68: Medium lost at x0.92; the softer bites of item 1 carry it over the line). It sits exactly on the
+  edge on Medium and Hard. The `PaperHeldBosses` entry is removed; the cap test passes because the probe beats it.
+
+### Final measurement (720 runs, bot v2, stamp `bot=2:90273749; data=645e4d4c; game=b815fb85`)
+
+`Tools/PlayTest/pressure_r77_final_records.txt`; five workers passed, 0 probe errors. Every Easy, Hard and Psycho cell is
+identical to round 76 in seeds won at every multiple. Medium (seeds won at x0.8 / 0.9 / 1 / 1.12 / 1.25):
+
+| Cell | Skilled, round 76 | now | Sensible, round 76 | now |
+| --- | --- | --- | --- | --- |
+| Landing Site Medium | 3 3 2 2 0 | 3 3 3 3 1 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Glass Meadows Medium | 3 3 3 3 1 | 3 3 3 3 3 | 3 2 2 0 0 | 3 3 3 0 0 |
+| Shard Ridge Medium | 3 3 3 3 2 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Medium | 3 3 3 3 2 | 3 3 3 3 3 | 2 1 1 1 0 | 3 3 3 3 3 |
+| Quartz Flats Medium | 3 3 3 2 0 | **3 3 2 0 0** | 1 0 0 0 0 | 3 3 3 3 2 |
+| Crysium Vein Medium | 3 3 3 3 2 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+
+Against the targets of the second critic:
+
+| Target | Result |
+| --- | --- |
+| Easy all won | 180 of 180, as before |
+| Medium won by the sensible rung at the data on most seeds | 18 of 18 (round 76: 11 of 18) |
+| Hard harder than Medium for the sensible rung | Yes on four levels; equal (15 of 15 both) on Fault Line and Crysium Vein. No cell has Medium harder than Hard any more (round 76: Fault Line, Quartz Flats) |
+| Skilled wins at the data everywhere | Not on Quartz Flats Medium (2 of 3, new, the stale pick of item 3), Quartz Flats Hard 1 of 3, Psycho 2 of 3 and Landing Site Psycho 1 of 3 (all three unchanged) |
+| Fewer all-or-nothing endings | Lost in the last wave from a base at 90 %+: **77 of 213 lost runs (36 %) -> 64 of 183 (35 %)**; on Medium 28 of 46 -> 15 of 16. The count fell, the share did not: what is still lost on Medium is almost only that (Quartz Flats' wave 17, Landing Site's rift, Glass Meadows' last wave). Won runs: 507 -> 537; won but hurt (base under 90 %) 103 -> 113 |
+
+### Gates
+
+- **Grace windows** (yardstick rows of all 12 Easy and Medium cells measured again, 432 runs): gate holds with the seven
+  allowances of item 1; 94 rows: 49 in time, 1 early, 38 late inside an allowance, 6 not judged. No row without the
+  counter wins. `calibration_records.txt` and `yardstick_partial.txt` now carry these rows (the gate test reads them).
+- **Acceptance** (searched plans of the 12 cells replayed, 309 runs, then the suite on w6; `r77_acceptance_moved_cells.txt`):
+  Fault Line Medium FAIL -> PASS; Landing Site Easy PASS -> FAIL (the naive row loses 3 of 3 in wave 12). That one is
+  **not from this round**: measured with HEAD's Easy profile the naive row loses the same three seeds; it is the authored
+  rift of round 74, and the committed `acceptance.txt` predates it. The other ten verdicts are unchanged. The committed
+  `acceptance.txt`, `plan_records.txt` and `plan_replay_partial.txt` were left as they are (the last two are in the bot stamp).
+- **Finale probe** (24 cells, `finale_probe.txt` updated, copy `r77_finale_probe.txt`): every boss won on every difficulty.
+  The factor moved Easy and Medium: Medium holds Gravemaw x1.18 -> x1.40, Frost Warden 1.18 -> 1.34, Sealed One 1.18 ->
+  1.40, Shattered 1.18 -> 1.40, Cinder Matriarch 1.18 -> 1.13, Rotbloom x1.00. No boss health was changed for it.
+- **EditMode on w6, whole suite: 1134 / 1080 passed / 0 failed / 54 skipped** (1131 / 1078 / 0 / 53; +3 tests:
+  `FirstFlyers_WhereTheRuleHolds_ArePayableFromBounties`, two in `DifficultyProfileTests`). The extra skip is
+  `PlanSearchTests`' guard "the calibration is stale": Rotbloom's health and `LevelBossAlone` are inputs of its hash.
+  `CombatRulesTests` and the grace tests green. Compile clean, console 0 errors.
+- `Data/Difficulty/*.asset` keep their localisation keys (only the factor line was added to Easy and Medium).
+
+### Open questions for Remco
+
+1. The grace windows: seven rows fall one to three waves later (item 1). Accept, or soften less?
+2. Easy and Medium now bite the same (0.45). Is that wanted, or should Easy keep its old bite (factor 1), which makes
+   Medium the softer of the two?
+3. The continent bosses became 15 to 20 % easier to hold on Medium through the factor. Re-run the finale stage to put
+   them back on x1.18, or leave it?
+4. Rotbloom wins at exactly x1.00 on Medium and Hard: keep 28200 or let the finale stage size it?
+5. Quartz Flats Medium's last wave (crowd x2.19) still ends runs from a full base, and the cell's armour counter is now
+   two coins short from bounties. A rule for the last wave's crowd would be the general way; nothing was changed for it.
+6. One ladder of builder scales per difficulty in place of the 17 per-cell scales: a separate round, yes or no?
+
+### For bot version 3
+
+- The known ones: a sky gun beside the base when flyers bite out of reach; reading the wave preview HUD (round 78).
+- **The skilled rung's pick is stale**: it takes the best strategy of round 68's `plan_records.txt`. After a wave change
+  the plans must be replayed (or searched again) and the pick refreshed; today that changes the bot stamp.
+- R4 kept (two rift Cragbacks on Landing Site Psycho). R6 Shard Ridge Hard: no change (skilled 15 of 15, sensible 11 of 15,
+  as in round 76).
+
+### Changed files
+
+- Game code: `Scripts/Levels/DifficultyProfile.cs`, `BalanceLedger.cs`, `CounterAffordability.cs`;
+  `Scripts/Balance/CounterPurse.cs` (new, with Unity's `.meta`), `BalanceRules.cs`, `CampaignModel.cs`, `WaveComposer.cs`,
+  `WaveScript.cs`.
+- Editor: `BalanceSheet.cs`, `ProjectGenerator.cs`, `ProjectGenerator.Bosses.cs`, `GraceWindows.cs`.
+- Tests: `CounterAffordabilityTests.cs`, `ContinentFinaleTests.cs`, `DifficultyProfileTests.cs` (new, with `.meta`).
+- Data (through the solve stage and `R77Rotbloom.cs`): `Data/Difficulty/Easy.asset`, `Medium.asset`;
+  `Data/Waves/Waves_C1_03.asset` to `Waves_C1_06.asset`; `Data/Enemies/Rotbloom.asset`.
+- Tools: `pressure_endings.py`, `refresh_assets.cs`, `Scripts/R77Rotbloom.cs` (new); `Scripts/BossLab.cs` (bool lists).
+- Results: `pressure_r77_sd060*`, `_sd045*`, `_siege060*`, `_flyers*`, `_boss*`, `_final*`; `r64_lab_r77_alone025.txt`;
+  `r77_acceptance_moved_cells.txt`, `r77_replay_moved_cells*.txt`, `r77_finale_probe.txt`; `affordability.txt`,
+  `grace_windows.txt`, `finale_probe.txt`, `calibration_records.txt`, `yardstick_partial.txt` (updated).
+- Docs: `Docs/COMMANDS.md` ("Round 77"), `Docs/COMBAT_RULES.md` (the allowance table), this entry.

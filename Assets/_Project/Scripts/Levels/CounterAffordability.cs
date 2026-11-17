@@ -15,7 +15,8 @@ namespace Game.Levels
     /// starting money and the bounty of every creature of the waves before that one, through the difficulty's income share
     /// (<see cref="Game.Economy.Wallet.Earn"/>). The game pays no bonus for a cleared wave; the early-call bonus and a
     /// harvest drone's ore are the player's own doing and are left out. Every creature is taken as killed, so the coins are
-    /// an upper bound. No bot, no balance model.
+    /// an upper bound. No bot, no balance model. The deadline and the purse are <see cref="CounterPurse"/>'s, the rule the wave
+    /// solver holds the first flyers of Easy and Medium to (round 77).
     /// </summary>
     public static class CounterAffordability
     {
@@ -78,7 +79,7 @@ namespace Game.Levels
 
             public Verdict Verdict =>
                 string.IsNullOrEmpty(CounterId) ? Verdict.NoCounterOwned
-                : KillCoins >= Price ? Verdict.Payable
+                : CounterPurse.PayableFromBounties(KillCoins, Price) ? Verdict.Payable
                 : StartingMoney + KillCoins >= Price ? Verdict.NeedsStartingMoney
                 : Verdict.OutOfReach;
 
@@ -105,8 +106,7 @@ namespace Game.Levels
                     continue;
                 }
 
-                int grace = GrowthWindow.GraceWaves[Math.Min(difficultyIndex, GrowthWindow.GraceWaves.Length - 1)];
-                int deadline = Math.Min(first + grace, waves.Length);
+                int deadline = CounterPurse.DeadlineWave(first, difficultyIndex, waves.Length);
                 TowerDefinition counter = CheapestCounter(level, ownedTowerIds, trait);
                 rows.Add(new Row(level.name, difficultyIndex, trait, first, deadline, start, KillCoins(waves, difficulty, deadline - 1), counter != null ? counter.Id : string.Empty, counter != null ? counter.BuildCost : 0));
             }
@@ -163,12 +163,8 @@ namespace Game.Levels
                 }
             }
 
-            // The wallet carries the remainder of every bounty over, so the total is the floor of the scaled sum.
-            return (int)Math.Floor(bounty * (double)difficulty.IncomeMultiplier + IncomeEpsilon);
+            return CounterPurse.KillCoins(bounty, difficulty.IncomeMultiplier);
         }
-
-        // Guards the floor against a sum like 119.99999 that the wallet's running remainder would have paid as 120.
-        private const double IncomeEpsilon = 1e-4;
 
         /// <summary>The first wave (1-based) that sends a creature with the trait, bosses aside (a boss carries its own fight); 0 for none.</summary>
         public static int FirstWave(WaveDefinition[] waves, EnemyTraits trait)

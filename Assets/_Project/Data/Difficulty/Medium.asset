@@ -19,6 +19,7 @@ MonoBehaviour:
   _rewardMultiplier: 2
   _powerCurrencyMultiplier: 1
   _structureDamageMultiplier: 0.75
+  _structureDamageFactor: 0.6
   _incomeMultiplier: 0.95
   _startingMoneyMultiplier: 1
   _bossHealthShare: 1

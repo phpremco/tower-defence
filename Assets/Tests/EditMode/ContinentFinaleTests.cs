@@ -283,12 +283,9 @@ namespace Game.Tests
         }
 
         // Bosses whose health the paper cap (EveryContinentBoss_AtItsFinale_IsKillableInsideTheHeroCap) holds instead of the probe,
-        // each with its reason. Round 68: the Rotbloom held x8.9 in play at 3550 (x1.18 before round 67) but asks 6.8 times the
-        // hero cap on paper at the probe's 28200; the model and the game disagree on its petals since round 67.
-        private static readonly System.Collections.Generic.Dictionary<string, string> PaperHeldBosses = new System.Collections.Generic.Dictionary<string, string>
-        {
-            ["Rotbloom"] = "play and paper disagree since round 67 (round 68: holds x8.9 in play at 3550, 6.8 times the cap on paper at 28200); kept at 3550 until its mechanic is re-modelled",
-        };
+        // each with its reason. None since round 77: the Rotbloom was held at 3550 in round 68 (the paper cap asked for it, the
+        // probe for 28200); Remco put it back at the probe's 28200 and the probe beats it there on every difficulty.
+        private static readonly System.Collections.Generic.Dictionary<string, string> PaperHeldBosses = new System.Collections.Generic.Dictionary<string, string>();
 
         // 0.1 until round 29; the one-seed probe gives holds that differ by up to 15 % between runs on identical data (probes 6 and 8:
         // Matriarch Easy 1.40 / 1.52, Shattered Easy 1.66 / 1.40), so the band is the probe's own spread.

@@ -23,16 +23,16 @@ counter takes when the bounties fall short.
 | C1_03 Psycho | Armoured | w4 | w4 | Cannon | 100 | 720 | 100 | - | payable from bounties |
 | C1_04 Easy | Airborne | w7 | w9 | Rocket | 120 | 208 | 182 | - | payable from bounties |
 | C1_04 Easy | Armoured | w8 | w10 | Cannon | 100 | 208 | 235 | - | payable from bounties |
-| C1_04 Medium | Airborne | w3 | w4 | Rocket | 120 | 260 | 52 | 26% | WARNING: only from the starting money |
-| C1_04 Medium | Armoured | w8 | w9 | Cannon | 100 | 260 | 189 | - | payable from bounties |
+| C1_04 Medium | Airborne | w6 | w7 | Rocket | 120 | 260 | 125 | - | payable from bounties |
+| C1_04 Medium | Armoured | w8 | w9 | Cannon | 100 | 260 | 193 | - | payable from bounties |
 | C1_04 Hard | Airborne | w3 | w4 | Rocket | 120 | 260 | 88 | 12% | WARNING: only from the starting money |
 | C1_04 Hard | Armoured | w9 | w10 | Cannon | 100 | 260 | 416 | - | payable from bounties |
 | C1_04 Psycho | Airborne | w3 | w3 | Rocket | 120 | 780 | 71 | 6% | WARNING: only from the starting money |
 | C1_04 Psycho | Armoured | w10 | w10 | Cannon | 100 | 780 | 540 | - | payable from bounties |
 | C1_05 Easy | Airborne | w8 | w10 | Rocket | 120 | 224 | 267 | - | payable from bounties |
 | C1_05 Easy | Armoured | w4 | w6 | Cannon | 100 | 224 | 106 | - | payable from bounties |
-| C1_05 Medium | Airborne | w4 | w5 | Rocket | 120 | 280 | 80 | 14% | WARNING: only from the starting money |
-| C1_05 Medium | Armoured | w5 | w6 | Cannon | 100 | 280 | 111 | - | payable from bounties |
+| C1_05 Medium | Airborne | w6 | w7 | Rocket | 120 | 280 | 146 | - | payable from bounties |
+| C1_05 Medium | Armoured | w4 | w5 | Cannon | 100 | 280 | 98 | 1% | WARNING: only from the starting money |
 | C1_05 Hard | Airborne | w4 | w5 | Rocket | 120 | 280 | 133 | - | payable from bounties |
 | C1_05 Hard | Armoured | w5 | w6 | Cannon | 100 | 280 | 191 | - | payable from bounties |
 | C1_05 Psycho | Airborne | w4 | w4 | Rocket | 120 | 840 | 127 | - | payable from bounties |
@@ -46,4 +46,4 @@ counter takes when the bounties fall short.
 | C1_06 Psycho | Airborne | w5 | w5 | Rocket | 120 | 900 | 176 | - | payable from bounties |
 | C1_06 Psycho | Armoured | w9 | w9 | Cannon | 100 | 900 | 596 | - | payable from bounties |
 
-4 warnings of 40 rows.
+3 warnings of 40 rows.

@@ -1451,3 +1451,34 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
   (`workers.sh run measure 5 "cells=3:2,5:1" "seeds=1,2,3"`), `GraceReport.cs` and compare `grace_windows.txt`;
   `finale_workers.sh` and copy `finale_probe.txt` aside. Then `git checkout -- Tools/PlayTest/plan_records.txt Tools/PlayTest/plan_replay_partial.txt Tools/PlayTest/calibration_records.txt Tools/PlayTest/yardstick_partial.txt Tools/PlayTest/grace_windows.txt Tools/PlayTest/finale_probe.txt`:
   `plan_records.txt` is part of the bot stamp, the others feed the calibration.
+
+## Round 77: structure damage factor, first-flyer rule, boss factor, Rotbloom (added 2026-11-17)
+
+- **How the levels end (the all-or-nothing share):** `python Tools/PlayTest/pressure_endings.py <records> [<records before>] [--cells 3:1,4:1] [--difficulties 0,1]`
+  prints, per file, rung and difficulty: runs won by how much base they keep, runs lost in the last wave, and the share of
+  lost runs that fell in the last wave from a base at 90 % or more. Same stamp rule as `pressure_wins.py`.
+- **A difficulty factor measured before it is in the data:** copy `Assets/_Project/Data/Difficulty/Medium.asset` into an
+  overlay folder (same relative path), change the number there and run `PR_OVERLAY=<folder> PR_RECORDS=... bash Tools/PlayTest/pressure.sh "0,1,2,3,4,5" "1"`
+  (180 runs, 15 minutes). The project is not touched; the final value goes in through `BalanceSheet` and the solve stage.
+- **The structure damage factor** is `BalanceSheet.EasyStructureFactor` / `MediumStructureFactor` -> `DifficultyProfile._structureDamageFactor`
+  (the solve stage writes the profiles too). The wave solver reads `CalibratedStructureDamage` (the multiplier without the
+  factor), so changing the factor moves no wave. Changing `_structureDamageMultiplier` itself re-solves every difficulty of
+  every level (Medium is the solver's base curve): do not use it as a softness lever.
+- **The first-flyer rule** is `BalanceRules.FlyersAfterBounties` (Easy to Psycho), applied by `CampaignModel.BuildWaves`
+  at every solve; `CounterAffordabilityTests.FirstFlyers_WhereTheRuleHolds_ArePayableFromBounties` fails when the stored
+  waves break it. The purse rule both sides share is `Game.Balance.CounterPurse`.
+- **A rule tried on paper before the solve:** `Tools/PlayTest/r64_lab_arg.txt` with `rule.<Field>=...` lines and
+  `BossLab.Run` (round 64) now also takes `bool[]` fields (`rule.FlyersAfterBounties=false,false,false,false`). It prints
+  per cell how many waves would move against the stored set and every level boss with what it asks alone; no asset is written.
+  Restore the arg file with `git checkout` afterwards.
+- **After a `git checkout` of an asset the open editor still holds the old version in memory** until it refreshes: a report
+  script then reads data that is not on disk (the grace report mixed two wave sets this round). Run
+  `unity command eval_file --file Tools/PlayTest/refresh_assets.cs` first.
+- **Never run a generator script right after an edit without reading `compilationFailed`:** `run_script` runs on the last
+  good assemblies when the compile failed, so the solve wrote the previous code's waves this round. Check
+  `unity command console_status --result-only` for `"compilationFailed": false` in the same command chain.
+- **The grace gate after a difficulty or wave change:** `bash Tools/PlayTest/workers.sh run measure 5 "difficulties=0,1" "seeds=1,2,3"`
+  (12 cells, 8 minutes), then `GraceReport.cs`. `CombatRulesTests` reads `calibration_records.txt`, so the measured records
+  stay in the tree this time (they are the rows of today's data).
+- **Rotbloom:** `Tools/PlayTest/Scripts/R77Rotbloom.cs` writes the asset's health (28200, as the generator's spec); then
+  `bash Tools/PlayTest/finale_workers.sh` (24 cells, 5 minutes).
