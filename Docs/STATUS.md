@@ -12118,3 +12118,236 @@ Against the targets of the second critic:
   `r77_acceptance_moved_cells.txt`, `r77_replay_moved_cells*.txt`, `r77_finale_probe.txt`; `affordability.txt`,
   `grace_windows.txt`, `finale_probe.txt`, `calibration_records.txt`, `yardstick_partial.txt` (updated).
 - Docs: `Docs/COMMANDS.md` ("Round 77"), `Docs/COMBAT_RULES.md` (the allowance table), this entry.
+
+## Round 78: next-wave preview in the HUD, bot version 3 measured against version 2 (2026-11-17)
+
+Not committed. Two parts, in the brief's order: the preview Remco approved on 2026-11-17, then the reference players
+rebuilt on it (bot version 3), frozen and measured on all 24 cells. **No level data changed** (data stamp 645e4d4c, as in
+round 77). No package, no generator run, the Game view untouched. Play Mode in the open editor only for the stills (each
+time after `editor_status` read `playMode: stopped`; Remco's save copied aside first, MD5 42fbe06b38e133cecfe2014def5c833c
+before and after every run, every `settings.json` the runs wrote deleted); every probe run on the silent clones w1-w5,
+EditMode on w6. Commands: Docs/COMMANDS.md, "Round 78".
+
+### A. The next-wave preview
+
+- **What the player sees.** In the top strip, right of the wave line and left of the speed, pause, call and Codex icons:
+  the word "Next" and one chip per creature type of the wave that starts next. A chip is the creature's picture (rendered
+  from its model once per level, like the tower cards), with to its right a mark over a number: a **light blue wing** (the
+  icon of the tower cards' air badge, so the creature's mark and the mark on the gun that answers it are one picture) on
+  flyers, a **steel shield** (painted in code, `TraitBadgeArt`) on plated creatures, and "x12" for how many come on this
+  difficulty. A **boss** is a red chip with the boss marker and the word BOSS, not its picture and not its name.
+  The list is ranked: boss, flyers, plated, then the rest by number.
+- **When.** From the opening countdown (it shows wave 1) to the start of the last wave; during a wave and between waves it
+  shows the wave that comes next, which is exactly the wave "Call next wave" (round 73) would bring, because both read
+  the same thing: `LevelContext.NextWave`, set by the level controller. After the last wave has started the strip is gone.
+- **What stays a surprise.** The preview adds a creature type's groups up whatever their entrance, so it never says where
+  anything comes from: a rift behind the gate is still announced by its marker on the ground and Voss's warning when it
+  opens, as before (nothing of that was touched). What a boss calls in during the fight is not listed either, and a boss
+  is not shown before it is met.
+- **Fit.** The strip lives inside the top bar (60 units high in the bar's 72), so it covers no field and the keep-out of
+  the world labels is unchanged. It measures its room between the wave line (which grows with "BOSS" and two-digit
+  waves) and the icon row: chips are 106 wide when there is room (picture, then mark and number beside it), narrow down
+  to 62 (mark and number slide over the picture's right side), then the word "Next" goes, and only then the last types
+  (the plain walkers, by the ranking) fold into a "+N" chip. The first continent's widest waves list six types; six fit at
+  the default margin and at a 5 % safe margin (without the label), and `WavePreviewTests` fails when a wave ever needs more.
+  Numbers are at the HUD's readable size with a dark edge; nothing needs a pointer, a hover or a focus.
+- **Data-driven.** `Game.Levels.WavePreview` (pure): the wave's groups through `WaveScheduler.CountOf`, so the numbers are the
+  spawned numbers on the difficulty (a boss is one). Strings `hud.preview_next`, `hud.preview_count`, `hud.preview_more`,
+  `hud.preview_boss` in `en.ui_level.txt` (no BOM).
+- **Seen** (stills in `ArtSource/Previews/QA/`, each at 1920x1080 and 1280x720; the Game view itself as `_gameview`):
+  - `r78_opening`: Landing Site before wave 1: "Wave 0/12", "Next", one chip (an orange Skitter, x12), "First wave in 2s"
+    under the wave line. The chip's frame is faint against the bar; the creature and the number carry it.
+  - `r78_plated`: wave 7 next: a Cragback (grey-brown dome) with the shield mark and x2, a Skitter x16.
+  - `r78_boss`: wave 12 next: a red chip with the boss marker and BOSS, Cragback x9 with the shield, Skitter x36.
+  - `r78_flyers`, `r78_flyers_gameview`: Crysium Vein, wave 7 next: a Shalebat with the wing mark and x5, Skitter x9,
+    Roller x1. Three wide chips: picture left, mark top right, number bottom right.
+  - `r78_five`, `r78_six`, `r78_six_gameview`: waves 13 and 18 next (five and six types, the widest of the continent): the
+    chips narrow to about 90 units (five) and 70 units (six), the number slides over the picture's lower right corner and
+    stays readable through its dark edge; with six the boss chip drops its marker and keeps the word. The strip ends 18
+    units before the icons.
+  - `r78_low_five`, `r78_low_six`: the Low (Switch) profile with a 5 % safe margin: five chips with the label, six
+    without it (chips near their narrowest, 62 units); at 1280x720 the numbers are an 18 px font and read cleanly, the marks are
+    about 16 px and are told apart by shape (wing, shield) more than by colour.
+  - What is weak: the creature pictures are small (36 px at 720p) and stippled like their skins, so a species is told by
+    colour and outline, not by detail (Skitter orange and spidery, Cragback a dome, Skyray blue and flat, Roller yellow and
+    ribbed, Prowler brown); two brownish walkers side by side (Cragback, Prowler) are the closest pair, and the shield on
+    the Cragback is what separates them. No names are shown (no hover on a pad); the Codex has them.
+  - The High-profile stills look soft because the still helper draws the HUD through the tilt-shift pass; the Game view
+    captures and the Low stills show the real sharpness (COMMANDS, "Round 78").
+  - Console during every stills run: 0 errors, 0 warnings.
+- **EditMode:** `WavePreviewTests`, 14 cases: a type's groups add up whatever their entrance (road, second road, rift); the
+  numbers are the scheduler's on the difficulty and a boss is one; the ranking; the wave's own order between equals; a
+  boss's minions are left out; no wave lists nothing and clears an old list; a group without an enemy is skipped; the
+  flyer and plated sums; the folding into "+N" for five strip widths; and every wave of every level and difficulty in the
+  data lists something, at most six types, marked types first.
+
+### B. Bot version 3
+
+Test code only (`Assets/Tests/PlayMode`), then frozen: `ProbeStamp.BotVersion` is 3 and the hash now also covers
+`SkilledPicks.cs` and `Tools/PlayTest/skilled_picks.txt`.
+
+1. **The sensible rung reads the preview, and nothing more of a coming wave.** `BotRun.Preview` calls the same
+   `WavePreview.Collect` on the same `LevelContext.NextWave` the HUD draws. A wing or plate mark in the next wave counts as
+   that trait met (`NoteSeen`), so its counter is wanted one wave ahead, and the marked number sizes the counters
+   (`SizeCounterDemand` takes the larger of the living and the previewed number). Everything else is version 2: the Codex
+   roster, the opening for the roster, the Flak's price held back until the bounties refill it, the rift behind the gate
+   answered when it opens (the preview does not say where creatures come from, so it cannot tell what a rift will send).
+2. **A sky gun for a flyer the sky guns do not reach** (both rungs, `BalanceProbeTests.CoverBaseSky`). While flyers are
+   biting the base (the base lost health with flyers on it) and one of them hangs where no standing gun made for the sky
+   has it in range, one sky gun goes on the free build cell nearest that flyer: bought when the purse allows; else a sky
+   gun is moved (sold and rebuilt there, when its sale closes the gap); else the cheapest other gun whose sale closes the
+   gap is sold for it, never the last gun; else the purse is kept for it. A record's note says so
+   (`base sky gun w16 moved`). The first version of the rule asked whether a sky gun reached **the base** and never fired
+   in 72 sample runs: the Flaks of the role spots do reach the base, the Skyray simply rests on the far side of it. The
+   rule now measures to the flyer.
+3. **The skilled rung's pick is measured, not inherited.** `HeadroomProbeTests.BestRecordedStrategy` first reads
+   `Tools/PlayTest/skilled_picks.txt` (`SkilledPicks`), and only for a cell without a line falls back to round 68's
+   `plan_records.txt`. The file is written by `Tools/PlayTest/skilled_picks.py --write` from a pressure batch that plays
+   every searched strategy of every cell (new policies `strategy1` to `strategy5`) exactly as the skilled rung plays one,
+   on seeds 1-3 at the data. Rule: most seeds won, then most base health kept over the seeds, then stars, then the
+   lowest number. `plan_records.txt`, `Plans/` and the calibration's inputs are untouched. How to refresh: Docs/COMMANDS.md,
+   "Round 78"; a refresh is a new bot stamp by construction.
+4. **Not changed, on purpose:** the skilled rung still knows the level (the ledger of the coming waves and the rift a wave
+   ahead): it stands for a player who has played the level before. Only the sensible rung is held to what the HUD shows.
+
+### The picks (309 runs, `skilled_picks_r78_records.txt`, written to `skilled_picks.txt`)
+
+Every cell has a pick; 7 of 24 differ from what round 68's records gave: Landing Site Hard (strategy 1 -> 3), Shard Ridge
+Medium (5 -> 1), Fault Line Medium (5 -> 1) and Psycho (2 -> 1), Quartz Flats Medium (1 -> 3), Hard (4 -> 3) and Psycho
+(2 -> 1). Two cells have no strategy that wins all three seeds at the data: Landing Site Psycho (every strategy 1 of 3:
+the rear rift) and Quartz Flats Hard (the best three win 1 of 3: the last wave). Quartz Flats Medium, the stale pick round 77
+named: the old strategy 1 wins 2 of 3, strategies 2 to 5 win 3 of 3.
+
+### Version 2 against version 3 (720 runs each, the same data)
+
+Version 2 is round 77's final measurement (`pressure_r77_final_records.txt`, stamp `bot=2:90273749; data=645e4d4c;
+game=b815fb85`); version 3 is `pressure_r78_v3_records.txt`, stamp **`bot=3:5bddeb15; data=645e4d4c; game=64e52f85`**
+(five workers passed, 0 probe errors, 55 minutes). The game stamp differs by this round's game code (the preview); that it
+plays the same game was checked on the `script` rung, which no rule of version 3 touches: Quartz Flats Hard seed 1 at x1
+and x1.12 is field for field the record of round 76 (but for wall time, the gate float sum and the stamps). The probe is
+still deterministic: five units played twice in other places of a clone's list gave identical records (both checks on
+the first build of version 3, before the stray-flyer rule was reworked; the probe loop was not touched after).
+`python Tools/PlayTest/pressure_versus.py Tools/PlayTest/pressure_r77_final_records.txt Tools/PlayTest/pressure_r78_v3_records.txt --mixed-bots`:
+
+| Cell | Skilled, v2 | v3 | Sensible, v2 | v3 |
+| --- | --- | --- | --- | --- |
+| Landing Site Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Landing Site Medium | 3 3 3 3 1 | 3 3 3 3 1 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Landing Site Hard | 3 3 3 0 0 | 3 3 3 0 0 | 3 3 3 0 0 | 3 3 3 0 0 |
+| Landing Site Psycho | 2 1 1 0 0 | 2 1 1 0 0 | 1 0 0 0 0 | 1 0 0 0 0 |
+| Glass Meadows Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Glass Meadows Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 0 0 | **3 3 3 3 0** |
+| Glass Meadows Hard | 3 3 3 2 0 | 3 3 3 2 0 | 3 3 0 0 0 | 3 3 0 0 0 |
+| Glass Meadows Psycho | 3 3 3 1 0 | 3 3 3 1 0 | 0 0 0 0 0 | 0 0 0 0 0 |
+| Shard Ridge Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Shard Ridge Medium | 3 3 3 3 3 | **3 3 3 2 3** | 3 3 3 3 3 | 3 3 3 3 3 |
+| Shard Ridge Hard | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 1 1 | 3 3 3 1 1 |
+| Shard Ridge Psycho | 3 3 3 3 1 | 3 3 3 3 1 | 0 0 0 0 0 | 0 0 0 0 0 |
+| Fault Line Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Hard | 3 3 3 3 1 | 3 3 3 3 1 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Psycho | 3 3 3 3 0 | **3 3 3 3 2** | 2 2 1 0 0 | **3 3 3 1 0** |
+| Quartz Flats Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Quartz Flats Medium | 3 3 2 0 0 | **3 3 3 3 0** | 3 3 3 3 2 | **3 3 3 2 1** |
+| Quartz Flats Hard | 3 3 1 0 0 | **3 2 1 0 0** | 3 1 1 0 0 | **3 0 0 0 0** |
+| Quartz Flats Psycho | 3 3 2 0 1 | **3 3 3 1 0** | 2 0 0 0 0 | **3 1 0 0 0** |
+| Crysium Vein Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Crysium Vein Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Crysium Vein Hard | 3 3 3 2 0 | 3 3 3 2 0 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Crysium Vein Psycho | 3 3 3 1 0 | 3 3 3 1 0 | 0 0 0 0 0 | **1 0 0 0 0** |
+| Runs won | 295 of 360 | 300 of 360 | 242 of 360 | 249 of 360 |
+
+(Seeds won of three at x0.8 / 0.9 / 1 / 1.12 / 1.25 of the creatures' health; bold marks a cell and rung that moved.)
+
+How the levels end (`pressure_endings.py`, both files):
+
+| | Version 2 | Version 3 |
+| --- | --- | --- |
+| Runs won | 537 of 720 | 549 of 720 |
+| Won with the base at 90 % or more | 424 | 455 |
+| Won but hurt (base under 90 %) | 113 of 537 (21 %) | 94 of 549 (17 %) |
+| **All-or-nothing: lost in the last wave from a base at 90 %+** | **64 of 183 lost (35 %)** | **66 of 171 lost (39 %)** |
+| the same, sensible rung | 29 of 118 (25 %) | 33 of 111 (30 %) |
+| the same, skilled rung | 35 of 65 (54 %) | 33 of 60 (55 %) |
+| the same, Medium | 15 of 16 (94 %) | 10 of 12 (83 %) |
+| the same, Hard | 16 of 53 (30 %) | 25 of 56 (45 %) |
+| the same, Psycho | 33 of 114 (29 %) | 31 of 103 (30 %) |
+| Easy | 180 of 180 won, 13 hurt | 180 of 180 won, 6 hurt |
+
+How it reads:
+
+- **11 of 48 cell-and-rung rows moved; no Easy cell and no Landing Site cell did.** The players win 12 runs more (skilled
+  +5, sensible +7) and are hurt less on the way (won with a whole base 424 -> 455).
+- **The preview does what was hoped on the flyer levels.** The sensible rung stands its first Flak a wave ahead (Quartz
+  Flats Easy: built in wave 7 instead of paid by a sale in wave 10; round 76's "a Cannon for four Shalebats, then a sale"
+  is gone: 0 of 15 runs sell there, 10 of 15 did), Fault Line Psycho goes 2 2 1 0 0 -> 3 3 3 1 0, Quartz Flats Psycho
+  2 0 0 0 0 -> 3 1 0 0 0, Glass Meadows Medium keeps x1.12, Crysium Vein Psycho wins its first run.
+- **The stray-flyer gun fired in 40 of 720 runs** (14 bought, 13 moved, 13 paid by a sale): Shard Ridge Medium (sensible
+  14 of 15 runs, skilled 4), Fault Line Medium (sensible 4, skilled 1) and Hard (skilled 1), Quartz Flats Medium
+  (sensible 3), Shard Ridge Psycho (sensible 5) and Crysium Vein Psycho (sensible 8). Every Medium and Hard run it fired in
+  but one was won; the Psycho runs were lost anyway. So round 76's "a Skyray comes to rest out of reach" is a real pattern
+  on three Medium levels, and a player who walks a gun over to it survives it. The sensible rung's runs with a sale: 13 -> 21
+  of 360 (Shard Ridge Medium 14, Fault Line Medium 4, Quartz Flats Medium 2, Shard Ridge Psycho 1; Quartz Flats Easy none).
+- **The all-or-nothing share did not fall: 35 % -> 39 % of the lost runs.** The count is flat (64 -> 66) while fewer runs
+  are lost by attrition, so what is left is more purely the last wave. On Hard it rose (16 -> 25): Quartz Flats Hard is the
+  cell (sensible 3 1 1 0 0 -> 3 0 0 0 0, skilled 3 3 1 0 0 -> 3 2 1 0 0). Its runs, old and new, all fall in wave 17, which
+  takes 750 to 800 base health in one wave; the version 3 player arrives there with a whole or nearly whole base (its
+  Flaks stand in waves 3 and 7 instead of 4 and 10) and loses the same wave. A better player does not
+  get through that wave either, so it is the wave, not the bot: round 77's open question 5 stands, sharper.
+- **Quartz Flats Medium**: the skilled rung is repaired by its pick (3 3 2 0 0 -> 3 3 3 3 0); the sensible rung gives two
+  runs back at the top (3 3 3 3 2 -> 3 3 3 2 1), again in wave 17.
+- **Shard Ridge Medium skilled 3 3 3 3 3 -> 3 3 3 2 3** comes with its new pick (strategy 5 -> 1, both 3 of 3 at the data
+  with a whole base; the tie went to the lower number). One seed is lost at x1.12 and won at x1.25: a fragile run, as the
+  critic defined it. A pick measured at the data alone cannot see that; measuring the picks at x1 and x1.12 would
+  (question 4).
+- Against the targets of the second critic the verdicts stand: Easy all won; Medium sensible 18 of 18 at the data; Hard is
+  nowhere easier than Medium; skilled at the data now loses only on Landing Site Psycho (1 of 3) and Quartz Flats Hard
+  (1 of 3): Quartz Flats Medium and Psycho are 3 of 3 with their new picks.
+
+### Verification
+
+- Compile clean in the open editor (only the old CS0618 in `BalanceProbeTests.cs`); console 0 errors after the last recompile.
+- **EditMode on w6, whole suite: 1148 / 1094 passed / 0 failed / 54 skipped** (1134 / 1080 / 0 / 54 in round 77; +14
+  `WavePreviewTests`). It ran on the final code; the pick file, the reports and the docs were written after it. A first
+  run of the new class alone failed five cases on a test fixture that kept its list between tests (fixed in the fixture).
+- PlayMode on the clones: every pressure batch passed with 0 probe errors (the 72-run sample, 309 pick runs, 720 runs).
+- Stills: see part A; console 0 errors and 0 warnings in each stills run.
+- Save MD5 42fbe06b38e133cecfe2014def5c833c after everything; `progress_dev_backup_2026-11-05.json` and
+  `progress_before_r66_test_2026-11-15.json` untouched; no `settings.json` left; no worker Unity left running; the editor
+  is out of Play Mode.
+
+### Open questions for Remco
+
+1. The boss in the preview is a red chip with the marker and the word, not the creature. Enough warning, and enough
+   surprise? (Showing the boss's own picture once it has been met, as the Codex does, is a small step.)
+2. Exact numbers ("x12") or coarse ("few / many")? Exact reads fastest and is what a call brings; say so if it tells too much.
+3. No creature names in the strip (a pad has no hover). Should the Codex button open on the next wave's first creature
+   while a preview is showing?
+4. The skilled rung still knows the level by heart (the next waves' health and the rift a wave ahead); only the sensible
+   rung is held to the HUD. Keep it as "a player who has played the level", or hold it to the preview too? And pick its
+   strategy at x1 alone (as now) or at x1 and x1.12, so a fragile strategy loses the tie?
+5. Quartz Flats' wave 17 (Hard and Medium) and Landing Site Psycho's rift decide their cells in one wave for every player
+   measured so far. Round 77's question 5 (a rule for the last wave's crowd) is the next data step; nothing was changed.
+6. `Docs/GAME_DESIGN.md` does not mention the preview yet; one line under the HUD would do.
+
+### Known nits
+
+- A comment in `BalanceProbeTests.SensibleAct` says version 2's emergency sale put its gun "on a road spot, where it did
+  nothing for the base"; exact is: on the Flak's role spot, which need not reach where the flyer hangs. Left as it is
+  because the file is part of the frozen bot's hash; fix it with the next bot change.
+- A plain chip's frame is faint on the bar (the skin's panel takes little tint); the boss chip is washed red instead.
+
+### Changed files
+
+- Game code: `Scripts/Levels/WavePreview.cs`, `WavePreviewEntry.cs` (new), `LevelContext.cs` (`NextWave`), `LevelController.cs`;
+  `Scripts/UI/WavePreviewView.cs`, `TraitBadgeArt.cs` (new), `HudView.cs`, `IconFraming.cs` (`CreatureChip`);
+  `Resources/Localization/en.ui_level.txt` (four keys). New files with Unity's `.meta`.
+- Tests: `Tests/EditMode/WavePreviewTests.cs` (new); `Tests/PlayMode/BalanceProbeTests.cs`, `BotRun.cs`, `ProbeStrategy.cs`,
+  `ProbeStamp.cs`, `HeadroomProbeTests.cs`, `PressureProbeTests.cs`, `SkilledPicks.cs` (new).
+- Tools: `r78_shots.sh`, `r78_preview.cs`, `r78_margin.cs` (with their arg files), `skilled_picks.py`, `pressure_versus.py` (new).
+- Results: `skilled_picks.txt` (in the bot stamp), `skilled_picks_r78_records.txt`, `skilled_picks_r78.txt`,
+  `pressure_r78_v3_records.txt`, `pressure_r78_v3.txt`, `pressure_r78_check3_records.txt`, `pressure_r78_check3.txt` (the
+  72-run sample in which the stray-flyer rule first fired; bot hash `3:d4456c6b`: the same rules before the pick file);
+  18 stills `ArtSource/Previews/QA/r78_*.png`.
+- Data: none. `pressure.sh` untouched.
+- Docs: `Docs/COMMANDS.md` ("Round 78"), this entry.

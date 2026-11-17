@@ -18,20 +18,24 @@ namespace Game.Tests
         /// The version of the reference players (the sensible bot, the skilled rung, the obvious family). Bump it with every
         /// change of their rules; the hash beside it catches a change that forgot to. Version 2 (round 76): the sensible bot
         /// knows the level's Codex roster and no wave preview, opens for the roster, sells in the emergency only; the skilled
-        /// rung is the cell's best searched strategy played adaptively with the rift reaction. Frozen.
+        /// rung is the cell's best searched strategy played adaptively with the rift reaction. Version 3 (round 78): the
+        /// sensible bot also reads the HUD's next-wave preview (the same <see cref="Game.Levels.WavePreview"/>, nothing more);
+        /// both rungs put or move a sky gun beside the base when flyers bite it out of reach of every sky gun; the skilled
+        /// rung's strategy is the pick of Tools/PlayTest/skilled_picks.txt, measured on the data of its day. Frozen.
         /// </summary>
-        public const int BotVersion = 2;
+        public const int BotVersion = 3;
 
         private const int HashLength = 8;
         private const byte CarriageReturn = 13;
 
-        // Everything that decides how the reference players play: their code, the recorded plans the skilled rung is picked
-        // from and the searched strategies it plays.
+        // Everything that decides how the reference players play: their code, the picks and recorded plans the skilled rung
+        // is chosen from and the searched strategies it plays.
         private static readonly string[] BotFiles =
         {
             "Assets/Tests/PlayMode/BalanceProbeTests.cs", "Assets/Tests/PlayMode/BotRun.cs", "Assets/Tests/PlayMode/ProbeStrategy.cs",
             "Assets/Tests/PlayMode/ProbePlayer.cs", "Assets/Tests/PlayMode/PressureProbeTests.cs", "Assets/Tests/PlayMode/HeadroomProbeTests.cs",
-            "Tools/PlayTest/plan_records.txt",
+            "Assets/Tests/PlayMode/SkilledPicks.cs",
+            "Tools/PlayTest/plan_records.txt", SkilledPicks.Path,
         };
 
         private const string PlansFolder = "Tools/PlayTest/Plans";

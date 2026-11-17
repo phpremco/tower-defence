@@ -114,7 +114,7 @@ namespace Game.Tests
         private bool _rosterRead;
         private readonly Dictionary<Game.Core.EnemyTraits, int> _grownInWave = new Dictionary<Game.Core.EnemyTraits, int>();
 
-        /// <summary>The counter traits the player has met on the field so far: once seen, more of them are expected.</summary>
+        /// <summary>The counter traits the player has met on the field or in the preview so far: once seen, more of them are expected.</summary>
         public Game.Core.EnemyTraits SeenTraits => _seenTraits;
 
         public void NoteSeen(Game.Core.EnemyTraits traits) => _seenTraits |= traits;
@@ -210,6 +210,35 @@ namespace Game.Tests
             return true;
         }
 
+        private readonly List<WavePreviewEntry> _preview = new List<WavePreviewEntry>();
+        private WaveDefinition _previewOf;
+        private bool _previewRead;
+
+        /// <summary>
+        /// The next wave as the HUD's preview lists it (bot version 3): the same <see cref="WavePreview"/> of the same
+        /// <see cref="LevelContext.NextWave"/> the HUD draws, read again only when the next wave changes. Empty after the last wave.
+        /// </summary>
+        public IReadOnlyList<WavePreviewEntry> Preview(LevelContext context)
+        {
+            if (!_previewRead || context.NextWave != _previewOf)
+            {
+                _previewRead = true;
+                _previewOf = context.NextWave;
+                WavePreview.Collect(context.NextWave, context.Difficulty, _preview);
+            }
+
+            return _preview;
+        }
+
+        /// <summary>How many creatures with the trait the preview lists for the next wave (its wing and plate marks).</summary>
+        public int PreviewCount(LevelContext context, Game.Core.EnemyTraits trait) =>
+            trait == Game.Core.EnemyTraits.Airborne ? WavePreview.Flyers(Preview(context)) : trait == Game.Core.EnemyTraits.Armoured ? WavePreview.Plated(Preview(context)) : 0;
+
+        /// <summary>The counter traits the preview marks in the next wave.</summary>
+        public Game.Core.EnemyTraits PreviewTraits(LevelContext context) =>
+            (PreviewCount(context, Game.Core.EnemyTraits.Armoured) > 0 ? Game.Core.EnemyTraits.Armoured : Game.Core.EnemyTraits.None)
+            | (PreviewCount(context, Game.Core.EnemyTraits.Airborne) > 0 ? Game.Core.EnemyTraits.Airborne : Game.Core.EnemyTraits.None);
+
         /// <summary>The counter traits of the creatures alive on the field: what a player sees, whatever the preview says.</summary>
         public Game.Core.EnemyTraits LivingTraits() =>
             (LivingCount(Game.Core.EnemyTraits.Armoured) > 0 ? Game.Core.EnemyTraits.Armoured : Game.Core.EnemyTraits.None)
@@ -261,6 +290,9 @@ namespace Game.Tests
         public int PlanStep;
         public int PlanSkipped;
         public readonly List<string> DronesBought = new List<string>();
+
+        /// <summary>Bot version 3: each sky gun put beside a base that flyers were biting, as "w12 bought" (or moved, or paid by a sale).</summary>
+        public readonly List<string> BaseSkyGuns = new List<string>();
 
         /// <summary>Per tower type: damage dealt, tower-seconds with creatures on the field, and the data damage of those seconds.</summary>
         public readonly Dictionary<string, (float Damage, float Seconds, float DataDamage)> Fire = new Dictionary<string, (float, float, float)>();

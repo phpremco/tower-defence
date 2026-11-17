@@ -22,7 +22,7 @@ namespace Game.Tests
         /// <summary>Replays a written plan step by step (PlanReplayTests); decides nothing itself.</summary>
         Scripted = 4,
 
-        /// <summary>The affordable buyer who first buys the counter tower when the wave preview shows armour or flyers (the headroom ladder's sensible rung). No model.</summary>
+        /// <summary>The affordable buyer who first buys the counter tower when the field or the HUD's next-wave preview shows armour or flyers (the sensible rung). No model.</summary>
         Sensible = 5,
     }
 
@@ -106,7 +106,8 @@ namespace Game.Tests
 
         /// <summary>
         /// The sensible player of the headroom ladder (Docs/BALANCE_HEADROOM.md): the affordable buyer on role spots, who stands a
-        /// counter tower (by the role table of the combat rules) before anything else once the preview shows armour or flyers.
+        /// counter tower (by the role table of the combat rules) before anything else once the field or the HUD's next-wave
+        /// preview shows armour or flyers (the preview since bot version 3; the rules are at BalanceProbeTests.SensibleAct).
         /// </summary>
         public static ProbeStrategy SensibleBot() => new ProbeStrategy("sensible", roleSpots: true, style: PlayStyle.Sensible);
 
@@ -122,7 +123,8 @@ namespace Game.Tests
 
         /// <summary>
         /// A searched strategy played adaptively by someone who knows the level (the skilled rung since round 76): as
-        /// <see cref="Adaptive"/>, and a rift behind the defence gate gets its gun a wave ahead. Same name, so the same seeded draws.
+        /// <see cref="Adaptive"/>, and a rift behind the defence gate gets its gun a wave ahead; since bot version 3 flyers biting
+        /// the base out of reach of every sky gun get one beside it (BalanceProbeTests.CoverBaseSky). Same name, so the same seeded draws.
         /// </summary>
         public static ProbeStrategy AdaptiveGuardingRifts(StrategySpec spec) => new ProbeStrategy("strategy " + spec.Name, roleSpots: true, creative: true, spec: spec) { GuardsRearRift = true };
 

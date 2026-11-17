@@ -1482,3 +1482,48 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
   stay in the tree this time (they are the rows of today's data).
 - **Rotbloom:** `Tools/PlayTest/Scripts/R77Rotbloom.cs` writes the asset's health (28200, as the generator's spec); then
   `bash Tools/PlayTest/finale_workers.sh` (24 cells, 5 minutes).
+
+## Round 78: next-wave preview, bot version 3, the skilled rung's picks (added 2026-11-17)
+
+- **The preview's stills:** `bash Tools/PlayTest/r78_shots.sh <node> <name> <wave> [<name> <wave> ...]` plays the campaign node
+  on Medium from Boot and writes `ArtSource/Previews/QA/r78_<name>_1080.png` and `_720.png` with the HUD as it stands when
+  wave `<wave>` is the next one (1 = the opening countdown); it walks there with the developer fast-forward and kills every
+  creature on the way (`r78_preview.cs fast`). `R78_CAPTURE=1` also saves the Game view itself (`capture_game_view`) as
+  `r78_<name>_gameview.png`; `R78_LOW=1` plays on the Low (Switch) profile; `R78_MARGIN=5` lays the HUD out inside a 5 %
+  safe margin (`r78_margin.cs`). Back up `progress.json` first and delete the `settings.json` the run writes. Round 78's set:
+  `r78_shots.sh 0 opening 1 plated 7 boss 12`, `R78_CAPTURE=1 r78_shots.sh 5 flyers 7 six 18` (and `five 13`),
+  `R78_LOW=1 R78_MARGIN=5 r78_shots.sh 5 low_five 13 low_six 18`.
+- **Mind the stills' blur:** `r73_still.cs` draws the canvases through the renderer's full-screen tilt-shift pass, so the HUD in
+  a High-profile still is softer than in the game; the Low-profile stills and the `_gameview` captures show it as sharp as it is.
+- **What the preview lists:** `unity command eval_file --file Tools/PlayTest/r78_preview.cs` with `Tools/PlayTest/r78_preview_arg.txt`
+  = `probe` (the wave, the preview's entries in the HUD's order, how many have a chip, the strip's place against the icon
+  row), `list` (the preview of every wave of the running level) or `fast`.
+- **The preview's data:** `LevelContext.NextWave` (set by the level controller) through `Game.Levels.WavePreview.Collect`; the HUD
+  (`UI/WavePreviewView.cs`) and the sensible bot (`BotRun.Preview`) read exactly that list. EditMode: `WavePreviewTests`
+  (`bash Tools/PlayTest/r34b_editmode_worker.sh 6 WavePreviewTests`); its last test fails when a wave of the first
+  continent lists more creature types than the HUD has places at the default margin (six).
+- **Bot version 3** (`ProbeStamp.BotVersion`): the sensible rung reads the preview (a flyer or plated mark in the next wave
+  counts as met, and its number sizes the counters); both rungs put one sky gun on the free cell nearest a flyer that
+  bites the base out of reach of every sky gun (bought, else a sky gun moved, else paid by a sale; `BalanceProbeTests.CoverBaseSky`);
+  the skilled rung plays the pick of `Tools/PlayTest/skilled_picks.txt`. A record's note says `base sky gun w12 bought` when
+  the rule acted. The skilled rung still knows the level (its ledger of the coming waves); only the sensible rung is held
+  to what the HUD shows.
+- **Refreshing the skilled rung's picks** (after any wave, tower or bot change; it makes a new bot stamp, so never inside a
+  measurement):
+  1. `PR_RECORDS=Tools/PlayTest/skilled_picks_<round>_records.txt PR_POLICIES="strategy1,strategy2,strategy3,strategy4,strategy5" PR_MULTIPLES="1" bash Tools/PlayTest/pressure.sh "0,1,2,3,4,5" "0,1,2,3"`
+     plays every searched strategy of every cell (`Tools/PlayTest/Plans/<level>_<difficulty>_strategyN.json`) as the skilled
+     rung plays one, on seeds 1-3 at the data (360 units, 309 runs; a cell without a strategyN writes a `pskip` line).
+  2. `python Tools/PlayTest/skilled_picks.py Tools/PlayTest/skilled_picks_<round>_records.txt` prints every candidate per cell
+     (seeds won, base kept, stars) with the pick starred; add `--write` to write `Tools/PlayTest/skilled_picks.txt`. The rule:
+     most seeds won, then most base health kept over the seeds, then stars, then the lowest number.
+  3. The pick file is in the bot stamp (`ProbeStamp.BotFiles`): measure with it and keep its records apart from the old pick's.
+  A cell without a line in the file falls back to round 68's `plan_records.txt` (as bot version 2 did).
+- **Two measurements side by side as a Markdown table:** `python Tools/PlayTest/pressure_versus.py <records before> <records after> [--mixed-bots]`
+  (per cell and rung the seeds won at every multiple, moved rows in bold, runs won at the foot). Round 78's measurement:
+  `Tools/PlayTest/pressure_r78_v3_records.txt`, stamp `bot=3:5bddeb15; data=645e4d4c; game=64e52f85`.
+- **Version 2 against version 3:** `python Tools/PlayTest/pressure_wins.py <v3 records> Tools/PlayTest/pressure_r77_final_records.txt --mixed-bots`
+  (the override is meant for exactly this: the data is the same, the bot differs) and
+  `python Tools/PlayTest/pressure_endings.py <v3 records> Tools/PlayTest/pressure_r77_final_records.txt --mixed-bots`.
+- **Stopping a batch by hand:** there is no `pkill` in this Git Bash; stop the clones with
+  `powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \"Name='Unity.exe'\" | Where-Object { $_.CommandLine -like '*TowerDefenseWorkers*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }"`,
+  delete `TowerDefenseWorkers\wN\Temp\UnityLockfile` and the half-written records file; `pressure.sh` then ends by itself.

@@ -259,13 +259,28 @@ namespace Game.Tests
         }
 
         /// <summary>
-        /// The searched strategy behind the cell's best recorded plan (Tools/PlayTest/Plans), to be played adaptively: the
-        /// pressure probe's skilled rung since round 76. Null when the cell has no record or its best plan is a fixed script.
+        /// The cell's searched strategy (Tools/PlayTest/Plans) the skilled rung of the pressure probe plays adaptively. Since
+        /// round 78 it is the cell's pick in Tools/PlayTest/skilled_picks.txt (<see cref="SkilledPicks"/>: the strategy that
+        /// did best when the cell's strategies were played on the data of that day); a cell without a pick falls back to the
+        /// strategy behind the best recorded plan of round 68's plan_records.txt, as in round 76. Null when the cell has
+        /// neither, or its best plan is a fixed script.
         /// </summary>
         internal static StrategySpec BestRecordedStrategy(string levelName, int difficulty)
         {
+            string picked = SkilledPicks.For(levelName, difficulty);
+            if (picked != null)
+            {
+                return SearchedStrategy(levelName, difficulty, picked);
+            }
+
             RunRecord best = BestRecordedRun(levelName, difficulty);
-            if (best == null || !System.IO.Directory.Exists(PlansFolder))
+            return best != null ? SearchedStrategy(levelName, difficulty, best.Strategy.Replace(StrategyPrefix, string.Empty)) : null;
+        }
+
+        /// <summary>The searched strategy of a cell by its name ("Level_C1_05_1_strategy3"), or null.</summary>
+        internal static StrategySpec SearchedStrategy(string levelName, int difficulty, string name)
+        {
+            if (!System.IO.Directory.Exists(PlansFolder))
             {
                 return null;
             }
@@ -275,7 +290,7 @@ namespace Game.Tests
             foreach (string file in files)
             {
                 StrategySpec spec = JsonUtility.FromJson<StrategySpec>(System.IO.File.ReadAllText(file));
-                if (spec != null && spec.Spots != null && StrategyPrefix + spec.Name == best.Strategy)
+                if (spec != null && spec.Spots != null && spec.Name == name)
                 {
                     return spec;
                 }

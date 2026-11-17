@@ -10,8 +10,8 @@ using UnityEngine.UI;
 namespace Game.UI
 {
     /// <summary>
-    /// HUD built in code. A slim strip at the top holds the stats (base, wave) and the speed, pause and
-    /// call-next-wave icons; the card bar sits at the very bottom with the money and the status line just above it. The
+    /// HUD built in code. A slim strip at the top holds the stats (base, wave), the next-wave preview and the speed, pause
+    /// and call-next-wave icons; the card bar sits at the very bottom with the money and the status line just above it. The
     /// drones are bought from the base's own menu. Key and gamepad help lives in the options menu. It only reads
     /// LevelContext, except for passing on clicks.
     /// </summary>
@@ -83,6 +83,9 @@ namespace Game.UI
 
         /// <summary>The call-next-wave icon and its bonus text, for tests and stills.</summary>
         public WaveCallButton WaveCallButton { get; private set; }
+
+        /// <summary>The next-wave preview beside the wave line, for tests and stills.</summary>
+        public WavePreviewView WavePreview { get; private set; }
 
         private struct TowerButton
         {
@@ -331,6 +334,12 @@ namespace Game.UI
             {
                 _codexButton = AddIcon(row, IconType.Book, _codex.Open);
             }
+
+            // The preview fills the strip between the wave line and these icons.
+            int icons = row.childCount;
+            float iconRow = Margin + icons * IconSize + Mathf.Max(0, icons - 1) * BarSpacing;
+            WavePreview = gameObject.AddComponent<WavePreviewView>();
+            WavePreview.Initialize(_context, safe, _font, _waveText, TopBarHeight, iconRow);
         }
 
         private Button AddIcon(RectTransform row, IconType type, UnityEngine.Events.UnityAction action)
@@ -550,6 +559,7 @@ namespace Game.UI
         {
             _waveText.text = WaveLine();
             _waveText.color = _context.BossWave && _context.NextWaveCountdown <= 0f ? BossWarning : TextColor;
+            WavePreview.Refresh();
             _baseText.text = Loc.Format("hud.base", Mathf.CeilToInt(_context.BaseHealth.Current), Mathf.CeilToInt(_context.BaseHealth.Max));
             // The hero timer follows the base text on the same line, however wide the numbers get.
             _heroText.rectTransform.anchoredPosition = new Vector2(Margin + _baseText.preferredWidth + HeroTextGap, TopTextY);

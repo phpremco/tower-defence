@@ -21,8 +21,9 @@ namespace Game.Tests
     /// rift behind the defence gate a wave ahead, <see cref="ProbeStrategy.AdaptiveGuardingRifts"/>), script (the skilled rung
     /// of rounds 74 and 75: the build order of that strategy's best recorded run as a fixed script, with the rift reaction),
     /// typical (the build order the sensible bot took on seed 1 at the data, replayed as a fixed script on every seed and
-    /// multiple), sensible and careless (the reactive bots of the headroom ladder), fresh (sensible on a plain save) and
-    /// mono-TowerId.
+    /// multiple), sensible and careless (the reactive bots of the headroom ladder), fresh (sensible on a plain save),
+    /// mono-TowerId, and strategyN (round 78: the cell's searched strategy number N played as the skilled rung plays one;
+    /// the skilled rung's pick is refreshed from a batch of these, see <see cref="SkilledPicks"/>).
     ///
     /// Tools/PlayTest/pressure_arg.txt gives the work: "units=node:difficulty:policy:seed,..." and "multiples=0.8,1,1.25";
     /// a "keeptrace=1" line keeps the probe's per-wave trace of every run (Logs/probe_trace.txt in the clone) for a diagnosis.
@@ -38,6 +39,7 @@ namespace Game.Tests
         private const string MonoPrefix = "mono-";
         private const string TypicalPolicy = "typical";
         private const string ScriptPolicy = "script";
+        private const string StrategyPolicyPrefix = "strategy";
 
         // The typical script is the sensible bot's own build order on this seed, at the data.
         private const int TypicalSourceSeed = 1;
@@ -155,6 +157,15 @@ namespace Game.Tests
                     note = typical.Steps.Length + " steps";
                     return typical.Steps.Length > 0 ? ProbeStrategy.Scripted(typical) : null;
                 default:
+                    if (policy.StartsWith(StrategyPolicyPrefix, System.StringComparison.Ordinal))
+                    {
+                        // One named candidate of the cell, played exactly as the skilled rung would play it.
+                        string name = level.name + "_" + I(difficulty) + "_" + policy;
+                        StrategySpec candidate = HeadroomProbeTests.SearchedStrategy(level.name, difficulty, name);
+                        note = candidate != null ? candidate.Name + " adaptive" : "the cell has no " + policy;
+                        return candidate != null ? ProbeStrategy.AdaptiveGuardingRifts(candidate) : null;
+                    }
+
                     Assert.IsTrue(policy.StartsWith(MonoPrefix, System.StringComparison.Ordinal), "unknown policy " + policy);
                     return ProbeStrategy.Mono(policy.Substring(MonoPrefix.Length));
             }
@@ -208,6 +219,12 @@ namespace Game.Tests
             }
 
             string outcome = result.Outcome == LevelOutcome.Won ? "won" : result.Outcome == LevelOutcome.Running ? "stalled" : "lost";
+            if (result.BaseSkyGuns.Length > 0)
+            {
+                // Round 78: when the player put a sky gun beside a bitten base, the note says so (the record's layout is unchanged).
+                note = (note.Length > 0 ? note + "; " : string.Empty) + "base sky gun " + result.BaseSkyGuns;
+            }
+
             return string.Join("|", tag, level.name, I(difficulty), policy, I(seed), F(multiple), outcome,
                 I(result.Wave), I(result.WaveCount), F(result.BaseHealth), F(result.BaseMax), I(result.Stars), F(result.GameSeconds), F(wallSeconds),
                 I(result.TowersBuilt), I(result.Upgrades), I(result.CoinsUnspent), I(result.Earned), I(result.RepairSpent),

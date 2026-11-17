@@ -16,6 +16,12 @@ namespace Game.UI
         private const float CardYaw = -38f;
         private const float CardFit = 1f;
 
+        // A creature's box is measured from its renderers' bounds, which are wider than the body: the fit overshoots a little
+        // so the creature fills its chip, and a pale back light lifts a dark body off the dark chip.
+        private const float ChipFit = 1.2f;
+        private const float ChipRimIntensity = 3f;
+        private static readonly Color ChipRim = new Color(0.8f, 0.9f, 1f);
+
         private const int BustSize = 256;
         private const float BustOrtho = 0.34f;
         private const float BustPitch = 7f;
@@ -65,6 +71,9 @@ namespace Game.UI
         /// the same view, centred and zoomed on the model itself.
         /// </summary>
         public static IconFraming FittedCard => new IconFraming(CardSize, CardOrtho, CardLift, CardPitch, CardYaw, Color.clear, 0f, CardFit);
+
+        /// <summary>A creature in a chip of the wave preview: the card's view, zoomed on the body, with a pale rim.</summary>
+        public static IconFraming CreatureChip => new IconFraming(CardSize, CardOrtho, CardLift, CardPitch, CardYaw, ChipRim, ChipRimIntensity, ChipFit);
 
         /// <summary>
         /// A head-and-shoulders portrait near eye level, lit from behind in the speaker's colour. The model is built

@@ -434,6 +434,9 @@ namespace Game.Tests
             /// </summary>
             public string IdleCounter = string.Empty;
 
+            /// <summary>Round 78: each sky gun the player put beside a base flyers were biting, "w12 bought, w15 moved"; empty when it never did.</summary>
+            public string BaseSkyGuns = string.Empty;
+
             /// <summary>The run as the calibration fit reads it.</summary>
             public Game.Balance.RunRecord ToRecord()
             {
@@ -683,6 +686,7 @@ namespace Game.Tests
                     Advance = run.Advance(),
                     Purse = run.Purse,
                     IdleCounter = IdleCounter(context, owned, run),
+                    BaseSkyGuns = string.Join(", ", run.BaseSkyGuns),
                     Seed = seed,
                     Step = step,
                     Records = run.Records,
@@ -1271,9 +1275,11 @@ namespace Game.Tests
             if (run.Strategy.GuardsRearRift)
             {
                 // The skilled rung since round 76: the searched strategy played adaptively by someone who knows the level, so
-                // a rift behind the gate gets its gun a wave ahead, before the strategy's own next step.
+                // a rift behind the gate gets its gun a wave ahead, before the strategy's own next step. Version 3: flyers
+                // biting the base out of reach of every sky gun get one beside it, as the sensible player does it.
                 run.StopSaving();
-                if (GuardRearRift(context, spots, towers, owned, run, foresight: true))
+                NoteFlyersBiting(context, run);
+                if (GuardRearRift(context, spots, towers, owned, run, foresight: true) || CoverBaseSky(context, spots, towers, owned, run))
                 {
                     return;
                 }
@@ -2556,31 +2562,36 @@ namespace Game.Tests
         private static readonly List<ITargetable> Besiegers = new List<ITargetable>();
         private static readonly List<EnemyTraits> TraitsFound = new List<EnemyTraits>();
 
-        // The sensible rung, bot version 2 (round 76, Docs/BALANCE_CRITIC_2026-11-17b.md; frozen, see ProbeStamp.BotVersion): the
-        // affordable buyer who knows what the game tells a player and answers what the field shows.
-        //  - Knowledge: the level's Codex (LevelRoster: which creatures this level and difficulty send, from second zero) and
-        //    the field (living creatures, the base, the gates, a rift's marker and its opening). Not the contents of a coming
-        //    wave: the game shows no wave preview.
+        // The sensible rung, bot version 3 (round 78; version 2 was round 76, Docs/BALANCE_CRITIC_2026-11-17b.md; frozen, see
+        // ProbeStamp.BotVersion): the affordable buyer who knows what the game tells a player and answers what it shows.
+        //  - Knowledge: the level's Codex (LevelRoster: which creatures this level and difficulty send, from second zero), the
+        //    field (living creatures, the base, the gates, a rift's marker and its opening) and, since version 3, the HUD's
+        //    next-wave preview exactly as it is listed (BotRun.Preview, the same WavePreview the HUD draws: the creature
+        //    types of the wave that starts next, how many of each, which fly, which are plated, a boss). Nothing else of a
+        //    coming wave: not where its creatures come from, so a rift is still met when it opens.
         //  - Opening: with plated creatures in the roster its first gun is the gun made for armour (it shoots every walker);
         //    with flyers in the roster it keeps a sky gun's price back once a ground gun stands, until a wave's bounties pay
         //    for one (then the gun can be bought the wave it is needed), and spends the rest as the affordable buyer does.
-        //  - Counters: a trait met on the field calls for its counter; the counters grow (a tower and an upgrade in turn) when
-        //    a wave shows clearly more of the trait than they were sized for or when the base or a gate lost health to it;
+        //  - Counters: a trait met on the field or listed in the preview calls for its counter (so the counter stands a wave
+        //    ahead when the purse allows); the counters grow (a tower and an upgrade in turn) when a wave, living or
+        //    previewed, shows clearly more of the trait than they were sized for or when the base or a gate lost health to it;
         //    the trait furthest behind is served first; while it saves for a counter only a wrecked defence gate is repaired.
         //  - Emergencies: a rift behind the defence gate that breaks open gets a gun at the gate its walkers reach; walkers
-        //    biting the base where no ground gun reaches get one gun beside it; flyers biting the base with no gun that can
-        //    aim up in reach and a short purse are paid for by selling a gun (SellForFirstCounter), and only then.
+        //    biting the base where no ground gun reaches get one gun beside it; flyers biting the base where no sky gun
+        //    reaches get one sky gun beside it, bought, moved or paid for by a sale (CoverBaseSky, version 3; before it the
+        //    sale of SellForFirstCounter put the gun on a road spot, where it did nothing for the base).
         // It reads no balance model.
         private static void SensibleAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<Tower> gates, List<string> owned, BotRun run)
         {
             run.StopSaving();
             NoteTraitLosses(context, gates, run);
-            if (GuardRearRift(context, spots, towers, owned, run, foresight: false) || GuardBesiegedBase(context, spots, towers, owned, run))
+            if (GuardRearRift(context, spots, towers, owned, run, foresight: false) || GuardBesiegedBase(context, spots, towers, owned, run)
+                || CoverBaseSky(context, spots, towers, owned, run))
             {
                 return;
             }
 
-            run.NoteSeen(run.LivingTraits());
+            run.NoteSeen(run.LivingTraits() | run.PreviewTraits(context));
             EnemyTraits met = run.SeenTraits;
             foreach (EnemyTraits trait in CounterTraits)
             {
@@ -2741,6 +2752,152 @@ namespace Game.Tests
             return true;
         }
 
+        // Bot version 3 (round 78), both rungs: a flyer that reaches the base stays on it and bites until it is shot, and it
+        // comes to rest where it likes: beside two Flaks a lone Skyray took a whole base because neither reached the spot it
+        // hung over (Fault Line Medium, round 76). While flyers are biting the base and one of them hangs out of reach of every
+        // standing gun made for the sky, one sky gun goes on the free build cell nearest that flyer: bought when the purse
+        // allows; else moved (a sky gun that does not reach it is sold and rebuilt there when its sale closes the gap); else,
+        // with no sky gun to move, the cheapest other gun whose sale closes the gap is sold for it (never the last gun); else
+        // the purse is kept for it. True while the purse is kept for that gun or went to it.
+        private static bool CoverBaseSky(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run)
+        {
+            if (context.Base == null || !run.FlyersBitingBase)
+            {
+                return false;
+            }
+
+            Enemy stray = StrayFlyerAtBase(context, towers);
+            TowerDefinition gun = stray != null ? CheapestCounter(context, owned, EnemyTraits.Airborne, TargetLayers.Air) : null;
+            if (gun == null || !FreeCellNearest(context, spots, towers, stray.Position, gun.GetLevel(0).Range, out Vector2Int cell))
+            {
+                return false;
+            }
+
+            string how = "bought";
+            if (!context.Wallet.CanAfford(gun.BuildCost))
+            {
+                Tower sale = SaleForBaseSkyGun(context, towers, gun.BuildCost);
+                if (sale == null)
+                {
+                    run.SaveForCounter(gun.BuildCost);
+                    return true;
+                }
+
+                how = AnswersTrait(sale.Definition, EnemyTraits.Airborne) ? "moved" : "paid by a sale";
+                Sell(context, towers, sale, run);
+            }
+
+            if (TryBuyAt(context, gun, cell, towers, run))
+            {
+                run.Purchases++;
+                run.BaseSkyGuns.Add("w" + context.WaveNumber.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + how);
+            }
+
+            return true;
+        }
+
+        // The first flyer over the base that no standing gun made for the sky reaches, or null.
+        private static Enemy StrayFlyerAtBase(LevelContext context, List<Tower> towers)
+        {
+            context.Targets.FindInRadius(context.Base.Position, BaseSiegeRadius * context.Level.Grid.CellSize, TargetLayers.Air, OverBase);
+            foreach (ITargetable target in OverBase)
+            {
+                if (target is Enemy enemy && enemy.IsAlive && enemy.Definition.Flies && !SkyGunReaches(towers, enemy.Position))
+                {
+                    return enemy;
+                }
+            }
+
+            return null;
+        }
+
+        // Whether a standing gun made for the sky has the point in its range, on the plane.
+        private static bool SkyGunReaches(List<Tower> towers, Vector3 point)
+        {
+            foreach (Tower tower in towers)
+            {
+                Vector3 offset = tower.Position - point;
+                offset.y = 0f;
+                if (tower.IsAlive && AnswersTrait(tower.Definition, EnemyTraits.Airborne) && offset.magnitude <= tower.Range)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // The gun that pays for the sky gun at the base: a sky gun first (it is moved: none of them reaches the flyer, or the
+        // flyer would not be a stray), the one that sells for least among those whose sale closes the gap; without one, the
+        // cheapest other gun that does, and never the player's last gun.
+        private static Tower SaleForBaseSkyGun(LevelContext context, List<Tower> towers, int price)
+        {
+            Tower moved = null;
+            Tower other = null;
+            int standing = 0;
+            foreach (Tower tower in towers)
+            {
+                if (!tower.IsAlive)
+                {
+                    continue;
+                }
+
+                standing++;
+                if (context.Wallet.Money + tower.SellValue < price)
+                {
+                    continue;
+                }
+
+                if (AnswersTrait(tower.Definition, EnemyTraits.Airborne))
+                {
+                    moved = moved == null || tower.SellValue < moved.SellValue ? tower : moved;
+                }
+                else
+                {
+                    other = other == null || tower.SellValue < other.SellValue ? tower : other;
+                }
+            }
+
+            return moved != null ? moved : standing >= 2 ? other : null;
+        }
+
+        // The free build cell nearest a point, within a reach of it (on the plane: a flyer's height does not count).
+        private static bool FreeCellNearest(LevelContext context, BuildSpots spots, List<Tower> towers, Vector3 point, float reach, out Vector2Int best)
+        {
+            var grid = new BuildGrid(context.Level);
+            best = default;
+            float nearest = float.MaxValue;
+            foreach (Vector2Int cell in spots.Ground)
+            {
+                Vector3 offset = context.Level.Grid.CellToWorld(cell) - point;
+                offset.y = 0f;
+                float distance = offset.magnitude;
+                if (distance <= reach && distance < nearest && grid.CanBuild(cell) && TowerAt(context, towers, cell) == null)
+                {
+                    nearest = distance;
+                    best = cell;
+                }
+            }
+
+            return nearest < float.MaxValue;
+        }
+
+        // For a player who does not keep the sensible player's ledger of losses (the skilled rung): whether flyers are biting
+        // the base, from a look at which the base lost health with flyers on it until a look with no flyer on it.
+        private static void NoteFlyersBiting(LevelContext context, BotRun run)
+        {
+            if (context.Base == null)
+            {
+                return;
+            }
+
+            float now = context.BaseHealth.Current;
+            bool lost = run.LastBaseSeen >= 0f && now < run.LastBaseSeen;
+            run.LastBaseSeen = now;
+            bool flyers = TraitsAt(context, context.Base.Position, BaseSiegeRadius * context.Level.Grid.CellSize).Contains(EnemyTraits.Airborne);
+            run.FlyersBitingBase = flyers && (lost || run.FlyersBitingBase);
+        }
+
         // The emergency sale (round 75, narrowed in round 76): a flyer that reaches the base stays on it until it is shot. When
         // flyers are biting the base, no gun of the player that can aim up reaches the base (a Gun Turret at the first gate does
         // nothing for a Skyray over the base: Quartz Flats Medium) and the purse is short of the sky gun, the cheapest gun whose
@@ -2836,11 +2993,12 @@ namespace Game.Tests
             return strength;
         }
 
-        // How many counters the trait asks for: one when it is first met, one more (once a wave) when the field shows clearly
-        // more of it than the counters were sized for, and one more than stands after a wave in which it cost health.
+        // How many counters the trait asks for: one when it is first met, one more (once a wave) when the field or the next
+        // wave's preview shows clearly more of it than the counters were sized for, and one more than stands after a wave in
+        // which it cost health.
         private static void SizeCounterDemand(LevelContext context, List<Tower> towers, EnemyTraits trait, BotRun run)
         {
-            int shown = run.LivingCount(trait);
+            int shown = Mathf.Max(run.LivingCount(trait), run.PreviewCount(context, trait));
             int sized = run.SizedFor(trait);
             if (sized == 0)
             {

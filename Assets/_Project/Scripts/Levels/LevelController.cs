@@ -41,6 +41,7 @@ namespace Game.Levels
             _progress = progress;
 
             _context.NextWaveCountdown = _clock.Countdown;
+            _context.NextWave = waves.Length > 0 ? waves[0] : null;
             _origins = CreateOrigins(context, waves);
             _context.Origins = _origins;
             PublishRoutes(0);
@@ -206,6 +207,7 @@ namespace Game.Levels
             _spawner.WaveBossHealthScale = wave.BossHealthScale;
             PublishRoutes(index);
             _context.WaveNumber = _clock.Started;
+            _context.NextWave = _clock.AllStarted ? null : _waves[_clock.Started];
             _context.NextWaveCountdown = 0f;
             // Waves overlap: a wave without a boss that starts while an earlier wave's boss still lives keeps that boss on the HUD.
             EnemyDefinition boss = BossOf(wave);

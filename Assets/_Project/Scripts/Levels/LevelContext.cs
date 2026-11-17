@@ -82,6 +82,12 @@ namespace Game.Levels
         /// <summary>Number of the wave that started most recently, zero before the first wave.</summary>
         public int WaveNumber { get; set; }
 
+        /// <summary>
+        /// The wave that starts next (the one a call would bring), or null once the last wave has started. The wave preview
+        /// reads it; the level controller keeps it up to date.
+        /// </summary>
+        public WaveDefinition NextWave { get; set; }
+
         public LevelOutcome Outcome { get; set; }
 
         /// <summary>Set once the level has ended.</summary>
