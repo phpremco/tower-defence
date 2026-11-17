@@ -51,8 +51,8 @@ namespace Game.Editor
             return null;
         }
 
-        public static TroopSpec Join(string enemy, int firstWave, float weight, float interval, int source = 0, float delay = 0f, int minDifficulty = 0, int pack = 0, bool loose = false, int maxDifficulty = int.MaxValue) =>
-            new TroopSpec { Enemy = enemy, FirstWave = firstWave, Weight = weight, Interval = interval, Source = source, Delay = delay, MinDifficulty = minDifficulty, Pack = pack, Loose = loose, MaxDifficulty = maxDifficulty };
+        public static TroopSpec Join(string enemy, int firstWave, float weight, float interval, int source = 0, float delay = 0f, int minDifficulty = 0, int pack = 0, bool loose = false, int maxDifficulty = int.MaxValue, int nest = 0) =>
+            new TroopSpec { Enemy = enemy, FirstWave = firstWave, Weight = weight, Interval = interval, Source = source, Delay = delay, MinDifficulty = minDifficulty, Pack = pack, Loose = loose, MaxDifficulty = maxDifficulty, Nest = nest };
 
         public static BossSpec Boss(int wave, string enemy, int minDifficulty = 0, BossRoute[] routes = null) =>
             new BossSpec { Wave = wave, Enemy = enemy, MinDifficulty = minDifficulty, Routes = routes ?? Gate };

@@ -11238,3 +11238,166 @@ Landing Site and Shard Ridge, four difficulties, seeds 1-5, multiples 0.5 to 2: 
 - The other four levels. A rerun-on-another-clone check for the pressure records (stage 1 showed the probe repeats per seed).
 - Which of the two Landing Site nests lies behind the gate was not checked on the map.
 - The purse per wave is not recorded, so "the Rocket was not affordable in time" on Easy is inferred from the build order.
+
+## Round 74: the sensible bot repaired, Landing Site's rear rift authored, both levels re-measured (2026-11-17)
+
+Not committed. Plan: Docs/BALANCE_CRITIC_2026-11-17.md, items 1 to 4 (item 5, flyers on Landing Site, is not approved and was
+not touched). No tower was changed, no map was changed, no package added, the Game view untouched. No Play Mode in the
+editor; every run was on the silent clones w1-w5 (EditMode on w6). The open editor was used for recompiles and for the
+generator's Waves step only, each time after `editor_status` read `playMode: stopped`. Remco's save MD5
+42fbe06b38e133cecfe2014def5c833c before and after every batch; no `settings.json`; no worker left running.
+Commands: Docs/COMMANDS.md, "Round 74".
+
+### The result in one table
+
+Seeds won out of five at x0.8 / x1 / x1.25 of the creatures' health. "Stage 1b" is yesterday's reading (old bot, drawn rift),
+"baseline" the repaired bot on the committed data, "final" the same with the rift authored.
+
+| Cell | Skilled: stage 1b | Skilled: final | Sensible: stage 1b | Sensible: baseline | Sensible: final |
+| --- | --- | --- | --- | --- | --- |
+| Landing Site Easy | 5 5 5 | 5 5 5 | 5 5 0 | 5 5 5 | 5 5 5 |
+| Landing Site Medium | 2 2 2 | **5 5 5** | 5 5 2 | 5 5 5 | 5 5 5 |
+| Landing Site Hard | 5 5 0 | 5 5 0 | 4 1 0 | 3 3 0 | **4 0 0** |
+| Landing Site Psycho | 3 3 0 | **5 1 0** | 0 0 0 | 2 1 0 | 4 1 0 |
+| Shard Ridge Easy | 5 5 5 | 5 5 5 | 1 1 0 | **5 5 5** | 5 5 5 |
+| Shard Ridge Medium | 5 5 5 | 5 5 5 | 3 3 0 | **5 5 5** | 5 5 5 |
+| Shard Ridge Hard | 5 5 5 | 5 5 5 | 0 0 0 | **5 5 4** | 5 5 4 |
+| Shard Ridge Psycho | 5 5 4 | 5 5 4 | 0 0 0 | 1 0 0 | 1 0 0 |
+
+Records: `Tools/PlayTest/pressure_r74_baseline_records.txt` (360 runs: the first baseline and the sensible rung again after
+the bot's repair order was fixed; the last record counts) and `pressure_r74_final_records.txt` (240 runs), reports beside
+them; `python Tools/PlayTest/pressure_wins.py <final> <baseline>` prints the table, `--bot` the purchases and the purse.
+
+### Item 1: the sensible bot (test code)
+
+`BalanceProbeTests.SensibleAct` and helpers, `BotRun`, `PressureProbeTests`, `ProbeStrategy`:
+
+- Living flyers and plated creatures count as coming (`BotRun.LivingTraits`), whatever the preview says.
+- The counters of a trait grow, a tower and an upgrade in turn: one more than stands after a wave in which the base lost
+  health with such creatures on it or a gate lost a quarter of its health to them (`NoteTraitLosses`), and one more when the
+  preview shows half as many again as the counters were sized for (`SizeCounterDemand`).
+- The trait furthest behind is served first (`MostWanting`). The first batch showed why: with the table's order alone the
+  bot grew its Cannons on Shard Ridge Easy and never bought a Rocket (purse 75 at wave 12, a Cannon upgrade, 83 at wave 14,
+  another Cannon). That batch was stopped and is not in the records.
+- While it saves for a counter it repairs nothing but a wrecked defence gate, once a wave, and never with coins that already
+  pay for the counter (`Maintain`, `BotRun.SaveForCounter`).
+- A marked rift behind the defence gate (`RearNests.BehindGate`, `OriginDirector` states) gets one gun that reaches the gate
+  its walkers stop at, from the wave before they come: the Cannon when they are plated (`GuardRearRift`).
+- Every record now carries the purse at the first look of each wave and an idle-counter note (a counter trait alive at the
+  end with its counter's price unspent). `pressure_report.py` reads both layouts; `pressure_wins.py` is new.
+- `typical` is out of the default rungs of `pressure.sh`.
+
+Pass criteria of the critic:
+
+| Criterion | Result |
+| --- | --- |
+| Rocket on Shard Ridge Easy on 5 of 5 seeds, no later than wave 13 | **Pass**: wave 13 on all five (purse at waves 11 to 13: about 17, 76, 107; the Rocket costs 120) |
+| 2 or more Rockets by wave 14 on Shard Ridge Hard | **Pass**: 2 on all five seeds (first one in wave 11 or 12) |
+| No run ends with a counter's price unspent while its target is alive | **Pass**: 0 of 120 runs, in the baseline and in the final batch |
+| Shard Ridge Easy from 1 of 5 to 5 of 5 at x1 | **Pass**: 5 of 5 at all three multiples |
+| Landing Site Hard "mostly won" | **Not met**: 3 of 5 at x0.8 and x1 on the baseline, see the open findings |
+
+### Item 2: Landing Site's wave 7 rift is authored
+
+- New field `SpawnGroup.Nest` (0 = drawn, n = nest n of `LevelDefinition.Nests`, counted from 1), written by the generator's
+  Waves step from `TroopSpec.Nest` (`Join(..., nest: n)`), honoured by `NestAssignment.Draw` (no draw for an authored
+  group). Landing Site's rift Cragbacks name nest 1, (17,1), the rift behind the first gate. The second nest (10,8) stays in
+  the layout and is simply never used, so it stays closed and unmarked; no map change.
+- Data: `Waves_C1_01.asset` only: `Nest: 1` on the four rift groups (wave 7, one per difficulty), `Nest: 0` on the others.
+  No multiplier, count or timing moved (the solve is otherwise idempotent; the other five wave assets are untouched).
+- Validator rule (`LevelValidator.SmallNestGroup` = 2): a group of at most two walkers out of a nest, on a level with more
+  than one nest of its element, must have an authored nest; an authored nest must be a nest of that element. Only Landing
+  Site has such groups today (the small nest groups of C1_04 and C1_06 are flyers). Tests: two in
+  `SpawnOriginTests`, two in `RearNestTests` (one clears the field on a copy and expects the validator's error).
+- The paper model follows the data: `WaveGroup.Nest`, `RouteKill.Place`, `KillPurse.Travel` and `WaveLoad.Reach` take the
+  authored nest instead of the mean of the nests. The solve came out identical with it, so it moved no number.
+- `OffRoadRoute.NearestRoadCell` breaks a tie by `RoadCorridor.CompareAlongRoad` (first road, earlier leg, first row) and no
+  longer by the order of a `HashSet`. `Tools/PlayTest/nest_join_probe.cs` shows four tied nests in the campaign (Landing
+  Site 2, C1_04's 2 and 3, C1_05's 2); none of them joins anywhere else than before.
+- BalanceLab's asset writer and reader carry the field too (not rebuilt: there is no `dotnet` on this machine).
+
+Pass criteria:
+
+| Criterion | Result |
+| --- | --- |
+| Wave 7 reach the same on all five seeds | **Pass in substance**: the rear rift on every seed (0.81 to 1.00 everywhere except the skilled script on Easy, seeds 1 and 4, where the Cragback is shot on its way at 0.47; before: 0.12 to 0.15 on seeds 1 and 2) |
+| Seed spread of P at x1 under 5 % where every seed wins | Medium 0.5 % and 1.1 % (was 93 % and 21 %), Easy sensible 2.2 % (was 21 %), Hard skilled 6.4 % (was 151 %); **Easy skilled 24 %** (0.044 absolute: whether the one Cragback dies on the way or at the far gate) |
+| Skilled wins 5 of 5 at x1 on Easy and Medium | **Pass**: 5 of 5 at all three multiples on both (Medium was 2 of 5) |
+
+How the skilled script was "re-recorded", and what did not work: replaying the searched plans against the new data lost
+nearly everything on Medium (1 of 12 runs) and Psycho (0 of 15), and a new plan search (with the model now knowing the
+authored nest) wrote the same plans: the paper search does not see one creature behind the gate as a reason to build there.
+Both attempts were rolled back (`plan_records.txt` and `Plans/` are as committed). Instead the skilled rung of the pressure
+probe is now the recorded build order played by someone who sees the marker
+(`ProbeStrategy.ScriptedGuardingRifts`: the same one-gun reaction as the sensible bot, then the script as written).
+
+### Item 3: Shard Ridge Easy's first raid: no data change
+
+The repaired bot wins 5 of 5 at x0.8, x1 and x1.25, as Medium does, so Easy is not behind Medium at any multiple. The bot
+buys the Rocket in wave 13, one wave after the raid, and takes base damage in wave 13 only. Neither of the critic's two
+options was applied.
+
+### Item 4: Shard Ridge Hard and Psycho: no data change
+
+- The "swap" on Hard (wave 11 at 1.106, wave 12 at 0.212) is not a typing mistake and not in `wave_tuning.txt`. It comes out
+  of the solve: a wave has one health multiplier for its crowd and its flyers, and `CampaignModel.CalibrateToHuman` trims a
+  wave on its own when the paper player with the hero cannot hold it (the hero cap). On Hard that is wave 12 (ground
+  pressure 1.09 in `balance_ledger.txt`, the highest before the late raids), on Medium wave 11. So Medium's soft first raid
+  is the same accident, on the other wave. There is no "soft introduction raid" rule in the generator. Left as it is:
+  swapping would put wave 12 over the hero cap in the model, and the measured cell does not need it.
+- With the repaired bot Hard is no wall: sensible 5, 5 and 4 of 5 (two Rockets by wave 14, base hit in waves 12, 13 and 16
+  without losing), skilled 5 of 5 everywhere. The condition for thinning the late raids (0 of 5 at x0.8) is not met.
+  One criterion fails the other way: the sensible bot should lose most seeds at x1.25 and wins 4 of 5, so Hard is roomier
+  than the critic's target.
+- Psycho: skilled 5, 5, 4; sensible 1, 0, 0 (it loses in wave 16 on four seeds, with base hits from wave 12 on). That is
+  inside the criterion (skilled 5 of 5 at x1, sensible may lose).
+
+### Open findings and questions for Remco
+
+1. **Landing Site Hard and Psycho became harder with the rift on every run.** Sensible on Hard at x1: 3 of 5 before, 0 of 5
+   now (4 of 5 at x0.8). Skilled on Psycho at x1: 3 of 5 before, 1 of 5 now (5 of 5 at x0.8): the two rift Cragbacks of
+   Psycho (wave multiplier 2.576) walk through both far gates and the base between waves 7 and 12 against the one Cannon
+   the script adds there. Before, two seeds in five (one in four on Psycho) never met the rift. This is the honest price of
+   the fix, and the same question as the next one.
+2. **Is one unshot Cragback ending the level the intended price of ignoring the warning, also on Easy?** If not, the gentle
+   version is a lever on the rift group alone (its health or, on Psycho, its count); nothing was decided or built.
+3. **The sensible bot on Landing Site Hard sits on a knife edge**, and that is partly the bot: with armour in the preview it
+   holds its purse for the first Cannon (100) from wave 6 on, its three light guns lose the gate in wave 6, and whether the
+   purse reads 96 or 87 at the start of wave 7 decides the run (seed 3: 87, then a gate rebuilt every wave, no Cannon,
+   650 coins earned against 1800 in a won run). The critic's repair rule is implemented as written; a player who buys a
+   fourth light gun in wave 6 instead of saving is a different bot. Not tuned further.
+4. **Shard Ridge Hard is roomy for the sensible bot (4 of 5 at x1.25).** Harden it, or accept?
+5. **A soft first raid as a rule?** Today it is an accident of the hero cap. A script rule ("the first raid of a difficulty
+   is never the tougher of the first two") would make it deliberate on every level; it fights the cap, so it needs a
+   decision.
+6. **The plan search is blind to a rift behind the gate.** Until it is not, the skilled rung leans on the reaction rule.
+7. The solve stage rewrites the difficulty display names over the string keys of round 69 (found again, restored from git
+   both times; Docs/COMMANDS.md has the pitfall). Worth a one-line fix in `GenerateDifficulties` in another round.
+
+### Verification
+
+- Compile clean (only the old CS0618 in `Tests/PlayMode/BalanceProbeTests.cs`).
+- EditMode on w6, whole suite: **1126 / 1073 passed / 0 failed / 53 skipped** (1122 / 1069 / 0 / 53 before; +4 tests).
+  `CombatRulesTests` and the grace-window tests are in it and green; no allowance was changed.
+- All worker batches passed with 0 probe errors.
+- The acceptance stage (`BalanceAcceptanceTests` on w6, half a minute): the report is identical to the committed one apart
+  from its date line (not copied back). The finale probes were skipped: nothing they read changed.
+
+### Changed files
+
+- Test code: `Assets/Tests/PlayMode/BalanceProbeTests.cs`, `BotRun.cs`, `PressureProbeTests.cs`, `ProbeStrategy.cs`;
+  `Assets/Tests/EditMode/RearNestTests.cs`, `SpawnOriginTests.cs`.
+- Game: `Scripts/Levels/SpawnGroup.cs`, `NestAssignment.cs`, `LevelValidator.cs`, `OffRoadRoute.cs`, `RoadCorridor.cs`.
+- Balance model and generator: `Scripts/Balance/BalanceStats.cs`, `WaveScript.cs`, `WaveComposer.cs`, `WaveLoad.cs`,
+  `KillPurse.cs`, `RouteKill.cs`; `Scripts/Editor/WaveScripts.cs`, `ProjectGenerator.Waves.cs`,
+  `LevelSpecs/LevelSpecs.Crystal.cs`; `Tools/BalanceLab/AssetWriter.cs`, `GameData.cs`.
+- Data: `Assets/_Project/Data/Waves/Waves_C1_01.asset`.
+- Tools and docs: `Tools/PlayTest/pressure.sh`, `pressure_report.py`, `pressure_wins.py` (new), `nest_join_probe.cs` (new),
+  `pressure_r74_baseline*.txt`, `pressure_r74_final*.txt` (new); `Docs/COMMANDS.md`, `Docs/LEVEL_GUIDE.md`,
+  `Docs/BALANCE_HEADROOM.md`, this file.
+
+### Not done
+
+- The other four levels (the critic's table of the same patterns). Health jitter instead of seeds (critic 2.5).
+- A real re-record of the Landing Site scripts through the plan search (finding 6).
+- The headroom probe (`headroom.sh`) still plays its skilled script without the rift reaction.

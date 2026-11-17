@@ -209,6 +209,7 @@ namespace Game.Editor
                 element.FindPropertyRelative("Stagger").floatValue = group.Stagger;
                 element.FindPropertyRelative("PathIndex").intValue = group.Path;
                 element.FindPropertyRelative("Source").enumValueIndex = group.Source;
+                element.FindPropertyRelative("Nest").intValue = group.Nest;
             }
         }
     }

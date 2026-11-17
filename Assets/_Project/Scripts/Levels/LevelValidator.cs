@@ -507,13 +507,13 @@ namespace Game.Levels
                     string wave = $"{set.Difficulty.name} {i + 1}";
                     foreach (SpawnGroup group in set.Waves[i].Groups)
                     {
-                        CheckGroup(level, wave, group, errors);
+                        CheckGroup(level, wave, group, set.Difficulty, errors);
                     }
                 }
             }
         }
 
-        private static void CheckGroup(LevelDefinition level, string wave, SpawnGroup group, List<string> errors)
+        private static void CheckGroup(LevelDefinition level, string wave, SpawnGroup group, DifficultyProfile difficulty, List<string> errors)
         {
             if (group.Enemy == null)
             {
@@ -550,7 +550,7 @@ namespace Game.Levels
 
             if (group.Source == SpawnSource.Nest)
             {
-                CheckNestGroup(level, wave, group, errors);
+                CheckNestGroup(level, wave, group, difficulty, errors);
                 return;
             }
 
@@ -566,8 +566,16 @@ namespace Game.Levels
             }
         }
 
-        // A nest spawn needs a creature with an element and a nest of that element to come out of.
-        private static void CheckNestGroup(LevelDefinition level, string wave, SpawnGroup group, List<string> errors)
+        /// <summary>
+        /// A group of at most this many walkers out of a nest must have an authored nest when the level offers it more than one
+        /// (round 74, Docs/BALANCE_CRITIC_2026-11-17.md): so few creatures decide alone whether a rift is used at all, and a draw
+        /// made Landing Site's rift behind the gate a coin flip per run. Bigger groups average out over the nests and may draw.
+        /// </summary>
+        public const int SmallNestGroup = 2;
+
+        // A nest spawn needs a creature with an element and a nest of that element to come out of; an authored nest must be
+        // one of those, and a small group of walkers with a choice of nests must have one.
+        private static void CheckNestGroup(LevelDefinition level, string wave, SpawnGroup group, DifficultyProfile difficulty, List<string> errors)
         {
             if (group.Enemy.Element == Element.None)
             {
@@ -575,15 +583,33 @@ namespace Game.Levels
                 return;
             }
 
+            int candidates = 0;
             foreach (ElementNest nest in level.Nests)
             {
-                if (nest.Element == group.Enemy.Element)
-                {
-                    return;
-                }
+                candidates += nest.Element == group.Enemy.Element ? 1 : 0;
             }
 
-            errors.Add($"Wave '{wave}' sends {group.Enemy.name} out of a {group.Enemy.Element} nest, but the level has none.");
+            if (candidates == 0)
+            {
+                errors.Add($"Wave '{wave}' sends {group.Enemy.name} out of a {group.Enemy.Element} nest, but the level has none.");
+                return;
+            }
+
+            if (group.Nest > 0)
+            {
+                if (group.Nest > level.Nests.Length || level.Nests[group.Nest - 1].Element != group.Enemy.Element)
+                {
+                    errors.Add($"Wave '{wave}' sends {group.Enemy.name} out of nest {group.Nest}, which is not a {group.Enemy.Element} nest of the level.");
+                }
+
+                return;
+            }
+
+            int count = WaveScheduler.CountOf(group, difficulty);
+            if (!group.Enemy.Flies && candidates > 1 && count <= SmallNestGroup)
+            {
+                errors.Add($"Wave '{wave}' draws a nest for {count} {group.Enemy.name} out of {candidates}: a nest group of at most {SmallNestGroup} walkers needs an authored nest (SpawnGroup.Nest).");
+            }
         }
 
         /// <summary>Largest share of its road a creature from a nest or pool may skip; the rest it must walk under the guns.</summary>

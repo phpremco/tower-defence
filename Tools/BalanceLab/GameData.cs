@@ -419,6 +419,7 @@ namespace BalanceLab
                     Interval = g["Interval"].Float,
                     Delay = g["Delay"].Float,
                     Stagger = g["Stagger"].Float,
+                    Nest = g["Nest"].Int,
                 });
             }
 

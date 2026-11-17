@@ -23,7 +23,7 @@ from collections import defaultdict
 
 DIFFICULTIES = ["Easy", "Medium", "Hard", "Psycho"]
 LEVEL_NAMES = {"Level_C1_01": "Landing Site", "Level_C1_03": "Shard Ridge"}
-RUNGS = ["skilled", "typical", "sensible", "careless"]
+RUNGS = ["skilled", "typical", "sensible", "careless"]  # typical: stage 1b records only (dropped from the default run in round 74)
 FIXED = ["skilled", "typical"]
 
 # Stop rule (a): a unit/seed curve is monotone when no step to the next multiple drops P by more than this (1 % of the 0-2 scale).
@@ -54,7 +54,10 @@ def load(path):
                      health=float(p[9]), max=float(p[10]), stars=int(p[11]), game=float(p[12]), wall=float(p[13]), built=int(p[14]),
                      upgrades=int(p[15]), coins=int(p[16]), earned=int(p[17]), repair=int(p[18]), reach=waves(p[19], float),
                      base_lost=waves(p[20], float), gate_lost=waves(p[21], float),
-                     advance=waves(p[22], lambda v: tuple(float(x) for x in v.split(":"))), moves=p[23], note=p[24], worker=p[25], batch=p[26])
+                     advance=waves(p[22], lambda v: tuple(float(x) for x in v.split(":"))), moves=p[23], note=p[24], worker=p[-2], batch=p[-1])
+            # Round 74: the purse at each wave start and the idle-counter note sit between the note and the worker.
+            r["purse"] = waves(p[25], int) if len(p) >= 29 else {}
+            r["idle"] = p[26] if len(p) >= 29 else ""
             score(r)
             (runs if p[0] == "prun" else refs).append(r)
         elif p[0] == "batch" and len(p) >= 5:

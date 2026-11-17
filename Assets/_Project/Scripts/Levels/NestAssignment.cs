@@ -6,6 +6,7 @@ namespace Game.Levels
     /// Which nest every creature of a wave that comes out of a nest uses, drawn once when the level starts: a creature
     /// takes one of the nests of its element at random, as before, but the choice is known ahead, so an origin that will
     /// be used is marked from the first moment and only opens in the waves that really send something through it.
+    /// A group with an authored nest (<see cref="SpawnGroup.Nest"/>) is not drawn: all of it uses that nest.
     /// Pure data, no scene objects.
     /// </summary>
     public sealed class NestAssignment
@@ -42,14 +43,20 @@ namespace Game.Levels
                     }
                 }
 
+                int authored = Authored(group, candidates);
                 for (int k = 0; k < total; k++)
                 {
-                    result[g][k] = candidates.Count == 0 ? None : candidates[random.Next(candidates.Count)];
+                    result[g][k] = candidates.Count == 0 ? None : authored != None ? authored : candidates[random.Next(candidates.Count)];
                 }
             }
 
             return new NestAssignment(result);
         }
+
+        // The group's authored nest when it is one of the candidates (a nest of the creature's element); the validator
+        // reports an authored nest that is not, and the game falls back on the draw.
+        private static int Authored(SpawnGroup group, List<int> candidates) =>
+            group.Nest > 0 && candidates.Contains(group.Nest - 1) ? group.Nest - 1 : None;
 
         /// <summary>The nest of spawn <paramref name="index"/> of a group, or <see cref="None"/>.</summary>
         public int NestOf(int group, int index) =>

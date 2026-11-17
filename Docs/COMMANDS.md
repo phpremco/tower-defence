@@ -1309,9 +1309,10 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
   `Game.Tests.PressureProbeTests.Measure_Pressure` headless, appends every run to `Tools/PlayTest/pressure_records.txt` and
   writes the report with the stop rules to `Tools/PlayTest/pressure.txt` (`pressure_report.py`). The open editor is not used.
   The save's MD5 is checked before and after.
-- **What it plays by default:** the rungs `skilled` (the best replayed plan as a fixed script), `typical` (the sensible bot's
-  seed 1 build order as a fixed script) and `sensible` (the reactive bot) on seeds 1-5 at the multiples
-  0.5, 0.65, 0.8, 1, 1.25, 1.6, 2, plus the Cannon row and the careless bot on node 0. Env: `PR_POLICIES`, `PR_SEEDS`,
+- **What it plays by default:** the rungs `skilled` (the best replayed plan as a fixed script) and `sensible` (the reactive
+  bot, repaired in round 74) on seeds 1-5 at the multiples 0.5, 0.65, 0.8, 1, 1.25, 1.6, 2, plus the Cannon row and the
+  careless bot on node 0. The `typical` rung of stage 1b (the sensible bot's seed 1 build order as a fixed script) is no
+  longer in the default; `PR_POLICIES="skilled,typical,sensible"` still plays it. Env: `PR_POLICIES`, `PR_SEEDS`,
   `PR_MULTIPLES`, `PR_EXTRA` (`node:policy,...`, `""` for none), `PR_WORKERS` (default `workers.sh count`), `PR_FIRST`, `PR_RECORDS`.
 - **Exact units:** `PR_UNITS="0:1:skilled:3,2:0:sensible:1" PR_MULTIPLES="0.5,1" bash Tools/PlayTest/pressure.sh`
   (node:difficulty:policy:seed; policies also `careless`, `fresh`, `mono-<TowerId>`).
@@ -1327,3 +1328,34 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
 - Pitfall met while writing it: the Windows paths in `pressure.sh` need the same doubled backslashes as in `headroom.sh`;
   with single ones robocopy gets a wrong path, returns 16 and the script stops at the sync. Unlike `headroom.sh`, the sync
   step here fails loudly when a clone could not be refreshed.
+
+## Round 74: the repaired sensible bot, seeds won, authored nests (added 2026-11-17)
+
+- **The reading:** `PR_RECORDS=Tools/PlayTest/<name>_records.txt PR_MULTIPLES="0.8,1,1.25" PR_EXTRA="" bash Tools/PlayTest/pressure.sh "0,2" "0,1,2,3"`
+  (240 runs, about 14 minutes on five clones), then `python Tools/PlayTest/pressure_wins.py <records>` for the seeds won per
+  rung, cell and multiple; with a second records file it prints before -> after side by side; `--bot` lists the sensible
+  bot's counter purchases per seed (first Rocket wave, Rockets and Cannons by wave 14), the purse at the start of waves
+  10 to 14 and the idle-counter note. Keep a records file per measurement (`PR_RECORDS`); the report takes the last record
+  of a unit and multiple, so mixing rounds in one file hides the earlier one.
+- **New record fields** (after the note, before the worker and the batch): the purse at the first look of every wave
+  (`wave=coins;...`) and the idle-counter note (`Trait=coins/price` when a counter trait was alive at the end and its
+  counter's price was unspent). `pressure_report.py` reads both layouts.
+- **The sensible bot's rules** live in `BalanceProbeTests.SensibleAct` (PlayMode test code): living flyers and plated
+  creatures count as coming; the counters of a trait grow (a tower, then an upgrade, in turn) after a wave in which the base
+  or a gate lost health to it or when the preview shows half as many again; the trait furthest behind is served first;
+  while it saves for a counter only a wrecked defence gate is repaired; a marked rift behind the defence gate gets a gun at
+  the gate its walkers reach, one wave ahead.
+- **An authored nest:** `Join(..., Nest, delay, nest: n)` in a level spec sends every rift group of that troop through nest n
+  of the level (counted from 1 in `LevelDefinition.Nests`); it lands in the wave data as `SpawnGroup.Nest` (0 = drawn). The
+  level validator asks for it when at most `LevelValidator.SmallNestGroup` walkers would draw one of several nests.
+  `unity command eval_file --file Tools/PlayTest/nest_join_probe.cs` lists every level's nests, the road cell each joins at,
+  ties and which lie behind the defence gate.
+- **Pitfall of the solve stage** (`ApplyRound68.cs`, `BalanceStages.SolveWaves`): its "Difficulties" step writes the plain
+  display names back over the string keys of round 69 in `Data/Difficulty/*.asset`. After a solve, restore those four files
+  (`git checkout -- Assets/_Project/Data/Difficulty`) and refresh the editor; nothing else in them changes.
+- **Replaying a level's searched plans** after its data changed: `bash Tools/PlayTest/workers.sh run replay 5 "cells=0:0,0:1,0:2,0:3" "seeds=1,2,3"`
+  replaces their records in `plan_records.txt`, and the pressure probe's `skilled` rung takes the best of them
+  (`HeadroomProbeTests.BestRecordedPlan`). Mind that a lost replay leaves a cut-off build order: in round 74 the plans of
+  Landing Site lost to the authored rift, a new search (`r34b_editmode_worker.sh N PlanSearchTests "cells=0:1"`) wrote the
+  same plans, and both were rolled back with `git checkout -- Tools/PlayTest/plan_records.txt Tools/PlayTest/Plans`. The
+  skilled rung reacts to a marked rift itself instead (`ProbeStrategy.ScriptedGuardingRifts`).

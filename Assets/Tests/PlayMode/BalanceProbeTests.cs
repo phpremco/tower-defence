@@ -111,6 +111,7 @@ namespace Game.Tests
         // A structure's loss in the next wave is reckoned as the worse of this wave and the last, times this for the growth.
         private const float LossGrowth = 1.25f;
         private const int GateRepairsPerWave = 2;
+        private const int GateRepairsWhileSaving = 1;
         private const string FilterPath = "Tools/PlayTest/probe_arg.txt";
         internal const string CampaignPath = "Assets/_Project/Data/Levels/CampaignCatalog.asset";
         internal const string UnlocksPath = "Assets/_Project/Data/Unlocks/UnlockTable.asset";
@@ -424,6 +425,15 @@ namespace Game.Tests
             /// <summary>The build order the run really took (round 22e).</summary>
             public List<Game.Balance.PlanStep> Moves = new List<Game.Balance.PlanStep>();
 
+            /// <summary>The coins in hand when each wave started (round 74), see <see cref="BotRun.Purse"/>.</summary>
+            public Dictionary<int, int> Purse = new Dictionary<int, int>();
+
+            /// <summary>
+            /// Round 74: "Trait=coins/price" for every counter trait still alive on the field when the run ended with at least
+            /// the price of its counter tower unspent; empty when the purse was not idle.
+            /// </summary>
+            public string IdleCounter = string.Empty;
+
             /// <summary>The run as the calibration fit reads it.</summary>
             public Game.Balance.RunRecord ToRecord()
             {
@@ -666,6 +676,8 @@ namespace Game.Tests
                     AirHealth = run.AirHealth,
                     Reach = run.Reach,
                     Advance = run.Advance(),
+                    Purse = run.Purse,
+                    IdleCounter = IdleCounter(context, owned, run),
                     Seed = seed,
                     Step = step,
                     Records = run.Records,
@@ -685,6 +697,23 @@ namespace Game.Tests
             // One line per run, kept over test runs, so repeated runs and seed sweeps can be compared.
             System.IO.File.AppendAllLines(ResultsPath, report);
             Debug.Log(string.Join(" | ", report));
+        }
+
+        // The counter traits alive at the end of a run whose counter tower the unspent purse could have paid for.
+        private static string IdleCounter(LevelContext context, List<string> owned, BotRun run)
+        {
+            var idle = new List<string>();
+            EnemyTraits living = run.LivingTraits();
+            foreach (EnemyTraits trait in CounterTraits)
+            {
+                TowerDefinition counter = (living & trait) != 0 ? CheapestCounter(context, owned, trait, TargetLayers.None) : null;
+                if (counter != null && context.Wallet.CanAfford(counter.BuildCost))
+                {
+                    idle.Add(trait + "=" + context.Wallet.Money + "/" + counter.BuildCost);
+                }
+            }
+
+            return string.Join(";", idle);
         }
 
         // Whether the strategy lets the bot build an owned tower (by id, as the level sells it).
@@ -1215,13 +1244,22 @@ namespace Game.Tests
 
             if (run.Strategy.Style == PlayStyle.Scripted)
             {
+                if (run.Strategy.GuardsRearRift)
+                {
+                    run.StopSaving();
+                    if (GuardRearRift(context, spots, towers, owned, run))
+                    {
+                        return;
+                    }
+                }
+
                 ScriptedAct(context, towers, watch, cheapestStep, run);
                 return;
             }
 
             if (run.Strategy.Obvious)
             {
-                ObviousAct(context, spots, towers, owned, run);
+                ObviousAct(context, spots, towers, gates, owned, run);
                 return;
             }
 
@@ -1491,7 +1529,18 @@ namespace Game.Tests
 
             // A scripted plan repairs its gates only where it says so (a "repair" step; round 22b): the repair is one of its trades.
             bool gatesByPlan = run.Strategy.Style == PlayStyle.Scripted;
-            if (!gatesByPlan && gate != null && watch.Repairs < GateRepairsPerWave && gate.NeedsRepair && (gate.IsWrecked || gate.HealthFraction < RepairBelow)
+            // The sensible player who is saving for a counter tower (round 74) mends nothing but a fallen defence gate, once a
+            // wave, and not with the coins that already pay for the counter: every other repair took the purse before it
+            // reached the counter's price (Landing Site Hard, stage 1b), and a gate raised again in front of creatures no
+            // standing gun can hurt falls again.
+            bool saving = run.SavingForCounter;
+            if (saving && context.Wallet.CanAfford(run.CounterPrice))
+            {
+                return false;
+            }
+
+            int gateRepairs = saving ? GateRepairsWhileSaving : GateRepairsPerWave;
+            if (!gatesByPlan && gate != null && watch.Repairs < gateRepairs && gate.NeedsRepair && (gate.IsWrecked || (!saving && gate.HealthFraction < RepairBelow))
                 && WorthRepair(context, watch, gate, cheapestStep) && Spend(context, watch, gate.RepairCost))
             {
                 gate.RepairFully();
@@ -1501,7 +1550,7 @@ namespace Game.Tests
 
             foreach (Tower tower in towers)
             {
-                if (tower.NeedsRepair && tower.HealthFraction < RepairBelow && WorthRepair(context, watch, tower, cheapestStep) && Spend(context, watch, tower.RepairCost))
+                if (!saving && tower.NeedsRepair && tower.HealthFraction < RepairBelow && WorthRepair(context, watch, tower, cheapestStep) && Spend(context, watch, tower.RepairCost))
                 {
                     tower.RepairFully();
                     return true;
@@ -2365,7 +2414,7 @@ namespace Game.Tests
         private const int NaiveSkyEvery = 3;
         private const int DefaultSeeds = 3;
 
-        private static void ObviousAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run)
+        private static void ObviousAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<Tower> gates, List<string> owned, BotRun run)
         {
             switch (run.Strategy.Style)
             {
@@ -2376,7 +2425,7 @@ namespace Game.Tests
                     NaiveAct(context, spots, towers, owned, run);
                     break;
                 case PlayStyle.Sensible:
-                    SensibleAct(context, spots, towers, owned, run);
+                    SensibleAct(context, spots, towers, gates, owned, run);
                     break;
                 default:
                     AffordableAct(context, spots, towers, owned, run);
@@ -2478,35 +2527,79 @@ namespace Game.Tests
         // The traits a player answers with a tower of its own, in the order the sensible player looks at them.
         private static readonly EnemyTraits[] CounterTraits = { EnemyTraits.Armoured, EnemyTraits.Airborne };
 
-        // The sensible rung of the headroom ladder: when the wave being fought or the next one (the preview) brings armour or
-        // flyers and no standing tower is made for that (the role table of the combat rules), the cheapest owned counter comes
-        // first and the purse is kept for it; otherwise the affordable buyer's dearest step. It reads no balance model.
-        private static void SensibleAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run)
+        // The preview calls for one more counter when it shows this many times the creatures the counters were last sized for.
+        private const float PreviewGrowth = 1.5f;
+        // A gate is meant to be chipped; it lost health "to a trait" once such creatures took this share of it within a wave.
+        private const float GateLossShare = 0.25f;
+        // Creatures this close (cells) to a structure that loses health are the ones taking it.
+        private const float StructureSiegeRadius = 2.5f;
+        private static readonly List<ITargetable> Besiegers = new List<ITargetable>();
+        private static readonly List<EnemyTraits> TraitsFound = new List<EnemyTraits>();
+
+        // The sensible rung of the headroom ladder (repaired in round 74, Docs/BALANCE_CRITIC_2026-11-17.md): the affordable
+        // buyer who answers what a player sees. Armour or flyers in the preview (the wave being fought and the next) or alive
+        // on the field call for the counter tower of the role table, and the purse is kept for it; the counters grow (a tower
+        // and an upgrade in turn) when the base or a gate lost health to the trait or the preview shows clearly more of it;
+        // a marked rift behind the defence gate gets a gun at the gate its creatures will reach. It reads no balance model.
+        private static void SensibleAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<Tower> gates, List<string> owned, BotRun run)
         {
-            EnemyTraits coming = ComingCounterTraits(context);
+            run.StopSaving();
+            NoteTraitLosses(context, gates, run);
+            if (GuardRearRift(context, spots, towers, owned, run))
+            {
+                return;
+            }
+
+            EnemyTraits coming = ComingCounterTraits(context) | run.LivingTraits();
             foreach (EnemyTraits trait in CounterTraits)
             {
-                if ((coming & trait) == 0 || towers.Exists(t => t.IsAlive && AnswersTrait(t.Definition, trait)))
+                if ((coming & trait) != 0)
                 {
-                    continue;
+                    SizeCounterDemand(context, towers, trait, run);
                 }
+            }
 
-                TowerDefinition counter = null;
-                foreach (TowerDefinition tower in context.AllTowers)
+            // The trait that is furthest behind comes first (none of its counters standing before one more of another's): with
+            // the table's order alone, growing the anti-armour guns took every coin while the flyers had no gun at all.
+            foreach (EnemyTraits trait in MostWanting(towers, coming, run))
+            {
+                TowerDefinition counter = CheapestCounter(context, owned, trait, TargetLayers.None);
+                bool canBuild = counter != null && FreeSpot(context, spots.RankingFor(counter), towers, out _);
+                Tower upgrade = null;
+                int standing = 0;
+                int raised = 0;
+                foreach (Tower tower in towers)
                 {
-                    bool fits = !tower.IsSupport && owned.Contains(tower.Id) && AnswersTrait(tower, trait);
-                    if (fits && (counter == null || tower.BuildCost < counter.BuildCost))
+                    if (!tower.IsAlive || !AnswersTrait(tower.Definition, trait))
                     {
-                        counter = tower;
+                        continue;
+                    }
+
+                    standing++;
+                    raised += tower.LevelIndex;
+                    if (tower.CanUpgrade && (upgrade == null || tower.NextUpgradeCost < upgrade.NextUpgradeCost))
+                    {
+                        upgrade = tower;
                     }
                 }
 
-                if (counter == null)
+                // Another tower first (coverage), then an upgrade, in turn; whichever is possible when the other is not.
+                bool build = canBuild && (upgrade == null || raised >= standing - 1);
+                if (!build && upgrade == null)
                 {
                     continue;
                 }
 
-                if (context.Wallet.CanAfford(counter.BuildCost) && TryBuy(context, spots, towers, owned, t => t == counter, run))
+                int price = build ? counter.BuildCost : upgrade.NextUpgradeCost;
+                if (!context.Wallet.CanAfford(price))
+                {
+                    run.SaveForCounter(price);
+                }
+                else if (!build)
+                {
+                    Buy(context, upgrade, run);
+                }
+                else if (TryBuy(context, spots, towers, owned, t => t == counter, run))
                 {
                     run.Purchases++;
                 }
@@ -2515,6 +2608,239 @@ namespace Game.Tests
             }
 
             AffordableAct(context, spots, towers, owned, run);
+        }
+
+        private static readonly List<EnemyTraits> Wanting = new List<EnemyTraits>();
+
+        // The coming or living counter traits whose counters fall short of the demand, the largest shortfall (as a share of the
+        // demand) first; the table's order between equals.
+        private static List<EnemyTraits> MostWanting(List<Tower> towers, EnemyTraits coming, BotRun run)
+        {
+            Wanting.Clear();
+            foreach (EnemyTraits trait in CounterTraits)
+            {
+                if ((coming & trait) != 0 && CounterStrength(towers, trait) < run.CounterDemand(trait))
+                {
+                    Wanting.Add(trait);
+                }
+            }
+
+            float Shortfall(EnemyTraits trait) => 1f - CounterStrength(towers, trait) / (float)Mathf.Max(1, run.CounterDemand(trait));
+            if (Wanting.Count > 1 && Shortfall(Wanting[1]) > Shortfall(Wanting[0]))
+            {
+                Wanting.Reverse();
+            }
+
+            return Wanting;
+        }
+
+        // The cheapest owned tower made for the trait (the role table); with a layer, one that can also aim at that layer.
+        private static TowerDefinition CheapestCounter(LevelContext context, List<string> owned, EnemyTraits trait, TargetLayers layer)
+        {
+            TowerDefinition counter = null;
+            foreach (TowerDefinition tower in context.AllTowers)
+            {
+                bool fits = !tower.IsSupport && owned.Contains(tower.Id) && AnswersTrait(tower, trait) && (layer == TargetLayers.None || (tower.Targets & layer) != 0);
+                if (fits && (counter == null || tower.BuildCost < counter.BuildCost))
+                {
+                    counter = tower;
+                }
+            }
+
+            return counter;
+        }
+
+        // What the counters of a trait amount to: every standing tower made for it, and every upgrade on one.
+        private static int CounterStrength(List<Tower> towers, EnemyTraits trait)
+        {
+            int strength = 0;
+            foreach (Tower tower in towers)
+            {
+                strength += tower.IsAlive && AnswersTrait(tower.Definition, trait) ? 1 + tower.LevelIndex : 0;
+            }
+
+            return strength;
+        }
+
+        // How many counters the trait asks for: one when it first shows, one more when the preview (or the field) shows
+        // clearly more of it than the counters were sized for, and one more than stands after a wave in which it cost health.
+        private static void SizeCounterDemand(LevelContext context, List<Tower> towers, EnemyTraits trait, BotRun run)
+        {
+            int shown = Mathf.Max(PreviewCount(context, trait), run.LivingCount(trait));
+            int sized = run.SizedFor(trait);
+            if (sized == 0 || shown >= sized * PreviewGrowth)
+            {
+                run.RaiseCounterDemand(trait, sized == 0 ? 1 : run.CounterDemand(trait) + 1, shown);
+            }
+
+            if (run.TakeTraitLoss(trait, context.WaveNumber))
+            {
+                run.RaiseCounterDemand(trait, CounterStrength(towers, trait) + 1, Mathf.Max(shown, sized));
+            }
+        }
+
+        // The base or a gate lost health since the last look: creatures with a counter trait at that structure took it. Any
+        // loss of the base counts; a gate's loss counts once it adds up to GateLossShare of the gate within the wave.
+        private static void NoteTraitLosses(LevelContext context, List<Tower> gates, BotRun run)
+        {
+            float cell = context.Level.Grid.CellSize;
+            float baseNow = context.BaseHealth.Current;
+            if (context.Base != null && run.LastBaseSeen >= 0f && baseNow < run.LastBaseSeen)
+            {
+                foreach (EnemyTraits trait in TraitsAt(context, context.Base.Position, BaseSiegeRadius * cell))
+                {
+                    run.NoteTraitLoss(trait, context.WaveNumber, 1f);
+                }
+            }
+
+            run.LastBaseSeen = baseNow;
+            foreach (Tower gate in gates)
+            {
+                float now = gate.Health.Current;
+                float lost = run.LastGateSeen.TryGetValue(gate, out float before) ? before - now : 0f;
+                run.LastGateSeen[gate] = now;
+                if (lost <= 0f)
+                {
+                    continue;
+                }
+
+                foreach (EnemyTraits trait in TraitsAt(context, gate.Position, StructureSiegeRadius * cell))
+                {
+                    run.NoteTraitLoss(trait, context.WaveNumber, lost / Mathf.Max(1f, gate.Health.Max) / GateLossShare);
+                }
+            }
+        }
+
+        private static List<EnemyTraits> TraitsAt(LevelContext context, Vector3 position, float radius)
+        {
+            TraitsFound.Clear();
+            context.Targets.FindInRadius(position, radius, TargetLayers.Ground | TargetLayers.Air, Besiegers);
+            foreach (ITargetable target in Besiegers)
+            {
+                if (!(target is Enemy enemy) || !enemy.IsAlive)
+                {
+                    continue;
+                }
+
+                EnemyTraits trait = enemy.Definition.Flies ? EnemyTraits.Airborne : enemy.Definition.HasArmor ? EnemyTraits.Armoured : EnemyTraits.None;
+                if (trait != EnemyTraits.None && !TraitsFound.Contains(trait))
+                {
+                    TraitsFound.Add(trait);
+                }
+            }
+
+            return TraitsFound;
+        }
+
+        // A rift behind the defence gate is marked on the ground from the first second and Voss warns when it opens. When the
+        // wave being fought or the next sends walkers through it, the bot wants one gun that reaches the gate those walkers
+        // will stop at (the base when no gate is left on their way): the counter when they are plated, else its cheapest
+        // ground gun. True while the purse is kept for that gun or went to it.
+        private static bool GuardRearRift(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run)
+        {
+            OriginDirector origins = context.Origins;
+            WaveDefinition[] waves = context.Level.GetWaves(context.Difficulty);
+            if (origins == null || waves == null)
+            {
+                return false;
+            }
+
+            bool[] behind = run.RearNests(context.Level);
+            int current = Mathf.Max(0, context.WaveNumber - 1);
+            for (int n = 0; n < behind.Length && n < origins.Count; n++)
+            {
+                if (!behind[n] || origins.StateOf(n) == OriginState.Closed)
+                {
+                    continue;
+                }
+
+                bool used = false;
+                bool plated = false;
+                for (int w = current; w <= current + Horizon && w < waves.Length; w++)
+                {
+                    if (!origins.Wave(w).Uses(n))
+                    {
+                        continue;
+                    }
+
+                    foreach (SpawnGroup group in waves[w].Groups)
+                    {
+                        bool walker = group.Source == SpawnSource.Nest && group.Enemy != null && !group.Enemy.Flies;
+                        used |= walker;
+                        plated |= walker && group.Enemy.HasArmor;
+                    }
+                }
+
+                if (used && GuardBehind(context, spots, towers, owned, run, n, plated))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool GuardBehind(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run, int nest, bool plated)
+        {
+            Vector3 stand = context.Level.Grid.CellToWorld(run.RearStand(context.Level, nest));
+            foreach (Tower tower in towers)
+            {
+                bool reaches = tower.IsAlive && (tower.Definition.Targets & TargetLayers.Ground) != 0 && Vector3.Distance(tower.Position, stand) <= tower.Range;
+                if (reaches && (!plated || AnswersTrait(tower.Definition, EnemyTraits.Armoured)))
+                {
+                    return false;
+                }
+            }
+
+            TowerDefinition gun = plated ? CheapestCounter(context, owned, EnemyTraits.Armoured, TargetLayers.Ground) : null;
+            foreach (TowerDefinition tower in context.AllTowers)
+            {
+                bool fits = !tower.IsSupport && !tower.BlocksGroundEnemies && owned.Contains(tower.Id) && (tower.Targets & TargetLayers.Ground) != 0;
+                if (!plated && fits && (gun == null || tower.BuildCost < gun.BuildCost))
+                {
+                    gun = tower;
+                }
+            }
+
+            if (gun == null)
+            {
+                return false;
+            }
+
+            // The free spot nearest the stand, within the new gun's reach.
+            float reach = gun.GetLevel(0).Range;
+            bool found = false;
+            Vector2Int best = default;
+            float bestDistance = float.MaxValue;
+            foreach (Vector2Int cell in spots.Ground)
+            {
+                float distance = Vector3.Distance(context.Level.Grid.CellToWorld(cell), stand);
+                if (distance <= reach && distance < bestDistance && TowerAt(context, towers, cell) == null)
+                {
+                    found = true;
+                    best = cell;
+                    bestDistance = distance;
+                }
+            }
+
+            if (!found)
+            {
+                return false;
+            }
+
+            if (!context.Wallet.CanAfford(gun.BuildCost))
+            {
+                run.SaveForCounter(gun.BuildCost);
+                return true;
+            }
+
+            if (TryBuyAt(context, gun, best, towers, run))
+            {
+                run.Purchases++;
+                return true;
+            }
+
+            return false;
         }
 
         private static bool AnswersTrait(TowerDefinition tower, EnemyTraits trait)
@@ -2533,21 +2859,34 @@ namespace Game.Tests
         // Armour and flyers in the wave being fought and in the one after it: what the wave preview shows a player.
         private static EnemyTraits ComingCounterTraits(LevelContext context)
         {
-            WaveDefinition[] waves = context.Level.GetWaves(context.Difficulty);
             EnemyTraits traits = EnemyTraits.None;
-            int current = Mathf.Max(0, context.WaveNumber - 1);
-            for (int w = current; waves != null && w <= current + 1 && w < waves.Length; w++)
+            foreach (EnemyTraits trait in CounterTraits)
             {
-                foreach (SpawnGroup group in waves[w].Groups)
-                {
-                    if (group.Enemy != null)
-                    {
-                        traits |= (group.Enemy.HasArmor ? EnemyTraits.Armoured : EnemyTraits.None) | (group.Enemy.Flies ? EnemyTraits.Airborne : EnemyTraits.None);
-                    }
-                }
+                traits |= PreviewCount(context, trait) > 0 ? trait : EnemyTraits.None;
             }
 
             return traits;
+        }
+
+        // The most creatures with the trait that one of the waves at hand (the one being fought, the next) brings.
+        private static int PreviewCount(LevelContext context, EnemyTraits trait)
+        {
+            WaveDefinition[] waves = context.Level.GetWaves(context.Difficulty);
+            int most = 0;
+            int current = Mathf.Max(0, context.WaveNumber - 1);
+            for (int w = current; waves != null && w <= current + Horizon && w < waves.Length; w++)
+            {
+                int count = 0;
+                foreach (SpawnGroup group in waves[w].Groups)
+                {
+                    bool has = group.Enemy != null && (trait == EnemyTraits.Airborne ? group.Enemy.Flies : group.Enemy.HasArmor);
+                    count += has ? WaveScheduler.CountOf(group, context.Difficulty) : 0;
+                }
+
+                most = Mathf.Max(most, count);
+            }
+
+            return most;
         }
 
         private static Tower CheapestUpgrade(List<Tower> towers, int purse)

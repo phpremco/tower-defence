@@ -17,6 +17,9 @@ namespace Game.Balance
         public float Speed = 1f;
         public int Path;
         public int Source;
+
+        /// <summary>The authored nest of a nest group, counted from 1 in the level's nests; 0 = drawn (<see cref="GroupSpec.Nest"/>).</summary>
+        public int Nest;
         public bool IsBoss;
         public bool Flies;
 
@@ -188,6 +191,7 @@ namespace Game.Balance
                     Speed = enemy.InRangeSpeed,
                     Path = group.Path,
                     Source = group.Source,
+                    Nest = group.Nest,
                     IsBoss = enemy.IsBoss,
                     Flies = !Layer.Has(enemy.Layer, Layer.Ground),
                 });
@@ -306,12 +310,19 @@ namespace Game.Balance
             }
             else
             {
-                trunk = Mean(shape) ;
+                trunk = NestRemaining(shape, group.Nest);
             }
 
             float share = Math.Min(1f, trunk / Math.Max(0.01f, rules.TrunkReference));
             return share + (1f - share) * rules.FrontEfficiency;
         }
+
+        /// <summary>
+        /// The share of the main road ahead of a nest group where it joins: its authored nest's (round 74), else the mean of the
+        /// level's nests, as the game draws one per creature.
+        /// </summary>
+        public static float NestRemaining(LevelShape shape, int nest) =>
+            nest > 0 && nest <= shape.NestRemaining.Count ? shape.NestRemaining[nest - 1] : Mean(shape);
 
         private static float Mean(LevelShape shape)
         {

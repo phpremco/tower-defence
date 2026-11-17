@@ -495,6 +495,7 @@ namespace Game.Balance
                     Delay = troop.Delay + extraDelay + order * TroopStagger,
                     Source = troop.Source,
                     Path = Road,
+                    Nest = troop.Source != 0 ? troop.Nest : 0,
                 };
                 // Round 68: plated troops that have grown past their grace window close ranks (packs at the gate, a tight file from
                 // a nest), so a blast catches several and light fire, one target at a time, falls behind.

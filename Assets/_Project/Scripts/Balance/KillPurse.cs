@@ -139,7 +139,7 @@ namespace Game.Balance
             }
             else
             {
-                toBase = MeanNestRemaining(shape) * shape.MainLength;
+                toBase = WaveLoad.NestRemaining(shape, group.Nest) * shape.MainLength;
             }
 
             return Math.Max(0f, toBase - _defenceRemaining);
@@ -167,22 +167,6 @@ namespace Game.Balance
 
             float progress = best != null ? best.Progress : 0.5f;
             return (1f - progress) * shape.MainLength;
-        }
-
-        private static float MeanNestRemaining(LevelShape shape)
-        {
-            if (shape.NestRemaining.Count == 0)
-            {
-                return 1f;
-            }
-
-            float sum = 0f;
-            foreach (float remaining in shape.NestRemaining)
-            {
-                sum += remaining;
-            }
-
-            return sum / shape.NestRemaining.Count;
         }
     }
 }

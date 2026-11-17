@@ -10,6 +10,11 @@ Rules for building a level that plays fairly. A level is data (`LevelDefinition`
 - Roads are 74 to 141 cells long; a wide road (`RoadCorridor`) gets a second build row on the right of travel,
   and legs keep 5 cells between parallel runs and 3 to a plaza edge.
 - Nests (ambush spawns in the field) join the road within the first 60% of its walk from the spawn, never next to the base itself.
+- A nest group that decides alone whether a rift is used at all is authored, not drawn (round 74): a troop that comes out
+  of the nests in ones and twos on a level with more than one nest for it names its nest (`Join(..., Nest, delay, nest: n)`,
+  nest n of the level counted from 1; `SpawnGroup.Nest` in the wave data). The validator enforces it for walkers
+  (`LevelValidator.SmallNestGroup`, 2). Bigger groups may draw: they average out over the nests. A level generator that
+  places a rift as a lesson (the rift behind the first gate on Landing Site) writes the nest it means.
 - Three to five gates per level, on straight road cells, spread over the walk; a second road gets a gate within a screen
   downstream of its junction. The pure `LayoutChecks` enforce all of this before an asset is written.
   The share of ambush creatures per difficulty is in the `DifficultyProfile`.

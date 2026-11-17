@@ -179,6 +179,40 @@ namespace Game.Tests
         }
 
         [Test]
+        public void NestAssignment_AnAuthoredNest_TakesTheWholeGroup_WithoutADraw()
+        {
+            // Two stone nests (0 and 2) around a fire nest: the draw would split the group, the authored nest (counted from 1) does not.
+            var nests = new[] { _nests[0], _nests[1], new ElementNest { Cell = new Vector2Int(9, 2), Element = Element.Stone } };
+            var wave = new WaveDefinition(new[]
+            {
+                new SpawnGroup { Enemy = _stone, Count = 12, Interval = NestInterval, Delay = NestDelay, Source = SpawnSource.Nest, Nest = 3 },
+            });
+
+            for (int seed = 0; seed < 8; seed++)
+            {
+                NestAssignment assignment = NestAssignment.Draw(wave, _difficulty, nests, new System.Random(seed));
+                for (int k = 0; k < assignment.CountOf(0); k++)
+                {
+                    Assert.AreEqual(2, assignment.NestOf(0, k), $"seed {seed}: the authored nest takes every creature");
+                }
+
+                Assert.IsFalse(assignment.Uses(0), "the other stone nest stays shut");
+            }
+        }
+
+        [Test]
+        public void NestAssignment_AnAuthoredNestOfAnotherElement_FallsBackOnTheDraw()
+        {
+            var wave = new WaveDefinition(new[]
+            {
+                new SpawnGroup { Enemy = _stone, Count = NestCount, Interval = NestInterval, Delay = NestDelay, Source = SpawnSource.Nest, Nest = 2 },
+            });
+            NestAssignment assignment = NestAssignment.Draw(wave, _difficulty, _nests, new System.Random(3));
+
+            Assert.AreEqual(0, assignment.NestOf(0, 0), "the fire nest never takes a stone creature; the validator reports the data");
+        }
+
+        [Test]
         public void Scheduler_PlannedTimes_MatchWhenTheSpawnsAreDue()
         {
             var scheduler = new WaveScheduler(NestWave(), _difficulty, new System.Random(5));

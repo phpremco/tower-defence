@@ -77,6 +77,117 @@ namespace Game.Tests
         /// <summary>Purchases of the obvious bots (towers and upgrades), for their round-robin rules.</summary>
         public int Purchases;
 
+        /// <summary>The coins in hand at the first look of each wave (round 74): evidence for "could it afford the counter then".</summary>
+        public readonly Dictionary<int, int> Purse = new Dictionary<int, int>();
+
+        // ---- The sensible player's memory (round 74) ------------------------------------------------------------------------
+
+        /// <summary>True while the sensible player keeps its purse for a counter tower it cannot pay yet: repairs wait (see Maintain).</summary>
+        public bool SavingForCounter { get; private set; }
+
+        /// <summary>The price of the counter step the purse is kept for.</summary>
+        public int CounterPrice { get; private set; }
+
+        public void SaveForCounter(int price)
+        {
+            SavingForCounter = true;
+            CounterPrice = price;
+        }
+
+        public void StopSaving()
+        {
+            SavingForCounter = false;
+            CounterPrice = 0;
+        }
+
+        /// <summary>The base's and each gate's health at the sensible player's last look, to see what was lost since.</summary>
+        public float LastBaseSeen = -1f;
+        public readonly Dictionary<Tower, float> LastGateSeen = new Dictionary<Tower, float>();
+
+        private readonly Dictionary<Game.Core.EnemyTraits, int> _counterDemand = new Dictionary<Game.Core.EnemyTraits, int>();
+        private readonly Dictionary<Game.Core.EnemyTraits, int> _sizedFor = new Dictionary<Game.Core.EnemyTraits, int>();
+        private readonly Dictionary<Game.Core.EnemyTraits, (int Wave, float Share, bool Taken)> _traitLoss = new Dictionary<Game.Core.EnemyTraits, (int, float, bool)>();
+        private bool[] _rearNests;
+        private readonly Dictionary<int, Vector2Int> _rearStand = new Dictionary<int, Vector2Int>();
+
+        /// <summary>How many counters (towers and upgrades on them) the sensible player wants against a trait.</summary>
+        public int CounterDemand(Game.Core.EnemyTraits trait) => _counterDemand.TryGetValue(trait, out int demand) ? demand : 0;
+
+        /// <summary>The number of creatures with the trait the counters were last sized for (0 = never seen).</summary>
+        public int SizedFor(Game.Core.EnemyTraits trait) => _sizedFor.TryGetValue(trait, out int count) ? count : 0;
+
+        public void RaiseCounterDemand(Game.Core.EnemyTraits trait, int demand, int sizedFor)
+        {
+            _counterDemand[trait] = Mathf.Max(CounterDemand(trait), demand);
+            _sizedFor[trait] = Mathf.Max(SizedFor(trait), sizedFor);
+        }
+
+        /// <summary>A structure lost health to creatures with the trait in a wave; <paramref name="share"/> adds up to 1 for "it counted".</summary>
+        public void NoteTraitLoss(Game.Core.EnemyTraits trait, int wave, float share)
+        {
+            (int Wave, float Share, bool Taken) loss = _traitLoss.TryGetValue(trait, out var known) && known.Wave == wave ? known : (wave, 0f, false);
+            _traitLoss[trait] = (wave, loss.Share + share, loss.Taken);
+        }
+
+        /// <summary>True once per wave in which the trait cost a structure enough health to count.</summary>
+        public bool TakeTraitLoss(Game.Core.EnemyTraits trait, int wave)
+        {
+            if (!_traitLoss.TryGetValue(trait, out var loss) || loss.Wave != wave || loss.Taken || loss.Share < 1f)
+            {
+                return false;
+            }
+
+            _traitLoss[trait] = (loss.Wave, loss.Share, true);
+            return true;
+        }
+
+        /// <summary>The counter traits of the creatures alive on the field: what a player sees, whatever the preview says.</summary>
+        public Game.Core.EnemyTraits LivingTraits() =>
+            (LivingCount(Game.Core.EnemyTraits.Armoured) > 0 ? Game.Core.EnemyTraits.Armoured : Game.Core.EnemyTraits.None)
+            | (LivingCount(Game.Core.EnemyTraits.Airborne) > 0 ? Game.Core.EnemyTraits.Airborne : Game.Core.EnemyTraits.None);
+
+        public int LivingCount(Game.Core.EnemyTraits trait)
+        {
+            int count = 0;
+            foreach (Enemy enemy in _watched)
+            {
+                bool has = enemy != null && enemy.IsAlive && (trait == Game.Core.EnemyTraits.Airborne ? enemy.Definition.Flies : enemy.Definition.HasArmor);
+                count += has ? 1 : 0;
+            }
+
+            return count;
+        }
+
+        /// <summary>Per nest of the level, whether it joins the road behind the defence gate (<see cref="Game.Levels.RearNests"/>), read once.</summary>
+        public bool[] RearNests(LevelDefinition level) => _rearNests ?? (_rearNests = Game.Levels.RearNests.BehindGate(level));
+
+        /// <summary>
+        /// The cell a rear nest's walkers stop at: the first gate on the main road past the cell they join it at, else the base.
+        /// </summary>
+        public Vector2Int RearStand(LevelDefinition level, int nest)
+        {
+            if (_rearStand.TryGetValue(nest, out Vector2Int known))
+            {
+                return known;
+            }
+
+            LevelShape shape = BalanceLedger.Shape(level);
+            float joined = nest < shape.NestRemaining.Count ? 1f - shape.NestRemaining[nest] : 0f;
+            int best = -1;
+            for (int i = 0; i < shape.Gates.Count && i < level.Blockades.Length; i++)
+            {
+                bool ahead = shape.Gates[i].Progress > joined;
+                if (ahead && (best < 0 || shape.Gates[i].Progress < shape.Gates[best].Progress))
+                {
+                    best = i;
+                }
+            }
+
+            Vector2Int stand = best >= 0 ? level.Blockades[best].Cell : level.Grid.WorldToCell(LevelVisualBuilder.BasePosition(level));
+            _rearStand[nest] = stand;
+            return stand;
+        }
+
         /// <summary>Scripted plans: the next step to take, and the steps that could not be taken at all.</summary>
         public int PlanStep;
         public int PlanSkipped;
@@ -191,6 +302,11 @@ namespace Game.Tests
             if (context.WaveNumber >= 1)
             {
                 _recordedWave = context.WaveNumber;
+                if (!Purse.ContainsKey(_recordedWave))
+                {
+                    Purse[_recordedWave] = context.Wallet.Money;
+                }
+
                 WaveRecord record = RecordOf(_recordedWave);
                 RecordLosses(context, gates, record);
                 RecordRepairDrones(record, deltaTime);

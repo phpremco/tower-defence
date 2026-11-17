@@ -62,6 +62,69 @@ namespace Game.Tests
         }
 
         [Test]
+        public void LandingSite_SendsEveryRiftGroupThroughTheRearRift_OnEveryDifficulty()
+        {
+            // Round 74: the rift Cragbacks come in ones and twos; drawn, the lesson of the rear rift happened on half the runs.
+            var catalog = AssetDatabase.LoadAssetAtPath<CampaignCatalog>(CampaignPath);
+            LevelDefinition first = catalog.Nodes[0].Level;
+            bool[] behind = RearNests.BehindGate(first);
+            int groups = 0;
+            foreach (DifficultyWaves set in first.DifficultyWaves)
+            {
+                for (int w = 0; w < set.Waves.Length; w++)
+                {
+                    foreach (SpawnGroup group in set.Waves[w].Groups)
+                    {
+                        if (group.Source != SpawnSource.Nest)
+                        {
+                            continue;
+                        }
+
+                        groups++;
+                        Assert.Greater(group.Nest, 0, $"{set.Difficulty.name} wave {w + 1}: the rift group draws its nest; run the generator's Waves step");
+                        Assert.IsTrue(behind[group.Nest - 1], $"{set.Difficulty.name} wave {w + 1}: nest {group.Nest} is not the rift behind the gate");
+                    }
+                }
+            }
+
+            Assert.Greater(groups, 0, "Landing Site lost its rift groups");
+        }
+
+        [Test]
+        public void TheValidator_AsksForAnAuthoredNest_WhenAFewWalkersWouldDrawOne()
+        {
+            var catalog = AssetDatabase.LoadAssetAtPath<CampaignCatalog>(CampaignPath);
+            LevelDefinition level = UnityEngine.Object.Instantiate(catalog.Nodes[0].Level);
+            var levelSo = new SerializedObject(level);
+            LevelWaves waves = UnityEngine.Object.Instantiate((LevelWaves)levelSo.FindProperty("_waves").objectReferenceValue);
+            var wavesSo = new SerializedObject(waves);
+            SerializedProperty sets = wavesSo.FindProperty("_difficultyWaves");
+            for (int d = 0; d < sets.arraySize; d++)
+            {
+                SerializedProperty list = sets.GetArrayElementAtIndex(d).FindPropertyRelative("Waves");
+                for (int w = 0; w < list.arraySize; w++)
+                {
+                    SerializedProperty groups = list.GetArrayElementAtIndex(w).FindPropertyRelative("_groups");
+                    for (int g = 0; g < groups.arraySize; g++)
+                    {
+                        groups.GetArrayElementAtIndex(g).FindPropertyRelative("Nest").intValue = 0;
+                    }
+                }
+            }
+
+            wavesSo.ApplyModifiedPropertiesWithoutUndo();
+            levelSo.FindProperty("_waves").objectReferenceValue = waves;
+            levelSo.ApplyModifiedPropertiesWithoutUndo();
+
+            var errors = new System.Collections.Generic.List<string>();
+            LevelValidator.Validate(level, errors);
+            UnityEngine.Object.DestroyImmediate(level);
+            UnityEngine.Object.DestroyImmediate(waves);
+
+            Assert.IsTrue(errors.Exists(e => e.Contains("needs an authored nest")), "a drawn rift for one Cragback passed: " + string.Join(" | ", errors));
+        }
+
+        [Test]
         public void CrystalPlains_HasItsRiftBehindTheGate_AndTheStoryWarnsAboutIt()
         {
             var catalog = AssetDatabase.LoadAssetAtPath<CampaignCatalog>(CampaignPath);

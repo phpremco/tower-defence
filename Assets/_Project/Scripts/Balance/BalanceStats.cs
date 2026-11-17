@@ -279,6 +279,9 @@ namespace Game.Balance
         public float Interval;
         public float Delay;
         public float Stagger;
+
+        /// <summary>The authored nest of a nest group, counted from 1 in the level's nests; 0 = drawn (Game.Levels.SpawnGroup.Nest).</summary>
+        public int Nest;
     }
 
     /// <summary>One wave as the game stores it.</summary>

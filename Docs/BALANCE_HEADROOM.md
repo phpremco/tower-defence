@@ -556,3 +556,20 @@ Proposed order, none of it built:
 - `Assets/Tests/PlayMode/HeadroomProbeTests.cs`: `Scaled` and `BestRecordedPlan` opened to the test assembly (no behaviour change).
 - `Tools/PlayTest/pressure.sh`, `pressure_report.py`: the one command and the report with the stop rules.
 - `Tools/PlayTest/pressure_records.txt` (every run, with its build order), `Tools/PlayTest/pressure.txt` (the full report).
+
+# Round 74: the ruler after the bot repair (2026-11-17)
+
+The reading proposed above (seeds won out of five at x0.8, x1 and x1.25, a fixed script and the sensible bot) was used to carry
+out the fix plan of Docs/BALANCE_CRITIC_2026-11-17.md. Full account: Docs/STATUS.md, "Round 74". In short:
+
+- The sensible bot was the fault behind most of stage 1b's "structural" findings. Repaired (living creatures count as coming,
+  counters grow with losses and with the preview, the trait furthest behind first, repairs wait for the counter, a marked rift
+  behind the gate gets a gun), it wins Shard Ridge Easy and Medium on 5 of 5 seeds at every multiple (was 1 and 3 of 5 at
+  the data) and Hard on 5, 5 and 4 (was 0). Shard Ridge needed no data change.
+- Landing Site's wave 7 rift is authored (`SpawnGroup.Nest`), so the seed no longer draws it. The seed spread of P at the
+  data fell from 21 to 93 % to 0.5 to 2.2 % in the cells every seed wins (the skilled script on Easy excepted: 24 %, one
+  creature shot on its way or not). The skilled script, which now reacts to a marked rift, wins Medium 5 of 5 (was 2).
+- The price: with the rift on every run, Landing Site Hard reads 4, 0, 0 for the sensible bot (3, 3, 0 before) and Psycho
+  5, 1, 0 for the skilled script (4, 3, 0 before). Open for Remco in the STATUS entry.
+- Records and reports: `Tools/PlayTest/pressure_r74_baseline*.txt`, `pressure_r74_final*.txt`; `pressure_wins.py` prints the
+  win table and the bot's purchases with the purse.

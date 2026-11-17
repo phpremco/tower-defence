@@ -28,5 +28,14 @@ namespace Game.Levels
         /// spawn interval. Clusters of one stream use it so a harder level compresses the whole rhythm.
         /// </summary>
         [Min(0f)] public float Stagger;
+
+        /// <summary>
+        /// The authored origin of a group that comes out of a nest (round 74): 0 lets every creature draw one of the level's
+        /// nests of its element; n sends the whole group through nest n of <see cref="LevelDefinition.Nests"/> (counted from 1).
+        /// A small group of walkers decides alone whether a rift is used at all, so the level validator asks for an authored
+        /// nest there (<see cref="LevelValidator.SmallNestGroup"/>): a lesson such as the rift behind the gate then happens on
+        /// every run instead of on a coin flip.
+        /// </summary>
+        [Min(0)] public int Nest;
     }
 }

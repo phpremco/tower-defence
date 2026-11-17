@@ -9,7 +9,7 @@
 #   bash Tools/PlayTest/pressure.sh report                 # only rebuild the report from the records
 #
 # Env (all optional):
-#   PR_POLICIES  skilled,typical,sensible    the rungs played on every seed (also: careless, fresh, mono-TowerId)
+#   PR_POLICIES  skilled,sensible            the rungs played on every seed (also: typical, careless, fresh, mono-TowerId)
 #   PR_SEEDS     1,2,3,4,5
 #   PR_MULTIPLES 0.5,0.65,0.8,1,1.25,1.6,2   the health multiples every unit is played at
 #   PR_EXTRA     0:mono-Cannon,0:careless    node:policy pairs played as well, on every difficulty and seed ("" for none)
@@ -32,7 +32,7 @@ report() { python Tools/PlayTest/pressure_report.py "$RECORDS" "$REPORT" > /dev/
 if [ "${1:-}" = "report" ]; then report; exit 0; fi
 
 LEVELS="${1:-0,2}"; DIFFS="${2:-0,1,2,3}"
-POLICIES="${PR_POLICIES-skilled,typical,sensible}"; SEEDS="${PR_SEEDS:-1,2,3,4,5}"
+POLICIES="${PR_POLICIES-skilled,sensible}"; SEEDS="${PR_SEEDS:-1,2,3,4,5}"
 MULTIPLES="${PR_MULTIPLES:-0.5,0.65,0.8,1,1.25,1.6,2}"
 EXTRA="${PR_EXTRA-0:mono-Cannon,0:careless}"
 UNITS=()

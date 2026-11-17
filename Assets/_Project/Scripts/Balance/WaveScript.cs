@@ -25,6 +25,13 @@ namespace Game.Balance
         public int Source;
         public float Delay;
 
+        /// <summary>
+        /// For a troop out of the element nests: the level's nest every group of it comes out of, counted from 1 in the level's
+        /// nests (round 74); 0 lets each creature draw a nest of its element. Author it where the troop comes in ones and twos
+        /// and the level has more than one nest for it (the level validator insists), so the rift it uses is the same on every run.
+        /// </summary>
+        public int Nest;
+
         /// <summary>Index of the easiest difficulty this troop joins on; easy may be spared a species.</summary>
         public int MinDifficulty;
 

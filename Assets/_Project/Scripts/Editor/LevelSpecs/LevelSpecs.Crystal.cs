@@ -22,6 +22,9 @@ namespace Game.Editor
         // so rate of fire is the answer (round 21a, Docs/BALANCE.md "Roles by enemy").
         private const float LooseRunners = 1f;
 
+        // Landing Site's nest behind the first gate, counted from 1 in the level's nests (RearNestTests pins it to the rear one).
+        private const int LandingSiteRearRift = 1;
+
 
         // From Medium on level 3's raids are bigger, so a gun-only defence feels the missing Flak; Easy stays forgiving
         // (curator decision after balance, 2026-11-04). 1.3, the low end of the curator's range: at 1.6 the gun-only probe
@@ -57,9 +60,11 @@ namespace Game.Editor
                     Budget = 7f, FinalBudget = 95f,
                     // Roles from the first level (round 21a): ant packs that bunch for the Cannon, loose runners for the Gun
                     // Turret's rate of fire, and plated Cragbacks (road and rifts) that shrug off fresh light guns.
+                    // Round 74: the rift Cragbacks come in ones and twos, so their rift is authored, not drawn: the rear rift
+                    // (the level's first nest, behind the first gate), the lesson Remco kept on 2026-11-10, now on every run.
                     Troops = new[]
                     {
-                        Join("Skitter", 1, 2f, 0.45f, pack: 6), Join("Skitter", 3, 2f, LooseRunners, loose: true), Join("Cragback", 4, 1.4f, 2.6f, Nest, 7f),
+                        Join("Skitter", 1, 2f, 0.45f, pack: 6), Join("Skitter", 3, 2f, LooseRunners, loose: true), Join("Cragback", 4, 1.4f, 2.6f, Nest, 7f, nest: LandingSiteRearRift),
                         Join("Cragback", 6, 1f, 2.6f),
                     },
                     Rhythm = "PPRHPRMHRPHP",

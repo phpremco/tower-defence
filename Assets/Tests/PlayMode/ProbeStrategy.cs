@@ -112,5 +112,15 @@ namespace Game.Tests
 
         /// <summary>Replays a plan; placed exactly where the plan says.</summary>
         public static ProbeStrategy Scripted(PlanSpec plan) => new ProbeStrategy("plan " + plan.Name, style: PlayStyle.Scripted, plan: plan);
+
+        /// <summary>
+        /// A scripted plan played by someone who sees the field (round 74): the plan's steps as written, but a marked rift
+        /// behind the defence gate gets its gun first, one wave ahead, as the sensible player does it. A plan recorded before a
+        /// level's rift was authored is otherwise blind to it and loses to one creature. Same name, so the same seeded draws.
+        /// </summary>
+        public static ProbeStrategy ScriptedGuardingRifts(PlanSpec plan) => new ProbeStrategy("plan " + plan.Name, style: PlayStyle.Scripted, plan: plan) { GuardsRearRift = true };
+
+        /// <summary>Whether a scripted player reacts to a marked rift behind the defence gate before going on with its plan.</summary>
+        public bool GuardsRearRift { get; private set; }
     }
 }

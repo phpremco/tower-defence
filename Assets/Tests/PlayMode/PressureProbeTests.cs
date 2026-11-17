@@ -17,12 +17,14 @@ namespace Game.Tests
     /// creature got along its road, the health that reached the base, and the base and gate damage. Nothing is bisected, so
     /// nothing depends on winning being monotone. The level is played as it is, through the headroom probe's runtime copy.
     ///
-    /// The reference players: skilled (the build order of the cell's best replayed plan, as a fixed script), typical (the
+    /// The reference players: skilled (the build order of the cell's best replayed plan, as a fixed script; since round 74 it
+    /// also puts a gun at a marked rift behind the defence gate, <see cref="ProbeStrategy.ScriptedGuardingRifts"/>), typical (the
     /// build order the sensible bot took on seed 1 at the data, replayed as a fixed script on every seed and multiple),
     /// sensible and careless (the reactive bots of the headroom ladder), fresh (sensible on a plain save) and mono-TowerId.
     ///
     /// Tools/PlayTest/pressure_arg.txt gives the work: "units=node:difficulty:policy:seed,..." and "multiples=0.8,1,1.25".
-    /// Every run is appended to Tools/PlayTest/pressure_records.txt.
+    /// Every run is appended to Tools/PlayTest/pressure_records.txt. Since round 74 a record ends with the purse at each wave
+    /// start ("wave=coins;...") and the idle-counter note (<see cref="BalanceProbeTests.ProbeResult.IdleCounter"/>).
     /// </summary>
     public sealed class PressureProbeTests
     {
@@ -135,7 +137,8 @@ namespace Game.Tests
                 case "skilled":
                     PlanSpec plan = HeadroomProbeTests.BestRecordedPlan(level.name, difficulty);
                     note = plan != null ? plan.Name : "no recorded plan for this cell";
-                    return plan != null ? ProbeStrategy.Scripted(plan) : null;
+                    // Round 74: the skilled player sees a marked rift behind the gate; the recorded plans of before did not.
+                    return plan != null ? ProbeStrategy.ScriptedGuardingRifts(plan) : null;
                 case TypicalPolicy:
                     PlanSpec typical = _typical[(node, difficulty)];
                     note = typical.Steps.Length + " steps";
@@ -184,11 +187,20 @@ namespace Game.Tests
                 moves.Add(string.Join(":", step.Kind, step.Item, I(step.X), I(step.Y), I(step.Wave)));
             }
 
+            var purse = new List<string>();
+            for (int wave = 1; wave <= result.WaveCount; wave++)
+            {
+                if (result.Purse.TryGetValue(wave, out int coins))
+                {
+                    purse.Add(I(wave) + "=" + I(coins));
+                }
+            }
+
             string outcome = result.Outcome == LevelOutcome.Won ? "won" : result.Outcome == LevelOutcome.Running ? "stalled" : "lost";
             return string.Join("|", tag, level.name, I(difficulty), policy, I(seed), F(multiple), outcome,
                 I(result.Wave), I(result.WaveCount), F(result.BaseHealth), F(result.BaseMax), I(result.Stars), F(result.GameSeconds), F(wallSeconds),
                 I(result.TowersBuilt), I(result.Upgrades), I(result.CoinsUnspent), I(result.Earned), I(result.RepairSpent),
-                string.Join(";", reach), string.Join(";", baseLost), string.Join(";", gateLost), string.Join(";", advance), string.Join(";", moves), note);
+                string.Join(";", reach), string.Join(";", baseLost), string.Join(";", gateLost), string.Join(";", advance), string.Join(";", moves), note, string.Join(";", purse), result.IdleCounter);
         }
 
         private static List<string[]> Units()

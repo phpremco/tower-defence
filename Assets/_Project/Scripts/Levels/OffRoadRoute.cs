@@ -46,21 +46,30 @@ namespace Game.Levels
         /// <summary>The middle of the road cell closest to a world position.</summary>
         public static Vector3 NearestRoadCellWorld(LevelDefinition level, Vector3 position) => level.Grid.CellToWorld(NearestRoadCell(level, position));
 
-        /// <summary>The road cell closest to a world position, by straight-line distance.</summary>
+        // Road cells whose squared distances differ by less than this (world units) are equally near.
+        private const float TieSqr = 1e-4f;
+
+        /// <summary>
+        /// The road cell closest to a world position, by straight-line distance. Of cells equally near (a point halfway between
+        /// two legs) the one earliest along the road wins (<see cref="RoadCorridor.CompareAlongRoad"/>), as in the balance
+        /// model (LevelShape.Nearest), so the answer never depends on the order the road's cell set lists them in.
+        /// </summary>
         public static Vector2Int NearestRoadCell(LevelDefinition level, Vector3 position)
         {
             GridMap grid = level.Grid;
+            RoadCorridor road = level.Road;
             Vector2Int best = default;
             float bestSqr = float.MaxValue;
-            foreach (Vector2Int cell in level.Road.Cells)
+            foreach (Vector2Int cell in road.Cells)
             {
                 Vector3 world = grid.CellToWorld(cell);
                 float dx = world.x - position.x;
                 float dz = world.z - position.z;
                 float sqr = dx * dx + dz * dz;
-                if (sqr < bestSqr)
+                bool nearer = sqr < bestSqr - TieSqr;
+                if (nearer || (sqr <= bestSqr + TieSqr && road.CompareAlongRoad(cell, best) < 0))
                 {
-                    bestSqr = sqr;
+                    bestSqr = nearer ? sqr : Mathf.Min(sqr, bestSqr);
                     best = cell;
                 }
             }

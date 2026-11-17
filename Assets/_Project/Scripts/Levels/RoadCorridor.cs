@@ -93,6 +93,28 @@ namespace Game.Levels
 
         public bool IsPlaza(Vector2Int cell) => _plaza.Contains(cell);
 
+        /// <summary>
+        /// A fixed order for road cells that are equally good by some other measure (round 74: the nearest road cell to a nest
+        /// that lies between two legs was whichever the cell set happened to list first): the first road before the others, an
+        /// earlier leg before a later one, the first row before the second, a plaza cell last, then by the cell itself.
+        /// Negative when <paramref name="a"/> comes first.
+        /// </summary>
+        public int CompareAlongRoad(Vector2Int a, Vector2Int b)
+        {
+            bool onA = _segmentAt.TryGetValue(a, out Segment first);
+            bool onB = _segmentAt.TryGetValue(b, out Segment second);
+            if (onA != onB)
+            {
+                return onA ? -1 : 1;
+            }
+
+            int order = onA ? first.Path.CompareTo(second.Path) : 0;
+            order = order != 0 || !onA ? order : first.Next.CompareTo(second.Next);
+            order = order != 0 || !onA ? order : first.Row.CompareTo(second.Row);
+            order = order != 0 ? order : a.y.CompareTo(b.y);
+            return order != 0 ? order : a.x.CompareTo(b.x);
+        }
+
         /// <summary>Which row of its road a cell is (0 for the first row), or -1 when it is not on a road path.</summary>
         public int RowOf(Vector2Int cell) => _segmentAt.TryGetValue(cell, out Segment segment) ? segment.Row : -1;
 

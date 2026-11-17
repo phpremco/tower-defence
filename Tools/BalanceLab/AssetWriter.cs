@@ -163,6 +163,7 @@ namespace BalanceLab
                 yield return $"{GroupIndent}  Interval: {F(g.Interval)}";
                 yield return $"{GroupIndent}  Delay: {F(g.Delay)}";
                 yield return $"{GroupIndent}  Stagger: {F(g.Stagger)}";
+                yield return $"{GroupIndent}  Nest: {g.Nest}";
             }
         }
 

@@ -401,8 +401,17 @@ namespace Game.Balance
                 {
                     // Round 31: the game draws a nest at random per creature, so the group walks from every nest in equal shares; a
                     // nest that joins behind the defence gate sends its share past the queue (the mean of the nests put them all on one side).
+                    // Round 74: a group with an authored nest is not drawn; all of it joins where that nest does.
                     route = geometry.GroundRoutes[0];
                     List<float> nests = level.Shape.NestRemaining;
+                    bool authored = group.Nest > 0 && group.Nest <= nests.Count;
+                    if (authored)
+                    {
+                        Add(walkers, group, route, JoinIndex(route, nests[group.Nest - 1]), 1f, geometry.DefenceGate.HasValue);
+                        streamTotal += !group.IsBoss ? group.Count * group.Total : 0f;
+                        continue;
+                    }
+
                     if (nests.Count > 1)
                     {
                         foreach (float remaining in nests)
