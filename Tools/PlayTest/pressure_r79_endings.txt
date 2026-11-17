@@ -1,0 +1,37 @@
+Tools/PlayTest/pressure_r79_final_records.txt: bot 3:5bddeb15; data c75b37f7; game code c2d7fb7c
+all: 720 runs, 558 won (base kept 90 %+: 467, 50-90 %: 70, under 50 %: 21), 162 lost
+  lost in the last wave: 69/162 (43 %)
+  ALL-OR-NOTHING (lost in the last wave from a base at 90 %+): 42/162 (26 %) of the lost runs
+  lost in one wave, any wave (base at 90 %+ when the wave began): 80/162 (49 %) of the lost runs
+  won but hurt (base under 90 %): 91/558 (16 %) of the won runs
+  sensible: 360 runs, 253 won (base kept 90 %+: 193, 50-90 %: 44, under 50 %: 16), 107 lost
+  lost in the last wave: 40/107 (37 %)
+  ALL-OR-NOTHING (lost in the last wave from a base at 90 %+): 20/107 (19 %) of the lost runs
+  lost in one wave, any wave (base at 90 %+ when the wave began): 45/107 (42 %) of the lost runs
+  won but hurt (base under 90 %): 60/253 (24 %) of the won runs
+  skilled: 360 runs, 305 won (base kept 90 %+: 274, 50-90 %: 26, under 50 %: 5), 55 lost
+  lost in the last wave: 29/55 (53 %)
+  ALL-OR-NOTHING (lost in the last wave from a base at 90 %+): 22/55 (40 %) of the lost runs
+  lost in one wave, any wave (base at 90 %+ when the wave began): 35/55 (64 %) of the lost runs
+  won but hurt (base under 90 %): 31/305 (10 %) of the won runs
+  Easy: 180 runs, 180 won (base kept 90 %+: 179, 50-90 %: 1, under 50 %: 0), 0 lost
+  lost in the last wave: 0/0
+  ALL-OR-NOTHING (lost in the last wave from a base at 90 %+): 0/0 of the lost runs
+  lost in one wave, any wave (base at 90 %+ when the wave began): 0/0 of the lost runs
+  won but hurt (base under 90 %): 1/180 (1 %) of the won runs
+  Medium: 180 runs, 178 won (base kept 90 %+: 160, 50-90 %: 17, under 50 %: 1), 2 lost
+  lost in the last wave: 2/2 (100 %)
+  ALL-OR-NOTHING (lost in the last wave from a base at 90 %+): 2/2 (100 %) of the lost runs
+  lost in one wave, any wave (base at 90 %+ when the wave began): 2/2 (100 %) of the lost runs
+  won but hurt (base under 90 %): 18/178 (10 %) of the won runs
+  Hard: 180 runs, 124 won (base kept 90 %+: 79, 50-90 %: 35, under 50 %: 10), 56 lost
+  lost in the last wave: 26/56 (46 %)
+  ALL-OR-NOTHING (lost in the last wave from a base at 90 %+): 12/56 (21 %) of the lost runs
+  lost in one wave, any wave (base at 90 %+ when the wave began): 29/56 (52 %) of the lost runs
+  won but hurt (base under 90 %): 45/124 (36 %) of the won runs
+  Psycho: 180 runs, 76 won (base kept 90 %+: 49, 50-90 %: 17, under 50 %: 10), 104 lost
+  lost in the last wave: 41/104 (39 %)
+  ALL-OR-NOTHING (lost in the last wave from a base at 90 %+): 28/104 (27 %) of the lost runs
+  lost in one wave, any wave (base at 90 %+ when the wave began): 49/104 (47 %) of the lost runs
+  won but hurt (base under 90 %): 27/76 (36 %) of the won runs
+

@@ -182,6 +182,9 @@ namespace Game.Balance
         /// <summary>The composer's memory of the wave each counter trait first appears in, per difficulty (<see cref="WaveComposer.Growth"/>).</summary>
         internal readonly System.Collections.Generic.Dictionary<long, int> FirstTraitWaves = new System.Collections.Generic.Dictionary<long, int>();
 
+        /// <summary>The grammar's memory of the waves that carry a surprise, per difficulty (<see cref="WaveGrammar.SurpriseOn"/>).</summary>
+        internal readonly System.Collections.Generic.Dictionary<long, SurpriseKind[]> SurprisePlans = new System.Collections.Generic.Dictionary<long, SurpriseKind[]>();
+
         public float BossCrowdFor(int difficulty) => At(BossCrowd, difficulty, 0f);
 
         public float PlatedBiasFor(int difficulty) => At(PlatedBias, difficulty, 1f);
@@ -194,7 +197,11 @@ namespace Game.Balance
 
         private static float At(float[] values, int difficulty, float fallback) => values == null || values.Length == 0 ? fallback : values[difficulty < values.Length ? difficulty : values.Length - 1];
 
-        /// <summary>One letter per wave: P plain, R rush, H heavy, M ambush. A shorter string repeats.</summary>
+        /// <summary>
+        /// One letter per wave: P plain (a stream in clusters, later a combo swarm), R rush (a swarm), H heavy (a tank with its
+        /// escort). A shorter string repeats. Air raids, surprises and the layout of a boss wave are not written here: the wave
+        /// grammar places them (<see cref="WaveGrammar"/>, Docs/WAVE_GRAMMAR.md).
+        /// </summary>
         public string Rhythm = "P";
         public BossSpec[] Bosses = new BossSpec[0];
 

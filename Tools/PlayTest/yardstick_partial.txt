@@ -1,473 +1,905 @@
-Parallel measure over 5 workers, 2026-11-17 10:59; units: 0:0:1 0:0:2 0:0:3 0:1:1 0:1:2 0:1:3 1:0:1 1:0:2 1:0:3 1:1:1 1:1:2 1:1:3 2:0:1 2:0:2 2:0:3 2:1:1 2:1:2 2:1:3 3:0:1 3:0:2 3:0:3 3:1:1 3:1:2 3:1:3 4:0:1 4:0:2 4:0:3 4:1:1 4:1:2 4:1:3 5:0:1 5:0:2 5:0:3 5:1:1 5:1:2 5:1:3
+Parallel measure over 5 workers, 2026-11-17 18:04; units: 0:0:1 0:0:2 0:0:3 0:1:1 0:1:2 0:1:3 0:2:1 0:2:2 0:2:3 0:3:1 0:3:2 0:3:3 1:0:1 1:0:2 1:0:3 1:1:1 1:1:2 1:1:3 1:2:1 1:2:2 1:2:3 1:3:1 1:3:2 1:3:3 2:0:1 2:0:2 2:0:3 2:1:1 2:1:2 2:1:3 2:2:1 2:2:2 2:2:3 2:3:1 2:3:2 2:3:3 3:0:1 3:0:2 3:0:3 3:1:1 3:1:2 3:1:3 3:2:1 3:2:2 3:2:3 3:3:1 3:3:2 3:3:3 4:0:1 4:0:2 4:0:3 4:1:1 4:1:2 4:1:3 4:2:1 4:2:2 4:2:3 4:3:1 4:3:2 4:3:3 5:0:1 5:0:2 5:0:3 5:1:1 5:1:2 5:1:3 5:2:1 5:2:2 5:2:3 5:3:1 5:3:2 5:3:3
 
 ---- worker w1
-Yardstick, obvious family: seeds 1,2,3, step 0.2 s, 2026-11-17 10:59. calibration 2026-11-16 03:13 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs 5fea0658 (STALE, data now 32757254)
+Yardstick, obvious family: seeds 1,2,3, step 0.2 s, 2026-11-17 18:04. calibration 2026-11-16 03:13 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs 5fea0658 (STALE, data now 32757254)
 Per cell and strategy: wins over seeds, stars (mean of the wins), base left (mean), waves reached (losses), coins unspent (mean).
 
 level        diff    strategy          wins  stars   base  reached   coins
-Level_C1_01  Easy    affordable        1/1    3.0    600  -            32
-Level_C1_01  Easy    affordable (fresh save) 1/1    3.0    600  -            32
-Level_C1_01  Easy    creative          1/1    3.0    600  -            77
-Level_C1_01  Easy    mono Cannon       1/1    3.0    600  -            37
-Level_C1_01  Easy    mono PulseRifle   0/1    0.0      0  12/12        49
-Level_C1_01  Easy    naive             0/1    0.0      0  12/12        50
-Level_C1_01  Easy    naive (fresh save) 0/1    0.0      0  12/12        50
-Level_C1_01  Medium  affordable        1/1    3.0    600  -            47
-Level_C1_01  Medium  creative          1/1    3.0    600  -            32
-Level_C1_01  Medium  mono Cannon       1/1    3.0    600  -            37
-Level_C1_01  Medium  mono PulseRifle   0/1    0.0      0  12/12         1
-Level_C1_01  Medium  naive             0/1    0.0      0  12/12         3
-Level_C1_02  Medium  affordable        0/1    0.0      0  12/12        17
-Level_C1_02  Medium  creative          1/1    3.0    700  -            53
-Level_C1_02  Medium  mono Cannon       1/1    3.0    700  -            48
-Level_C1_02  Medium  mono Laser        0/1    0.0      0  12/12        72
-Level_C1_02  Medium  mono PulseRifle   0/1    0.0      0  12/12         1
-Level_C1_02  Medium  naive             1/1    3.0    700  -            47
-Level_C1_03  Medium  affordable        0/1    0.0      0  14/16        12
-Level_C1_03  Medium  creative          1/1    3.0    700  -           163
-Level_C1_03  Medium  mono Cannon       0/1    0.0      0  13/16        30
-Level_C1_03  Medium  mono Laser        0/1    0.0      0  13/16        34
-Level_C1_03  Medium  mono PulseRifle   0/1    0.0      0  14/16        28
-Level_C1_03  Medium  naive             0/1    0.0      0  13/16        92
-Level_C1_04  Easy    affordable        0/1    0.0      0  14/16        30
-Level_C1_04  Easy    creative          1/1    3.0    700  -            55
-Level_C1_04  Easy    mono Cannon       0/1    0.0      0  12/16        52
-Level_C1_04  Easy    mono Laser        0/1    0.0      0  12/16        64
-Level_C1_04  Easy    mono PulseRifle   0/1    0.0      0  14/16        36
-Level_C1_04  Easy    naive             0/1    0.0      0  15/16        22
-Level_C1_05  Easy    affordable        0/1    0.0      0  11/17        47
-Level_C1_05  Easy    creative          1/1    3.0    700  -            41
-Level_C1_05  Easy    mono Cannon       0/1    0.0      0  11/17        96
-Level_C1_05  Easy    mono Laser        0/1    0.0      0  11/17        16
-Level_C1_05  Easy    mono PulseRifle   0/1    0.0      0  11/17         2
-Level_C1_05  Easy    naive             0/1    0.0      0  11/17        25
-Level_C1_06  Easy    affordable        0/1    0.0      0  13/18        41
-Level_C1_06  Easy    creative          1/1    3.0    700  -            34
-Level_C1_06  Easy    mono Cannon       0/1    0.0      0  11/18        21
-Level_C1_06  Easy    mono Laser        0/1    0.0      0  11/18         7
-Level_C1_06  Easy    mono PulseRifle   0/1    0.0      0  13/18         8
-Level_C1_06  Easy    naive             0/1    0.0      0  13/18        11
-Level_C1_06  Medium  affordable        0/1    0.0      0  12/18        51
-Level_C1_06  Medium  creative          1/1    3.0    700  -            77
-Level_C1_06  Medium  mono Cannon       0/1    0.0      0  12/18        67
-Level_C1_06  Medium  mono Laser        0/1    0.0      0  12/18        51
-Level_C1_06  Medium  mono PulseRifle   0/1    0.0      0  12/18        33
-Level_C1_06  Medium  naive             0/1    0.0      0  12/18        44
-
-Runs:
-  Level_C1_01  Easy    seed 1 mono PulseRifle   Lost   0* 12/12 base    0 built  8 upg  8 sold 0 mines 0 fields 0 drones - coins   49 repairs 0
-  Level_C1_01  Easy    seed 1 mono Cannon       Won    3* 12/12 base  600 built  7 upg  2 sold 0 mines 0 fields 0 drones - coins   37 repairs 0
-  Level_C1_01  Easy    seed 1 naive             Lost   0* 12/12 base    0 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins   50 repairs 0
-  Level_C1_01  Easy    seed 1 affordable        Won    3* 12/12 base  600 built  9 upg  8 sold 0 mines 0 fields 0 drones - coins   32 repairs 0
-  Level_C1_01  Easy    seed 1 creative          Won    3* 12/12 base  600 built  8 upg  5 sold 0 mines 0 fields 0 drones - coins   77 repairs 0
-  Level_C1_01  Easy    seed 1 affordable        Won    3* 12/12 base  600 built  9 upg  8 sold 0 mines 0 fields 0 drones - coins   32 repairs 0
-  Level_C1_01  Easy    seed 1 naive             Lost   0* 12/12 base    0 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins   50 repairs 0
-  Level_C1_01  Medium  seed 3 mono PulseRifle   Lost   0* 12/12 base    0 built 10 upg  9 sold 0 mines 0 fields 0 drones - coins    1 repairs 60
-  Level_C1_01  Medium  seed 3 mono Cannon       Won    3* 12/12 base  600 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   37 repairs 0
-  Level_C1_01  Medium  seed 3 naive             Lost   0* 12/12 base    0 built 13 upg  6 sold 0 mines 0 fields 0 drones - coins    3 repairs 0
-  Level_C1_01  Medium  seed 3 affordable        Won    3* 12/12 base  600 built 12 upg  9 sold 0 mines 0 fields 0 drones - coins   47 repairs 0
-  Level_C1_01  Medium  seed 3 creative          Won    3* 12/12 base  600 built 10 upg  8 sold 0 mines 0 fields 0 drones - coins   32 repairs 0
-  Level_C1_02  Medium  seed 2 mono PulseRifle   Lost   0* 12/12 base    0 built 10 upg  9 sold 0 mines 0 fields 0 drones - coins    1 repairs 0
-  Level_C1_02  Medium  seed 2 mono Cannon       Won    3* 12/12 base  700 built  7 upg  4 sold 0 mines 0 fields 0 drones - coins   48 repairs 0
-  Level_C1_02  Medium  seed 2 mono Laser        Lost   0* 12/12 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   72 repairs 412
-  Level_C1_02  Medium  seed 2 naive             Won    3* 12/12 base  700 built 11 upg  5 sold 0 mines 0 fields 0 drones - coins   47 repairs 60
-  Level_C1_02  Medium  seed 2 affordable        Lost   0* 12/12 base    0 built  8 upg  8 sold 0 mines 0 fields 0 drones - coins   17 repairs 0
-  Level_C1_02  Medium  seed 2 creative          Won    3* 12/12 base  700 built  8 upg  8 sold 0 mines 0 fields 0 drones RepairDrone coins   53 repairs 0
-  Level_C1_03  Medium  seed 1 mono PulseRifle   Lost   0* 14/16 base    0 built  8 upg  8 sold 0 mines 0 fields 0 drones - coins   28 repairs 0
-  Level_C1_03  Medium  seed 1 mono Cannon       Lost   0* 13/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   30 repairs 0
-  Level_C1_03  Medium  seed 1 mono Laser        Lost   0* 13/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   34 repairs 0
-  Level_C1_03  Medium  seed 1 naive             Lost   0* 13/16 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   92 repairs 0
-  Level_C1_03  Medium  seed 1 affordable        Lost   0* 14/16 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   12 repairs 0
-  Level_C1_03  Medium  seed 1 creative          Won    3* 16/16 base  700 built 13 upg 10 sold 1 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  163 repairs 0
-  Level_C1_04  Easy    seed 3 mono PulseRifle   Lost   0* 14/16 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins   36 repairs 0
-  Level_C1_04  Easy    seed 3 mono Cannon       Lost   0* 12/16 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins   52 repairs 0
-  Level_C1_04  Easy    seed 3 mono Laser        Lost   0* 12/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   64 repairs 0
-  Level_C1_04  Easy    seed 3 naive             Lost   0* 15/16 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   22 repairs 0
-  Level_C1_04  Easy    seed 3 affordable        Lost   0* 14/16 base    0 built  6 upg  4 sold 0 mines 0 fields 0 drones - coins   30 repairs 0
-  Level_C1_04  Easy    seed 3 creative          Won    3* 16/16 base  700 built  6 upg  6 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   55 repairs 0
-  Level_C1_05  Easy    seed 2 mono PulseRifle   Lost   0* 11/17 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins    2 repairs 0
-  Level_C1_05  Easy    seed 2 mono Cannon       Lost   0* 11/17 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   96 repairs 0
-  Level_C1_05  Easy    seed 2 mono Laser        Lost   0* 11/17 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   16 repairs 0
-  Level_C1_05  Easy    seed 2 naive             Lost   0* 11/17 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   25 repairs 0
-  Level_C1_05  Easy    seed 2 affordable        Lost   0* 11/17 base    0 built  5 upg  5 sold 0 mines 0 fields 0 drones - coins   47 repairs 0
-  Level_C1_05  Easy    seed 2 creative          Won    3* 17/17 base  700 built  9 upg  6 sold 0 mines 0 fields 0 drones HarvestDrone+AttackDrone coins   41 repairs 0
-  Level_C1_06  Easy    seed 1 mono PulseRifle   Lost   0* 13/18 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins    8 repairs 0
-  Level_C1_06  Easy    seed 1 mono Cannon       Lost   0* 11/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   21 repairs 0
-  Level_C1_06  Easy    seed 1 mono Laser        Lost   0* 11/18 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins    7 repairs 0
-  Level_C1_06  Easy    seed 1 naive             Lost   0* 13/18 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   11 repairs 0
-  Level_C1_06  Easy    seed 1 affordable        Lost   0* 13/18 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   41 repairs 0
-  Level_C1_06  Easy    seed 1 creative          Won    3* 18/18 base  700 built  8 upg 10 sold 0 mines 6 fields 1 drones HarvestDrone+RepairDrone coins   34 repairs 0
-  Level_C1_06  Medium  seed 3 mono PulseRifle   Lost   0* 12/18 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   33 repairs 0
-  Level_C1_06  Medium  seed 3 mono Cannon       Lost   0* 12/18 base    0 built  5 upg  0 sold 0 mines 0 fields 0 drones - coins   67 repairs 0
-  Level_C1_06  Medium  seed 3 mono Laser        Lost   0* 12/18 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins   51 repairs 0
-  Level_C1_06  Medium  seed 3 naive             Lost   0* 12/18 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   44 repairs 0
-  Level_C1_06  Medium  seed 3 affordable        Lost   0* 12/18 base    0 built  4 upg  4 sold 0 mines 0 fields 0 drones - coins   51 repairs 0
-  Level_C1_06  Medium  seed 3 creative          Won    3* 18/18 base  700 built 10 upg 10 sold 0 mines 4 fields 1 drones HarvestDrone+RepairDrone+AttackDrone coins   77 repairs 0
-
----- worker w2
-Yardstick, obvious family: seeds 1,2,3, step 0.2 s, 2026-11-17 10:58. calibration 2026-11-16 03:13 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs 5fea0658 (STALE, data now 32757254)
-Per cell and strategy: wins over seeds, stars (mean of the wins), base left (mean), waves reached (losses), coins unspent (mean).
-
-level        diff    strategy          wins  stars   base  reached   coins
-Level_C1_01  Easy    affordable        1/1    3.0    600  -            32
-Level_C1_01  Easy    affordable (fresh save) 1/1    3.0    600  -            32
-Level_C1_01  Easy    creative          1/1    3.0    600  -            77
-Level_C1_01  Easy    mono Cannon       1/1    3.0    600  -            47
-Level_C1_01  Easy    mono PulseRifle   0/1    0.0      0  12/12         3
-Level_C1_01  Easy    naive             0/1    0.0      0  12/12         5
-Level_C1_01  Easy    naive (fresh save) 0/1    0.0      0  12/12         5
-Level_C1_02  Easy    affordable        0/1    0.0      0  12/12        39
-Level_C1_02  Easy    creative          1/1    3.0    700  -            42
-Level_C1_02  Easy    mono Cannon       1/1    3.0    700  -            62
-Level_C1_02  Easy    mono Laser        0/1    0.0      0  12/12        35
-Level_C1_02  Easy    mono PulseRifle   0/1    0.0      0  12/12        22
-Level_C1_02  Easy    naive             1/1    3.0    700  -            77
-Level_C1_02  Medium  affordable        0/1    0.0      0  12/12        38
-Level_C1_02  Medium  creative          1/1    3.0    700  -            53
-Level_C1_02  Medium  mono Cannon       1/1    3.0    700  -            48
-Level_C1_02  Medium  mono Laser        0/1    0.0      0  10/12        21
-Level_C1_02  Medium  mono PulseRifle   0/1    0.0      0  12/12        18
-Level_C1_02  Medium  naive             1/1    3.0    700  -            17
-Level_C1_03  Medium  affordable        0/1    0.0      0  14/16        10
-Level_C1_03  Medium  creative          1/1    3.0    700  -            57
-Level_C1_03  Medium  mono Cannon       0/1    0.0      0  13/16        22
-Level_C1_03  Medium  mono Laser        0/1    0.0      0  13/16        28
-Level_C1_03  Medium  mono PulseRifle   0/1    0.0      0  14/16        25
-Level_C1_03  Medium  naive             0/1    0.0      0  13/16        83
-Level_C1_04  Medium  affordable        0/1    0.0      0  11/16        37
-Level_C1_04  Medium  creative          1/1    3.0    700  -            15
-Level_C1_04  Medium  mono Cannon       0/1    0.0      0  11/16        28
-Level_C1_04  Medium  mono Laser        0/1    0.0      0  11/16        41
-Level_C1_04  Medium  mono PulseRifle   0/1    0.0      0  12/16        44
-Level_C1_04  Medium  naive             0/1    0.0      0  13/16       102
-Level_C1_05  Easy    affordable        0/1    0.0      0  11/17        26
-Level_C1_05  Easy    creative          1/1    3.0    700  -            41
-Level_C1_05  Easy    mono Cannon       0/1    0.0      0  11/17        13
-Level_C1_05  Easy    mono Laser        0/1    0.0      0  11/17        40
-Level_C1_05  Easy    mono PulseRifle   0/1    0.0      0  11/17        32
-Level_C1_05  Easy    naive             0/1    0.0      0  11/17        50
-Level_C1_06  Easy    affordable        0/1    0.0      0  13/18        34
-Level_C1_06  Easy    creative          1/1    3.0    700  -            34
-Level_C1_06  Easy    mono Cannon       0/1    0.0      0  11/18        24
-Level_C1_06  Easy    mono Laser        0/1    0.0      0  11/18        20
-Level_C1_06  Easy    mono PulseRifle   0/1    0.0      0  13/18        49
-Level_C1_06  Easy    naive             0/1    0.0      0  13/18        18
-
-Runs:
-  Level_C1_01  Easy    seed 2 mono PulseRifle   Lost   0* 12/12 base    0 built 10 upg  9 sold 0 mines 0 fields 0 drones - coins    3 repairs 60
-  Level_C1_01  Easy    seed 2 mono Cannon       Won    3* 12/12 base  600 built  5 upg  4 sold 0 mines 0 fields 0 drones - coins   47 repairs 0
-  Level_C1_01  Easy    seed 2 naive             Lost   0* 12/12 base    0 built 10 upg  4 sold 0 mines 0 fields 0 drones - coins    5 repairs 0
-  Level_C1_01  Easy    seed 2 affordable        Won    3* 12/12 base  600 built  9 upg  8 sold 0 mines 0 fields 0 drones - coins   32 repairs 0
-  Level_C1_01  Easy    seed 2 creative          Won    3* 12/12 base  600 built  8 upg  5 sold 0 mines 0 fields 0 drones - coins   77 repairs 0
-  Level_C1_01  Easy    seed 2 affordable        Won    3* 12/12 base  600 built  9 upg  8 sold 0 mines 0 fields 0 drones - coins   32 repairs 0
-  Level_C1_01  Easy    seed 2 naive             Lost   0* 12/12 base    0 built 10 upg  4 sold 0 mines 0 fields 0 drones - coins    5 repairs 0
-  Level_C1_02  Easy    seed 1 mono PulseRifle   Lost   0* 12/12 base    0 built 10 upg  9 sold 0 mines 0 fields 0 drones - coins   22 repairs 0
-  Level_C1_02  Easy    seed 1 mono Cannon       Won    3* 12/12 base  700 built  5 upg  4 sold 0 mines 0 fields 0 drones - coins   62 repairs 0
-  Level_C1_02  Easy    seed 1 mono Laser        Lost   0* 12/12 base    0 built  5 upg  0 sold 0 mines 0 fields 0 drones - coins   35 repairs 120
-  Level_C1_02  Easy    seed 1 naive             Won    3* 12/12 base  700 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins   77 repairs 0
-  Level_C1_02  Easy    seed 1 affordable        Lost   0* 12/12 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   39 repairs 0
-  Level_C1_02  Easy    seed 1 creative          Won    3* 12/12 base  700 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   42 repairs 0
-  Level_C1_02  Medium  seed 3 mono PulseRifle   Lost   0* 12/12 base    0 built  9 upg  9 sold 0 mines 0 fields 0 drones - coins   18 repairs 0
-  Level_C1_02  Medium  seed 3 mono Cannon       Won    3* 12/12 base  700 built  7 upg  4 sold 0 mines 0 fields 0 drones - coins   48 repairs 0
-  Level_C1_02  Medium  seed 3 mono Laser        Lost   0* 10/12 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   21 repairs 120
-  Level_C1_02  Medium  seed 3 naive             Won    3* 12/12 base  700 built 11 upg  5 sold 0 mines 0 fields 0 drones - coins   17 repairs 60
-  Level_C1_02  Medium  seed 3 affordable        Lost   0* 12/12 base    0 built  8 upg  8 sold 0 mines 0 fields 0 drones - coins   38 repairs 0
-  Level_C1_02  Medium  seed 3 creative          Won    3* 12/12 base  700 built  9 upg  8 sold 0 mines 0 fields 0 drones - coins   53 repairs 0
-  Level_C1_03  Medium  seed 2 mono PulseRifle   Lost   0* 14/16 base    0 built  8 upg  8 sold 0 mines 0 fields 0 drones - coins   25 repairs 0
-  Level_C1_03  Medium  seed 2 mono Cannon       Lost   0* 13/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   22 repairs 0
-  Level_C1_03  Medium  seed 2 mono Laser        Lost   0* 13/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   28 repairs 0
-  Level_C1_03  Medium  seed 2 naive             Lost   0* 13/16 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   83 repairs 0
-  Level_C1_03  Medium  seed 2 affordable        Lost   0* 14/16 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   10 repairs 0
-  Level_C1_03  Medium  seed 2 creative          Won    3* 16/16 base  700 built 14 upg 10 sold 1 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   57 repairs 0
-  Level_C1_04  Medium  seed 1 mono PulseRifle   Lost   0* 12/16 base    0 built  5 upg  5 sold 0 mines 0 fields 0 drones - coins   44 repairs 0
-  Level_C1_04  Medium  seed 1 mono Cannon       Lost   0* 11/16 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins   28 repairs 0
-  Level_C1_04  Medium  seed 1 mono Laser        Lost   0* 11/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   41 repairs 0
-  Level_C1_04  Medium  seed 1 naive             Lost   0* 13/16 base    0 built  5 upg  2 sold 0 mines 0 fields 0 drones - coins  102 repairs 0
-  Level_C1_04  Medium  seed 1 affordable        Lost   0* 11/16 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   37 repairs 0
-  Level_C1_04  Medium  seed 1 creative          Won    3* 16/16 base  700 built  9 upg  5 sold 1 mines 0 fields 0 drones RepairDrone+AttackDrone coins   15 repairs 0
-  Level_C1_05  Easy    seed 3 mono PulseRifle   Lost   0* 11/17 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   32 repairs 0
-  Level_C1_05  Easy    seed 3 mono Cannon       Lost   0* 11/17 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   13 repairs 0
-  Level_C1_05  Easy    seed 3 mono Laser        Lost   0* 11/17 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   40 repairs 0
-  Level_C1_05  Easy    seed 3 naive             Lost   0* 11/17 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   50 repairs 0
-  Level_C1_05  Easy    seed 3 affordable        Lost   0* 11/17 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins   26 repairs 0
-  Level_C1_05  Easy    seed 3 creative          Won    3* 17/17 base  700 built  9 upg  6 sold 0 mines 0 fields 0 drones HarvestDrone+AttackDrone coins   41 repairs 0
-  Level_C1_06  Easy    seed 2 mono PulseRifle   Lost   0* 13/18 base    0 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   49 repairs 0
-  Level_C1_06  Easy    seed 2 mono Cannon       Lost   0* 11/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   24 repairs 0
-  Level_C1_06  Easy    seed 2 mono Laser        Lost   0* 11/18 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins   20 repairs 0
-  Level_C1_06  Easy    seed 2 naive             Lost   0* 13/18 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   18 repairs 0
-  Level_C1_06  Easy    seed 2 affordable        Lost   0* 13/18 base    0 built  5 upg  4 sold 0 mines 0 fields 0 drones - coins   34 repairs 0
-  Level_C1_06  Easy    seed 2 creative          Won    3* 18/18 base  700 built  8 upg 10 sold 0 mines 6 fields 1 drones HarvestDrone+RepairDrone coins   34 repairs 0
-
----- worker w3
-Yardstick, obvious family: seeds 1,2,3, step 0.2 s, 2026-11-17 10:58. calibration 2026-11-16 03:13 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs 5fea0658 (STALE, data now 32757254)
-Per cell and strategy: wins over seeds, stars (mean of the wins), base left (mean), waves reached (losses), coins unspent (mean).
-
-level        diff    strategy          wins  stars   base  reached   coins
-Level_C1_01  Easy    affordable        1/1    3.0    600  -            32
-Level_C1_01  Easy    affordable (fresh save) 1/1    3.0    600  -            32
-Level_C1_01  Easy    creative          1/1    3.0    600  -            33
-Level_C1_01  Easy    mono Cannon       1/1    3.0    600  -            42
-Level_C1_01  Easy    mono PulseRifle   0/1    0.0      0  12/12         9
-Level_C1_01  Easy    naive             0/1    0.0      0  12/12        50
-Level_C1_01  Easy    naive (fresh save) 0/1    0.0      0  12/12        50
-Level_C1_02  Easy    affordable        0/1    0.0      0  12/12        31
-Level_C1_02  Easy    creative          1/1    3.0    700  -           142
-Level_C1_02  Easy    mono Cannon       1/1    3.0    700  -           162
-Level_C1_02  Easy    mono Laser        0/1    0.0      0  12/12        90
-Level_C1_02  Easy    mono PulseRifle   0/1    0.0      0  12/12        26
-Level_C1_02  Easy    naive             1/1    3.0    700  -           132
-Level_C1_03  Easy    affordable        0/1    0.0      0  14/16        15
-Level_C1_03  Easy    creative          1/1    3.0    700  -           150
-Level_C1_03  Easy    mono Cannon       0/1    0.0      0  14/16         6
-Level_C1_03  Easy    mono Laser        0/1    0.0      0  14/16         8
-Level_C1_03  Easy    mono PulseRifle   0/1    0.0      0  14/16        35
-Level_C1_03  Easy    naive             0/1    0.0      0  14/16        67
-Level_C1_03  Medium  affordable        0/1    0.0      0  14/16        10
-Level_C1_03  Medium  creative          1/1    3.0    700  -            44
-Level_C1_03  Medium  mono Cannon       0/1    0.0      0  13/16        34
-Level_C1_03  Medium  mono Laser        0/1    0.0      0  13/16        30
-Level_C1_03  Medium  mono PulseRifle   0/1    0.0      0  14/16        27
-Level_C1_03  Medium  naive             0/1    0.0      0  13/16        90
-Level_C1_04  Medium  affordable        0/1    0.0      0  12/16        12
-Level_C1_04  Medium  creative          1/1    3.0    700  -            15
-Level_C1_04  Medium  mono Cannon       0/1    0.0      0  11/16        30
-Level_C1_04  Medium  mono Laser        0/1    0.0      0  11/16        40
-Level_C1_04  Medium  mono PulseRifle   0/1    0.0      0  12/16        43
-Level_C1_04  Medium  naive             0/1    0.0      0  13/16         6
-Level_C1_05  Medium  affordable        0/1    0.0      0  11/17        14
-Level_C1_05  Medium  creative          1/1    3.0    700  -            20
-Level_C1_05  Medium  mono Cannon       0/1    0.0      0  11/17        55
-Level_C1_05  Medium  mono Laser        0/1    0.0      0  11/17        50
-Level_C1_05  Medium  mono PulseRifle   0/1    0.0      0  11/17         9
-Level_C1_05  Medium  naive             0/1    0.0      0  11/17        34
-Level_C1_06  Easy    affordable        0/1    0.0      0  13/18        41
-Level_C1_06  Easy    creative          1/1    3.0    700  -           122
-Level_C1_06  Easy    mono Cannon       0/1    0.0      0  11/18        27
-Level_C1_06  Easy    mono Laser        0/1    0.0      0  11/18        14
-Level_C1_06  Easy    mono PulseRifle   0/1    0.0      0  13/18        50
-Level_C1_06  Easy    naive             0/1    0.0      0  13/18        16
-
-Runs:
-  Level_C1_01  Easy    seed 3 mono PulseRifle   Lost   0* 12/12 base    0 built  8 upg  8 sold 0 mines 0 fields 0 drones - coins    9 repairs 60
-  Level_C1_01  Easy    seed 3 mono Cannon       Won    3* 12/12 base  600 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   42 repairs 0
-  Level_C1_01  Easy    seed 3 naive             Lost   0* 12/12 base    0 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins   50 repairs 0
-  Level_C1_01  Easy    seed 3 affordable        Won    3* 12/12 base  600 built  9 upg  8 sold 0 mines 0 fields 0 drones - coins   32 repairs 0
-  Level_C1_01  Easy    seed 3 creative          Won    3* 12/12 base  600 built  8 upg  6 sold 0 mines 0 fields 0 drones - coins   33 repairs 0
-  Level_C1_01  Easy    seed 3 affordable        Won    3* 12/12 base  600 built  9 upg  8 sold 0 mines 0 fields 0 drones - coins   32 repairs 0
-  Level_C1_01  Easy    seed 3 naive             Lost   0* 12/12 base    0 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins   50 repairs 0
-  Level_C1_02  Easy    seed 2 mono PulseRifle   Lost   0* 12/12 base    0 built 10 upg  9 sold 0 mines 0 fields 0 drones - coins   26 repairs 0
-  Level_C1_02  Easy    seed 2 mono Cannon       Won    3* 12/12 base  700 built  4 upg  4 sold 0 mines 0 fields 0 drones - coins  162 repairs 0
-  Level_C1_02  Easy    seed 2 mono Laser        Lost   0* 12/12 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   90 repairs 120
-  Level_C1_02  Easy    seed 2 naive             Won    3* 12/12 base  700 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins  132 repairs 0
-  Level_C1_02  Easy    seed 2 affordable        Lost   0* 12/12 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   31 repairs 0
-  Level_C1_02  Easy    seed 2 creative          Won    3* 12/12 base  700 built  5 upg  6 sold 0 mines 0 fields 0 drones - coins  142 repairs 0
-  Level_C1_03  Easy    seed 1 mono PulseRifle   Lost   0* 14/16 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   35 repairs 0
-  Level_C1_03  Easy    seed 1 mono Cannon       Lost   0* 14/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins    6 repairs 0
-  Level_C1_03  Easy    seed 1 mono Laser        Lost   0* 14/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins    8 repairs 0
-  Level_C1_03  Easy    seed 1 naive             Lost   0* 14/16 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   67 repairs 0
-  Level_C1_03  Easy    seed 1 affordable        Lost   0* 14/16 base    0 built  6 upg  7 sold 0 mines 0 fields 0 drones - coins   15 repairs 0
-  Level_C1_03  Easy    seed 1 creative          Won    3* 16/16 base  700 built  9 upg  8 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  150 repairs 0
-  Level_C1_03  Medium  seed 3 mono PulseRifle   Lost   0* 14/16 base    0 built  8 upg  8 sold 0 mines 0 fields 0 drones - coins   27 repairs 0
-  Level_C1_03  Medium  seed 3 mono Cannon       Lost   0* 13/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   34 repairs 0
-  Level_C1_03  Medium  seed 3 mono Laser        Lost   0* 13/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   30 repairs 0
-  Level_C1_03  Medium  seed 3 naive             Lost   0* 13/16 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   90 repairs 0
-  Level_C1_03  Medium  seed 3 affordable        Lost   0* 14/16 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   10 repairs 0
-  Level_C1_03  Medium  seed 3 creative          Won    3* 16/16 base  700 built 14 upg 10 sold 1 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   44 repairs 0
-  Level_C1_04  Medium  seed 2 mono PulseRifle   Lost   0* 12/16 base    0 built  5 upg  5 sold 0 mines 0 fields 0 drones - coins   43 repairs 0
-  Level_C1_04  Medium  seed 2 mono Cannon       Lost   0* 11/16 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins   30 repairs 0
-  Level_C1_04  Medium  seed 2 mono Laser        Lost   0* 11/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   40 repairs 0
-  Level_C1_04  Medium  seed 2 naive             Lost   0* 13/16 base    0 built  6 upg  2 sold 0 mines 0 fields 0 drones - coins    6 repairs 0
-  Level_C1_04  Medium  seed 2 affordable        Lost   0* 12/16 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   12 repairs 0
-  Level_C1_04  Medium  seed 2 creative          Won    3* 16/16 base  700 built  9 upg  5 sold 1 mines 0 fields 0 drones RepairDrone+AttackDrone coins   15 repairs 0
-  Level_C1_05  Medium  seed 1 mono PulseRifle   Lost   0* 11/17 base    0 built  7 upg  7 sold 0 mines 0 fields 0 drones - coins    9 repairs 0
-  Level_C1_05  Medium  seed 1 mono Cannon       Lost   0* 11/17 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   55 repairs 0
-  Level_C1_05  Medium  seed 1 mono Laser        Lost   0* 11/17 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   50 repairs 0
-  Level_C1_05  Medium  seed 1 naive             Lost   0* 11/17 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   34 repairs 0
-  Level_C1_05  Medium  seed 1 affordable        Lost   0* 11/17 base    0 built  6 upg  4 sold 0 mines 0 fields 0 drones - coins   14 repairs 0
-  Level_C1_05  Medium  seed 1 creative          Won    3* 17/17 base  700 built 15 upg 11 sold 1 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   20 repairs 165
-  Level_C1_06  Easy    seed 3 mono PulseRifle   Lost   0* 13/18 base    0 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   50 repairs 0
-  Level_C1_06  Easy    seed 3 mono Cannon       Lost   0* 11/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   27 repairs 0
-  Level_C1_06  Easy    seed 3 mono Laser        Lost   0* 11/18 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins   14 repairs 0
-  Level_C1_06  Easy    seed 3 naive             Lost   0* 13/18 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   16 repairs 0
-  Level_C1_06  Easy    seed 3 affordable        Lost   0* 13/18 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   41 repairs 0
-  Level_C1_06  Easy    seed 3 creative          Won    3* 18/18 base  700 built  8 upg 10 sold 0 mines 5 fields 0 drones HarvestDrone+RepairDrone coins  122 repairs 0
-
----- worker w4
-Yardstick, obvious family: seeds 1,2,3, step 0.2 s, 2026-11-17 10:58. calibration 2026-11-16 03:13 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs 5fea0658 (STALE, data now 32757254)
-Per cell and strategy: wins over seeds, stars (mean of the wins), base left (mean), waves reached (losses), coins unspent (mean).
-
-level        diff    strategy          wins  stars   base  reached   coins
-Level_C1_01  Medium  affordable        1/1    3.0    600  -            57
+Level_C1_01  Easy    affordable        1/1    3.0    600  -            39
+Level_C1_01  Easy    affordable (fresh save) 1/1    3.0    600  -            39
+Level_C1_01  Easy    creative          1/1    3.0    600  -            79
+Level_C1_01  Easy    mono Cannon       1/1    3.0    600  -            39
+Level_C1_01  Easy    mono PulseRifle   0/1    0.0      0  12/12        15
+Level_C1_01  Easy    naive             0/1    0.0      0  12/12        95
+Level_C1_01  Easy    naive (fresh save) 0/1    0.0      0  12/12        95
+Level_C1_01  Medium  affordable        1/1    3.0    600  -             7
 Level_C1_01  Medium  creative          1/1    3.0    600  -           107
 Level_C1_01  Medium  mono Cannon       1/1    3.0    600  -            32
-Level_C1_01  Medium  mono PulseRifle   0/1    0.0      0  12/12        48
-Level_C1_01  Medium  naive             0/1    0.0      0  12/12        28
-Level_C1_02  Easy    affordable        0/1    0.0      0  12/12        46
-Level_C1_02  Easy    creative          1/1    3.0    700  -            42
-Level_C1_02  Easy    mono Cannon       1/1    3.0    700  -           162
-Level_C1_02  Easy    mono Laser        0/1    0.0      0  12/12        51
-Level_C1_02  Easy    mono PulseRifle   0/1    0.0      0  12/12        38
-Level_C1_02  Easy    naive             1/1    3.0    700  -           136
-Level_C1_03  Easy    affordable        0/1    0.0      0  14/16         7
-Level_C1_03  Easy    creative          1/1    3.0    700  -           150
-Level_C1_03  Easy    mono Cannon       0/1    0.0      0  14/16        93
-Level_C1_03  Easy    mono Laser        0/1    0.0      0  14/16         3
-Level_C1_03  Easy    mono PulseRifle   0/1    0.0      0  14/16        13
-Level_C1_03  Easy    naive             0/1    0.0      0  14/16        60
-Level_C1_04  Easy    affordable        0/1    0.0      0  14/16         2
-Level_C1_04  Easy    creative          1/1    3.0    700  -            47
-Level_C1_04  Easy    mono Cannon       0/1    0.0      0  12/16        51
-Level_C1_04  Easy    mono Laser        0/1    0.0      0  12/16        62
-Level_C1_04  Easy    mono PulseRifle   0/1    0.0      0  14/16        10
-Level_C1_04  Easy    naive             0/1    0.0      0  15/16        44
-Level_C1_04  Medium  affordable        0/1    0.0      0  11/16         9
-Level_C1_04  Medium  creative          1/1    3.0    700  -            37
-Level_C1_04  Medium  mono Cannon       0/1    0.0      0  11/16        29
-Level_C1_04  Medium  mono Laser        0/1    0.0      0  11/16        42
-Level_C1_04  Medium  mono PulseRifle   0/1    0.0      0  12/16        34
-Level_C1_04  Medium  naive             0/1    0.0      0  11/16        38
-Level_C1_05  Medium  affordable        0/1    0.0      0  11/17        14
-Level_C1_05  Medium  creative          1/1    3.0    700  -            33
-Level_C1_05  Medium  mono Cannon       0/1    0.0      0  11/17        54
-Level_C1_05  Medium  mono Laser        0/1    0.0      0  11/17        47
-Level_C1_05  Medium  mono PulseRifle   0/1    0.0      0  11/17        15
-Level_C1_05  Medium  naive             0/1    0.0      0  11/17        17
-Level_C1_06  Medium  affordable        0/1    0.0      0  12/18         8
-Level_C1_06  Medium  creative          1/1    3.0    700  -            58
-Level_C1_06  Medium  mono Cannon       0/1    0.0      0  12/18        92
-Level_C1_06  Medium  mono Laser        0/1    0.0      0  12/18        18
-Level_C1_06  Medium  mono PulseRifle   0/1    0.0      0  12/18        28
-Level_C1_06  Medium  naive             0/1    0.0      0  12/18        28
+Level_C1_01  Medium  mono PulseRifle   0/1    0.0      0  12/12        45
+Level_C1_01  Medium  naive             0/1    0.0      0  12/12        39
+Level_C1_01  Psycho  affordable        0/1    0.0      0  10/12        39
+Level_C1_01  Psycho  creative          1/1    3.0    700  -            32
+Level_C1_01  Psycho  mono Cannon       1/1    3.0    700  -            36
+Level_C1_01  Psycho  mono Laser        0/1    0.0      0  12/12        37
+Level_C1_01  Psycho  mono PulseRifle   0/1    0.0      0  12/12        37
+Level_C1_01  Psycho  naive             0/1    0.0      0  11/12        13
+Level_C1_02  Hard    affordable        0/1    0.0      0  10/12       147
+Level_C1_02  Hard    creative          0/1    0.0      0  12/12         2
+Level_C1_02  Hard    mono Cannon       0/1    0.0      0  11/12        75
+Level_C1_02  Hard    mono Laser        0/1    0.0      0  9/12         73
+Level_C1_02  Hard    mono PulseRifle   0/1    0.0      0  10/12        12
+Level_C1_02  Hard    naive             0/1    0.0      0  10/12        49
+Level_C1_02  Medium  affordable        0/1    0.0      0  12/12        29
+Level_C1_02  Medium  creative          1/1    3.0    700  -           202
+Level_C1_02  Medium  mono Cannon       1/1    3.0    700  -           242
+Level_C1_02  Medium  mono Laser        0/1    0.0      0  12/12        36
+Level_C1_02  Medium  mono PulseRifle   0/1    0.0      0  12/12        23
+Level_C1_02  Medium  naive             0/1    0.0      0  12/12         8
+Level_C1_03  Easy    affordable        0/1    0.0      0  14/16        18
+Level_C1_03  Easy    creative          1/1    3.0    700  -           176
+Level_C1_03  Easy    mono Cannon       0/1    0.0      0  14/16        82
+Level_C1_03  Easy    mono Laser        0/1    0.0      0  14/16        46
+Level_C1_03  Easy    mono PulseRifle   0/1    0.0      0  14/16        20
+Level_C1_03  Easy    naive             0/1    0.0      0  14/16        41
+Level_C1_03  Hard    affordable        0/1    0.0      0  13/16        28
+Level_C1_03  Hard    creative          1/1    3.0    700  -           216
+Level_C1_03  Hard    mono Cannon       0/1    0.0      0  13/16        61
+Level_C1_03  Hard    mono Laser        0/1    0.0      0  13/16        23
+Level_C1_03  Hard    mono PulseRifle   0/1    0.0      0  13/16         6
+Level_C1_03  Hard    naive             0/1    0.0      0  13/16        22
+Level_C1_03  Psycho  affordable        0/1    0.0      0  13/16        15
+Level_C1_03  Psycho  creative          1/1    3.0    800  -           192
+Level_C1_03  Psycho  mono Cannon       0/1    0.0      0  13/16        48
+Level_C1_03  Psycho  mono Laser        0/1    0.0      0  13/16        49
+Level_C1_03  Psycho  mono PulseRifle   0/1    0.0      0  13/16         1
+Level_C1_03  Psycho  naive             0/1    0.0      0  13/16        70
+Level_C1_04  Medium  affordable        0/1    0.0      0  11/16         4
+Level_C1_04  Medium  creative          1/1    3.0    681  -            70
+Level_C1_04  Medium  mono Cannon       0/1    0.0      0  11/16        38
+Level_C1_04  Medium  mono Laser        0/1    0.0      0  11/16        47
+Level_C1_04  Medium  mono PulseRifle   0/1    0.0      0  12/16        35
+Level_C1_04  Medium  naive             0/1    0.0      0  13/16        22
+Level_C1_04  Psycho  affordable        0/1    0.0      0  5/16         39
+Level_C1_04  Psycho  creative          1/1    1.0    229  -            29
+Level_C1_04  Psycho  mono Cannon       0/1    0.0      0  5/16         70
+Level_C1_04  Psycho  mono Laser        0/1    0.0      0  5/16         49
+Level_C1_04  Psycho  mono PulseRifle   0/1    0.0      0  7/16          6
+Level_C1_04  Psycho  naive             0/1    0.0      0  9/16         33
+Level_C1_05  Easy    affordable        0/1    0.0      0  11/17        33
+Level_C1_05  Easy    creative          1/1    3.0    700  -            95
+Level_C1_05  Easy    mono Cannon       0/1    0.0      0  11/17        32
+Level_C1_05  Easy    mono Laser        0/1    0.0      0  11/17        49
+Level_C1_05  Easy    mono PulseRifle   0/1    0.0      0  11/17        38
+Level_C1_05  Easy    naive             0/1    0.0      0  11/17         5
+Level_C1_05  Hard    affordable        0/1    0.0      0  7/17         28
+Level_C1_05  Hard    creative          0/1    0.0      0  15/17         4
+Level_C1_05  Hard    mono Cannon       0/1    0.0      0  7/17         49
+Level_C1_05  Hard    mono Laser        0/1    0.0      0  7/17         64
+Level_C1_05  Hard    mono PulseRifle   0/1    0.0      0  7/17         23
+Level_C1_05  Hard    naive             0/1    0.0      0  7/17         53
+Level_C1_06  Easy    affordable        0/1    0.0      0  12/18        31
+Level_C1_06  Easy    creative          1/1    3.0    700  -            51
+Level_C1_06  Easy    mono Cannon       0/1    0.0      0  12/18        74
+Level_C1_06  Easy    mono Laser        0/1    0.0      0  12/18         9
+Level_C1_06  Easy    mono PulseRifle   0/1    0.0      0  12/18        46
+Level_C1_06  Easy    naive             0/1    0.0      0  12/18        12
+Level_C1_06  Medium  affordable        0/1    0.0      0  12/18        25
+Level_C1_06  Medium  creative          1/1    3.0    700  -            78
+Level_C1_06  Medium  mono Cannon       0/1    0.0      0  12/18        95
+Level_C1_06  Medium  mono Laser        0/1    0.0      0  12/18         3
+Level_C1_06  Medium  mono PulseRifle   0/1    0.0      0  12/18        46
+Level_C1_06  Medium  naive             0/1    0.0      0  12/18        11
+Level_C1_06  Psycho  affordable        0/1    0.0      0  11/18         2
+Level_C1_06  Psycho  creative          1/1    1.0    407  -            46
+Level_C1_06  Psycho  mono Cannon       0/1    0.0      0  7/18         79
+Level_C1_06  Psycho  mono Laser        0/1    0.0      0  7/18         57
+Level_C1_06  Psycho  mono PulseRifle   0/1    0.0      0  7/18         36
+Level_C1_06  Psycho  naive             0/1    0.0      0  7/18         80
 
 Runs:
-  Level_C1_01  Medium  seed 1 mono PulseRifle   Lost   0* 12/12 base    0 built  9 upg  9 sold 0 mines 0 fields 0 drones - coins   48 repairs 0
-  Level_C1_01  Medium  seed 1 mono Cannon       Won    3* 12/12 base  600 built  7 upg  5 sold 0 mines 0 fields 0 drones - coins   32 repairs 0
-  Level_C1_01  Medium  seed 1 naive             Lost   0* 12/12 base    0 built 12 upg  6 sold 0 mines 0 fields 0 drones - coins   28 repairs 0
-  Level_C1_01  Medium  seed 1 affordable        Won    3* 12/12 base  600 built 11 upg 10 sold 0 mines 0 fields 0 drones - coins   57 repairs 0
-  Level_C1_01  Medium  seed 1 creative          Won    3* 12/12 base  600 built 10 upg  8 sold 0 mines 0 fields 0 drones - coins  107 repairs 0
-  Level_C1_02  Easy    seed 3 mono PulseRifle   Lost   0* 12/12 base    0 built 10 upg  9 sold 0 mines 0 fields 0 drones - coins   38 repairs 0
-  Level_C1_02  Easy    seed 3 mono Cannon       Won    3* 12/12 base  700 built  4 upg  4 sold 0 mines 0 fields 0 drones - coins  162 repairs 0
-  Level_C1_02  Easy    seed 3 mono Laser        Lost   0* 12/12 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   51 repairs 120
-  Level_C1_02  Easy    seed 3 naive             Won    3* 12/12 base  700 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins  136 repairs 0
-  Level_C1_02  Easy    seed 3 affordable        Lost   0* 12/12 base    0 built  7 upg  7 sold 0 mines 0 fields 0 drones - coins   46 repairs 0
-  Level_C1_02  Easy    seed 3 creative          Won    3* 12/12 base  700 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   42 repairs 0
-  Level_C1_03  Easy    seed 2 mono PulseRifle   Lost   0* 14/16 base    0 built  8 upg  8 sold 0 mines 0 fields 0 drones - coins   13 repairs 0
-  Level_C1_03  Easy    seed 2 mono Cannon       Lost   0* 14/16 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   93 repairs 0
-  Level_C1_03  Easy    seed 2 mono Laser        Lost   0* 14/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins    3 repairs 0
-  Level_C1_03  Easy    seed 2 naive             Lost   0* 14/16 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   60 repairs 0
-  Level_C1_03  Easy    seed 2 affordable        Lost   0* 14/16 base    0 built  7 upg  7 sold 0 mines 0 fields 0 drones - coins    7 repairs 0
-  Level_C1_03  Easy    seed 2 creative          Won    3* 16/16 base  700 built  9 upg  8 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  150 repairs 0
-  Level_C1_04  Easy    seed 1 mono PulseRifle   Lost   0* 14/16 base    0 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   10 repairs 0
-  Level_C1_04  Easy    seed 1 mono Cannon       Lost   0* 12/16 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins   51 repairs 0
-  Level_C1_04  Easy    seed 1 mono Laser        Lost   0* 12/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   62 repairs 0
-  Level_C1_04  Easy    seed 1 naive             Lost   0* 15/16 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   44 repairs 0
-  Level_C1_04  Easy    seed 1 affordable        Lost   0* 14/16 base    0 built  5 upg  5 sold 0 mines 0 fields 0 drones - coins    2 repairs 0
-  Level_C1_04  Easy    seed 1 creative          Won    3* 16/16 base  700 built  6 upg  6 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   47 repairs 0
-  Level_C1_04  Medium  seed 3 mono PulseRifle   Lost   0* 12/16 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   34 repairs 0
-  Level_C1_04  Medium  seed 3 mono Cannon       Lost   0* 11/16 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins   29 repairs 0
-  Level_C1_04  Medium  seed 3 mono Laser        Lost   0* 11/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   42 repairs 0
-  Level_C1_04  Medium  seed 3 naive             Lost   0* 11/16 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   38 repairs 0
-  Level_C1_04  Medium  seed 3 affordable        Lost   0* 11/16 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins    9 repairs 0
-  Level_C1_04  Medium  seed 3 creative          Won    3* 16/16 base  700 built 11 upg  5 sold 2 mines 0 fields 0 drones RepairDrone coins   37 repairs 0
-  Level_C1_05  Medium  seed 2 mono PulseRifle   Lost   0* 11/17 base    0 built  7 upg  7 sold 0 mines 0 fields 0 drones - coins   15 repairs 0
-  Level_C1_05  Medium  seed 2 mono Cannon       Lost   0* 11/17 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   54 repairs 0
-  Level_C1_05  Medium  seed 2 mono Laser        Lost   0* 11/17 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   47 repairs 0
-  Level_C1_05  Medium  seed 2 naive             Lost   0* 11/17 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   17 repairs 0
-  Level_C1_05  Medium  seed 2 affordable        Lost   0* 11/17 base    0 built  6 upg  4 sold 0 mines 0 fields 0 drones - coins   14 repairs 0
-  Level_C1_05  Medium  seed 2 creative          Won    3* 17/17 base  700 built 17 upg 10 sold 1 mines 0 fields 0 drones HarvestDrone coins   33 repairs 207
-  Level_C1_06  Medium  seed 1 mono PulseRifle   Lost   0* 12/18 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   28 repairs 0
-  Level_C1_06  Medium  seed 1 mono Cannon       Lost   0* 12/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   92 repairs 0
-  Level_C1_06  Medium  seed 1 mono Laser        Lost   0* 12/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   18 repairs 0
-  Level_C1_06  Medium  seed 1 naive             Lost   0* 12/18 base    0 built  6 upg  2 sold 0 mines 0 fields 0 drones - coins   28 repairs 0
-  Level_C1_06  Medium  seed 1 affordable        Lost   0* 12/18 base    0 built  5 upg  4 sold 0 mines 0 fields 0 drones - coins    8 repairs 0
-  Level_C1_06  Medium  seed 1 creative          Won    3* 18/18 base  700 built 10 upg  9 sold 0 mines 7 fields 1 drones HarvestDrone+RepairDrone+AttackDrone coins   58 repairs 0
+  Level_C1_01  Easy    seed 1 mono PulseRifle   Lost   0* 12/12 base    0 built  9 upg  8 sold 0 mines 0 fields 0 drones - coins   15 repairs 60
+  Level_C1_01  Easy    seed 1 mono Cannon       Won    3* 12/12 base  600 built  7 upg  2 sold 0 mines 0 fields 0 drones - coins   39 repairs 0
+  Level_C1_01  Easy    seed 1 naive             Lost   0* 12/12 base    0 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins   95 repairs 0
+  Level_C1_01  Easy    seed 1 affordable        Won    3* 12/12 base  600 built 11 upg  6 sold 0 mines 0 fields 0 drones - coins   39 repairs 0
+  Level_C1_01  Easy    seed 1 creative          Won    3* 12/12 base  600 built  8 upg  5 sold 0 mines 0 fields 0 drones - coins   79 repairs 0
+  Level_C1_01  Easy    seed 1 affordable        Won    3* 12/12 base  600 built 11 upg  6 sold 0 mines 0 fields 0 drones - coins   39 repairs 0
+  Level_C1_01  Easy    seed 1 naive             Lost   0* 12/12 base    0 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins   95 repairs 0
+  Level_C1_01  Medium  seed 3 mono PulseRifle   Lost   0* 12/12 base    0 built  9 upg  9 sold 0 mines 0 fields 0 drones - coins   45 repairs 60
+  Level_C1_01  Medium  seed 3 mono Cannon       Won    3* 12/12 base  600 built  7 upg  5 sold 0 mines 0 fields 0 drones - coins   32 repairs 0
+  Level_C1_01  Medium  seed 3 naive             Lost   0* 12/12 base    0 built 12 upg  6 sold 0 mines 0 fields 0 drones - coins   39 repairs 0
+  Level_C1_01  Medium  seed 3 affordable        Won    3* 12/12 base  600 built 12 upg 10 sold 0 mines 0 fields 0 drones - coins    7 repairs 0
+  Level_C1_01  Medium  seed 3 creative          Won    3* 12/12 base  600 built 10 upg  8 sold 0 mines 0 fields 0 drones - coins  107 repairs 0
+  Level_C1_01  Psycho  seed 2 mono PulseRifle   Lost   0* 12/12 base    0 built 19 upg 19 sold 0 mines 0 fields 0 drones - coins   37 repairs 0
+  Level_C1_01  Psycho  seed 2 mono Cannon       Won    3* 12/12 base  700 built 12 upg 12 sold 0 mines 0 fields 0 drones - coins   36 repairs 355
+  Level_C1_01  Psycho  seed 2 mono Laser        Lost   0* 12/12 base    0 built  4 upg  5 sold 0 mines 0 fields 0 drones - coins   37 repairs 644
+  Level_C1_01  Psycho  seed 2 naive             Lost   0* 11/12 base    0 built 15 upg  7 sold 0 mines 0 fields 0 drones - coins   13 repairs 240
+  Level_C1_01  Psycho  seed 2 affordable        Lost   0* 10/12 base    0 built  9 upg  6 sold 0 mines 0 fields 0 drones - coins   39 repairs 178
+  Level_C1_01  Psycho  seed 2 creative          Won    3* 12/12 base  700 built 19 upg 20 sold 0 mines 0 fields 0 drones - coins   32 repairs 324
+  Level_C1_02  Medium  seed 1 mono PulseRifle   Lost   0* 12/12 base    0 built  9 upg  8 sold 0 mines 0 fields 0 drones - coins   23 repairs 0
+  Level_C1_02  Medium  seed 1 mono Cannon       Won    3* 12/12 base  700 built  7 upg  2 sold 0 mines 0 fields 0 drones - coins  242 repairs 0
+  Level_C1_02  Medium  seed 1 mono Laser        Lost   0* 12/12 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   36 repairs 60
+  Level_C1_02  Medium  seed 1 naive             Lost   0* 12/12 base    0 built 12 upg  5 sold 0 mines 0 fields 0 drones - coins    8 repairs 0
+  Level_C1_02  Medium  seed 1 affordable        Lost   0* 12/12 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   29 repairs 0
+  Level_C1_02  Medium  seed 1 creative          Won    3* 12/12 base  700 built  8 upg  7 sold 0 mines 0 fields 0 drones RepairDrone coins  202 repairs 0
+  Level_C1_02  Hard    seed 3 mono PulseRifle   Lost   0* 10/12 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   12 repairs 0
+  Level_C1_02  Hard    seed 3 mono Cannon       Lost   0* 11/12 base    0 built  8 upg  5 sold 0 mines 0 fields 0 drones - coins   75 repairs 60
+  Level_C1_02  Hard    seed 3 mono Laser        Lost   0*  9/12 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   73 repairs 120
+  Level_C1_02  Hard    seed 3 naive             Lost   0* 10/12 base    0 built  8 upg  4 sold 0 mines 0 fields 0 drones - coins   49 repairs 0
+  Level_C1_02  Hard    seed 3 affordable        Lost   0* 10/12 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins  147 repairs 0
+  Level_C1_02  Hard    seed 3 creative          Lost   0* 12/12 base    0 built 12 upg 14 sold 0 mines 0 fields 0 drones RepairDrone coins    2 repairs 60
+  Level_C1_03  Easy    seed 2 mono PulseRifle   Lost   0* 14/16 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   20 repairs 0
+  Level_C1_03  Easy    seed 2 mono Cannon       Lost   0* 14/16 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   82 repairs 0
+  Level_C1_03  Easy    seed 2 mono Laser        Lost   0* 14/16 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   46 repairs 0
+  Level_C1_03  Easy    seed 2 naive             Lost   0* 14/16 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   41 repairs 0
+  Level_C1_03  Easy    seed 2 affordable        Lost   0* 14/16 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   18 repairs 0
+  Level_C1_03  Easy    seed 2 creative          Won    3* 16/16 base  700 built  7 upg  7 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  176 repairs 0
+  Level_C1_03  Hard    seed 1 mono PulseRifle   Lost   0* 13/16 base    0 built  9 upg  8 sold 0 mines 0 fields 0 drones - coins    6 repairs 0
+  Level_C1_03  Hard    seed 1 mono Cannon       Lost   0* 13/16 base    0 built  5 upg  2 sold 0 mines 0 fields 0 drones - coins   61 repairs 36
+  Level_C1_03  Hard    seed 1 mono Laser        Lost   0* 13/16 base    0 built  4 upg  4 sold 0 mines 0 fields 0 drones - coins   23 repairs 0
+  Level_C1_03  Hard    seed 1 naive             Lost   0* 13/16 base    0 built  8 upg  4 sold 0 mines 0 fields 0 drones - coins   22 repairs 0
+  Level_C1_03  Hard    seed 1 affordable        Lost   0* 13/16 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   28 repairs 0
+  Level_C1_03  Hard    seed 1 creative          Won    3* 16/16 base  700 built 16 upg 10 sold 3 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  216 repairs 34
+  Level_C1_03  Psycho  seed 3 mono PulseRifle   Lost   0* 13/16 base    0 built 17 upg 16 sold 0 mines 0 fields 0 drones - coins    1 repairs 0
+  Level_C1_03  Psycho  seed 3 mono Cannon       Lost   0* 13/16 base    0 built  8 upg  6 sold 0 mines 0 fields 0 drones - coins   48 repairs 46
+  Level_C1_03  Psycho  seed 3 mono Laser        Lost   0* 13/16 base    0 built  6 upg  9 sold 0 mines 0 fields 0 drones - coins   49 repairs 0
+  Level_C1_03  Psycho  seed 3 naive             Lost   0* 13/16 base    0 built 13 upg  6 sold 0 mines 0 fields 0 drones - coins   70 repairs 0
+  Level_C1_03  Psycho  seed 3 affordable        Lost   0* 13/16 base    0 built 11 upg  9 sold 0 mines 0 fields 0 drones - coins   15 repairs 0
+  Level_C1_03  Psycho  seed 3 creative          Won    3* 16/16 base  800 built 20 upg 17 sold 4 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  192 repairs 89
+  Level_C1_04  Medium  seed 2 mono PulseRifle   Lost   0* 12/16 base    0 built  5 upg  5 sold 0 mines 0 fields 0 drones - coins   35 repairs 0
+  Level_C1_04  Medium  seed 2 mono Cannon       Lost   0* 11/16 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins   38 repairs 0
+  Level_C1_04  Medium  seed 2 mono Laser        Lost   0* 11/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   47 repairs 0
+  Level_C1_04  Medium  seed 2 naive             Lost   0* 13/16 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   22 repairs 0
+  Level_C1_04  Medium  seed 2 affordable        Lost   0* 11/16 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins    4 repairs 0
+  Level_C1_04  Medium  seed 2 creative          Won    3* 16/16 base  681 built 10 upg  3 sold 2 mines 0 fields 0 drones RepairDrone+AttackDrone coins   70 repairs 0
+  Level_C1_04  Psycho  seed 1 mono PulseRifle   Lost   0*  7/16 base    0 built 11 upg 10 sold 0 mines 0 fields 0 drones - coins    6 repairs 27
+  Level_C1_04  Psycho  seed 1 mono Cannon       Lost   0*  5/16 base    0 built  6 upg  2 sold 0 mines 0 fields 0 drones - coins   70 repairs 0
+  Level_C1_04  Psycho  seed 1 mono Laser        Lost   0*  5/16 base    0 built  5 upg  3 sold 0 mines 0 fields 0 drones - coins   49 repairs 31
+  Level_C1_04  Psycho  seed 1 naive             Lost   0*  9/16 base    0 built 10 upg  5 sold 0 mines 0 fields 0 drones - coins   33 repairs 31
+  Level_C1_04  Psycho  seed 1 affordable        Lost   0*  5/16 base    0 built  7 upg  0 sold 0 mines 0 fields 0 drones - coins   39 repairs 0
+  Level_C1_04  Psycho  seed 1 creative          Won    1* 16/16 base  229 built 20 upg 21 sold 1 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   29 repairs 287
+  Level_C1_05  Easy    seed 3 mono PulseRifle   Lost   0* 11/17 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   38 repairs 0
+  Level_C1_05  Easy    seed 3 mono Cannon       Lost   0* 11/17 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   32 repairs 0
+  Level_C1_05  Easy    seed 3 mono Laser        Lost   0* 11/17 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   49 repairs 0
+  Level_C1_05  Easy    seed 3 naive             Lost   0* 11/17 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins    5 repairs 0
+  Level_C1_05  Easy    seed 3 affordable        Lost   0* 11/17 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins   33 repairs 0
+  Level_C1_05  Easy    seed 3 creative          Won    3* 17/17 base  700 built  8 upg  5 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   95 repairs 0
+  Level_C1_05  Hard    seed 2 mono PulseRifle   Lost   0*  7/17 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins   23 repairs 0
+  Level_C1_05  Hard    seed 2 mono Cannon       Lost   0*  7/17 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   49 repairs 0
+  Level_C1_05  Hard    seed 2 mono Laser        Lost   0*  7/17 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   64 repairs 60
+  Level_C1_05  Hard    seed 2 naive             Lost   0*  7/17 base    0 built  5 upg  2 sold 0 mines 0 fields 0 drones - coins   53 repairs 0
+  Level_C1_05  Hard    seed 2 affordable        Lost   0*  7/17 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   28 repairs 0
+  Level_C1_05  Hard    seed 2 creative          Lost   0* 15/17 base    0 built 12 upg 14 sold 1 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins    4 repairs 81
+  Level_C1_06  Easy    seed 1 mono PulseRifle   Lost   0* 12/18 base    0 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   46 repairs 0
+  Level_C1_06  Easy    seed 1 mono Cannon       Lost   0* 12/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   74 repairs 0
+  Level_C1_06  Easy    seed 1 mono Laser        Lost   0* 12/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins    9 repairs 0
+  Level_C1_06  Easy    seed 1 naive             Lost   0* 12/18 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   12 repairs 0
+  Level_C1_06  Easy    seed 1 affordable        Lost   0* 12/18 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   31 repairs 0
+  Level_C1_06  Easy    seed 1 creative          Won    3* 18/18 base  700 built  7 upg  6 sold 0 mines 10 fields 3 drones HarvestDrone+RepairDrone coins   51 repairs 0
+  Level_C1_06  Medium  seed 3 mono PulseRifle   Lost   0* 12/18 base    0 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   46 repairs 0
+  Level_C1_06  Medium  seed 3 mono Cannon       Lost   0* 12/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   95 repairs 0
+  Level_C1_06  Medium  seed 3 mono Laser        Lost   0* 12/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins    3 repairs 0
+  Level_C1_06  Medium  seed 3 naive             Lost   0* 12/18 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   11 repairs 0
+  Level_C1_06  Medium  seed 3 affordable        Lost   0* 12/18 base    0 built  5 upg  3 sold 0 mines 0 fields 0 drones - coins   25 repairs 0
+  Level_C1_06  Medium  seed 3 creative          Won    3* 18/18 base  700 built 13 upg  9 sold 1 mines 4 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   78 repairs 0
+  Level_C1_06  Psycho  seed 2 mono PulseRifle   Lost   0*  7/18 base    0 built 13 upg 12 sold 0 mines 0 fields 0 drones - coins   36 repairs 0
+  Level_C1_06  Psycho  seed 2 mono Cannon       Lost   0*  7/18 base    0 built  7 upg  4 sold 0 mines 0 fields 0 drones - coins   79 repairs 0
+  Level_C1_06  Psycho  seed 2 mono Laser        Lost   0*  7/18 base    0 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   57 repairs 0
+  Level_C1_06  Psycho  seed 2 naive             Lost   0*  7/18 base    0 built 11 upg  5 sold 0 mines 0 fields 0 drones - coins   80 repairs 0
+  Level_C1_06  Psycho  seed 2 affordable        Lost   0* 11/18 base    0 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins    2 repairs 310
+  Level_C1_06  Psycho  seed 2 creative          Won    1* 18/18 base  407 built 26 upg 28 sold 2 mines 10 fields 1 drones HarvestDrone+RepairDrone+AttackDrone coins   46 repairs 204
 
----- worker w5
-Yardstick, obvious family: seeds 1,2,3, step 0.2 s, 2026-11-17 10:58. calibration 2026-11-16 03:13 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs 5fea0658 (STALE, data now 32757254)
+---- worker w2
+Yardstick, obvious family: seeds 1,2,3, step 0.2 s, 2026-11-17 18:04. calibration 2026-11-16 03:13 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs 5fea0658 (STALE, data now 32757254)
 Per cell and strategy: wins over seeds, stars (mean of the wins), base left (mean), waves reached (losses), coins unspent (mean).
 
 level        diff    strategy          wins  stars   base  reached   coins
-Level_C1_01  Medium  affordable        1/1    3.0    600  -            37
-Level_C1_01  Medium  creative          1/1    3.0    600  -            37
-Level_C1_01  Medium  mono Cannon       1/1    3.0    600  -            37
-Level_C1_01  Medium  mono PulseRifle   0/1    0.0      0  12/12        17
-Level_C1_01  Medium  naive             0/1    0.0      0  12/12        28
-Level_C1_02  Medium  affordable        0/1    0.0      0  12/12        34
-Level_C1_02  Medium  creative          1/1    3.0    700  -           118
-Level_C1_02  Medium  mono Cannon       1/1    3.0    700  -            48
-Level_C1_02  Medium  mono Laser        0/1    0.0      0  12/12        36
-Level_C1_02  Medium  mono PulseRifle   0/1    0.0      0  12/12        43
-Level_C1_02  Medium  naive             1/1    3.0    700  -           229
-Level_C1_03  Easy    affordable        0/1    0.0      0  14/16         9
-Level_C1_03  Easy    creative          1/1    3.0    700  -           134
-Level_C1_03  Easy    mono Cannon       0/1    0.0      0  14/16         7
-Level_C1_03  Easy    mono Laser        0/1    0.0      0  14/16        11
-Level_C1_03  Easy    mono PulseRifle   0/1    0.0      0  14/16        14
-Level_C1_03  Easy    naive             0/1    0.0      0  14/16        64
-Level_C1_04  Easy    affordable        0/1    0.0      0  14/16        37
-Level_C1_04  Easy    creative          1/1    3.0    700  -            47
-Level_C1_04  Easy    mono Cannon       0/1    0.0      0  12/16        49
-Level_C1_04  Easy    mono Laser        0/1    0.0      0  12/16        65
-Level_C1_04  Easy    mono PulseRifle   0/1    0.0      0  14/16        36
-Level_C1_04  Easy    naive             0/1    0.0      0  15/16        40
-Level_C1_05  Easy    affordable        0/1    0.0      0  11/17        13
-Level_C1_05  Easy    creative          1/1    3.0    700  -           141
-Level_C1_05  Easy    mono Cannon       0/1    0.0      0  11/17         6
-Level_C1_05  Easy    mono Laser        0/1    0.0      0  11/17        22
-Level_C1_05  Easy    mono PulseRifle   0/1    0.0      0  11/17        18
-Level_C1_05  Easy    naive             0/1    0.0      0  11/17        36
-Level_C1_05  Medium  affordable        0/1    0.0      0  11/17        14
-Level_C1_05  Medium  creative          1/1    3.0    693  -           165
-Level_C1_05  Medium  mono Cannon       0/1    0.0      0  11/17         5
-Level_C1_05  Medium  mono Laser        0/1    0.0      0  11/17        20
-Level_C1_05  Medium  mono PulseRifle   0/1    0.0      0  11/17         2
-Level_C1_05  Medium  naive             0/1    0.0      0  11/17        86
-Level_C1_06  Medium  affordable        0/1    0.0      0  12/18         3
-Level_C1_06  Medium  creative          1/1    3.0    700  -            67
-Level_C1_06  Medium  mono Cannon       0/1    0.0      0  12/18        69
-Level_C1_06  Medium  mono Laser        0/1    0.0      0  12/18        54
-Level_C1_06  Medium  mono PulseRifle   0/1    0.0      0  12/18         5
-Level_C1_06  Medium  naive             0/1    0.0      0  12/18        35
+Level_C1_01  Easy    affordable        1/1    3.0    600  -             9
+Level_C1_01  Easy    affordable (fresh save) 1/1    3.0    600  -             9
+Level_C1_01  Easy    creative          1/1    3.0    600  -            39
+Level_C1_01  Easy    mono Cannon       1/1    3.0    600  -            39
+Level_C1_01  Easy    mono PulseRifle   0/1    0.0      0  12/12         0
+Level_C1_01  Easy    naive             0/1    0.0      0  12/12        95
+Level_C1_01  Easy    naive (fresh save) 0/1    0.0      0  12/12        95
+Level_C1_01  Hard    affordable        0/1    0.0      0  12/12         9
+Level_C1_01  Hard    creative          0/1    0.0      0  12/12        29
+Level_C1_01  Hard    mono Cannon       0/1    0.0      0  11/12        31
+Level_C1_01  Hard    mono Laser        0/1    0.0      0  10/12        34
+Level_C1_01  Hard    mono PulseRifle   0/1    0.0      0  12/12         4
+Level_C1_01  Hard    naive             0/1    0.0      0  11/12        69
+Level_C1_01  Psycho  affordable        0/1    0.0      0  12/12        22
+Level_C1_01  Psycho  creative          1/1    3.0    700  -            52
+Level_C1_01  Psycho  mono Cannon       1/1    3.0    700  -           270
+Level_C1_01  Psycho  mono Laser        0/1    0.0      0  11/12        46
+Level_C1_01  Psycho  mono PulseRifle   0/1    0.0      0  12/12         1
+Level_C1_01  Psycho  naive             0/1    0.0      0  12/12        39
+Level_C1_02  Medium  affordable        0/1    0.0      0  12/12        11
+Level_C1_02  Medium  creative          1/1    3.0    700  -           102
+Level_C1_02  Medium  mono Cannon       1/1    3.0    700  -            52
+Level_C1_02  Medium  mono Laser        0/1    0.0      0  12/12        52
+Level_C1_02  Medium  mono PulseRifle   0/1    0.0      0  12/12         1
+Level_C1_02  Medium  naive             0/1    0.0      0  12/12        23
+Level_C1_02  Psycho  affordable        0/1    0.0      0  10/12        42
+Level_C1_02  Psycho  creative          0/1    0.0      0  12/12        29
+Level_C1_02  Psycho  mono Cannon       1/1    3.0    800  -           217
+Level_C1_02  Psycho  mono Laser        0/1    0.0      0  10/12        36
+Level_C1_02  Psycho  mono PulseRifle   0/1    0.0      0  10/12        35
+Level_C1_02  Psycho  naive             0/1    0.0      0  11/12        22
+Level_C1_03  Easy    affordable        0/1    0.0      0  14/16        31
+Level_C1_03  Easy    creative          1/1    3.0    700  -           192
+Level_C1_03  Easy    mono Cannon       0/1    0.0      0  14/16        78
+Level_C1_03  Easy    mono Laser        0/1    0.0      0  14/16        38
+Level_C1_03  Easy    mono PulseRifle   0/1    0.0      0  14/16        34
+Level_C1_03  Easy    naive             0/1    0.0      0  14/16        38
+Level_C1_03  Hard    affordable        0/1    0.0      0  13/16        34
+Level_C1_03  Hard    creative          1/1    3.0    676  -           228
+Level_C1_03  Hard    mono Cannon       0/1    0.0      0  13/16        57
+Level_C1_03  Hard    mono Laser        0/1    0.0      0  13/16        56
+Level_C1_03  Hard    mono PulseRifle   0/1    0.0      0  13/16        37
+Level_C1_03  Hard    naive             0/1    0.0      0  13/16        35
+Level_C1_04  Easy    affordable        0/1    0.0      0  16/16        43
+Level_C1_04  Easy    creative          1/1    3.0    700  -            30
+Level_C1_04  Easy    mono Cannon       0/1    0.0      0  13/16        10
+Level_C1_04  Easy    mono Laser        0/1    0.0      0  13/16       122
+Level_C1_04  Easy    mono PulseRifle   0/1    0.0      0  14/16        13
+Level_C1_04  Easy    naive             0/1    0.0      0  15/16        47
+Level_C1_04  Medium  affordable        0/1    0.0      0  11/16         8
+Level_C1_04  Medium  creative          1/1    3.0    700  -            21
+Level_C1_04  Medium  mono Cannon       0/1    0.0      0  11/16        54
+Level_C1_04  Medium  mono Laser        0/1    0.0      0  11/16        47
+Level_C1_04  Medium  mono PulseRifle   0/1    0.0      0  12/16        24
+Level_C1_04  Medium  naive             0/1    0.0      0  11/16        11
+Level_C1_04  Psycho  affordable        0/1    0.0      0  5/16         33
+Level_C1_04  Psycho  creative          1/1    1.0    372  -           137
+Level_C1_04  Psycho  mono Cannon       0/1    0.0      0  5/16         65
+Level_C1_04  Psycho  mono Laser        0/1    0.0      0  5/16         26
+Level_C1_04  Psycho  mono PulseRifle   0/1    0.0      0  7/16         45
+Level_C1_04  Psycho  naive             0/1    0.0      0  7/16          3
+Level_C1_05  Hard    affordable        0/1    0.0      0  7/17         38
+Level_C1_05  Hard    creative          0/1    0.0      0  15/17        43
+Level_C1_05  Hard    mono Cannon       0/1    0.0      0  7/17         17
+Level_C1_05  Hard    mono Laser        0/1    0.0      0  7/17        110
+Level_C1_05  Hard    mono PulseRifle   0/1    0.0      0  7/17          5
+Level_C1_05  Hard    naive             0/1    0.0      0  7/17         78
+Level_C1_05  Medium  affordable        0/1    0.0      0  11/17        25
+Level_C1_05  Medium  creative          1/1    3.0    682  -            73
+Level_C1_05  Medium  mono Cannon       0/1    0.0      0  11/17        89
+Level_C1_05  Medium  mono Laser        0/1    0.0      0  11/17         8
+Level_C1_05  Medium  mono PulseRifle   0/1    0.0      0  11/17         3
+Level_C1_05  Medium  naive             0/1    0.0      0  11/17        61
+Level_C1_06  Easy    affordable        0/1    0.0      0  12/18        22
+Level_C1_06  Easy    creative          1/1    3.0    700  -            83
+Level_C1_06  Easy    mono Cannon       0/1    0.0      0  12/18        69
+Level_C1_06  Easy    mono Laser        0/1    0.0      0  12/18         5
+Level_C1_06  Easy    mono PulseRifle   0/1    0.0      0  12/18        44
+Level_C1_06  Easy    naive             0/1    0.0      0  12/18        18
+Level_C1_06  Hard    affordable        0/1    0.0      0  10/18         3
+Level_C1_06  Hard    creative          1/1    3.0    776  -           100
+Level_C1_06  Hard    mono Cannon       0/1    0.0      0  10/18        42
+Level_C1_06  Hard    mono Laser        0/1    0.0      0  10/18        28
+Level_C1_06  Hard    mono PulseRifle   0/1    0.0      0  10/18        14
+Level_C1_06  Hard    naive             0/1    0.0      0  10/18        37
+Level_C1_06  Psycho  affordable        0/1    0.0      0  11/18         5
+Level_C1_06  Psycho  creative          0/1    0.0      0  16/18        21
+Level_C1_06  Psycho  mono Cannon       0/1    0.0      0  7/18         78
+Level_C1_06  Psycho  mono Laser        0/1    0.0      0  7/18         56
+Level_C1_06  Psycho  mono PulseRifle   0/1    0.0      0  7/18         35
+Level_C1_06  Psycho  naive             0/1    0.0      0  7/18         49
 
 Runs:
-  Level_C1_01  Medium  seed 2 mono PulseRifle   Lost   0* 12/12 base    0 built 11 upg 10 sold 0 mines 0 fields 0 drones - coins   17 repairs 60
-  Level_C1_01  Medium  seed 2 mono Cannon       Won    3* 12/12 base  600 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   37 repairs 0
-  Level_C1_01  Medium  seed 2 naive             Lost   0* 12/12 base    0 built 12 upg  6 sold 0 mines 0 fields 0 drones - coins   28 repairs 0
-  Level_C1_01  Medium  seed 2 affordable        Won    3* 12/12 base  600 built 13 upg  8 sold 0 mines 0 fields 0 drones - coins   37 repairs 0
-  Level_C1_01  Medium  seed 2 creative          Won    3* 12/12 base  600 built  9 upg  9 sold 0 mines 0 fields 0 drones - coins   37 repairs 0
-  Level_C1_02  Medium  seed 1 mono PulseRifle   Lost   0* 12/12 base    0 built  8 upg  8 sold 0 mines 0 fields 0 drones - coins   43 repairs 0
-  Level_C1_02  Medium  seed 1 mono Cannon       Won    3* 12/12 base  700 built  7 upg  4 sold 0 mines 0 fields 0 drones - coins   48 repairs 0
-  Level_C1_02  Medium  seed 1 mono Laser        Lost   0* 12/12 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins   36 repairs 120
-  Level_C1_02  Medium  seed 1 naive             Won    3* 12/12 base  700 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins  229 repairs 93
-  Level_C1_02  Medium  seed 1 affordable        Lost   0* 12/12 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   34 repairs 0
-  Level_C1_02  Medium  seed 1 creative          Won    3* 12/12 base  700 built  8 upg  7 sold 0 mines 0 fields 0 drones RepairDrone coins  118 repairs 0
-  Level_C1_03  Easy    seed 3 mono PulseRifle   Lost   0* 14/16 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   14 repairs 0
-  Level_C1_03  Easy    seed 3 mono Cannon       Lost   0* 14/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins    7 repairs 0
-  Level_C1_03  Easy    seed 3 mono Laser        Lost   0* 14/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   11 repairs 0
-  Level_C1_03  Easy    seed 3 naive             Lost   0* 14/16 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   64 repairs 0
-  Level_C1_03  Easy    seed 3 affordable        Lost   0* 14/16 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins    9 repairs 0
-  Level_C1_03  Easy    seed 3 creative          Won    3* 16/16 base  700 built  9 upg  8 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  134 repairs 0
-  Level_C1_04  Easy    seed 2 mono PulseRifle   Lost   0* 14/16 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins   36 repairs 0
-  Level_C1_04  Easy    seed 2 mono Cannon       Lost   0* 12/16 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins   49 repairs 0
-  Level_C1_04  Easy    seed 2 mono Laser        Lost   0* 12/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   65 repairs 0
-  Level_C1_04  Easy    seed 2 naive             Lost   0* 15/16 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   40 repairs 0
-  Level_C1_04  Easy    seed 2 affordable        Lost   0* 14/16 base    0 built  5 upg  5 sold 0 mines 0 fields 0 drones - coins   37 repairs 0
-  Level_C1_04  Easy    seed 2 creative          Won    3* 16/16 base  700 built  6 upg  6 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   47 repairs 0
-  Level_C1_05  Easy    seed 1 mono PulseRifle   Lost   0* 11/17 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   18 repairs 0
-  Level_C1_05  Easy    seed 1 mono Cannon       Lost   0* 11/17 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins    6 repairs 0
-  Level_C1_05  Easy    seed 1 mono Laser        Lost   0* 11/17 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   22 repairs 0
-  Level_C1_05  Easy    seed 1 naive             Lost   0* 11/17 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   36 repairs 0
-  Level_C1_05  Easy    seed 1 affordable        Lost   0* 11/17 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins   13 repairs 0
-  Level_C1_05  Easy    seed 1 creative          Won    3* 17/17 base  700 built  8 upg  6 sold 0 mines 0 fields 0 drones HarvestDrone+AttackDrone coins  141 repairs 0
-  Level_C1_05  Medium  seed 3 mono PulseRifle   Lost   0* 11/17 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins    2 repairs 0
-  Level_C1_05  Medium  seed 3 mono Cannon       Lost   0* 11/17 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins    5 repairs 0
-  Level_C1_05  Medium  seed 3 mono Laser        Lost   0* 11/17 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   20 repairs 0
-  Level_C1_05  Medium  seed 3 naive             Lost   0* 11/17 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   86 repairs 0
-  Level_C1_05  Medium  seed 3 affordable        Lost   0* 11/17 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins   14 repairs 0
-  Level_C1_05  Medium  seed 3 creative          Won    3* 17/17 base  693 built 16 upg 13 sold 1 mines 0 fields 0 drones HarvestDrone coins  165 repairs 0
-  Level_C1_06  Medium  seed 2 mono PulseRifle   Lost   0* 12/18 base    0 built  7 upg  7 sold 0 mines 0 fields 0 drones - coins    5 repairs 0
-  Level_C1_06  Medium  seed 2 mono Cannon       Lost   0* 12/18 base    0 built  5 upg  0 sold 0 mines 0 fields 0 drones - coins   69 repairs 0
-  Level_C1_06  Medium  seed 2 mono Laser        Lost   0* 12/18 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins   54 repairs 0
-  Level_C1_06  Medium  seed 2 naive             Lost   0* 12/18 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   35 repairs 0
-  Level_C1_06  Medium  seed 2 affordable        Lost   0* 12/18 base    0 built  5 upg  4 sold 0 mines 0 fields 0 drones - coins    3 repairs 0
-  Level_C1_06  Medium  seed 2 creative          Won    3* 18/18 base  700 built 10 upg 10 sold 0 mines 9 fields 2 drones HarvestDrone+RepairDrone coins   67 repairs 0
+  Level_C1_01  Easy    seed 2 mono PulseRifle   Lost   0* 12/12 base    0 built 10 upg  9 sold 0 mines 0 fields 0 drones - coins    0 repairs 60
+  Level_C1_01  Easy    seed 2 mono Cannon       Won    3* 12/12 base  600 built  7 upg  2 sold 0 mines 0 fields 0 drones - coins   39 repairs 0
+  Level_C1_01  Easy    seed 2 naive             Lost   0* 12/12 base    0 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins   95 repairs 0
+  Level_C1_01  Easy    seed 2 affordable        Won    3* 12/12 base  600 built 10 upg  8 sold 0 mines 0 fields 0 drones - coins    9 repairs 0
+  Level_C1_01  Easy    seed 2 creative          Won    3* 12/12 base  600 built  8 upg  6 sold 0 mines 0 fields 0 drones - coins   39 repairs 0
+  Level_C1_01  Easy    seed 2 affordable        Won    3* 12/12 base  600 built 10 upg  8 sold 0 mines 0 fields 0 drones - coins    9 repairs 0
+  Level_C1_01  Easy    seed 2 naive             Lost   0* 12/12 base    0 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins   95 repairs 0
+  Level_C1_01  Hard    seed 1 mono PulseRifle   Lost   0* 12/12 base    0 built 10 upg  9 sold 0 mines 0 fields 0 drones - coins    4 repairs 0
+  Level_C1_01  Hard    seed 1 mono Cannon       Lost   0* 11/12 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   31 repairs 60
+  Level_C1_01  Hard    seed 1 mono Laser        Lost   0* 10/12 base    0 built  2 upg  0 sold 0 mines 0 fields 0 drones - coins   34 repairs 300
+  Level_C1_01  Hard    seed 1 naive             Lost   0* 11/12 base    0 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins   69 repairs 0
+  Level_C1_01  Hard    seed 1 affordable        Lost   0* 12/12 base    0 built  9 upg  8 sold 0 mines 0 fields 0 drones - coins    9 repairs 0
+  Level_C1_01  Hard    seed 1 creative          Lost   0* 12/12 base    0 built 11 upg 11 sold 0 mines 0 fields 0 drones - coins   29 repairs 60
+  Level_C1_01  Psycho  seed 3 mono PulseRifle   Lost   0* 12/12 base    0 built 19 upg 19 sold 0 mines 0 fields 0 drones - coins    1 repairs 0
+  Level_C1_01  Psycho  seed 3 mono Cannon       Won    3* 12/12 base  700 built 12 upg 11 sold 0 mines 0 fields 0 drones - coins  270 repairs 214
+  Level_C1_01  Psycho  seed 3 mono Laser        Lost   0* 11/12 base    0 built  5 upg  7 sold 0 mines 0 fields 0 drones - coins   46 repairs 300
+  Level_C1_01  Psycho  seed 3 naive             Lost   0* 12/12 base    0 built 18 upg  9 sold 0 mines 0 fields 0 drones - coins   39 repairs 601
+  Level_C1_01  Psycho  seed 3 affordable        Lost   0* 12/12 base    0 built 12 upg 11 sold 0 mines 0 fields 0 drones - coins   22 repairs 135
+  Level_C1_01  Psycho  seed 3 creative          Won    3* 12/12 base  700 built 18 upg 20 sold 0 mines 0 fields 0 drones - coins   52 repairs 120
+  Level_C1_02  Medium  seed 2 mono PulseRifle   Lost   0* 12/12 base    0 built 11 upg 10 sold 0 mines 0 fields 0 drones - coins    1 repairs 0
+  Level_C1_02  Medium  seed 2 mono Cannon       Won    3* 12/12 base  700 built  7 upg  4 sold 0 mines 0 fields 0 drones - coins   52 repairs 0
+  Level_C1_02  Medium  seed 2 mono Laser        Lost   0* 12/12 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   52 repairs 60
+  Level_C1_02  Medium  seed 2 naive             Lost   0* 12/12 base    0 built 11 upg  5 sold 0 mines 0 fields 0 drones - coins   23 repairs 60
+  Level_C1_02  Medium  seed 2 affordable        Lost   0* 12/12 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   11 repairs 0
+  Level_C1_02  Medium  seed 2 creative          Won    3* 12/12 base  700 built  9 upg  7 sold 0 mines 0 fields 0 drones RepairDrone coins  102 repairs 0
+  Level_C1_02  Psycho  seed 1 mono PulseRifle   Lost   0* 10/12 base    0 built 14 upg 14 sold 0 mines 0 fields 0 drones - coins   35 repairs 0
+  Level_C1_02  Psycho  seed 1 mono Cannon       Won    3* 12/12 base  800 built 14 upg 13 sold 0 mines 0 fields 0 drones - coins  217 repairs 0
+  Level_C1_02  Psycho  seed 1 mono Laser        Lost   0* 10/12 base    0 built  6 upg  8 sold 0 mines 0 fields 0 drones - coins   36 repairs 120
+  Level_C1_02  Psycho  seed 1 naive             Lost   0* 11/12 base    0 built 19 upg  9 sold 0 mines 0 fields 0 drones - coins   22 repairs 120
+  Level_C1_02  Psycho  seed 1 affordable        Lost   0* 10/12 base    0 built 10 upg  6 sold 0 mines 0 fields 0 drones - coins   42 repairs 0
+  Level_C1_02  Psycho  seed 1 creative          Lost   0* 12/12 base    0 built 20 upg 23 sold 0 mines 0 fields 0 drones RepairDrone coins   29 repairs 60
+  Level_C1_03  Easy    seed 3 mono PulseRifle   Lost   0* 14/16 base    0 built  7 upg  7 sold 0 mines 0 fields 0 drones - coins   34 repairs 0
+  Level_C1_03  Easy    seed 3 mono Cannon       Lost   0* 14/16 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   78 repairs 0
+  Level_C1_03  Easy    seed 3 mono Laser        Lost   0* 14/16 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   38 repairs 0
+  Level_C1_03  Easy    seed 3 naive             Lost   0* 14/16 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   38 repairs 0
+  Level_C1_03  Easy    seed 3 affordable        Lost   0* 14/16 base    0 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   31 repairs 0
+  Level_C1_03  Easy    seed 3 creative          Won    3* 16/16 base  700 built  7 upg  7 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  192 repairs 0
+  Level_C1_03  Hard    seed 2 mono PulseRifle   Lost   0* 13/16 base    0 built  8 upg  8 sold 0 mines 0 fields 0 drones - coins   37 repairs 0
+  Level_C1_03  Hard    seed 2 mono Cannon       Lost   0* 13/16 base    0 built  5 upg  2 sold 0 mines 0 fields 0 drones - coins   57 repairs 36
+  Level_C1_03  Hard    seed 2 mono Laser        Lost   0* 13/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   56 repairs 0
+  Level_C1_03  Hard    seed 2 naive             Lost   0* 13/16 base    0 built  8 upg  3 sold 0 mines 0 fields 0 drones - coins   35 repairs 0
+  Level_C1_03  Hard    seed 2 affordable        Lost   0* 13/16 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   34 repairs 0
+  Level_C1_03  Hard    seed 2 creative          Won    3* 16/16 base  676 built 16 upg 10 sold 3 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  228 repairs 39
+  Level_C1_04  Easy    seed 1 mono PulseRifle   Lost   0* 14/16 base    0 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   13 repairs 0
+  Level_C1_04  Easy    seed 1 mono Cannon       Lost   0* 13/16 base    0 built  5 upg  0 sold 0 mines 0 fields 0 drones - coins   10 repairs 0
+  Level_C1_04  Easy    seed 1 mono Laser        Lost   0* 13/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins  122 repairs 0
+  Level_C1_04  Easy    seed 1 naive             Lost   0* 15/16 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   47 repairs 0
+  Level_C1_04  Easy    seed 1 affordable        Lost   0* 16/16 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   43 repairs 0
+  Level_C1_04  Easy    seed 1 creative          Won    3* 16/16 base  700 built  7 upg  6 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   30 repairs 0
+  Level_C1_04  Medium  seed 3 mono PulseRifle   Lost   0* 12/16 base    0 built  6 upg  4 sold 0 mines 0 fields 0 drones - coins   24 repairs 0
+  Level_C1_04  Medium  seed 3 mono Cannon       Lost   0* 11/16 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins   54 repairs 0
+  Level_C1_04  Medium  seed 3 mono Laser        Lost   0* 11/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   47 repairs 0
+  Level_C1_04  Medium  seed 3 naive             Lost   0* 11/16 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   11 repairs 0
+  Level_C1_04  Medium  seed 3 affordable        Lost   0* 11/16 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins    8 repairs 0
+  Level_C1_04  Medium  seed 3 creative          Won    3* 16/16 base  700 built  9 upg  5 sold 1 mines 0 fields 0 drones RepairDrone+AttackDrone coins   21 repairs 0
+  Level_C1_04  Psycho  seed 2 mono PulseRifle   Lost   0*  7/16 base    0 built 10 upg 10 sold 0 mines 0 fields 0 drones - coins   45 repairs 0
+  Level_C1_04  Psycho  seed 2 mono Cannon       Lost   0*  5/16 base    0 built  6 upg  2 sold 0 mines 0 fields 0 drones - coins   65 repairs 0
+  Level_C1_04  Psycho  seed 2 mono Laser        Lost   0*  5/16 base    0 built  5 upg  4 sold 0 mines 0 fields 0 drones - coins   26 repairs 0
+  Level_C1_04  Psycho  seed 2 naive             Lost   0*  7/16 base    0 built 10 upg  4 sold 0 mines 0 fields 0 drones - coins    3 repairs 0
+  Level_C1_04  Psycho  seed 2 affordable        Lost   0*  5/16 base    0 built  7 upg  0 sold 0 mines 0 fields 0 drones - coins   33 repairs 0
+  Level_C1_04  Psycho  seed 2 creative          Won    1* 16/16 base  372 built 21 upg 18 sold 2 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins  137 repairs 323
+  Level_C1_05  Medium  seed 1 mono PulseRifle   Lost   0* 11/17 base    0 built  7 upg  7 sold 0 mines 0 fields 0 drones - coins    3 repairs 0
+  Level_C1_05  Medium  seed 1 mono Cannon       Lost   0* 11/17 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   89 repairs 0
+  Level_C1_05  Medium  seed 1 mono Laser        Lost   0* 11/17 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins    8 repairs 0
+  Level_C1_05  Medium  seed 1 naive             Lost   0* 11/17 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   61 repairs 0
+  Level_C1_05  Medium  seed 1 affordable        Lost   0* 11/17 base    0 built  6 upg  4 sold 0 mines 0 fields 0 drones - coins   25 repairs 0
+  Level_C1_05  Medium  seed 1 creative          Won    3* 17/17 base  682 built  9 upg  8 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   73 repairs 0
+  Level_C1_05  Hard    seed 3 mono PulseRifle   Lost   0*  7/17 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins    5 repairs 0
+  Level_C1_05  Hard    seed 3 mono Cannon       Lost   0*  7/17 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   17 repairs 0
+  Level_C1_05  Hard    seed 3 mono Laser        Lost   0*  7/17 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins  110 repairs 0
+  Level_C1_05  Hard    seed 3 naive             Lost   0*  7/17 base    0 built  5 upg  2 sold 0 mines 0 fields 0 drones - coins   78 repairs 0
+  Level_C1_05  Hard    seed 3 affordable        Lost   0*  7/17 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   38 repairs 0
+  Level_C1_05  Hard    seed 3 creative          Lost   0* 15/17 base    0 built 12 upg  9 sold 1 mines 0 fields 0 drones HarvestDrone coins   43 repairs 430
+  Level_C1_06  Easy    seed 2 mono PulseRifle   Lost   0* 12/18 base    0 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   44 repairs 0
+  Level_C1_06  Easy    seed 2 mono Cannon       Lost   0* 12/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   69 repairs 0
+  Level_C1_06  Easy    seed 2 mono Laser        Lost   0* 12/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins    5 repairs 0
+  Level_C1_06  Easy    seed 2 naive             Lost   0* 12/18 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   18 repairs 0
+  Level_C1_06  Easy    seed 2 affordable        Lost   0* 12/18 base    0 built  5 upg  4 sold 0 mines 0 fields 0 drones - coins   22 repairs 0
+  Level_C1_06  Easy    seed 2 creative          Won    3* 18/18 base  700 built  8 upg  4 sold 0 mines 9 fields 3 drones HarvestDrone+RepairDrone coins   83 repairs 0
+  Level_C1_06  Hard    seed 1 mono PulseRifle   Lost   0* 10/18 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   14 repairs 0
+  Level_C1_06  Hard    seed 1 mono Cannon       Lost   0* 10/18 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   42 repairs 0
+  Level_C1_06  Hard    seed 1 mono Laser        Lost   0* 10/18 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   28 repairs 0
+  Level_C1_06  Hard    seed 1 naive             Lost   0* 10/18 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   37 repairs 0
+  Level_C1_06  Hard    seed 1 affordable        Lost   0* 10/18 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins    3 repairs 0
+  Level_C1_06  Hard    seed 1 creative          Won    3* 18/18 base  776 built 17 upg 14 sold 2 mines 10 fields 3 drones HarvestDrone+RepairDrone+AttackDrone coins  100 repairs 60
+  Level_C1_06  Psycho  seed 3 mono PulseRifle   Lost   0*  7/18 base    0 built 13 upg 12 sold 0 mines 0 fields 0 drones - coins   35 repairs 0
+  Level_C1_06  Psycho  seed 3 mono Cannon       Lost   0*  7/18 base    0 built  7 upg  4 sold 0 mines 0 fields 0 drones - coins   78 repairs 0
+  Level_C1_06  Psycho  seed 3 mono Laser        Lost   0*  7/18 base    0 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   56 repairs 0
+  Level_C1_06  Psycho  seed 3 naive             Lost   0*  7/18 base    0 built 11 upg  5 sold 0 mines 0 fields 0 drones - coins   49 repairs 0
+  Level_C1_06  Psycho  seed 3 affordable        Lost   0* 11/18 base    0 built 11 upg  4 sold 0 mines 0 fields 0 drones - coins    5 repairs 294
+  Level_C1_06  Psycho  seed 3 creative          Lost   0* 16/18 base    0 built 18 upg 18 sold 2 mines 10 fields 1 drones HarvestDrone+RepairDrone coins   21 repairs 113
+
+---- worker w3
+Yardstick, obvious family: seeds 1,2,3, step 0.2 s, 2026-11-17 18:03. calibration 2026-11-16 03:13 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs 5fea0658 (STALE, data now 32757254)
+Per cell and strategy: wins over seeds, stars (mean of the wins), base left (mean), waves reached (losses), coins unspent (mean).
+
+level        diff    strategy          wins  stars   base  reached   coins
+Level_C1_01  Easy    affordable        1/1    3.0    600  -            24
+Level_C1_01  Easy    affordable (fresh save) 1/1    3.0    600  -            24
+Level_C1_01  Easy    creative          1/1    3.0    600  -            39
+Level_C1_01  Easy    mono Cannon       1/1    3.0    600  -            49
+Level_C1_01  Easy    mono PulseRifle   0/1    0.0      0  12/12        15
+Level_C1_01  Easy    naive             0/1    0.0      0  12/12        95
+Level_C1_01  Easy    naive (fresh save) 0/1    0.0      0  12/12        95
+Level_C1_01  Hard    affordable        0/1    0.0      0  12/12        48
+Level_C1_01  Hard    creative          0/1    0.0      0  12/12        71
+Level_C1_01  Hard    mono Cannon       1/1    3.0    700  -           117
+Level_C1_01  Hard    mono Laser        0/1    0.0      0  9/12        116
+Level_C1_01  Hard    mono PulseRifle   0/1    0.0      0  11/12         3
+Level_C1_01  Hard    naive             0/1    0.0      0  12/12        51
+Level_C1_02  Easy    affordable        0/1    0.0      0  12/12        39
+Level_C1_02  Easy    creative          1/1    3.0    700  -            50
+Level_C1_02  Easy    mono Cannon       1/1    3.0    700  -            77
+Level_C1_02  Easy    mono Laser        0/1    0.0      0  12/12        10
+Level_C1_02  Easy    mono PulseRifle   0/1    0.0      0  12/12         5
+Level_C1_02  Easy    naive             0/1    0.0      0  12/12        35
+Level_C1_02  Medium  affordable        0/1    0.0      0  12/12        52
+Level_C1_02  Medium  creative          1/1    3.0    700  -            27
+Level_C1_02  Medium  mono Cannon       1/1    3.0    700  -            47
+Level_C1_02  Medium  mono Laser        0/1    0.0      0  12/12        53
+Level_C1_02  Medium  mono PulseRifle   0/1    0.0      0  12/12        34
+Level_C1_02  Medium  naive             0/1    0.0      0  12/12        43
+Level_C1_02  Psycho  affordable        0/1    0.0      0  10/12         8
+Level_C1_02  Psycho  creative          0/1    0.0      0  12/12        43
+Level_C1_02  Psycho  mono Cannon       1/1    3.0    800  -            50
+Level_C1_02  Psycho  mono Laser        0/1    0.0      0  10/12        26
+Level_C1_02  Psycho  mono PulseRifle   0/1    0.0      0  10/12        20
+Level_C1_02  Psycho  naive             0/1    0.0      0  12/12        19
+Level_C1_03  Hard    affordable        0/1    0.0      0  13/16         5
+Level_C1_03  Hard    creative          1/1    3.0    700  -           220
+Level_C1_03  Hard    mono Cannon       0/1    0.0      0  13/16        52
+Level_C1_03  Hard    mono Laser        0/1    0.0      0  13/16        10
+Level_C1_03  Hard    mono PulseRifle   0/1    0.0      0  13/16        38
+Level_C1_03  Hard    naive             0/1    0.0      0  13/16        25
+Level_C1_03  Medium  affordable        0/1    0.0      0  13/16        21
+Level_C1_03  Medium  creative          1/1    3.0    700  -           158
+Level_C1_03  Medium  mono Cannon       0/1    0.0      0  13/16        15
+Level_C1_03  Medium  mono Laser        0/1    0.0      0  13/16        12
+Level_C1_03  Medium  mono PulseRifle   0/1    0.0      0  13/16        23
+Level_C1_03  Medium  naive             0/1    0.0      0  13/16        80
+Level_C1_04  Easy    affordable        0/1    0.0      0  16/16        24
+Level_C1_04  Easy    creative          1/1    3.0    700  -            22
+Level_C1_04  Easy    mono Cannon       0/1    0.0      0  13/16        14
+Level_C1_04  Easy    mono Laser        0/1    0.0      0  13/16       127
+Level_C1_04  Easy    mono PulseRifle   0/1    0.0      0  14/16        19
+Level_C1_04  Easy    naive             0/1    0.0      0  16/16        14
+Level_C1_04  Hard    affordable        0/1    0.0      0  5/16         18
+Level_C1_04  Hard    creative          1/1    2.0    544  -            36
+Level_C1_04  Hard    mono Cannon       0/1    0.0      0  5/16         20
+Level_C1_04  Hard    mono Laser        0/1    0.0      0  5/16         72
+Level_C1_04  Hard    mono PulseRifle   0/1    0.0      0  5/16         38
+Level_C1_04  Hard    naive             0/1    0.0      0  5/16         80
+Level_C1_04  Psycho  affordable        0/1    0.0      0  5/16         32
+Level_C1_04  Psycho  creative          1/1    3.0    750  -           207
+Level_C1_04  Psycho  mono Cannon       0/1    0.0      0  5/16         70
+Level_C1_04  Psycho  mono Laser        0/1    0.0      0  5/16         28
+Level_C1_04  Psycho  mono PulseRifle   0/1    0.0      0  7/16         50
+Level_C1_04  Psycho  naive             0/1    0.0      0  7/16         31
+Level_C1_05  Medium  affordable        0/1    0.0      0  11/17         9
+Level_C1_05  Medium  creative          1/1    3.0    700  -            18
+Level_C1_05  Medium  mono Cannon       0/1    0.0      0  11/17        85
+Level_C1_05  Medium  mono Laser        0/1    0.0      0  11/17         8
+Level_C1_05  Medium  mono PulseRifle   0/1    0.0      0  11/17         6
+Level_C1_05  Medium  naive             0/1    0.0      0  11/17        56
+Level_C1_05  Psycho  affordable        0/1    0.0      0  7/17         32
+Level_C1_05  Psycho  creative          0/1    0.0      0  15/17        68
+Level_C1_05  Psycho  mono Cannon       0/1    0.0      0  7/17         95
+Level_C1_05  Psycho  mono Laser        0/1    0.0      0  7/17         20
+Level_C1_05  Psycho  mono PulseRifle   0/1    0.0      0  7/17         24
+Level_C1_05  Psycho  naive             0/1    0.0      0  7/17          5
+Level_C1_06  Easy    affordable        0/1    0.0      0  12/18        27
+Level_C1_06  Easy    creative          1/1    3.0    700  -            98
+Level_C1_06  Easy    mono Cannon       0/1    0.0      0  12/18        75
+Level_C1_06  Easy    mono Laser        0/1    0.0      0  12/18         5
+Level_C1_06  Easy    mono PulseRifle   0/1    0.0      0  14/18        11
+Level_C1_06  Easy    naive             0/1    0.0      0  12/18        14
+Level_C1_06  Hard    affordable        0/1    0.0      0  10/18         6
+Level_C1_06  Hard    creative          1/1    3.0    800  -            27
+Level_C1_06  Hard    mono Cannon       0/1    0.0      0  10/18        11
+Level_C1_06  Hard    mono Laser        0/1    0.0      0  10/18        31
+Level_C1_06  Hard    mono PulseRifle   0/1    0.0      0  10/18        18
+Level_C1_06  Hard    naive             0/1    0.0      0  10/18        83
+
+Runs:
+  Level_C1_01  Easy    seed 3 mono PulseRifle   Lost   0* 12/12 base    0 built  9 upg  8 sold 0 mines 0 fields 0 drones - coins   15 repairs 60
+  Level_C1_01  Easy    seed 3 mono Cannon       Won    3* 12/12 base  600 built  5 upg  4 sold 0 mines 0 fields 0 drones - coins   49 repairs 0
+  Level_C1_01  Easy    seed 3 naive             Lost   0* 12/12 base    0 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins   95 repairs 0
+  Level_C1_01  Easy    seed 3 affordable        Won    3* 12/12 base  600 built 10 upg  7 sold 0 mines 0 fields 0 drones - coins   24 repairs 0
+  Level_C1_01  Easy    seed 3 creative          Won    3* 12/12 base  600 built  8 upg  6 sold 0 mines 0 fields 0 drones - coins   39 repairs 0
+  Level_C1_01  Easy    seed 3 affordable        Won    3* 12/12 base  600 built 10 upg  7 sold 0 mines 0 fields 0 drones - coins   24 repairs 0
+  Level_C1_01  Easy    seed 3 naive             Lost   0* 12/12 base    0 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins   95 repairs 0
+  Level_C1_01  Hard    seed 2 mono PulseRifle   Lost   0* 11/12 base    0 built  9 upg  8 sold 0 mines 0 fields 0 drones - coins    3 repairs 0
+  Level_C1_01  Hard    seed 2 mono Cannon       Won    3* 12/12 base  700 built  9 upg  7 sold 0 mines 0 fields 0 drones - coins  117 repairs 214
+  Level_C1_01  Hard    seed 2 mono Laser        Lost   0*  9/12 base    0 built  2 upg  0 sold 0 mines 0 fields 0 drones - coins  116 repairs 116
+  Level_C1_01  Hard    seed 2 naive             Lost   0* 12/12 base    0 built 12 upg  5 sold 0 mines 0 fields 0 drones - coins   51 repairs 180
+  Level_C1_01  Hard    seed 2 affordable        Lost   0* 12/12 base    0 built  7 upg  8 sold 0 mines 0 fields 0 drones - coins   48 repairs 0
+  Level_C1_01  Hard    seed 2 creative          Lost   0* 12/12 base    0 built 15 upg 16 sold 0 mines 0 fields 0 drones - coins   71 repairs 0
+  Level_C1_02  Easy    seed 1 mono PulseRifle   Lost   0* 12/12 base    0 built 10 upg  9 sold 0 mines 0 fields 0 drones - coins    5 repairs 60
+  Level_C1_02  Easy    seed 1 mono Cannon       Won    3* 12/12 base  700 built  5 upg  4 sold 0 mines 0 fields 0 drones - coins   77 repairs 0
+  Level_C1_02  Easy    seed 1 mono Laser        Lost   0* 12/12 base    0 built  4 upg  5 sold 0 mines 0 fields 0 drones - coins   10 repairs 60
+  Level_C1_02  Easy    seed 1 naive             Lost   0* 12/12 base    0 built 10 upg  4 sold 0 mines 0 fields 0 drones - coins   35 repairs 0
+  Level_C1_02  Easy    seed 1 affordable        Lost   0* 12/12 base    0 built  9 upg  7 sold 0 mines 0 fields 0 drones - coins   39 repairs 0
+  Level_C1_02  Easy    seed 1 creative          Won    3* 12/12 base  700 built  6 upg  6 sold 0 mines 0 fields 0 drones RepairDrone coins   50 repairs 0
+  Level_C1_02  Medium  seed 3 mono PulseRifle   Lost   0* 12/12 base    0 built 10 upg 10 sold 0 mines 0 fields 0 drones - coins   34 repairs 0
+  Level_C1_02  Medium  seed 3 mono Cannon       Won    3* 12/12 base  700 built  8 upg  3 sold 0 mines 0 fields 0 drones - coins   47 repairs 0
+  Level_C1_02  Medium  seed 3 mono Laser        Lost   0* 12/12 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   53 repairs 60
+  Level_C1_02  Medium  seed 3 naive             Lost   0* 12/12 base    0 built 10 upg  5 sold 0 mines 0 fields 0 drones - coins   43 repairs 60
+  Level_C1_02  Medium  seed 3 affordable        Lost   0* 12/12 base    0 built  9 upg  7 sold 0 mines 0 fields 0 drones - coins   52 repairs 0
+  Level_C1_02  Medium  seed 3 creative          Won    3* 12/12 base  700 built  8 upg  8 sold 0 mines 0 fields 0 drones RepairDrone coins   27 repairs 60
+  Level_C1_02  Psycho  seed 2 mono PulseRifle   Lost   0* 10/12 base    0 built 14 upg 14 sold 0 mines 0 fields 0 drones - coins   20 repairs 0
+  Level_C1_02  Psycho  seed 2 mono Cannon       Won    3* 12/12 base  800 built 13 upg 13 sold 0 mines 0 fields 0 drones - coins   50 repairs 267
+  Level_C1_02  Psycho  seed 2 mono Laser        Lost   0* 10/12 base    0 built  6 upg  7 sold 0 mines 0 fields 0 drones - coins   26 repairs 86
+  Level_C1_02  Psycho  seed 2 naive             Lost   0* 12/12 base    0 built 16 upg  8 sold 0 mines 0 fields 0 drones - coins   19 repairs 360
+  Level_C1_02  Psycho  seed 2 affordable        Lost   0* 10/12 base    0 built 10 upg  6 sold 0 mines 0 fields 0 drones - coins    8 repairs 0
+  Level_C1_02  Psycho  seed 2 creative          Lost   0* 12/12 base    0 built 18 upg 16 sold 0 mines 0 fields 0 drones RepairDrone coins   43 repairs 52
+  Level_C1_03  Medium  seed 1 mono PulseRifle   Lost   0* 13/16 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   23 repairs 0
+  Level_C1_03  Medium  seed 1 mono Cannon       Lost   0* 13/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   15 repairs 0
+  Level_C1_03  Medium  seed 1 mono Laser        Lost   0* 13/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   12 repairs 0
+  Level_C1_03  Medium  seed 1 naive             Lost   0* 13/16 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   80 repairs 0
+  Level_C1_03  Medium  seed 1 affordable        Lost   0* 13/16 base    0 built  7 upg  5 sold 0 mines 0 fields 0 drones - coins   21 repairs 0
+  Level_C1_03  Medium  seed 1 creative          Won    3* 16/16 base  700 built 12 upg  8 sold 1 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  158 repairs 0
+  Level_C1_03  Hard    seed 3 mono PulseRifle   Lost   0* 13/16 base    0 built  8 upg  8 sold 0 mines 0 fields 0 drones - coins   38 repairs 0
+  Level_C1_03  Hard    seed 3 mono Cannon       Lost   0* 13/16 base    0 built  5 upg  2 sold 0 mines 0 fields 0 drones - coins   52 repairs 45
+  Level_C1_03  Hard    seed 3 mono Laser        Lost   0* 13/16 base    0 built  4 upg  4 sold 0 mines 0 fields 0 drones - coins   10 repairs 0
+  Level_C1_03  Hard    seed 3 naive             Lost   0* 13/16 base    0 built  8 upg  4 sold 0 mines 0 fields 0 drones - coins   25 repairs 0
+  Level_C1_03  Hard    seed 3 affordable        Lost   0* 13/16 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins    5 repairs 0
+  Level_C1_03  Hard    seed 3 creative          Won    3* 16/16 base  700 built 16 upg 10 sold 3 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  220 repairs 36
+  Level_C1_04  Easy    seed 2 mono PulseRifle   Lost   0* 14/16 base    0 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   19 repairs 0
+  Level_C1_04  Easy    seed 2 mono Cannon       Lost   0* 13/16 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   14 repairs 0
+  Level_C1_04  Easy    seed 2 mono Laser        Lost   0* 13/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins  127 repairs 0
+  Level_C1_04  Easy    seed 2 naive             Lost   0* 16/16 base    0 built  8 upg  3 sold 0 mines 0 fields 0 drones - coins   14 repairs 0
+  Level_C1_04  Easy    seed 2 affordable        Lost   0* 16/16 base    0 built  8 upg  8 sold 0 mines 0 fields 0 drones - coins   24 repairs 24
+  Level_C1_04  Easy    seed 2 creative          Won    3* 16/16 base  700 built  7 upg  6 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   22 repairs 0
+  Level_C1_04  Hard    seed 1 mono PulseRifle   Lost   0*  5/16 base    0 built  5 upg  1 sold 0 mines 0 fields 0 drones - coins   38 repairs 0
+  Level_C1_04  Hard    seed 1 mono Cannon       Lost   0*  5/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   20 repairs 0
+  Level_C1_04  Hard    seed 1 mono Laser        Lost   0*  5/16 base    0 built  2 upg  0 sold 0 mines 0 fields 0 drones - coins   72 repairs 0
+  Level_C1_04  Hard    seed 1 naive             Lost   0*  5/16 base    0 built  3 upg  1 sold 0 mines 0 fields 0 drones - coins   80 repairs 0
+  Level_C1_04  Hard    seed 1 affordable        Lost   0*  5/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   18 repairs 0
+  Level_C1_04  Hard    seed 1 creative          Won    2* 16/16 base  544 built 19 upg 20 sold 2 mines 0 fields 0 drones HarvestDrone coins   36 repairs 216
+  Level_C1_04  Psycho  seed 3 mono PulseRifle   Lost   0*  7/16 base    0 built 10 upg 10 sold 0 mines 0 fields 0 drones - coins   50 repairs 0
+  Level_C1_04  Psycho  seed 3 mono Cannon       Lost   0*  5/16 base    0 built  6 upg  2 sold 0 mines 0 fields 0 drones - coins   70 repairs 0
+  Level_C1_04  Psycho  seed 3 mono Laser        Lost   0*  5/16 base    0 built  5 upg  4 sold 0 mines 0 fields 0 drones - coins   28 repairs 0
+  Level_C1_04  Psycho  seed 3 naive             Lost   0*  7/16 base    0 built 10 upg  4 sold 0 mines 0 fields 0 drones - coins   31 repairs 0
+  Level_C1_04  Psycho  seed 3 affordable        Lost   0*  5/16 base    0 built  7 upg  0 sold 0 mines 0 fields 0 drones - coins   32 repairs 0
+  Level_C1_04  Psycho  seed 3 creative          Won    3* 16/16 base  750 built 19 upg 18 sold 2 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins  207 repairs 327
+  Level_C1_05  Medium  seed 2 mono PulseRifle   Lost   0* 11/17 base    0 built  7 upg  7 sold 0 mines 0 fields 0 drones - coins    6 repairs 0
+  Level_C1_05  Medium  seed 2 mono Cannon       Lost   0* 11/17 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   85 repairs 0
+  Level_C1_05  Medium  seed 2 mono Laser        Lost   0* 11/17 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins    8 repairs 0
+  Level_C1_05  Medium  seed 2 naive             Lost   0* 11/17 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   56 repairs 0
+  Level_C1_05  Medium  seed 2 affordable        Lost   0* 11/17 base    0 built  6 upg  4 sold 0 mines 0 fields 0 drones - coins    9 repairs 0
+  Level_C1_05  Medium  seed 2 creative          Won    3* 17/17 base  700 built  8 upg 10 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   18 repairs 0
+  Level_C1_05  Psycho  seed 1 mono PulseRifle   Lost   0*  7/17 base    0 built 15 upg 15 sold 0 mines 0 fields 0 drones - coins   24 repairs 0
+  Level_C1_05  Psycho  seed 1 mono Cannon       Lost   0*  7/17 base    0 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins   95 repairs 0
+  Level_C1_05  Psycho  seed 1 mono Laser        Lost   0*  7/17 base    0 built  7 upg  7 sold 0 mines 0 fields 0 drones - coins   20 repairs 60
+  Level_C1_05  Psycho  seed 1 naive             Lost   0*  7/17 base    0 built 14 upg  6 sold 0 mines 0 fields 0 drones - coins    5 repairs 0
+  Level_C1_05  Psycho  seed 1 affordable        Lost   0*  7/17 base    0 built 10 upg  5 sold 0 mines 0 fields 0 drones - coins   32 repairs 130
+  Level_C1_05  Psycho  seed 1 creative          Lost   0* 15/17 base    0 built 18 upg 15 sold 3 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   68 repairs 399
+  Level_C1_06  Easy    seed 3 mono PulseRifle   Lost   0* 14/18 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   11 repairs 0
+  Level_C1_06  Easy    seed 3 mono Cannon       Lost   0* 12/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   75 repairs 0
+  Level_C1_06  Easy    seed 3 mono Laser        Lost   0* 12/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins    5 repairs 0
+  Level_C1_06  Easy    seed 3 naive             Lost   0* 12/18 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   14 repairs 0
+  Level_C1_06  Easy    seed 3 affordable        Lost   0* 12/18 base    0 built  5 upg  4 sold 0 mines 0 fields 0 drones - coins   27 repairs 0
+  Level_C1_06  Easy    seed 3 creative          Won    3* 18/18 base  700 built  7 upg  6 sold 0 mines 11 fields 1 drones HarvestDrone+RepairDrone coins   98 repairs 0
+  Level_C1_06  Hard    seed 2 mono PulseRifle   Lost   0* 10/18 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   18 repairs 0
+  Level_C1_06  Hard    seed 2 mono Cannon       Lost   0* 10/18 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   11 repairs 0
+  Level_C1_06  Hard    seed 2 mono Laser        Lost   0* 10/18 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   31 repairs 0
+  Level_C1_06  Hard    seed 2 naive             Lost   0* 10/18 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   83 repairs 0
+  Level_C1_06  Hard    seed 2 affordable        Lost   0* 10/18 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins    6 repairs 0
+  Level_C1_06  Hard    seed 2 creative          Won    3* 18/18 base  800 built 19 upg 16 sold 1 mines 10 fields 2 drones HarvestDrone+RepairDrone+AttackDrone coins   27 repairs 60
+
+---- worker w4
+Yardstick, obvious family: seeds 1,2,3, step 0.2 s, 2026-11-17 18:03. calibration 2026-11-16 03:13 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs 5fea0658 (STALE, data now 32757254)
+Per cell and strategy: wins over seeds, stars (mean of the wins), base left (mean), waves reached (losses), coins unspent (mean).
+
+level        diff    strategy          wins  stars   base  reached   coins
+Level_C1_01  Hard    affordable        0/1    0.0      0  12/12        25
+Level_C1_01  Hard    creative          0/1    0.0      0  12/12        12
+Level_C1_01  Hard    mono Cannon       0/1    0.0      0  11/12        20
+Level_C1_01  Hard    mono Laser        0/1    0.0      0  9/12         18
+Level_C1_01  Hard    mono PulseRifle   0/1    0.0      0  12/12        34
+Level_C1_01  Hard    naive             0/1    0.0      0  11/12        59
+Level_C1_01  Medium  affordable        1/1    3.0    600  -            22
+Level_C1_01  Medium  creative          1/1    3.0    600  -           107
+Level_C1_01  Medium  mono Cannon       1/1    3.0    600  -            37
+Level_C1_01  Medium  mono PulseRifle   0/1    0.0      0  12/12        34
+Level_C1_01  Medium  naive             0/1    0.0      0  12/12        14
+Level_C1_02  Easy    affordable        0/1    0.0      0  12/12         4
+Level_C1_02  Easy    creative          1/1    3.0    700  -            50
+Level_C1_02  Easy    mono Cannon       1/1    3.0    700  -           177
+Level_C1_02  Easy    mono Laser        0/1    0.0      0  12/12        18
+Level_C1_02  Easy    mono PulseRifle   0/1    0.0      0  12/12         9
+Level_C1_02  Easy    naive             0/1    0.0      0  12/12        35
+Level_C1_02  Hard    affordable        0/1    0.0      0  10/12         6
+Level_C1_02  Hard    creative          0/1    0.0      0  12/12         3
+Level_C1_02  Hard    mono Cannon       1/1    3.0    700  -           154
+Level_C1_02  Hard    mono Laser        0/1    0.0      0  10/12        39
+Level_C1_02  Hard    mono PulseRifle   0/1    0.0      0  9/12         41
+Level_C1_02  Hard    naive             0/1    0.0      0  12/12         1
+Level_C1_02  Psycho  affordable        0/1    0.0      0  10/12        30
+Level_C1_02  Psycho  creative          0/1    0.0      0  12/12        12
+Level_C1_02  Psycho  mono Cannon       1/1    3.0    800  -            85
+Level_C1_02  Psycho  mono Laser        0/1    0.0      0  10/12        35
+Level_C1_02  Psycho  mono PulseRifle   0/1    0.0      0  10/12        17
+Level_C1_02  Psycho  naive             0/1    0.0      0  12/12        55
+Level_C1_03  Medium  affordable        0/1    0.0      0  13/16        17
+Level_C1_03  Medium  creative          1/1    3.0    700  -           147
+Level_C1_03  Medium  mono Cannon       0/1    0.0      0  13/16        17
+Level_C1_03  Medium  mono Laser        0/1    0.0      0  13/16        13
+Level_C1_03  Medium  mono PulseRifle   0/1    0.0      0  13/16        20
+Level_C1_03  Medium  naive             0/1    0.0      0  13/16        72
+Level_C1_03  Psycho  affordable        0/1    0.0      0  13/16        23
+Level_C1_03  Psycho  creative          1/1    3.0    744  -           188
+Level_C1_03  Psycho  mono Cannon       0/1    0.0      0  13/16        50
+Level_C1_03  Psycho  mono Laser        0/1    0.0      0  13/16        37
+Level_C1_03  Psycho  mono PulseRifle   0/1    0.0      0  13/16        17
+Level_C1_03  Psycho  naive             0/1    0.0      0  13/16        49
+Level_C1_04  Easy    affordable        0/1    0.0      0  16/16        36
+Level_C1_04  Easy    creative          1/1    3.0    700  -            29
+Level_C1_04  Easy    mono Cannon       0/1    0.0      0  13/16        14
+Level_C1_04  Easy    mono Laser        0/1    0.0      0  13/16       128
+Level_C1_04  Easy    mono PulseRifle   0/1    0.0      0  15/16        30
+Level_C1_04  Easy    naive             0/1    0.0      0  15/16        46
+Level_C1_04  Hard    affordable        0/1    0.0      0  5/16         23
+Level_C1_04  Hard    creative          1/1    2.0    552  -            18
+Level_C1_04  Hard    mono Cannon       0/1    0.0      0  5/16         24
+Level_C1_04  Hard    mono Laser        0/1    0.0      0  5/16         78
+Level_C1_04  Hard    mono PulseRifle   0/1    0.0      0  5/16         43
+Level_C1_04  Hard    naive             0/1    0.0      0  5/16         80
+Level_C1_05  Easy    affordable        0/1    0.0      0  11/17        25
+Level_C1_05  Easy    creative          1/1    3.0    700  -            17
+Level_C1_05  Easy    mono Cannon       0/1    0.0      0  11/17        29
+Level_C1_05  Easy    mono Laser        0/1    0.0      0  11/17        45
+Level_C1_05  Easy    mono PulseRifle   0/1    0.0      0  11/17        30
+Level_C1_05  Easy    naive             0/1    0.0      0  11/17         0
+Level_C1_05  Medium  affordable        0/1    0.0      0  11/17         3
+Level_C1_05  Medium  creative          1/1    3.0    700  -             8
+Level_C1_05  Medium  mono Cannon       0/1    0.0      0  11/17        13
+Level_C1_05  Medium  mono Laser        0/1    0.0      0  11/17        35
+Level_C1_05  Medium  mono PulseRifle   0/1    0.0      0  11/17        51
+Level_C1_05  Medium  naive             0/1    0.0      0  11/17        88
+Level_C1_05  Psycho  affordable        0/1    0.0      0  7/17         25
+Level_C1_05  Psycho  creative          0/1    0.0      0  15/17        42
+Level_C1_05  Psycho  mono Cannon       0/1    0.0      0  7/17          7
+Level_C1_05  Psycho  mono Laser        0/1    0.0      0  7/17         10
+Level_C1_05  Psycho  mono PulseRifle   0/1    0.0      0  7/17         25
+Level_C1_05  Psycho  naive             0/1    0.0      0  7/17         50
+Level_C1_06  Hard    affordable        0/1    0.0      0  10/18        29
+Level_C1_06  Hard    creative          1/1    3.0    800  -            63
+Level_C1_06  Hard    mono Cannon       0/1    0.0      0  10/18        38
+Level_C1_06  Hard    mono Laser        0/1    0.0      0  10/18        36
+Level_C1_06  Hard    mono PulseRifle   0/1    0.0      0  10/18        24
+Level_C1_06  Hard    naive             0/1    0.0      0  10/18        98
+Level_C1_06  Medium  affordable        0/1    0.0      0  12/18        22
+Level_C1_06  Medium  creative          1/1    3.0    700  -            34
+Level_C1_06  Medium  mono Cannon       0/1    0.0      0  12/18        90
+Level_C1_06  Medium  mono Laser        0/1    0.0      0  12/18        54
+Level_C1_06  Medium  mono PulseRifle   0/1    0.0      0  12/18        40
+Level_C1_06  Medium  naive             0/1    0.0      0  12/18        95
+
+Runs:
+  Level_C1_01  Medium  seed 1 mono PulseRifle   Lost   0* 12/12 base    0 built 10 upg 10 sold 0 mines 0 fields 0 drones - coins   34 repairs 60
+  Level_C1_01  Medium  seed 1 mono Cannon       Won    3* 12/12 base  600 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   37 repairs 0
+  Level_C1_01  Medium  seed 1 naive             Lost   0* 12/12 base    0 built 12 upg  6 sold 0 mines 0 fields 0 drones - coins   14 repairs 0
+  Level_C1_01  Medium  seed 1 affordable        Won    3* 12/12 base  600 built 13 upg  9 sold 0 mines 0 fields 0 drones - coins   22 repairs 0
+  Level_C1_01  Medium  seed 1 creative          Won    3* 12/12 base  600 built 10 upg  8 sold 0 mines 0 fields 0 drones - coins  107 repairs 0
+  Level_C1_01  Hard    seed 3 mono PulseRifle   Lost   0* 12/12 base    0 built 10 upg 10 sold 0 mines 0 fields 0 drones - coins   34 repairs 0
+  Level_C1_01  Hard    seed 3 mono Cannon       Lost   0* 11/12 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   20 repairs 60
+  Level_C1_01  Hard    seed 3 mono Laser        Lost   0*  9/12 base    0 built  2 upg  0 sold 0 mines 0 fields 0 drones - coins   18 repairs 222
+  Level_C1_01  Hard    seed 3 naive             Lost   0* 11/12 base    0 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins   59 repairs 60
+  Level_C1_01  Hard    seed 3 affordable        Lost   0* 12/12 base    0 built  8 upg  8 sold 0 mines 0 fields 0 drones - coins   25 repairs 0
+  Level_C1_01  Hard    seed 3 creative          Lost   0* 12/12 base    0 built 13 upg 17 sold 0 mines 0 fields 0 drones - coins   12 repairs 0
+  Level_C1_02  Easy    seed 2 mono PulseRifle   Lost   0* 12/12 base    0 built 10 upg 10 sold 0 mines 0 fields 0 drones - coins    9 repairs 0
+  Level_C1_02  Easy    seed 2 mono Cannon       Won    3* 12/12 base  700 built  4 upg  4 sold 0 mines 0 fields 0 drones - coins  177 repairs 0
+  Level_C1_02  Easy    seed 2 mono Laser        Lost   0* 12/12 base    0 built  5 upg  4 sold 0 mines 0 fields 0 drones - coins   18 repairs 0
+  Level_C1_02  Easy    seed 2 naive             Lost   0* 12/12 base    0 built 10 upg  4 sold 0 mines 0 fields 0 drones - coins   35 repairs 0
+  Level_C1_02  Easy    seed 2 affordable        Lost   0* 12/12 base    0 built  9 upg  7 sold 0 mines 0 fields 0 drones - coins    4 repairs 0
+  Level_C1_02  Easy    seed 2 creative          Won    3* 12/12 base  700 built  6 upg  6 sold 0 mines 0 fields 0 drones RepairDrone coins   50 repairs 0
+  Level_C1_02  Hard    seed 1 mono PulseRifle   Lost   0*  9/12 base    0 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   41 repairs 0
+  Level_C1_02  Hard    seed 1 mono Cannon       Won    3* 12/12 base  700 built  9 upg  9 sold 0 mines 0 fields 0 drones - coins  154 repairs 60
+  Level_C1_02  Hard    seed 1 mono Laser        Lost   0* 10/12 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   39 repairs 180
+  Level_C1_02  Hard    seed 1 naive             Lost   0* 12/12 base    0 built  8 upg  4 sold 0 mines 0 fields 0 drones - coins    1 repairs 496
+  Level_C1_02  Hard    seed 1 affordable        Lost   0* 10/12 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins    6 repairs 0
+  Level_C1_02  Hard    seed 1 creative          Lost   0* 12/12 base    0 built 13 upg 14 sold 0 mines 0 fields 0 drones RepairDrone coins    3 repairs 60
+  Level_C1_02  Psycho  seed 3 mono PulseRifle   Lost   0* 10/12 base    0 built 14 upg 14 sold 0 mines 0 fields 0 drones - coins   17 repairs 0
+  Level_C1_02  Psycho  seed 3 mono Cannon       Won    3* 12/12 base  800 built 14 upg 13 sold 0 mines 0 fields 0 drones - coins   85 repairs 132
+  Level_C1_02  Psycho  seed 3 mono Laser        Lost   0* 10/12 base    0 built  6 upg  7 sold 0 mines 0 fields 0 drones - coins   35 repairs 60
+  Level_C1_02  Psycho  seed 3 naive             Lost   0* 12/12 base    0 built 15 upg  7 sold 0 mines 0 fields 0 drones - coins   55 repairs 468
+  Level_C1_02  Psycho  seed 3 affordable        Lost   0* 10/12 base    0 built 10 upg  6 sold 0 mines 0 fields 0 drones - coins   30 repairs 0
+  Level_C1_02  Psycho  seed 3 creative          Lost   0* 12/12 base    0 built 20 upg 19 sold 0 mines 0 fields 0 drones RepairDrone coins   12 repairs 112
+  Level_C1_03  Medium  seed 2 mono PulseRifle   Lost   0* 13/16 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   20 repairs 0
+  Level_C1_03  Medium  seed 2 mono Cannon       Lost   0* 13/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   17 repairs 0
+  Level_C1_03  Medium  seed 2 mono Laser        Lost   0* 13/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   13 repairs 0
+  Level_C1_03  Medium  seed 2 naive             Lost   0* 13/16 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   72 repairs 0
+  Level_C1_03  Medium  seed 2 affordable        Lost   0* 13/16 base    0 built  7 upg  5 sold 0 mines 0 fields 0 drones - coins   17 repairs 0
+  Level_C1_03  Medium  seed 2 creative          Won    3* 16/16 base  700 built 11 upg  8 sold 1 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  147 repairs 0
+  Level_C1_03  Psycho  seed 1 mono PulseRifle   Lost   0* 13/16 base    0 built 16 upg 16 sold 0 mines 0 fields 0 drones - coins   17 repairs 30
+  Level_C1_03  Psycho  seed 1 mono Cannon       Lost   0* 13/16 base    0 built  8 upg  6 sold 0 mines 0 fields 0 drones - coins   50 repairs 42
+  Level_C1_03  Psycho  seed 1 mono Laser        Lost   0* 13/16 base    0 built  5 upg 10 sold 0 mines 0 fields 0 drones - coins   37 repairs 0
+  Level_C1_03  Psycho  seed 1 naive             Lost   0* 13/16 base    0 built 14 upg  7 sold 0 mines 0 fields 0 drones - coins   49 repairs 0
+  Level_C1_03  Psycho  seed 1 affordable        Lost   0* 13/16 base    0 built 12 upg  8 sold 0 mines 0 fields 0 drones - coins   23 repairs 0
+  Level_C1_03  Psycho  seed 1 creative          Won    3* 16/16 base  744 built 19 upg 18 sold 4 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  188 repairs 91
+  Level_C1_04  Easy    seed 3 mono PulseRifle   Lost   0* 15/16 base    0 built  7 upg  7 sold 0 mines 0 fields 0 drones - coins   30 repairs 0
+  Level_C1_04  Easy    seed 3 mono Cannon       Lost   0* 13/16 base    0 built  5 upg  0 sold 0 mines 0 fields 0 drones - coins   14 repairs 0
+  Level_C1_04  Easy    seed 3 mono Laser        Lost   0* 13/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins  128 repairs 0
+  Level_C1_04  Easy    seed 3 naive             Lost   0* 15/16 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   46 repairs 0
+  Level_C1_04  Easy    seed 3 affordable        Lost   0* 16/16 base    0 built  6 upg  7 sold 0 mines 0 fields 0 drones - coins   36 repairs 0
+  Level_C1_04  Easy    seed 3 creative          Won    3* 16/16 base  700 built  7 upg  6 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   29 repairs 0
+  Level_C1_04  Hard    seed 2 mono PulseRifle   Lost   0*  5/16 base    0 built  5 upg  1 sold 0 mines 0 fields 0 drones - coins   43 repairs 0
+  Level_C1_04  Hard    seed 2 mono Cannon       Lost   0*  5/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   24 repairs 0
+  Level_C1_04  Hard    seed 2 mono Laser        Lost   0*  5/16 base    0 built  2 upg  0 sold 0 mines 0 fields 0 drones - coins   78 repairs 0
+  Level_C1_04  Hard    seed 2 naive             Lost   0*  5/16 base    0 built  3 upg  1 sold 0 mines 0 fields 0 drones - coins   80 repairs 0
+  Level_C1_04  Hard    seed 2 affordable        Lost   0*  5/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   23 repairs 0
+  Level_C1_04  Hard    seed 2 creative          Won    2* 16/16 base  552 built 20 upg 19 sold 1 mines 0 fields 0 drones HarvestDrone coins   18 repairs 217
+  Level_C1_05  Easy    seed 1 mono PulseRifle   Lost   0* 11/17 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   30 repairs 0
+  Level_C1_05  Easy    seed 1 mono Cannon       Lost   0* 11/17 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   29 repairs 0
+  Level_C1_05  Easy    seed 1 mono Laser        Lost   0* 11/17 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   45 repairs 0
+  Level_C1_05  Easy    seed 1 naive             Lost   0* 11/17 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins    0 repairs 0
+  Level_C1_05  Easy    seed 1 affordable        Lost   0* 11/17 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins   25 repairs 0
+  Level_C1_05  Easy    seed 1 creative          Won    3* 17/17 base  700 built  9 upg  5 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   17 repairs 0
+  Level_C1_05  Medium  seed 3 mono PulseRifle   Lost   0* 11/17 base    0 built  7 upg  7 sold 0 mines 0 fields 0 drones - coins   51 repairs 0
+  Level_C1_05  Medium  seed 3 mono Cannon       Lost   0* 11/17 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   13 repairs 0
+  Level_C1_05  Medium  seed 3 mono Laser        Lost   0* 11/17 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   35 repairs 0
+  Level_C1_05  Medium  seed 3 naive             Lost   0* 11/17 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   88 repairs 0
+  Level_C1_05  Medium  seed 3 affordable        Lost   0* 11/17 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins    3 repairs 0
+  Level_C1_05  Medium  seed 3 creative          Won    3* 17/17 base  700 built  8 upg 10 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins    8 repairs 0
+  Level_C1_05  Psycho  seed 2 mono PulseRifle   Lost   0*  7/17 base    0 built 15 upg 15 sold 0 mines 0 fields 0 drones - coins   25 repairs 0
+  Level_C1_05  Psycho  seed 2 mono Cannon       Lost   0*  7/17 base    0 built  8 upg  6 sold 0 mines 0 fields 0 drones - coins    7 repairs 0
+  Level_C1_05  Psycho  seed 2 mono Laser        Lost   0*  7/17 base    0 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   10 repairs 246
+  Level_C1_05  Psycho  seed 2 naive             Lost   0*  7/17 base    0 built 13 upg  6 sold 0 mines 0 fields 0 drones - coins   50 repairs 0
+  Level_C1_05  Psycho  seed 2 affordable        Lost   0*  7/17 base    0 built 11 upg  5 sold 0 mines 0 fields 0 drones - coins   25 repairs 0
+  Level_C1_05  Psycho  seed 2 creative          Lost   0* 15/17 base    0 built 17 upg 15 sold 3 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   42 repairs 276
+  Level_C1_06  Medium  seed 1 mono PulseRifle   Lost   0* 12/18 base    0 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   40 repairs 0
+  Level_C1_06  Medium  seed 1 mono Cannon       Lost   0* 12/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   90 repairs 0
+  Level_C1_06  Medium  seed 1 mono Laser        Lost   0* 12/18 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins   54 repairs 0
+  Level_C1_06  Medium  seed 1 naive             Lost   0* 12/18 base    0 built  5 upg  2 sold 0 mines 0 fields 0 drones - coins   95 repairs 0
+  Level_C1_06  Medium  seed 1 affordable        Lost   0* 12/18 base    0 built  4 upg  4 sold 0 mines 0 fields 0 drones - coins   22 repairs 0
+  Level_C1_06  Medium  seed 1 creative          Won    3* 18/18 base  700 built 11 upg  8 sold 1 mines 7 fields 1 drones HarvestDrone+RepairDrone+AttackDrone coins   34 repairs 0
+  Level_C1_06  Hard    seed 3 mono PulseRifle   Lost   0* 10/18 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   24 repairs 0
+  Level_C1_06  Hard    seed 3 mono Cannon       Lost   0* 10/18 base    0 built  6 upg  1 sold 0 mines 0 fields 0 drones - coins   38 repairs 0
+  Level_C1_06  Hard    seed 3 mono Laser        Lost   0* 10/18 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   36 repairs 0
+  Level_C1_06  Hard    seed 3 naive             Lost   0* 10/18 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   98 repairs 0
+  Level_C1_06  Hard    seed 3 affordable        Lost   0* 10/18 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins   29 repairs 0
+  Level_C1_06  Hard    seed 3 creative          Won    3* 18/18 base  800 built 23 upg 17 sold 2 mines 8 fields 2 drones HarvestDrone+RepairDrone coins   63 repairs 120
+
+---- worker w5
+Yardstick, obvious family: seeds 1,2,3, step 0.2 s, 2026-11-17 18:02. calibration 2026-11-16 03:13 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs 5fea0658 (STALE, data now 32757254)
+Per cell and strategy: wins over seeds, stars (mean of the wins), base left (mean), waves reached (losses), coins unspent (mean).
+
+level        diff    strategy          wins  stars   base  reached   coins
+Level_C1_01  Medium  affordable        1/1    3.0    600  -            22
+Level_C1_01  Medium  creative          1/1    3.0    600  -           107
+Level_C1_01  Medium  mono Cannon       1/1    3.0    600  -            32
+Level_C1_01  Medium  mono PulseRifle   0/1    0.0      0  12/12        11
+Level_C1_01  Medium  naive             0/1    0.0      0  12/12        14
+Level_C1_01  Psycho  affordable        0/1    0.0      0  11/12         3
+Level_C1_01  Psycho  creative          1/1    3.0    700  -            62
+Level_C1_01  Psycho  mono Cannon       1/1    3.0    700  -            19
+Level_C1_01  Psycho  mono Laser        0/1    0.0      0  12/12        71
+Level_C1_01  Psycho  mono PulseRifle   0/1    0.0      0  12/12        24
+Level_C1_01  Psycho  naive             0/1    0.0      0  11/12         6
+Level_C1_02  Easy    affordable        0/1    0.0      0  12/12         4
+Level_C1_02  Easy    creative          1/1    3.0    700  -            90
+Level_C1_02  Easy    mono Cannon       1/1    3.0    700  -            77
+Level_C1_02  Easy    mono Laser        0/1    0.0      0  12/12        26
+Level_C1_02  Easy    mono PulseRifle   0/1    0.0      0  12/12         9
+Level_C1_02  Easy    naive             0/1    0.0      0  12/12        39
+Level_C1_02  Hard    affordable        0/1    0.0      0  10/12         1
+Level_C1_02  Hard    creative          0/1    0.0      0  12/12        13
+Level_C1_02  Hard    mono Cannon       1/1    3.0    700  -            19
+Level_C1_02  Hard    mono Laser        0/1    0.0      0  9/12         78
+Level_C1_02  Hard    mono PulseRifle   0/1    0.0      0  10/12         6
+Level_C1_02  Hard    naive             0/1    0.0      0  10/12        99
+Level_C1_03  Easy    affordable        0/1    0.0      0  14/16        11
+Level_C1_03  Easy    creative          1/1    3.0    700  -           147
+Level_C1_03  Easy    mono Cannon       0/1    0.0      0  14/16        78
+Level_C1_03  Easy    mono Laser        0/1    0.0      0  14/16        37
+Level_C1_03  Easy    mono PulseRifle   0/1    0.0      0  14/16        14
+Level_C1_03  Easy    naive             0/1    0.0      0  14/16        40
+Level_C1_03  Medium  affordable        0/1    0.0      0  13/16        15
+Level_C1_03  Medium  creative          1/1    3.0    700  -           173
+Level_C1_03  Medium  mono Cannon       0/1    0.0      0  13/16        11
+Level_C1_03  Medium  mono Laser        0/1    0.0      0  13/16        10
+Level_C1_03  Medium  mono PulseRifle   0/1    0.0      0  13/16        17
+Level_C1_03  Medium  naive             0/1    0.0      0  13/16        73
+Level_C1_03  Psycho  affordable        0/1    0.0      0  13/16        28
+Level_C1_03  Psycho  creative          1/1    3.0    800  -           186
+Level_C1_03  Psycho  mono Cannon       0/1    0.0      0  13/16        53
+Level_C1_03  Psycho  mono Laser        0/1    0.0      0  13/16        43
+Level_C1_03  Psycho  mono PulseRifle   0/1    0.0      0  13/16         7
+Level_C1_03  Psycho  naive             0/1    0.0      0  13/16        22
+Level_C1_04  Hard    affordable        0/1    0.0      0  5/16         21
+Level_C1_04  Hard    creative          1/1    2.0    688  -            59
+Level_C1_04  Hard    mono Cannon       0/1    0.0      0  5/16         20
+Level_C1_04  Hard    mono Laser        0/1    0.0      0  5/16         77
+Level_C1_04  Hard    mono PulseRifle   0/1    0.0      0  5/16         39
+Level_C1_04  Hard    naive             0/1    0.0      0  5/16         25
+Level_C1_04  Medium  affordable        0/1    0.0      0  13/16        36
+Level_C1_04  Medium  creative          1/1    3.0    700  -            21
+Level_C1_04  Medium  mono Cannon       0/1    0.0      0  11/16        40
+Level_C1_04  Medium  mono Laser        0/1    0.0      0  11/16        62
+Level_C1_04  Medium  mono PulseRifle   0/1    0.0      0  12/16        37
+Level_C1_04  Medium  naive             0/1    0.0      0  14/16        50
+Level_C1_05  Easy    affordable        0/1    0.0      0  11/17        27
+Level_C1_05  Easy    creative          1/1    3.0    700  -           135
+Level_C1_05  Easy    mono Cannon       0/1    0.0      0  11/17        31
+Level_C1_05  Easy    mono Laser        0/1    0.0      0  11/17        46
+Level_C1_05  Easy    mono PulseRifle   0/1    0.0      0  11/17        31
+Level_C1_05  Easy    naive             0/1    0.0      0  11/17        51
+Level_C1_05  Hard    affordable        0/1    0.0      0  7/17         17
+Level_C1_05  Hard    creative          0/1    0.0      0  14/17        16
+Level_C1_05  Hard    mono Cannon       0/1    0.0      0  7/17         30
+Level_C1_05  Hard    mono Laser        0/1    0.0      0  7/17         55
+Level_C1_05  Hard    mono PulseRifle   0/1    0.0      0  7/17          9
+Level_C1_05  Hard    naive             0/1    0.0      0  7/17         89
+Level_C1_05  Psycho  affordable        0/1    0.0      0  8/17         31
+Level_C1_05  Psycho  creative          0/1    0.0      0  15/17        63
+Level_C1_05  Psycho  mono Cannon       0/1    0.0      0  8/17          7
+Level_C1_05  Psycho  mono Laser        0/1    0.0      0  8/17         24
+Level_C1_05  Psycho  mono PulseRifle   0/1    0.0      0  8/17         34
+Level_C1_05  Psycho  naive             0/1    0.0      0  8/17         12
+Level_C1_06  Medium  affordable        0/1    0.0      0  12/18        40
+Level_C1_06  Medium  creative          1/1    3.0    700  -            74
+Level_C1_06  Medium  mono Cannon       0/1    0.0      0  12/18        90
+Level_C1_06  Medium  mono Laser        0/1    0.0      0  12/18        25
+Level_C1_06  Medium  mono PulseRifle   0/1    0.0      0  12/18        14
+Level_C1_06  Medium  naive             0/1    0.0      0  12/18        26
+Level_C1_06  Psycho  affordable        0/1    0.0      0  11/18        16
+Level_C1_06  Psycho  creative          1/1    2.0    522  -            49
+Level_C1_06  Psycho  mono Cannon       0/1    0.0      0  7/18         77
+Level_C1_06  Psycho  mono Laser        0/1    0.0      0  7/18         56
+Level_C1_06  Psycho  mono PulseRifle   0/1    0.0      0  7/18         35
+Level_C1_06  Psycho  naive             0/1    0.0      0  7/18         23
+
+Runs:
+  Level_C1_01  Medium  seed 2 mono PulseRifle   Lost   0* 12/12 base    0 built 12 upg 11 sold 0 mines 0 fields 0 drones - coins   11 repairs 0
+  Level_C1_01  Medium  seed 2 mono Cannon       Won    3* 12/12 base  600 built  7 upg  5 sold 0 mines 0 fields 0 drones - coins   32 repairs 0
+  Level_C1_01  Medium  seed 2 naive             Lost   0* 12/12 base    0 built 12 upg  6 sold 0 mines 0 fields 0 drones - coins   14 repairs 0
+  Level_C1_01  Medium  seed 2 affordable        Won    3* 12/12 base  600 built 12 upg  9 sold 0 mines 0 fields 0 drones - coins   22 repairs 0
+  Level_C1_01  Medium  seed 2 creative          Won    3* 12/12 base  600 built 10 upg  8 sold 0 mines 0 fields 0 drones - coins  107 repairs 0
+  Level_C1_01  Psycho  seed 1 mono PulseRifle   Lost   0* 12/12 base    0 built 21 upg 20 sold 0 mines 0 fields 0 drones - coins   24 repairs 0
+  Level_C1_01  Psycho  seed 1 mono Cannon       Won    3* 12/12 base  700 built 13 upg 13 sold 0 mines 0 fields 0 drones - coins   19 repairs 175
+  Level_C1_01  Psycho  seed 1 mono Laser        Lost   0* 12/12 base    0 built  6 upg  8 sold 0 mines 0 fields 0 drones - coins   71 repairs 420
+  Level_C1_01  Psycho  seed 1 naive             Lost   0* 11/12 base    0 built 17 upg  8 sold 0 mines 0 fields 0 drones - coins    6 repairs 275
+  Level_C1_01  Psycho  seed 1 affordable        Lost   0* 11/12 base    0 built 12 upg  8 sold 0 mines 0 fields 0 drones - coins    3 repairs 171
+  Level_C1_01  Psycho  seed 1 creative          Won    3* 12/12 base  700 built 16 upg 21 sold 0 mines 0 fields 0 drones - coins   62 repairs 120
+  Level_C1_02  Easy    seed 3 mono PulseRifle   Lost   0* 12/12 base    0 built 10 upg 10 sold 0 mines 0 fields 0 drones - coins    9 repairs 0
+  Level_C1_02  Easy    seed 3 mono Cannon       Won    3* 12/12 base  700 built  5 upg  4 sold 0 mines 0 fields 0 drones - coins   77 repairs 0
+  Level_C1_02  Easy    seed 3 mono Laser        Lost   0* 12/12 base    0 built  5 upg  4 sold 0 mines 0 fields 0 drones - coins   26 repairs 0
+  Level_C1_02  Easy    seed 3 naive             Lost   0* 12/12 base    0 built 10 upg  4 sold 0 mines 0 fields 0 drones - coins   39 repairs 0
+  Level_C1_02  Easy    seed 3 affordable        Lost   0* 12/12 base    0 built  9 upg  7 sold 0 mines 0 fields 0 drones - coins    4 repairs 0
+  Level_C1_02  Easy    seed 3 creative          Won    3* 12/12 base  700 built  6 upg  5 sold 0 mines 0 fields 0 drones RepairDrone coins   90 repairs 0
+  Level_C1_02  Hard    seed 2 mono PulseRifle   Lost   0* 10/12 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins    6 repairs 0
+  Level_C1_02  Hard    seed 2 mono Cannon       Won    3* 12/12 base  700 built 10 upg 10 sold 0 mines 0 fields 0 drones - coins   19 repairs 0
+  Level_C1_02  Hard    seed 2 mono Laser        Lost   0*  9/12 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   78 repairs 120
+  Level_C1_02  Hard    seed 2 naive             Lost   0* 10/12 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   99 repairs 0
+  Level_C1_02  Hard    seed 2 affordable        Lost   0* 10/12 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins    1 repairs 0
+  Level_C1_02  Hard    seed 2 creative          Lost   0* 12/12 base    0 built 12 upg 14 sold 0 mines 0 fields 0 drones RepairDrone coins   13 repairs 60
+  Level_C1_03  Easy    seed 1 mono PulseRifle   Lost   0* 14/16 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   14 repairs 0
+  Level_C1_03  Easy    seed 1 mono Cannon       Lost   0* 14/16 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   78 repairs 0
+  Level_C1_03  Easy    seed 1 mono Laser        Lost   0* 14/16 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   37 repairs 0
+  Level_C1_03  Easy    seed 1 naive             Lost   0* 14/16 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   40 repairs 0
+  Level_C1_03  Easy    seed 1 affordable        Lost   0* 14/16 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   11 repairs 0
+  Level_C1_03  Easy    seed 1 creative          Won    3* 16/16 base  700 built  7 upg  8 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  147 repairs 0
+  Level_C1_03  Medium  seed 3 mono PulseRifle   Lost   0* 13/16 base    0 built  8 upg  7 sold 0 mines 0 fields 0 drones - coins   17 repairs 0
+  Level_C1_03  Medium  seed 3 mono Cannon       Lost   0* 13/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   11 repairs 0
+  Level_C1_03  Medium  seed 3 mono Laser        Lost   0* 13/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   10 repairs 0
+  Level_C1_03  Medium  seed 3 naive             Lost   0* 13/16 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   73 repairs 0
+  Level_C1_03  Medium  seed 3 affordable        Lost   0* 13/16 base    0 built  7 upg  5 sold 0 mines 0 fields 0 drones - coins   15 repairs 0
+  Level_C1_03  Medium  seed 3 creative          Won    3* 16/16 base  700 built 11 upg  8 sold 1 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  173 repairs 0
+  Level_C1_03  Psycho  seed 2 mono PulseRifle   Lost   0* 13/16 base    0 built 17 upg 16 sold 0 mines 0 fields 0 drones - coins    7 repairs 0
+  Level_C1_03  Psycho  seed 2 mono Cannon       Lost   0* 13/16 base    0 built  7 upg  7 sold 0 mines 0 fields 0 drones - coins   53 repairs 42
+  Level_C1_03  Psycho  seed 2 mono Laser        Lost   0* 13/16 base    0 built  5 upg 10 sold 0 mines 0 fields 0 drones - coins   43 repairs 0
+  Level_C1_03  Psycho  seed 2 naive             Lost   0* 13/16 base    0 built 15 upg  7 sold 0 mines 0 fields 0 drones - coins   22 repairs 0
+  Level_C1_03  Psycho  seed 2 affordable        Lost   0* 13/16 base    0 built 11 upg  8 sold 0 mines 0 fields 0 drones - coins   28 repairs 27
+  Level_C1_03  Psycho  seed 2 creative          Won    3* 16/16 base  800 built 20 upg 17 sold 5 mines 0 fields 0 drones HarvestDrone+RepairDrone coins  186 repairs 145
+  Level_C1_04  Medium  seed 1 mono PulseRifle   Lost   0* 12/16 base    0 built  5 upg  5 sold 0 mines 0 fields 0 drones - coins   37 repairs 0
+  Level_C1_04  Medium  seed 1 mono Cannon       Lost   0* 11/16 base    0 built  4 upg  0 sold 0 mines 0 fields 0 drones - coins   40 repairs 0
+  Level_C1_04  Medium  seed 1 mono Laser        Lost   0* 11/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   62 repairs 0
+  Level_C1_04  Medium  seed 1 naive             Lost   0* 14/16 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   50 repairs 0
+  Level_C1_04  Medium  seed 1 affordable        Lost   0* 13/16 base    0 built  5 upg  2 sold 0 mines 0 fields 0 drones - coins   36 repairs 0
+  Level_C1_04  Medium  seed 1 creative          Won    3* 16/16 base  700 built  9 upg  5 sold 1 mines 0 fields 0 drones RepairDrone+AttackDrone coins   21 repairs 0
+  Level_C1_04  Hard    seed 3 mono PulseRifle   Lost   0*  5/16 base    0 built  5 upg  1 sold 0 mines 0 fields 0 drones - coins   39 repairs 0
+  Level_C1_04  Hard    seed 3 mono Cannon       Lost   0*  5/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   20 repairs 0
+  Level_C1_04  Hard    seed 3 mono Laser        Lost   0*  5/16 base    0 built  2 upg  0 sold 0 mines 0 fields 0 drones - coins   77 repairs 0
+  Level_C1_04  Hard    seed 3 naive             Lost   0*  5/16 base    0 built  3 upg  1 sold 0 mines 0 fields 0 drones - coins   25 repairs 0
+  Level_C1_04  Hard    seed 3 affordable        Lost   0*  5/16 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   21 repairs 0
+  Level_C1_04  Hard    seed 3 creative          Won    2* 16/16 base  688 built 18 upg 19 sold 1 mines 0 fields 0 drones HarvestDrone coins   59 repairs 229
+  Level_C1_05  Easy    seed 2 mono PulseRifle   Lost   0* 11/17 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   31 repairs 0
+  Level_C1_05  Easy    seed 2 mono Cannon       Lost   0* 11/17 base    0 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins   31 repairs 0
+  Level_C1_05  Easy    seed 2 mono Laser        Lost   0* 11/17 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   46 repairs 0
+  Level_C1_05  Easy    seed 2 naive             Lost   0* 11/17 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   51 repairs 0
+  Level_C1_05  Easy    seed 2 affordable        Lost   0* 11/17 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins   27 repairs 0
+  Level_C1_05  Easy    seed 2 creative          Won    3* 17/17 base  700 built  8 upg  4 sold 0 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins  135 repairs 0
+  Level_C1_05  Hard    seed 1 mono PulseRifle   Lost   0*  7/17 base    0 built  6 upg  5 sold 0 mines 0 fields 0 drones - coins    9 repairs 0
+  Level_C1_05  Hard    seed 1 mono Cannon       Lost   0*  7/17 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   30 repairs 0
+  Level_C1_05  Hard    seed 1 mono Laser        Lost   0*  7/17 base    0 built  3 upg  0 sold 0 mines 0 fields 0 drones - coins   55 repairs 60
+  Level_C1_05  Hard    seed 1 naive             Lost   0*  7/17 base    0 built  5 upg  2 sold 0 mines 0 fields 0 drones - coins   89 repairs 0
+  Level_C1_05  Hard    seed 1 affordable        Lost   0*  7/17 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   17 repairs 0
+  Level_C1_05  Hard    seed 1 creative          Lost   0* 14/17 base    0 built 12 upg  8 sold 1 mines 0 fields 0 drones HarvestDrone+RepairDrone coins   16 repairs 225
+  Level_C1_05  Psycho  seed 3 mono PulseRifle   Lost   0*  8/17 base    0 built 15 upg 15 sold 0 mines 0 fields 0 drones - coins   34 repairs 0
+  Level_C1_05  Psycho  seed 3 mono Cannon       Lost   0*  8/17 base    0 built  8 upg  6 sold 0 mines 0 fields 0 drones - coins    7 repairs 0
+  Level_C1_05  Psycho  seed 3 mono Laser        Lost   0*  8/17 base    0 built  7 upg  7 sold 0 mines 0 fields 0 drones - coins   24 repairs 60
+  Level_C1_05  Psycho  seed 3 naive             Lost   0*  8/17 base    0 built 12 upg  6 sold 0 mines 0 fields 0 drones - coins   12 repairs 0
+  Level_C1_05  Psycho  seed 3 affordable        Lost   0*  8/17 base    0 built 11 upg  5 sold 0 mines 0 fields 0 drones - coins   31 repairs 0
+  Level_C1_05  Psycho  seed 3 creative          Lost   0* 15/17 base    0 built 17 upg 15 sold 2 mines 0 fields 0 drones HarvestDrone+RepairDrone+AttackDrone coins   63 repairs 290
+  Level_C1_06  Medium  seed 2 mono PulseRifle   Lost   0* 12/18 base    0 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins   14 repairs 0
+  Level_C1_06  Medium  seed 2 mono Cannon       Lost   0* 12/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   90 repairs 0
+  Level_C1_06  Medium  seed 2 mono Laser        Lost   0* 12/18 base    0 built  4 upg  1 sold 0 mines 0 fields 0 drones - coins   25 repairs 0
+  Level_C1_06  Medium  seed 2 naive             Lost   0* 12/18 base    0 built  6 upg  3 sold 0 mines 0 fields 0 drones - coins   26 repairs 0
+  Level_C1_06  Medium  seed 2 affordable        Lost   0* 12/18 base    0 built  4 upg  4 sold 0 mines 0 fields 0 drones - coins   40 repairs 0
+  Level_C1_06  Medium  seed 2 creative          Won    3* 18/18 base  700 built 12 upg  6 sold 1 mines 6 fields 1 drones HarvestDrone+RepairDrone+AttackDrone coins   74 repairs 0
+  Level_C1_06  Psycho  seed 1 mono PulseRifle   Lost   0*  7/18 base    0 built 13 upg 12 sold 0 mines 0 fields 0 drones - coins   35 repairs 0
+  Level_C1_06  Psycho  seed 1 mono Cannon       Lost   0*  7/18 base    0 built  7 upg  4 sold 0 mines 0 fields 0 drones - coins   77 repairs 0
+  Level_C1_06  Psycho  seed 1 mono Laser        Lost   0*  7/18 base    0 built  6 upg  6 sold 0 mines 0 fields 0 drones - coins   56 repairs 0
+  Level_C1_06  Psycho  seed 1 naive             Lost   0*  7/18 base    0 built 10 upg  4 sold 0 mines 0 fields 0 drones - coins   23 repairs 0
+  Level_C1_06  Psycho  seed 1 affordable        Lost   0* 11/18 base    0 built  9 upg  4 sold 0 mines 0 fields 0 drones - coins   16 repairs 297
+  Level_C1_06  Psycho  seed 1 creative          Won    2* 18/18 base  522 built 26 upg 27 sold 2 mines 11 fields 1 drones HarvestDrone+RepairDrone+AttackDrone coins   49 repairs 199

@@ -34,7 +34,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 2.6999998
         Nest: 0
-      _healthMultiplier: 0.726
+      _healthMultiplier: 0.692
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -64,7 +64,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 5.85
         Nest: 0
-      _healthMultiplier: 0.944
+      _healthMultiplier: 0.899
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -94,7 +94,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.018
+      _healthMultiplier: 0.97
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -104,7 +104,7 @@ MonoBehaviour:
         Count: 6
         PathIndex: 0
         Source: 0
-        Interval: 0.22049999
+        Interval: 0.2
         Delay: 0
         Stagger: 0
         Nest: 0
@@ -112,27 +112,27 @@ MonoBehaviour:
         Count: 7
         PathIndex: 0
         Source: 0
-        Interval: 0.22049999
+        Interval: 0.2
         Delay: 0
-        Stagger: 3.78
+        Stagger: 2.6999998
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 1
         PathIndex: 0
         Source: 0
-        Interval: 0.22049999
+        Interval: 0.2
         Delay: 0
-        Stagger: 8.19
+        Stagger: 5.85
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 11
         PathIndex: 0
         Source: 0
-        Interval: 1
+        Interval: 0.7
         Delay: 0
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.323
+      _healthMultiplier: 1.233
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -163,14 +163,22 @@ MonoBehaviour:
         Stagger: 5.85
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 16
+        Count: 7
         PathIndex: 0
         Source: 0
         Interval: 1
-        Delay: 2.5
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 9
+        PathIndex: 0
+        Source: 0
+        Interval: 1
+        Delay: 14.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.72
+      _healthMultiplier: 1.604
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -216,66 +224,12 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.507
+      _healthMultiplier: 1.435
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 6
-        PathIndex: 0
-        Source: 0
-        Interval: 0.2
-        Delay: 0
-        Stagger: 0
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 4
-        PathIndex: 0
-        Source: 0
-        Interval: 0.2
-        Delay: 0
-        Stagger: 2.6999998
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 10
-        PathIndex: 0
-        Source: 0
-        Interval: 1
-        Delay: 2.5
-        Stagger: 0
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
-        Count: 1
-        PathIndex: 0
-        Source: 0
-        Interval: 1.3
-        Delay: 5
-        Stagger: 0
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
-        Count: 1
-        PathIndex: 0
-        Source: 4
-        Interval: 2.6
-        Delay: 19
-        Stagger: 0
-        Nest: 1
-      _healthMultiplier: 1.333
-      _bossHealthScale: 1
-      _counterCheck: 0
-    - _startDelay: 8
-      _spawnJitter: 0.45
-      _groups:
-      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
-        Count: 1
-        PathIndex: 0
-        Source: 0
-        Interval: 1.8199999
-        Delay: 0
-        Stagger: 0
-        Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 6
         PathIndex: 0
@@ -293,22 +247,84 @@ MonoBehaviour:
         Stagger: 2.6999998
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 5
+        PathIndex: 0
+        Source: 0
+        Interval: 1
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 8
+        PathIndex: 0
+        Source: 0
+        Interval: 1
+        Delay: 12.5
+        Stagger: 0
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+        Count: 1
+        PathIndex: 0
+        Source: 0
+        Interval: 1.3
+        Delay: 0
+        Stagger: 5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+        Count: 1
+        PathIndex: 0
+        Source: 4
+        Interval: 2.6
+        Delay: 19
+        Stagger: 0
+        Nest: 1
+      _healthMultiplier: 1.163
+      _bossHealthScale: 1
+      _counterCheck: 0
+    - _startDelay: 8
+      _spawnJitter: 0.45
+      _groups:
+      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+        Count: 1
+        PathIndex: 0
+        Source: 0
+        Interval: 1.3
+        Delay: 0
+        Stagger: 0
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 6
+        PathIndex: 0
+        Source: 0
+        Interval: 0.2
+        Delay: 10.416666
+        Stagger: 0
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 7
+        PathIndex: 0
+        Source: 0
+        Interval: 0.2
+        Delay: 10.416666
+        Stagger: 1.89
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 1
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 5.85
+        Delay: 10.416666
+        Stagger: 4.095
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 14
         PathIndex: 0
         Source: 0
-        Interval: 1
-        Delay: 2.5
+        Interval: 0.7
+        Delay: 12.916666
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.995
+      _healthMultiplier: 1.833
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -379,14 +395,22 @@ MonoBehaviour:
         Stagger: 12.42
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 49
+        Count: 22
         PathIndex: 0
         Source: 0
         Interval: 0.6
-        Delay: 2.5
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 27
+        PathIndex: 0
+        Source: 0
+        Interval: 0.6
+        Delay: 21.1
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.249
+      _healthMultiplier: 1.401
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -425,11 +449,19 @@ MonoBehaviour:
         Stagger: 8.55
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 23
+        Count: 11
         PathIndex: 0
         Source: 0
         Interval: 1
-        Delay: 2.5
+        Delay: 0
+        Stagger: 0
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 12
+        PathIndex: 0
+        Source: 0
+        Interval: 1
+        Delay: 16
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
@@ -437,7 +469,7 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.90999997
-        Delay: 5
+        Delay: 0
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
@@ -445,10 +477,10 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.90999997
-        Delay: 5
+        Delay: 0
         Stagger: 7.7999997
         Nest: 0
-      _healthMultiplier: 2.802
+      _healthMultiplier: 2.549
       _bossHealthScale: 1
       _counterCheck: 1
     - _startDelay: 8
@@ -458,7 +490,7 @@ MonoBehaviour:
         Count: 3
         PathIndex: 0
         Source: 0
-        Interval: 1.2739999
+        Interval: 0.90999997
         Delay: 0
         Stagger: 0
         Nest: 0
@@ -466,24 +498,16 @@ MonoBehaviour:
         Count: 4
         PathIndex: 0
         Source: 0
-        Interval: 1.2739999
+        Interval: 0.90999997
         Delay: 0
-        Stagger: 10.92
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
-        Count: 1
-        PathIndex: 0
-        Source: 0
-        Interval: 1.2739999
-        Delay: 0
-        Stagger: 25.48
+        Stagger: 7.7999997
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 6
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
+        Delay: 10.416666
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
@@ -491,42 +515,42 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 2.6999998
+        Delay: 10.416666
+        Stagger: 1.89
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 6
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 5.85
+        Delay: 10.416666
+        Stagger: 4.095
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 8
+        Count: 7
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 8.55
+        Delay: 10.416666
+        Stagger: 5.9849997
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 2
+        Count: 26
         PathIndex: 0
         Source: 0
-        Interval: 0.2
-        Delay: 0
-        Stagger: 12.15
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 29
-        PathIndex: 0
-        Source: 0
-        Interval: 1
-        Delay: 2.5
+        Interval: 0.7
+        Delay: 12.916666
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 2.419
+      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+        Count: 1
+        PathIndex: 0
+        Source: 4
+        Interval: 2.6
+        Delay: 22.208332
+        Stagger: 0
+        Nest: 1
+      _healthMultiplier: 2.152
       _bossHealthScale: 1
       _counterCheck: 1
     - _startDelay: 8
@@ -557,11 +581,27 @@ MonoBehaviour:
         Stagger: 5.85
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 18
+        Count: 6
         PathIndex: 0
         Source: 0
         Interval: 1
-        Delay: 2.5
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 8
+        PathIndex: 0
+        Source: 0
+        Interval: 1
+        Delay: 16.5
+        Stagger: 0
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 4
+        PathIndex: 0
+        Source: 0
+        Interval: 1
+        Delay: 32.53
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
@@ -569,34 +609,34 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.90999997
-        Delay: 5
-        Stagger: 0
+        Delay: 0
+        Stagger: 5
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
         Count: 4
         PathIndex: 0
         Source: 0
         Interval: 0.90999997
-        Delay: 5
-        Stagger: 7.7999997
+        Delay: 16.5
+        Stagger: 4.299999
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
         Count: 2
         PathIndex: 0
         Source: 0
         Interval: 0.90999997
-        Delay: 5
-        Stagger: 18.199999
+        Delay: 32.53
+        Stagger: 6.699999
         Nest: 0
       - Enemy: {fileID: 11400000, guid: 8cb5eb8352c408f4cb988f7a695fa718, type: 2}
         Count: 1
         PathIndex: 0
         Source: 0
         Interval: 1
-        Delay: 14
+        Delay: 32.53
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 0.856
+      _healthMultiplier: 0.95
       _bossHealthScale: 1
       _counterCheck: 1
   - Difficulty: {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}
@@ -620,7 +660,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 2.6999998
         Nest: 0
-      _healthMultiplier: 0.712
+      _healthMultiplier: 0.674
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -650,7 +690,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 5.85
         Nest: 0
-      _healthMultiplier: 0.926
+      _healthMultiplier: 0.877
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -680,7 +720,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 0.999
+      _healthMultiplier: 0.946
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -690,7 +730,7 @@ MonoBehaviour:
         Count: 6
         PathIndex: 0
         Source: 0
-        Interval: 0.22049999
+        Interval: 0.2
         Delay: 0
         Stagger: 0
         Nest: 0
@@ -698,27 +738,27 @@ MonoBehaviour:
         Count: 7
         PathIndex: 0
         Source: 0
-        Interval: 0.22049999
+        Interval: 0.2
         Delay: 0
-        Stagger: 3.78
+        Stagger: 2.6999998
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 1
         PathIndex: 0
         Source: 0
-        Interval: 0.22049999
+        Interval: 0.2
         Delay: 0
-        Stagger: 8.19
+        Stagger: 5.85
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 11
         PathIndex: 0
         Source: 0
-        Interval: 1
+        Interval: 0.7
         Delay: 0
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.298
+      _healthMultiplier: 1.203
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -749,14 +789,22 @@ MonoBehaviour:
         Stagger: 5.85
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 16
+        Count: 7
         PathIndex: 0
         Source: 0
         Interval: 1
-        Delay: 2.5
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 9
+        PathIndex: 0
+        Source: 0
+        Interval: 1
+        Delay: 13.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.688
+      _healthMultiplier: 1.564
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -802,7 +850,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.478
+      _healthMultiplier: 1.399
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -817,7 +865,7 @@ MonoBehaviour:
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 2
+        Count: 6
         PathIndex: 0
         Source: 0
         Interval: 0.2
@@ -825,11 +873,19 @@ MonoBehaviour:
         Stagger: 2.6999998
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 8
+        Count: 5
         PathIndex: 0
         Source: 0
         Interval: 1
-        Delay: 2.5
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 7
+        PathIndex: 0
+        Source: 0
+        Interval: 1
+        Delay: 11.5
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
@@ -837,8 +893,8 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 1.3
-        Delay: 5
-        Stagger: 0
+        Delay: 0
+        Stagger: 5
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
         Count: 1
@@ -848,7 +904,7 @@ MonoBehaviour:
         Delay: 19
         Stagger: 0
         Nest: 1
-      _healthMultiplier: 1.197
+      _healthMultiplier: 1.094
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -858,7 +914,7 @@ MonoBehaviour:
         Count: 2
         PathIndex: 0
         Source: 0
-        Interval: 1.2739999
+        Interval: 0.90999997
         Delay: 0
         Stagger: 0
         Nest: 0
@@ -867,7 +923,7 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
+        Delay: 10.416666
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
@@ -875,26 +931,26 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 2.6999998
+        Delay: 10.416666
+        Stagger: 1.89
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 1
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 5.85
+        Delay: 10.416666
+        Stagger: 4.095
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 14
         PathIndex: 0
         Source: 0
-        Interval: 1
-        Delay: 2.5
+        Interval: 0.7
+        Delay: 12.916666
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.668
+      _healthMultiplier: 1.895
       _bossHealthScale: 1
       _counterCheck: 1
     - _startDelay: 8
@@ -965,14 +1021,22 @@ MonoBehaviour:
         Stagger: 12.42
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 49
+        Count: 22
         PathIndex: 0
         Source: 0
         Interval: 0.6
-        Delay: 2.5
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 27
+        PathIndex: 0
+        Source: 0
+        Interval: 0.6
+        Delay: 20.1
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.225
+      _healthMultiplier: 1.366
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1003,19 +1067,19 @@ MonoBehaviour:
         Stagger: 5.85
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 4
-        PathIndex: 0
-        Source: 0
-        Interval: 0.2
-        Delay: 0
-        Stagger: 8.55
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 23
+        Count: 9
         PathIndex: 0
         Source: 0
         Interval: 1
-        Delay: 2.5
+        Delay: 0
+        Stagger: 0
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 10
+        PathIndex: 0
+        Source: 0
+        Interval: 1
+        Delay: 13.71
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
@@ -1023,18 +1087,26 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.90999997
-        Delay: 5
+        Delay: 0
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
-        Count: 3
+        Count: 2
         PathIndex: 0
         Source: 0
         Interval: 0.90999997
-        Delay: 5
+        Delay: 0
         Stagger: 7.7999997
         Nest: 0
-      _healthMultiplier: 1.964
+      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+        Count: 1
+        PathIndex: 0
+        Source: 4
+        Interval: 2.6
+        Delay: 19
+        Stagger: 0
+        Nest: 1
+      _healthMultiplier: 1.817
       _bossHealthScale: 1
       _counterCheck: 1
     - _startDelay: 8
@@ -1044,7 +1116,7 @@ MonoBehaviour:
         Count: 3
         PathIndex: 0
         Source: 0
-        Interval: 1.2739999
+        Interval: 0.90999997
         Delay: 0
         Stagger: 0
         Nest: 0
@@ -1052,32 +1124,32 @@ MonoBehaviour:
         Count: 4
         PathIndex: 0
         Source: 0
-        Interval: 1.2739999
+        Interval: 0.90999997
         Delay: 0
-        Stagger: 10.92
+        Stagger: 7.7999997
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
         Count: 3
         PathIndex: 0
         Source: 0
-        Interval: 1.2739999
+        Interval: 0.90999997
         Delay: 0
-        Stagger: 25.48
+        Stagger: 18.199999
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
         Count: 1
         PathIndex: 0
         Source: 0
-        Interval: 1.2739999
+        Interval: 0.90999997
         Delay: 0
-        Stagger: 36.399998
+        Stagger: 25.999998
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 6
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
+        Delay: 10.416666
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
@@ -1085,42 +1157,42 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 2.6999998
+        Delay: 10.416666
+        Stagger: 1.89
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 6
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 5.85
+        Delay: 10.416666
+        Stagger: 4.095
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 8
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 8.55
+        Delay: 10.416666
+        Stagger: 5.9849997
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 2
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 12.15
+        Delay: 10.416666
+        Stagger: 8.504999
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 29
         PathIndex: 0
         Source: 0
-        Interval: 1
-        Delay: 2.5
+        Interval: 0.7
+        Delay: 12.916666
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.771
+      _healthMultiplier: 1.473
       _bossHealthScale: 1
       _counterCheck: 1
     - _startDelay: 8
@@ -1151,11 +1223,27 @@ MonoBehaviour:
         Stagger: 5.85
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 18
+        Count: 6
         PathIndex: 0
         Source: 0
         Interval: 1
-        Delay: 2.5
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 8
+        PathIndex: 0
+        Source: 0
+        Interval: 1
+        Delay: 15.5
+        Stagger: 0
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 4
+        PathIndex: 0
+        Source: 0
+        Interval: 1
+        Delay: 30.529999
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
@@ -1163,34 +1251,34 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.90999997
-        Delay: 5
-        Stagger: 0
+        Delay: 0
+        Stagger: 5
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
         Count: 4
         PathIndex: 0
         Source: 0
         Interval: 0.90999997
-        Delay: 5
-        Stagger: 7.7999997
+        Delay: 15.5
+        Stagger: 4.299999
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
         Count: 2
         PathIndex: 0
         Source: 0
         Interval: 0.90999997
-        Delay: 5
-        Stagger: 18.199999
+        Delay: 30.529999
+        Stagger: 6.699999
         Nest: 0
       - Enemy: {fileID: 11400000, guid: 8cb5eb8352c408f4cb988f7a695fa718, type: 2}
         Count: 1
         PathIndex: 0
         Source: 0
         Interval: 1
-        Delay: 14
+        Delay: 30.529999
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 0.776
+      _healthMultiplier: 0.773
       _bossHealthScale: 1
       _counterCheck: 1
   - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
@@ -1214,7 +1302,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 2.295
         Nest: 0
-      _healthMultiplier: 1.008
+      _healthMultiplier: 0.984
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1244,7 +1332,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 4.9725
         Nest: 0
-      _healthMultiplier: 1.311
+      _healthMultiplier: 1.279
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1274,7 +1362,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.414
+      _healthMultiplier: 1.38
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1294,7 +1382,7 @@ MonoBehaviour:
         Source: 0
         Interval: 0.2
         Delay: 0
-        Stagger: 3.2129998
+        Stagger: 2.295
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 1
@@ -1302,17 +1390,17 @@ MonoBehaviour:
         Source: 0
         Interval: 0.2
         Delay: 0
-        Stagger: 6.9614997
+        Stagger: 4.9725
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 11
         PathIndex: 0
         Source: 0
-        Interval: 0.85
+        Interval: 0.595
         Delay: 0
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.837
+      _healthMultiplier: 1.755
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1343,14 +1431,22 @@ MonoBehaviour:
         Stagger: 4.9725
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 16
+        Count: 7
         PathIndex: 0
         Source: 0
         Interval: 0.85
-        Delay: 2.5
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 9
+        PathIndex: 0
+        Source: 0
+        Interval: 0.85
+        Delay: 12.1
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 2.388
+      _healthMultiplier: 2.281
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1396,7 +1492,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 2.091
+      _healthMultiplier: 2.041
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1411,7 +1507,7 @@ MonoBehaviour:
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 1
+        Count: 5
         PathIndex: 0
         Source: 0
         Interval: 0.2
@@ -1419,11 +1515,19 @@ MonoBehaviour:
         Stagger: 2.295
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 4
+        PathIndex: 0
+        Source: 0
+        Interval: 0.85
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 7
         PathIndex: 0
         Source: 0
         Interval: 0.85
-        Delay: 2.5
+        Delay: 9.55
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
@@ -1431,8 +1535,8 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 1.105
-        Delay: 5
-        Stagger: 0
+        Delay: 0
+        Stagger: 5
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
         Count: 1
@@ -1442,7 +1546,7 @@ MonoBehaviour:
         Delay: 19
         Stagger: 0
         Nest: 1
-      _healthMultiplier: 1.617
+      _healthMultiplier: 1.257
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1452,7 +1556,7 @@ MonoBehaviour:
         Count: 1
         PathIndex: 0
         Source: 0
-        Interval: 1.0828999
+        Interval: 0.7735
         Delay: 0
         Stagger: 0
         Nest: 0
@@ -1461,7 +1565,7 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
+        Delay: 7
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
@@ -1469,27 +1573,27 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 2.295
+        Delay: 7
+        Stagger: 1.6064997
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 9
         PathIndex: 0
         Source: 0
-        Interval: 0.85
-        Delay: 2.5
-        Stagger: 0
+        Interval: 0.595
+        Delay: 7
+        Stagger: 2.5
         Nest: 0
       - Enemy: {fileID: 11400000, guid: 8cb5eb8352c408f4cb988f7a695fa718, type: 2}
         Count: 1
         PathIndex: 0
         Source: 0
         Interval: 1
-        Delay: 14
+        Delay: 7
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 0.671
-      _bossHealthScale: 1.341
+      _healthMultiplier: 0.81
+      _bossHealthScale: 1.111
       _counterCheck: 1
     - _startDelay: 8
       _spawnJitter: 0.45
@@ -1559,156 +1663,24 @@ MonoBehaviour:
         Stagger: 10.557
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 49
+        Count: 22
         PathIndex: 0
         Source: 0
         Interval: 0.51000005
-        Delay: 2.5
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 27
+        PathIndex: 0
+        Source: 0
+        Interval: 0.51000005
+        Delay: 17.710001
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.733
+      _healthMultiplier: 1.993
       _bossHealthScale: 1
       _counterCheck: 0
-    - _startDelay: 8
-      _spawnJitter: 0.45
-      _groups:
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 6
-        PathIndex: 0
-        Source: 0
-        Interval: 0.2
-        Delay: 0
-        Stagger: 0
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 7
-        PathIndex: 0
-        Source: 0
-        Interval: 0.2
-        Delay: 0
-        Stagger: 2.295
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 6
-        PathIndex: 0
-        Source: 0
-        Interval: 0.2
-        Delay: 0
-        Stagger: 4.9725
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 4
-        PathIndex: 0
-        Source: 0
-        Interval: 0.2
-        Delay: 0
-        Stagger: 7.2675
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 23
-        PathIndex: 0
-        Source: 0
-        Interval: 0.85
-        Delay: 2.5
-        Stagger: 0
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
-        Count: 3
-        PathIndex: 0
-        Source: 0
-        Interval: 0.7735
-        Delay: 5
-        Stagger: 0
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
-        Count: 4
-        PathIndex: 0
-        Source: 0
-        Interval: 0.7735
-        Delay: 5
-        Stagger: 6.63
-        Nest: 0
-      _healthMultiplier: 1.706
-      _bossHealthScale: 1
-      _counterCheck: 1
-    - _startDelay: 8
-      _spawnJitter: 0.45
-      _groups:
-      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
-        Count: 3
-        PathIndex: 0
-        Source: 0
-        Interval: 1.0828999
-        Delay: 0
-        Stagger: 0
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
-        Count: 4
-        PathIndex: 0
-        Source: 0
-        Interval: 1.0828999
-        Delay: 0
-        Stagger: 9.282
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
-        Count: 2
-        PathIndex: 0
-        Source: 0
-        Interval: 1.0828999
-        Delay: 0
-        Stagger: 21.657999
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 6
-        PathIndex: 0
-        Source: 0
-        Interval: 0.2
-        Delay: 0
-        Stagger: 0
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 7
-        PathIndex: 0
-        Source: 0
-        Interval: 0.2
-        Delay: 0
-        Stagger: 2.295
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 6
-        PathIndex: 0
-        Source: 0
-        Interval: 0.2
-        Delay: 0
-        Stagger: 4.9725
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 8
-        PathIndex: 0
-        Source: 0
-        Interval: 0.2
-        Delay: 0
-        Stagger: 7.2675
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 2
-        PathIndex: 0
-        Source: 0
-        Interval: 0.2
-        Delay: 0
-        Stagger: 10.327499
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 29
-        PathIndex: 0
-        Source: 0
-        Interval: 0.85
-        Delay: 2.5
-        Stagger: 0
-        Nest: 0
-      _healthMultiplier: 1.655
-      _bossHealthScale: 1
-      _counterCheck: 1
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1741,7 +1713,7 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.85
-        Delay: 2.5
+        Delay: 0
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
@@ -1749,7 +1721,37 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.7735
-        Delay: 5
+        Delay: 0
+        Stagger: 0
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+        Count: 3
+        PathIndex: 0
+        Source: 0
+        Interval: 0.7735
+        Delay: 0
+        Stagger: 6.63
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+        Count: 1
+        PathIndex: 0
+        Source: 4
+        Interval: 2.21
+        Delay: 19
+        Stagger: 0
+        Nest: 1
+      _healthMultiplier: 1.653
+      _bossHealthScale: 1
+      _counterCheck: 1
+    - _startDelay: 8
+      _spawnJitter: 0.45
+      _groups:
+      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+        Count: 3
+        PathIndex: 0
+        Source: 0
+        Interval: 0.7735
+        Delay: 0
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
@@ -1757,26 +1759,160 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.7735
-        Delay: 5
+        Delay: 0
         Stagger: 6.63
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+        Count: 2
+        PathIndex: 0
+        Source: 0
+        Interval: 0.7735
+        Delay: 0
+        Stagger: 15.47
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 6
+        PathIndex: 0
+        Source: 0
+        Interval: 0.2
+        Delay: 10.416666
+        Stagger: 0
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 7
+        PathIndex: 0
+        Source: 0
+        Interval: 0.2
+        Delay: 10.416666
+        Stagger: 1.6064999
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 6
+        PathIndex: 0
+        Source: 0
+        Interval: 0.2
+        Delay: 10.416666
+        Stagger: 3.4807498
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 8
+        PathIndex: 0
+        Source: 0
+        Interval: 0.2
+        Delay: 10.416666
+        Stagger: 5.0872498
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 2
+        PathIndex: 0
+        Source: 0
+        Interval: 0.2
+        Delay: 10.416666
+        Stagger: 7.22925
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 29
+        PathIndex: 0
+        Source: 0
+        Interval: 0.595
+        Delay: 12.916666
+        Stagger: 0
+        Nest: 0
+      _healthMultiplier: 1.87
+      _bossHealthScale: 1
+      _counterCheck: 1
+    - _startDelay: 8
+      _spawnJitter: 0.45
+      _groups:
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 6
+        PathIndex: 0
+        Source: 0
+        Interval: 0.2
+        Delay: 0
+        Stagger: 0
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 7
+        PathIndex: 0
+        Source: 0
+        Interval: 0.2
+        Delay: 0
+        Stagger: 2.295
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 5
+        PathIndex: 0
+        Source: 0
+        Interval: 0.2
+        Delay: 0
+        Stagger: 4.9725
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 6
+        PathIndex: 0
+        Source: 0
+        Interval: 0.85
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 8
+        PathIndex: 0
+        Source: 0
+        Interval: 0.85
+        Delay: 13.75
+        Stagger: 0
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 4
+        PathIndex: 0
+        Source: 0
+        Interval: 0.85
+        Delay: 26.7
+        Stagger: 0.44950008
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+        Count: 3
+        PathIndex: 0
+        Source: 0
+        Interval: 0.7735
+        Delay: 0
+        Stagger: 5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+        Count: 3
+        PathIndex: 0
+        Source: 0
+        Interval: 0.7735
+        Delay: 13.75
+        Stagger: 4.0299997
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
         Count: 1
         PathIndex: 0
         Source: 0
         Interval: 0.7735
-        Delay: 5
-        Stagger: 15.47
+        Delay: 26.7
+        Stagger: 0
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+        Count: 1
+        PathIndex: 0
+        Source: 0
+        Interval: 0.7735
+        Delay: 26.7
+        Stagger: 6.5195007
         Nest: 0
       - Enemy: {fileID: 11400000, guid: 8cb5eb8352c408f4cb988f7a695fa718, type: 2}
         Count: 1
         PathIndex: 0
         Source: 0
         Interval: 1
-        Delay: 14
+        Delay: 26.7
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.039
+      _healthMultiplier: 1.149
       _bossHealthScale: 1
       _counterCheck: 1
   - Difficulty: {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
@@ -1800,7 +1936,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 2.295
         Nest: 0
-      _healthMultiplier: 1.075
+      _healthMultiplier: 1.001
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1830,7 +1966,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 4.9725
         Nest: 0
-      _healthMultiplier: 1.397
+      _healthMultiplier: 1.301
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1868,7 +2004,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.507
+      _healthMultiplier: 1.403
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1888,7 +2024,7 @@ MonoBehaviour:
         Source: 0
         Interval: 0.2
         Delay: 0
-        Stagger: 3.2129998
+        Stagger: 2.295
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 1
@@ -1896,17 +2032,17 @@ MonoBehaviour:
         Source: 0
         Interval: 0.2
         Delay: 0
-        Stagger: 6.9614997
+        Stagger: 4.9725
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 11
         PathIndex: 0
         Source: 0
-        Interval: 0.85
+        Interval: 0.595
         Delay: 0
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.959
+      _healthMultiplier: 1.784
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -1929,11 +2065,19 @@ MonoBehaviour:
         Stagger: 2.295
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 9
+        Count: 3
         PathIndex: 0
         Source: 0
         Interval: 0.85
-        Delay: 2.5
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 6
+        PathIndex: 0
+        Source: 0
+        Interval: 0.85
+        Delay: 10.2
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: 8cb5eb8352c408f4cb988f7a695fa718, type: 2}
@@ -1941,11 +2085,11 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 1
-        Delay: 14
+        Delay: 10.2
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 0.792
-      _bossHealthScale: 1.136
+      _healthMultiplier: 0.741
+      _bossHealthScale: 1.215
       _counterCheck: 0
     - _startDelay: 8
       _spawnJitter: 0.45
@@ -1990,7 +2134,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 2.23
+      _healthMultiplier: 2.076
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -2008,19 +2152,43 @@ MonoBehaviour:
         Count: 5
         PathIndex: 0
         Source: 0
+        Interval: 0.2
+        Delay: 0
+        Stagger: 2.295
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 4
+        PathIndex: 0
+        Source: 0
         Interval: 0.85
-        Delay: 2.5
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 7
+        PathIndex: 0
+        Source: 0
+        Interval: 0.85
+        Delay: 9.05
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
-        Count: 2
+        Count: 1
+        PathIndex: 0
+        Source: 0
+        Interval: 0.7735
+        Delay: 0
+        Stagger: 5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+        Count: 1
         PathIndex: 0
         Source: 4
-        Interval: 0.7735
+        Interval: 2.21
         Delay: 19
         Stagger: 0
         Nest: 1
-      _healthMultiplier: 2.576
+      _healthMultiplier: 1.584
       _bossHealthScale: 1
       _counterCheck: 1
     - _startDelay: 8
@@ -2030,7 +2198,7 @@ MonoBehaviour:
         Count: 2
         PathIndex: 0
         Source: 0
-        Interval: 1.0828999
+        Interval: 0.7735
         Delay: 0
         Stagger: 0
         Nest: 0
@@ -2039,7 +2207,7 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
+        Delay: 6.7735
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
@@ -2047,26 +2215,26 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 2.295
+        Delay: 6.7735
+        Stagger: 1.6064997
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 9
         PathIndex: 0
         Source: 0
-        Interval: 0.85
-        Delay: 2.5
-        Stagger: 0
+        Interval: 0.595
+        Delay: 6.7735
+        Stagger: 2.5
         Nest: 0
       - Enemy: {fileID: 11400000, guid: 8cb5eb8352c408f4cb988f7a695fa718, type: 2}
         Count: 1
         PathIndex: 0
         Source: 0
         Interval: 1
-        Delay: 14
+        Delay: 6.7735
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.26
+      _healthMultiplier: 1.263
       _bossHealthScale: 1
       _counterCheck: 1
     - _startDelay: 8
@@ -2137,14 +2305,22 @@ MonoBehaviour:
         Stagger: 10.557
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 49
+        Count: 22
         PathIndex: 0
         Source: 0
         Interval: 0.51000005
-        Delay: 2.5
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 27
+        PathIndex: 0
+        Source: 0
+        Interval: 0.51000005
+        Delay: 17.210001
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.848
+      _healthMultiplier: 2.026
       _bossHealthScale: 1
       _counterCheck: 0
     - _startDelay: 8
@@ -2167,7 +2343,7 @@ MonoBehaviour:
         Stagger: 2.295
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 6
+        Count: 4
         PathIndex: 0
         Source: 0
         Interval: 0.2
@@ -2175,19 +2351,11 @@ MonoBehaviour:
         Stagger: 4.9725
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 4
-        PathIndex: 0
-        Source: 0
-        Interval: 0.2
-        Delay: 0
-        Stagger: 7.2675
-        Nest: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 23
+        Count: 17
         PathIndex: 0
         Source: 0
         Interval: 0.85
-        Delay: 2.5
+        Delay: 0
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
@@ -2195,18 +2363,26 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.7735
-        Delay: 5
+        Delay: 0
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
-        Count: 4
+        Count: 2
         PathIndex: 0
         Source: 0
         Interval: 0.7735
-        Delay: 5
+        Delay: 0
         Stagger: 6.63
         Nest: 0
-      _healthMultiplier: 2.459
+      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+        Count: 1
+        PathIndex: 0
+        Source: 4
+        Interval: 2.21
+        Delay: 19
+        Stagger: 0
+        Nest: 1
+      _healthMultiplier: 2.463
       _bossHealthScale: 1
       _counterCheck: 1
     - _startDelay: 8
@@ -2216,7 +2392,7 @@ MonoBehaviour:
         Count: 3
         PathIndex: 0
         Source: 0
-        Interval: 1.0828999
+        Interval: 0.7735
         Delay: 0
         Stagger: 0
         Nest: 0
@@ -2224,24 +2400,24 @@ MonoBehaviour:
         Count: 4
         PathIndex: 0
         Source: 0
-        Interval: 1.0828999
+        Interval: 0.7735
         Delay: 0
-        Stagger: 9.282
+        Stagger: 6.63
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
         Count: 2
         PathIndex: 0
         Source: 0
-        Interval: 1.0828999
+        Interval: 0.7735
         Delay: 0
-        Stagger: 21.657999
+        Stagger: 15.47
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 6
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
+        Delay: 10.416666
         Stagger: 0
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
@@ -2249,42 +2425,42 @@ MonoBehaviour:
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 2.295
+        Delay: 10.416666
+        Stagger: 1.6064999
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 6
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 4.9725
+        Delay: 10.416666
+        Stagger: 3.4807498
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 8
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 7.2675
+        Delay: 10.416666
+        Stagger: 5.0872498
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 2
         PathIndex: 0
         Source: 0
         Interval: 0.2
-        Delay: 0
-        Stagger: 10.327499
+        Delay: 10.416666
+        Stagger: 7.22925
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
         Count: 29
         PathIndex: 0
         Source: 0
-        Interval: 0.85
-        Delay: 2.5
+        Interval: 0.595
+        Delay: 12.916666
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 2.28
+      _healthMultiplier: 2.436
       _bossHealthScale: 1
       _counterCheck: 1
     - _startDelay: 8
@@ -2315,45 +2491,69 @@ MonoBehaviour:
         Stagger: 4.9725
         Nest: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 18
+        Count: 6
         PathIndex: 0
         Source: 0
         Interval: 0.85
-        Delay: 2.5
+        Delay: 0
+        Stagger: 2.5
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 8
+        PathIndex: 0
+        Source: 0
+        Interval: 0.85
+        Delay: 12.75
         Stagger: 0
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+        Count: 4
+        PathIndex: 0
+        Source: 0
+        Interval: 0.85
+        Delay: 24.7
+        Stagger: 0.44950008
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
         Count: 3
         PathIndex: 0
         Source: 0
         Interval: 0.7735
-        Delay: 5
-        Stagger: 0
+        Delay: 0
+        Stagger: 5
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
-        Count: 4
+        Count: 3
         PathIndex: 0
         Source: 0
         Interval: 0.7735
-        Delay: 5
-        Stagger: 6.63
+        Delay: 12.75
+        Stagger: 4.0299997
         Nest: 0
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
         Count: 1
         PathIndex: 0
         Source: 0
         Interval: 0.7735
-        Delay: 5
-        Stagger: 15.47
+        Delay: 24.7
+        Stagger: 0
+        Nest: 0
+      - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+        Count: 1
+        PathIndex: 0
+        Source: 0
+        Interval: 0.7735
+        Delay: 24.7
+        Stagger: 6.5195007
         Nest: 0
       - Enemy: {fileID: 11400000, guid: 8cb5eb8352c408f4cb988f7a695fa718, type: 2}
         Count: 1
         PathIndex: 0
         Source: 0
         Interval: 1
-        Delay: 14
+        Delay: 24.7
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.353
+      _healthMultiplier: 1.58
       _bossHealthScale: 1
       _counterCheck: 1

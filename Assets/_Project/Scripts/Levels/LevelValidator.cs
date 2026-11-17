@@ -509,6 +509,8 @@ namespace Game.Levels
                     {
                         CheckGroup(level, wave, group, set.Difficulty, errors);
                     }
+
+                    WaveShape.Check(wave, set.Waves[i], set.Difficulty, errors);
                 }
             }
         }

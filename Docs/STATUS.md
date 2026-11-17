@@ -12351,3 +12351,296 @@ How it reads:
   18 stills `ArtSource/Previews/QA/r78_*.png`.
 - Data: none. `pressure.sh` untouched.
 - Docs: `Docs/COMMANDS.md` ("Round 78"), this entry.
+
+## Round 79: the wave grammar (clusters, breathers, surprises, a boss entrance), measured on all 24 cells; picks refreshed; two cells open (2026-11-17)
+
+Not committed. Two agents: the first built the grammar, solved the waves and measured them (its sections follow as it
+wrote them); the second investigated the cells that missed a target, refreshed the skilled rung's picks, ran the gates and
+changed no rule and no wave. **Read Docs/WAVE_GRAMMAR.md for the design.** In short: a wave has one front pattern (stream,
+spread clusters, swarm, tank escort, combo swarm, air raid) cut into clusters by breathers, may carry one surprise (the
+level's rift troops mid-wave, behind the gate where the level has such a rift, or a share down the second road), and a boss
+walks in with the last cluster of its wave. One set of numbers per difficulty for every level (`WaveGrammarRules`); a level's
+script keeps its roster and its rhythm. Result: Easy 180 of 180 and Medium 178 of 180 runs won, the share of lost runs that
+fell in the last wave from a full base 39 % -> 26 %, a won run 8 % longer; the skilled rung wins 22 of 24 cells at the data
+with refreshed picks (round 78: 22), Glass Meadows Psycho and Quartz Flats Hard do not. Save MD5
+42fbe06b38e133cecfe2014def5c833c after every batch; no `settings.json`.
+
+### What is built (all compiles clean; the stored waves are the grammar's)
+
+- **Grammar code** (`Assets/_Project/Scripts/Balance`): `WavePattern`, `SurpriseKind`, `WaveGrammarRules` (the numbers, one
+  object at `BalanceRules.Grammar`), `WaveGrammar` (pattern per wave, which waves carry a surprise), `WaveTimeline` (clusters
+  and breathers, active seconds); `WaveComposer.Compose` lays a wave out by them (tank escort, combo swarm, surprise fill,
+  boss with the last cluster); `WaveLoad.Span` counts only the seconds something is coming (`PauseCredit` 2 s);
+  `WaveSolver.SolveVariant` solves a surprise wave on its own difficulty; `BalanceRules.AmbushFactor` and the rhythm letter
+  `M` are gone. `WaveSpec` carries `Pattern`, `Beats`, `Surprise` for reports and tests.
+- **Validator:** `Game.Levels.WaveShape.Check`, called by `LevelValidator.CheckWaves` (silence at most 16 s, a wave at most
+  120 s, walkers out of one authored nest per wave).
+- **Scripts of the first continent** (`LevelSpecs.Crystal.cs`): every `M` is a `P`; Landing Site's rift Cragbacks join in
+  wave 7 (was 4, they only ever came in wave 7); new rift troops out of the nest behind the first gate on Glass Meadows
+  (Cragback from wave 7, nest 1) and Quartz Flats (Cragback from wave 9, nest 2).
+- **Tests:** `Assets/Tests/EditMode/WaveGrammarTests.cs` (22 cases, 21 at the time of the first whole suite; all green in a targeted run on w6 before the last
+  four rule changes: no surprise on a swarm, a surprise never empty, rift levels through rifts only, no growth in a
+  surprise; **run the class again**). The first whole suite on w6 read 1169 / 1110 passed / 5 failed / 54 skipped. Three
+  of the five are repaired and seen green in a targeted run (the validator's silence bound in the test and in
+  `WorldContentTests`, Fault Line Easy's growth); `Round64Tests.ShardRidgesBossesOnHard_AreNoLongerShotDownByTwoGuns` should
+  pass on the stored waves (first boss 600 x 1.248 x 1.211 x 1.15 = 1043 hit points against the test's 1017; it read 989
+  on the first solve) but was not run again. **Still failing and expected:** `CombatRulesTests.NoRowWithoutTheCounter_OutlastsItsWindow_AsPlayed`
+  (it read the yardstick rows measured on the old waves; measured again in the second half, below).
+- **Tools:** `Tools/PlayTest/wave_shape.py` (spans and clusters of the stored waves, `--rev`), `pressure_lost.py` (where the
+  lost runs fell), `editmode_failures.py` (failed tests of a worker run), `Scripts/WaveGrammarReport.cs` (the plan per cell
+  -> `wave_grammar.txt`), `wave_shape_r78.txt` / `wave_shape_r79.txt` (before and after).
+- **Docs:** `Docs/WAVE_GRAMMAR.md` (new), `Docs/COMMANDS.md` ("Round 79").
+
+### What was measured so far (seeds won of three at the data, x1 only; 144 runs each)
+
+`pressure_r79_try1_records.txt` (first grammar: surprise shares 0.2 / 0.3 / 0.35 / 0.4, surprises also on swarms) and
+`pressure_r79_try2_records.txt` (shares 0.12 / 0.18 / 0.22 / 0.26, no surprise on a swarm, a surprise never empty, rift
+levels surprise through rifts only). Round 78 at x1 is taken from `pressure_r78_v3_records.txt`.
+
+| Cell | Skilled: r78 | try1 | try2 | Sensible: r78 | try1 | try2 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Landing Site E / M / H / P | 3 3 3 1 | 3 3 2 0 | 3 3 2 2 | 3 3 3 0 | 3 3 1 0 | 3 3 2 0 |
+| Glass Meadows | 3 3 3 3 | 0 3 0 0 | 3 3 3 0 | 3 3 0 0 | 3 3 0 0 | 3 3 2 0 |
+| Shard Ridge | 3 3 3 3 | 3 3 3 3 | 3 3 3 3 | 3 3 3 0 | 3 3 1 0 | 3 3 0 0 |
+| Fault Line | 3 3 3 3 | 3 3 3 3 | 3 3 3 3 | 3 3 3 3 | 3 3 3 2 | 3 3 3 3 |
+| Quartz Flats | 3 3 1 3 | 3 3 0 0 | 3 3 0 0 | 3 3 0 0 | 3 3 0 0 | 3 3 1 0 |
+| Crysium Vein | 3 3 3 3 | 3 3 3 1 | 3 3 3 3 | 3 3 3 0 | 3 3 3 0 | 3 3 3 0 |
+
+- try2: Easy and Medium all won by both rungs; all-or-nothing at x1 10 of 33 lost runs (30 %); try1 19 of 47 (40 %).
+- **Quartz Flats' wave 17 no longer decides the level** (the finale rule): its Hard and Psycho runs now fall in waves 14
+  to 16, most from a hurt base. But the cell became harder for the skilled rung (Hard 1 of 3 -> 0 of 3, Psycho 3 -> 0):
+  flyers reach the base in waves 11 to 13. The Hard raid of wave 13 is solved at x2.25 of health (round 78: x1.02).
+  Not understood yet; first thing to look at when the full table is in (compare `wave_shape.py --waves C1_05:2` with
+  `--rev HEAD`, and the ledger's sky guns per wave).
+- After try2 one more rule went in (**a surprise is sized by its share alone, without the armour growth of round 68**:
+  Glass Meadows Psycho sent seven Cragbacks behind the gate in wave 10 and lost every skilled run there). The waves were
+  solved again with it; **the stored waves are that state**, and the full measurement below is of that state.
+
+### The full measurement (720 runs, done 16:11, five workers passed, 0 probe errors)
+
+`Tools/PlayTest/pressure_r79_final_records.txt`, stamp `bot=3:5bddeb15; data=c75b37f7; game=c2d7fb7c`, against round 78's
+`pressure_r78_v3_records.txt` (same bot). The side-by-side table of all 24 cells is `Tools/PlayTest/pressure_r79_versus.txt`,
+the endings `pressure_r79_endings.txt`. It measures the stored waves (the state after the growth fix above).
+
+| | Round 78 | Round 79 |
+| --- | --- | --- |
+| Runs won | 549 of 720 (skilled 300, sensible 249) | 558 of 720 (skilled 305, sensible 253) |
+| Easy | 180 of 180 | 180 of 180 |
+| Medium | 168 of 180 | 178 of 180 (sensible 90 of 90; the two lost are skilled at x1.25, Landing Site and Glass Meadows) |
+| **All-or-nothing: lost in the last wave from a base at 90 %+** | **66 of 171 lost (39 %)** | **42 of 162 lost (26 %)** |
+| the same, sensible / skilled | 33 of 111 (30 %) / 33 of 60 (55 %) | 20 of 107 (19 %) / 22 of 55 (40 %) |
+| the same, Medium / Hard / Psycho | 10 of 12 / 25 of 56 (45 %) / 31 of 103 (30 %) | 2 of 2 / 12 of 56 (21 %) / 28 of 104 (27 %) |
+| Lost in one wave, any wave, from 90 %+ | 110 of 171 (64 %) | 80 of 162 (49 %) |
+
+Against the targets:
+
+- Easy all won: yes. Medium sensible wins at the data: 18 of 18 (and every multiple).
+- Hard harder than Medium for the sensible rung: yes on Landing Site, Glass Meadows, Shard Ridge and Quartz Flats; equal on
+  Fault Line (15 of 15 both), Crysium Vein 14 against 15.
+- **Skilled wins at the data: not everywhere.** 3 of 3 in 21 cells (Landing Site Psycho rose from 1 to 3 of 3); **0 of 3 on
+  Glass Meadows Psycho (was 3), Quartz Flats Hard (was 1) and Quartz Flats Psycho (was 3)**. These three are the
+  subject of the second half below. Sensible at the data moved down on Shard Ridge Hard (3 -> 0 of 3, the flank) and Landing Site Hard (3 -> 2),
+  up on Glass Meadows Hard (0 -> 2), Quartz Flats Hard (0 -> 1), Crysium Vein Psycho (0 -> 0 at x1 but 1 -> 3 at x0.8).
+- All-or-nothing clearly lower: 39 % -> 26 % of the lost runs; Quartz Flats' wave 17 no longer decides its cells.
+
+### Second half: the three cells, the picks, the gates (the successor, same day)
+
+No rule, script or wave changed in the second half: the stored waves are byte for byte the first half's (data stamp
+`c75b37f7`, game stamp `c2d7fb7c`; every experiment below was reverted and the tree compared with a worker clone). So the
+full measurement above is the round's final 24-cell measurement. What changed: `Tools/PlayTest/skilled_picks.txt` (the
+skilled rung's pick per cell, refreshed on today's waves; a new bot stamp, measured as its own batch), the grace rows and
+allowances, one new lab script, the docs.
+
+**The three cells the skilled rung lost at the data (0 of 3):**
+
+| Cell | Cause | Evidence |
+| --- | --- | --- |
+| Quartz Flats Psycho (was 3 of 3) | **Stale pick.** The pick of round 78 (strategy 1) loses on the new waves; strategy 2 of the same search wins 3 of 3. | `skilled_picks_r79_records.txt`; with the refreshed pick the cell reads `3 3 3 1 0`, exactly round 78's row. |
+| Quartz Flats Hard (was 1 of 3) | **Stale strategies, in a cell that already missed the target.** None of the five strategies searched in round 68 wins; a search on today's waves (a minute on a clone) finds one that wins 2 of 3. The sensible rung does better than in round 78 (`3 0 0 0 0` -> `3 2 1 0 0`). | `skilled_search_r79_records.txt` (strategy 3: won, won, lost in wave 14). Not adopted: new searched strategies are bot version 4. |
+| Glass Meadows Psycho (was 3 of 3) | **The data is harder, about a tenth.** No searched strategy wins, a new search wins 1 of 3. Waves 1 to 3 and 8 are 10 % tougher (the calibration's common factor); wave 10, a tank escort with the rift's Cragbacks behind the gate, has 33 creatures where it had 58 and each is x1.85 as tough (the wave's health +37 %, on the hero cap); the gates fall in waves 8, 10 and 11 and the finale takes the whole base. | Records of both rounds; `wave_health.py C1_02 HEAD`; `wave_shape.py --waves C1_02:3`. A builder scale (0.757 -> 0.68) was solved and measured: no change (`3 2 0 0 0`), the deciding waves sit on the hero cap; reverted. **Open.** |
+
+**The lead of the handover (Quartz Flats Hard, the raid of wave 13 at x2.25 against x1.02):** it is not solved on Hard. A raid
+that Medium has in its script at the same wave copies Medium's multiplier, and the Medium solve gives that raid x2.46 before
+the calibration where round 78 gave x1.18 (`WaveLedgerLab.cs` with the grammar switched off gives round 78's numbers back to
+three decimals). No single rule carries the step: without surprises it is x1.98, with the cluster cuts alone about x1.9. The
+level now really has its rift bats (in the script from wave 6, but they never came: the level had no ambush wave), so the
+solver's player stands and upgrades sky guns earlier, and the cuts hand the towers more firing time. `WaveLoad.Span`'s pause
+credit is not the fault: two seconds a breather is less than the pass every tower gets per cluster in play. What looked
+like the fault, the flyers' window counting the seconds before the first flyer, is real but cannot be mended alone (Docs/WAVE_GRAMMAR.md,
+"Tried ... and not kept": one bat made a paper wave of Fault Line Medium wave 7). Waves 9 to 11 of that cell are 30 to 40 %
+tougher per creature for the same reasons (escort layout, the boss walking in later, clusters); the gates of the skilled
+runs take their first heavy damage in wave 9 where it was wave 14.
+
+**Shard Ridge Hard, sensible 3 -> 0 of 3 at the data: an acceptable step, not the flank.** The base is lost in the last wave
+from 27 to 46 %, after the raids of waves 12 to 15 wore it down (waves 14 and 15 are 27 % tougher, the finale's crowd x2.2
+with the boss x1.15; the flank waves 7 and 13 take no more base than in round 78). The skilled rung wins every multiple up to
+x1.25 and the sensible one wins x0.8, so Hard is now harder than Medium for the sensible rung there, which round 78 lacked.
+**Landing Site Hard, sensible 3 -> 2:** one seed loses the finale from a full base (the finale is 10.6 % tougher, wave 11
+13 %); the skilled rung rose (`3 3 3 0 0` -> `3 3 3 1 0`). A step within the cell's edge, but it is the all-or-nothing kind.
+
+**The picks refreshed (its own batch, bot `3:f9f8c682`, same data and game stamps):** every searched strategy of every cell
+played as the skilled rung plays one (`skilled_picks_r79_records.txt`, 309 runs, bot `3:5bddeb15`), `skilled_picks.py --write`
+(12 of 24 lines changed; 22 cells have a strategy that wins 3 of 3, Glass Meadows Psycho and Quartz Flats Hard have none), then
+the skilled rung alone on the default grid (`pressure_r79_picks_records.txt`, 360 runs). The sensible rung does not read the
+pick file. Seeds won at x0.8 / x0.9 / x1 / x1.12 / x1.25 (`pressure_r79_table.txt`):
+
+| Cell | Skilled: round 78 | round 79 | round 79, picks refreshed | Sensible: round 78 | round 79 |
+| --- | --- | --- | --- | --- | --- |
+| Landing Site Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Landing Site Medium | 3 3 3 3 1 | **3 3 3 3 2** | 3 3 3 3 2 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Landing Site Hard | 3 3 3 0 0 | **3 3 3 1 0** | **3 3 3 2 1** | 3 3 3 0 0 | **3 3 2 0 0** |
+| Landing Site Psycho | 2 1 1 0 0 | **3 3 3 1 0** | 3 3 3 1 0 | 1 0 0 0 0 | **0 0 0 0 0** |
+| Glass Meadows Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Glass Meadows Medium | 3 3 3 3 3 | **3 3 3 3 2** | 3 3 3 3 2 | 3 3 3 3 0 | **3 3 3 3 3** |
+| Glass Meadows Hard | 3 3 3 2 0 | **3 3 3 2 1** | 3 3 3 2 1 | 3 3 0 0 0 | **3 3 2 1 0** |
+| Glass Meadows Psycho | 3 3 3 1 0 | **3 2 0 0 0** | 3 2 0 0 0 | 0 0 0 0 0 | 0 0 0 0 0 |
+| Shard Ridge Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Shard Ridge Medium | 3 3 3 2 3 | **3 3 3 3 3** | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Shard Ridge Hard | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 1 1 | **3 2 0 0 0** |
+| Shard Ridge Psycho | 3 3 3 3 1 | **3 3 3 3 2** | **3 3 3 3 3** | 0 0 0 0 0 | **1 0 0 0 0** |
+| Fault Line Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Hard | 3 3 3 3 1 | 3 3 3 3 1 | 3 3 3 3 1 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Psycho | 3 3 3 3 2 | **3 3 3 3 3** | 3 3 3 3 3 | 3 3 3 1 0 | **3 2 3 2 0** |
+| Quartz Flats Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Quartz Flats Medium | 3 3 3 3 0 | **3 3 3 3 3** | 3 3 3 3 3 | 3 3 3 2 1 | **3 3 3 3 3** |
+| Quartz Flats Hard | 3 2 1 0 0 | **2 1 0 0 0** | **3 1 0 0 0** | 3 0 0 0 0 | **3 2 1 0 0** |
+| Quartz Flats Psycho | 3 3 3 1 0 | **3 2 0 0 0** | **3 3 3 1 0** | 3 1 0 0 0 | **1 0 0 0 0** |
+| Crysium Vein Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Crysium Vein Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Crysium Vein Hard | 3 3 3 2 0 | **3 3 3 3 2** | 3 3 3 3 2 | 3 3 3 3 3 | **3 3 3 3 2** |
+| Crysium Vein Psycho | 3 3 3 1 0 | **3 3 3 2 0** | 3 3 3 2 0 | 1 0 0 0 0 | **3 1 0 0 0** |
+| Runs won | 300 of 360 | 305 of 360 | 314 of 360 | 249 of 360 | 253 of 360 |
+
+| | Round 78 | Round 79 | Round 79, picks refreshed |
+| --- | --- | --- | --- |
+| Skilled, runs won | 300 of 360 | 305 of 360 | 314 of 360 |
+| Skilled, cells won 3 of 3 at the data | 22 of 24 (not: Landing Site Psycho, Quartz Flats Hard) | 21 of 24 | 22 of 24 (not: Glass Meadows Psycho, Quartz Flats Hard) |
+| Sensible, runs won | 249 of 360 | 253 of 360 | the same runs |
+| All-or-nothing, skilled (lost in the last wave from a base at 90 %+) | 33 of 60 lost (55 %) | 22 of 55 (40 %) | 21 of 46 (46 %): Medium 2 of 2, Hard 3 of 20, Psycho 16 of 24 |
+| All-or-nothing, both rungs | 66 of 171 (39 %) | 42 of 162 (26 %) | 41 of 153 (27 %) |
+
+**How long a wave and a level take** (`wave_shape_r78.txt` against `wave_shape_r79.txt`, and the 108 runs both rounds won at the data):
+
+| | Round 78 | Round 79 |
+| --- | --- | --- |
+| Spawn span of a wave: median / mean / longest | 14 s / 17 s / 47 s | 17 s / 19 s / 53 s |
+| Spawning seconds per wave, all cells | 25.2 | 27.6 |
+| Clusters per wave (a pause of 4 s or more ends one), mean over the cells | 1.11 | 1.59 |
+| Creature types per wave | 2.4 | 2.5 |
+| Game seconds of a won run at the data: all / Easy / Medium / Hard / Psycho | 480 / 499 / 464 / 479 / 473 | 518 / 561 / 499 / 500 / 483 |
+
+### Gates on the final data
+
+- **Grace windows** (all 24 cells measured again: `workers.sh run measure 5 "seeds=1,2,3"`, 432 runs, 22 minutes, then
+  `GraceReport.cs`): five rows broke the gate, none of them by winning (every row without the counter still loses 3 of 3).
+  The rows fall at the waves they fell at in round 78; the window moved. **Four allowances changed, each with a named
+  reason in `GraceWindows.cs`; none was loosened silently, and the gate holds with them:**
+
+  | Cell, trait | Allowance | Row | Reason (`GraceWindows`) |
+  | --- | --- | --- | --- |
+  | Fault Line Easy, armoured | 1 -> 2 | Gun Turret falls at wave 14 (as before) | `EarlierPlated`: the first Cragback walks in at wave 7 instead of 8 (a single one in a plain wave, where the ambush wave of round 78 brought none), so the window opens a wave earlier |
+  | Fault Line Medium, armoured | new, 1 | Gun Turret falls at wave 12 (as before) | `EarlierPlated`, wave 8 -> 7 |
+  | Crysium Vein Medium, armoured | new, 1 | Gun Turret and Laser Turret fall at wave 12 (as before) | `EarlierPlated`, wave 9 -> 7 |
+  | Fault Line Psycho, airborne | new, 2 | Gun Turret falls at wave 7 (was 5) | `BossEntrance`: the row used to fall to the boss wave of wave 5, on the ground; with the crowd in clusters and the boss after a breather it holds that wave and falls to the flyers two waves later |
+
+  Not tightened: rows that are now less late than their allowance (Landing Site Hard and Shard Ridge Medium: 1 late, 2
+  allowed) keep it; shorten them when those cells are next tuned. The measured rows stay in the tree
+  (`calibration_records.txt`, `yardstick_partial.txt`, `grace_windows.txt`): `CombatRulesTests` reads them.
+- **Finale probe** (`finale_workers.sh`, all 24 boss cells): 24 of 24 won at the data, as at HEAD; the lowest hold is x1.09
+  (HEAD x1.00). Twelve holds moved by a step of the probe's grid (the level before the boss plays differently);
+  `finale_probe.txt` is the new measurement.
+- **Acceptance: not run.** The replay of all cells it needs was stopped after 38 minutes (see the handover below);
+  the picks batch above is the nearest reading (every searched strategy of every cell at the data, seeds 1 to 3: 22 cells
+  have one that wins 3 of 3).
+- **EditMode, whole suite on w6:** 1170 tests, 1116 passed, 0 failed, 54 skipped (the first half: 1169 with 5 failed; at the start of the second half 1170 with 1 failed, `CombatRulesTests.NoRowWithoutTheCounter_OutlastsItsWindow_AsPlayed`, which passes on the rows measured again with the four allowances).
+- **Compile:** clean (0 errors, 0 warnings in the open editor after the last recompile).
+
+### Changed in the second half
+
+- `Tools/PlayTest/skilled_picks.txt` (refreshed; part of the bot stamp: `3:5bddeb15` -> `3:f9f8c682`).
+- `Tools/PlayTest/Scripts/WaveLedgerLab.cs` (new; argument file `wave_ledger_arg.txt`), `Docs/COMMANDS.md`, `Docs/WAVE_GRAMMAR.md`
+  ("Tried ... and not kept", "Known and open"), this entry.
+- Records: `skilled_picks_r79_records.txt`, `skilled_search_r79_records.txt`, `pressure_r79b_gm_psycho_records.txt` (the
+  builder scale that was tried; data stamp `78df6448`, a state that is not in the tree), `pressure_r79_picks_records.txt`,
+  `pressure_r79_table.txt`.
+- `Assets/_Project/Scripts/Editor/GraceWindows.cs` (four allowances, two named reasons; an editor file, so the tree's game stamp
+  now differs from the records' `c2d7fb7c` by this file alone), `calibration_records.txt`, `yardstick_partial.txt`,
+  `grace_windows.txt`, `finale_probe.txt` (measured again).
+- Save MD5 42fbe06b38e133cecfe2014def5c833c after every batch, no `settings.json`; the open editor was used for recompiles,
+  the solve stage (twice, for the builder scale and its revert) and the lab script, each after `editor_status` read
+  `playMode: stopped`.
+
+### For bot version 4 (the bot's code was not changed in this round)
+
+- Search the strategies again on the grammar's waves (the plans are round 68's): a minute for two cells on a clone, and it
+  already gives Quartz Flats Hard 2 of 3 where round 78 had 1 of 3.
+- The rear-rift rule of both rungs puts a gun "at the gate the rift's walkers reach"; on Glass Meadows those walkers meet no
+  gate and reach the base. Check that the rule covers a rift whose walkers meet no gate.
+- Neither rung retargets, so the tank escort is measured as its worst case for the player.
+
+### Open, for the curator
+
+1. **Glass Meadows Psycho** misses "the skilled rung wins at the data" (x0.9: 2 of 3). The scale does not reach it. Candidates,
+   none built: no surprise on a tank escort wave (as none falls on a swarm: the rift's troop here is a tank too, so tanks come
+   at the front and behind the gate at once); a surprise wave that keeps its bodies (a share that buys less than half a pack
+   goes back to the front); a lower hero cap for a wave that carries a surprise.
+2. **Quartz Flats Hard** misses it as in round 78 (then 1 of 3, now 0 of 3 with the old strategies, 2 of 3 with a new search).
+3. **The ledger's air side** stands on the spawn window: it reads a late lone flyer as twenty seconds of fire and would read
+   it as none with an honest clock. Raids, rift bats and flying bosses are all sized through it.
+
+### Questions for Remco (yes / no, with the recommendation)
+
+1. Rear rifts on Glass Meadows (level 2) and Quartz Flats (level 5), as on Landing Site: keep? Recommended: yes; it is the
+   surprise he asked for, one Cragback on Easy.
+2. Rift flyers only after the difficulty's first air raid ("a surprise never introduces the sky"): keep? Recommended: yes.
+3. A taunt for the tanks (guns must shoot the tank first)? Recommended: no; the escort's timing already makes guns that shoot
+   the front creature spend their shots on the tank, and a player who retargets is rewarded.
+4. May a surprise fall on a tank escort wave (tanks at the gate and tanks out of the rift behind it in one wave)? It is the
+   hardest moment of Glass Meadows on Psycho. Recommended: no, as on a swarm; the surprise then moves to the next plain wave.
+5. Waves are about a fifth longer (median spawn span 14 -> 17 s, a won run 480 -> 518 game seconds) with clusters and
+   pauses; longer still (slower streams)? Recommended: play it first.
+
+### Remco's answers (2026-11-17, through the coordinator, after the questions above were written)
+
+1. Rear rifts on Glass Meadows and Quartz Flats: **keep.** And where a level or map itself is the balance problem, the level
+   may be changed (`LevelSpecs`) instead of bending the grammar; note every map change with its reason here.
+2. Rift flyers before the first air raid: **no guard.** Being caught out and losing is part of the game ("a bit of panic
+   belongs to it"), so rift and flank flyers do not have to wait for an air raid. The rule of round 77 (first flyers on Easy
+   and Medium only after the bounties pay for a sky gun) stays as it is.
+3. Taunt: **no.**
+4. Longer waves: he plays only when the balance is in good shape, so no playtest is coming; keep relying on measurements.
+
+Question 4 above (a surprise on a tank escort wave) was not put to him yet.
+
+## Round 79b – handover (2026-11-17, 19:05)
+
+The second agent stops on its context limit. Not committed. The tree is consistent: it compiles clean, the whole EditMode
+suite passed on it (1170 / 1116 / 0 / 54), the stored waves are the first half's (data `c75b37f7`), no worker runs, save MD5
+42fbe06b38e133cecfe2014def5c833c, no `settings.json`. Read the "Round 79" entry above first.
+
+**Not done, in order:**
+
+1. **Remco's answer 2 is not built: the guard "a surprise never introduces the sky" must go.** It is `WaveComposer.Unlocked`
+   (rift flyers wait for the difficulty's first raid; Docs/WAVE_GRAMMAR.md, "Surprises", second bullet, and the pitfall in
+   COMMANDS "Round 79"). Remove the wait, keep round 77's `FlyersAfterBounties` (Easy and Medium: it holds the flying troops
+   through `FlyingTroopFloor`; check that it also holds a rift's flyers, the first half met a Shalebat in wave 5 of Fault Line
+   Easy that made the ledger buy a sky gun out of a thin purse and halved the level, x0.4). Then: adjust `WaveGrammarTests`
+   (the test that keeps rift flyers behind the first raid), recompile, read `compilationFailed`, solve stage only
+   (`ApplyRound68.Run`), `WaveLedgerLab.cs` on all 24 cells for what moved, the whole measurement again (720 runs; the skilled
+   picks again first when a cell's picks all lose: `skilled_picks.py` procedure), grace measure and allowances, finale probe,
+   EditMode. Fault Line, Quartz Flats and Crysium Vein are the levels with rift flyers; Hard and Psycho are where it bites.
+2. **Acceptance on the final data was not run.** The replay of all 24 cells (`workers.sh run replay 5 "seeds=1,2,3"`) was
+   stopped by hand after 38 minutes with two clones still playing (the first three were done); `plan_records.txt` and
+   `plan_replay_partial.txt` were restored from git (they are in the bot stamp and were not changed by this round). Run it
+   after step 1 on the new waves, then `r34b_editmode_worker.sh 6 BalanceAcceptanceTests`, copy `acceptance.txt` aside,
+   restore the two files again. Expect it to take 45 minutes or more.
+3. **Glass Meadows Psycho and Quartz Flats Hard** (the skilled rung loses at the data) stay open: "Open, for the curator"
+   above. With answer 1 a map change is allowed where the map is the problem: on Glass Meadows the rift behind the first gate
+   joins a road with no gate between it and the base.
+4. Put question 4 (a surprise on a tank escort wave) to Remco, or decide it by measurement.
+
+**Mind:** never `git checkout` a file the round changed (the list is `git status`); a worker clone is a byte copy of the tree
+at its last sync and shows what an experiment left behind (`diff -rq Assets/_Project/Scripts TowerDefenseWorkers\w6\Assets\_Project\Scripts`).
+`GraceWindows.cs` changed after the measurements, so the tree's game stamp differs from the records' `c2d7fb7c` by that
+editor file alone.

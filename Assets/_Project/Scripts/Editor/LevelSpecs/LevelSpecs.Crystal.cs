@@ -22,8 +22,11 @@ namespace Game.Editor
         // so rate of fire is the answer (round 21a, Docs/BALANCE.md "Roles by enemy").
         private const float LooseRunners = 1f;
 
-        // Landing Site's nest behind the first gate, counted from 1 in the level's nests (RearNestTests pins it to the rear one).
+        // The nest behind the first gate of the levels that have one, counted from 1 in the level's nests (RearNestTests pins
+        // each to a rear one). The level's rift walkers come out of it as the wave grammar's surprise (round 79).
         private const int LandingSiteRearRift = 1;
+        private const int GlassMeadowsRearRift = 1;
+        private const int QuartzFlatsRearRift = 2;
 
 
         // From Medium on level 3's raids are bigger, so a gun-only defence feels the missing Flak; Easy stays forgiving
@@ -62,12 +65,13 @@ namespace Game.Editor
                     // Turret's rate of fire, and plated Cragbacks (road and rifts) that shrug off fresh light guns.
                     // Round 74: the rift Cragbacks come in ones and twos, so their rift is authored, not drawn: the rear rift
                     // (the level's first nest, behind the first gate), the lesson Remco kept on 2026-11-10, now on every run.
+                    // Round 79: the rift troop joins in wave 7, where the lesson always was; the grammar repeats it later.
                     Troops = new[]
                     {
-                        Join("Skitter", 1, 2f, 0.45f, pack: 6), Join("Skitter", 3, 2f, LooseRunners, loose: true), Join("Cragback", 4, 1.4f, 2.6f, Nest, 7f, nest: LandingSiteRearRift),
+                        Join("Skitter", 1, 2f, 0.45f, pack: 6), Join("Skitter", 3, 2f, LooseRunners, loose: true), Join("Cragback", 7, 1.4f, 2.6f, Nest, 7f, nest: LandingSiteRearRift),
                         Join("Cragback", 6, 1f, 2.6f),
                     },
-                    Rhythm = "PPRHPRMHRPHP",
+                    Rhythm = "PPRHPRPHRPHP",
                     AirSprinkleFrom = 4,
                     Bosses = new[] { Boss(12, "BroodMother"), Boss(8, "BroodMother", Hard), Boss(5, "BroodMother", Psycho) },
                 },
@@ -114,6 +118,9 @@ namespace Game.Editor
                         // Round 34b (Remco): from Hard on, a tight pack of three plated Cragbacks walks in from wave 3, so a row of light guns
                         // (Gun, Laser) breaks before the last third and anti-armour (Cannon, Railgun) is needed.
                         Join("Cragback", 3, 2.5f, 2f, minDifficulty: Hard, pack: 3),
+                        // Round 79: the meadow's one rift lies behind the first gate; its crawlers are the level's surprise,
+                        // two waves after the first Cragbacks have come up the road.
+                        Join("Cragback", 7, 1.5f, 2.6f, Nest, 7f, nest: GlassMeadowsRearRift),
                     },
                     Rhythm = "PRPHRPHRPHRP",
                     AirSprinkleFrom = 4,
@@ -171,7 +178,7 @@ namespace Game.Editor
                     AirWaves = new[] { 12, 15, 11, 14 },
                     AirWavesPerDifficulty = new[] { 2, 3, 4, 4 },
                     AirSprinkleFrom = 2,
-                    Rhythm = "PRPHPRMPHRPMHRPH",
+                    Rhythm = "PRPHPRPPHRPPHRPH",
                     Bosses = new[] { Boss(16, "BroodMother"), Boss(10, "CoreWisp", Hard), Boss(6, "BroodMother", Psycho) },
                 },
                 Story = new[]
@@ -221,7 +228,7 @@ namespace Game.Editor
                     AirWaves = new[] { 3, 6, 9, 12, 15, 8, 14 },
                     AirWavesPerDifficulty = new[] { 4, 5, 6, 7 },
                     AirSprinkleFrom = 2,
-                    Rhythm = "PRMPHRMPRHPMRPHP",
+                    Rhythm = "PRPPHRPPRHPPRPHP",
                     Bosses = new[] { Boss(16, "StormMatriarch"), Boss(10, "BroodMother", Hard), Boss(5, "CoreWisp", Psycho) },
                 },
                 RewardHeroPerk = "Perk_QuickReload",
@@ -264,13 +271,15 @@ namespace Game.Editor
                     {
                         Join("Skitter", 1, 2.2f, 0.42f, pack: 6), Join("Skitter", 2, 2f, LooseRunners, loose: true), Join("Cragback", 3, 1.3f, 2.5f), Join("Shalebat", 6, 1.5f, 1.3f, Nest, 7f),
                         Join("Wisp", 9, 1.4f, 1.3f),
+                        // Round 79: the second rift opens behind the first gate; from wave 9 crawlers climb out of it with the bats.
+                        Join("Cragback", 9, 1.2f, 2.6f, Nest, 7f, nest: QuartzFlatsRearRift),
                     },
                     Flyer = "Skyray",
                     FlyerInterval = LooseFlyers,
                     AirWaves = new[] { 4, 8, 13, 16, 6, 10 },
                     AirWavesPerDifficulty = new[] { 3, 4, 5, 6 },
                     AirSprinkleFrom = 2,
-                    Rhythm = "PMRPHPRMHPRPMHRPH",
+                    Rhythm = "PPRPHPRPHPRPPHRPH",
                     Bosses = new[] { Boss(17, "CoreWisp"), Boss(11, "StormMatriarch", Hard), Boss(5, "BroodMother", Psycho) },
                     Teasers = new[] { Teaser("Roller", 12, 2), Teaser("Roller", 15, 3) },
                 },
@@ -313,7 +322,7 @@ namespace Game.Editor
                     // Round 21a3: four raids on Hard, not five (the band check put the competent player just under the bar).
                     AirWavesPerDifficulty = new[] { 3, 4, 4, 6 },
                     AirSprinkleFrom = 1,
-                    Rhythm = "RMPHRPMRHPRMPHPRMH",
+                    Rhythm = "RPPHRPPRHPRPPHPRPH",
                     Bosses = new[] { Boss(18, "PackAlpha"), Boss(12, "CoreWisp", Hard), Boss(7, "StormMatriarch", Psycho) },
                 },
                 Story = new[]

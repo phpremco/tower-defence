@@ -5,26 +5,26 @@ Window per difficulty (may hold / must have lost within, in waves): Easy 2 / 4, 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | C1_01 Easy | Armoured | w7 of 12 | Gun Turret | 0/3 | w12 | 5 | in time |
 | C1_01 Medium | Armoured | w7 of 12 | Gun Turret | 0/3 | w12 | 5 | LATE: the counter was not needed (1 late, allowed 1: growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave) |
-| C1_01 Hard | Armoured | w7 of 12 | Gun Turret | 0/3 | w12 | 5 | LATE: the counter was not needed (2 late, allowed 2: growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave) |
-| C1_01 Hard | Armoured | w7 of 12 | Laser Turret | 0/3 | w10 | 3 | in time |
+| C1_01 Hard | Armoured | w7 of 12 | Gun Turret | 0/3 | w11 | 4 | LATE: the counter was not needed (1 late, allowed 2: growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave) |
+| C1_01 Hard | Armoured | w7 of 12 | Laser Turret | 0/3 | w9 | 2 | in time |
 | C1_01 Psycho | Armoured | w7 of 12 | Gun Turret | 0/3 | w12 | 5 | LATE: the counter was not needed (3 late, allowed 3: growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave) |
 | C1_01 Psycho | Armoured | w7 of 12 | Laser Turret | 0/3 | w11 | 4 | LATE: the counter was not needed (2 late, allowed 3: growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave) |
 | C1_02 Easy | Armoured | w6 of 12 | Gun Turret | 0/3 | w12 | 6 | LATE: the counter was not needed (1 late, allowed 1: growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave) |
 | C1_02 Easy | Armoured | w6 of 12 | Laser Turret | 0/3 | w12 | 6 | LATE: the counter was not needed (1 late, allowed 1: growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave) |
 | C1_02 Medium | Armoured | w6 of 12 | Gun Turret | 0/3 | w12 | 6 | LATE: the counter was not needed (2 late, allowed 2: at the old scale 1.15 with growth no searched plan won (best 0/3); scale 1.07 with growth 1.3 ends the row in time but leaves the best plan 2/3 and the creative bot 0/3, so the cell keeps scale 1.0 and growth 1.2 (best plan and creative bot 3/3); round 77: the structure damage factor (round 77) softens every bite on Easy and Medium: the row keeps its base a wave or two longer than the window, and still loses every seed) |
-| C1_02 Medium | Armoured | w6 of 12 | Laser Turret | 0/3 | w10 | 4 | in time |
-| C1_02 Hard | Armoured | w6 of 12 | Gun Turret | 0/3 | w10 | 4 | LATE: the counter was not needed (1 late, allowed 1: growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave) |
-| C1_02 Hard | Armoured | w6 of 12 | Laser Turret | 0/3 | w10 | 4 | LATE: the counter was not needed (1 late, allowed 1: growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave) |
-| C1_02 Psycho | Armoured | w6 of 12 | Gun Turret | 0/3 | w11 | 5 | LATE: the counter was not needed (3 late, allowed 3: growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave) |
+| C1_02 Medium | Armoured | w6 of 12 | Laser Turret | 0/3 | w12 | 6 | LATE: the counter was not needed (2 late, allowed 2: at the old scale 1.15 with growth no searched plan won (best 0/3); scale 1.07 with growth 1.3 ends the row in time but leaves the best plan 2/3 and the creative bot 0/3, so the cell keeps scale 1.0 and growth 1.2 (best plan and creative bot 3/3); round 77: the structure damage factor (round 77) softens every bite on Easy and Medium: the row keeps its base a wave or two longer than the window, and still loses every seed) |
+| C1_02 Hard | Armoured | w6 of 12 | Gun Turret | 0/3 | w9 | 3 | in time |
+| C1_02 Hard | Armoured | w6 of 12 | Laser Turret | 0/3 | w9 | 3 | in time |
+| C1_02 Psycho | Armoured | w6 of 12 | Gun Turret | 0/3 | w10 | 4 | LATE: the counter was not needed (2 late, allowed 3: growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave) |
 | C1_02 Psycho | Armoured | w6 of 12 | Laser Turret | 0/3 | w10 | 4 | LATE: the counter was not needed (2 late, allowed 3: growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave) |
 | C1_03 Easy | Armoured | w8 of 16 | Gun Turret | 0/3 | w14 | 6 | LATE: the counter was not needed (1 late, allowed 1: the Cragbacks walk in from wave 8 on Easy and Medium (round 68, was wave 4: five waves late); the row falls to the first raid, one wave after the window) |
 | C1_03 Easy | Armoured | w8 of 16 | Laser Turret | 0/3 | w14 | 6 | LATE: the counter was not needed (1 late, allowed 1: the Cragbacks walk in from wave 8 on Easy and Medium (round 68, was wave 4: five waves late); the row falls to the first raid, one wave after the window) |
 | C1_03 Easy | Airborne | w12 of 16 | Gun Turret | 0/3 | w14 | 2 | in time |
 | C1_03 Easy | Airborne | w12 of 16 | Cannon | 0/3 | w14 | 2 | in time |
 | C1_03 Easy | Airborne | w12 of 16 | Laser Turret | 0/3 | w14 | 2 | in time |
-| C1_03 Medium | Armoured | w8 of 16 | Gun Turret | 0/3 | w14 | 6 | LATE: the counter was not needed (2 late, allowed 2: the Cragbacks walk in from wave 8 on Easy and Medium (round 68, was wave 4: five waves late); the row falls to the first raid, one wave after the window; round 77: the structure damage factor (round 77) softens every bite on Easy and Medium: the row keeps its base a wave or two longer than the window, and still loses every seed) |
+| C1_03 Medium | Armoured | w8 of 16 | Gun Turret | 0/3 | w13 | 5 | LATE: the counter was not needed (1 late, allowed 2: the Cragbacks walk in from wave 8 on Easy and Medium (round 68, was wave 4: five waves late); the row falls to the first raid, one wave after the window; round 77: the structure damage factor (round 77) softens every bite on Easy and Medium: the row keeps its base a wave or two longer than the window, and still loses every seed) |
 | C1_03 Medium | Armoured | w8 of 16 | Laser Turret | 0/3 | w13 | 5 | LATE: the counter was not needed (1 late, allowed 2: the Cragbacks walk in from wave 8 on Easy and Medium (round 68, was wave 4: five waves late); the row falls to the first raid, one wave after the window; round 77: the structure damage factor (round 77) softens every bite on Easy and Medium: the row keeps its base a wave or two longer than the window, and still loses every seed) |
-| C1_03 Medium | Airborne | w11 of 16 | Gun Turret | 0/3 | w14 | 3 | in time |
+| C1_03 Medium | Airborne | w11 of 16 | Gun Turret | 0/3 | w13 | 2 | in time |
 | C1_03 Medium | Airborne | w11 of 16 | Cannon | 0/3 | w13 | 2 | in time |
 | C1_03 Medium | Airborne | w11 of 16 | Laser Turret | 0/3 | w13 | 2 | in time |
 | C1_03 Hard | Armoured | w4 of 16 | Gun Turret | 0/3 | w13 | 9 | LATE: the counter was not needed (6 late, allowed 6: on Hard and Psycho the plated pack walks in from wave 3 (Remco, round 34b) and the troops stay few until the raids: growth strong enough to end a row by the window left no searched plan winning (round 68, growth 1.5: best plan 0/3; growth 1.2 moved no row and cost the creative bot Hard and Psycho), so the row falls to the first raid instead) |
@@ -37,31 +37,31 @@ Window per difficulty (may hold / must have lost within, in waves): Easy 2 / 4, 
 | C1_03 Psycho | Airborne | w11 of 16 | Gun Turret | 0/3 | w13 | 2 | in time |
 | C1_03 Psycho | Airborne | w11 of 16 | Cannon | 0/3 | w13 | 2 | in time |
 | C1_03 Psycho | Airborne | w11 of 16 | Laser Turret | 0/3 | w13 | 2 | in time |
-| C1_04 Easy | Armoured | w8 of 16 | Gun Turret | 0/3 | w14 | 6 | LATE: the counter was not needed (1 late, allowed 1: the structure damage factor (round 77) softens every bite on Easy and Medium: the row keeps its base a wave or two longer than the window, and still loses every seed) |
-| C1_04 Easy | Armoured | w8 of 16 | Laser Turret | 0/3 | w12 | 4 | in time |
-| C1_04 Easy | Airborne | w7 of 16 | Gun Turret | 0/3 | w14 | 7 | LATE: the counter was not needed (2 late, allowed 2: the row falls to the raid one wave after the window closes; a bigger raid there costs the mixed plan its margin (Quartz Flats and Fault Line are the cells the creative bot already loses seeds on); round 77: the structure damage factor (round 77) softens every bite on Easy and Medium: the row keeps its base a wave or two longer than the window, and still loses every seed) |
-| C1_04 Easy | Airborne | w7 of 16 | Cannon | 0/3 | w12 | 5 | in time |
-| C1_04 Easy | Airborne | w7 of 16 | Laser Turret | 0/3 | w12 | 5 | in time |
-| C1_04 Medium | Armoured | w8 of 16 | Gun Turret | 0/3 | w12 | 4 | in time |
-| C1_04 Medium | Armoured | w8 of 16 | Laser Turret | 0/3 | w11 | 3 | in time |
+| C1_04 Easy | Armoured | w7 of 16 | Gun Turret | 0/3 | w14 | 7 | LATE: the counter was not needed (2 late, allowed 2: the structure damage factor (round 77) softens every bite on Easy and Medium: the row keeps its base a wave or two longer than the window, and still loses every seed; round 79: the level's first Cragback walks in one or two waves earlier (a single one in the plain wave 7, where the ambush wave of round 78 brought none), so the window opens earlier while the row falls at the wave it fell at before; it still loses every seed) |
+| C1_04 Easy | Armoured | w7 of 16 | Laser Turret | 0/3 | w13 | 6 | LATE: the counter was not needed (1 late, allowed 2: the structure damage factor (round 77) softens every bite on Easy and Medium: the row keeps its base a wave or two longer than the window, and still loses every seed; round 79: the level's first Cragback walks in one or two waves earlier (a single one in the plain wave 7, where the ambush wave of round 78 brought none), so the window opens earlier while the row falls at the wave it fell at before; it still loses every seed) |
+| C1_04 Easy | Airborne | w10 of 16 | Gun Turret | 0/3 | w14 | 4 | in time |
+| C1_04 Easy | Airborne | w10 of 16 | Cannon | 0/3 | w13 | 3 | in time |
+| C1_04 Easy | Airborne | w10 of 16 | Laser Turret | 0/3 | w13 | 3 | in time |
+| C1_04 Medium | Armoured | w7 of 16 | Gun Turret | 0/3 | w12 | 5 | LATE: the counter was not needed (1 late, allowed 1: round 79: the level's first Cragback walks in one or two waves earlier (a single one in the plain wave 7, where the ambush wave of round 78 brought none), so the window opens earlier while the row falls at the wave it fell at before; it still loses every seed) |
+| C1_04 Medium | Armoured | w7 of 16 | Laser Turret | 0/3 | w11 | 4 | in time |
 | C1_04 Medium | Airborne | w6 of 16 | Gun Turret | 0/3 | w12 | 6 | LATE: the counter was not needed (2 late, allowed 2: the structure damage factor (round 77) softens every bite, and the first-flyer rule moved the raids that used to end the row (first raid wave 6, was 3 and 4); the row still loses every seed) |
 | C1_04 Medium | Airborne | w6 of 16 | Cannon | 0/3 | w11 | 5 | LATE: the counter was not needed (1 late, allowed 2: the structure damage factor (round 77) softens every bite, and the first-flyer rule moved the raids that used to end the row (first raid wave 6, was 3 and 4); the row still loses every seed) |
 | C1_04 Medium | Airborne | w6 of 16 | Laser Turret | 0/3 | w11 | 5 | LATE: the counter was not needed (1 late, allowed 2: the structure damage factor (round 77) softens every bite, and the first-flyer rule moved the raids that used to end the row (first raid wave 6, was 3 and 4); the row still loses every seed) |
-| C1_04 Hard | Armoured | w9 of 16 | Gun Turret | 0/3 | w5 | - | not judged |
-| C1_04 Hard | Armoured | w9 of 16 | Laser Turret | 0/3 | w5 | - | not judged |
+| C1_04 Hard | Armoured | w7 of 16 | Gun Turret | 0/3 | w5 | - | not judged |
+| C1_04 Hard | Armoured | w7 of 16 | Laser Turret | 0/3 | w5 | - | not judged |
 | C1_04 Hard | Airborne | w3 of 16 | Gun Turret | 0/3 | w5 | 2 | in time |
 | C1_04 Hard | Airborne | w3 of 16 | Cannon | 0/3 | w5 | 2 | in time |
 | C1_04 Hard | Airborne | w3 of 16 | Laser Turret | 0/3 | w5 | 2 | in time |
-| C1_04 Psycho | Armoured | w10 of 16 | Gun Turret | 0/3 | w5 | - | not judged |
+| C1_04 Psycho | Armoured | w10 of 16 | Gun Turret | 0/3 | w7 | - | not judged |
 | C1_04 Psycho | Armoured | w10 of 16 | Laser Turret | 0/3 | w5 | - | not judged |
-| C1_04 Psycho | Airborne | w3 of 16 | Gun Turret | 0/3 | w5 | 2 | in time |
+| C1_04 Psycho | Airborne | w3 of 16 | Gun Turret | 0/3 | w7 | 4 | LATE: the counter was not needed (2 late, allowed 2: round 79: the row used to fall inside the window to the boss wave of wave 5, on the ground; with the crowd in clusters and the boss walking in after a breather (the finale rule) it holds that wave and falls to the flyers two waves later; it still loses every seed) |
 | C1_04 Psycho | Airborne | w3 of 16 | Cannon | 0/3 | w5 | 2 | in time |
 | C1_04 Psycho | Airborne | w3 of 16 | Laser Turret | 0/3 | w5 | 2 | in time |
 | C1_05 Easy | Armoured | w4 of 17 | Gun Turret | 0/3 | w11 | 7 | LATE: the counter was not needed (2 late, allowed 2: growth 1.5 here left no searched plan winning (round 68: best plan 0/3); the row falls to the raid of wave 8 and the waves after it) |
 | C1_05 Easy | Armoured | w4 of 17 | Laser Turret | 0/3 | w11 | 7 | LATE: the counter was not needed (2 late, allowed 2: growth 1.5 here left no searched plan winning (round 68: best plan 0/3); the row falls to the raid of wave 8 and the waves after it) |
-| C1_05 Easy | Airborne | w8 of 17 | Gun Turret | 0/3 | w11 | 3 | in time |
-| C1_05 Easy | Airborne | w8 of 17 | Cannon | 0/3 | w11 | 3 | in time |
-| C1_05 Easy | Airborne | w8 of 17 | Laser Turret | 0/3 | w11 | 3 | in time |
+| C1_05 Easy | Airborne | w9 of 17 | Gun Turret | 0/3 | w11 | 2 | in time |
+| C1_05 Easy | Airborne | w9 of 17 | Cannon | 0/3 | w11 | 2 | in time |
+| C1_05 Easy | Airborne | w9 of 17 | Laser Turret | 0/3 | w11 | 2 | in time |
 | C1_05 Medium | Armoured | w4 of 17 | Gun Turret | 0/3 | w11 | 7 | LATE: the counter was not needed (3 late, allowed 3: the structure damage factor (round 77) softens every bite, and the first-flyer rule moved the raids that used to end the row (first raid wave 6, was 3 and 4); the row still loses every seed) |
 | C1_05 Medium | Armoured | w4 of 17 | Laser Turret | 0/3 | w11 | 7 | LATE: the counter was not needed (3 late, allowed 3: the structure damage factor (round 77) softens every bite, and the first-flyer rule moved the raids that used to end the row (first raid wave 6, was 3 and 4); the row still loses every seed) |
 | C1_05 Medium | Airborne | w6 of 17 | Gun Turret | 0/3 | w11 | 5 | LATE: the counter was not needed (1 late, allowed 1: the row falls to the raid one wave after the window closes; a bigger raid there costs the mixed plan its margin (Quartz Flats and Fault Line are the cells the creative bot already loses seeds on)) |
@@ -77,21 +77,21 @@ Window per difficulty (may hold / must have lost within, in waves): Easy 2 / 4, 
 | C1_05 Psycho | Airborne | w4 of 17 | Gun Turret | 0/3 | w7 | 3 | LATE: the counter was not needed (1 late, allowed 1: the row falls to the raid one wave after the window closes; a bigger raid there costs the mixed plan its margin (Quartz Flats and Fault Line are the cells the creative bot already loses seeds on)) |
 | C1_05 Psycho | Airborne | w4 of 17 | Cannon | 0/3 | w7 | 3 | LATE: the counter was not needed (1 late, allowed 1: the row falls to the raid one wave after the window closes; a bigger raid there costs the mixed plan its margin (Quartz Flats and Fault Line are the cells the creative bot already loses seeds on)) |
 | C1_05 Psycho | Airborne | w4 of 17 | Laser Turret | 0/3 | w7 | 3 | LATE: the counter was not needed (1 late, allowed 1: the row falls to the raid one wave after the window closes; a bigger raid there costs the mixed plan its margin (Quartz Flats and Fault Line are the cells the creative bot already loses seeds on)) |
-| C1_06 Easy | Armoured | w10 of 18 | Gun Turret | 0/3 | w13 | 3 | in time |
-| C1_06 Easy | Armoured | w10 of 18 | Laser Turret | 0/3 | w11 | 1 | early (inside the grace window) |
-| C1_06 Easy | Airborne | w7 of 18 | Gun Turret | 0/3 | w13 | 6 | LATE: the counter was not needed (1 late, allowed 1: the structure damage factor (round 77) softens every bite on Easy and Medium: the row keeps its base a wave or two longer than the window, and still loses every seed) |
-| C1_06 Easy | Airborne | w7 of 18 | Cannon | 0/3 | w11 | 4 | in time |
-| C1_06 Easy | Airborne | w7 of 18 | Laser Turret | 0/3 | w11 | 4 | in time |
-| C1_06 Medium | Armoured | w9 of 18 | Gun Turret | 0/3 | w12 | 3 | in time |
-| C1_06 Medium | Armoured | w9 of 18 | Laser Turret | 0/3 | w12 | 3 | in time |
-| C1_06 Medium | Airborne | w7 of 18 | Gun Turret | 0/3 | w12 | 5 | LATE: the counter was not needed (1 late, allowed 1: the row falls to the raid one wave after the window closes; a bigger raid there costs the mixed plan its margin (Quartz Flats and Fault Line are the cells the creative bot already loses seeds on)) |
-| C1_06 Medium | Airborne | w7 of 18 | Cannon | 0/3 | w12 | 5 | LATE: the counter was not needed (1 late, allowed 1: the row falls to the raid one wave after the window closes; a bigger raid there costs the mixed plan its margin (Quartz Flats and Fault Line are the cells the creative bot already loses seeds on)) |
-| C1_06 Medium | Airborne | w7 of 18 | Laser Turret | 0/3 | w12 | 5 | LATE: the counter was not needed (1 late, allowed 1: the row falls to the raid one wave after the window closes; a bigger raid there costs the mixed plan its margin (Quartz Flats and Fault Line are the cells the creative bot already loses seeds on)) |
-| C1_06 Hard | Armoured | w9 of 18 | Gun Turret | 0/3 | w10 | 1 | in time |
-| C1_06 Hard | Armoured | w9 of 18 | Laser Turret | 0/3 | w10 | 1 | in time |
-| C1_06 Hard | Airborne | w7 of 18 | Gun Turret | 0/3 | w10 | 3 | in time |
-| C1_06 Hard | Airborne | w7 of 18 | Cannon | 0/3 | w10 | 3 | in time |
-| C1_06 Hard | Airborne | w7 of 18 | Laser Turret | 0/3 | w10 | 3 | in time |
+| C1_06 Easy | Armoured | w7 of 18 | Gun Turret | 0/3 | w12 | 5 | in time |
+| C1_06 Easy | Armoured | w7 of 18 | Laser Turret | 0/3 | w12 | 5 | in time |
+| C1_06 Easy | Airborne | w9 of 18 | Gun Turret | 0/3 | w12 | 3 | in time |
+| C1_06 Easy | Airborne | w9 of 18 | Cannon | 0/3 | w12 | 3 | in time |
+| C1_06 Easy | Airborne | w9 of 18 | Laser Turret | 0/3 | w12 | 3 | in time |
+| C1_06 Medium | Armoured | w7 of 18 | Gun Turret | 0/3 | w12 | 5 | LATE: the counter was not needed (1 late, allowed 1: round 79: the level's first Cragback walks in one or two waves earlier (a single one in the plain wave 7, where the ambush wave of round 78 brought none), so the window opens earlier while the row falls at the wave it fell at before; it still loses every seed) |
+| C1_06 Medium | Armoured | w7 of 18 | Laser Turret | 0/3 | w12 | 5 | LATE: the counter was not needed (1 late, allowed 1: round 79: the level's first Cragback walks in one or two waves earlier (a single one in the plain wave 7, where the ambush wave of round 78 brought none), so the window opens earlier while the row falls at the wave it fell at before; it still loses every seed) |
+| C1_06 Medium | Airborne | w8 of 18 | Gun Turret | 0/3 | w12 | 4 | in time |
+| C1_06 Medium | Airborne | w8 of 18 | Cannon | 0/3 | w12 | 4 | in time |
+| C1_06 Medium | Airborne | w8 of 18 | Laser Turret | 0/3 | w12 | 4 | in time |
+| C1_06 Hard | Armoured | w7 of 18 | Gun Turret | 0/3 | w10 | 3 | in time |
+| C1_06 Hard | Armoured | w7 of 18 | Laser Turret | 0/3 | w10 | 3 | in time |
+| C1_06 Hard | Airborne | w8 of 18 | Gun Turret | 0/3 | w10 | 2 | in time |
+| C1_06 Hard | Airborne | w8 of 18 | Cannon | 0/3 | w10 | 2 | in time |
+| C1_06 Hard | Airborne | w8 of 18 | Laser Turret | 0/3 | w10 | 2 | in time |
 | C1_06 Psycho | Armoured | w9 of 18 | Gun Turret | 0/3 | w7 | - | not judged |
 | C1_06 Psycho | Armoured | w9 of 18 | Laser Turret | 0/3 | w7 | - | not judged |
 | C1_06 Psycho | Airborne | w5 of 18 | Gun Turret | 0/3 | w7 | 2 | in time |
@@ -100,4 +100,4 @@ Window per difficulty (may hold / must have lost within, in waves): Easy 2 / 4, 
 
 Gate (CombatRulesTests): holds. No row without the counter may win; a late row needs an allowance with a reason (GraceWindows.Allowances).
 
-94 rows: 49 in time, 1 early, 38 late, 6 not judged.
+94 rows: 51 in time, 0 early, 37 late, 6 not judged.

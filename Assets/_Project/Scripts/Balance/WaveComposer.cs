@@ -5,8 +5,10 @@ namespace Game.Balance
 {
     /// <summary>
     /// Turns a wave script into the spawn groups of one wave on one difficulty, with the health multiplier the solver chose. The kind of wave
-    /// decides how the budget is spent (a rush of the cheapest creatures, a heavy wave led by the toughest, an air raid,
-    /// an ambush from the pools and nests); a boss wave keeps the ground thin so the boss is the event. Deterministic:
+    /// decides how the budget is spent (a rush of the cheapest creatures, a heavy wave led by the toughest, an air raid);
+    /// the wave grammar (round 79, <see cref="WaveGrammar"/>) lays the creatures out in time: clusters with breathers, a
+    /// tank with its escort, a combo swarm, a surprise out of a rift or down the second road in the middle of the wave,
+    /// and a boss that walks in with the last cluster of a thin crowd. Deterministic:
     /// the same script, health and seed give the same wave in the editor and in the BalanceLab tool.
     /// </summary>
     public static class WaveComposer
@@ -17,7 +19,6 @@ namespace Game.Balance
 
         private const float BossDelaySeconds = 14f;
         private const float EscortDelaySeconds = 5f;
-        private const float AmbushDelaySeconds = 12f;
         private const float TroopStagger = 2.5f;
         private const float RushBudget = 1.2f;
         private const int RaidCount = 5;
@@ -27,7 +28,6 @@ namespace Game.Balance
         private const int MaxGroupCount = 64;
         private const float RushTempo = 0.6f;
         private const float HeavyShare = 0.55f;
-        private const float HeavyTempo = 1.4f;
         private const float AirShare = 0.35f;
         private const float AirGroundShare = 0.4f;
         private const float SprinkleShare = 0.15f;
@@ -38,10 +38,6 @@ namespace Game.Balance
         private const float PackInnerIntervalShare = 0.35f;
         private const float TeaserDelaySeconds = 6f;
         private const float TeaserInterval = 1.2f;
-
-
-        // Share of an ambush wave that surfaces from pools and nests, per difficulty: easy keeps most of it at the gate.
-        private static readonly float[] AmbushSharePerDifficulty = { 0.3f, 0.45f, 0.55f, 0.65f };
 
         // Flyers that sweep in behind the last boss, per difficulty.
         private static readonly int[] BossEscortFlyers = { 0, 1, 2, 4 };
@@ -61,7 +57,6 @@ namespace Game.Balance
             Rush = 1,
             Heavy = 2,
             Air = 3,
-            Ambush = 4,
         }
 
         /// <summary>A stable hash of the level key (FNV-1a), so seeds do not depend on the runtime's string hashing.</summary>
@@ -114,8 +109,6 @@ namespace Game.Balance
                     return Kind.Rush;
                 case 'H':
                     return Kind.Heavy;
-                case 'M':
-                    return Kind.Ambush;
                 default:
                     return Kind.Plain;
             }
@@ -209,7 +202,6 @@ namespace Game.Balance
             var wave = new WaveSpec { HealthMultiplier = health };
             List<GroupSpec> result = wave.Groups;
             BossSpec boss = BossOn(script, difficulty, number);
-            Kind kind = KindOf(script, difficulty, number);
             if (boss != null)
             {
                 float crowd = script.BossCrowdFor(difficulty);
@@ -217,42 +209,71 @@ namespace Game.Balance
             }
 
             List<TroopSpec> open = Unlocked(script, enemies, number, difficulty, false);
-            List<TroopSpec> pools = Unlocked(script, enemies, number, difficulty, true);
             EnemyStats flyer = Get(enemies, script.Flyer);
+            WaveGrammarRules grammar = rules.Grammar;
+            WavePattern pattern = WaveGrammar.PatternOf(script, difficulty, number, grammar);
+            SurpriseKind surprise = WaveGrammar.SurpriseOn(script, enemies, difficulty, number, secondRoad, rules);
+            float hiddenBudget = surprise != SurpriseKind.None ? budget * grammar.SurpriseShareFor(difficulty) : 0f;
+            float frontBudget = budget - hiddenBudget;
+            var fill = new FillContext(script, enemies, rules, difficulty, number, secondRoad, random, growth);
+            // The creatures at the gate, on a clock of their own until the grammar has cut them into clusters.
+            var front = new List<GroupSpec>();
             // A troop capped at the largest group size cannot take its whole share; what it could not buy makes every
             // creature of the wave tougher instead of the crowd larger.
-            float shortfall = 0f;
-            switch (kind)
+            float shortfall;
+            switch (pattern)
             {
-                case Kind.Rush:
-                    shortfall = Fill(result, budget * RushBudget, Cheapest(open, 2, enemies, rules), RushTempo, secondRoad, random, growth, script, difficulty, number, enemies, rules);
+                case WavePattern.Swarm:
+                    shortfall = Fill(front, frontBudget * RushBudget, Cheapest(open, 2, enemies, rules), RushTempo, fill);
                     break;
-                case Kind.Heavy:
-                    TroopSpec heavy = Toughest(open, enemies, rules);
-                    if (heavy != null)
-                    {
-                        shortfall = Fill(result, budget * HeavyShare, new List<TroopSpec> { heavy }, HeavyTempo, secondRoad, random, growth, script, difficulty, number, enemies, rules);
-                        shortfall += Fill(result, budget * (1f - HeavyShare), Without(open, heavy), 1f, secondRoad, random, growth, script, difficulty, number, enemies, rules);
-                    }
-
+                case WavePattern.TankEscort:
+                    shortfall = FillTankEscort(front, frontBudget, open, fill);
                     break;
-                case Kind.Air:
+                case WavePattern.AirRaid:
                     AddFlyers(result, flyer, budget * AirShare * script.AirRaidScaleFor(difficulty) * growth.Air, 0f, script.FlyerInterval, rules);
-                    shortfall = Fill(result, budget * AirGroundShare, open, 1f, secondRoad, random, growth, script, difficulty, number, enemies, rules);
+                    shortfall = Fill(front, frontBudget * AirGroundShare, open, 1f, fill);
                     break;
-                case Kind.Ambush when pools.Count > 0:
-                    float ambush = AmbushSharePerDifficulty[Math.Min(difficulty, AmbushSharePerDifficulty.Length - 1)];
-                    shortfall = Fill(result, budget * (1f - ambush), open, 1f, secondRoad, random, growth, script, difficulty, number, enemies, rules);
-                    shortfall += Fill(result, budget * ambush, pools, 1f, secondRoad, random, growth, script, difficulty, number, enemies, rules, AmbushDelaySeconds);
+                case WavePattern.ComboSwarm:
+                    shortfall = Fill(front, frontBudget, open, grammar.ComboTempo, fill, 0f, 0f);
                     break;
                 default:
-                    shortfall = Fill(result, budget, open, 1f, secondRoad, random, growth, script, difficulty, number, enemies, rules);
+                    shortfall = Fill(front, frontBudget, open, 1f, fill);
                     break;
             }
 
             if (script.RaidWaveFor(difficulty) == number)
             {
-                AddRaid(result, open, secondRoad, random, enemies, rules);
+                AddRaid(front, open, secondRoad, random, enemies, rules);
+            }
+
+            // Clusters and breathers. A boss wave's thin crowd comes in a fixed number of clusters with long breathers, and the
+            // boss walks in with the last: a defence that bends on the first cluster gets its hero and its gates back before the
+            // boss, instead of losing the base to one block (the finale rule, Docs/WAVE_GRAMMAR.md).
+            float span = WaveTimeline.Span(front);
+            int beats = boss != null ? BossBeats(script, number, span, grammar) : WaveTimeline.Beats(span, grammar.BeatSecondsFor(pattern), grammar.MinBeatShare, grammar.MaxBeats);
+            float[] starts = WaveTimeline.Spread(front, beats, boss != null ? grammar.BossBreatherFor(difficulty) : grammar.BreatherFor(difficulty));
+            result.AddRange(front);
+            wave.Pattern = pattern == WavePattern.SpreadClusters && beats == 1 ? WavePattern.Stream : pattern;
+            wave.Beats = beats;
+
+            if (surprise != SurpriseKind.None)
+            {
+                // Out of the rifts, or down the second road alone, once the front is well under way: the player is committed there.
+                var hidden = new List<GroupSpec>();
+                List<TroopSpec> troops = surprise == SurpriseKind.Rift ? Unlocked(script, enemies, number, difficulty, true) : open;
+                // Sized by its share alone: the growth past a grace window is the front's (seven Cragbacks behind the gate of Glass
+                // Meadows on Psycho, where the share asked for two, ended every run of the first measurement).
+                var plain = new FillContext(script, enemies, rules, difficulty, number, secondRoad, random, TraitGrowth.None);
+                shortfall += Fill(hidden, hiddenBudget, troops, 1f, plain, 0f, TroopStagger, surprise == SurpriseKind.Flank ? new[] { secondRoad } : null);
+                if (hidden.Count == 0)
+                {
+                    // A surprise is never empty: where its share buys no creature yet (an early wave, a heavy rift troop), one comes.
+                    AddOne(hidden, Cheapest(troops, 1, enemies, rules), enemies, surprise == SurpriseKind.Flank ? secondRoad : Road);
+                }
+
+                WaveTimeline.Shift(hidden, Math.Max(grammar.SurpriseMinDelay, WaveTimeline.Span(front) * grammar.SurpriseAt));
+                result.AddRange(hidden);
+                wave.Surprise = hidden.Count > 0 ? surprise : SurpriseKind.None;
             }
 
             if (shortfall > 0f && budget > shortfall)
@@ -268,7 +289,7 @@ namespace Game.Balance
 
             if (boss != null)
             {
-                AddBoss(result, script, boss, Get(enemies, boss.Enemy), flyer, difficulty, secondRoad);
+                AddBoss(result, script, boss, Get(enemies, boss.Enemy), flyer, difficulty, secondRoad, beats > 1 ? starts[beats - 1] : BossDelaySeconds);
             }
 
             AddTeasers(result, script, number, enemies);
@@ -312,7 +333,7 @@ namespace Game.Balance
             }
         }
 
-        private static void AddBoss(List<GroupSpec> result, WaveScriptSpec script, BossSpec boss, EnemyStats enemy, EnemyStats flyer, int difficulty, int secondRoad)
+        private static void AddBoss(List<GroupSpec> result, WaveScriptSpec script, BossSpec boss, EnemyStats enemy, EnemyStats flyer, int difficulty, int secondRoad, float delay)
         {
             if (enemy == null)
             {
@@ -325,7 +346,7 @@ namespace Game.Balance
                 Enemy = enemy,
                 Count = 1,
                 Interval = 1f,
-                Delay = BossDelaySeconds,
+                Delay = delay,
                 Path = route == BossRoute.SecondRoad && secondRoad >= 0 ? secondRoad : Road,
                 Source = route == BossRoute.Entrance ? WaveLoad.EntranceSource : 0,
             });
@@ -334,7 +355,7 @@ namespace Game.Balance
             int escorts = BossEscortFlyers[Math.Min(difficulty, BossEscortFlyers.Length - 1)];
             if (last && escorts > 0 && flyer != null)
             {
-                result.Add(new GroupSpec { Enemy = flyer, Count = escorts, Interval = 1.5f, Delay = BossDelaySeconds + EscortDelaySeconds, Path = NorthAirRoute });
+                result.Add(new GroupSpec { Enemy = flyer, Count = escorts, Interval = 1.5f, Delay = delay + EscortDelaySeconds, Path = NorthAirRoute });
             }
         }
 
@@ -392,15 +413,18 @@ namespace Game.Balance
             return floor > 0 && first != int.MaxValue ? Math.Max(0, floor - first) : 0;
         }
 
-        // The troops a wave may draw from. A flying troop also waits for the difficulty's floor of its own (WaveScriptSpec.FlyingTroopFloor).
-        private static List<TroopSpec> Unlocked(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int number, int difficulty, bool pools)
+        // The troops a wave may draw from. A flying troop also waits for the difficulty's floor of its own (WaveScriptSpec.FlyingTroopFloor),
+        // and one out of a rift for the difficulty's first air raid (round 79): a surprise never introduces the sky. The raid does,
+        // on the wave the raid rules allow it, and the rifts' flyers follow.
+        internal static List<TroopSpec> Unlocked(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int number, int difficulty, bool pools)
         {
             var list = new List<TroopSpec>();
             int floor = script.FlyingTroopFloorFor(difficulty);
+            bool skyKnown = !pools || script.AirWaves.Length == 0 || number > FirstAirWave(script, difficulty);
             foreach (TroopSpec troop in script.Troops)
             {
                 if (troop.FirstWave <= number && troop.MinDifficulty <= difficulty && difficulty <= troop.MaxDifficulty && (troop.Source != 0) == pools
-                    && (number >= floor || !(Get(enemies, troop.Enemy)?.Flies ?? false)))
+                    && ((number >= floor && skyKnown) || !(Get(enemies, troop.Enemy)?.Flies ?? false)))
                 {
                     list.Add(troop);
                 }
@@ -443,10 +467,106 @@ namespace Game.Balance
             return list.Count > 0 ? list : troops;
         }
 
-        // Spends a budget over troops by weight, leaning towards tougher creatures as the level goes on; gate troops are
-        // cut into clusters over the lanes, pool and nest troops surface as one group.
-        private static float Fill(List<GroupSpec> output, float budget, List<TroopSpec> troops, float tempo, int secondRoad, Random random, TraitGrowth growth, WaveScriptSpec script, int difficulty, int number, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules, float extraDelay = 0f)
+        // What every fill of one wave shares: the script and its difficulty, the wave, the roads and the wave's own dice.
+        private readonly struct FillContext
         {
+            public FillContext(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules, int difficulty, int number, int secondRoad, Random random, TraitGrowth growth)
+            {
+                Script = script;
+                Enemies = enemies;
+                Rules = rules;
+                Difficulty = difficulty;
+                Number = number;
+                SecondRoad = secondRoad;
+                Random = random;
+                Growth = growth;
+            }
+
+            public WaveScriptSpec Script { get; }
+            public IReadOnlyDictionary<string, EnemyStats> Enemies { get; }
+            public BalanceRules Rules { get; }
+            public int Difficulty { get; }
+            public int Number { get; }
+            public int SecondRoad { get; }
+            public Random Random { get; }
+            public TraitGrowth Growth { get; }
+        }
+
+        // One creature of the first of the given troops, on the troop's own delay.
+        private static void AddOne(List<GroupSpec> output, List<TroopSpec> troops, IReadOnlyDictionary<string, EnemyStats> enemies, int path)
+        {
+            EnemyStats enemy = troops.Count > 0 ? Get(enemies, troops[0].Enemy) : null;
+            if (enemy == null)
+            {
+                return;
+            }
+
+            TroopSpec troop = troops[0];
+            output.Add(new GroupSpec { Enemy = enemy, Count = 1, Interval = troop.Interval, Delay = troop.Delay, Source = troop.Source, Path = troop.Source != 0 || enemy.Flies ? Road : path, Nest = troop.Source != 0 ? troop.Nest : 0 });
+        }
+
+        // The clusters of a boss wave's crowd: the grammar's number (more for the last wave of the level), fewer for a crowd too thin to cut.
+        private static int BossBeats(WaveScriptSpec script, int number, float span, WaveGrammarRules grammar)
+        {
+            int beats = Math.Max(1, number == script.Waves ? grammar.FinaleBeats : grammar.BossBeats);
+            while (beats > 1 && span / beats < grammar.MinBossBeatSeconds)
+            {
+                beats--;
+            }
+
+            return beats;
+        }
+
+        // Tank escort: the toughest troop takes the heavy share and walks in first; the others come close together and start as
+        // much later as it takes them to run into the tanks' back at the first guns. With front-first targeting the guns are
+        // still busy on the tanks when the small ones arrive; nothing in the game forces that (no taunt).
+        private static float FillTankEscort(List<GroupSpec> front, float budget, List<TroopSpec> open, FillContext fill)
+        {
+            TroopSpec heavy = Toughest(open, fill.Enemies, fill.Rules);
+            if (heavy == null)
+            {
+                return 0f;
+            }
+
+            float shortfall = Fill(front, budget * HeavyShare, new List<TroopSpec> { heavy }, 1f, fill);
+            List<TroopSpec> others = Without(open, heavy);
+            var escort = new List<GroupSpec>();
+            shortfall += Fill(escort, budget * (1f - HeavyShare), others, fill.Rules.Grammar.EscortTempo, fill);
+            WaveTimeline.Shift(escort, EscortLag(heavy, others, fill));
+            front.AddRange(escort);
+            return shortfall;
+        }
+
+        // Seconds the fastest escort starts behind the first tank so that it catches it after the grammar's cells of road.
+        private static float EscortLag(TroopSpec heavy, List<TroopSpec> others, FillContext fill)
+        {
+            EnemyStats tank = Get(fill.Enemies, heavy.Enemy);
+            float fastest = 0f;
+            foreach (TroopSpec troop in others)
+            {
+                EnemyStats enemy = Get(fill.Enemies, troop.Enemy);
+                fastest = enemy != null ? Math.Max(fastest, enemy.Speed) : fastest;
+            }
+
+            if (tank == null || tank.Speed <= 0f || fastest <= tank.Speed)
+            {
+                return 0f;
+            }
+
+            WaveGrammarRules grammar = fill.Rules.Grammar;
+            return Math.Min(grammar.MaxEscortLag, grammar.EscortCatchCells * (1f / tank.Speed - 1f / fastest));
+        }
+
+        // Spends a budget over troops by weight, leaning towards tougher creatures as the level goes on; gate troops are
+        // cut into clusters over the lanes (or the given lanes only), pool and nest troops surface as one group.
+        private static float Fill(List<GroupSpec> output, float budget, List<TroopSpec> troops, float tempo, FillContext fill, float extraDelay = 0f, float troopStagger = TroopStagger, int[] lanes = null)
+        {
+            WaveScriptSpec script = fill.Script;
+            IReadOnlyDictionary<string, EnemyStats> enemies = fill.Enemies;
+            BalanceRules rules = fill.Rules;
+            int difficulty = fill.Difficulty;
+            int number = fill.Number;
+            TraitGrowth growth = fill.Growth;
             if (troops.Count == 0 || budget <= 0f)
             {
                 return 0f;
@@ -495,7 +615,7 @@ namespace Game.Balance
                     Enemy = enemy,
                     Count = count,
                     Interval = troop.Interval * tempo * script.TempoFor(difficulty),
-                    Delay = troop.Delay + extraDelay + order * TroopStagger,
+                    Delay = troop.Delay + extraDelay + order * troopStagger,
                     Source = troop.Source,
                     Path = Road,
                     Nest = troop.Source != 0 ? troop.Nest : 0,
@@ -505,7 +625,7 @@ namespace Game.Balance
                 bool ranks = enemy.Armor > 0f && growth.Armour > 1f;
                 if (troop.Source == 0)
                 {
-                    Scatter(group, random.Next(0, 1000), LanesFor(enemy, secondRoad), output, ranks ? Math.Max(troop.Pack, GrownPack) : troop.Pack, troop.Loose && !ranks);
+                    Scatter(group, fill.Random.Next(0, 1000), lanes != null && !enemy.Flies ? lanes : LanesFor(enemy, fill.SecondRoad), output, ranks ? Math.Max(troop.Pack, GrownPack) : troop.Pack, troop.Loose && !ranks);
                 }
                 else
                 {

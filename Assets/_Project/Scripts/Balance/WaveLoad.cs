@@ -53,7 +53,10 @@ namespace Game.Balance
         public float StreamReach = 1f;
         public float BossReach = 1f;
 
-        /// <summary>Seconds the wave takes to spawn, and the seconds the gates' hold adds for guns that reach the queue.</summary>
+        /// <summary>
+        /// Seconds the wave's ground stream is really coming (its spawning less the idle part of every breather,
+        /// <see cref="WaveTimeline.ActiveSeconds"/>), and the seconds the gates' hold adds for guns that reach the queue.
+        /// </summary>
         public float Span;
         public float GateSeconds;
         public float Window;
@@ -146,8 +149,6 @@ namespace Game.Balance
         {
             var load = new WaveLoad();
             load.CounterCheck = wave.CounterCheck;
-            float span = 0f;
-            float airSpan = 0f;
             float speed = 0f;
             float airSpeed = 0f;
             float bossSpeed = 0f;
@@ -162,6 +163,9 @@ namespace Game.Balance
             float bossStrikeSum = 0f;
             float airBaseDamage = 0f;
             float airStrikeSum = 0f;
+            // When the ground stream and the flyers are really coming: a breather is no time the towers can use (round 79).
+            var stretches = new List<(float Start, float End)>();
+            var airStretches = new List<(float Start, float End)>();
             float scale = difficulty.Health * level.HealthScale * wave.HealthMultiplier;
             float bossScale = wave.BossHealthScale > 0f ? wave.BossHealthScale : 1f;
 
@@ -179,6 +183,7 @@ namespace Game.Balance
                 float each = enemy.EffectiveHealth * scale * own * difficulty.ShareFor(enemy);
                 float health = each * count;
                 float armour = enemy.Armor * scale * own * difficulty.ShareFor(enemy) * count;
+                float start = group.Delay + group.Stagger * difficulty.Interval;
                 float end = group.Delay + (group.Stagger + (count - 1) * group.Interval) * difficulty.Interval;
                 load.KillMoney += (int)Math.Round(enemy.Reward * count * level.Income);
                 load.HasBoss |= enemy.IsBoss;
@@ -200,7 +205,7 @@ namespace Game.Balance
                 {
                     load.AirHealth += health;
                     load.AirArmour.Add(health - armour, armour);
-                    airSpan = Math.Max(airSpan, end);
+                    airStretches.Add((start, end));
                     airSpeed += enemy.InRangeSpeed * count;
                     air += count;
                     airBaseDamage += enemy.BaseDamage * count;
@@ -241,7 +246,7 @@ namespace Game.Balance
                         load.StreamHealth += eachSummon * summons;
                         load.StreamArmour.Add(eachSummon * summons - summonArmour, summonArmour);
                         reachWeighted += reach * SummonStartShare * eachSummon * summons;
-                        span = Math.Max(span, end + walk);
+                        stretches.Add((start, end + walk));
                         speed += enemy.SummonSpeed * summons;
                         ground += summons;
                         gateDps += summonStrike * Math.Min(summons, rules.AttackersPerGate);
@@ -254,13 +259,15 @@ namespace Game.Balance
                 load.StreamHealth += health;
                 load.StreamArmour.Add(health - armour, armour);
                 reachWeighted += reach * health;
-                span = Math.Max(span, end);
+                stretches.Add((start, end));
                 speed += enemy.InRangeSpeed * count;
                 ground += count;
                 gateDps += strike * Math.Min(count, rules.AttackersPerGate);
                 strikeSum += strike * count;
             }
 
+            float span = WaveTimeline.ActiveSeconds(stretches, rules.Grammar.PauseCredit);
+            float airSpan = WaveTimeline.ActiveSeconds(airStretches, rules.Grammar.PauseCredit);
             load.GroundCount = ground;
             load.BossCount = bosses;
             load.AirCount = air;

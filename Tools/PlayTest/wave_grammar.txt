@@ -1,0 +1,25 @@
+# wave grammar plan: pattern letter + clusters per wave; ! rift surprise, ^ flank, B boss
+C1_01 Easy    s1 s1 W1 T1 C2 W1 C2! T1 W2 X2 T1! C3B   | stream 2, clusters 3, swarm 3, tank escort 3, combo 1, raid 0, surprises 2
+C1_01 Medium  s1 s1 W1 T1 C2 W1 C2! T1 W2 X2! T1 C3B   | stream 2, clusters 3, swarm 3, tank escort 3, combo 1, raid 0, surprises 2
+C1_01 Hard    s1 s1 W1 T1 C2 W1 C2! T2B W2 X1! T1 C3B   | stream 2, clusters 3, swarm 3, tank escort 3, combo 1, raid 0, surprises 2
+C1_01 Psycho  s1 s1 W1 T1 C2B W1 C2! T2B W2 X1! T1 C3B   | stream 2, clusters 3, swarm 3, tank escort 3, combo 1, raid 0, surprises 2
+C1_02 Easy    C2 W1 C3 T1 W1 C2 T1! W3 X2 T1 W3 C3B   | stream 0, clusters 4, swarm 4, tank escort 3, combo 1, raid 0, surprises 1
+C1_02 Medium  C2 W1 C3 T1 W1 C3 T1! W3 X3 T1! W3 C3B   | stream 0, clusters 4, swarm 4, tank escort 3, combo 1, raid 0, surprises 2
+C1_02 Hard    C2 W1 C2 T1 W1 s1 T1! W3 X2B T1! W3 C3B   | stream 1, clusters 3, swarm 4, tank escort 3, combo 1, raid 0, surprises 2
+C1_02 Psycho  C2 W1 s1 T1 W2B s1 T1! W2 X2B T1! W2 C3B   | stream 2, clusters 2, swarm 4, tank escort 3, combo 1, raid 0, surprises 2
+C1_03 Easy    s1 W1 C2 T1 C2 W1 C3^ C2 T1 W2 X1^ A1 T1 W3 A2 T3B   | stream 1, clusters 4, swarm 4, tank escort 4, combo 1, raid 2, surprises 2
+C1_03 Medium  s1 W1 C2 T1 C2 W1 C3^ C2 T1 W2 A1 A1 T1^ W3 A2 T3B   | stream 1, clusters 4, swarm 4, tank escort 4, combo 0, raid 3, surprises 2
+C1_03 Hard    s1 W1 s1 T1 s1 W1 s1^ C2 T1 W2B A1 A1 T1^ A1 A1 T3B   | stream 4, clusters 1, swarm 3, tank escort 4, combo 0, raid 4, surprises 2
+C1_03 Psycho  s1 W1 s1 T1 s1 W2B s1^ s1 T1^ W2B A1 A1 T1^ A1 A1 T3B   | stream 5, clusters 0, swarm 3, tank escort 4, combo 0, raid 4, surprises 3
+C1_04 Easy    s1 W1 C2 C2 T1 W1 C2 C2 W1 A1 X1! C2 A1 X1 T1! A2B   | stream 1, clusters 5, swarm 3, tank escort 2, combo 2, raid 3, surprises 2
+C1_04 Medium  s1 W1 C2 C2 T1 A1 s1! C2 A1 T1! X1 A1 W3 C2! A1 X3B   | stream 2, clusters 4, swarm 2, tank escort 2, combo 2, raid 4, surprises 3
+C1_04 Hard    s1 W1 A1 C2 T1! A1 s1 A1 A1 T2B C2! A1 W3 X1! A1 C3B   | stream 2, clusters 3, swarm 2, tank escort 2, combo 1, raid 6, surprises 3
+C1_04 Psycho  s1 W1 A1 C2 T1B A1 s1! A1 A1 T2B C2! A1 W3 A2 A2 X3B   | stream 2, clusters 2, swarm 2, tank escort 2, combo 1, raid 7, surprises 2
+C1_05 Easy    s1 C2 W1 C2 T1 C2 W1 C3 A1 C2! W3 X2 A2 T1! W3 C4 T3B   | stream 1, clusters 6, swarm 4, tank escort 3, combo 1, raid 2, surprises 2
+C1_05 Medium  s1 C2 W1 C2 T1 A1 W1 C2! T1 A1 W3 C3! X2 T1 A2 C4! T3B   | stream 1, clusters 5, swarm 3, tank escort 4, combo 1, raid 3, surprises 3
+C1_05 Hard    s1 C2 W1 A1 T1 A1 W1 A1 T1! C3 W2B X1! A2 T1 W3 A2 T3B   | stream 1, clusters 2, swarm 4, tank escort 4, combo 1, raid 5, surprises 2
+C1_05 Psycho  s1 C2 W1 A1 T2B A1 W1 A1 T1! A1 W2B C3! A2 T1! W3 A2 T3B   | stream 1, clusters 2, swarm 4, tank escort 4, combo 0, raid 6, surprises 3
+C1_06 Easy    W1 s1 C2 T1 W1 C2 C2 W1 A1 C2! W2 A1 X1 T1! A2 W3 C3 T3B   | stream 1, clusters 5, swarm 5, tank escort 3, combo 1, raid 3, surprises 2
+C1_06 Medium  W1 s1 C2 T1 W1 C2 s1 A1 T1! C2 A1 X1! C2 A1 X1! W3 A2 T3B   | stream 2, clusters 4, swarm 3, tank escort 3, combo 2, raid 4, surprises 3
+C1_06 Hard    W1 s1 C2 T1 W1 C2 s1 A1 T1! C2 A1 X1B C2! A1 X1 W3 A2 T3B   | stream 2, clusters 4, swarm 3, tank escort 3, combo 2, raid 4, surprises 2
+C1_06 Psycho  W1 s1 C2 T1 A1 s1! C2B A1 T1! C2 A1 X1B C2! A1 A1 W3 A2 T3B   | stream 2, clusters 4, swarm 2, tank escort 3, combo 1, raid 6, surprises 3

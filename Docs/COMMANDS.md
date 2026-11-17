@@ -1527,3 +1527,60 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
 - **Stopping a batch by hand:** there is no `pkill` in this Git Bash; stop the clones with
   `powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \"Name='Unity.exe'\" | Where-Object { $_.CommandLine -like '*TowerDefenseWorkers*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }"`,
   delete `TowerDefenseWorkers\wN\Temp\UnityLockfile` and the half-written records file; `pressure.sh` then ends by itself.
+
+## Round 79: the wave grammar (added 2026-11-17)
+
+- **The design:** Docs/WAVE_GRAMMAR.md. The numbers are `Game.Balance.WaveGrammarRules` (one object, `BalanceRules.Grammar`); the
+  picking rules `WaveGrammar` (pattern per wave, which waves carry a surprise), the cuts `WaveTimeline`, the layout itself in
+  `WaveComposer.Compose`. A level's script keeps its roster and its rhythm (`P`, `R`, `H`; the old `M` is gone).
+- **After any change of a grammar number or a script:** recompile, read `compilationFailed`, then the solve stage alone, as in
+  round 75: `unity command run_script --file Tools/PlayTest/Scripts/ApplyRound68.cs --entry ApplyRound68.Run --timeout_ms 900000 --timeout 960`
+  (17 seconds; `editor_status` first). Never the full generator.
+- **The plan the grammar makes of every cell** (pattern, clusters, surprise and boss per wave), without writing an asset:
+  `unity command run_script --file Tools/PlayTest/Scripts/WaveGrammarReport.cs --entry WaveGrammarReport.Run --timeout_ms 900000 --timeout 960`
+  writes `Tools/PlayTest/wave_grammar.txt`. Letters: `s` stream, `C` spread clusters, `W` swarm, `T` tank escort, `X` combo
+  swarm, `A` air raid; the number is the clusters; `!` a rift surprise, `^` a flank, `B` a boss. (It is a `run_script`, not
+  an `eval_file`: solving six levels takes longer than the five seconds an eval gets on the main thread.)
+- **The shape of the stored waves:** `python Tools/PlayTest/wave_shape.py` prints per cell the median and longest spawn span,
+  the clusters (a pause of four seconds or more ends one; `--gap` changes that), the creature types per wave, the level's
+  spawn seconds and its creatures; `--rev HEAD` reads a revision instead of the working tree (before against after);
+  `--waves C1_05:1` lists every wave of one cell with its groups (level key, difficulty index).
+- **The validator's rule** on the stored waves is `Game.Levels.WaveShape.Check` (silence between two spawns at most 16 s, a
+  wave at most 120 s of spawning, walkers out of one authored nest per wave); `LevelValidator` runs it, so every test that
+  validates a level does. The grammar's own tests: `bash Tools/PlayTest/r34b_editmode_worker.sh 6 WaveGrammarTests`.
+- **Several test classes in one worker run:** the filter takes names separated by a semicolon
+  (`r34b_editmode_worker.sh 6 "WaveGrammarTests;WorldContentTests;Round64Tests"`); `Game.Tests` runs the whole suite (about
+  twelve minutes). `python Tools/PlayTest/editmode_failures.py` prints the totals and every failed test with its message
+  from the clone's `Logs/results.xml`.
+- **A quick reading before the full one:** `PR_RECORDS=Tools/PlayTest/<name>_records.txt PR_MULTIPLES="1" bash Tools/PlayTest/pressure.sh "0,1,2,3,4,5" "0,1,2,3"`
+  (144 runs at the data), then `pressure_wins.py` and `pressure_endings.py` as before.
+- **Pitfalls met this round:** a Bash heredoc whose text holds an odd number of apostrophes fails to parse in this shell even
+  when its delimiter is quoted (write such a file with the editor tool, or a patch script from a file); a rift flyer in a
+  surprise before the difficulty's first raid makes the ledger's Easy player buy a sky gun out of a thin purse, and the
+  human calibration then halves the whole level (Fault Line Easy fell to x0.4 of its health): rift flyers now wait for the
+  first raid (`WaveComposer.Unlocked`).
+- **Why a wave's multiplier is what it is (round 79, second half):** `Tools/PlayTest/Scripts/WaveLedgerLab.cs` solves a level in
+  memory as the solve stage does and prints, per wave of the cells named in `Tools/PlayTest/wave_ledger_arg.txt`
+  (`cell=C1_05:2`, one per line): the grammar's pattern, the multiplier of this solve against the stored one, the solver's own
+  multiplier before the human calibration, the pressure with the hero against the cap, the purse, ground and flyer health,
+  the ground window (`span`) and the flyers' window (`sky`), creatures, both pressures and what the ledger's player buys; at
+  the foot per cell the sum of multipliers against the stored set and every wave that moved more than 3 %. `grammar.<Field>=`
+  and `rule.<Field>=` lines override a number of `WaveGrammarRules` / `BalanceRules` for that run only (a float, an int or a
+  comma list), `label=<name>` names the output `Tools/PlayTest/wave_ledger_<name>.txt`. No asset is written:
+  `unity command run_script --file Tools/PlayTest/Scripts/WaveLedgerLab.cs --entry WaveLedgerLab.Run --timeout_ms 900000 --timeout 960`
+  (four seconds a level; `editor_status` first). The grammar switched off for a comparison with round 78:
+  `grammar.BeatSeconds=1000`, `SwarmBeatSeconds=1000`, `ComboBeatSeconds=1000`, `EscortBeatSeconds=1000`, `SurpriseFreeWaves=99`,
+  `PauseCredit=1000`, `ComboFrom=2`, `BossBeats=1`, `FinaleBeats=1`, `EscortCatchCells=0`, `EscortTempo=1` (it gave round 78's
+  multipliers of Quartz Flats Hard to three decimals on sixteen of seventeen waves).
+- **A strategy searched on today's waves, tried without touching the project:** `bash Tools/PlayTest/r34b_editmode_worker.sh 6 PlanSearchTests "cells=1:3,4:2"`
+  (a minute; the result line reads Skipped, the files are written), copy the clone's `Tools/PlayTest/Plans/Level_<key>_<d>*`
+  into an overlay folder under the same relative path and play them as the skilled rung would:
+  `PR_OVERLAY=<folder> PR_UNITS="1:3:strategy1:1,1:3:strategy1:2,..." PR_MULTIPLES="1" PR_RECORDS=Tools/PlayTest/<name>_records.txt bash Tools/PlayTest/pressure.sh`.
+  The records carry the overlay's bot stamp. Round 79: `skilled_search_r79_records.txt`.
+- **The skilled rung alone** (after a pick refresh, as its own batch): `PR_POLICIES="skilled" PR_RECORDS=Tools/PlayTest/<name>_records.txt bash Tools/PlayTest/pressure.sh "0,1,2,3,4,5" "0,1,2,3"`
+  (360 runs, about 40 minutes). The sensible rung does not read the pick file, so its records of the same data stay valid;
+  keep the two files apart (different bot stamps).
+- **Pitfalls of the second half:** never `git checkout` a file to undo an experiment while a round is uncommitted: it throws
+  the round's own changes away with the experiment (`WaveSolver.cs` was restored from a worker clone, which is a byte copy of
+  the tree at its last sync: `cmp` against `TowerDefenseWorkers\wN\...` shows what an experiment left behind). A Python
+  patch written through a Bash heredoc turns `\n` inside a C# string into a real line break; write C# with the editor tool.

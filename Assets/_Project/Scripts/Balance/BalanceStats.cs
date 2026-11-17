@@ -305,6 +305,14 @@ namespace Game.Balance
         /// (BalanceChecks.PlainMean) leaves it out, as it leaves a boss wave out; the cap with the hero still holds it.
         /// </summary>
         public bool CounterCheck;
+
+        /// <summary>
+        /// How the wave grammar laid the wave out (round 79): the front pattern, the clusters it was cut into and the surprise
+        /// it carries. For the reports and the tests; the game reads the groups.
+        /// </summary>
+        public WavePattern Pattern;
+        public int Beats = 1;
+        public SurpriseKind Surprise;
     }
 }
 

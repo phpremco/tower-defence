@@ -58,8 +58,6 @@ namespace Game.Balance
                     return target * rules.RushFactor;
                 case WaveComposer.Kind.Heavy:
                     return target * rules.HeavyFactor;
-                case WaveComposer.Kind.Ambush:
-                    return target * rules.AmbushFactor;
                 case WaveComposer.Kind.Air:
                     return target * rules.AirFactor * script.AirRaidScaleFor(difficulty) * airGrowth;
                 default:
@@ -147,8 +145,8 @@ namespace Game.Balance
         }
 
         /// <summary>
-        /// The waves a harder or easier difficulty adds or changes (an extra air raid, an extra boss, an ambush split
-        /// differently between gate and pools) have no Medium counterpart to copy; they are solved on their own difficulty against the Medium target times the
+        /// The waves a harder or easier difficulty adds or changes (an extra air raid, an extra boss, a surprise of another
+        /// size or on another wave) have no Medium counterpart to copy; they are solved on their own difficulty against the Medium target times the
         /// difficulty's share. Every other wave keeps the Medium multiplier, with the profile on top.
         /// </summary>
         public static float[] SolveVariant(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, LevelInput level, DifficultyStats difficulty, float[] medium, int secondRoad, BalanceRules rules)
@@ -172,7 +170,9 @@ namespace Game.Balance
                     || WaveComposer.HasSprinkle(script, d, number) != WaveComposer.HasSprinkle(script, SolveDifficulty, number)
                     || (WaveComposer.KindOf(script, d, number) == WaveComposer.Kind.Air && script.AirRaidScaleFor(d) * airGrowth != script.AirRaidScaleFor(SolveDifficulty) * WaveComposer.GrowthOn(script, enemies, SolveDifficulty, number, secondRoad, rules).Air)
                     || armourAim != ArmourAim(script, enemies, SolveDifficulty, number, secondRoad, rules)
-                    || WaveComposer.KindOf(script, d, number) == WaveComposer.Kind.Ambush;
+                    // A surprise is sized per difficulty (its share of the wave, and which waves carry one), so it has no Medium twin.
+                    || WaveGrammar.SurpriseOn(script, enemies, d, number, secondRoad, rules) != SurpriseKind.None
+                    || WaveGrammar.SurpriseOn(script, enemies, SolveDifficulty, number, secondRoad, rules) != SurpriseKind.None;
                 if (changed)
                 {
                     float target = TargetOn(script, d, number, rules, airGrowth) * share * armourAim;

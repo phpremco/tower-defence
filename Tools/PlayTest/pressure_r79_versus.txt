@@ -1,0 +1,31 @@
+Before: bot 3:5bddeb15; data 645e4d4c; game code 64e52f85
+After:  bot 3:5bddeb15; data c75b37f7; game code c2d7fb7c
+Seeds won at x0.8 / x0.9 / x1 / x1.12 / x1.25 of the creatures' health; ** marks a cell and rung that moved.
+
+| Cell | Skilled, before | after | Sensible, before | after |
+| --- | --- | --- | --- | --- |
+| Landing Site Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Landing Site Medium | 3 3 3 3 1 | **3 3 3 3 2** | 3 3 3 3 3 | 3 3 3 3 3 |
+| Landing Site Hard | 3 3 3 0 0 | **3 3 3 1 0** | 3 3 3 0 0 | **3 3 2 0 0** |
+| Landing Site Psycho | 2 1 1 0 0 | **3 3 3 1 0** | 1 0 0 0 0 | **0 0 0 0 0** |
+| Glass Meadows Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Glass Meadows Medium | 3 3 3 3 3 | **3 3 3 3 2** | 3 3 3 3 0 | **3 3 3 3 3** |
+| Glass Meadows Hard | 3 3 3 2 0 | **3 3 3 2 1** | 3 3 0 0 0 | **3 3 2 1 0** |
+| Glass Meadows Psycho | 3 3 3 1 0 | **3 2 0 0 0** | 0 0 0 0 0 | 0 0 0 0 0 |
+| Shard Ridge Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Shard Ridge Medium | 3 3 3 2 3 | **3 3 3 3 3** | 3 3 3 3 3 | 3 3 3 3 3 |
+| Shard Ridge Hard | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 1 1 | **3 2 0 0 0** |
+| Shard Ridge Psycho | 3 3 3 3 1 | **3 3 3 3 2** | 0 0 0 0 0 | **1 0 0 0 0** |
+| Fault Line Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Hard | 3 3 3 3 1 | 3 3 3 3 1 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Psycho | 3 3 3 3 2 | **3 3 3 3 3** | 3 3 3 1 0 | **3 2 3 2 0** |
+| Quartz Flats Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Quartz Flats Medium | 3 3 3 3 0 | **3 3 3 3 3** | 3 3 3 2 1 | **3 3 3 3 3** |
+| Quartz Flats Hard | 3 2 1 0 0 | **2 1 0 0 0** | 3 0 0 0 0 | **3 2 1 0 0** |
+| Quartz Flats Psycho | 3 3 3 1 0 | **3 2 0 0 0** | 3 1 0 0 0 | **1 0 0 0 0** |
+| Crysium Vein Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Crysium Vein Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Crysium Vein Hard | 3 3 3 2 0 | **3 3 3 3 2** | 3 3 3 3 3 | **3 3 3 3 2** |
+| Crysium Vein Psycho | 3 3 3 1 0 | **3 3 3 2 0** | 1 0 0 0 0 | **3 1 0 0 0** |
+| Runs won | 300 of 360 | 305 of 360 | 249 of 360 | 253 of 360 |

@@ -116,7 +116,6 @@ namespace Game.Balance
         /// <summary>Target factors per wave kind, so the rhythm survives the solver.</summary>
         public float RushFactor = 1.1f;
         public float HeavyFactor = 1.15f;
-        public float AmbushFactor = 1f;
         public float AirFactor = 0.9f;
         public float BossFactor = 1.4f;
 
@@ -511,6 +510,12 @@ namespace Game.Balance
         public float ExpectedBossesPerLevel = 2f;
 
         /// <summary>A copy to vary one knob on (the arrays are shared: treat them as read-only).</summary>
+        /// <summary>
+        /// The wave grammar's numbers (round 79, Docs/WAVE_GRAMMAR.md): clusters and breathers, where surprises fall, how a
+        /// boss wave is laid out. One object for every level; a copy of the rules shares it.
+        /// </summary>
+        public WaveGrammarRules Grammar = new WaveGrammarRules();
+
         public BalanceRules Copy() => (BalanceRules)MemberwiseClone();
 
         /// <summary>The default instance the generator and the tools use.</summary>
