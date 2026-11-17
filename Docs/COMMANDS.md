@@ -1296,3 +1296,34 @@ wins at, bisected in the real game. Test and tool code only; no data is written 
   `progress.json` first as for any Play Mode run.
 - If a batch is stopped: kill the clones' Unity (command line contains `TowerDefenseWorkers`) and delete
   `TowerDefenseWorkers\wN\Temp\UnityLockfile`, as for the other worker scripts.
+
+## Balance stage 1b: pressure (added 2026-11-17)
+
+The continuous sibling of the headroom probe (results and the definition in Docs/BALANCE_HEADROOM.md, "Stage 1b"): a reference
+player plays a level at a few fixed multiples of the creatures' health; nothing is bisected. Per run the records keep, per
+wave, the health spawned, that health weighted by how far each creature got, the health that reached the base, base and gate
+damage, and the build order taken. Test and tool code only; `headroom.sh` is untouched and still works beside it.
+
+- **One command:** `bash Tools/PlayTest/pressure.sh "0,2" "0,1,2,3"` (campaign nodes, difficulties). It refreshes the worker
+  clones (silent: `m_DisableAudio: 1` is set and checked in each clone; own save folder), deals the units over them, runs
+  `Game.Tests.PressureProbeTests.Measure_Pressure` headless, appends every run to `Tools/PlayTest/pressure_records.txt` and
+  writes the report with the stop rules to `Tools/PlayTest/pressure.txt` (`pressure_report.py`). The open editor is not used.
+  The save's MD5 is checked before and after.
+- **What it plays by default:** the rungs `skilled` (the best replayed plan as a fixed script), `typical` (the sensible bot's
+  seed 1 build order as a fixed script) and `sensible` (the reactive bot) on seeds 1-5 at the multiples
+  0.5, 0.65, 0.8, 1, 1.25, 1.6, 2, plus the Cannon row and the careless bot on node 0. Env: `PR_POLICIES`, `PR_SEEDS`,
+  `PR_MULTIPLES`, `PR_EXTRA` (`node:policy,...`, `""` for none), `PR_WORKERS` (default `workers.sh count`), `PR_FIRST`, `PR_RECORDS`.
+- **Exact units:** `PR_UNITS="0:1:skilled:3,2:0:sensible:1" PR_MULTIPLES="0.5,1" bash Tools/PlayTest/pressure.sh`
+  (node:difficulty:policy:seed; policies also `careless`, `fresh`, `mono-<TowerId>`).
+- **The acceptance reading proposed in stage 1b** (seeds won at three multiples):
+  `PR_MULTIPLES="0.8,1,1.25" PR_EXTRA="" PR_POLICIES="skilled,sensible" bash Tools/PlayTest/pressure.sh "<nodes>" "<difficulties>"`.
+- **Only the report again:** `bash Tools/PlayTest/pressure.sh report` (or `python Tools/PlayTest/pressure_report.py <records> <report>`).
+  A unit and multiple measured twice: the report takes the last record.
+- **Cost:** about 15 s a run; the default set on two levels is 160 units x 7 multiples = 1120 runs, 58 minutes on five clones.
+- The stop rules (monotone share, seed spread) are constants at the top of `pressure_report.py`; they were fixed before the
+  stage 1b batch and should not be tuned to a result.
+- If a batch is stopped: kill the clones' Unity (command line contains `TowerDefenseWorkers`) and delete
+  the clone's `Temp/UnityLockfile`, as for the other worker scripts.
+- Pitfall met while writing it: the Windows paths in `pressure.sh` need the same doubled backslashes as in `headroom.sh`;
+  with single ones robocopy gets a wrong path, returns 16 and the script stops at the sync. Unlike `headroom.sh`, the sync
+  step here fails loudly when a clone could not be refreshed.

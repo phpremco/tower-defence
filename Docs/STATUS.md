@@ -11172,3 +11172,69 @@ under about 10 %. Options and reasons are in Docs/BALANCE_HEADROOM.md, "What thi
 - The other four levels. Why Shard Ridge Easy reads harder than Medium for the sensible player.
 - A pooled estimate over seeds (only median and range are reported).
 - No separate experiment on why edges flip back; the explanation in the write-up is read from the records.
+
+## Balance stage 1b: a continuous pressure score tested (2026-11-17)
+
+Not committed. Test and tool code only: no gameplay or data change, the stage 1 pipeline untouched (one `headroom.sh` unit
+re-run after the change: passed, same side of the edge as on 2026-11-16), no generator, no Blender, no packages, the Game
+view untouched. No Play Mode in the editor; every run was on the silent clones w1-w5 (EditMode on w6). Remco's save MD5
+42fbe06b38e133cecfe2014def5c833c before and after every batch; no `settings.json`; no worker left running.
+Full write-up: Docs/BALANCE_HEADROOM.md, "Stage 1b". Commands: Docs/COMMANDS.md, "Balance stage 1b: pressure".
+
+### What was built
+
+- `PressureProbeTests.Measure_Pressure` (PlayMode, explicit): a reference player plays a level at fixed health multiples, no
+  bisection. New rung `typical`: the sensible bot's seed 1 build order replayed as a fixed script.
+- `BotRun.Advance()`: per wave the health spawned, that health weighted by how far each creature got, and the health that
+  reached the base. Every run is recorded with it, base and gate damage, and the build order taken.
+- `Tools/PlayTest/pressure.sh "<nodes>" "<difficulties>"` runs it on the clones and writes `pressure_records.txt` and
+  `pressure.txt` (`pressure_report.py`; the stop rules are constants there, fixed before the batch).
+- Pressure P = A + D (0 to 2): A = mean over the waves of the health-weighted share of the road covered, D = base health lost.
+
+### Result: the stop rules are not met; the score is two-valued
+
+Landing Site and Shard Ridge, four difficulties, seeds 1-5, multiples 0.5 to 2: 1120 runs, 58 minutes on five clones.
+
+- **(a) Monotone, at least 95 % of curves: fails by one curve.** 151 of 160 (94.4 %). Scripts 78 of 80, sensible bot 34 of 40.
+- **(b) Seed spread of P at the data under 10 % for the skilled script: fails.** 1 of 8 cells (Shard Ridge Easy 0.9 %); the
+  others 17 to 151 %.
+- **(c) Known facts: holds.** Cannon row 5 of 5 on every Landing Site difficulty; sensible player 0 of 5 on Shard Ridge Hard
+  and Psycho; the air raid hits the base in wave 12 or 13 on nearly every seed.
+- Why: a won run ends with a full base and a lost one at zero, so P is win/lose plus a small term (Landing Site Hard,
+  skilled: 0.09, 0.10, 0.10, 0.11, then 1.22). Only Shard Ridge Hard and Psycho degrade gradually.
+- Seeds won at the data (skilled / typical / sensible): Landing Site 5/5/5, 2/5/5, 5/0/1, 3/0/0; Shard Ridge 5/0/1, 5/2/3,
+  5/0/0, 5/0/0.
+
+### Findings (causes, not fixed)
+
+- **Landing Site wave 7:** the seed draws which of the two nests its nest group leaves. On seeds 3, 4 and 5 a creature comes
+  up behind the first gate; a player with no gun at the far gate loses that gate and the base at any health (skilled script
+  on Medium: lost on those seeds even at x0.5). This is stage 1's "seed 3 loses at every multiple".
+- **Shard Ridge Easy harder than Medium (sensible):** not health (Easy spawns 68 % of Medium's). On Medium the flyers show in
+  the preview during wave 10 and the Rocket is bought then, on all five seeds. On Easy the first flyers come in wave 12
+  without an introduction wave, the bot has just spent its wave 10 money, buys nothing in waves 11 and 12 and no Rocket on
+  4 of 5 seeds; from wave 13 the preview is clear, it stops saving, and the Skyrays on the base finish it (also at x0.5).
+- **Careless beats sensible on Landing Site:** the careless rule alternates the ground guns, so half its guns are Cannons, the
+  strongest row there; the sensible rule's "dearest affordable step" ends at one Cannon and eight Gun Turrets. On Hard the
+  sensible bot stops building after wave 5 (3 guns, 601 coins earned against 1740, 213 on repairs).
+
+### Verification
+
+- Compile clean (only the old CS0618 in `Tests/PlayMode/BalanceProbeTests.cs`).
+- EditMode on w6: **1122 / 1069 passed / 0 failed / 53 skipped** (unchanged).
+- The pressure batch and both smoke batches passed with 0 probe errors.
+
+### Open decisions for Remco
+
+- Do not gate on P or H with percentage bands. Proposed instead: read the probe as seeds won out of five at x0.8, x1 and x1.25
+  (roomy / tight / too hard, plus "lost at x0.5 = structural"), and first decide the three structural findings above.
+- Landing Site: should a wave 7 creature be able to come up behind the first gate on some seeds?
+- Shard Ridge Easy: an introduction wave before the first raid, as Medium has?
+- The sensible bot needs two repairs before it stands for a real player again (keep saving while flyers are alive; do not let
+  repairs starve the counter purchase). Test code, but it changes every "sensible" number.
+
+### Not done
+
+- The other four levels. A rerun-on-another-clone check for the pressure records (stage 1 showed the probe repeats per seed).
+- Which of the two Landing Site nests lies behind the gate was not checked on the map.
+- The purse per wave is not recorded, so "the Rocket was not affordable in time" on Easy is inferred from the build order.

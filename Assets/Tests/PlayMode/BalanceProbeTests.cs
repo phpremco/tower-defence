@@ -413,6 +413,9 @@ namespace Game.Tests
             /// <summary>Per wave, how far along its road the furthest of its creatures got, 0 to 1 (see <see cref="BotRun.Reach"/>).</summary>
             public Dictionary<int, float> Reach = new Dictionary<int, float>();
 
+            /// <summary>Per wave, the spawned health, its progress-weighted share and what reached the base (see <see cref="BotRun.Advance"/>).</summary>
+            public Dictionary<int, BotRun.WaveAdvance> Advance = new Dictionary<int, BotRun.WaveAdvance>();
+
             /// <summary>The seed and step of the run, and its wave records for the calibration (<see cref="Game.Balance.CalibrationFit"/>).</summary>
             public int Seed;
             public float Step;
@@ -662,6 +665,7 @@ namespace Game.Tests
                     AirDealt = run.AirDealt,
                     AirHealth = run.AirHealth,
                     Reach = run.Reach,
+                    Advance = run.Advance(),
                     Seed = seed,
                     Step = step,
                     Records = run.Records,

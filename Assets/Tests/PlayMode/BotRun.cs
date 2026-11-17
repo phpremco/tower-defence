@@ -27,6 +27,9 @@ namespace Game.Tests
         private readonly Dictionary<Enemy, float> _roadLength = new Dictionary<Enemy, float>();
         private readonly Dictionary<Enemy, float> _lastHealth = new Dictionary<Enemy, float>();
         private readonly Dictionary<int, WaveRecord> _records = new Dictionary<int, WaveRecord>();
+        private readonly Dictionary<Enemy, float> _lifeReach = new Dictionary<Enemy, float>();
+        private readonly Dictionary<Enemy, float> _lifeWeight = new Dictionary<Enemy, float>();
+        private readonly Dictionary<int, WaveAdvance> _advance = new Dictionary<int, WaveAdvance>();
         private Game.Combat.TargetRegistry _targets;
         private LevelContext _context;
         private int _recordedWave = -1;
@@ -101,6 +104,30 @@ namespace Game.Tests
         /// of that road (0 at its start, 1 at the base). A wave that reads 1 leaked.
         /// </summary>
         public readonly Dictionary<int, float> Reach = new Dictionary<int, float>();
+
+        /// <summary>
+        /// The pressure probe's continuous leak measure (Docs/BALANCE_HEADROOM.md, stage 1b): per wave, the health its creatures
+        /// spawned with, that health weighted by how far each creature got along its road (0 to 1), and the health that reached
+        /// the base. Unlike <see cref="Reach"/> (the furthest creature only) it moves with every creature that gets a step further.
+        /// </summary>
+        public Dictionary<int, WaveAdvance> Advance()
+        {
+            // Creatures still on the field (or dead since their last spawn) are counted with what they reached so far.
+            foreach (Enemy enemy in new List<Enemy>(_lifeWeight.Keys))
+            {
+                CloseLife(enemy);
+            }
+
+            return new Dictionary<int, WaveAdvance>(_advance);
+        }
+
+        /// <summary>One wave's spawned health, its progress-weighted health and its health that reached the base.</summary>
+        public struct WaveAdvance
+        {
+            public float Health;
+            public float Advanced;
+            public float Leaked;
+        }
 
         /// <summary>The wave records in order, for the calibration.</summary>
         public List<WaveRecord> Records
@@ -260,7 +287,9 @@ namespace Game.Tests
             {
                 if (enemy != null && enemy.IsAlive && _roadLength.TryGetValue(enemy, out float length) && _spawnWave.TryGetValue(enemy, out int wave))
                 {
-                    NoteReach(wave, enemy.PathProgress / length);
+                    float share = enemy.PathProgress / length;
+                    NoteReach(wave, share);
+                    NoteLifeReach(enemy, share);
                 }
             }
         }
@@ -274,7 +303,37 @@ namespace Game.Tests
             }
         }
 
-        private void OnReachedEnd(Enemy enemy) => NoteReach(_spawnWave.TryGetValue(enemy, out int wave) ? wave : Mathf.Max(1, _context.WaveNumber), 1f);
+        private void OnReachedEnd(Enemy enemy)
+        {
+            NoteReach(_spawnWave.TryGetValue(enemy, out int wave) ? wave : Mathf.Max(1, _context.WaveNumber), 1f);
+            NoteLifeReach(enemy, 1f);
+        }
+
+        private void NoteLifeReach(Enemy enemy, float share)
+        {
+            if (_lifeReach.TryGetValue(enemy, out float known) && share > known)
+            {
+                _lifeReach[enemy] = Mathf.Clamp01(share);
+            }
+        }
+
+        // A pooled creature comes back as another one: what its last life reached goes on the wave it spawned in.
+        private void CloseLife(Enemy enemy)
+        {
+            if (!_lifeWeight.TryGetValue(enemy, out float weight) || !_spawnWave.TryGetValue(enemy, out int wave))
+            {
+                return;
+            }
+
+            float reach = _lifeReach.TryGetValue(enemy, out float known) ? known : 0f;
+            _advance.TryGetValue(wave, out WaveAdvance sum);
+            sum.Health += weight;
+            sum.Advanced += weight * reach;
+            sum.Leaked += reach >= 1f ? weight : 0f;
+            _advance[wave] = sum;
+            _lifeWeight.Remove(enemy);
+            _lifeReach.Remove(enemy);
+        }
 
         // The length of the road a creature walks or flies: the level's path of its kind that passes nearest to where it came up
         // (a creature out of a nest joins its road halfway, and its progress counts from that road's start).
@@ -333,9 +392,12 @@ namespace Game.Tests
                 enemy.ReachedEnd += OnReachedEnd;
             }
 
+            CloseLife(enemy);
             _roadLength[enemy] = RoadLengthFor(enemy);
             int wave = _context != null ? Mathf.Max(1, _context.WaveNumber) : 1;
             _spawnWave[enemy] = wave;
+            _lifeReach[enemy] = 0f;
+            _lifeWeight[enemy] = enemy.Health != null ? enemy.Health.Max + enemy.Health.ArmorMax : 0f;
             _lastHealth[enemy] = enemy.Health != null ? enemy.Health.Current + enemy.Health.Armor : 0f;
             // A boss's own minions and the like spawn mid-wave and count with the wave they appear in.
             RecordOf(wave).Health += enemy.Health != null ? enemy.Health.Max + enemy.Health.ArmorMax : 0f;

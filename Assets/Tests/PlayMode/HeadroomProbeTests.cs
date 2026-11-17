@@ -207,7 +207,7 @@ namespace Game.Tests
         }
 
         // A runtime copy of the level whose creatures carry the multiple; the asset is not touched and the copy keeps its name.
-        private static LevelDefinition Scaled(LevelDefinition level, float factor)
+        internal static LevelDefinition Scaled(LevelDefinition level, float factor)
         {
             LevelDefinition copy = UnityEngine.Object.Instantiate(level);
             copy.name = level.name;
@@ -247,7 +247,7 @@ namespace Game.Tests
         /// fixed script. Best is the strategy that won on the most seeds (then stars, then base health); of its wins the lowest
         /// seed's build order is taken. A script decides nothing, so this player reads no model either.
         /// </summary>
-        private static PlanSpec BestRecordedPlan(string levelName, int difficulty)
+        internal static PlanSpec BestRecordedPlan(string levelName, int difficulty)
         {
             if (!System.IO.File.Exists(PlanRecordsPath))
             {

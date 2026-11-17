@@ -1,0 +1,348 @@
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 151 of 160 curves monotone = 94.4%  ->  FAIL
+  skilled       38 of 40  curves (95%); 2 of 240 steps drop by more than the tolerance
+  typical       40 of 40  curves (100%); 0 of 240 steps drop by more than the tolerance
+  sensible      34 of 40  curves (85%); 6 of 240 steps drop by more than the tolerance
+  careless      20 of 20  curves (100%); 0 of 120 steps drop by more than the tolerance
+  mono-Cannon   19 of 20  curves (95%); 1 of 120 steps drop by more than the tolerance
+  the same check on other scores (all rungs): P 151 of 160; A 148 of 160; R+D (furthest creature) 119 of 160; D 157 of 160; won/lost 157 of 160
+  curves that are not monotone (P per multiple, the drops marked):
+    Landing Site Hard     skilled      seed 2: 0.5:0.08 0.65:0.08 0.8:0.09 1:0.09 1.25:1.22L 1.6:1.17L! 2:1.39L  (worst drop -0.044)
+    Landing Site Psycho   mono-Cannon  seed 3: 0.5:0.11 0.65:0.11 0.8:0.13 1:0.16 1.25:0.14! 1.6:1.29L 2:1.32L  (worst drop -0.023)
+    Landing Site Psycho   sensible     seed 1: 0.5:0.18 0.65:1.25L 0.8:1.28L 1:1.25L! 1.25:1.33L 1.6:1.44L 2:1.47L  (worst drop -0.025)
+    Landing Site Psycho   skilled      seed 4: 0.5:0.12 0.65:0.35 0.8:1.13L 1:0.69! 1.25:1.21L 1.6:1.40L 2:1.40L  (worst drop -0.439)
+    Shard Ridge Easy      sensible     seed 2: 0.5:0.43 0.65:1.48L 0.8:0.44! 1:0.44 1.25:1.49L 1.6:1.51L 2:1.52L  (worst drop -1.045)
+    Shard Ridge Medium    sensible     seed 5: 0.5:0.47 0.65:1.44L 0.8:1.44L 1:1.33! 1.25:1.45L 1.6:1.54L 2:1.56L  (worst drop -0.107)
+    Shard Ridge Psycho    sensible     seed 1: 0.5:1.43L 0.65:1.49L 0.8:1.54L 1:1.54L 1.25:1.52L! 1.6:1.54L 2:1.55L  (worst drop -0.022)
+    Shard Ridge Psycho    sensible     seed 3: 0.5:1.46L 0.65:1.53L 0.8:1.49L! 1:1.54L 1.25:1.53L 1.6:1.55L 2:1.60L  (worst drop -0.044)
+    Shard Ridge Psycho    sensible     seed 5: 0.5:1.46L 0.65:1.53L 0.8:1.53L 1:1.48L! 1.25:1.55L 1.6:1.54L 2:1.56L  (worst drop -0.052)
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 1 of 8 cells within the limit  ->  FAIL
+  cell                  skilled                   typical                   sensible                  careless                  
+  Landing Site Easy     21.8% (abs 0.025, n=5)    21.1% (abs 0.022, n=5)    22.5% (abs 0.024, n=5)    91.6% (abs 1.029, n=5)
+  Landing Site Medium   92.9% (abs 1.029, n=5)    23.0% (abs 0.026, n=5)    23.4% (abs 0.026, n=5)    91.5% (abs 1.031, n=5)
+  Landing Site Hard     151.0% (abs 0.163, n=5)   3.0% (abs 0.039, n=5)     80.7% (abs 1.018, n=5)    91.8% (abs 1.065, n=5)
+  Landing Site Psycho   149.9% (abs 1.038, n=5)   5.3% (abs 0.068, n=5)     5.9% (abs 0.076, n=5)     3.9% (abs 0.046, n=5)
+  Shard Ridge Easy      0.9% (abs 0.004, n=5)     0.3% (abs 0.004, n=5)     70.3% (abs 1.047, n=5)    -
+  Shard Ridge Medium    121.4% (abs 0.629, n=5)   18.9% (abs 0.274, n=5)    20.5% (abs 0.274, n=5)    -
+  Shard Ridge Hard      22.9% (abs 0.192, n=5)    3.6% (abs 0.054, n=5)     4.0% (abs 0.060, n=5)     -
+  Shard Ridge Psycho    16.8% (abs 0.102, n=5)    1.5% (abs 0.023, n=5)     3.9% (abs 0.061, n=5)     -
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+    skilled  Landing Site Easy     x0.5 10% (0.01)  x0.65 11% (0.01)  x0.8 26% (0.02)  x1 22% (0.02)  x1.25 20% (0.02)  x1.6 648% (1.00)  x2 9% (0.11)
+    skilled  Landing Site Medium   x0.5 94% (1.03)  x0.65 93% (1.03)  x0.8 93% (1.03)  x1 93% (1.03)  x1.25 93% (1.04)  x1.6 6% (0.07)  x2 2% (0.03)
+    skilled  Landing Site Hard     x0.5 28% (0.03)  x0.65 27% (0.03)  x0.8 26% (0.03)  x1 151% (0.16)  x1.25 5% (0.06)  x1.6 8% (0.10)  x2 1% (0.01)
+    skilled  Landing Site Psycho   x0.5 24% (0.03)  x0.65 204% (0.25)  x0.8 798% (1.03)  x1 150% (1.04)  x1.25 3% (0.04)  x1.6 12% (0.17)  x2 6% (0.08)
+    skilled  Shard Ridge Easy      x0.5 1% (0.00)  x0.65 1% (0.01)  x0.8 1% (0.00)  x1 1% (0.00)  x1.25 0% (0.00)  x1.6 68% (1.00)  x2 68% (1.00)
+    skilled  Shard Ridge Medium    x0.5 2% (0.01)  x0.65 1% (0.00)  x0.8 2% (0.01)  x1 121% (0.63)  x1.25 65% (0.72)  x1.6 15% (0.21)  x2 4% (0.06)
+    skilled  Shard Ridge Hard      x0.5 5% (0.03)  x0.65 11% (0.06)  x0.8 16% (0.10)  x1 23% (0.19)  x1.25 18% (0.17)  x1.6 15% (0.22)  x2 8% (0.13)
+    skilled  Shard Ridge Psycho    x0.5 1% (0.01)  x0.65 0% (0.00)  x0.8 2% (0.01)  x1 17% (0.10)  x1.25 42% (0.56)  x1.6 4% (0.06)  x2 1% (0.02)
+    typical  Landing Site Easy     x0.5 24% (0.02)  x0.65 24% (0.02)  x0.8 23% (0.02)  x1 21% (0.02)  x1.25 21% (0.03)  x1.6 2% (0.03)  x2 1% (0.01)
+    typical  Landing Site Medium   x0.5 23% (0.02)  x0.65 23% (0.02)  x0.8 23% (0.02)  x1 23% (0.03)  x1.25 27% (0.04)  x1.6 3% (0.03)  x2 2% (0.03)
+    typical  Landing Site Hard     x0.5 9% (0.11)  x0.65 1% (0.01)  x0.8 4% (0.05)  x1 3% (0.04)  x1.25 5% (0.07)  x1.6 1% (0.01)  x2 7% (0.10)
+    typical  Landing Site Psycho   x0.5 4% (0.05)  x0.65 4% (0.04)  x0.8 3% (0.04)  x1 5% (0.07)  x1.25 10% (0.13)  x1.6 5% (0.07)  x2 5% (0.07)
+    typical  Shard Ridge Easy      x0.5 1% (0.01)  x0.65 1% (0.01)  x0.8 0% (0.01)  x1 0% (0.00)  x1.25 0% (0.01)  x1.6 0% (0.01)  x2 1% (0.01)
+    typical  Shard Ridge Medium    x0.5 17% (0.08)  x0.65 125% (0.91)  x0.8 78% (0.78)  x1 19% (0.27)  x1.25 5% (0.07)  x1.6 4% (0.07)  x2 4% (0.07)
+    typical  Shard Ridge Hard      x0.5 40% (0.44)  x0.65 0% (0.00)  x0.8 1% (0.01)  x1 4% (0.05)  x1.25 4% (0.06)  x1.6 3% (0.05)  x2 1% (0.01)
+    typical  Shard Ridge Psycho    x0.5 4% (0.06)  x0.65 5% (0.07)  x0.8 1% (0.01)  x1 1% (0.02)  x1.25 2% (0.03)  x1.6 1% (0.02)  x2 1% (0.02)
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  skilled                           typical                           sensible                          careless                          mono-Cannon                       
+  Landing Site Easy     0.113 (0.090-0.115) 5/5           0.106 (0.085-0.107) 5/5           0.106 (0.084-0.108) 5/5           1.123 (0.099-1.128) 2/5           0.109 (0.089-0.111) 5/5
+  Landing Site Medium   1.107 (0.081-1.109) 2/5           0.111 (0.087-0.113) 5/5           0.111 (0.087-0.113) 5/5           1.127 (0.100-1.131) 2/5           0.112 (0.087-0.113) 5/5
+  Landing Site Hard     0.108 (0.092-0.255) 5/5           1.285 (1.251-1.289) 0/5           1.263 (0.256-1.274) 1/5           1.160 (0.112-1.177) 1/5           0.109 (0.096-0.179) 5/5
+  Landing Site Psycho   0.692 (0.126-1.163) 3/5           1.289 (1.270-1.338) 0/5           1.289 (1.254-1.330) 0/5           1.173 (1.150-1.196) 0/5           0.137 (0.109-0.168) 5/5
+  Shard Ridge Easy      0.473 (0.472-0.476) 5/5           1.491 (1.488-1.492) 0/5           1.490 (0.444-1.492) 1/5           -                                 -
+  Shard Ridge Medium    0.518 (0.491-1.119) 5/5           1.447 (1.237-1.511) 2/5           1.335 (1.237-1.511) 3/5           -                                 -
+  Shard Ridge Hard      0.839 (0.658-0.850) 5/5           1.503 (1.454-1.508) 0/5           1.503 (1.449-1.508) 0/5           -                                 -
+  Shard Ridge Psycho    0.606 (0.531-0.633) 5/5           1.537 (1.519-1.541) 0/5           1.538 (1.481-1.541) 0/5           -                                 -
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  skilled
+    Landing Site Easy     x0.5 0.08 (0.07-0.08) 5/5 | x0.65 0.09 (0.08-0.09) 5/5 | x0.8 0.09 (0.09-0.11) 5/5 | x1 0.11 (0.09-0.11) 5/5 | x1.25 0.12 (0.10-0.12) 5/5 | x1.6 0.15 (0.14-1.14) 4/5 | x2 1.25 (1.22-1.33) 0/5
+    Landing Site Medium   x0.5 1.10 (0.07-1.10) 2/5 | x0.65 1.10 (0.07-1.10) 2/5 | x0.8 1.10 (0.08-1.11) 2/5 | x1 1.11 (0.08-1.11) 2/5 | x1.25 1.11 (0.09-1.13) 2/5 | x1.6 1.16 (1.14-1.20) 0/5 | x2 1.22 (1.19-1.22) 0/5
+    Landing Site Hard     x0.5 0.09 (0.08-0.11) 5/5 | x0.65 0.10 (0.08-0.11) 5/5 | x0.8 0.10 (0.08-0.11) 5/5 | x1 0.11 (0.09-0.25) 5/5 | x1.25 1.22 (1.16-1.22) 0/5 | x1.6 1.24 (1.17-1.28) 0/5 | x2 1.39 (1.39-1.40) 0/5
+    Landing Site Psycho   x0.5 0.12 (0.09-0.12) 5/5 | x0.65 0.12 (0.10-0.35) 5/5 | x0.8 0.13 (0.10-1.13) 3/5 | x1 0.69 (0.13-1.16) 3/5 | x1.25 1.21 (1.18-1.21) 0/5 | x1.6 1.35 (1.24-1.40) 0/5 | x2 1.40 (1.33-1.41) 0/5
+    Shard Ridge Easy      x0.5 0.45 (0.45-0.45) 5/5 | x0.65 0.46 (0.45-0.46) 5/5 | x0.8 0.46 (0.46-0.46) 5/5 | x1 0.47 (0.47-0.48) 5/5 | x1.25 0.48 (0.48-0.48) 5/5 | x1.6 1.48 (0.49-1.49) 2/5 | x2 1.48 (0.50-1.50) 1/5
+    Shard Ridge Medium    x0.5 0.47 (0.46-0.47) 5/5 | x0.65 0.48 (0.47-0.48) 5/5 | x0.8 0.49 (0.48-0.50) 5/5 | x1 0.52 (0.49-1.12) 5/5 | x1.25 1.11 (0.51-1.23) 5/5 | x1.6 1.44 (1.29-1.50) 3/5 | x2 1.63 (1.57-1.63) 0/5
+    Shard Ridge Hard      x0.5 0.51 (0.48-0.51) 5/5 | x0.65 0.55 (0.52-0.58) 5/5 | x0.8 0.64 (0.59-0.69) 5/5 | x1 0.84 (0.66-0.85) 5/5 | x1.25 0.94 (0.92-1.09) 5/5 | x1.6 1.50 (1.30-1.52) 3/5 | x2 1.62 (1.54-1.67) 0/5
+    Shard Ridge Psycho    x0.5 0.50 (0.49-0.50) 5/5 | x0.65 0.51 (0.50-0.51) 5/5 | x0.8 0.51 (0.51-0.52) 5/5 | x1 0.61 (0.53-0.63) 5/5 | x1.25 1.36 (0.97-1.54) 4/5 | x1.6 1.60 (1.54-1.60) 0/5 | x2 1.62 (1.60-1.63) 0/5
+  typical
+    Landing Site Easy     x0.5 0.09 (0.07-0.10) 5/5 | x0.65 0.10 (0.08-0.10) 5/5 | x0.8 0.10 (0.08-0.10) 5/5 | x1 0.11 (0.08-0.11) 5/5 | x1.25 0.14 (0.12-0.15) 5/5 | x1.6 1.21 (1.19-1.22) 0/5 | x2 1.24 (1.23-1.25) 0/5
+    Landing Site Medium   x0.5 0.10 (0.08-0.10) 5/5 | x0.65 0.10 (0.08-0.11) 5/5 | x0.8 0.11 (0.09-0.11) 5/5 | x1 0.11 (0.09-0.11) 5/5 | x1.25 0.13 (0.11-0.14) 5/5 | x1.6 1.19 (1.19-1.22) 0/5 | x2 1.26 (1.24-1.27) 0/5
+    Landing Site Hard     x0.5 1.23 (1.14-1.24) 0/5 | x0.65 1.23 (1.22-1.23) 0/5 | x0.8 1.25 (1.23-1.28) 0/5 | x1 1.29 (1.25-1.29) 0/5 | x1.25 1.33 (1.29-1.36) 0/5 | x1.6 1.40 (1.39-1.40) 0/5 | x2 1.42 (1.41-1.52) 0/5
+    Landing Site Psycho   x0.5 1.24 (1.21-1.26) 0/5 | x0.65 1.26 (1.25-1.29) 0/5 | x0.8 1.29 (1.28-1.32) 0/5 | x1 1.29 (1.27-1.34) 0/5 | x1.25 1.34 (1.27-1.40) 0/5 | x1.6 1.44 (1.40-1.46) 0/5 | x2 1.47 (1.46-1.54) 0/5
+    Shard Ridge Easy      x0.5 1.49 (1.48-1.49) 0/5 | x0.65 1.49 (1.48-1.49) 0/5 | x0.8 1.49 (1.48-1.49) 0/5 | x1 1.49 (1.49-1.49) 0/5 | x1.25 1.50 (1.49-1.50) 0/5 | x1.6 1.51 (1.51-1.51) 0/5 | x2 1.52 (1.51-1.52) 0/5
+    Shard Ridge Medium    x0.5 0.47 (0.45-0.53) 5/5 | x0.65 0.73 (0.58-1.50) 3/5 | x0.8 1.00 (0.72-1.50) 3/5 | x1 1.45 (1.24-1.51) 2/5 | x1.25 1.47 (1.45-1.52) 0/5 | x1.6 1.48 (1.47-1.53) 0/5 | x2 1.55 (1.49-1.56) 0/5
+    Shard Ridge Hard      x0.5 1.12 (1.00-1.44) 4/5 | x0.65 1.45 (1.45-1.45) 0/5 | x0.8 1.46 (1.46-1.47) 0/5 | x1 1.50 (1.45-1.51) 0/5 | x1.25 1.52 (1.46-1.52) 0/5 | x1.6 1.52 (1.52-1.57) 0/5 | x2 1.57 (1.56-1.57) 0/5
+    Shard Ridge Psycho    x0.5 1.46 (1.41-1.47) 0/5 | x0.65 1.53 (1.46-1.54) 0/5 | x0.8 1.53 (1.53-1.54) 0/5 | x1 1.54 (1.52-1.54) 0/5 | x1.25 1.53 (1.52-1.55) 0/5 | x1.6 1.55 (1.54-1.56) 0/5 | x2 1.60 (1.59-1.61) 0/5
+  sensible
+    Landing Site Easy     x0.5 0.09 (0.07-0.10) 5/5 | x0.65 0.10 (0.08-0.10) 5/5 | x0.8 0.10 (0.08-0.10) 5/5 | x1 0.11 (0.08-0.11) 5/5 | x1.25 1.15 (1.13-1.16) 0/5 | x1.6 1.21 (1.19-1.22) 0/5 | x2 1.23 (1.23-1.24) 0/5
+    Landing Site Medium   x0.5 0.10 (0.08-0.10) 5/5 | x0.65 0.11 (0.08-0.11) 5/5 | x0.8 0.11 (0.09-0.11) 5/5 | x1 0.11 (0.09-0.11) 5/5 | x1.25 1.12 (0.11-1.15) 2/5 | x1.6 1.19 (1.19-1.22) 0/5 | x2 1.25 (1.22-1.27) 0/5
+    Landing Site Hard     x0.5 0.11 (0.09-0.12) 5/5 | x0.65 0.13 (0.11-0.15) 5/5 | x0.8 0.17 (0.12-1.21) 4/5 | x1 1.26 (0.26-1.27) 1/5 | x1.25 1.28 (1.27-1.30) 0/5 | x1.6 1.39 (1.39-1.40) 0/5 | x2 1.42 (1.41-1.51) 0/5
+    Landing Site Psycho   x0.5 0.20 (0.18-1.21) 4/5 | x0.65 1.25 (1.22-1.26) 0/5 | x0.8 1.28 (1.25-1.30) 0/5 | x1 1.29 (1.25-1.33) 0/5 | x1.25 1.36 (1.33-1.39) 0/5 | x1.6 1.44 (1.40-1.47) 0/5 | x2 1.47 (1.46-1.55) 0/5
+    Shard Ridge Easy      x0.5 1.49 (0.43-1.49) 2/5 | x0.65 1.49 (1.17-1.49) 1/5 | x0.8 1.49 (0.44-1.49) 1/5 | x1 1.49 (0.44-1.49) 1/5 | x1.25 1.50 (1.49-1.50) 0/5 | x1.6 1.51 (1.51-1.51) 0/5 | x2 1.52 (1.51-1.52) 0/5
+    Shard Ridge Medium    x0.5 0.47 (0.45-0.53) 5/5 | x0.65 0.80 (0.59-1.50) 3/5 | x0.8 0.98 (0.75-1.50) 3/5 | x1 1.33 (1.24-1.51) 3/5 | x1.25 1.47 (1.45-1.52) 0/5 | x1.6 1.48 (1.47-1.54) 0/5 | x2 1.56 (1.49-1.57) 0/5
+    Shard Ridge Hard      x0.5 1.33 (0.82-1.44) 3/5 | x0.65 1.45 (1.44-1.45) 0/5 | x0.8 1.46 (1.45-1.46) 0/5 | x1 1.50 (1.45-1.51) 0/5 | x1.25 1.51 (1.46-1.52) 0/5 | x1.6 1.52 (1.52-1.57) 0/5 | x2 1.57 (1.56-1.58) 0/5
+    Shard Ridge Psycho    x0.5 1.43 (1.41-1.46) 0/5 | x0.65 1.49 (1.42-1.53) 0/5 | x0.8 1.53 (1.43-1.54) 0/5 | x1 1.54 (1.48-1.54) 0/5 | x1.25 1.53 (1.52-1.55) 0/5 | x1.6 1.55 (1.54-1.56) 0/5 | x2 1.55 (1.54-1.60) 0/5
+  careless
+    Landing Site Easy     x0.5 0.10 (0.10-0.10) 5/5 | x0.65 1.12 (0.10-1.12) 2/5 | x0.8 1.12 (0.10-1.13) 2/5 | x1 1.12 (0.10-1.13) 2/5 | x1.25 1.13 (0.10-1.13) 2/5 | x1.6 1.13 (0.10-1.14) 2/5 | x2 1.18 (1.17-1.20) 0/5
+    Landing Site Medium   x0.5 0.10 (0.10-0.10) 5/5 | x0.65 1.12 (0.10-1.13) 2/5 | x0.8 1.13 (0.10-1.13) 2/5 | x1 1.13 (0.10-1.13) 2/5 | x1.25 1.13 (0.10-1.13) 2/5 | x1.6 1.14 (0.11-1.16) 1/5 | x2 1.16 (1.16-1.23) 0/5
+    Landing Site Hard     x0.5 1.12 (0.10-1.13) 2/5 | x0.65 1.12 (0.10-1.13) 2/5 | x0.8 1.12 (0.10-1.13) 2/5 | x1 1.16 (0.11-1.18) 1/5 | x1.25 1.26 (1.23-1.27) 0/5 | x1.6 1.40 (1.39-1.41) 0/5 | x2 1.52 (1.43-1.61) 0/5
+    Landing Site Psycho   x0.5 0.10 (0.10-1.12) 3/5 | x0.65 1.13 (0.11-1.15) 2/5 | x0.8 1.13 (0.11-1.15) 1/5 | x1 1.17 (1.15-1.20) 0/5 | x1.25 1.20 (1.17-1.35) 0/5 | x1.6 1.40 (1.40-1.41) 0/5 | x2 1.41 (1.41-1.48) 0/5
+  mono-Cannon
+    Landing Site Easy     x0.5 0.10 (0.08-0.10) 5/5 | x0.65 0.10 (0.09-0.10) 5/5 | x0.8 0.10 (0.09-0.11) 5/5 | x1 0.11 (0.09-0.11) 5/5 | x1.25 0.11 (0.09-0.11) 5/5 | x1.6 0.11 (0.09-0.12) 5/5 | x2 0.12 (0.10-1.16) 4/5
+    Landing Site Medium   x0.5 0.10 (0.08-0.10) 5/5 | x0.65 0.10 (0.08-0.10) 5/5 | x0.8 0.11 (0.09-0.11) 5/5 | x1 0.11 (0.09-0.11) 5/5 | x1.25 0.11 (0.09-0.11) 5/5 | x1.6 0.12 (0.09-0.12) 5/5 | x2 1.21 (0.16-1.24) 1/5
+    Landing Site Hard     x0.5 0.10 (0.09-0.10) 5/5 | x0.65 0.10 (0.09-0.12) 5/5 | x0.8 0.10 (0.09-0.12) 5/5 | x1 0.11 (0.10-0.18) 5/5 | x1.25 1.25 (1.15-1.26) 0/5 | x1.6 1.26 (1.16-1.31) 0/5 | x2 1.32 (1.26-1.41) 0/5
+    Landing Site Psycho   x0.5 0.11 (0.09-0.12) 5/5 | x0.65 0.11 (0.09-0.13) 5/5 | x0.8 0.13 (0.10-0.13) 5/5 | x1 0.14 (0.11-0.17) 5/5 | x1.25 0.14 (0.14-0.18) 5/5 | x1.6 1.29 (1.26-1.29) 0/5 | x2 1.32 (1.28-1.33) 0/5
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  skilled     Landing Site Easy     A 0.113 (0.090-0.115)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  skilled     Landing Site Medium   A 0.107 (0.081-0.109)  D 1.00 (0.00-1.00)  leaked 0.015 (0.000-0.015)
+  skilled     Landing Site Hard     A 0.108 (0.092-0.118)  D 0.00 (0.00-0.14)  leaked 0.000 (0.000-0.014)
+  skilled     Landing Site Psycho   A 0.142 (0.126-0.163)  D 0.54 (0.00-1.00)  leaked 0.014 (0.000-0.043)
+  skilled     Shard Ridge Easy      A 0.473 (0.472-0.476)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  skilled     Shard Ridge Medium    A 0.493 (0.491-0.494)  D 0.03 (0.00-0.63)  leaked 0.007 (0.000-0.013)
+  skilled     Shard Ridge Hard      A 0.519 (0.517-0.523)  D 0.32 (0.14-0.33)  leaked 0.021 (0.015-0.025)
+  skilled     Shard Ridge Psycho    A 0.535 (0.529-0.536)  D 0.07 (0.00-0.10)  leaked 0.006 (0.000-0.012)
+  typical     Landing Site Easy     A 0.106 (0.085-0.107)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  typical     Landing Site Medium   A 0.111 (0.087-0.113)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  typical     Landing Site Hard     A 0.285 (0.251-0.289)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  typical     Landing Site Psycho   A 0.289 (0.270-0.338)  D 1.00 (1.00-1.00)  leaked 0.028 (0.000-0.042)
+  typical     Shard Ridge Easy      A 0.491 (0.488-0.492)  D 1.00 (1.00-1.00)  leaked 0.011 (0.011-0.015)
+  typical     Shard Ridge Medium    A 0.470 (0.447-0.511)  D 1.00 (0.77-1.00)  leaked 0.032 (0.007-0.039)
+  typical     Shard Ridge Hard      A 0.503 (0.454-0.508)  D 1.00 (1.00-1.00)  leaked 0.046 (0.036-0.073)
+  typical     Shard Ridge Psycho    A 0.537 (0.519-0.541)  D 1.00 (1.00-1.00)  leaked 0.054 (0.041-0.064)
+  sensible    Landing Site Easy     A 0.106 (0.084-0.108)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  sensible    Landing Site Medium   A 0.111 (0.087-0.113)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  sensible    Landing Site Hard     A 0.263 (0.253-0.274)  D 1.00 (0.00-1.00)  leaked 0.000 (0.000-0.000)
+  sensible    Landing Site Psycho   A 0.289 (0.254-0.330)  D 1.00 (1.00-1.00)  leaked 0.028 (0.000-0.028)
+  sensible    Shard Ridge Easy      A 0.490 (0.444-0.492)  D 1.00 (0.00-1.00)  leaked 0.011 (0.000-0.015)
+  sensible    Shard Ridge Medium    A 0.469 (0.466-0.511)  D 0.87 (0.77-1.00)  leaked 0.032 (0.007-0.045)
+  sensible    Shard Ridge Hard      A 0.503 (0.449-0.508)  D 1.00 (1.00-1.00)  leaked 0.046 (0.045-0.068)
+  sensible    Shard Ridge Psycho    A 0.538 (0.481-0.541)  D 1.00 (1.00-1.00)  leaked 0.054 (0.047-0.070)
+  careless    Landing Site Easy     A 0.123 (0.099-0.128)  D 1.00 (0.00-1.00)  leaked 0.016 (0.000-0.016)
+  careless    Landing Site Medium   A 0.127 (0.100-0.131)  D 1.00 (0.00-1.00)  leaked 0.015 (0.000-0.015)
+  careless    Landing Site Hard     A 0.160 (0.111-0.177)  D 1.00 (0.00-1.00)  leaked 0.014 (0.000-0.016)
+  careless    Landing Site Psycho   A 0.173 (0.150-0.196)  D 1.00 (1.00-1.00)  leaked 0.028 (0.000-0.043)
+  mono-Cannon Landing Site Easy     A 0.109 (0.089-0.111)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  mono-Cannon Landing Site Medium   A 0.112 (0.087-0.113)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  mono-Cannon Landing Site Hard     A 0.109 (0.096-0.179)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  mono-Cannon Landing Site Psycho   A 0.137 (0.109-0.168)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<0.5' / '>2' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  skilled
+    Landing Site Easy     median 1.79   pooled 1.79   per seed: 1.79 1.77 1.79 1.79 1.41             spread 26% (n=5)
+    Landing Site Medium   median <0.5   pooled <0.5   per seed: 1.41 1.41 <0.5 <0.5 <0.5             spread 0% (n=2)
+    Landing Site Hard     median 1.12   pooled 1.12   per seed: 1.12 1.12 1.12 1.12 1.10             spread 2% (n=5)
+    Landing Site Psycho   median 0.89   pooled 0.98   per seed: 1.12 1.12 0.89 0.70 0.72             spread 60% (n=5)
+    Shard Ridge Easy      median 1.41   pooled 1.41   per seed: >2 1.41 1.41 1.41 1.79               spread 26% (n=4)
+    Shard Ridge Medium    median 1.20   pooled 1.20   per seed: 1.47 1.37 0.96 0.97 1.20             spread 54% (n=5)
+    Shard Ridge Hard      median 1.30   pooled 1.30   per seed: 1.18 1.30 1.33 1.34 1.29             spread 13% (n=5)
+    Shard Ridge Psycho    median 1.14   pooled 1.14   per seed: 1.14 1.15 1.11 1.29 1.14             spread 17% (n=5)
+  typical
+    Landing Site Easy     median 1.41   pooled 1.41   per seed: 1.41 1.41 1.41 1.41 1.41             spread 0% (n=5)
+    Landing Site Medium   median 1.41   pooled 1.41   per seed: 1.41 1.41 1.41 1.41 1.41             spread 0% (n=5)
+    Landing Site Hard     median <0.5   pooled <0.5   per seed: <0.5 <0.5 <0.5 <0.5 <0.5             spread -
+    Landing Site Psycho   median <0.5   pooled <0.5   per seed: <0.5 <0.5 <0.5 <0.5 <0.5             spread -
+    Shard Ridge Easy      median <0.5   pooled <0.5   per seed: <0.5 <0.5 <0.5 <0.5 <0.5             spread -
+    Shard Ridge Medium    median 0.78   pooled 0.77   per seed: 0.86 0.78 0.56 0.83 0.57             spread 53% (n=5)
+    Shard Ridge Hard      median <0.5   pooled <0.5   per seed: <0.5 <0.5 <0.5 <0.5 <0.5             spread -
+    Shard Ridge Psycho    median <0.5   pooled <0.5   per seed: <0.5 <0.5 <0.5 <0.5 <0.5             spread -
+  sensible
+    Landing Site Easy     median 1.12   pooled 1.12   per seed: 1.12 1.12 1.12 1.12 1.12             spread 0% (n=5)
+    Landing Site Medium   median 1.12   pooled 1.12   per seed: 1.41 1.12 1.12 1.41 1.12             spread 26% (n=5)
+    Landing Site Hard     median 0.89   pooled 0.89   per seed: 0.89 0.89 0.89 1.12 0.72             spread 55% (n=5)
+    Landing Site Psycho   median 0.57   pooled 0.57   per seed: 0.57 0.57 <0.5 0.57 0.57             spread 0% (n=4)
+    Shard Ridge Easy      median <0.5   pooled <0.5   per seed: <0.5 0.57 <0.5 <0.5 <0.5             spread -
+    Shard Ridge Medium    median 0.79   pooled 0.78   per seed: 0.85 0.79 0.56 0.83 0.57             spread 52% (n=5)
+    Shard Ridge Hard      median <0.5   pooled <0.5   per seed: 0.53 <0.5 <0.5 <0.5 <0.5             spread -
+    Shard Ridge Psycho    median <0.5   pooled <0.5   per seed: <0.5 <0.5 <0.5 <0.5 <0.5             spread -
+  careless
+    Landing Site Easy     median 0.57   pooled 0.57   per seed: 1.79 1.79 0.57 0.57 0.57             spread 214% (n=5)
+    Landing Site Medium   median 0.57   pooled 0.57   per seed: 1.41 1.79 0.57 0.57 0.57             spread 214% (n=5)
+    Landing Site Hard     median <0.5   pooled <0.5   per seed: 0.89 1.12 <0.5 <0.5 <0.5             spread 25% (n=2)
+    Landing Site Psycho   median 0.57   pooled 0.57   per seed: <0.5 0.89 0.57 0.72 <0.5             spread 57% (n=3)
+  mono-Cannon
+    Landing Site Easy     median >2     pooled >2     per seed: >2 >2 >2 >2 1.79                     spread -
+    Landing Site Medium   median 1.79   pooled 1.79   per seed: 1.79 1.79 1.79 1.79 >2               spread 0% (n=4)
+    Landing Site Hard     median 1.12   pooled 1.12   per seed: 1.12 1.12 1.12 1.12 1.12             spread 0% (n=5)
+    Landing Site Psycho   median 1.41   pooled 1.41   per seed: 1.41 1.41 1.41 1.41 1.41             spread 0% (n=5)
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x0.5   x0.65  x0.8   x1     x1.25  x1.6   x2     H50
+  skilled     Landing Site Easy     5/5    5/5    5/5    5/5    5/5    4/5    0/5    1.74
+  skilled     Landing Site Medium   2/5    2/5    2/5    2/5    2/5    0/5    0/5    <0.5
+  skilled     Landing Site Hard     5/5    5/5    5/5    5/5    0/5    0/5    0/5    1.12
+  skilled     Landing Site Psycho   5/5    5/5    3/5    3/5    0/5    0/5    0/5    1.04
+  skilled     Shard Ridge Easy      5/5    5/5    5/5    5/5    5/5    2/5    1/5    1.54
+  skilled     Shard Ridge Medium    5/5    5/5    5/5    5/5    5/5    3/5    0/5    1.66
+  skilled     Shard Ridge Hard      5/5    5/5    5/5    5/5    5/5    3/5    0/5    1.66
+  skilled     Shard Ridge Psycho    5/5    5/5    5/5    5/5    4/5    0/5    0/5    1.37
+  typical     Landing Site Easy     5/5    5/5    5/5    5/5    5/5    0/5    0/5    1.41
+  typical     Landing Site Medium   5/5    5/5    5/5    5/5    5/5    0/5    0/5    1.41
+  typical     Landing Site Hard     0/5    0/5    0/5    0/5    0/5    0/5    0/5    <0.5
+  typical     Landing Site Psycho   0/5    0/5    0/5    0/5    0/5    0/5    0/5    <0.5
+  typical     Shard Ridge Easy      0/5    0/5    0/5    0/5    0/5    0/5    0/5    <0.5
+  typical     Shard Ridge Medium    5/5    3/5    3/5    2/5    0/5    0/5    0/5    0.89
+  typical     Shard Ridge Hard      4/5    0/5    0/5    0/5    0/5    0/5    0/5    0.55
+  typical     Shard Ridge Psycho    0/5    0/5    0/5    0/5    0/5    0/5    0/5    <0.5
+  sensible    Landing Site Easy     5/5    5/5    5/5    5/5    0/5    0/5    0/5    1.12
+  sensible    Landing Site Medium   5/5    5/5    5/5    5/5    2/5    0/5    0/5    1.20
+  sensible    Landing Site Hard     5/5    5/5    4/5    1/5    0/5    0/5    0/5    0.89
+  sensible    Landing Site Psycho   4/5    0/5    0/5    0/5    0/5    0/5    0/5    0.55
+  sensible    Shard Ridge Easy      2/5    1/5    1/5    1/5    0/5    0/5    0/5    <0.5
+  sensible    Shard Ridge Medium    5/5    3/5    3/5    3/5    0/5    0/5    0/5    1.04
+  sensible    Shard Ridge Hard      3/5    0/5    0/5    0/5    0/5    0/5    0/5    0.52
+  sensible    Shard Ridge Psycho    0/5    0/5    0/5    0/5    0/5    0/5    0/5    <0.5
+  careless    Landing Site Easy     5/5    2/5    2/5    2/5    2/5    2/5    0/5    0.62
+  careless    Landing Site Medium   5/5    2/5    2/5    2/5    2/5    1/5    0/5    0.62
+  careless    Landing Site Hard     2/5    2/5    2/5    1/5    0/5    0/5    0/5    <0.5
+  careless    Landing Site Psycho   3/5    2/5    1/5    0/5    0/5    0/5    0/5    0.57
+  mono-Cannon Landing Site Easy     5/5    5/5    5/5    5/5    5/5    5/5    4/5    >2
+  mono-Cannon Landing Site Medium   5/5    5/5    5/5    5/5    5/5    5/5    1/5    1.84
+  mono-Cannon Landing Site Hard     5/5    5/5    5/5    5/5    0/5    0/5    0/5    1.12
+  mono-Cannon Landing Site Psycho   5/5    5/5    5/5    5/5    5/5    0/5    0/5    1.41
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  skilled     Landing Site Easy       8   8   9   7   9  10  39  10   8  10  10   8
+                                    base hit: never
+  skilled     Landing Site Medium     7   7   8   7   7   7  41  10   6  10  10   8
+                                    base hit: w12 3/5
+  skilled     Landing Site Hard       8   9   9   8   9  10  26   9   9  10  10   9
+                                    base hit: w12 1/5
+  skilled     Landing Site Psycho     8   8   8   8  11  10  60  21  12  12  13   9
+                                    base hit: w12 3/5
+  skilled     Shard Ridge Easy       47  46  46  47  46  46  46  43  46  46  47  54  46  44  58  52
+                                    base hit: never
+  skilled     Shard Ridge Medium     47  45  45  47  44  47  48  50  45  48  54  67  44  47  59  50
+                                    base hit: w13 3/5, w14 2/5
+  skilled     Shard Ridge Hard       45  45  48  44  44  46  45  51  47  64  67  61  45  64  66  52
+                                    base hit: w12 4/5, w13 5/5
+  skilled     Shard Ridge Psycho     44  45  49  53  46  56  49  46  40  60  68  69  44  63  68  54
+                                    base hit: w13 4/5, w14 1/5
+  typical     Landing Site Easy       8   7   8   7   7   8  36   9   7  10  11  10
+                                    base hit: never
+  typical     Landing Site Medium     8   8   8   8   8   8  37  10   8  10  11  10
+                                    base hit: never
+  typical     Landing Site Hard       9  10  10  10  10  12  64  39  49  21   6   .
+                                    base hit: w10 1/5, w11 5/5, w12 1/5
+  typical     Landing Site Psycho    10  10   8  10  12  33  63  44  30  49  37  19
+                                    base hit: w11 1/5, w12 4/5
+  typical     Shard Ridge Easy       47  44  43  45  43  43  44  41  44  39  41  58  36  15   .   .
+                                    base hit: w13 5/5, w14 5/5
+  typical     Shard Ridge Medium     47  46  45  47  43  40  38  45  41  43  52  66  41  38  65  50
+                                    base hit: w13 5/5, w14 2/5, w15 1/5, w16 3/5
+  typical     Shard Ridge Hard       45  45  47  44  44  39  39  47  44  52  66  60  38  64  42   .
+                                    base hit: w12 5/5, w13 5/5, w15 5/5, w16 2/5
+  typical     Shard Ridge Psycho     40  35  38  55  35  51  36  40  41  45  63  66  16   .   .   .
+                                    base hit: w12 5/5, w13 5/5
+  sensible    Landing Site Easy       8   7   8   7   7   8  36   9   7  10  11  11
+                                    base hit: never
+  sensible    Landing Site Medium     8   8   8   8   8   8  37  10   8  10  11   9
+                                    base hit: never
+  sensible    Landing Site Hard       9  10  10  10  10  11  42  11  31  56  57  52
+                                    base hit: w11 2/5, w12 2/5
+  sensible    Landing Site Psycho    10  10   8  10  11  29  54  48  35  46  35  22
+                                    base hit: w11 2/5, w12 3/5
+  sensible    Shard Ridge Easy       47  44  43  45  43  43  44  41  44  39  41  58  36  15   .   .
+                                    base hit: w13 4/5, w14 4/5
+  sensible    Shard Ridge Medium     47  46  45  47  43  40  38  45  41  43  53  66  41  39  65  50
+                                    base hit: w13 5/5, w14 2/5, w15 1/5, w16 3/5
+  sensible    Shard Ridge Hard       45  45  47  44  44  39  39  47  44  52  66  60  37  64  42   .
+                                    base hit: w12 5/5, w13 5/5, w15 5/5, w16 2/5
+  sensible    Shard Ridge Psycho     40  35  38  55  35  51  36  40  41  47  63  68  17   .   .   .
+                                    base hit: w12 5/5, w13 5/5, w14 2/5, w15 1/5
+  careless    Landing Site Easy      10   9   9  10  10  10  41  10   9  10  11  10
+                                    base hit: w12 3/5
+  careless    Landing Site Medium    10  10  10  10  10  10  42  10   9  11  11  11
+                                    base hit: w12 3/5
+  careless    Landing Site Hard      10  11  10  10  11  11  30  44  15  16  15   8
+                                    base hit: w11 2/5, w12 4/5
+  careless    Landing Site Psycho    10  10  10  10  13  11  64  35  17  23  16   7
+                                    base hit: w11 1/5, w12 5/5
+  mono-Cannon Landing Site Easy       8   8   9   8   8   9  35   9   9  10  10   8
+                                    base hit: never
+  mono-Cannon Landing Site Medium     8   8   8   8   9   9  37  10   9  10  10   8
+                                    base hit: never
+  mono-Cannon Landing Site Hard       8   9   9   9  10  11  26  11  10  10   9   9
+                                    base hit: never
+  mono-Cannon Landing Site Psycho     8   7   8   9  11  10  57  11  12  11  11  10
+                                    base hit: never
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  skilled     Landing Site Easy     won w12/12; built 7, upgrades 3, left 77, earned 1119, repairs 0
+                                    w1 build Cannon@31,14; w1 build PulseRifle@9,6; w3 upgrade@9,6; w7 build Cannon@12,7; w9 upgrade@12,7; w10 build Cannon@11,6; w11 upgrade@9,6; w12 build Cannon@12,2; w12 build Cannon@12,6; w12 build Cannon@13,2
+  skilled     Landing Site Medium   won w12/12; built 10, upgrades 9, left 42, earned 1261, repairs 0
+                                    w1 build Cannon@11,2; w1 build PulseRifle@9,3; w1 upgrade@9,3; w4 upgrade@9,3; w7 upgrade@11,2; w9 build PulseRifle@9,6; w9 upgrade@9,6; w9 build PulseRifle@10,6; w9 upgrade@10,6; w10 build PulseRifle@11,6; w10 upgrade@11,6; w11 build PulseRifle@12,7
+  skilled     Landing Site Hard     won w12/12; built 13, upgrades 16, left 104, earned 1736, repairs 0
+                                    w1 build Cannon@11,2; w1 build Cannon@11,6; w3 build PulseRifle@9,6; w4 upgrade@9,6; w5 upgrade@9,6; w7 build PulseRifle@9,3; w7 upgrade@9,3; w8 upgrade@9,3; w8 build PulseRifle@12,7; w9 upgrade@11,6; w9 upgrade@11,2; w9 upgrade@12,7
+  skilled     Landing Site Psycho   won w12/12; built 16, upgrades 21, left 97, earned 2561, repairs 0
+                                    w1 build Cannon@11,2; w1 build Cannon@11,6; w1 build Cannon@12,2; w1 build Cannon@12,6; w1 build Cannon@12,7; w1 build Cannon@13,2; w2 build PulseRifle@10,6; w3 upgrade@10,6; w5 upgrade@10,6; w6 upgrade@11,6; w6 upgrade@11,6; w7 build PulseRifle@9,3
+  skilled     Shard Ridge Easy      won w16/16; built 7, upgrades 9, left 160, earned 1428, repairs 0
+                                    w1 build Cannon@12,11; w1 build PulseRifle@13,11; w1 upgrade@13,11; w5 upgrade@13,11; w7 build PulseRifle@11,11; w10 build Rocket@32,10; w12 drone HarvestDrone@0,0; w13 drone RepairDrone@0,0; w14 upgrade@11,11; w14 upgrade@11,11; w15 build PulseRifle@12,10; w15 upgrade@12,10
+  skilled     Shard Ridge Medium    won w16/16; built 14, upgrades 6, left 93, earned 1491, repairs 0
+                                    w1 build Cannon@13,10; w1 build PulseRifle@12,11; w1 build PulseRifle@13,11; w6 drone HarvestDrone@0,0; w7 build Cannon@12,10; w10 build Rocket@32,10; w11 build Rocket@33,10; w12 upgrade@13,11; w12 drone RepairDrone@0,0; w14 build Rocket@34,7; w14 build Cannon@11,11; w14 upgrade@12,11
+  skilled     Shard Ridge Hard      won w16/16; built 14, upgrades 9, left 233, earned 1766, repairs 0
+                                    w1 build Cannon@12,10; w1 build Cannon@12,11; w2 build PulseRifle@13,11; w6 drone HarvestDrone@0,0; w8 build Rocket@34,7; w9 upgrade@13,11; w9 build PulseRifle@11,11; w10 upgrade@11,11; w10 build PulseRifle@13,10; w10 upgrade@13,10; w13 build Rocket@32,10; w13 build Rocket@33,10
+  skilled     Shard Ridge Psycho    won w16/16; built 22, upgrades 13, left 225, earned 2543, repairs 126
+                                    w1 build Cannon@12,10; w1 build Cannon@13,11; w1 build Cannon@12,11; w1 drone HarvestDrone@0,0; w1 build Cannon@13,10; w1 gate gates@16,8; w2 drone RepairDrone@0,0; w3 build PulseRifle@11,11; w4 upgrade@13,10; w5 upgrade@11,11; w6 upgrade@11,11; w8 sell@12,10
+  typical     Landing Site Easy     won w12/12; built 8, upgrades 7, left 197, earned 1119, repairs 0
+                                    w1 build Cannon@11,6; w1 build PulseRifle@10,6; w3 upgrade@10,6; w5 build PulseRifle@12,6; w6 upgrade@12,6; w8 build PulseRifle@19,14; w9 upgrade@19,14; w9 build PulseRifle@12,7; w10 build PulseRifle@9,6; w11 upgrade@12,7; w11 upgrade@9,6; w11 build PulseRifle@13,6
+  typical     Landing Site Medium   won w12/12; built 11, upgrades 10, left 57, earned 1261, repairs 0
+                                    w1 build Cannon@11,6; w1 build Cannon@12,6; w4 build PulseRifle@10,6; w5 upgrade@10,6; w6 build PulseRifle@19,14; w8 build PulseRifle@12,7; w8 upgrade@19,14; w9 upgrade@12,7; w9 build PulseRifle@9,6; w10 upgrade@9,6; w10 build PulseRifle@13,6; w11 upgrade@13,6
+  typical     Landing Site Hard     lost w12/12; built 3, upgrades 2, left 407, earned 711, repairs 0
+                                    w1 build Laser@10,6; w1 upgrade@10,6; w2 build PulseRifle@11,6; w3 upgrade@11,6; w5 build PulseRifle@12,6
+  typical     Landing Site Psycho   lost w12/12; built 16, upgrades 12, left 137, earned 1789, repairs 0
+                                    w1 build Laser@10,6; w1 build Laser@11,6; w1 build Laser@12,7; w1 build Laser@19,14; w1 upgrade@10,6; w2 build PulseRifle@12,6; w3 upgrade@12,6; w4 build PulseRifle@9,6; w5 upgrade@9,6; w6 build Cannon@13,6; w6 upgrade@12,6; w7 build PulseRifle@20,14
+  typical     Shard Ridge Easy      lost w14/16; built 5, upgrades 5, left 37, earned 818, repairs 0
+                                    w1 build Laser@12,10; w1 upgrade@12,10; w4 build PulseRifle@13,10; w6 upgrade@13,10; w8 build Cannon@13,11; w10 build PulseRifle@31,10; w10 upgrade@31,10; w13 upgrade@12,10; w13 build PulseRifle@14,10; w13 upgrade@14,10
+  typical     Shard Ridge Medium    lost w15/16; built 9, upgrades 7, left 48, earned 1033, repairs 0
+                                    w1 build Laser@12,10; w1 build Cannon@13,10; w4 build PulseRifle@13,11; w5 upgrade@13,11; w6 build PulseRifle@31,10; w7 upgrade@31,10; w9 build PulseRifle@14,10; w10 build Rocket@34,10; w11 upgrade@14,10; w12 upgrade@12,10; w13 build PulseRifle@14,11; w13 upgrade@14,11
+  typical     Shard Ridge Hard      lost w15/16; built 11, upgrades 8, left 52, earned 1140, repairs 49
+                                    w1 build Laser@12,10; w1 build Cannon@13,10; w4 build PulseRifle@13,11; w5 upgrade@13,11; w6 upgrade@12,10; w6 build PulseRifle@31,10; w7 upgrade@31,10; w8 build PulseRifle@14,10; w9 upgrade@14,10; w11 build Rocket@34,10; w12 build PulseRifle@14,11; w13 upgrade@14,11
+  typical     Shard Ridge Psycho    lost w13/16; built 10, upgrades 6, left 14, earned 1477, repairs 138
+                                    w1 build Laser@12,10; w1 build Laser@13,10; w1 build Laser@13,11; w1 build Laser@30,10; w1 build Laser@11,10; w1 upgrade@12,10; w2 build PulseRifle@31,10; w5 upgrade@13,10; w5 upgrade@31,10; w8 build Cannon@32,12; w9 upgrade@13,11; w10 build Rocket@34,10
+  sensible    Landing Site Easy     won w12/12; built 8, upgrades 7, left 51, earned 1119, repairs 146
+                                    w1 build Cannon@11,6; w1 build PulseRifle@10,6; w3 upgrade@10,6; w5 build PulseRifle@12,6; w6 upgrade@12,6; w8 build PulseRifle@19,14; w9 upgrade@19,14; w9 build PulseRifle@12,7; w10 build PulseRifle@9,6; w11 upgrade@12,7; w11 upgrade@9,6; w11 build PulseRifle@13,6
+  sensible    Landing Site Medium   won w12/12; built 11, upgrades 10, left 57, earned 1261, repairs 0
+                                    w1 build Cannon@11,6; w1 build Cannon@12,6; w4 build PulseRifle@10,6; w5 upgrade@10,6; w6 build PulseRifle@19,14; w8 build PulseRifle@12,7; w8 upgrade@19,14; w9 upgrade@12,7; w9 build PulseRifle@9,6; w10 upgrade@9,6; w10 build PulseRifle@13,6; w11 upgrade@13,6
+  sensible    Landing Site Hard     lost w11/12; built 3, upgrades 2, left 73, earned 601, repairs 213
+                                    w1 build Laser@10,6; w1 upgrade@10,6; w2 build PulseRifle@11,6; w3 upgrade@11,6; w5 build PulseRifle@12,6
+  sensible    Landing Site Psycho   lost w12/12; built 16, upgrades 12, left 53, earned 1794, repairs 60
+                                    w1 build Laser@10,6; w1 build Laser@11,6; w1 build Laser@12,7; w1 build Laser@19,14; w1 upgrade@10,6; w2 build PulseRifle@12,6; w3 upgrade@12,6; w4 build PulseRifle@9,6; w5 upgrade@9,6; w6 build Cannon@13,6; w6 upgrade@12,6; w7 build PulseRifle@20,14
+  sensible    Shard Ridge Easy      lost w14/16; built 5, upgrades 5, left 37, earned 818, repairs 0
+                                    w1 build Laser@12,10; w1 upgrade@12,10; w4 build PulseRifle@13,10; w6 upgrade@13,10; w8 build Cannon@13,11; w10 build PulseRifle@31,10; w10 upgrade@31,10; w13 upgrade@12,10; w13 build PulseRifle@14,10; w13 upgrade@14,10
+  sensible    Shard Ridge Medium    lost w15/16; built 9, upgrades 7, left 48, earned 1033, repairs 0
+                                    w1 build Laser@12,10; w1 build Cannon@13,10; w4 build PulseRifle@13,11; w5 upgrade@13,11; w6 build PulseRifle@31,10; w7 upgrade@31,10; w9 build PulseRifle@14,10; w10 build Rocket@34,10; w11 upgrade@14,10; w12 upgrade@12,10; w13 build PulseRifle@14,11; w13 upgrade@14,11
+  sensible    Shard Ridge Hard      lost w15/16; built 11, upgrades 8, left 52, earned 1140, repairs 49
+                                    w1 build Laser@12,10; w1 build Cannon@13,10; w4 build PulseRifle@13,11; w5 upgrade@13,11; w6 upgrade@12,10; w6 build PulseRifle@31,10; w7 upgrade@31,10; w8 build PulseRifle@14,10; w9 upgrade@14,10; w11 build Rocket@34,10; w12 build PulseRifle@14,11; w13 upgrade@14,11
+  sensible    Shard Ridge Psycho    lost w13/16; built 10, upgrades 6, left 14, earned 1477, repairs 138
+                                    w1 build Laser@12,10; w1 build Laser@13,10; w1 build Laser@13,11; w1 build Laser@30,10; w1 build Laser@11,10; w1 upgrade@12,10; w2 build PulseRifle@31,10; w5 upgrade@13,10; w5 upgrade@31,10; w8 build Cannon@32,12; w9 upgrade@13,11; w10 build Rocket@34,10
+  careless    Landing Site Easy     won w12/12; built 9, upgrades 4, left 62, earned 1119, repairs 0
+                                    w1 build PulseRifle@14,6; w1 build Cannon@13,6; w3 upgrade@14,6; w7 build Cannon@15,6; w8 build PulseRifle@14,7; w9 upgrade@14,7; w10 build PulseRifle@15,3; w11 build Cannon@12,6; w11 upgrade@15,3; w12 build Cannon@16,6; w12 build PulseRifle@13,7; w12 upgrade@13,6
+  careless    Landing Site Medium   won w12/12; built 12, upgrades 6, left 42, earned 1261, repairs 0
+                                    w1 build PulseRifle@14,6; w1 build Cannon@13,6; w1 upgrade@14,6; w5 build Cannon@15,6; w6 build PulseRifle@14,7; w8 upgrade@14,7; w8 build PulseRifle@15,3; w9 build Cannon@12,6; w10 upgrade@15,3; w11 build Cannon@16,6; w11 build PulseRifle@13,7; w11 upgrade@13,7
+  careless    Landing Site Hard     lost w12/12; built 15, upgrades 7, left 85, earned 1740, repairs 374
+                                    w1 build PulseRifle@14,6; w1 build Cannon@13,6; w1 upgrade@14,6; w3 build PulseRifle@15,6; w5 build Cannon@14,7; w6 upgrade@15,6; w6 build PulseRifle@15,3; w8 build Cannon@12,6; w9 upgrade@15,3; w9 build PulseRifle@16,6; w9 build Cannon@13,7; w10 upgrade@16,6
+  careless    Landing Site Psycho   lost w12/12; built 18, upgrades 8, left 12, earned 1907, repairs 300
+                                    w1 build PulseRifle@14,6; w1 build Cannon@13,6; w1 upgrade@14,6; w1 build PulseRifle@15,6; w1 build Cannon@14,7; w1 upgrade@13,6; w1 build PulseRifle@15,3; w1 build Cannon@12,6; w2 upgrade@15,3; w3 build PulseRifle@16,6; w5 build Cannon@13,7; w6 upgrade@15,6
+  mono-Cannon Landing Site Easy     won w12/12; built 6, upgrades 3, left 42, earned 1119, repairs 0
+                                    w1 build Cannon@11,6; w3 build Cannon@12,6; w7 build Cannon@12,7; w9 build Cannon@19,14; w10 build Cannon@10,6; w11 upgrade@11,6; w12 upgrade@12,6; w12 upgrade@12,7; w12 build Cannon@13,6
+  mono-Cannon Landing Site Medium   won w12/12; built 7, upgrades 5, left 32, earned 1261, repairs 0
+                                    w1 build Cannon@11,6; w1 build Cannon@12,6; w5 build Cannon@12,7; w8 build Cannon@19,14; w9 build Cannon@10,6; w10 upgrade@11,6; w11 upgrade@12,6; w11 upgrade@12,7; w12 build Cannon@13,6; w12 upgrade@19,14; w12 build Cannon@13,7; w12 upgrade@10,6
+  mono-Cannon Landing Site Hard     won w12/12; built 9, upgrades 9, left 80, earned 1741, repairs 60
+                                    w1 build Cannon@11,6; w1 build Cannon@12,6; w4 build Cannon@12,7; w6 build Cannon@19,14; w8 build Cannon@10,6; w9 upgrade@11,6; w9 upgrade@12,6; w9 upgrade@12,7; w10 upgrade@19,14; w10 upgrade@10,6; w11 build Cannon@13,6; w11 upgrade@13,6
+  mono-Cannon Landing Site Psycho   won w12/12; built 11, upgrades 11, left 190, earned 2553, repairs 413
+                                    w1 build Cannon@11,6; w1 build Cannon@12,6; w1 build Cannon@12,7; w1 build Cannon@19,14; w1 build Cannon@10,6; w1 upgrade@11,6; w3 upgrade@12,6; w5 upgrade@12,7; w6 build Cannon@13,6; w7 upgrade@19,14; w8 build Cannon@13,7; w9 upgrade@10,6
+
+Cost: 1120 runs, 275 machine minutes of play (15 s a run), 40 reference runs for the typical scripts; 1 batches, 58 wall-clock minutes in all.
+  batch 1794870767: 160 units on 5 workers, 58.2 min
