@@ -4,18 +4,24 @@
 # headless worker clones of workers.sh (silent, their own save folder); nothing is bisected. The open editor is never touched
 # and no data is written; the records go to Tools/PlayTest/pressure_records.txt (appended) and the report, with the stop
 # rules, to Tools/PlayTest/pressure.txt. The headroom pipeline (headroom.sh) is untouched and still works beside it.
+# Every record carries the stamp of the bot, data and game code it was measured with (round 76, pressure_stamp.py): keep one
+# records file (PR_RECORDS) per bot and data state; the report refuses a file that mixes bots. Never change the bot and the
+# data in one batch.
 #
 #   bash Tools/PlayTest/pressure.sh "0,2" "0,1,2,3"       # campaign nodes, difficulties
 #   bash Tools/PlayTest/pressure.sh report                 # only rebuild the report from the records
 #
 # Env (all optional):
-#   PR_POLICIES  skilled,sensible            the rungs played on every seed (also: typical, careless, fresh, mono-TowerId)
-#   PR_SEEDS     1,2,3,4,5
-#   PR_MULTIPLES 0.5,0.65,0.8,1,1.25,1.6,2   the health multiples every unit is played at
-#   PR_EXTRA     0:mono-Cannon,0:careless    node:policy pairs played as well, on every difficulty and seed ("" for none)
+#   PR_POLICIES  skilled,sensible            the rungs played on every seed (also: script, typical, careless, fresh, mono-TowerId)
+#   PR_SEEDS     1,2,3
+#   PR_MULTIPLES 0.8,0.9,1,1.12,1.25         the health multiples every unit is played at (round 76: health jitter instead of more seeds)
+#   PR_EXTRA     (none)                      node:policy pairs played as well, on every difficulty and seed, e.g. 0:mono-Cannon,0:careless
 #   PR_UNITS     node:difficulty:policy:seed,...   exactly these units instead of the product above
 #   PR_RECORDS   Tools/PlayTest/pressure_records.txt
 #   PR_WORKERS   the N of workers.sh count;  PR_FIRST 1 (the first clone to use: clones wFIRST..wFIRST+N-1)
+#   PR_KEEPTRACE 1 keeps the probe's per-wave trace of every run in the clone (Logs/probe_trace.txt) for a diagnosis
+#   PR_OVERLAY   a folder whose files are copied over each clone after the sync (same relative paths), to measure another
+#                data state with the same bot without touching the project; the records carry that state's data stamp
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 export MSYS_NO_PATHCONV=1
@@ -32,9 +38,9 @@ report() { python Tools/PlayTest/pressure_report.py "$RECORDS" "$REPORT" > /dev/
 if [ "${1:-}" = "report" ]; then report; exit 0; fi
 
 LEVELS="${1:-0,2}"; DIFFS="${2:-0,1,2,3}"
-POLICIES="${PR_POLICIES-skilled,sensible}"; SEEDS="${PR_SEEDS:-1,2,3,4,5}"
-MULTIPLES="${PR_MULTIPLES:-0.5,0.65,0.8,1,1.25,1.6,2}"
-EXTRA="${PR_EXTRA-0:mono-Cannon,0:careless}"
+POLICIES="${PR_POLICIES-skilled,sensible}"; SEEDS="${PR_SEEDS:-1,2,3}"
+MULTIPLES="${PR_MULTIPLES:-0.8,0.9,1,1.12,1.25}"
+EXTRA="${PR_EXTRA-}"
 UNITS=()
 if [ -n "${PR_UNITS:-}" ]; then
   IFS=, read -r -a UNITS <<< "$PR_UNITS"
@@ -69,6 +75,7 @@ sync_worker() {
   sed -i 's/^  m_DisableAudio: 0$/  m_DisableAudio: 1/' "$(cygpath -u "$dir")/ProjectSettings/AudioManager.asset"
   grep -q '^  m_DisableAudio: 1$' "$(cygpath -u "$dir")/ProjectSettings/AudioManager.asset" || { echo "w$i: audio is not off in the clone" >&2; exit 1; }
   rm -f "$(cygpath -u "$dir")"/Assets/InitTestScene*.unity*
+  if [ -n "${PR_OVERLAY:-}" ]; then cp -r "$PR_OVERLAY"/. "$(cygpath -u "$dir")"/; fi
 }
 sync_pids=()
 for ((i = FIRST; i < FIRST + N; i++)); do sync_worker "$i" & sync_pids+=($!); done
@@ -83,6 +90,7 @@ for ((k = 0; k < N; k++)); do
   {
     echo "units=$(IFS=,; echo "${mine[*]}")"
     echo "multiples=$MULTIPLES"
+    if [ -n "${PR_KEEPTRACE:-}" ]; then echo "keeptrace=1"; fi
   } > "$dir/Tools/PlayTest/pressure_arg.txt"
   # A stale probe filter in the clone would set the probe's step; the pressure runs use the probe's defaults.
   rm -f "$dir/Tools/PlayTest/probe_arg.txt" "$dir/Tools/PlayTest/pressure_records.txt" "$dir/Logs/results.xml" "$dir/Logs/probe_trace.txt"

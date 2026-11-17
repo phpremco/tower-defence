@@ -3,6 +3,11 @@
 
     python Tools/PlayTest/pressure_wins.py <records> [<records before>]      # with two files: before -> after, side by side
     python Tools/PlayTest/pressure_wins.py <records> --bot                   # the sensible bot's counter purchases and purse
+    python Tools/PlayTest/pressure_wins.py <records> --sales                 # the sensible bot's runs with a sale, per cell
+
+Records carry the stamp of the bot, the data and the game code they were measured with (pressure_stamp.py, round 76). A file
+that mixes bots, or two files measured with different (or unknown) bots, are refused unless --mixed-bots is given: the probe
+is deterministic, so a difference between two bots is a bot effect, not noise, and says nothing about the data.
 
 The table: per rung and cell, the seeds won at every multiple played (the last record of a unit and multiple counts).
 --bot lists, per cell and seed at the data (x1) for the sensible rung: the wave of the first sky gun (Rocket), the sky guns
@@ -11,6 +16,8 @@ idle-counter note (a counter trait alive at the end with its counter's price uns
 """
 import sys
 from collections import defaultdict
+
+import pressure_stamp
 
 DIFFICULTIES = ["Easy", "Medium", "Hard", "Psycho"]
 LEVEL_NAMES = {"Level_C1_01": "Landing Site", "Level_C1_02": "Glass Meadows", "Level_C1_03": "Shard Ridge", "Level_C1_04": "Fault Line",
@@ -40,6 +47,7 @@ def load(path):
         r = dict(level=p[1], d=int(p[2]), policy=p[3], seed=int(p[4]), m=float(p[5]), won=p[6] == "won", wave=int(p[7]), health=float(p[9]),
                  max=float(p[10]), coins=int(p[16]), base_lost=pairs(p[20], float), moves=[s.split(":") for s in p[23].split(";") if s],
                  reach=pairs(p[19], float), purse=pairs(p[25], int) if new else {}, idle=p[26] if new else "")
+        r["bot"], r["data"], r["game"] = pressure_stamp.parse(p)
         last[(r["level"], r["d"], r["policy"], r["seed"], r["m"])] = r
     return list(last.values())
 
@@ -98,13 +106,36 @@ def print_bot(runs):
         print(f"  {cell(r['level'], r['d'])} seed {r['seed']} x{r['m']:g}: {r['idle']} ({'won' if r['won'] else 'lost'} in wave {r['wave']})")
 
 
+def print_sales(runs):
+    print("sensible bot: runs in which a gun was sold (every multiple played), per cell")
+    table = defaultdict(lambda: [0, 0])
+    for r in runs:
+        if r["policy"] == "sensible":
+            key = (r["level"], r["d"])
+            table[key][0] += any(m[0] == "sell" for m in r["moves"])
+            table[key][1] += 1
+    for (level, d), (sold, total) in sorted(table.items()):
+        print(f"  {cell(level, d):<24}{sold}/{total}")
+    print(f"  all cells: {sum(v[0] for v in table.values())} of {sum(v[1] for v in table.values())} runs")
+
+
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    allow = pressure_stamp.ALLOW_FLAG in sys.argv
     runs = load(args[0])
+    pressure_stamp.check_one(runs, args[0], allow)
+    print(f"{args[0]}: {pressure_stamp.describe(runs)}")
     if "--bot" in sys.argv:
         print_bot(runs)
+    elif "--sales" in sys.argv:
+        print_sales(runs)
     else:
-        print_wins(runs, load(args[1]) if len(args) > 1 else None)
+        before = load(args[1]) if len(args) > 1 else None
+        if before is not None:
+            pressure_stamp.check_one(before, args[1], allow)
+            print(f"{args[1]}: {pressure_stamp.describe(before)}")
+            pressure_stamp.check_pair(runs, before, allow)
+        print_wins(runs, before)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """The pressure report (Docs/BALANCE_HEADROOM.md, "Stage 1b") from the records of Tools/PlayTest/pressure.sh.
 
-    python Tools/PlayTest/pressure_report.py [records] [report]
+    python Tools/PlayTest/pressure_report.py [records] [report] [--mixed-bots]
+
+A records file that holds runs of more than one bot (pressure_stamp.py: the stamp every record carries since round 76) is
+refused unless --mixed-bots is given: the report takes the last record of a unit, so mixed bots would silently be compared.
 
 Reads pressure_records.txt (prun, pref and batch lines; see PressureProbeTests) and writes pressure.txt.
 
@@ -21,10 +24,14 @@ import statistics
 import sys
 from collections import defaultdict
 
+import pressure_stamp
+
 DIFFICULTIES = ["Easy", "Medium", "Hard", "Psycho"]
-LEVEL_NAMES = {"Level_C1_01": "Landing Site", "Level_C1_03": "Shard Ridge"}
-RUNGS = ["skilled", "typical", "sensible", "careless"]  # typical: stage 1b records only (dropped from the default run in round 74)
-FIXED = ["skilled", "typical"]
+LEVEL_NAMES = {"Level_C1_01": "Landing Site", "Level_C1_02": "Glass Meadows", "Level_C1_03": "Shard Ridge", "Level_C1_04": "Fault Line",
+               "Level_C1_05": "Quartz Flats", "Level_C1_06": "Crysium Vein"}
+# typical: stage 1b records only (dropped from the default run in round 74); script: the frozen-script skilled rung of rounds 74-75.
+RUNGS = ["skilled", "script", "typical", "sensible", "careless"]
+FIXED = ["script", "typical"]
 
 # Stop rule (a): a unit/seed curve is monotone when no step to the next multiple drops P by more than this (1 % of the 0-2 scale).
 TOLERANCE = 0.02
@@ -58,6 +65,7 @@ def load(path):
             # Round 74: the purse at each wave start and the idle-counter note sit between the note and the worker.
             r["purse"] = waves(p[25], int) if len(p) >= 29 else {}
             r["idle"] = p[26] if len(p) >= 29 else ""
+            r["bot"], r["data"], r["game"] = pressure_stamp.parse(p)
             score(r)
             (runs if p[0] == "prun" else refs).append(r)
         elif p[0] == "batch" and len(p) >= 5:
@@ -120,9 +128,11 @@ def show_edge(value, lo, hi):
 
 
 def main():
-    records = sys.argv[1] if len(sys.argv) > 1 else "Tools/PlayTest/pressure_records.txt"
-    report = sys.argv[2] if len(sys.argv) > 2 else "Tools/PlayTest/pressure.txt"
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    records = args[0] if len(args) > 0 else "Tools/PlayTest/pressure_records.txt"
+    report = args[1] if len(args) > 1 else "Tools/PlayTest/pressure.txt"
     runs, refs, batches = load(records)
+    pressure_stamp.check_one(runs, records, pressure_stamp.ALLOW_FLAG in sys.argv)
     # The last record of every (unit, multiple): a rerun replaces the first.
     last = {}
     for r in runs:
@@ -139,6 +149,8 @@ def main():
     lo, hi = multiples[0], multiples[-1]
     out = []
 
+    out.append(f"Measured with: {pressure_stamp.describe(runs)}")
+    out.append("")
     out.append("Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures")
     out.append("covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of")
     out.append("Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.")

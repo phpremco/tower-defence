@@ -100,6 +100,75 @@ namespace Game.Tests
             CounterPrice = 0;
         }
 
+        /// <summary>
+        /// Coins the sensible player keeps back for a counter tower the level's roster calls for and no creature has asked for
+        /// yet (bot version 2): nothing but an emergency in view spends them, and repairs leave them alone (see Maintain).
+        /// </summary>
+        public int HeldBack;
+
+        /// <summary>True from a look at which the base lost health with flyers on it until a look with no flyer on the base.</summary>
+        public bool FlyersBitingBase;
+
+        private Game.Core.EnemyTraits _seenTraits;
+        private Game.Core.EnemyTraits _rosterTraits;
+        private bool _rosterRead;
+        private readonly Dictionary<Game.Core.EnemyTraits, int> _grownInWave = new Dictionary<Game.Core.EnemyTraits, int>();
+
+        /// <summary>The counter traits the player has met on the field so far: once seen, more of them are expected.</summary>
+        public Game.Core.EnemyTraits SeenTraits => _seenTraits;
+
+        public void NoteSeen(Game.Core.EnemyTraits traits) => _seenTraits |= traits;
+
+        /// <summary>
+        /// The counter traits among the creatures the level's Codex lists for this difficulty (<see cref="LevelRoster"/>, bosses
+        /// aside): what a player can know from second zero. Which wave brings them is not in the Codex.
+        /// </summary>
+        public Game.Core.EnemyTraits RosterTraits(LevelContext context)
+        {
+            if (_rosterRead)
+            {
+                return _rosterTraits;
+            }
+
+            var roster = new HashSet<EnemyDefinition>();
+            LevelRoster.Collect(context.Level, context.Difficulty, roster);
+            foreach (EnemyDefinition enemy in roster)
+            {
+                if (enemy.IsBoss)
+                {
+                    continue;
+                }
+
+                _rosterTraits |= enemy.Flies ? Game.Core.EnemyTraits.Airborne : enemy.HasArmor ? Game.Core.EnemyTraits.Armoured : Game.Core.EnemyTraits.None;
+            }
+
+            _rosterRead = true;
+            return _rosterTraits;
+        }
+
+        private readonly Dictionary<int, int> _bountyByWave = new Dictionary<int, int>();
+
+        /// <summary>The bounties of the creatures killed while the given wave was the current one, before the income share.</summary>
+        public int BountyOf(int wave) => _bountyByWave.TryGetValue(wave, out int bounty) ? bounty : 0;
+
+        private void OnKilled(Enemy enemy)
+        {
+            int wave = _context != null ? _context.WaveNumber : 0;
+            _bountyByWave[wave] = BountyOf(wave) + enemy.Reward;
+        }
+
+        /// <summary>True once per wave and trait: the counters grow by sight at most once a wave.</summary>
+        public bool TakeGrowth(Game.Core.EnemyTraits trait, int wave)
+        {
+            if (_grownInWave.TryGetValue(trait, out int grown) && grown == wave)
+            {
+                return false;
+            }
+
+            _grownInWave[trait] = wave;
+            return true;
+        }
+
         /// <summary>The base's and each gate's health at the sensible player's last look, to see what was lost since.</summary>
         public float LastBaseSeen = -1f;
         public readonly Dictionary<Tower, float> LastGateSeen = new Dictionary<Tower, float>();
@@ -287,6 +356,7 @@ namespace Game.Tests
                 {
                     enemy.DamagedBy -= OnDamaged;
                     enemy.ReachedEnd -= OnReachedEnd;
+                    enemy.Killed -= OnKilled;
                 }
             }
 
@@ -506,6 +576,7 @@ namespace Game.Tests
             {
                 enemy.DamagedBy += OnDamaged;
                 enemy.ReachedEnd += OnReachedEnd;
+                enemy.Killed += OnKilled;
             }
 
             CloseLife(enemy);

@@ -524,6 +524,11 @@ namespace Game.Tests
                 Services.Register(over != null
                     ? new LevelSession(definition, catalog.Difficulties[difficulty], false, null, over.Waves, over.StartingMoney, seed)
                     : new LevelSession(definition, catalog.Difficulties[difficulty], seed: seed));
+                // Round 76: the fixed step is set before the level loads. The level's first frames used to run on the wall
+                // clock (a frame after a scene load takes as long as it takes), which put the first wave a fraction of a
+                // step earlier or later against the bot's buying beat: the same unit played twice came out as two games.
+                Time.timeScale = 1f;
+                Time.captureDeltaTime = step;
                 SceneManager.LoadScene(SceneNames.Level);
                 yield return null;
                 yield return null;
@@ -1247,7 +1252,7 @@ namespace Game.Tests
                 if (run.Strategy.GuardsRearRift)
                 {
                     run.StopSaving();
-                    if (GuardRearRift(context, spots, towers, owned, run))
+                    if (GuardRearRift(context, spots, towers, owned, run, foresight: true))
                     {
                         return;
                     }
@@ -1261,6 +1266,17 @@ namespace Game.Tests
             {
                 ObviousAct(context, spots, towers, gates, owned, run);
                 return;
+            }
+
+            if (run.Strategy.GuardsRearRift)
+            {
+                // The skilled rung since round 76: the searched strategy played adaptively by someone who knows the level, so
+                // a rift behind the gate gets its gun a wave ahead, before the strategy's own next step.
+                run.StopSaving();
+                if (GuardRearRift(context, spots, towers, owned, run, foresight: true))
+                {
+                    return;
+                }
             }
 
             int current = Mathf.Clamp(context.WaveNumber - 1, 0, ledger.Count - 1);
@@ -1540,8 +1556,10 @@ namespace Game.Tests
             }
 
             int gateRepairs = saving ? GateRepairsWhileSaving : GateRepairsPerWave;
+            // Coins kept back for a counter the roster calls for (the sensible player, bot version 2) pay for no repair.
+            int spare = context.Wallet.Money - run.HeldBack;
             if (!gatesByPlan && gate != null && watch.Repairs < gateRepairs && gate.NeedsRepair && (gate.IsWrecked || (!saving && gate.HealthFraction < RepairBelow))
-                && WorthRepair(context, watch, gate, cheapestStep) && Spend(context, watch, gate.RepairCost))
+                && gate.RepairCost <= spare && WorthRepair(context, watch, gate, cheapestStep) && Spend(context, watch, gate.RepairCost))
             {
                 gate.RepairFully();
                 watch.Repairs++;
@@ -1550,7 +1568,7 @@ namespace Game.Tests
 
             foreach (Tower tower in towers)
             {
-                if (!saving && tower.NeedsRepair && tower.HealthFraction < RepairBelow && WorthRepair(context, watch, tower, cheapestStep) && Spend(context, watch, tower.RepairCost))
+                if (!saving && tower.NeedsRepair && tower.HealthFraction < RepairBelow && tower.RepairCost <= spare && WorthRepair(context, watch, tower, cheapestStep) && Spend(context, watch, tower.RepairCost))
                 {
                     tower.RepairFully();
                     return true;
@@ -2492,15 +2510,15 @@ namespace Game.Tests
         }
 
         // The dearest affordable step, whatever it is: a new tower (an air gun only where flyers come) or an upgrade.
-        private static void AffordableAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run, bool skyGuns = true)
+        private static void AffordableAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run, bool skyGuns = true, int keep = 0)
         {
             // The sensible player builds its sky guns by the counter rules alone (skyGuns false): as "the dearest affordable"
-            // a second Flak took the purse before any flyer was announced.
+            // a second Flak took the purse before any flyer was seen. It also leaves the coins it holds back (keep) alone.
             bool flyers = skyGuns && System.Array.Exists(context.Level.Paths, p => p.Flying);
             TowerDefinition build = null;
             foreach (TowerDefinition tower in context.AllTowers)
             {
-                bool fits = !tower.IsSupport && owned.Contains(tower.Id) && (flyers || !AirOnly(tower)) && context.Wallet.CanAfford(tower.BuildCost);
+                bool fits = !tower.IsSupport && owned.Contains(tower.Id) && (flyers || !AirOnly(tower)) && context.Wallet.CanAfford(tower.BuildCost + keep);
                 if (fits && (build == null || tower.BuildCost > build.BuildCost))
                 {
                     build = tower;
@@ -2510,7 +2528,7 @@ namespace Game.Tests
             Tower upgrade = null;
             foreach (Tower tower in towers)
             {
-                if (tower.CanUpgrade && context.Wallet.CanAfford(tower.NextUpgradeCost) && (upgrade == null || tower.NextUpgradeCost > upgrade.NextUpgradeCost))
+                if (tower.CanUpgrade && context.Wallet.CanAfford(tower.NextUpgradeCost + keep) && (upgrade == null || tower.NextUpgradeCost > upgrade.NextUpgradeCost))
                 {
                     upgrade = tower;
                 }
@@ -2529,8 +2547,8 @@ namespace Game.Tests
         // The traits a player answers with a tower of its own, in the order the sensible player looks at them.
         private static readonly EnemyTraits[] CounterTraits = { EnemyTraits.Armoured, EnemyTraits.Airborne };
 
-        // The preview calls for one more counter when it shows this many times the creatures the counters were last sized for.
-        private const float PreviewGrowth = 1.5f;
+        // The sight of a trait calls for one more counter when a wave shows this many times the creatures the counters were last sized for.
+        private const float SightGrowth = 1.5f;
         // A gate is meant to be chipped; it lost health "to a trait" once such creatures took this share of it within a wave.
         private const float GateLossShare = 0.25f;
         // Creatures this close (cells) to a structure that loses health are the ones taking it.
@@ -2538,27 +2556,35 @@ namespace Game.Tests
         private static readonly List<ITargetable> Besiegers = new List<ITargetable>();
         private static readonly List<EnemyTraits> TraitsFound = new List<EnemyTraits>();
 
-        // The sensible rung of the headroom ladder (repaired in round 74, Docs/BALANCE_CRITIC_2026-11-17.md): the affordable
-        // buyer who answers what a player sees. Armour or flyers in the preview (the wave being fought and the next) or alive
-        // on the field call for the counter tower of the role table, and the purse is kept for it; the counters grow (a tower
-        // and an upgrade in turn) when the base or a gate lost health to the trait or the preview shows clearly more of it;
-        // a marked rift behind the defence gate gets a gun at the gate its creatures will reach. It reads no balance model.
-        // Round 75: flyers nothing can aim at are paid for by selling a ground gun when the purse is short (SellForFirstCounter),
-        // the rest of the purse never goes to a sky gun the counter rules did not ask for, and walkers biting the base where no
-        // ground gun reaches get one gun beside it (GuardBesiegedBase).
+        // The sensible rung, bot version 2 (round 76, Docs/BALANCE_CRITIC_2026-11-17b.md; frozen, see ProbeStamp.BotVersion): the
+        // affordable buyer who knows what the game tells a player and answers what the field shows.
+        //  - Knowledge: the level's Codex (LevelRoster: which creatures this level and difficulty send, from second zero) and
+        //    the field (living creatures, the base, the gates, a rift's marker and its opening). Not the contents of a coming
+        //    wave: the game shows no wave preview.
+        //  - Opening: with plated creatures in the roster its first gun is the gun made for armour (it shoots every walker);
+        //    with flyers in the roster it keeps a sky gun's price back once a ground gun stands, until a wave's bounties pay
+        //    for one (then the gun can be bought the wave it is needed), and spends the rest as the affordable buyer does.
+        //  - Counters: a trait met on the field calls for its counter; the counters grow (a tower and an upgrade in turn) when
+        //    a wave shows clearly more of the trait than they were sized for or when the base or a gate lost health to it;
+        //    the trait furthest behind is served first; while it saves for a counter only a wrecked defence gate is repaired.
+        //  - Emergencies: a rift behind the defence gate that breaks open gets a gun at the gate its walkers reach; walkers
+        //    biting the base where no ground gun reaches get one gun beside it; flyers biting the base with no gun that can
+        //    aim up in reach and a short purse are paid for by selling a gun (SellForFirstCounter), and only then.
+        // It reads no balance model.
         private static void SensibleAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<Tower> gates, List<string> owned, BotRun run)
         {
             run.StopSaving();
             NoteTraitLosses(context, gates, run);
-            if (GuardRearRift(context, spots, towers, owned, run) || GuardBesiegedBase(context, spots, towers, owned, run))
+            if (GuardRearRift(context, spots, towers, owned, run, foresight: false) || GuardBesiegedBase(context, spots, towers, owned, run))
             {
                 return;
             }
 
-            EnemyTraits coming = ComingCounterTraits(context) | run.LivingTraits();
+            run.NoteSeen(run.LivingTraits());
+            EnemyTraits met = run.SeenTraits;
             foreach (EnemyTraits trait in CounterTraits)
             {
-                if ((coming & trait) != 0)
+                if ((met & trait) != 0)
                 {
                     SizeCounterDemand(context, towers, trait, run);
                 }
@@ -2566,7 +2592,7 @@ namespace Game.Tests
 
             // The trait that is furthest behind comes first (none of its counters standing before one more of another's): with
             // the table's order alone, growing the anti-armour guns took every coin while the flyers had no gun at all.
-            foreach (EnemyTraits trait in MostWanting(towers, coming, run))
+            foreach (EnemyTraits trait in MostWanting(towers, met, run))
             {
                 TowerDefinition counter = CheapestCounter(context, owned, trait, TargetLayers.None);
                 bool canBuild = counter != null && FreeSpot(context, spots.RankingFor(counter), towers, out _);
@@ -2613,7 +2639,43 @@ namespace Game.Tests
                 return;
             }
 
-            AffordableAct(context, spots, towers, owned, run, skyGuns: false);
+            if (OpenForRoster(context, spots, towers, owned, run))
+            {
+                return;
+            }
+
+            AffordableAct(context, spots, towers, owned, run, skyGuns: false, keep: run.HeldBack);
+        }
+
+        // What the Codex's roster asks of the purse before any creature of a trait is met: a counter that also shoots walkers
+        // is the next gun bought (true when it was); a counter for the sky alone is useless until flyers come, so its price is
+        // held back instead, once a ground gun stands (a player with no gun at all buys a gun first) and for as long as the
+        // last wave's bounties would not pay for it (a purse that refills within a wave needs no coins kept back).
+        private static bool OpenForRoster(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run)
+        {
+            run.HeldBack = 0;
+            EnemyTraits roster = run.RosterTraits(context);
+            foreach (EnemyTraits trait in CounterTraits)
+            {
+                TowerDefinition counter = (roster & trait) != 0 && CounterStrength(towers, trait) == 0 ? CheapestCounter(context, owned, trait, TargetLayers.None) : null;
+                if (counter == null)
+                {
+                    continue;
+                }
+
+                if (AirOnly(counter))
+                {
+                    bool refills = run.BountyOf(context.WaveNumber - 1) * context.Difficulty.IncomeMultiplier >= counter.BuildCost;
+                    run.HeldBack += towers.Count > 0 && !refills ? counter.BuildCost : 0;
+                }
+                else if (context.Wallet.CanAfford(counter.BuildCost) && TryBuy(context, spots, towers, owned, t => t == counter, run))
+                {
+                    run.Purchases++;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         // Round 75: walkers that got past the last gate stand at the base and bite it until they are shot (the base is besieged
@@ -2679,14 +2741,13 @@ namespace Game.Tests
             return true;
         }
 
-        // Round 75: flyers are announced one wave ahead, and early on Fault Line, Quartz Flats and Crysium Vein a wave pays 10 to
-        // 30 coins, so a player who opened with ground guns cannot save a sky gun's price in time; a flyer that reaches the base
-        // stays on it until it is shot. What a player does then is sell: when flyers are coming or alive, no gun of the player
-        // that can aim up reaches the base (a Gun Turret at the first gate does nothing for a Skyray over the base: Quartz Flats
-        // Medium) and the purse is short, the cheapest gun whose sale covers the difference goes (never the last one).
+        // The emergency sale (round 75, narrowed in round 76): a flyer that reaches the base stays on it until it is shot. When
+        // flyers are biting the base, no gun of the player that can aim up reaches the base (a Gun Turret at the first gate does
+        // nothing for a Skyray over the base: Quartz Flats Medium) and the purse is short of the sky gun, the cheapest gun whose
+        // sale covers the difference goes (never the last one). Not a habit: without flyers on a bleeding base nothing is sold.
         private static bool SellForFirstCounter(LevelContext context, List<Tower> towers, EnemyTraits trait, int price, BotRun run)
         {
-            if (trait != EnemyTraits.Airborne)
+            if (trait != EnemyTraits.Airborne || !run.FlyersBitingBase)
             {
                 return false;
             }
@@ -2775,15 +2836,25 @@ namespace Game.Tests
             return strength;
         }
 
-        // How many counters the trait asks for: one when it first shows, one more when the preview (or the field) shows
-        // clearly more of it than the counters were sized for, and one more than stands after a wave in which it cost health.
+        // How many counters the trait asks for: one when it is first met, one more (once a wave) when the field shows clearly
+        // more of it than the counters were sized for, and one more than stands after a wave in which it cost health.
         private static void SizeCounterDemand(LevelContext context, List<Tower> towers, EnemyTraits trait, BotRun run)
         {
-            int shown = Mathf.Max(PreviewCount(context, trait), run.LivingCount(trait));
+            int shown = run.LivingCount(trait);
             int sized = run.SizedFor(trait);
-            if (sized == 0 || shown >= sized * PreviewGrowth)
+            if (sized == 0)
             {
-                run.RaiseCounterDemand(trait, sized == 0 ? 1 : run.CounterDemand(trait) + 1, shown);
+                run.RaiseCounterDemand(trait, 1, Mathf.Max(1, shown));
+                run.TakeGrowth(trait, context.WaveNumber);
+            }
+            else if (shown >= sized * SightGrowth && run.TakeGrowth(trait, context.WaveNumber))
+            {
+                run.RaiseCounterDemand(trait, run.CounterDemand(trait) + 1, shown);
+            }
+            else
+            {
+                // The wave's peak is what the counters are sized for, without asking for more within the same wave.
+                run.RaiseCounterDemand(trait, run.CounterDemand(trait), shown);
             }
 
             if (run.TakeTraitLoss(trait, context.WaveNumber))
@@ -2798,11 +2869,17 @@ namespace Game.Tests
         {
             float cell = context.Level.Grid.CellSize;
             float baseNow = context.BaseHealth.Current;
-            if (context.Base != null && run.LastBaseSeen >= 0f && baseNow < run.LastBaseSeen)
+            if (context.Base != null)
             {
-                foreach (EnemyTraits trait in TraitsAt(context, context.Base.Position, BaseSiegeRadius * cell))
+                List<EnemyTraits> atBase = TraitsAt(context, context.Base.Position, BaseSiegeRadius * cell);
+                bool lost = run.LastBaseSeen >= 0f && baseNow < run.LastBaseSeen;
+                run.FlyersBitingBase = atBase.Contains(EnemyTraits.Airborne) && (lost || run.FlyersBitingBase);
+                foreach (EnemyTraits trait in atBase)
                 {
-                    run.NoteTraitLoss(trait, context.WaveNumber, 1f);
+                    if (lost)
+                    {
+                        run.NoteTraitLoss(trait, context.WaveNumber, 1f);
+                    }
                 }
             }
 
@@ -2845,11 +2922,13 @@ namespace Game.Tests
             return TraitsFound;
         }
 
-        // A rift behind the defence gate is marked on the ground from the first second and Voss warns when it opens. When the
-        // wave being fought or the next sends walkers through it, the bot wants one gun that reaches the gate those walkers
-        // will stop at (the base when no gate is left on their way): the counter when they are plated, else its cheapest
-        // ground gun. True while the purse is kept for that gun or went to it.
-        private static bool GuardRearRift(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run)
+        // A rift behind the defence gate is marked on the ground from the first second and Voss warns when it opens. The bot
+        // wants one gun that reaches the gate its walkers will stop at (the base when no gate is left on their way): the
+        // counter when they are plated, else its cheapest ground gun. With foresight (the skilled player, who knows the level)
+        // that is when the wave being fought or the next sends walkers through it; without (the sensible player, who has no
+        // wave preview) when the rift is seen breaking open, with the Codex's roster for whether its walkers may be plated.
+        // True while the purse is kept for that gun or went to it.
+        private static bool GuardRearRift(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run, bool foresight)
         {
             OriginDirector origins = context.Origins;
             WaveDefinition[] waves = context.Level.GetWaves(context.Difficulty);
@@ -2867,9 +2946,9 @@ namespace Game.Tests
                     continue;
                 }
 
-                bool used = false;
-                bool plated = false;
-                for (int w = current; w <= current + Horizon && w < waves.Length; w++)
+                bool used = !foresight && origins.StateOf(n) != OriginState.Marked;
+                bool plated = used && (run.RosterTraits(context) & EnemyTraits.Armoured) != 0;
+                for (int w = current; foresight && w <= current + Horizon && w < waves.Length; w++)
                 {
                     if (!origins.Wave(w).Uses(n))
                     {
@@ -2967,39 +3046,6 @@ namespace Game.Tests
             }
 
             return false;
-        }
-
-        // Armour and flyers in the wave being fought and in the one after it: what the wave preview shows a player.
-        private static EnemyTraits ComingCounterTraits(LevelContext context)
-        {
-            EnemyTraits traits = EnemyTraits.None;
-            foreach (EnemyTraits trait in CounterTraits)
-            {
-                traits |= PreviewCount(context, trait) > 0 ? trait : EnemyTraits.None;
-            }
-
-            return traits;
-        }
-
-        // The most creatures with the trait that one of the waves at hand (the one being fought, the next) brings.
-        private static int PreviewCount(LevelContext context, EnemyTraits trait)
-        {
-            WaveDefinition[] waves = context.Level.GetWaves(context.Difficulty);
-            int most = 0;
-            int current = Mathf.Max(0, context.WaveNumber - 1);
-            for (int w = current; waves != null && w <= current + Horizon && w < waves.Length; w++)
-            {
-                int count = 0;
-                foreach (SpawnGroup group in waves[w].Groups)
-                {
-                    bool has = group.Enemy != null && (trait == EnemyTraits.Airborne ? group.Enemy.Flies : group.Enemy.HasArmor);
-                    count += has ? WaveScheduler.CountOf(group, context.Difficulty) : 0;
-                }
-
-                most = Mathf.Max(most, count);
-            }
-
-            return most;
         }
 
         private static Tower CheapestUpgrade(List<Tower> towers, int purse)

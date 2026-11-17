@@ -17,14 +17,18 @@ namespace Game.Tests
     /// creature got along its road, the health that reached the base, and the base and gate damage. Nothing is bisected, so
     /// nothing depends on winning being monotone. The level is played as it is, through the headroom probe's runtime copy.
     ///
-    /// The reference players: skilled (the build order of the cell's best replayed plan, as a fixed script; since round 74 it
-    /// also puts a gun at a marked rift behind the defence gate, <see cref="ProbeStrategy.ScriptedGuardingRifts"/>), typical (the
-    /// build order the sensible bot took on seed 1 at the data, replayed as a fixed script on every seed and multiple),
-    /// sensible and careless (the reactive bots of the headroom ladder), fresh (sensible on a plain save) and mono-TowerId.
+    /// The reference players: skilled (since round 76 the cell's best searched strategy played adaptively, with a gun at a
+    /// rift behind the defence gate a wave ahead, <see cref="ProbeStrategy.AdaptiveGuardingRifts"/>), script (the skilled rung
+    /// of rounds 74 and 75: the build order of that strategy's best recorded run as a fixed script, with the rift reaction),
+    /// typical (the build order the sensible bot took on seed 1 at the data, replayed as a fixed script on every seed and
+    /// multiple), sensible and careless (the reactive bots of the headroom ladder), fresh (sensible on a plain save) and
+    /// mono-TowerId.
     ///
-    /// Tools/PlayTest/pressure_arg.txt gives the work: "units=node:difficulty:policy:seed,..." and "multiples=0.8,1,1.25".
-    /// Every run is appended to Tools/PlayTest/pressure_records.txt. Since round 74 a record ends with the purse at each wave
-    /// start ("wave=coins;...") and the idle-counter note (<see cref="BalanceProbeTests.ProbeResult.IdleCounter"/>).
+    /// Tools/PlayTest/pressure_arg.txt gives the work: "units=node:difficulty:policy:seed,..." and "multiples=0.8,1,1.25";
+    /// a "keeptrace=1" line keeps the probe's per-wave trace of every run (Logs/probe_trace.txt in the clone) for a diagnosis.
+    /// Every run is appended to Tools/PlayTest/pressure_records.txt. Since round 74 a record carries the purse at each wave
+    /// start ("wave=coins;...") and the idle-counter note (<see cref="BalanceProbeTests.ProbeResult.IdleCounter"/>); since
+    /// round 76 it ends with the stamp of what it was measured with (<see cref="ProbeStamp"/>: bot version, data, game code).
     /// </summary>
     public sealed class PressureProbeTests
     {
@@ -33,6 +37,7 @@ namespace Game.Tests
         private const string TracePath = "Logs/probe_trace.txt";
         private const string MonoPrefix = "mono-";
         private const string TypicalPolicy = "typical";
+        private const string ScriptPolicy = "script";
 
         // The typical script is the sensible bot's own build order on this seed, at the data.
         private const int TypicalSourceSeed = 1;
@@ -96,7 +101,7 @@ namespace Game.Tests
                 }
 
                 Append(string.Join("\n", lines));
-                if (System.IO.File.Exists(TracePath))
+                if (System.IO.File.Exists(TracePath) && Items("keeptrace").Count == 0)
                 {
                     // The probe's per-sample trace of every run is not read here and grows by megabytes per unit.
                     System.IO.File.Delete(TracePath);
@@ -135,9 +140,15 @@ namespace Game.Tests
                 case "fresh":
                     return ProbeStrategy.SensibleBot();
                 case "skilled":
+                    // Round 76: the best strategy itself, deciding as it goes; a frozen build order of one of its runs lost
+                    // levels the strategy wins (Quartz Flats Hard, round 75).
+                    StrategySpec spec = HeadroomProbeTests.BestRecordedStrategy(level.name, difficulty);
+                    note = spec != null ? spec.Name + " adaptive" : "no recorded strategy for this cell";
+                    return spec != null ? ProbeStrategy.AdaptiveGuardingRifts(spec) : null;
+                case ScriptPolicy:
                     PlanSpec plan = HeadroomProbeTests.BestRecordedPlan(level.name, difficulty);
                     note = plan != null ? plan.Name : "no recorded plan for this cell";
-                    // Round 74: the skilled player sees a marked rift behind the gate; the recorded plans of before did not.
+                    // Round 74: the scripted player sees a marked rift behind the gate; the recorded plans of before did not.
                     return plan != null ? ProbeStrategy.ScriptedGuardingRifts(plan) : null;
                 case TypicalPolicy:
                     PlanSpec typical = _typical[(node, difficulty)];
@@ -200,7 +211,7 @@ namespace Game.Tests
             return string.Join("|", tag, level.name, I(difficulty), policy, I(seed), F(multiple), outcome,
                 I(result.Wave), I(result.WaveCount), F(result.BaseHealth), F(result.BaseMax), I(result.Stars), F(result.GameSeconds), F(wallSeconds),
                 I(result.TowersBuilt), I(result.Upgrades), I(result.CoinsUnspent), I(result.Earned), I(result.RepairSpent),
-                string.Join(";", reach), string.Join(";", baseLost), string.Join(";", gateLost), string.Join(";", advance), string.Join(";", moves), note, string.Join(";", purse), result.IdleCounter);
+                string.Join(";", reach), string.Join(";", baseLost), string.Join(";", gateLost), string.Join(";", advance), string.Join(";", moves), note, string.Join(";", purse), result.IdleCounter, ProbeStamp.Line);
         }
 
         private static List<string[]> Units()

@@ -1,0 +1,84 @@
+Measured with: bot 2:90273749; data b6050a78; game code 54f21dc0
+
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 8 of 12 curves monotone = 66.7%  ->  FAIL
+  skilled        6 of 6   curves (100%); 0 of 24 steps drop by more than the tolerance
+  sensible       2 of 6   curves (33%); 4 of 24 steps drop by more than the tolerance
+  the same check on other scores (all rungs): P 8 of 12; A 12 of 12; R+D (furthest creature) 8 of 12; D 8 of 12; won/lost 12 of 12
+  curves that are not monotone (P per multiple, the drops marked):
+    Fault Line Hard       sensible     seed 2: 0.8:0.81 0.9:0.87 1:0.92 1.12:1.12 1.25:0.97!  (worst drop -0.149)
+    Crysium Vein Medium   sensible     seed 1: 0.8:0.77 0.9:1.02 1:0.77! 1.12:0.86 1.25:0.87  (worst drop -0.259)
+    Crysium Vein Medium   sensible     seed 2: 0.8:0.65 0.9:0.75 1:0.81 1.12:1.03 1.25:0.92!  (worst drop -0.113)
+    Crysium Vein Medium   sensible     seed 3: 0.8:0.72 0.9:0.90 1:0.70! 1.12:0.68 1.25:0.76  (worst drop -0.202)
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 0 of 2 cells within the limit  ->  FAIL
+  cell                  skilled                   sensible                  
+  Fault Line Hard       24.3% (abs 0.269, n=3)    11.6% (abs 0.104, n=3)
+  Crysium Vein Medium   166.6% (abs 1.048, n=3)   14.4% (abs 0.111, n=3)
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  skilled                           sensible                          
+  Fault Line Hard       1.109 (0.890-1.160) 3/3           0.894 (0.820-0.924) 3/3
+  Crysium Vein Medium   0.629 (0.610-1.659) 2/3           0.765 (0.699-0.810) 3/3
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  skilled
+    Fault Line Hard       x0.8 0.92 (0.81-0.92) 3/3 | x0.9 0.95 (0.82-0.97) 3/3 | x1 1.11 (0.89-1.16) 3/3 | x1.12 1.19 (0.96-1.33) 3/3 | x1.25 1.32 (1.19-1.52) 3/3
+    Crysium Vein Medium   x0.8 0.60 (0.60-0.60) 3/3 | x0.9 0.61 (0.61-0.62) 3/3 | x1 0.63 (0.61-1.66) 2/3 | x1.12 0.70 (0.65-1.66) 2/3 | x1.25 1.67 (1.65-1.70) 0/3
+  sensible
+    Fault Line Hard       x0.8 0.81 (0.81-0.81) 3/3 | x0.9 0.86 (0.82-0.87) 3/3 | x1 0.89 (0.82-0.92) 3/3 | x1.12 0.88 (0.85-1.12) 3/3 | x1.25 0.97 (0.83-1.04) 3/3
+    Crysium Vein Medium   x0.8 0.72 (0.65-0.77) 3/3 | x0.9 0.90 (0.75-1.02) 3/3 | x1 0.77 (0.70-0.81) 3/3 | x1.12 0.86 (0.68-1.03) 3/3 | x1.25 0.87 (0.76-0.92) 3/3
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  skilled     Fault Line Hard       A 0.829 (0.820-0.830)  D 0.28 (0.07-0.33)  leaked 0.085 (0.085-0.102)
+  skilled     Crysium Vein Medium   A 0.612 (0.610-0.659)  D 0.02 (0.00-1.00)  leaked 0.042 (0.042-0.078)
+  sensible    Fault Line Hard       A 0.824 (0.820-0.824)  D 0.07 (0.00-0.10)  leaked 0.092 (0.066-0.094)
+  sensible    Crysium Vein Medium   A 0.613 (0.611-0.614)  D 0.15 (0.09-0.20)  leaked 0.048 (0.042-0.059)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<0.8' / '>1.25' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  skilled
+    Fault Line Hard       median >1.25  pooled >1.25  per seed: >1.25 1.12 >1.25                     spread -
+    Crysium Vein Medium   median 1.18   pooled 1.18   per seed: 1.18 0.95 1.18                       spread 24% (n=3)
+  sensible
+    Fault Line Hard       median >1.25  pooled >1.25  per seed: >1.25 >1.25 >1.25                    spread -
+    Crysium Vein Medium   median >1.25  pooled >1.25  per seed: >1.25 >1.25 >1.25                    spread -
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x0.8   x0.9   x1     x1.12  x1.25  H50
+  skilled     Fault Line Hard       3/3    3/3    3/3    3/3    3/3    >1.25
+  skilled     Crysium Vein Medium   3/3    3/3    2/3    2/3    0/3    1.15
+  sensible    Fault Line Hard       3/3    3/3    3/3    3/3    3/3    >1.25
+  sensible    Crysium Vein Medium   3/3    3/3    3/3    3/3    3/3    >1.25
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  skilled     Fault Line Hard        80  78  77  79  82  92  93  81  83  89  78  83  79  77  88  87
+                                    base hit: w7 3/3, w10 1/3, w16 2/3
+  skilled     Crysium Vein Medium    59  53  50  63  58  57  78  73  54  56  69  73  53  71  62  54  60  60
+                                    base hit: w10 1/3, w13 1/3, w14 1/3, w15 1/3
+  sensible    Fault Line Hard        82  81  79  81  81  84  93  77  82  89  77  84  80  74  86  86
+                                    base hit: w16 2/3
+  sensible    Crysium Vein Medium    59  53  51  61  56  56  76  69  54  55  69  72  54  74  63  55  63  61
+                                    base hit: w10 1/3, w14 1/3, w15 3/3, w16 1/3, w18 3/3
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  skilled     Fault Line Hard       won w16/16; built 20, upgrades 18, left 85, earned 1988, repairs 151
+                                    w1 build Cannon@29,6; w1 build Rocket@34,9; w2 build PulseRifle@29,5; w7 drone HarvestDrone@0,0; w8 upgrade@34,9; w9 upgrade@29,5; w9 build PulseRifle@28,6; w10 upgrade@28,6; w10 build PulseRifle@32,6; w11 upgrade@32,6; w12 build PulseRifle@32,5; w12 upgrade@32,5
+  skilled     Crysium Vein Medium   won w18/18; built 14, upgrades 10, left 79, earned 1766, repairs 49
+                                    w1 build Cannon@12,10; w1 build Rocket@36,10; w3 build Cannon@13,10; w8 drone HarvestDrone@0,0; w11 build Rocket@36,7; w12 build PulseRifle@12,11; w12 upgrade@12,11; w12 build PulseRifle@13,11; w13 upgrade@13,11; w14 build PulseRifle@14,7; w14 upgrade@14,7; w15 build PulseRifle@14,11
+  sensible    Fault Line Hard       won w16/16; built 20, upgrades 14, left 18, earned 1988, repairs 89
+                                    w1 build Cannon@32,5; w2 build PulseRifle@32,6; w3 build Rocket@34,9; w6 build Rocket@33,9; w7 upgrade@32,6; w7 build PulseRifle@29,5; w9 upgrade@29,5; w9 build PulseRifle@30,9; w12 build Cannon@33,6; w13 upgrade@30,9; w13 build PulseRifle@29,5; w13 upgrade@29,5
+  sensible    Crysium Vein Medium   won w18/18; built 16, upgrades 12, left 37, earned 1766, repairs 0
+                                    w1 build Cannon@13,10; w1 build PulseRifle@14,10; w2 upgrade@14,10; w5 build PulseRifle@14,11; w6 upgrade@14,11; w7 build PulseRifle@32,10; w7 build Rocket@36,10; w9 upgrade@32,10; w10 build PulseRifle@14,7; w12 build Cannon@15,10; w12 upgrade@14,7; w13 build PulseRifle@12,10
+
+Cost: 60 runs, 29 machine minutes of play (29 s a run), 0 reference runs for the typical scripts; 1 batches, 16 wall-clock minutes in all.
+  batch 1794895697: 12 units on 2 workers, 16.3 min

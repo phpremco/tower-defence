@@ -590,3 +590,19 @@ tables, the diagnoses and the open questions are in Docs/STATUS.md, "Round 75".
 - The skilled rung is a frozen script; on Quartz Flats Hard it loses 5 of 5 at the data where the same strategy replayed
   adaptively wins 3 of 3. Read a skilled zero with that in mind.
 - Records and reports: `Tools/PlayTest/pressure_r75_*.txt`.
+
+## Round 76: a frozen ruler (2026-11-17)
+
+Details, tables and the open questions: Docs/STATUS.md, "Round 76"; commands: Docs/COMMANDS.md, "Round 76".
+
+- Every record carries the bot, data and game code it was measured with; the tools refuse to compare across bots. A batch
+  changes the bot or the data, never both. There is no noise rule: the probe is deterministic (and since this round also
+  when a unit is played in another place of a worker's list; the level's first frames ran on the wall clock before).
+- Bot version 2, frozen: the sensible rung knows the level's Codex roster and no wave preview, opens for the roster and
+  sells only in the emergency; the skilled rung is the cell's best searched strategy played adaptively with the rift
+  reaction.
+- The reading is seeds 1 to 3 at x0.8, 0.9, 1, 1.12 and 1.25 (health jitter instead of more seeds): 720 runs for the
+  first continent, `Tools/PlayTest/pressure_r76_v2_records.txt`.
+- The economy reading is the affordability table (`Tools/PlayTest/affordability.txt`, `CounterAffordability`), not health
+  per coin: four cells cannot pay their first Flak from bounties in time (Fault Line Medium, Hard and Psycho, Quartz
+  Flats Medium).

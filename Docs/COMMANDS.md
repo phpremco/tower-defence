@@ -1309,6 +1309,8 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
   `Game.Tests.PressureProbeTests.Measure_Pressure` headless, appends every run to `Tools/PlayTest/pressure_records.txt` and
   writes the report with the stop rules to `Tools/PlayTest/pressure.txt` (`pressure_report.py`). The open editor is not used.
   The save's MD5 is checked before and after.
+- **Round 76 changed the defaults and the skilled rung** (seeds 1-3, multiples 0.8 to 1.25, no extra rows, `skilled` adaptive,
+  the frozen script is `script`): see "Round 76" below. What follows describes stage 1b and round 74.
 - **What it plays by default:** the rungs `skilled` (the best replayed plan as a fixed script) and `sensible` (the reactive
   bot, repaired in round 74) on seeds 1-5 at the multiples 0.5, 0.65, 0.8, 1, 1.25, 1.6, 2, plus the Cannon row and the
   careless bot on node 0. The `typical` rung of stage 1b (the sensible bot's seed 1 build order as a fixed script) is no
@@ -1385,3 +1387,67 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
   strategy's lowest winning seed as a frozen script (see STATUS round 75, Quartz Flats Hard).
 - **While the clones run, the open editor answers slowly:** `eval_file` timed out twice ("Main thread operation timed out after
   5000ms") during a batch and ran at once after it. Run editor steps between batches.
+
+## Round 76: a frozen bot, stamped records, affordability, the adaptive skilled rung (added 2026-11-17)
+
+- **The rule:** a batch changes the bot or the data, never both. The probe is deterministic, so every difference between two
+  records of one unit is an effect of a change (bot, data or game code), never noise. There is no "one or two seeds are
+  noise" rule (round 75 had one; it was wrong).
+- **The stamp:** every pressure record ends (before the worker and the batch) with `bot=<version>:<hash>;data=<hash>;game=<hash>`
+  (`Assets/Tests/PlayMode/ProbeStamp.cs`). The bot hash covers the probe's code (`BalanceProbeTests`, `BotRun`, `ProbeStrategy`,
+  `ProbePlayer`, `PressureProbeTests`, `HeadroomProbeTests`), `plan_records.txt` and `Plans/*.json` (what the skilled rung is
+  picked from and plays); data is `Assets/_Project/Data/**/*.asset`; game is `Assets/_Project/Scripts/**/*.cs`. Bump
+  `ProbeStamp.BotVersion` with every change of a reference player's rules; the hash catches a change that forgot to.
+  **Bot version 2 is frozen** (the stamp of the round 76 measurement is in STATUS, "Round 76"): do not touch those files
+  for a measurement that must be comparable with it.
+- **The tools refuse to mix bots:** `pressure_wins.py <after> <before>` refuses two files measured with different or unknown
+  (unstamped: before round 76) bots, and says whether the data differs too; `pressure_report.py` (and so `pressure.sh`)
+  refuses a records file that holds more than one bot. `--mixed-bots` prints anyway, with a warning. Keep one records file
+  (`PR_RECORDS`) per bot and data state. The rule itself is in `Tools/PlayTest/pressure_stamp.py`.
+- **The reading since round 76** (the defaults of `pressure.sh`): rungs `skilled,sensible`, seeds 1-3, health multiples
+  0.8, 0.9, 1, 1.12, 1.25 (health jitter instead of more seeds), no extra rows:
+  `PR_RECORDS=Tools/PlayTest/<name>_records.txt bash Tools/PlayTest/pressure.sh "0,1,2,3,4,5" "0,1,2,3"` (720 runs, about 75
+  minutes on five clones), then `python Tools/PlayTest/pressure_wins.py <records>`; `--sales` counts the sensible bot's runs
+  with a sale per cell.
+- **The rungs:** `skilled` is the cell's best searched strategy (`HeadroomProbeTests.BestRecordedStrategy`: the strategy
+  behind the best plan of `plan_records.txt`, read from `Plans/`) played adaptively, with a gun at a rift behind the defence
+  gate a wave ahead (`ProbeStrategy.AdaptiveGuardingRifts`). `script` is the skilled rung of rounds 74 and 75 (that
+  strategy's best recorded build order as a frozen script); it is not in the default any more. `sensible` is bot version 2
+  (`BalanceProbeTests.SensibleAct`): it knows the level's Codex roster (`LevelRoster`) from second zero and no wave preview;
+  with plated creatures in the roster its first gun is the Cannon, with flyers in the roster it keeps a Flak's price back
+  until a wave's bounties pay for one; a counter is bought when its trait is met on the field; a gun is sold only when
+  flyers are biting the base, nothing that can aim up reaches it and the purse is short.
+- **Another data state with the same bot, without touching the project:** `PR_OVERLAY=<folder>` copies that folder's files
+  over every clone after the sync (same relative paths, e.g. `Assets/_Project/Data/Waves/Waves_C1_04.asset` taken with
+  `git show <rev>:<path>`). The records carry that state's data stamp. The next `pressure.sh` or `workers.sh` sync restores
+  the clones.
+- **A run's per-wave trace for a diagnosis:** add `keeptrace=1` to the clone's `pressure_arg.txt` (or run a single unit by
+  hand): the probe's `Logs/probe_trace.txt` is then kept instead of deleted after each unit.
+- **Pitfall found this round: the first frames of a level ran on the wall clock.** `BalanceProbeTests.Probe` set the fixed
+  step after the level scene had loaded, so the frames in between took as long as they took and the first wave started a
+  fraction of a step earlier or later against the bot's buying beat. The same unit played twice (in another place of a
+  worker's list) came out as two different games (Quartz Flats Hard, skilled, seed 1: 2224, 2130 and 2105 coins earned in
+  three plays). The step is now set before the scene loads. Check after any change of the probe loop:
+  `PR_RECORDS=Tools/PlayTest/<name>_records.txt PR_WORKERS=2 PR_UNITS="3:1:sensible:1,4:2:script:1,4:2:skilled:1,3:1:sensible:1,4:2:script:1,4:2:skilled:1" PR_MULTIPLES="1,1.12" bash Tools/PlayTest/pressure.sh`
+  plays three units twice, once early and once late in a clone's list; the two records of each must be identical.
+  Records of before round 76 carry that wobble: identical batches reproduced (same list, same places), re-dealt ones need not.
+- **Affordability of the first counter tower, from data alone:** `Game.Levels.CounterAffordability` (no bot, no model): per
+  cell and counter trait the starting money and the bounties of every wave before the deadline (the trait's first wave plus
+  the grace waves) against the cheapest owned counter's price. `Tools/Validate/Counter Affordability (first continent)` in
+  the editor, or the EditMode test `CounterAffordabilityTests` (in the suite; `bash Tools/PlayTest/r34b_editmode_worker.sh 6 CounterAffordabilityTests`,
+  then copy `Tools/PlayTest/affordability.txt` back from the clone), writes the table and logs every cell that is not
+  payable from bounties as a `[Validator]` warning. A warning, not a failing test.
+- **What a builder scale did to the waves, bosses included:** `python Tools/PlayTest/wave_health.py C1_06 [revision]` lists
+  per difficulty the waves whose health multiplier or boss scale moved since the revision, and the product a wave boss
+  carries. A wave boss (no continent-boss definition) carries wave multiplier x `_bossHealthScale`; the solve re-sizes that
+  scale when the builder scale moves, so the boss does not follow the crowd (see STATUS round 76).
+- **Never edit a script while it runs.** `pressure.sh` was changed during the 720-run batch; bash reads a script as it goes
+  and stopped at the collection step with a syntax error. The runs were complete in the clones
+  (`TowerDefenseWorkers\wN\Tools\PlayTest\pressure_records.txt`; the next `pressure.sh` deletes them, so collect first):
+  `for i in 1 2 3 4 5; do sed "s/\$/|w$i|<batch start, epoch seconds>/" <clone>/Tools/PlayTest/pressure_records.txt >> <records>; done`,
+  then check each clone's `Logs/results.xml` for `result="Passed"` and its `Logs/unity.log` for `[Probe] error`.
+- **The old gates on a moved cell without moving the pipeline's inputs:** replay (`workers.sh run replay 5 "cells=3:2,5:1" "seeds=1,2,3"`),
+  `r34b_editmode_worker.sh 6 BalanceAcceptanceTests` and copy the clone's `acceptance.txt` aside; measure
+  (`workers.sh run measure 5 "cells=3:2,5:1" "seeds=1,2,3"`), `GraceReport.cs` and compare `grace_windows.txt`;
+  `finale_workers.sh` and copy `finale_probe.txt` aside. Then `git checkout -- Tools/PlayTest/plan_records.txt Tools/PlayTest/plan_replay_partial.txt Tools/PlayTest/calibration_records.txt Tools/PlayTest/yardstick_partial.txt Tools/PlayTest/grace_windows.txt Tools/PlayTest/finale_probe.txt`:
+  `plan_records.txt` is part of the bot stamp, the others feed the calibration.

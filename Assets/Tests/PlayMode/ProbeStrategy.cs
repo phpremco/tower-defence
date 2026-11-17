@@ -120,7 +120,13 @@ namespace Game.Tests
         /// </summary>
         public static ProbeStrategy ScriptedGuardingRifts(PlanSpec plan) => new ProbeStrategy("plan " + plan.Name, style: PlayStyle.Scripted, plan: plan) { GuardsRearRift = true };
 
-        /// <summary>Whether a scripted player reacts to a marked rift behind the defence gate before going on with its plan.</summary>
+        /// <summary>
+        /// A searched strategy played adaptively by someone who knows the level (the skilled rung since round 76): as
+        /// <see cref="Adaptive"/>, and a rift behind the defence gate gets its gun a wave ahead. Same name, so the same seeded draws.
+        /// </summary>
+        public static ProbeStrategy AdaptiveGuardingRifts(StrategySpec spec) => new ProbeStrategy("strategy " + spec.Name, roleSpots: true, creative: true, spec: spec) { GuardsRearRift = true };
+
+        /// <summary>Whether a scripted or adaptive player reacts to a rift behind the defence gate before going on with its plan.</summary>
         public bool GuardsRearRift { get; private set; }
     }
 }

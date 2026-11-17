@@ -249,6 +249,48 @@ namespace Game.Tests
         /// </summary>
         internal static PlanSpec BestRecordedPlan(string levelName, int difficulty)
         {
+            RunRecord best = BestRecordedRun(levelName, difficulty);
+            if (best == null)
+            {
+                return null;
+            }
+
+            return new PlanSpec { Level = levelName, Difficulty = difficulty, Name = best.Strategy.Replace(StrategyPrefix, string.Empty) + " seed " + I(best.Seed), Steps = best.Moves.ToArray() };
+        }
+
+        /// <summary>
+        /// The searched strategy behind the cell's best recorded plan (Tools/PlayTest/Plans), to be played adaptively: the
+        /// pressure probe's skilled rung since round 76. Null when the cell has no record or its best plan is a fixed script.
+        /// </summary>
+        internal static StrategySpec BestRecordedStrategy(string levelName, int difficulty)
+        {
+            RunRecord best = BestRecordedRun(levelName, difficulty);
+            if (best == null || !System.IO.Directory.Exists(PlansFolder))
+            {
+                return null;
+            }
+
+            var files = new List<string>(System.IO.Directory.GetFiles(PlansFolder, levelName + "_" + I(difficulty) + "_strategy*.json"));
+            files.Sort(StringComparer.Ordinal);
+            foreach (string file in files)
+            {
+                StrategySpec spec = JsonUtility.FromJson<StrategySpec>(System.IO.File.ReadAllText(file));
+                if (spec != null && spec.Spots != null && StrategyPrefix + spec.Name == best.Strategy)
+                {
+                    return spec;
+                }
+            }
+
+            return null;
+        }
+
+        private const string PlansFolder = "Tools/PlayTest/Plans";
+        private const string StrategyPrefix = "strategy ";
+
+        // The record the skilled rung is taken from: of the strategy that won on the most seeds (then stars, then base health),
+        // the run of the lowest winning seed.
+        private static RunRecord BestRecordedRun(string levelName, int difficulty)
+        {
             if (!System.IO.File.Exists(PlanRecordsPath))
             {
                 return null;
@@ -301,12 +343,7 @@ namespace Game.Tests
                 }
             }
 
-            if (best == null)
-            {
-                return null;
-            }
-
-            return new PlanSpec { Level = levelName, Difficulty = difficulty, Name = best.Strategy.Replace("strategy ", string.Empty) + " seed " + I(best.Seed), Steps = best.Moves.ToArray() };
+            return best;
         }
 
         // Wins outrank stars and stars outrank base health in the pick of the best recorded plan (base health is in the thousands at most).

@@ -1,0 +1,114 @@
+Measured with: bot 2:90273749; data 65c573d7; game code 54f21dc0
+
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 8 of 8 curves monotone = 100.0%  ->  PASS
+  skilled        4 of 4   curves (100%); 0 of 16 steps drop by more than the tolerance
+  sensible       4 of 4   curves (100%); 0 of 16 steps drop by more than the tolerance
+  the same check on other scores (all rungs): P 8 of 8; A 5 of 8; R+D (furthest creature) 8 of 8; D 8 of 8; won/lost 8 of 8
+  curves that are not monotone (P per multiple, the drops marked):
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 0 of 0 cells within the limit  ->  FAIL
+  cell                  skilled                   sensible                  
+  Landing Site Psycho   -                         -
+  Glass Meadows Hard    -                         -
+  Shard Ridge Hard      -                         -
+  Fault Line Medium     -                         -
+  Fault Line Psycho     -                         -
+  Quartz Flats Medium   -                         -
+  Quartz Flats Psycho   -                         -
+  Crysium Vein Psycho   -                         -
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  skilled                           sensible                          
+  Landing Site Psycho   1.200 (1.200-1.200) 0/1           -
+  Glass Meadows Hard    -                                 1.146 (1.146-1.146) 0/1
+  Shard Ridge Hard      -                                 1.265 (1.265-1.265) 1/1
+  Fault Line Medium     -                                 1.780 (1.780-1.780) 0/1
+  Fault Line Psycho     -                                 1.718 (1.718-1.718) 1/1
+  Quartz Flats Medium   0.142 (0.142-0.142) 1/1           -
+  Quartz Flats Psycho   0.196 (0.196-0.196) 1/1           -
+  Crysium Vein Psycho   0.839 (0.839-0.839) 1/1           -
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  skilled
+    Landing Site Psycho   x0.8 0.72 (0.72-0.72) 1/1 | x0.9 1.15 (1.15-1.15) 0/1 | x1 1.20 (1.20-1.20) 0/1 | x1.12 1.19 (1.19-1.19) 0/1 | x1.25 1.21 (1.21-1.21) 0/1
+    Quartz Flats Medium   x0.8 0.14 (0.14-0.14) 1/1 | x0.9 0.14 (0.14-0.14) 1/1 | x1 0.14 (0.14-0.14) 1/1 | x1.12 1.17 (1.17-1.17) 0/1 | x1.25 1.17 (1.17-1.17) 0/1
+    Quartz Flats Psycho   x0.8 0.19 (0.19-0.19) 1/1 | x0.9 0.19 (0.19-0.19) 1/1 | x1 0.20 (0.20-0.20) 1/1 | x1.12 1.21 (1.21-1.21) 0/1 | x1.25 1.21 (1.21-1.21) 0/1
+    Crysium Vein Psycho   x0.8 0.72 (0.72-0.72) 1/1 | x0.9 0.76 (0.76-0.76) 1/1 | x1 0.84 (0.84-0.84) 1/1 | x1.12 1.62 (1.62-1.62) 0/1 | x1.25 1.67 (1.67-1.67) 0/1
+  sensible
+    Glass Meadows Hard    x0.8 0.05 (0.05-0.05) 1/1 | x0.9 0.05 (0.05-0.05) 1/1 | x1 1.15 (1.15-1.15) 0/1 | x1.12 1.26 (1.26-1.26) 0/1 | x1.25 1.27 (1.27-1.27) 0/1
+    Shard Ridge Hard      x0.8 0.66 (0.66-0.66) 1/1 | x0.9 0.85 (0.85-0.85) 1/1 | x1 1.26 (1.26-1.26) 1/1 | x1.12 1.48 (1.48-1.48) 0/1 | x1.25 1.47 (1.47-1.47) 0/1
+    Fault Line Medium     x0.8 0.84 (0.84-0.84) 1/1 | x0.9 1.72 (1.72-1.72) 0/1 | x1 1.78 (1.78-1.78) 0/1 | x1.12 1.77 (1.77-1.77) 0/1 | x1.25 1.77 (1.77-1.77) 0/1
+    Fault Line Psycho     x0.8 0.98 (0.98-0.98) 1/1 | x0.9 1.45 (1.45-1.45) 1/1 | x1 1.72 (1.72-1.72) 1/1 | x1.12 1.72 (1.72-1.72) 0/1 | x1.25 1.75 (1.75-1.75) 0/1
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  skilled     Landing Site Psycho   A 0.200 (0.200-0.200)  D 1.00 (1.00-1.00)  leaked 0.028 (0.028-0.028)
+  skilled     Quartz Flats Medium   A 0.142 (0.142-0.142)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  skilled     Quartz Flats Psycho   A 0.196 (0.196-0.196)  D 0.00 (0.00-0.00)  leaked 0.024 (0.024-0.024)
+  skilled     Crysium Vein Psycho   A 0.618 (0.618-0.618)  D 0.22 (0.22-0.22)  leaked 0.072 (0.072-0.072)
+  sensible    Glass Meadows Hard    A 0.146 (0.146-0.146)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  sensible    Shard Ridge Hard      A 0.499 (0.499-0.499)  D 0.77 (0.77-0.77)  leaked 0.038 (0.038-0.038)
+  sensible    Fault Line Medium     A 0.780 (0.780-0.780)  D 1.00 (1.00-1.00)  leaked 0.054 (0.054-0.054)
+  sensible    Fault Line Psycho     A 0.780 (0.780-0.780)  D 0.94 (0.94-0.94)  leaked 0.137 (0.137-0.137)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<0.8' / '>1.25' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  skilled
+    Landing Site Psycho   median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Quartz Flats Medium   median 1.06   pooled 1.06   per seed: 1.06                                 spread -
+    Quartz Flats Psycho   median 1.06   pooled 1.06   per seed: 1.06                                 spread -
+    Crysium Vein Psycho   median 1.04   pooled 1.04   per seed: 1.04                                 spread -
+  sensible
+    Glass Meadows Hard    median 0.95   pooled 0.95   per seed: 0.95                                 spread -
+    Shard Ridge Hard      median 0.93   pooled 0.93   per seed: 0.93                                 spread -
+    Fault Line Medium     median 0.85   pooled 0.85   per seed: 0.85                                 spread -
+    Fault Line Psycho     median 0.86   pooled 0.86   per seed: 0.86                                 spread -
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x0.8   x0.9   x1     x1.12  x1.25  H50
+  skilled     Landing Site Psycho   1/1    0/1    0/1    0/1    0/1    0.85
+  skilled     Quartz Flats Medium   1/1    1/1    1/1    0/1    0/1    1.06
+  skilled     Quartz Flats Psycho   1/1    1/1    1/1    0/1    0/1    1.06
+  skilled     Crysium Vein Psycho   1/1    1/1    1/1    0/1    0/1    1.06
+  sensible    Glass Meadows Hard    1/1    1/1    0/1    0/1    0/1    0.95
+  sensible    Shard Ridge Hard      1/1    1/1    1/1    0/1    0/1    1.06
+  sensible    Fault Line Medium     1/1    0/1    0/1    0/1    0/1    0.85
+  sensible    Fault Line Psycho     1/1    1/1    1/1    0/1    0/1    1.06
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  skilled     Landing Site Psycho     8   8   8   9  11  10  78  31  12  23  35   9
+                                    base hit: w12 1/1
+  skilled     Quartz Flats Medium     6   6   8  35   8   8   8  29   9   9   8   8  35   9  10  35  10
+                                    base hit: never
+  skilled     Quartz Flats Psycho     3   4   6  37   9  38   6  28   7  32  37  19  41   9  10  34  15
+                                    base hit: never
+  skilled     Crysium Vein Psycho    54  64  52  51  56  58  99  64  50  63  65  82  53  64  66  57  61  55
+                                    base hit: w12 1/1
+  sensible    Glass Meadows Hard      3   3   4   6   5   6   9  27   5   4   2   .
+                                    base hit: w10 1/1, w11 1/1
+  sensible    Shard Ridge Hard       46  47  48  45  44  44  40  43  42  52  66  56  39  65  70  51
+                                    base hit: w12 1/1, w13 1/1, w15 1/1, w16 1/1
+  sensible    Fault Line Medium      83  80  75  81  82  85  89  78  85  84  78  86  80  52  31   .
+                                    base hit: w13 1/1, w14 1/1, w15 1/1
+  sensible    Fault Line Psycho      70  66  63  66  82  70  85  92  84  84  79  81  74  89  76  86
+                                    base hit: w9 1/1, w10 1/1, w11 1/1, w15 1/1, w16 1/1
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  skilled     Quartz Flats Psycho   won w17/17; built 18, upgrades 22, left 64, earned 3562, repairs 243
+                                    w1 build Cannon@3,15; w1 build Rocket@34,3; w1 build Cannon@3,11; w1 drone HarvestDrone@0,0; w1 build Cannon@3,16; w1 build Rocket@34,4; w1 build Cannon@6,11; w1 build PulseRifle@7,11; w1 upgrade@7,11; w3 upgrade@7,11; w4 upgrade@6,11; w5 upgrade@3,11
+  skilled     Crysium Vein Psycho   won w18/18; built 26, upgrades 21, left 52, earned 3613, repairs 222
+                                    w1 build Cannon@12,10; w1 build Rocket@36,10; w1 build Cannon@13,10; w1 build Cannon@14,7; w1 build Rocket@36,7; w1 build Cannon@12,11; w1 build Rocket@36,11; w1 build Cannon@13,11; w3 field SlowField@41,9; w5 drone RepairDrone@0,0; w6 upgrade@36,10; w7 upgrade@36,7
+  sensible    Fault Line Medium     lost w15/16; built 6, upgrades 2, left 54, earned 754, repairs 0
+                                    w1 build Cannon@32,5; w3 build Rocket@34,9; w3 build PulseRifle@32,6; w6 upgrade@32,6; w7 build PulseRifle@29,5; w11 build Cannon@33,6; w13 build Rocket@33,9; w14 upgrade@32,5
+
+Cost: 40 runs, 14 machine minutes of play (20 s a run), 0 reference runs for the typical scripts; 1 batches, 15 wall-clock minutes in all.
+  batch 1794895697: 8 units on 1 workers, 14.7 min
