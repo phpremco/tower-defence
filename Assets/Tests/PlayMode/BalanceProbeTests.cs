@@ -2492,9 +2492,11 @@ namespace Game.Tests
         }
 
         // The dearest affordable step, whatever it is: a new tower (an air gun only where flyers come) or an upgrade.
-        private static void AffordableAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run)
+        private static void AffordableAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run, bool skyGuns = true)
         {
-            bool flyers = System.Array.Exists(context.Level.Paths, p => p.Flying);
+            // The sensible player builds its sky guns by the counter rules alone (skyGuns false): as "the dearest affordable"
+            // a second Flak took the purse before any flyer was announced.
+            bool flyers = skyGuns && System.Array.Exists(context.Level.Paths, p => p.Flying);
             TowerDefinition build = null;
             foreach (TowerDefinition tower in context.AllTowers)
             {
@@ -2541,11 +2543,14 @@ namespace Game.Tests
         // on the field call for the counter tower of the role table, and the purse is kept for it; the counters grow (a tower
         // and an upgrade in turn) when the base or a gate lost health to the trait or the preview shows clearly more of it;
         // a marked rift behind the defence gate gets a gun at the gate its creatures will reach. It reads no balance model.
+        // Round 75: flyers nothing can aim at are paid for by selling a ground gun when the purse is short (SellForFirstCounter),
+        // the rest of the purse never goes to a sky gun the counter rules did not ask for, and walkers biting the base where no
+        // ground gun reaches get one gun beside it (GuardBesiegedBase).
         private static void SensibleAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<Tower> gates, List<string> owned, BotRun run)
         {
             run.StopSaving();
             NoteTraitLosses(context, gates, run);
-            if (GuardRearRift(context, spots, towers, owned, run))
+            if (GuardRearRift(context, spots, towers, owned, run) || GuardBesiegedBase(context, spots, towers, owned, run))
             {
                 return;
             }
@@ -2591,7 +2596,8 @@ namespace Game.Tests
                 }
 
                 int price = build ? counter.BuildCost : upgrade.NextUpgradeCost;
-                if (!context.Wallet.CanAfford(price))
+                bool affordable = context.Wallet.CanAfford(price) || (build && standing == 0 && SellForFirstCounter(context, towers, trait, price, run));
+                if (!affordable)
                 {
                     run.SaveForCounter(price);
                 }
@@ -2607,7 +2613,114 @@ namespace Game.Tests
                 return;
             }
 
-            AffordableAct(context, spots, towers, owned, run);
+            AffordableAct(context, spots, towers, owned, run, skyGuns: false);
+        }
+
+        // Round 75: walkers that got past the last gate stand at the base and bite it until they are shot (the base is besieged
+        // like a gate), and the guns at the gates do not reach that far: on Fault Line Medium one leak in the swarm wave cost
+        // 250 base health a wave for three waves. A player who sees that puts a gun there: the cheapest affordable ground gun
+        // on the free build cell nearest the base, once, while walkers are on the base and no ground gun reaches it.
+        private static bool GuardBesiegedBase(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run)
+        {
+            if (context.Base == null)
+            {
+                return false;
+            }
+
+            Vector3 home = context.Base.Position;
+            context.Targets.FindInRadius(home, BaseSiegeRadius * context.Level.Grid.CellSize, TargetLayers.Ground, OverBase);
+            if (!OverBase.Exists(t => t is Enemy enemy && enemy.IsAlive && !enemy.Definition.Flies))
+            {
+                return false;
+            }
+
+            foreach (Tower tower in towers)
+            {
+                if (tower.IsAlive && (tower.Definition.Targets & TargetLayers.Ground) != 0 && Vector3.Distance(tower.Position, home) <= tower.Range)
+                {
+                    return false;
+                }
+            }
+
+            TowerDefinition gun = null;
+            foreach (TowerDefinition candidate in context.AllTowers)
+            {
+                bool fits = !candidate.IsSupport && !candidate.BlocksGroundEnemies && (candidate.Targets & TargetLayers.Ground) != 0 && owned.Contains(candidate.Id);
+                if (fits && context.Wallet.CanAfford(candidate.BuildCost) && (gun == null || candidate.BuildCost < gun.BuildCost))
+                {
+                    gun = candidate;
+                }
+            }
+
+            if (gun == null)
+            {
+                return false;
+            }
+
+            var grid = new BuildGrid(context.Level);
+            Vector2Int best = default;
+            float nearest = float.MaxValue;
+            foreach (Vector2Int cell in spots.Ground)
+            {
+                float distance = Vector3.Distance(context.Level.Grid.CellToWorld(cell), home);
+                if (distance < nearest && grid.CanBuild(cell) && TowerAt(context, towers, cell) == null)
+                {
+                    nearest = distance;
+                    best = cell;
+                }
+            }
+
+            if (nearest > gun.GetLevel(0).Range || !TryBuyAt(context, gun, best, towers, run))
+            {
+                return false;
+            }
+
+            run.Purchases++;
+            return true;
+        }
+
+        // Round 75: flyers are announced one wave ahead, and early on Fault Line, Quartz Flats and Crysium Vein a wave pays 10 to
+        // 30 coins, so a player who opened with ground guns cannot save a sky gun's price in time; a flyer that reaches the base
+        // stays on it until it is shot. What a player does then is sell: when flyers are coming or alive, no gun of the player
+        // that can aim up reaches the base (a Gun Turret at the first gate does nothing for a Skyray over the base: Quartz Flats
+        // Medium) and the purse is short, the cheapest gun whose sale covers the difference goes (never the last one).
+        private static bool SellForFirstCounter(LevelContext context, List<Tower> towers, EnemyTraits trait, int price, BotRun run)
+        {
+            if (trait != EnemyTraits.Airborne)
+            {
+                return false;
+            }
+
+            Tower pick = null;
+            int standing = 0;
+            foreach (Tower tower in towers)
+            {
+                if (!tower.IsAlive)
+                {
+                    continue;
+                }
+
+                bool aimsUp = (tower.Definition.Targets & TargetLayers.Air) != 0;
+                if (aimsUp && (context.Base == null || Vector3.Distance(tower.Position, context.Base.Position) <= tower.Range))
+                {
+                    return false;
+                }
+
+                standing++;
+                bool covers = context.Wallet.Money + tower.SellValue >= price;
+                if (covers && (pick == null || tower.SellValue < pick.SellValue))
+                {
+                    pick = tower;
+                }
+            }
+
+            if (pick == null || standing < 2)
+            {
+                return false;
+            }
+
+            Sell(context, towers, pick, run);
+            return true;
         }
 
         private static readonly List<EnemyTraits> Wanting = new List<EnemyTraits>();

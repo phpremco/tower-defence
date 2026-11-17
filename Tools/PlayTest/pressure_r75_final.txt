@@ -1,0 +1,289 @@
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 110 of 120 curves monotone = 91.7%  ->  FAIL
+  sensible     110 of 120 curves (92%); 10 of 240 steps drop by more than the tolerance
+  the same check on other scores (all rungs): P 110 of 120; A 109 of 120; R+D (furthest creature) 108 of 120; D 116 of 120; won/lost 119 of 120
+  curves that are not monotone (P per multiple, the drops marked):
+    Landing Site Hard     sensible     seed 3: 0.8:1.30L 1:1.26L! 1.25:1.31L  (worst drop -0.035)
+    Landing Site Psycho   sensible     seed 3: 0.8:0.31 1:1.37L 1.25:1.31L!  (worst drop -0.061)
+    Level_C1_02 Psycho    sensible     seed 2: 0.8:1.26L 1:1.27L 1.25:1.23L!  (worst drop -0.044)
+    Level_C1_02 Psycho    sensible     seed 5: 0.8:1.25L 1:1.21L! 1.25:1.32L  (worst drop -0.043)
+    Shard Ridge Medium    sensible     seed 2: 0.8:0.50 1:0.56 1.25:0.54!  (worst drop -0.025)
+    Shard Ridge Psycho    sensible     seed 3: 0.8:1.54L 1:1.54L 1.25:1.44L!  (worst drop -0.091)
+    Level_C1_04 Easy      sensible     seed 4: 0.8:0.80 1:0.84 1.25:0.81!  (worst drop -0.021)
+    Level_C1_04 Medium    sensible     seed 2: 0.8:1.70L 1:1.70L 1.25:0.86!  (worst drop -0.843)
+    Level_C1_04 Medium    sensible     seed 4: 0.8:0.80 1:0.87 1.25:0.85!  (worst drop -0.023)
+    Level_C1_06 Psycho    sensible     seed 2: 0.8:1.68L 1:1.55L! 1.25:1.74L  (worst drop -0.132)
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 0 of 0 cells within the limit  ->  FAIL
+  cell                  sensible                  
+  Landing Site Easy     2.2% (abs 0.002, n=5)
+  Landing Site Medium   1.2% (abs 0.001, n=5)
+  Landing Site Hard     51.5% (abs 0.654, n=5)
+  Landing Site Psycho   74.8% (abs 1.012, n=5)
+  Level_C1_02 Easy      5.8% (abs 0.002, n=5)
+  Level_C1_02 Medium    2191.5% (abs 1.032, n=5)
+  Level_C1_02 Hard      0.9% (abs 0.011, n=5)
+  Level_C1_02 Psycho    4.9% (abs 0.062, n=5)
+  Shard Ridge Easy      2.4% (abs 0.011, n=5)
+  Shard Ridge Medium    39.0% (abs 0.264, n=5)
+  Shard Ridge Hard      55.0% (abs 0.457, n=5)
+  Shard Ridge Psycho    7.2% (abs 0.104, n=5)
+  Level_C1_04 Easy      5.9% (abs 0.048, n=5)
+  Level_C1_04 Medium    96.4% (abs 0.853, n=5)
+  Level_C1_04 Hard      1.4% (abs 0.011, n=5)
+  Level_C1_04 Psycho    19.9% (abs 0.344, n=5)
+  Level_C1_05 Easy      8.3% (abs 0.010, n=5)
+  Level_C1_05 Medium    2.2% (abs 0.026, n=5)
+  Level_C1_05 Hard      7.5% (abs 0.094, n=5)
+  Level_C1_05 Psycho    54.2% (abs 0.682, n=5)
+  Level_C1_06 Easy      0.4% (abs 0.002, n=5)
+  Level_C1_06 Medium    15.2% (abs 0.092, n=5)
+  Level_C1_06 Hard      39.2% (abs 0.317, n=5)
+  Level_C1_06 Psycho    7.6% (abs 0.124, n=5)
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  sensible                          
+  Landing Site Easy     0.102 (0.101-0.103) 5/5
+  Landing Site Medium   0.108 (0.108-0.109) 5/5
+  Landing Site Hard     1.269 (0.644-1.298) 1/5
+  Landing Site Psycho   1.352 (0.363-1.375) 1/5
+  Level_C1_02 Easy      0.030 (0.029-0.030) 5/5
+  Level_C1_02 Medium    0.047 (0.045-1.077) 4/5
+  Level_C1_02 Hard      1.261 (1.257-1.269) 0/5
+  Level_C1_02 Psycho    1.270 (1.211-1.274) 0/5
+  Shard Ridge Easy      0.450 (0.446-0.456) 5/5
+  Shard Ridge Medium    0.675 (0.563-0.827) 5/5
+  Shard Ridge Hard      0.830 (0.668-1.125) 5/5
+  Shard Ridge Psycho    1.457 (1.432-1.536) 0/5
+  Level_C1_04 Easy      0.808 (0.791-0.839) 5/5
+  Level_C1_04 Medium    0.885 (0.851-1.704) 3/5
+  Level_C1_04 Hard      0.829 (0.823-0.834) 5/5
+  Level_C1_04 Psycho    1.734 (1.404-1.748) 3/5
+  Level_C1_05 Easy      0.121 (0.119-0.129) 5/5
+  Level_C1_05 Medium    1.183 (1.174-1.200) 0/5
+  Level_C1_05 Hard      1.261 (1.246-1.340) 0/5
+  Level_C1_05 Psycho    1.257 (0.629-1.311) 1/5
+  Level_C1_06 Easy      0.561 (0.559-0.562) 5/5
+  Level_C1_06 Medium    0.604 (0.589-0.681) 5/5
+  Level_C1_06 Hard      0.809 (0.614-0.931) 5/5
+  Level_C1_06 Psycho    1.628 (1.553-1.677) 0/5
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  sensible
+    Landing Site Easy     x0.8 0.10 (0.10-0.10) 5/5 | x1 0.10 (0.10-0.10) 5/5 | x1.25 0.11 (0.10-0.11) 5/5
+    Landing Site Medium   x0.8 0.11 (0.10-0.11) 5/5 | x1 0.11 (0.11-0.11) 5/5 | x1.25 0.11 (0.11-0.11) 5/5
+    Landing Site Hard     x0.8 0.20 (0.18-1.30) 4/5 | x1 1.27 (0.64-1.30) 1/5 | x1.25 1.29 (1.26-1.31) 0/5
+    Landing Site Psycho   x0.8 0.31 (0.30-1.28) 4/5 | x1 1.35 (0.36-1.37) 1/5 | x1.25 1.32 (1.31-1.37) 0/5
+    Level_C1_02 Easy      x0.8 0.03 (0.02-0.03) 5/5 | x1 0.03 (0.03-0.03) 5/5 | x1.25 0.03 (0.03-0.03) 5/5
+    Level_C1_02 Medium    x0.8 0.04 (0.04-0.04) 5/5 | x1 0.05 (0.05-1.08) 4/5 | x1.25 1.15 (1.14-1.21) 0/5
+    Level_C1_02 Hard      x0.8 0.77 (0.04-1.23) 3/5 | x1 1.26 (1.26-1.27) 0/5 | x1.25 1.28 (1.27-1.28) 0/5
+    Level_C1_02 Psycho    x0.8 1.25 (1.18-1.26) 0/5 | x1 1.27 (1.21-1.27) 0/5 | x1.25 1.30 (1.23-1.32) 0/5
+    Shard Ridge Easy      x0.8 0.45 (0.44-0.45) 5/5 | x1 0.45 (0.45-0.46) 5/5 | x1.25 0.46 (0.45-0.46) 5/5
+    Shard Ridge Medium    x0.8 0.50 (0.47-0.67) 5/5 | x1 0.68 (0.56-0.83) 5/5 | x1.25 0.82 (0.54-1.22) 5/5
+    Shard Ridge Hard      x0.8 0.64 (0.56-0.76) 5/5 | x1 0.83 (0.67-1.13) 5/5 | x1.25 1.48 (0.98-1.52) 2/5
+    Shard Ridge Psycho    x0.8 1.45 (1.26-1.54) 1/5 | x1 1.46 (1.43-1.54) 0/5 | x1.25 1.54 (1.44-1.55) 0/5
+    Level_C1_04 Easy      x0.8 0.79 (0.78-0.80) 5/5 | x1 0.81 (0.79-0.84) 5/5 | x1.25 0.81 (0.80-1.78) 4/5
+    Level_C1_04 Medium    x0.8 0.86 (0.80-1.70) 3/5 | x1 0.89 (0.85-1.70) 3/5 | x1.25 0.91 (0.85-1.76) 4/5
+    Level_C1_04 Hard      x0.8 0.81 (0.80-0.82) 5/5 | x1 0.83 (0.82-0.83) 5/5 | x1.25 1.27 (0.96-1.78) 4/5
+    Level_C1_04 Psycho    x0.8 1.12 (1.02-1.74) 4/5 | x1 1.73 (1.40-1.75) 3/5 | x1.25 1.76 (1.76-1.79) 0/5
+    Level_C1_05 Easy      x0.8 0.12 (0.12-0.12) 5/5 | x1 0.12 (0.12-0.13) 5/5 | x1.25 0.13 (0.12-0.14) 5/5
+    Level_C1_05 Medium    x0.8 1.16 (0.16-1.16) 2/5 | x1 1.18 (1.17-1.20) 0/5 | x1.25 1.52 (1.27-1.54) 0/5
+    Level_C1_05 Hard      x0.8 1.12 (0.32-1.24) 4/5 | x1 1.26 (1.25-1.34) 0/5 | x1.25 1.58 (1.40-1.62) 0/5
+    Level_C1_05 Psycho    x0.8 0.39 (0.24-1.12) 5/5 | x1 1.26 (0.63-1.31) 1/5 | x1.25 1.33 (1.32-1.39) 0/5
+    Level_C1_06 Easy      x0.8 0.55 (0.55-0.56) 5/5 | x1 0.56 (0.56-0.56) 5/5 | x1.25 0.57 (0.57-0.57) 5/5
+    Level_C1_06 Medium    x0.8 0.58 (0.57-0.58) 5/5 | x1 0.60 (0.59-0.68) 5/5 | x1.25 0.68 (0.62-0.74) 5/5
+    Level_C1_06 Hard      x0.8 0.61 (0.56-0.65) 5/5 | x1 0.81 (0.61-0.93) 5/5 | x1.25 1.28 (0.89-1.83) 3/5
+    Level_C1_06 Psycho    x0.8 1.67 (0.92-1.68) 2/5 | x1 1.63 (1.55-1.68) 0/5 | x1.25 1.70 (1.68-1.74) 0/5
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  sensible    Landing Site Easy     A 0.102 (0.101-0.103)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  sensible    Landing Site Medium   A 0.108 (0.108-0.109)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  sensible    Landing Site Hard     A 0.269 (0.265-0.298)  D 1.00 (0.38-1.00)  leaked 0.000 (0.000-0.000)
+  sensible    Landing Site Psycho   A 0.363 (0.331-0.375)  D 1.00 (0.00-1.00)  leaked 0.000 (0.000-0.014)
+  sensible    Level_C1_02 Easy      A 0.030 (0.029-0.030)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  sensible    Level_C1_02 Medium    A 0.047 (0.045-0.077)  D 0.00 (0.00-1.00)  leaked 0.000 (0.000-0.000)
+  sensible    Level_C1_02 Hard      A 0.261 (0.257-0.269)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  sensible    Level_C1_02 Psycho    A 0.270 (0.211-0.274)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  sensible    Shard Ridge Easy      A 0.450 (0.446-0.456)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  sensible    Shard Ridge Medium    A 0.469 (0.467-0.471)  D 0.21 (0.09-0.36)  leaked 0.013 (0.013-0.032)
+  sensible    Shard Ridge Hard      A 0.497 (0.496-0.499)  D 0.33 (0.17-0.63)  leaked 0.017 (0.011-0.061)
+  sensible    Shard Ridge Psycho    A 0.457 (0.432-0.536)  D 1.00 (1.00-1.00)  leaked 0.052 (0.029-0.056)
+  sensible    Level_C1_04 Easy      A 0.796 (0.791-0.801)  D 0.01 (0.00-0.04)  leaked 0.101 (0.089-0.108)
+  sensible    Level_C1_04 Medium    A 0.796 (0.703-0.800)  D 0.09 (0.05-1.00)  leaked 0.150 (0.043-0.171)
+  sensible    Level_C1_04 Hard      A 0.824 (0.819-0.829)  D 0.00 (0.00-0.01)  leaked 0.078 (0.076-0.104)
+  sensible    Level_C1_04 Psycho    A 0.771 (0.745-0.785)  D 0.95 (0.62-1.00)  leaked 0.116 (0.062-0.152)
+  sensible    Level_C1_05 Easy      A 0.121 (0.119-0.129)  D 0.00 (0.00-0.00)  leaked 0.002 (0.002-0.006)
+  sensible    Level_C1_05 Medium    A 0.183 (0.174-0.200)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  sensible    Level_C1_05 Hard      A 0.261 (0.246-0.340)  D 1.00 (1.00-1.00)  leaked 0.055 (0.048-0.061)
+  sensible    Level_C1_05 Psycho    A 0.257 (0.247-0.311)  D 1.00 (0.38-1.00)  leaked 0.033 (0.030-0.039)
+  sensible    Level_C1_06 Easy      A 0.561 (0.559-0.562)  D 0.00 (0.00-0.00)  leaked 0.006 (0.006-0.006)
+  sensible    Level_C1_06 Medium    A 0.589 (0.587-0.593)  D 0.02 (0.00-0.09)  leaked 0.040 (0.040-0.052)
+  sensible    Level_C1_06 Hard      A 0.581 (0.574-0.585)  D 0.23 (0.04-0.35)  leaked 0.035 (0.027-0.037)
+  sensible    Level_C1_06 Psycho    A 0.628 (0.553-0.677)  D 1.00 (1.00-1.00)  leaked 0.100 (0.077-0.212)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<0.8' / '>1.25' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  sensible
+    Landing Site Easy     median >1.25  pooled >1.25  per seed: >1.25 >1.25 >1.25 >1.25 >1.25        spread -
+    Landing Site Medium   median >1.25  pooled >1.25  per seed: >1.25 >1.25 >1.25 >1.25 >1.25        spread -
+    Landing Site Hard     median 0.89   pooled 0.89   per seed: 0.89 0.89 <0.8 1.05 0.89             spread 17% (n=4)
+    Landing Site Psycho   median 0.89   pooled 0.89   per seed: 0.89 <0.8 0.89 1.12 0.89             spread 25% (n=4)
+    Level_C1_02 Easy      median >1.25  pooled >1.25  per seed: >1.25 >1.25 >1.25 >1.25 >1.25        spread -
+    Level_C1_02 Medium    median 1.12   pooled 1.12   per seed: 1.12 1.12 1.12 1.12 0.89             spread 25% (n=5)
+    Level_C1_02 Hard      median <0.8   pooled <0.8   per seed: <0.8 <0.8 0.89 0.89 <0.8             spread 0% (n=2)
+    Level_C1_02 Psycho    median <0.8   pooled <0.8   per seed: <0.8 <0.8 <0.8 <0.8 <0.8             spread -
+    Shard Ridge Easy      median >1.25  pooled >1.25  per seed: >1.25 >1.25 >1.25 >1.25 >1.25        spread -
+    Shard Ridge Medium    median >1.25  pooled >1.25  per seed: >1.25 >1.25 >1.25 1.14 1.09          spread 5% (n=2)
+    Shard Ridge Hard      median 1.08   pooled 1.06   per seed: 1.02 >1.25 1.08 1.13 0.92            spread 23% (n=4)
+    Shard Ridge Psycho    median <0.8   pooled <0.8   per seed: <0.8 <0.8 <0.8 <0.8 <0.8             spread -
+    Level_C1_04 Easy      median >1.25  pooled >1.25  per seed: >1.25 >1.25 1.12 >1.25 >1.25         spread -
+    Level_C1_04 Medium    median >1.25  pooled >1.25  per seed: <0.8 <0.8 >1.25 >1.25 >1.25          spread -
+    Level_C1_04 Hard      median >1.25  pooled >1.25  per seed: 1.12 >1.25 >1.25 >1.25 >1.25         spread -
+    Level_C1_04 Psycho    median 0.86   pooled 0.84   per seed: 0.83 <0.8 0.89 0.86 0.87             spread 8% (n=4)
+    Level_C1_05 Easy      median >1.25  pooled >1.25  per seed: >1.25 >1.25 >1.25 >1.25 >1.25        spread -
+    Level_C1_05 Medium    median <0.8   pooled <0.8   per seed: <0.8 0.89 0.89 <0.8 <0.8             spread 0% (n=2)
+    Level_C1_05 Hard      median <0.8   pooled <0.8   per seed: <0.8 <0.8 0.89 <0.8 <0.8             spread -
+    Level_C1_05 Psycho    median 0.88   pooled 0.88   per seed: 0.88 1.04 0.84 <0.8 0.88             spread 24% (n=4)
+    Level_C1_06 Easy      median >1.25  pooled >1.25  per seed: >1.25 >1.25 >1.25 >1.25 >1.25        spread -
+    Level_C1_06 Medium    median >1.25  pooled >1.25  per seed: >1.25 >1.25 >1.25 >1.25 >1.25        spread -
+    Level_C1_06 Hard      median 1.13   pooled 1.15   per seed: 1.25 >1.25 1.08 1.13 1.09            spread 16% (n=4)
+    Level_C1_06 Psycho    median <0.8   pooled <0.8   per seed: 0.84 <0.8 <0.8 <0.8 <0.8             spread -
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x0.8   x1     x1.25  H50
+  sensible    Landing Site Easy     5/5    5/5    5/5    >1.25
+  sensible    Landing Site Medium   5/5    5/5    5/5    >1.25
+  sensible    Landing Site Hard     4/5    1/5    0/5    0.89
+  sensible    Landing Site Psycho   4/5    1/5    0/5    0.89
+  sensible    Level_C1_02 Easy      5/5    5/5    5/5    >1.25
+  sensible    Level_C1_02 Medium    5/5    4/5    0/5    1.09
+  sensible    Level_C1_02 Hard      3/5    0/5    0/5    0.83
+  sensible    Level_C1_02 Psycho    0/5    0/5    0/5    <0.8
+  sensible    Shard Ridge Easy      5/5    5/5    5/5    >1.25
+  sensible    Shard Ridge Medium    5/5    5/5    5/5    >1.25
+  sensible    Shard Ridge Hard      5/5    5/5    2/5    1.20
+  sensible    Shard Ridge Psycho    1/5    0/5    0/5    <0.8
+  sensible    Level_C1_04 Easy      5/5    5/5    4/5    >1.25
+  sensible    Level_C1_04 Medium    3/5    3/5    4/5    >1.25
+  sensible    Level_C1_04 Hard      5/5    5/5    4/5    >1.25
+  sensible    Level_C1_04 Psycho    4/5    3/5    0/5    1.04
+  sensible    Level_C1_05 Easy      5/5    5/5    5/5    >1.25
+  sensible    Level_C1_05 Medium    2/5    0/5    0/5    <0.8
+  sensible    Level_C1_05 Hard      4/5    0/5    0/5    0.87
+  sensible    Level_C1_05 Psycho    5/5    1/5    0/5    0.92
+  sensible    Level_C1_06 Easy      5/5    5/5    5/5    >1.25
+  sensible    Level_C1_06 Medium    5/5    5/5    5/5    >1.25
+  sensible    Level_C1_06 Hard      5/5    5/5    3/5    >1.25
+  sensible    Level_C1_06 Psycho    2/5    0/5    0/5    <0.8
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  sensible    Landing Site Easy       7   7   7   7   7   8  36   9   6  10  10   8
+                                    base hit: never
+  sensible    Landing Site Medium     8   8   8   8   8   8  37  10   7  10   9   8
+                                    base hit: never
+  sensible    Landing Site Hard       9  10  10  10  10  11  70  33  49  22  14   .
+                                    base hit: w11 3/5, w12 2/5
+  sensible    Landing Site Psycho     9  10   8  10  11  38  73  58  35  73  70  40
+                                    base hit: w11 1/5, w12 3/5
+  sensible    Level_C1_02 Easy        0   0   1   2   1   5   7   1   6   7   1   4
+                                    base hit: never
+  sensible    Level_C1_02 Medium      1   1   1   4   5   6   8   4   8   9   6   6
+                                    base hit: w12 1/5
+  sensible    Level_C1_02 Hard        1   1   1   4   6   7  48  38   6   3   .   .
+                                    base hit: w10 5/5
+  sensible    Level_C1_02 Psycho      1   2   4   6   6   7  54  33  12   7   .   .
+                                    base hit: w10 3/5, w11 1/5, w12 1/5
+  sensible    Shard Ridge Easy       47  44  43  45  43  44  44  41  46  40  42  54  43  41  53  49
+                                    base hit: never
+  sensible    Shard Ridge Medium     47  46  45  47  43  40  38  44  41  44  52  67  42  42  63  50
+                                    base hit: w13 5/5, w16 4/5
+  sensible    Shard Ridge Hard       45  45  47  44  44  39  39  44  42  62  66  58  38  64  67  52
+                                    base hit: w12 5/5, w13 5/5, w15 2/5, w16 2/5
+  sensible    Shard Ridge Psycho     40  35  38  50  35  51  37  40  37  51  68  70  37  67  54   3
+                                    base hit: w12 5/5, w13 5/5, w14 3/5, w15 3/5, w16 4/5
+  sensible    Level_C1_04 Easy       82  80  69  69  78  81  81  83  80  80  75  88  81  75  81  91
+                                    base hit: w14 3/5
+  sensible    Level_C1_04 Medium     77  75  79  76  78  77  87  76  82  84  81  81  80  77  76  88
+                                    base hit: w4 4/5, w5 1/5, w10 1/5, w13 5/5, w14 2/5, w15 2/5, w16 2/5
+  sensible    Level_C1_04 Hard       77  73  77  77  85  86  94  79  83  90  81  85  85  78  85  87
+                                    base hit: w7 1/5, w16 1/5
+  sensible    Level_C1_04 Psycho     71  65  61  69  81  63  86  87  83  83  77  83  79  87  77  87
+                                    base hit: w5 3/5, w9 3/5, w10 5/5, w11 3/5, w13 3/5, w15 5/5, w16 3/5
+  sensible    Level_C1_05 Easy        6   6   8   8  10   8   9  19  29   9   9   9  39   9   9   9   9
+                                    base hit: never
+  sensible    Level_C1_05 Medium      7   8   9  39  10  10  11  32  11  11  13  14  40  11  31  38  13
+                                    base hit: w17 5/5
+  sensible    Level_C1_05 Hard        9   9  10  45  10  52  11  37  11  19  46  28  42  25  50  38   4
+                                    base hit: w7 2/5, w9 4/5, w10 2/5, w11 1/5, w14 5/5, w15 1/5, w16 2/5, w17 4/5
+  sensible    Level_C1_05 Psycho      9   8  10  40  11  41  14  32  12  39  44  22  44  18  35  36  21
+                                    base hit: w7 1/5, w11 3/5, w14 4/5, w16 2/5, w17 2/5
+  sensible    Level_C1_06 Easy       51  51  52  58  52  57  57  53  70  62  53  52  55  56  56  52  59  65
+                                    base hit: never
+  sensible    Level_C1_06 Medium     56  50  49  60  55  54  74  66  51  52  66  71  51  70  60  51  59  63
+                                    base hit: w18 4/5
+  sensible    Level_C1_06 Hard       56  65  47  49  52  63  71  70  49  54  55  68  56  65  54  46  63  60
+                                    base hit: w9 5/5, w10 5/5, w15 1/5, w18 4/5
+  sensible    Level_C1_06 Psycho     44  38  44  45  55  56  99  67  46  62  59  81  51  56  68  54   .   .
+                                    base hit: w6 4/5, w7 2/5, w9 4/5, w10 3/5, w11 2/5, w12 5/5, w16 3/5, w17 1/5, w18 1/5
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  sensible    Landing Site Easy     won w12/12; built 6, upgrades 6, left 42, earned 1119, repairs 0
+                                    w1 build Cannon@11,6; w1 build PulseRifle@10,6; w3 upgrade@10,6; w5 build PulseRifle@12,6; w8 upgrade@10,6; w9 build Cannon@12,7; w11 upgrade@11,6; w11 build Cannon@19,14; w12 upgrade@12,6; w12 build PulseRifle@9,6; w12 upgrade@9,6; w12 upgrade@11,6
+  sensible    Landing Site Medium   won w12/12; built 8, upgrades 9, left 22, earned 1261, repairs 0
+                                    w1 build Cannon@11,6; w1 build Cannon@12,6; w4 build PulseRifle@10,6; w5 upgrade@10,6; w8 upgrade@10,6; w8 build PulseRifle@19,14; w9 upgrade@11,6; w10 build Cannon@12,7; w11 upgrade@19,14; w11 build PulseRifle@9,6; w11 upgrade@9,6; w11 upgrade@12,6
+  sensible    Landing Site Hard     lost w11/12; built 5, upgrades 2, left 38, earned 749, repairs 240
+                                    w1 build Laser@10,6; w1 upgrade@10,6; w2 build PulseRifle@11,6; w3 upgrade@11,6; w5 build PulseRifle@12,6; w7 build Cannon@21,18; w10 build Cannon@12,7
+  sensible    Landing Site Psycho   lost w12/12; built 13, upgrades 14, left 65, earned 2114, repairs 60
+                                    w1 build Laser@10,6; w1 build Laser@11,6; w1 build Laser@12,7; w1 build Laser@19,14; w1 upgrade@10,6; w2 build PulseRifle@12,6; w3 upgrade@12,6; w4 build PulseRifle@9,6; w5 upgrade@9,6; w6 build Cannon@21,18; w6 upgrade@12,6; w7 build PulseRifle@13,6
+  sensible    Level_C1_02 Easy      won w12/12; built 9, upgrades 4, left 17, earned 1134, repairs 0
+                                    w1 build Laser@1,14; w1 build PulseRifle@1,15; w4 upgrade@1,15; w7 build Cannon@4,13; w9 build Cannon@4,14; w10 upgrade@4,13; w10 build PulseRifle@4,15; w11 upgrade@4,15; w11 build PulseRifle@13,17; w12 upgrade@13,17; w12 build PulseRifle@4,12; w12 build Laser@13,16
+  sensible    Level_C1_02 Medium    won w12/12; built 7, upgrades 6, left 8, earned 1176, repairs 60
+                                    w1 build Laser@1,14; w1 upgrade@1,14; w2 build PulseRifle@1,15; w3 upgrade@1,15; w6 build Cannon@4,13; w8 build Cannon@4,14; w9 upgrade@4,13; w11 build Cannon@4,15; w11 build PulseRifle@13,17; w11 upgrade@13,17; w12 upgrade@1,15; w12 build PulseRifle@4,12
+  sensible    Level_C1_02 Hard      lost w10/12; built 7, upgrades 5, left 6, earned 876, repairs 60
+                                    w1 build Laser@1,14; w1 upgrade@1,14; w1 build PulseRifle@1,15; w3 upgrade@1,15; w5 build Cannon@4,13; w8 build Cannon@4,14; w9 upgrade@4,13; w10 build Cannon@4,15; w10 build PulseRifle@35,16; w10 upgrade@1,15; w10 build PulseRifle@13,17; w10 upgrade@35,16
+  sensible    Level_C1_02 Psycho    lost w10/12; built 10, upgrades 3, left 51, earned 1307, repairs 120
+                                    w1 build Laser@1,14; w1 build Laser@4,14; w1 build Laser@1,15; w1 build Laser@13,16; w1 build Laser@4,15; w2 build PulseRifle@4,13; w3 upgrade@4,13; w6 build Cannon@13,17; w6 build Cannon@4,12; w6 upgrade@4,13; w6 build PulseRifle@1,13; w7 build PulseRifle@5,13
+  sensible    Shard Ridge Easy      won w16/16; built 10, upgrades 6, left 129, earned 1428, repairs 0
+                                    w1 build Laser@12,10; w1 upgrade@12,10; w4 build PulseRifle@13,10; w6 upgrade@13,10; w8 build Cannon@13,11; w10 build Cannon@32,12; w11 sell@12,10; w11 build Rocket@34,10; w11 build PulseRifle@12,10; w13 upgrade@13,11; w14 build Rocket@35,10; w16 build Cannon@14,10
+  sensible    Shard Ridge Medium    won w16/16; built 11, upgrades 7, left 198, earned 1493, repairs 0
+                                    w1 build Laser@12,10; w1 build Cannon@13,10; w4 build PulseRifle@13,11; w5 upgrade@13,11; w6 build PulseRifle@31,10; w7 upgrade@31,10; w10 sell@13,11; w10 build Rocket@34,10; w10 build Cannon@13,11; w11 build PulseRifle@14,10; w13 build Rocket@35,10; w14 upgrade@13,10
+  sensible    Shard Ridge Hard      won w16/16; built 14, upgrades 13, left 26, earned 1766, repairs 141
+                                    w1 build Laser@12,10; w1 build Cannon@13,10; w4 build PulseRifle@13,11; w5 upgrade@13,11; w6 upgrade@12,10; w6 build PulseRifle@31,10; w7 upgrade@31,10; w9 build Cannon@32,12; w10 sell@12,10; w10 build Rocket@34,10; w10 build PulseRifle@12,10; w11 upgrade@12,10
+  sensible    Shard Ridge Psycho    lost w16/16; built 16, upgrades 6, left 69, earned 2131, repairs 269
+                                    w1 build Laser@12,10; w1 build Laser@13,10; w1 build Laser@13,11; w1 build Laser@30,10; w1 build Laser@11,10; w1 upgrade@12,10; w2 build PulseRifle@31,10; w5 build Cannon@32,12; w9 build Cannon@14,10; w10 sell@32,12; w10 build Rocket@34,10; w10 build Cannon@32,12
+  sensible    Level_C1_04 Easy      won w16/16; built 8, upgrades 4, left 117, earned 1233, repairs 0
+                                    w1 build Laser@29,6; w1 upgrade@29,6; w4 build PulseRifle@32,5; w6 sell@29,6; w6 build Rocket@34,9; w6 build PulseRifle@32,6; w9 build Cannon@33,6; w12 build Cannon@30,9; w14 upgrade@33,6; w14 upgrade@32,5; w16 build Rocket@33,9; w16 upgrade@34,9
+  sensible    Level_C1_04 Medium    lost w16/16; built 6, upgrades 1, left 44, earned 774, repairs 0
+                                    w1 build Laser@29,6; w1 build Laser@29,5; w4 sell@29,6; w4 build Rocket@34,9; w8 build Cannon@32,5; w12 build Cannon@32,6; w13 build Rocket@33,9; w15 upgrade@32,5
+  sensible    Level_C1_04 Hard      won w16/16; built 15, upgrades 13, left 8, earned 1988, repairs 62
+                                    w1 build Laser@29,6; w1 build Laser@29,5; w4 sell@29,6; w4 build Rocket@34,9; w7 build Rocket@33,9; w7 upgrade@34,9; w10 build Cannon@32,5; w11 build Cannon@32,6; w13 upgrade@32,5; w13 build Cannon@33,6; w14 build Rocket@35,9; w14 build PulseRifle@29,5
+  sensible    Level_C1_04 Psycho    lost w15/16; built 15, upgrades 8, left 23, earned 1845, repairs 163
+                                    w1 build Laser@29,6; w1 build Laser@29,5; w1 build Laser@32,5; w1 build Laser@31,10; w1 build Laser@32,6; w1 build Laser@28,6; w3 sell@29,6; w3 build Rocket@34,9; w5 build Rocket@33,9; w7 upgrade@34,9; w9 build Cannon@33,6; w11 build Rocket@35,9
+  sensible    Level_C1_05 Easy      won w17/17; built 13, upgrades 9, left 113, earned 1675, repairs 0
+                                    w1 build Laser@6,12; w1 upgrade@6,12; w1 build PulseRifle@7,11; w6 build Cannon@7,10; w7 sell@6,12; w7 build Rocket@34,4; w8 build Cannon@8,10; w11 build Rocket@35,4; w11 upgrade@7,11; w11 build PulseRifle@8,7; w12 upgrade@8,7; w12 build PulseRifle@6,11
+  sensible    Level_C1_05 Medium    lost w17/17; built 14, upgrades 5, left 7, earned 1682, repairs 180
+                                    w1 build Laser@6,12; w1 build Laser@7,11; w2 build PulseRifle@7,10; w3 sell@6,12; w3 build Rocket@34,4; w7 build Cannon@8,10; w9 build Cannon@8,7; w10 upgrade@8,10; w11 upgrade@7,10; w11 build PulseRifle@6,11; w11 upgrade@6,11; w14 build Rocket@35,4
+  sensible    Level_C1_05 Hard      lost w17/17; built 16, upgrades 12, left 38, earned 2241, repairs 240
+                                    w1 build Laser@6,12; w1 build Laser@7,11; w2 build PulseRifle@7,10; w3 sell@6,12; w3 build Rocket@34,4; w3 upgrade@7,10; w7 build Cannon@8,10; w8 build Cannon@8,7; w10 build Rocket@35,4; w10 upgrade@8,10; w11 build Cannon@6,11; w12 upgrade@34,4
+  sensible    Level_C1_05 Psycho    lost w16/17; built 18, upgrades 10, left 20, earned 2845, repairs 544
+                                    w1 build Laser@6,12; w1 build Laser@7,11; w1 build Laser@8,11; w1 build Laser@14,15; w1 build Laser@6,11; w1 build Laser@7,10; w1 upgrade@6,12; w2 build PulseRifle@8,10; w3 sell@6,12; w3 build Rocket@34,4; w3 upgrade@8,10; w5 build Cannon@8,7
+  sensible    Level_C1_06 Easy      won w18/18; built 12, upgrades 9, left 17, earned 1773, repairs 0
+                                    w1 build Laser@13,10; w1 build Cannon@14,10; w5 build PulseRifle@14,11; w6 sell@13,10; w6 build Rocket@36,10; w7 upgrade@14,11; w8 build PulseRifle@13,10; w9 upgrade@13,10; w10 build PulseRifle@32,10; w11 upgrade@32,10; w13 build Cannon@14,7; w14 upgrade@14,10
+  sensible    Level_C1_06 Medium    won w18/18; built 13, upgrades 9, left 45, earned 1766, repairs 28
+                                    w1 build Laser@13,10; w1 build Laser@13,11; w2 build PulseRifle@14,10; w5 upgrade@14,10; w6 sell@13,10; w6 build Rocket@36,10; w7 build PulseRifle@13,10; w10 build Cannon@14,7; w12 build Cannon@32,10; w13 build Rocket@37,11; w15 upgrade@14,7; w15 upgrade@13,10
+  sensible    Level_C1_06 Hard      won w18/18; built 26, upgrades 21, left 19, earned 2569, repairs 27
+                                    w1 build Laser@13,10; w1 build Laser@13,11; w2 build PulseRifle@14,10; w4 upgrade@14,10; w5 build PulseRifle@14,11; w6 sell@13,10; w6 build Rocket@36,10; w6 upgrade@14,11; w7 upgrade@13,11; w7 build PulseRifle@13,10; w10 build Cannon@14,7; w10 build Cannon@32,10
+  sensible    Level_C1_06 Psycho    lost w16/18; built 18, upgrades 12, left 10, earned 2566, repairs 313
+                                    w1 build Laser@13,10; w1 build Laser@13,11; w1 build Laser@14,7; w1 build Laser@32,11; w1 build Laser@14,11; w1 build Laser@15,11; w1 build Cannon@14,10; w3 upgrade@13,10; w4 sell@13,11; w4 build Rocket@36,10; w4 build PulseRifle@32,10; w5 upgrade@32,10
+
+Cost: 360 runs, 122 machine minutes of play (20 s a run), 0 reference runs for the typical scripts; 1 batches, 26 wall-clock minutes in all.
+  batch 1794887260: 120 units on 5 workers, 25.8 min

@@ -11401,3 +11401,193 @@ options was applied.
 - The other four levels (the critic's table of the same patterns). Health jitter instead of seeds (critic 2.5).
 - A real re-record of the Landing Site scripts through the plan search (finding 6).
 - The headroom probe (`headroom.sh`) still plays its skilled script without the rift reaction.
+
+## Round 75: the other four levels measured, three more faults of the sensible bot repaired, three builder scales moved (2026-11-17)
+
+Not committed. Brief: baseline Glass Meadows, Fault Line, Quartz Flats and Crysium Vein with the repaired bot, diagnose the
+cells that are clearly off, fix level faults data-first, re-measure. No tower was changed, no map was changed, no package
+added, no flyers on Landing Site, the Game view untouched. No Play Mode in the editor: every run was on the silent clones
+w1-w5 (EditMode on w6). The open editor was used for recompiles, two read-only probes and one solve, each time after
+`editor_status` read `playMode: stopped`. Remco's save MD5 42fbe06b38e133cecfe2014def5c833c before and after every batch;
+no `settings.json`; no worker left running. Commands: Docs/COMMANDS.md, "Round 75".
+
+Campaign nodes: 1 Glass Meadows (C1_02), 3 Fault Line (C1_04), 4 Quartz Flats (C1_05), 5 Crysium Vein (C1_06).
+
+### The result in one table
+
+Seeds won out of five at x0.8 / x1 / x1.25 of the creatures' health. "Baseline" is the committed data with round 74's bot;
+"final" is this round's bot and data. The skilled rung was played again only where the data moved (marked *).
+
+| Cell | Skilled: baseline | Skilled: final | Sensible: baseline | Sensible: final |
+| --- | --- | --- | --- | --- |
+| Landing Site Easy | 5 5 5 | = | 5 5 5 | 5 5 5 |
+| Landing Site Medium | 5 5 5 | = | 5 5 5 | 5 5 5 |
+| Landing Site Hard | 5 5 0 | = | 4 0 0 | 4 1 0 |
+| Landing Site Psycho | 5 1 0 | = | 4 1 0 | 4 1 0 |
+| Glass Meadows Easy | 5 5 5 | = | 5 5 5 | 5 5 5 |
+| Glass Meadows Medium | 5 5 0 | = | 5 4 0 | 5 4 0 |
+| Glass Meadows Hard | 5 5 0 | = | 2 0 0 | 3 0 0 |
+| Glass Meadows Psycho | 5 5 0 | = | 0 0 0 | 0 0 0 |
+| Shard Ridge Easy | 5 5 5 | = | 5 5 5 | 5 5 5 |
+| Shard Ridge Medium | 5 5 5 | = | 5 5 5 | 5 5 5 |
+| Shard Ridge Hard | 5 5 5 | = | 5 5 4 | 5 5 2 |
+| Shard Ridge Psycho | 5 5 4 | = | 1 0 0 | 1 0 0 |
+| Fault Line Easy | 5 5 5 | = | 5 4 3 | 5 5 4 |
+| Fault Line Medium | 5 5 4 | **5 5 5** * | 0 0 0 | **3 3 4** |
+| Fault Line Hard | 5 5 5 | **5 5 3** * | 0 0 0 | **5 5 4** |
+| Fault Line Psycho | 5 5 2 | = | 0 0 0 | **4 3 0** |
+| Quartz Flats Easy | 5 5 5 | = | 5 5 5 | 5 5 5 |
+| Quartz Flats Medium | 5 5 0 | = | 1 0 0 | 2 0 0 |
+| Quartz Flats Hard | 5 0 0 | = | 0 0 0 | **4 0 0** |
+| Quartz Flats Psycho | 5 3 2 | = | 2 1 0 | **5 1 0** |
+| Crysium Vein Easy | 5 5 5 | = | 5 5 5 | 5 5 5 |
+| Crysium Vein Medium | 5 4 1 | **5 5 5** * | 3 1 0 | **5 5 5** |
+| Crysium Vein Hard | 5 5 0 | = | 5 5 5 | 5 5 3 |
+| Crysium Vein Psycho | 5 5 0 | = | 1 0 0 | 2 0 0 |
+
+Landing Site and Shard Ridge: the baseline is round 74's final. "=" means not replayed (a script on unchanged data). Bold
+is a change beyond the ruler's noise (one or two seeds either way are noise: Shard Ridge Hard at x1.25 read 4, 2 and 2 in
+three batches on unchanged data).
+
+Records (a file per measurement, reports beside them): `Tools/PlayTest/pressure_r75_baseline_records.txt` (480 runs, both
+rungs, nodes 1, 3, 4, 5), `pressure_r75_mono_records.txt` (24 one-tower rows), `pressure_r75_lane_rule_records.txt` (240, a
+rejected bot rule), `pressure_r75_bot_records.txt` (240, the sell rule on the committed data), `pressure_r75_data_records.txt`
+(285, after the scale change: the sensible rung on nodes 2 to 5 and the skilled rung on the three moved cells),
+`pressure_r75_final_records.txt` (360, the sensible rung with every bot repair on all six levels).
+
+### Step 0: the solve keeps the string keys
+
+`ProjectGenerator.CreateDifficulty` writes the display name through the new `LocalisationTables.KeyOrText`: the field's key
+when the table already holds exactly that text, the text otherwise (for the Localisation step to convert). This round's solve
+left `Data/Difficulty/*.asset` untouched. Test: `LocalisationTests.PartialGeneratorStep_KeepsTheKeyOfAnUnchangedText`.
+
+### What the baseline showed, and what each finding turned out to be
+
+| Finding in the baseline | Cause | Fault of |
+| --- | --- | --- |
+| Sensible 0 of 15 on Fault Line Medium, Hard and Psycho; 1 of 15 on Quartz Flats Medium; lost by wave 5 to 10 | An opening of ground guns only (two Lasers, the "dearest affordable"), the first Skyray in wave 3 or 4 announced one wave ahead, 10 to 30 coins a wave: the Flak's 120 is never reached, and one Skyray on the base stays there (Fault Line Medium seed 1: purse 0, 7, 17, 30, 38, 63 at waves 2 to 7; base lost 12, 168, 126, 378 in waves 4 to 7, the first of it to one Skyray of 32 health) | Bot |
+| Sensible on Quartz Flats Medium still 1 of 5 at x0.8 with the first sell rule | A Gun Turret at the first gate "can aim up", so the bot did not sell; the Skyray sat over the base more than 30 cells away | Bot |
+| Sensible bot buys a second Flak as "the dearest affordable" with no flyer announced (Crysium Vein Psycho: a Flak in wave 1 on all five seeds, two to four of them by wave 14) | `AffordableAct` offers air-only guns wherever a level has a flight lane | Bot |
+| Hard not harder than Medium: Fault Line (sensible Medium 3 4 2, Hard 5 5 5 with the sell rule; skilled 5 5 4 against 5 5 5), Crysium Vein (sensible Medium 3 1 0, Hard 5 5 5; skilled 5 4 1 against 5 5 0) | The builder's scales: Medium's creatures carry more health per coin than Hard's (Fault Line 10.5 against 9.5, Crysium Vein 16.2 against 14.4; `health_per_coin.py`), while Hard pays 1.5 times the coins (count x1.3, income 1.1 against 0.95). Fault Line Medium was the one Medium cell at scale 1 | Level data |
+| Skilled 0 of 5 at x1 on Quartz Flats Hard (all five lost in wave 17, base 800 to 0 in that wave, 200 to 300 coins unspent) | The rung's frozen script, not the level: the same strategy replayed as recorded (adaptive, `workers.sh run replay`, today's data) wins 3 of 3 seeds with 2, 3 and 3 stars. The script is the build order of its seed 1 run, which itself kept 2 stars | Harness |
+| Skilled Psycho (5 3 2) easier than Hard (5 0 0) on Quartz Flats | Mostly the row above. In the data Psycho's first eight waves carry 8.1 health per coin against Hard's 10.3 (three times the starting money, scale 0.45 against 0.66); not changed | Open |
+| Cannon row wins Glass Meadows Psycho (base 800 of 800) and loses Hard | Known (COMBAT_RULES section 6): no flyers on that level, six Cannons from the tripled starting money. The sensible bot loses the same cell 0 of 15: it buys Lasers and sizes its Cannons by the preview. The other 23 one-tower rows (Cannon, Gun Turret, Laser on Hard and Psycho, seed 1, x1) all lose, between wave 5 and 11 | Known dominance |
+| Critic: Fault Line's Shalebats drawn over three nests with two ties | No fault found: the groups are flyers (2 to 5 in wave 7, 5 in Easy's wave 12), they fly to the base from wherever they rise, and no walker uses a nest on this level. The ties (nests 2 and 3, `nest_join_probe.cs`) only matter for walkers | None today |
+| Critic: Quartz Flats' nest (20,7) joins behind gate 2 | No fault found today: the only nest group of the level is Easy's four Shalebats in wave 8 (flyers); Medium, Hard and Psycho send nothing through a nest. It becomes one the day a walker troop is written with `Nest` there: the validator only asks for an authored nest for groups of one or two | Latent |
+
+### The sensible bot (test code, `BalanceProbeTests`)
+
+- **Sells for the first sky gun** (`SellForFirstCounter`): flyers coming or alive, no gun that can aim up within its range
+  of the base, the purse short: the cheapest gun whose sale covers the difference goes (never the last one), and the Flak
+  is bought at once.
+- **Sky guns by the counter rules only** (`AffordableAct(..., skyGuns: false)` from `SensibleAct`).
+- **A gun for a besieged base** (`GuardBesiegedBase`): walkers on the base and no ground gun in reach of it: the cheapest
+  affordable ground gun on the free cell nearest the base. It fires (Quartz Flats: a Gun Turret at (37,3) in about two runs
+  in five, mostly in wave 17; Fault Line at (37,9) in three runs) and moved no cell of the table beyond noise: one gun
+  turns no finale around.
+- **Tried and rejected: a Flak in the opening on every level that sends flyers** (`pressure_r75_lane_rule_records.txt`).
+  It lifted Fault Line Hard to 5 5 5 and Quartz Flats Medium to 5 0 0, and sank Shard Ridge Medium and Hard from 5 5 5 to
+  0 0 0 (flyers come in wave 11 there; the batch also still had the second-Flak fault, so those zeros overstate it). It
+  needs knowledge of when the flyers come, which is the skilled rung's, so it is out.
+
+Shard Ridge and Landing Site were played again with the final bot; the table shows they read as in round 74 within the
+ruler's noise (2, 3 and 4 of 5 all mean "mixed").
+
+### The data change: three builder scales (`Tools/PlayTest/wave_tuning.txt`, then the solve stage alone)
+
+| Cell | Scale | Wave multipliers | Health per coin (Easy / Medium / Hard / Psycho) |
+| --- | --- | --- | --- |
+| Fault Line Medium | 1 -> 0.82 | x0.756 (wave 1: 1.297 -> 0.981) | 5.1 / 10.5 / 9.5 / 20.4 -> 5.1 / **7.9** / **11.3** / 20.4 |
+| Fault Line Hard | 0.757 -> 0.9 | x1.19 (wave 1: 0.96 -> 1.138) | |
+| Crysium Vein Medium | 0.87 -> 0.7 | x0.68 (wave 1: 1.631 -> 1.111) | 7.2 / 16.2 / 14.4 / 24.3 -> 7.2 / **11.1** / 14.4 / 24.3 |
+
+- Why the scale and not counts or timing: the crowd's creatures pay 0.055 to 0.09 coin per health point whatever the mix
+  (only the plated Cragback pays more, 0.25, and more armour is not a way to soften a cell), so composition barely moves
+  health per coin; the wave multiplier does.
+- Fault Line Hard went up because both rungs won it 5 of 5 at x1.25; Crysium Vein Hard was left (the skilled script loses
+  it at x1.25).
+- The scale does not act linearly on Medium (the solve's kill-money feedback): the Medium cells came out softer than the
+  scale's ratio. Counts, groups, timing, bosses' places and the other difficulties are identical; `Waves_C1_04.asset` and
+  `Waves_C1_06.asset` also gained the `Nest: 0` line of round 74 on every group (first write since), and the two level
+  assets carry the new `_balanceTargetScale`.
+- Before and after on the same rung (sensible: the sell-rule bot before, the same with the base-reach guard after):
+
+| Cell | Skilled before | Skilled after | Sensible before | Sensible after |
+| --- | --- | --- | --- | --- |
+| Fault Line Medium | 5 5 4 | 5 5 5 | 3 4 2 | 3 3 4 (3 3 4) |
+| Fault Line Hard | 5 5 5 | 5 5 3 | 5 5 5 | 5 5 4 (5 5 4) |
+| Crysium Vein Medium | 5 4 1 | 5 5 5 | 3 1 0 | 5 5 5 (5 5 5) |
+| Crysium Vein Hard (unchanged data) | 5 5 0 | not replayed | 5 5 5 | 5 5 3 (5 5 3) |
+
+  In brackets: the final batch, with the base guard added to the bot.
+
+  Crysium Vein Medium is repaired for both rungs and now sits below Hard. Fault Line's order is restored for the skilled
+  rung. **Fault Line Medium did not move for the sensible bot although its creatures lost a quarter of their health**: see
+  the open findings.
+
+### Open findings and questions for Remco
+
+1. **Fault Line Medium is still mixed for the sensible bot (3 3 4), and health does not move it** (3 4 2 before its
+   creatures lost a quarter of their health). Its lost runs are all alike: after the raid of wave 12 (three Skyrays) the base
+   loses about 250 a wave for three waves while one or two level-1 Flaks stand at (34,9) and (33,9), five cells from the
+   base; the bot answers the loss with a second Flak on the next cell and repairs nothing while it saves. The skilled
+   script has its Flak on the same cell, upgraded in wave 8, and wins 15 of 15 untouched. Not traced to the end (it needs
+   the Flak's health and the flyers' place over the base in the record): either the bot's "a tower, then an upgrade, in
+   turn" order or flyers hovering at the edge of the Flak's reach. So the scale change there is supported by the skilled
+   rung and by health per coin, not yet by the sensible rung. To undo it: the two `C1_04` lines in `wave_tuning.txt` and
+   one solve.
+2. **Quartz Flats' finale decides the level in one wave.** On Medium every lost run of the sensible bot at x0.8 and x1
+   (eight runs), and on Hard five of the six, is lost in wave 17 (the Core Wisp's wave), on Medium with the base going from
+   full to nothing in that wave; its
+   two wins on Medium keep the base at 700 of 700, and its four wins on Hard at x0.8 end with 60, 98, 256 and 732 of 800.
+   Either the boss dies at the first gate or it walks through all four (gates lost in wave 17 on Medium: 360 and 446 in the
+   won runs, 1760 to 2260 in the lost ones). Medium reads 2 0 0 for the sensible bot, so by the brief's rule the cell is
+   off; the lever would be the boss's size on Medium (`_bossHealthScale` 1.18, set by the sizing rules of rounds 64 and
+   65), and that is Remco's rule, so nothing was changed. Is an all-or-nothing boss wave the intended finale on Medium?
+3. **Medium against Hard across the continent.** Health per coin puts Medium above Hard on Glass Meadows (21.7 against
+   13.8) and Shard Ridge (10.9 against 7.5) too, and Easy to Medium doubles on four levels. In play those two keep their
+   order (Glass Meadows Hard has the plated pack from wave 3; Shard Ridge Hard is the roomy cell of round 74). The scales
+   were set by the old pipeline; a recalibration of the Medium and Hard scales against this ruler is a broad change and
+   was not made. Wanted?
+4. **Crysium Vein Medium now reads 5 5 5 for both rungs**, as Easy does. The scale 0.7 landed at x0.68; a value near 0.78
+   would sit between the old and the new. Left for the next measurement.
+5. **A first flyer with one wave of notice.** The bot now sells a gun for its first Flak in every run on the four levels
+   with flyers (240 of 240 in the final batch). That is what a first-visit player has to do on Fault Line Medium, Hard and
+   Psycho (Skyray in wave 3) and Quartz Flats (wave 4). If selling is not the intended answer, the generator already has
+   the remedy for Easy (the Easy raid rule: no raid before the kills have paid a sky gun, plus a wave); extending it to
+   Medium moves all of Medium's raids later together and drops the last ones, so it is a design decision. The critic's
+   other option (flyers that leave, or a softer attack on the base) stands too.
+6. **The skilled rung is a frozen script, and on Quartz Flats Hard it is a bad one** (0 of 5 at x1 where the adaptive
+   replay wins 3 of 3). Proposal for the next round: the skilled rung plays the best strategy adaptively (with the rift
+   reaction of round 74), or the script is re-recorded from a three-star run.
+7. **Quartz Flats Psycho is not harder than Hard** (sensible 5 1 0 against 4 0 0; skilled 5 3 2 against 5 0 0, the script
+   fault included). The first eight waves carry 8.1 health per coin on Psycho against 10.3 on Hard. Not changed: with the
+   skilled script unreliable there, there is no rung to tune against.
+8. **What the sensible bot still cannot do**: repair a damaged gun while it saves for a counter; choose anything but "the
+   dearest affordable" in its opening (two Lasers, then one sold); size its Cannons to a plated pack ahead of the preview
+   (Glass Meadows Hard and Psycho: 3 0 0 and 0 0 0 where a Cannon row wins Psycho).
+9. Round 74's questions on Landing Site (the rift's price on Hard and Psycho, one Cragback ending the level) are unchanged.
+
+### Verification
+
+- Compile clean (only the old CS0618 in `Tests/PlayMode/BalanceProbeTests.cs`).
+- EditMode on w6, whole suite, on the final code: **1127 / 1074 passed / 0 failed / 53 skipped** (1126 / 1073 / 0 / 53 before; +1 test). `CombatRulesTests` and the
+  grace-window tests are in it and green on the new data; no allowance was changed.
+- All worker batches passed with 0 probe errors.
+- Not run: the acceptance stage and the finale probes (the old pipeline's verdicts on the three moved cells will have
+  shifted; `acceptance.txt` is as committed).
+
+### Changed files
+
+- Generator: `Assets/_Project/Scripts/Editor/LocalisationTables.cs`, `ProjectGenerator.cs`.
+- Test code: `Assets/Tests/PlayMode/BalanceProbeTests.cs`; `Assets/Tests/EditMode/LocalisationTests.cs`.
+- Data: `Tools/PlayTest/wave_tuning.txt`; `Assets/_Project/Data/Waves/Waves_C1_04.asset`, `Waves_C1_06.asset`;
+  `Assets/_Project/Data/Levels/Level_C1_04.asset`, `Level_C1_06.asset` (`_balanceTargetScale`).
+- Tools and docs: `Tools/PlayTest/pressure_wins.py` (level names), `health_per_coin.py` (new), `pressure_r75_*.txt` (new);
+  `Docs/COMMANDS.md`, `Docs/BALANCE_HEADROOM.md`, this file.
+
+### Not done
+
+- The skilled rung on the unchanged cells with today's bot code (it is a script; only the three moved cells were replayed).
+- A re-record of the skilled scripts (Quartz Flats Hard above all), health jitter instead of seeds (critic 2.5), the
+  headroom probe's skilled script without the rift reaction (all as in round 74).

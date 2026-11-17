@@ -135,6 +135,28 @@ namespace Game.Editor
             return report;
         }
 
+        /// <summary>
+        /// What a partial generator step writes into a localised field: the field's key when the table already holds
+        /// exactly this text under it, and the text itself otherwise (the next "Localisation" step converts it). A step
+        /// that runs without that last step, such as the solve stage, would otherwise put the English text back over the key.
+        /// </summary>
+        public static string KeyOrText(ScriptableObject asset, string propertyPath, string text)
+        {
+            return KeyOrText(ReadTable(DataTablePath), asset.GetType().Name, asset.name, propertyPath, text);
+        }
+
+        /// <summary>The same choice against a given table (pure, for the tests).</summary>
+        public static string KeyOrText(IReadOnlyDictionary<string, string> table, string typeName, string assetName, string propertyPath, string text)
+        {
+            if (!IsLocalised(typeName, propertyPath))
+            {
+                return text;
+            }
+
+            string key = KeyFor(KindOf(typeName), assetName, propertyPath);
+            return table.TryGetValue(key, out string known) && known == text ? key : text;
+        }
+
         /// <summary>True when the serialized path (with indices) is one of the localised fields of the type.</summary>
         public static bool IsLocalised(string typeName, string propertyPath)
         {

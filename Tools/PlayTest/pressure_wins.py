@@ -13,7 +13,8 @@ import sys
 from collections import defaultdict
 
 DIFFICULTIES = ["Easy", "Medium", "Hard", "Psycho"]
-LEVEL_NAMES = {"Level_C1_01": "Landing Site", "Level_C1_03": "Shard Ridge"}
+LEVEL_NAMES = {"Level_C1_01": "Landing Site", "Level_C1_02": "Glass Meadows", "Level_C1_03": "Shard Ridge", "Level_C1_04": "Fault Line",
+               "Level_C1_05": "Quartz Flats", "Level_C1_06": "Crysium Vein"}
 SKY_GUN = "Rocket"
 ARMOUR_GUN = "Cannon"
 BY_WAVE = 14

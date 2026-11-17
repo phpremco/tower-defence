@@ -1350,12 +1350,38 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
   level validator asks for it when at most `LevelValidator.SmallNestGroup` walkers would draw one of several nests.
   `unity command eval_file --file Tools/PlayTest/nest_join_probe.cs` lists every level's nests, the road cell each joins at,
   ties and which lie behind the defence gate.
-- **Pitfall of the solve stage** (`ApplyRound68.cs`, `BalanceStages.SolveWaves`): its "Difficulties" step writes the plain
-  display names back over the string keys of round 69 in `Data/Difficulty/*.asset`. After a solve, restore those four files
-  (`git checkout -- Assets/_Project/Data/Difficulty`) and refresh the editor; nothing else in them changes.
+- **The solve stage keeps the string keys** (fixed in round 75): `CreateDifficulty` writes a localised field through
+  `LocalisationTables.KeyOrText`, which keeps the key of round 69 when the table already holds the same text. Until then the
+  "Difficulties" step of `ApplyRound68.cs` / `BalanceStages.SolveWaves` wrote the plain names over the keys and the four files
+  had to be restored from git after every solve.
 - **Replaying a level's searched plans** after its data changed: `bash Tools/PlayTest/workers.sh run replay 5 "cells=0:0,0:1,0:2,0:3" "seeds=1,2,3"`
   replaces their records in `plan_records.txt`, and the pressure probe's `skilled` rung takes the best of them
   (`HeadroomProbeTests.BestRecordedPlan`). Mind that a lost replay leaves a cut-off build order: in round 74 the plans of
   Landing Site lost to the authored rift, a new search (`r34b_editmode_worker.sh N PlanSearchTests "cells=0:1"`) wrote the
   same plans, and both were rolled back with `git checkout -- Tools/PlayTest/plan_records.txt Tools/PlayTest/Plans`. The
   skilled rung reacts to a marked rift itself instead (`ProbeStrategy.ScriptedGuardingRifts`).
+
+## Round 75: the other levels of the first continent (added 2026-11-17)
+
+- **Nodes:** 0 Landing Site (C1_01), 1 Glass Meadows (C1_02), 2 Shard Ridge (C1_03), 3 Fault Line (C1_04), 4 Quartz Flats
+  (C1_05), 5 Crysium Vein (C1_06).
+- **The baseline of a level set:** `PR_RECORDS=Tools/PlayTest/<name>_records.txt PR_MULTIPLES="0.8,1,1.25" PR_EXTRA="" bash Tools/PlayTest/pressure.sh "1,3,4,5" "0,1,2,3"`
+  (480 runs, 32 minutes on five clones; the later levels take about 20 s a run).
+- **One-tower rows** on Hard and Psycho at the data: `PR_UNITS="1:2:mono-Cannon:1,1:2:mono-PulseRifle:1,1:2:mono-Laser:1,..." PR_MULTIPLES="1" PR_RECORDS=... bash Tools/PlayTest/pressure.sh`
+  (24 units for four levels, 3 minutes). The Gun Turret's id is `PulseRifle`, the Flak's `Rocket`.
+- **A scale of one cell** (the builder's lever): a line `C1_04 1 0.82` in `Tools/PlayTest/wave_tuning.txt` (level key, difficulty,
+  target scale), then the solve stage alone:
+  `unity command run_script --file Tools/PlayTest/Scripts/ApplyRound68.cs --entry ApplyRound68.Run --timeout_ms 900000 --timeout 960`
+  (8 seconds; check `editor_status` first). It rewrites only the wave assets whose numbers moved and the level's
+  `_balanceTargetScale`. Mind two things: the scale does not act linearly on Medium (1 -> 0.82 moved Fault Line Medium's
+  wave multipliers by x0.756, 0.87 -> 0.7 moved Crysium Vein's by x0.68; Hard followed its scale exactly), and a wave asset
+  written for the first time since round 74 gains a `Nest: 0` line on every group (no change in the game).
+- **Health per coin of every cell** (a reading aid, not a gate): `python Tools/PlayTest/health_per_coin.py [waves]` sums, per cell, the health of
+  every creature but the bosses (count x difficulty count x health x wave multiplier x difficulty health) over the kill coins
+  plus the starting money.
+- **A recorded plan against today's data:** `bash Tools/PlayTest/workers.sh run replay 3 "cells=4:2" "seeds=1,2,3"` plays the
+  cell's adaptive strategies; it rewrites `plan_records.txt` and `plan_replay_partial.txt`, so restore both from git when the
+  replay was only a check. The pressure probe's `skilled` rung is not that replay: it plays the build order of the best
+  strategy's lowest winning seed as a frozen script (see STATUS round 75, Quartz Flats Hard).
+- **While the clones run, the open editor answers slowly:** `eval_file` timed out twice ("Main thread operation timed out after
+  5000ms") during a batch and ran at once after it. Run editor steps between batches.

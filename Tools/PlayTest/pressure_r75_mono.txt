@@ -1,0 +1,226 @@
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 0 of 0 curves monotone = 0.0%  ->  FAIL
+  the same check on other scores (all rungs): P 0 of 0; A 0 of 0; R+D (furthest creature) 0 of 0; D 0 of 0; won/lost 0 of 0
+  curves that are not monotone (P per multiple, the drops marked):
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 0 of 0 cells within the limit  ->  FAIL
+  cell                  
+  Level_C1_02 Hard
+  Level_C1_02 Psycho
+  Level_C1_04 Hard
+  Level_C1_04 Psycho
+  Level_C1_05 Hard
+  Level_C1_05 Psycho
+  Level_C1_06 Hard
+  Level_C1_06 Psycho
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  mono-Cannon                       mono-Laser                        mono-PulseRifle                   
+  Level_C1_02 Hard      1.248 (1.248-1.248) 0/1           1.277 (1.277-1.277) 0/1           1.318 (1.318-1.318) 0/1
+  Level_C1_02 Psycho    0.055 (0.055-0.055) 1/1           1.268 (1.268-1.268) 0/1           1.240 (1.240-1.240) 0/1
+  Level_C1_04 Hard      1.911 (1.911-1.911) 0/1           1.901 (1.901-1.901) 0/1           1.908 (1.908-1.908) 0/1
+  Level_C1_04 Psycho    1.908 (1.908-1.908) 0/1           1.877 (1.877-1.877) 0/1           1.860 (1.860-1.860) 0/1
+  Level_C1_05 Hard      1.677 (1.677-1.677) 0/1           1.678 (1.678-1.678) 0/1           1.679 (1.679-1.679) 0/1
+  Level_C1_05 Psycho    1.670 (1.670-1.670) 0/1           1.674 (1.674-1.674) 0/1           1.668 (1.668-1.668) 0/1
+  Level_C1_06 Hard      1.753 (1.753-1.753) 0/1           1.739 (1.739-1.739) 0/1           1.750 (1.750-1.750) 0/1
+  Level_C1_06 Psycho    1.811 (1.811-1.811) 0/1           1.780 (1.780-1.780) 0/1           1.797 (1.797-1.797) 0/1
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  mono-Cannon
+    Level_C1_02 Hard      x1 1.25 (1.25-1.25) 0/1
+    Level_C1_02 Psycho    x1 0.05 (0.05-0.05) 1/1
+    Level_C1_04 Hard      x1 1.91 (1.91-1.91) 0/1
+    Level_C1_04 Psycho    x1 1.91 (1.91-1.91) 0/1
+    Level_C1_05 Hard      x1 1.68 (1.68-1.68) 0/1
+    Level_C1_05 Psycho    x1 1.67 (1.67-1.67) 0/1
+    Level_C1_06 Hard      x1 1.75 (1.75-1.75) 0/1
+    Level_C1_06 Psycho    x1 1.81 (1.81-1.81) 0/1
+  mono-Laser
+    Level_C1_02 Hard      x1 1.28 (1.28-1.28) 0/1
+    Level_C1_02 Psycho    x1 1.27 (1.27-1.27) 0/1
+    Level_C1_04 Hard      x1 1.90 (1.90-1.90) 0/1
+    Level_C1_04 Psycho    x1 1.88 (1.88-1.88) 0/1
+    Level_C1_05 Hard      x1 1.68 (1.68-1.68) 0/1
+    Level_C1_05 Psycho    x1 1.67 (1.67-1.67) 0/1
+    Level_C1_06 Hard      x1 1.74 (1.74-1.74) 0/1
+    Level_C1_06 Psycho    x1 1.78 (1.78-1.78) 0/1
+  mono-PulseRifle
+    Level_C1_02 Hard      x1 1.32 (1.32-1.32) 0/1
+    Level_C1_02 Psycho    x1 1.24 (1.24-1.24) 0/1
+    Level_C1_04 Hard      x1 1.91 (1.91-1.91) 0/1
+    Level_C1_04 Psycho    x1 1.86 (1.86-1.86) 0/1
+    Level_C1_05 Hard      x1 1.68 (1.68-1.68) 0/1
+    Level_C1_05 Psycho    x1 1.67 (1.67-1.67) 0/1
+    Level_C1_06 Hard      x1 1.75 (1.75-1.75) 0/1
+    Level_C1_06 Psycho    x1 1.80 (1.80-1.80) 0/1
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  mono-Cannon Level_C1_02 Hard      A 0.248 (0.248-0.248)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  mono-Cannon Level_C1_02 Psycho    A 0.055 (0.055-0.055)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  mono-Cannon Level_C1_04 Hard      A 0.911 (0.911-0.911)  D 1.00 (1.00-1.00)  leaked 0.143 (0.143-0.143)
+  mono-Cannon Level_C1_04 Psycho    A 0.908 (0.908-0.908)  D 1.00 (1.00-1.00)  leaked 0.072 (0.072-0.072)
+  mono-Cannon Level_C1_05 Hard      A 0.677 (0.677-0.677)  D 1.00 (1.00-1.00)  leaked 0.037 (0.037-0.037)
+  mono-Cannon Level_C1_05 Psycho    A 0.670 (0.670-0.670)  D 1.00 (1.00-1.00)  leaked 0.046 (0.046-0.046)
+  mono-Cannon Level_C1_06 Hard      A 0.753 (0.753-0.753)  D 1.00 (1.00-1.00)  leaked 0.065 (0.065-0.065)
+  mono-Cannon Level_C1_06 Psycho    A 0.811 (0.811-0.811)  D 1.00 (1.00-1.00)  leaked 0.017 (0.017-0.017)
+  mono-Laser  Level_C1_02 Hard      A 0.277 (0.277-0.277)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  mono-Laser  Level_C1_02 Psycho    A 0.268 (0.268-0.268)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  mono-Laser  Level_C1_04 Hard      A 0.901 (0.901-0.901)  D 1.00 (1.00-1.00)  leaked 0.143 (0.143-0.143)
+  mono-Laser  Level_C1_04 Psycho    A 0.877 (0.877-0.877)  D 1.00 (1.00-1.00)  leaked 0.072 (0.072-0.072)
+  mono-Laser  Level_C1_05 Hard      A 0.678 (0.678-0.678)  D 1.00 (1.00-1.00)  leaked 0.037 (0.037-0.037)
+  mono-Laser  Level_C1_05 Psycho    A 0.674 (0.674-0.674)  D 1.00 (1.00-1.00)  leaked 0.046 (0.046-0.046)
+  mono-Laser  Level_C1_06 Hard      A 0.739 (0.739-0.739)  D 1.00 (1.00-1.00)  leaked 0.056 (0.056-0.056)
+  mono-Laser  Level_C1_06 Psycho    A 0.780 (0.780-0.780)  D 1.00 (1.00-1.00)  leaked 0.017 (0.017-0.017)
+  mono-PulseRifleLevel_C1_02 Hard      A 0.318 (0.318-0.318)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  mono-PulseRifleLevel_C1_02 Psycho    A 0.240 (0.240-0.240)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  mono-PulseRifleLevel_C1_04 Hard      A 0.908 (0.908-0.908)  D 1.00 (1.00-1.00)  leaked 0.143 (0.143-0.143)
+  mono-PulseRifleLevel_C1_04 Psycho    A 0.860 (0.860-0.860)  D 1.00 (1.00-1.00)  leaked 0.058 (0.058-0.058)
+  mono-PulseRifleLevel_C1_05 Hard      A 0.679 (0.679-0.679)  D 1.00 (1.00-1.00)  leaked 0.037 (0.037-0.037)
+  mono-PulseRifleLevel_C1_05 Psycho    A 0.668 (0.668-0.668)  D 1.00 (1.00-1.00)  leaked 0.046 (0.046-0.046)
+  mono-PulseRifleLevel_C1_06 Hard      A 0.750 (0.750-0.750)  D 1.00 (1.00-1.00)  leaked 0.065 (0.065-0.065)
+  mono-PulseRifleLevel_C1_06 Psycho    A 0.797 (0.797-0.797)  D 1.00 (1.00-1.00)  leaked 0.017 (0.017-0.017)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<1' / '>1' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  mono-Cannon
+    Level_C1_02 Hard      median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_02 Psycho    median >1     pooled <1     per seed: >1                                   spread -
+    Level_C1_04 Hard      median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_04 Psycho    median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_05 Hard      median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_05 Psycho    median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_06 Hard      median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_06 Psycho    median <1     pooled <1     per seed: <1                                   spread -
+  mono-Laser
+    Level_C1_02 Hard      median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_02 Psycho    median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_04 Hard      median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_04 Psycho    median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_05 Hard      median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_05 Psycho    median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_06 Hard      median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_06 Psycho    median <1     pooled <1     per seed: <1                                   spread -
+  mono-PulseRifle
+    Level_C1_02 Hard      median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_02 Psycho    median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_04 Hard      median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_04 Psycho    median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_05 Hard      median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_05 Psycho    median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_06 Hard      median <1     pooled <1     per seed: <1                                   spread -
+    Level_C1_06 Psycho    median <1     pooled <1     per seed: <1                                   spread -
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x1     H50
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  mono-Cannon Level_C1_02 Hard        4   4   5   6   7   8  19  33   6   5   .   .
+                                    base hit: w10 1/1
+  mono-Cannon Level_C1_02 Psycho      3   4   3   5   6   7   7   8   6   5   7   5
+                                    base hit: never
+  mono-Cannon Level_C1_04 Hard       80  78  85  74  40   .   .   .   .   .   .   .   .   .   .   .
+                                    base hit: w4 1/1, w5 1/1
+  mono-Cannon Level_C1_04 Psycho     81  80  89  69  34   .   .   .   .   .   .   .   .   .   .   .
+                                    base hit: w4 1/1, w5 1/1
+  mono-Cannon Level_C1_05 Hard        9   9   9  55  10  52   8   .   .   .   .   .   .   .   .   .   .
+                                    base hit: w6 1/1, w7 1/1
+  mono-Cannon Level_C1_05 Psycho      8   8   9  50  10  46   9   .   .   .   .   .   .   .   .   .   .
+                                    base hit: w5 1/1, w6 1/1, w7 1/1
+  mono-Cannon Level_C1_06 Hard       58  68  49  52  55  68  75  74  38  19   .   .   .   .   .   .   .   .
+                                    base hit: w9 1/1, w10 1/1
+  mono-Cannon Level_C1_06 Psycho     55  64  51  49  59  56  25   .   .   .   .   .   .   .   .   .   .   .
+                                    base hit: w6 1/1, w7 1/1
+  mono-Laser  Level_C1_02 Hard        1   5   2   5   6   7  51  44   8   3   .   .
+                                    base hit: w10 1/1
+  mono-Laser  Level_C1_02 Psycho      1   2   2   6   5   6  56  28  10   6   .   .
+                                    base hit: w10 1/1
+  mono-Laser  Level_C1_04 Hard       76  76  83  67  40   .   .   .   .   .   .   .   .   .   .   .
+                                    base hit: w4 1/1, w5 1/1
+  mono-Laser  Level_C1_04 Psycho     72  61  72  64  34   .   .   .   .   .   .   .   .   .   .   .
+                                    base hit: w4 1/1, w5 1/1
+  mono-Laser  Level_C1_05 Hard        9   9   9  54  10  53   9   .   .   .   .   .   .   .   .   .   .
+                                    base hit: w6 1/1, w7 1/1
+  mono-Laser  Level_C1_05 Psycho      9   9  10  49  10  48  13   .   .   .   .   .   .   .   .   .   .
+                                    base hit: w5 1/1, w6 1/1, w7 1/1
+  mono-Laser  Level_C1_06 Hard       56  67  47  49  53  58  71  69  39  22   .   .   .   .   .   .   .   .
+                                    base hit: w9 1/1, w10 1/1
+  mono-Laser  Level_C1_06 Psycho     43  38  43  44  55  57  25   .   .   .   .   .   .   .   .   .   .   .
+                                    base hit: w6 1/1, w7 1/1
+  mono-PulseRifleLevel_C1_02 Hard        4   3   2   6   7  40  61  32  18   7   .   .
+                                    base hit: w10 1/1
+  mono-PulseRifleLevel_C1_02 Psycho      3   4   5   7   7  25  64  26  24  12  12   .
+                                    base hit: w10 1/1, w11 1/1
+  mono-PulseRifleLevel_C1_04 Hard       78  78  84  72  40   .   .   .   .   .   .   .   .   .   .   .
+                                    base hit: w4 1/1, w5 1/1
+  mono-PulseRifleLevel_C1_04 Psycho     78  77  80  80  31  30   .   .   .   .   .   .   .   .   .   .
+                                    base hit: w5 1/1, w6 1/1
+  mono-PulseRifleLevel_C1_05 Hard        9  10  10  54  10  53   9   .   .   .   .   .   .   .   .   .   .
+                                    base hit: w6 1/1, w7 1/1
+  mono-PulseRifleLevel_C1_05 Psycho      9   7   9  46  10  46   8   .   .   .   .   .   .   .   .   .   .
+                                    base hit: w5 1/1, w6 1/1, w7 1/1
+  mono-PulseRifleLevel_C1_06 Hard       56  66  49  51  55  64  72  74  41  23   .   .   .   .   .   .   .   .
+                                    base hit: w9 1/1, w10 1/1
+  mono-PulseRifleLevel_C1_06 Psycho     50  55  48  47  56  54  25   .   .   .   .   .   .   .   .   .   .   .
+                                    base hit: w6 1/1, w7 1/1
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  mono-Cannon Level_C1_02 Hard      lost w10/12; built 6, upgrades 5, left 93, earned 1137, repairs 60
+                                    w1 build Cannon@4,13; w1 build Cannon@4,14; w4 build Cannon@4,15; w6 build Cannon@13,17; w8 upgrade@4,13; w9 upgrade@4,14; w9 build Cannon@1,15; w10 upgrade@4,15; w10 upgrade@13,17; w10 upgrade@1,15; w10 build Cannon@4,12
+  mono-Cannon Level_C1_02 Psycho    won w12/12; built 14, upgrades 14, left 136, earned 2748, repairs 60
+                                    w1 build Cannon@4,13; w1 build Cannon@4,14; w1 build Cannon@4,15; w1 build Cannon@13,17; w1 build Cannon@1,15; w1 upgrade@4,13; w2 upgrade@4,14; w4 upgrade@4,15; w6 build Cannon@4,12; w6 upgrade@13,17; w6 build Cannon@1,13; w8 upgrade@1,15
+  mono-Cannon Level_C1_04 Hard      lost w5/16; built 3, upgrades 0, left 26, earned 320, repairs 0
+                                    w1 build Cannon@32,5; w1 build Cannon@32,6; w4 build Cannon@33,6
+  mono-Cannon Level_C1_04 Psycho    lost w5/16; built 6, upgrades 2, left 61, earned 845, repairs 0
+                                    w1 build Cannon@32,5; w1 build Cannon@32,6; w1 build Cannon@33,6; w1 build Cannon@30,9; w1 build Cannon@31,9; w1 upgrade@32,5; w1 build Cannon@32,9; w2 upgrade@32,6
+  mono-Cannon Level_C1_05 Hard      lost w7/17; built 5, upgrades 0, left 55, earned 530, repairs 0
+                                    w1 build Cannon@7,11; w1 build Cannon@7,10; w1 build Cannon@8,10; w5 build Cannon@8,7; w7 build Cannon@6,11
+  mono-Cannon Level_C1_05 Psycho    lost w7/17; built 8, upgrades 6, left 5, earned 1327, repairs 0
+                                    w1 build Cannon@7,11; w1 build Cannon@7,10; w1 build Cannon@8,10; w1 build Cannon@8,7; w1 build Cannon@6,11; w1 upgrade@7,11; w1 build Cannon@7,8; w1 upgrade@7,10; w2 build Cannon@7,9; w4 upgrade@8,10; w7 build Cannon@8,6; w7 upgrade@8,7
+  mono-Cannon Level_C1_06 Hard      lost w10/18; built 4, upgrades 3, left 1, earned 651, repairs 0
+                                    w1 build Cannon@13,10; w1 build Cannon@14,10; w1 build Cannon@14,7; w5 build Cannon@32,10; w7 upgrade@13,10; w8 upgrade@14,10; w10 upgrade@14,7
+  mono-Cannon Level_C1_06 Psycho    lost w7/18; built 7, upgrades 4, left 81, earned 1138, repairs 0
+                                    w1 build Cannon@13,10; w1 build Cannon@14,10; w1 build Cannon@14,7; w1 build Cannon@32,10; w1 build Cannon@14,11; w1 upgrade@13,10; w1 build Cannon@15,10; w1 upgrade@14,10; w1 build Cannon@15,11; w4 upgrade@14,7; w6 upgrade@32,10
+  mono-Laser  Level_C1_02 Hard      lost w10/12; built 3, upgrades 0, left 43, earned 578, repairs 180
+                                    w1 build Laser@1,14; w2 build Laser@4,14; w6 build Laser@1,15
+  mono-Laser  Level_C1_02 Psycho    lost w10/12; built 6, upgrades 8, left 34, earned 1446, repairs 180
+                                    w1 build Laser@1,14; w1 build Laser@4,14; w1 build Laser@1,15; w1 build Laser@13,16; w1 build Laser@4,15; w2 upgrade@1,14; w4 upgrade@4,14; w5 upgrade@1,15; w6 build Laser@4,13; w6 upgrade@13,16; w6 upgrade@4,15; w8 upgrade@4,13
+  mono-Laser  Level_C1_04 Hard      lost w5/16; built 2, upgrades 0, left 71, earned 325, repairs 0
+                                    w1 build Laser@29,6; w1 build Laser@29,5
+  mono-Laser  Level_C1_04 Psycho    lost w5/16; built 5, upgrades 3, left 45, earned 878, repairs 27
+                                    w1 build Laser@29,6; w1 build Laser@29,5; w1 build Laser@32,5; w1 build Laser@31,10; w1 build Laser@32,6; w1 upgrade@29,6; w1 upgrade@29,5; w3 upgrade@32,5
+  mono-Laser  Level_C1_05 Hard      lost w7/17; built 3, upgrades 0, left 29, earned 503, repairs 106
+                                    w1 build Laser@6,12; w1 build Laser@7,11; w4 build Laser@8,11
+  mono-Laser  Level_C1_05 Psycho    lost w7/17; built 7, upgrades 7, left 20, earned 1327, repairs 60
+                                    w1 build Laser@6,12; w1 build Laser@7,11; w1 build Laser@8,11; w1 build Laser@14,15; w1 build Laser@6,11; w1 upgrade@6,12; w1 build Laser@7,10; w2 upgrade@7,11; w3 upgrade@8,11; w5 upgrade@14,15; w6 build Laser@7,8; w6 upgrade@6,11
+  mono-Laser  Level_C1_06 Hard      lost w10/18; built 4, upgrades 2, left 30, earned 654, repairs 29
+                                    w1 build Laser@13,10; w1 build Laser@13,11; w5 build Laser@14,7; w7 build Laser@32,11; w7 upgrade@13,10; w9 upgrade@13,11
+  mono-Laser  Level_C1_06 Psycho    lost w7/18; built 6, upgrades 6, left 65, earned 1150, repairs 0
+                                    w1 build Laser@13,10; w1 build Laser@13,11; w1 build Laser@14,7; w1 build Laser@32,11; w1 build Laser@14,11; w1 upgrade@13,10; w1 build Laser@15,11; w1 upgrade@13,11; w3 upgrade@14,7; w4 upgrade@32,11; w5 upgrade@14,11; w6 upgrade@15,11
+  mono-PulseRifleLevel_C1_02 Hard      lost w10/12; built 7, upgrades 6, left 32, earned 586, repairs 0
+                                    w1 build PulseRifle@1,15; w1 build PulseRifle@4,13; w1 build PulseRifle@4,15; w1 build PulseRifle@13,17; w1 upgrade@1,15; w3 upgrade@4,13; w5 upgrade@4,15; w5 upgrade@13,17; w6 build PulseRifle@4,14; w8 upgrade@4,14; w8 build PulseRifle@4,12; w9 upgrade@4,12
+  mono-PulseRifleLevel_C1_02 Psycho    lost w11/12; built 15, upgrades 15, left 27, earned 1312, repairs 0
+                                    w1 build PulseRifle@1,15; w1 build PulseRifle@4,13; w1 build PulseRifle@4,15; w1 build PulseRifle@13,17; w1 build PulseRifle@4,14; w1 upgrade@1,15; w1 build PulseRifle@4,12; w1 upgrade@4,13; w1 build PulseRifle@1,13; w1 upgrade@4,15; w1 build PulseRifle@13,16; w1 upgrade@13,17
+  mono-PulseRifleLevel_C1_04 Hard      lost w5/16; built 5, upgrades 1, left 39, earned 323, repairs 0
+                                    w1 build PulseRifle@32,5; w1 build PulseRifle@32,6; w1 build PulseRifle@29,5; w1 build PulseRifle@30,9; w1 build PulseRifle@33,6; w4 upgrade@32,5
+  mono-PulseRifleLevel_C1_04 Psycho    lost w6/16; built 10, upgrades 10, left 42, earned 928, repairs 0
+                                    w1 build PulseRifle@32,5; w1 build PulseRifle@32,6; w1 build PulseRifle@29,5; w1 build PulseRifle@30,9; w1 build PulseRifle@33,6; w1 upgrade@32,5; w1 build PulseRifle@31,9; w1 upgrade@32,6; w1 build PulseRifle@29,6; w1 upgrade@29,5; w1 build PulseRifle@32,9; w1 upgrade@30,9
+  mono-PulseRifleLevel_C1_05 Hard      lost w7/17; built 6, upgrades 5, left 34, earned 511, repairs 0
+                                    w1 build PulseRifle@7,11; w1 build PulseRifle@7,10; w1 build PulseRifle@8,10; w1 build PulseRifle@8,7; w1 build PulseRifle@6,11; w1 upgrade@7,11; w2 upgrade@7,10; w3 upgrade@8,10; w5 upgrade@8,7; w6 upgrade@6,11; w7 build PulseRifle@8,11
+  mono-PulseRifleLevel_C1_05 Psycho    lost w7/17; built 15, upgrades 15, left 25, earned 1327, repairs 0
+                                    w1 build PulseRifle@7,11; w1 build PulseRifle@7,10; w1 build PulseRifle@8,10; w1 build PulseRifle@8,7; w1 build PulseRifle@6,11; w1 upgrade@7,11; w1 build PulseRifle@8,11; w1 upgrade@7,10; w1 build PulseRifle@6,12; w1 upgrade@8,10; w1 build PulseRifle@7,7; w1 upgrade@8,7
+  mono-PulseRifleLevel_C1_06 Hard      lost w10/18; built 8, upgrades 7, left 19, earned 663, repairs 0
+                                    w1 build PulseRifle@13,10; w1 build PulseRifle@14,10; w1 build PulseRifle@14,11; w1 build PulseRifle@32,10; w1 build PulseRifle@14,7; w1 upgrade@13,10; w3 upgrade@14,10; w4 upgrade@14,11; w5 upgrade@32,10; w6 upgrade@14,7; w7 build PulseRifle@15,10; w7 upgrade@15,10
+  mono-PulseRifleLevel_C1_06 Psycho    lost w7/18; built 13, upgrades 13, left 10, earned 1155, repairs 0
+                                    w1 build PulseRifle@13,10; w1 build PulseRifle@14,10; w1 build PulseRifle@14,11; w1 build PulseRifle@32,10; w1 build PulseRifle@14,7; w1 upgrade@13,10; w1 build PulseRifle@15,10; w1 upgrade@14,10; w1 build PulseRifle@12,10; w1 upgrade@14,11; w1 build PulseRifle@31,10; w1 upgrade@32,10
+
+Cost: 24 runs, 4 machine minutes of play (10 s a run), 0 reference runs for the typical scripts; 1 batches, 2 wall-clock minutes in all.
+  batch 1794882828: 24 units on 5 workers, 1.5 min

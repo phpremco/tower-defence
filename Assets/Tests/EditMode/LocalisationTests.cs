@@ -201,6 +201,19 @@ namespace Game.Tests
         }
 
         [Test]
+        public void PartialGeneratorStep_KeepsTheKeyOfAnUnchangedText()
+        {
+            // The solve stage rewrites the difficulty profiles without the "Localisation" step after it (round 74, question 7).
+            const string Key = "data.difficultyProfile.Easy.displayName";
+            var table = new Dictionary<string, string> { { Key, "Easy" } };
+
+            Assert.AreEqual(Key, LocalisationTables.KeyOrText(table, "DifficultyProfile", "Easy", "_displayName", "Easy"));
+            Assert.AreEqual("Gentle", LocalisationTables.KeyOrText(table, "DifficultyProfile", "Easy", "_displayName", "Gentle"), "a changed text is written, for the Localisation step to convert");
+            Assert.AreEqual("Hard", LocalisationTables.KeyOrText(table, "DifficultyProfile", "Hard", "_displayName", "Hard"), "no table entry yet");
+            Assert.AreEqual("Easy", LocalisationTables.KeyOrText(table, "DifficultyProfile", "Easy", "_healthMultiplier", "Easy"), "not a localised field");
+        }
+
+        [Test]
         public void RuntimeScripts_HaveNoHardcodedUiText()
         {
             var found = new List<string>();

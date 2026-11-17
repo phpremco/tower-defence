@@ -256,7 +256,8 @@ namespace Game.Editor
         {
             var profile = LoadOrCreate<DifficultyProfile>($"{DataRoot}/Difficulty/{sheet.Id}.asset");
             var so = new SerializedObject(profile);
-            so.FindProperty("_displayName").stringValue = sheet.DisplayName;
+            // The solve stage runs this step without the "Localisation" step after it: the key of round 69 stays.
+            so.FindProperty("_displayName").stringValue = LocalisationTables.KeyOrText(profile, "_displayName", sheet.DisplayName);
             so.FindProperty("_healthMultiplier").floatValue = sheet.Health;
             so.FindProperty("_countMultiplier").floatValue = sheet.Count;
             so.FindProperty("_spawnIntervalMultiplier").floatValue = sheet.Interval;

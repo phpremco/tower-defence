@@ -573,3 +573,20 @@ out the fix plan of Docs/BALANCE_CRITIC_2026-11-17.md. Full account: Docs/STATUS
   5, 1, 0 for the skilled script (4, 3, 0 before). Open for Remco in the STATUS entry.
 - Records and reports: `Tools/PlayTest/pressure_r74_baseline*.txt`, `pressure_r74_final*.txt`; `pressure_wins.py` prints the
   win table and the bot's purchases with the purse.
+
+## Round 75: the other four levels (2026-11-17)
+
+The same reading (seeds won of five at x0.8, x1, x1.25) on Glass Meadows, Fault Line, Quartz Flats and Crysium Vein; the
+tables, the diagnoses and the open questions are in Docs/STATUS.md, "Round 75".
+
+- Most of the baseline's zeros were the sensible bot again: an opening of ground guns only, a first Skyray one wave ahead and
+  10 to 30 coins a wave. It now sells a gun for its first Flak, builds sky guns by the counter rules only and puts a gun by a
+  besieged base. Fault Line Hard went from 0 0 0 to 5 5 4, Psycho to 4 3 0, Quartz Flats Hard to 4 0 0.
+- Two level faults in the data, both the builder's scale: Medium carried more health per coin than Hard on Fault Line and
+  Crysium Vein (`Tools/PlayTest/health_per_coin.py`). Three scales moved in `wave_tuning.txt`; Crysium Vein Medium went from
+  3 1 0 to 5 5 5 (skilled 5 4 1 to 5 5 5), Fault Line's order is restored for the skilled rung.
+- Still off: Fault Line Medium for the sensible bot (3 3 4, indifferent to health) and Quartz Flats Medium (2 0 0: the boss
+  wave takes the whole base or none of it).
+- The skilled rung is a frozen script; on Quartz Flats Hard it loses 5 of 5 at the data where the same strategy replayed
+  adaptively wins 3 of 3. Read a skilled zero with that in mind.
+- Records and reports: `Tools/PlayTest/pressure_r75_*.txt`.
