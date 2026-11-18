@@ -200,7 +200,6 @@ namespace Game.Balance
         public BalanceRules HumanTowersOnly()
         {
             BalanceRules human = Copy();
-            human.BooksRearGuard = true;
             human.Utilisation = HumanUtilisation;
             human.HeroShare = 0f;
             return human;
@@ -210,7 +209,6 @@ namespace Game.Balance
         public BalanceRules HumanWithHero()
         {
             BalanceRules human = Copy();
-            human.BooksRearGuard = true;
             human.Utilisation = HumanUtilisation;
             return human;
         }
@@ -234,12 +232,30 @@ namespace Game.Balance
         public float HumanRampPerLevel = 0.015f;
         public float HumanRampMax = 0.2f;
 
-        /// <summary>When false, the waves keep the solver's shape and are not trimmed to the human target (tests of the solver alone).</summary>
-        public bool CalibrateToHuman = true;
-
         /// <summary>The surplus the human target asks for at a level of a continent (index from 0) on a difficulty.</summary>
         public float HumanSurplusAt(int difficulty, int continentIndex) =>
             HumanSurplus[System.Math.Min(difficulty, HumanSurplus.Length - 1)] / (1f + System.Math.Min(HumanRampMax, HumanRampPerLevel * System.Math.Max(0, continentIndex)));
+
+        /// <summary>
+        /// What the probe says the model misreads per difficulty, Easy to Psycho (round 83): a factor on the health of every
+        /// creature of that difficulty, on every level alike, on top of what the solver gives. The solver shapes a level
+        /// (which wave is how tough against the others); how tough the level is as played is measured, and the part of that
+        /// correction every level shares lives here, so a new level starts from it. A cell's own scalar (the script's
+        /// target scale, found by the closed loop of Docs/WAVE_GRAMMAR.md, "How to balance a new level") comes on top and
+        /// should stay near one (<see cref="CellScalarLeast"/> to <see cref="CellScalarMost"/>).
+        /// </summary>
+        // Round 83b: the geometric means of the first continent's 24 scalars after three passes of the closed loop
+        // (0.98 / 1.31 / 1 / 0.87 was the first guess, the level of round 82).
+        public float[] DifficultyScale = { 0.981f, 1.365f, 1.051f, 0.936f };
+
+        public float DifficultyScaleFor(int difficulty) => DifficultyScale.Length == 0 ? 1f : DifficultyScale[System.Math.Min(difficulty, DifficultyScale.Length - 1)];
+
+        /// <summary>
+        /// The range a cell's own scalar may lie in. Outside it the model misreads the level's map or script by more than the
+        /// closed loop should paper over: look at the level, not at the scalar.
+        /// </summary>
+        public float CellScalarLeast = 0.7f;
+        public float CellScalarMost = 1.4f;
 
         /// <summary>Most the stored human surplus of a level may stray from its target curve, as a share of the target.</summary>
         public float HumanTargetTolerance = 0.06f;
@@ -318,61 +334,6 @@ namespace Game.Balance
         public bool SkyGunForFlyers = true;
 
         /// <summary>
-        /// An air raid is never tougher than the sky guns the ledger's player already holds can take at the raid's target
-        /// (round 80). The ledger buys a sky gun's next step only above <see cref="SkyHoldPressure"/>, and a raid aims below
-        /// it, so a raid meets its target twice or more: with the guns held, and again after every step the tougher flyers
-        /// make the player buy. The solver's bisection over the whole range landed on either by a hair of the purse
-        /// (WaveSolver.BisectOn). With the cap the solver takes a raid's lowest crossing, and the trim to the human curve
-        /// may soften a raid with the level but never lifts it above that crossing (CampaignModel.CalibrateToHuman). A raid
-        /// is no plain wave (BalanceChecks.PlainMean, round 80b), so the curve is held by the ground waves, with the purse
-        /// the player keeps when the raids ask for no further sky gun.
-        /// </summary>
-        public bool RaidsCappedAtHeldGuns = true;
-
-        /// <summary>
-        /// A surprise takes from its own wave and never makes another wave tougher (round 80): a wave that carries no
-        /// surprise gets at most the multiplier it has in the same level solved without surprises. A surprise wave is
-        /// capped by what the hero can hold and pays less (its share buys few, heavy bodies), and the human calibration's
-        /// common factor put what the cap took onto every other wave (Glass Meadows Psycho: every uncapped wave 8 % tougher,
-        /// the swarms of waves 8 and 11 broke the gates). See CampaignModel.SolveDifficulty.
-        /// </summary>
-        public bool SurprisesLiftNoWave = true;
-
-        /// <summary>
-        /// The guard gun of a rear rift (round 80b). Walkers out of a rift that joins the road more than this many cells
-        /// behind the defence (the first gate every road passes) are out of reach of every gun at the front, and a player
-        /// who sees its marker stands a gun there: both reference players do, a wave ahead, at the price of an upgrade at
-        /// the front (Glass Meadows: the rift joins 24 cells behind the first gate; Landing Site: 3, where the guard still
-        /// fires on the front). From the first wave such a rift opens the purse is short the cheapest gun that shoots the
-        /// ground (KillPurse.Money), so the waves after it are sized for the defence the player really has at the front.
-        /// Zero: no guard is booked. Only the human lens books it (<see cref="BooksRearGuard"/>).
-        /// </summary>
-        public float RearRiftGuardCells = 8f;
-
-        /// <summary>
-        /// Whether this lens books the guard gun of <see cref="RearRiftGuardCells"/>: the human lenses do
-        /// (<see cref="HumanTowersOnly"/>, <see cref="HumanWithHero"/>), the paper player the curve is held for. The solver's
-        /// reference player does not: its factors are fitted to the probe bot's recorded runs, in which the bot already
-        /// stands that gun, and with the gun booked twice a counter check left its band (Glass Meadows Medium wave 10).
-        /// </summary>
-        public bool BooksRearGuard;
-
-        /// <summary>
-        /// Set by the model only while a level is solved without its surprises (<see cref="SurprisesLiftNoWave"/>): the wave
-        /// from which the level itself books the guard gun, so the level without surprises is sized for the same purse.
-        /// Zero otherwise.
-        /// </summary>
-        public int RearGuardFromWave;
-
-        /// <summary>
-        /// The most <see cref="SurprisesLiftNoWave"/> may leave a level under its human curve, as a share of the surplus the
-        /// curve asks (round 80b). The curve comes first: where the waves of the level without surprises would leave a
-        /// competent player more than this above the target, the lowered waves come back up together, as far as the level
-        /// needs to stay inside <see cref="HumanTargetTolerance"/> with a margin.
-        /// </summary>
-        public float SurpriseReliefMost = 0.05f;
-
-        /// <summary>
         /// The least a raid's health multiplier may be per difficulty, Easy first (round 61; zero: no floor). The solver sizes a
         /// wave by paper pressure, and the paper rates a sky gun against a packed raid at about a third of what it does in play
         /// (flyers hang over a gate while they lash it), so on the low pressure Easy asks a raid came out as four flyers of 8
@@ -398,51 +359,38 @@ namespace Game.Balance
         public float LevelBossHealthFloorFor(int difficulty) => LevelBossHealthFloor.Length == 0 ? 0f : LevelBossHealthFloor[System.Math.Min(difficulty, LevelBossHealthFloor.Length - 1)];
 
         /// <summary>
-        /// What a level's walking boss at least asks on its own of the expected player with the hero, Easy to Psycho (round 64):
-        /// the ledger's pressure of its wave reduced to the boss, where one is "everything that player can deal in the boss's
-        /// walk and its stand at the gate". The boss alone is made tougher until it asks this much
-        /// (<see cref="CampaignModel.BuildWaves"/>), so a boss grows with the firepower the player has by then: on Hard it takes
-        /// two fifths of all of it, on Easy a fifth. A boss already above it is left alone, and so is a flying boss (its
-        /// pressure is the sky's, and the sky guns the ledger buys for it stay out of the purse for the rest of the level).
-        /// When the wave as a whole then asks more than the hero cap, its crowd gives way and the boss keeps its health.
+        /// What a level's walking boss asks on its own of a competent player with the hero, Easy to Psycho: the ledger's
+        /// pressure of the boss alone against the defence that player stands for the boss's whole wave, where one is
+        /// "everything that defence can deal in the boss's walk and its stand at the gate". The boss is sized to ask exactly
+        /// this (<see cref="WaveSolver.Solve"/>), never under <see cref="LevelBossHealthFloor"/>, so it grows with the
+        /// firepower the player has by then; the crowd of its wave fills what the boss leaves. A flying boss follows its
+        /// wave instead (its pressure is the sky's, and the sky guns bought for it stay out of the purse).
         /// </summary>
-        /// <remarks>Medium: 0.25 in round 77, 0.3 in round 81, 0.33 in round 82 (Remco: Shard Ridge Medium's boss felt weak).</remarks>
-        public float[] LevelBossAlone = { 0.2f, 0.33f, 0.4f, 0.45f };
+        /// <remarks>
+        /// Rounds 64 to 82 read the boss against a defence bought for the boss alone (the best single-target guns), where
+        /// 0.2 / 0.33 / 0.4 / 0.45 gave the bosses of round 82. Read against the defence that really stands for the wave
+        /// (round 83) the same bosses ask about 0.35 / 0.55 / 0.65 / 0.7; the values are a step above those (Remco: the
+        /// Medium bosses feel weak).
+        /// </remarks>
+        public float[] LevelBossAlone = { 0.4f, 0.6f, 0.7f, 0.75f };
 
         public float LevelBossAloneFor(int difficulty) => LevelBossAlone.Length == 0 ? 0f : LevelBossAlone[System.Math.Min(difficulty, LevelBossAlone.Length - 1)];
 
         /// <summary>
-        /// The most a boss wave may ask of the expected player with the hero once its boss has grown (round 64), Easy to Psycho;
-        /// the boss stops growing there. A boss wave must really be held (<see cref="BossWaveCap"/>): on Easy and Medium the
-        /// boss grows no further than a wave that is just held. On Hard it may go a little over, as the replays carried it:
-        /// bosses grown to the hero cap (1.25) were beaten on Hard in every cell that did not fall earlier. On Psycho the
-        /// player has nothing to spare: grown to 1.35 and again to 1.15, Shard Ridge's last boss beat the searched plans
-        /// (8 and 6 runs of 9 lost at the last wave), so a Psycho boss grows only while its wave is held. A boss wave already
-        /// above this keeps its boss as it is.
+        /// The most a boss wave may ask of a competent player with the hero, Easy to Psycho (round 64). A boss wave must
+        /// really be held (<see cref="BossWaveCap"/>): on Easy and Medium a wave that is just held. On Hard it may go a
+        /// little over, as the replays carried it. On Psycho the player has nothing to spare (grown to 1.35 and again to
+        /// 1.15, Shard Ridge's last boss beat the searched plans). Over it the crowd of the wave gives way first, then the
+        /// boss comes down to its floor.
         /// </summary>
         public float[] LevelBossGrowthCap = { 1f, 1f, 1.15f, 1f };
 
         public float LevelBossGrowthCapFor(int difficulty) => LevelBossGrowthCap.Length == 0 ? BossWaveCap : LevelBossGrowthCap[System.Math.Min(difficulty, LevelBossGrowthCap.Length - 1)];
 
-        /// <summary>Most a boss may grow over its floor to ask that; keeps the bisection away from a boss nothing could size.</summary>
-        public float MaxBossGrowth = 8f;
-
-        /// <summary>
-        /// The most a level's walking boss asks on its own of the expected player with the hero (round 65), Easy to Psycho.
-        /// A boss carries its wave's multiplier, and with a thin crowd (the "bosscrowd" lever) the solve can raise that
-        /// until one creature asks more than everything the player has (Crysium Vein Psycho's Core Wisp asked 1.2 on paper
-        /// with every boss wave thinned). Above this the boss comes down on its own scale, never under
-        /// <see cref="LevelBossHealthFloor"/>. The bosses the round-64 replays held asked up to 0.6 alone.
-        /// </summary>
-        public float[] LevelBossAloneMost = { 0.65f, 0.65f, 0.65f, 0.65f };
-
-        public float LevelBossAloneMostFor(int difficulty) => LevelBossAloneMost.Length == 0 ? 0f : LevelBossAloneMost[System.Math.Min(difficulty, LevelBossAloneMost.Length - 1)];
-
         /// <summary>
         /// The share of a wave's budget its crowd keeps when a boss leads the wave (the composer's constant until round 65).
         /// A cell may thin the crowd of its boss waves further with the script lever "bosscrowd"
-        /// (<see cref="WaveScriptSpec.BossCrowd"/>): the wave then has room for the boss to grow to
-        /// <see cref="LevelBossAlone"/>. Round 64 left Shard Ridge Hard's last boss at its floor because the crowd took all
+        /// (<see cref="WaveScriptSpec.BossCrowd"/>). Round 64 left Shard Ridge Hard's last boss at its floor because the crowd took all
         /// the room; thinning every boss wave of the campaign (tried at 0.35 in round 65) made the mid-level bosses of four
         /// other cells half again as tough and lost two cells, so the lever is per cell.
         /// </summary>

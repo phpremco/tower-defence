@@ -90,9 +90,7 @@ public static class BalanceCurve
             }
 
             List<List<WaveSpec>> sets = model.BuildWaves(index, script, out _);
-            rules.CalibrateToHuman = false;
             List<List<WaveSpec>> shape = model.BuildWaves(index, script, out _);
-            rules.CalibrateToHuman = true;
             var hs = new StringBuilder();
             var ws = new StringBuilder();
             var worst = new StringBuilder();

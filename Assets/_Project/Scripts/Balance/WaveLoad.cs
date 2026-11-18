@@ -46,6 +46,13 @@ namespace Game.Balance
         public const int EntranceSource = 7;
 
         public float StreamHealth;
+
+        /// <summary>
+        /// The part of <see cref="StreamHealth"/> that earlier waves left on the road (<see cref="KillPurse.Carried"/>). Those
+        /// creatures keep their own toughness: a big hit is wasted on this wave's small creatures only
+        /// (<see cref="StreamOverkill"/>).
+        /// </summary>
+        public float CarriedHealth;
         public float BossHealth;
         public float AirHealth;
 
@@ -138,6 +145,22 @@ namespace Game.Balance
             return pressure;
         }
 
+        /// <summary>
+        /// The share of a hit this size that lands on the stream: wasted on the wave's own creatures where it is bigger than
+        /// they are, whole on what earlier waves carried in. Read on the wave's own mean alone, a wave of paper creatures
+        /// between carried tanks took all firepower away, and its pressure rose as its creatures got weaker (round 83).
+        /// </summary>
+        public float StreamOverkill(float hit)
+        {
+            if (StreamHealth <= 0f)
+            {
+                return 1f;
+            }
+
+            float own = Math.Max(0f, StreamHealth - CarriedHealth);
+            return (own * Ledger.Overkill(hit, MeanHealth) + Math.Min(StreamHealth, CarriedHealth)) / StreamHealth;
+        }
+
         public float AirPressure(float air) => AirHealth > 0f ? Ratio(AirHealth, air) : 0f;
 
         private static float Ratio(float health, float capacity) => capacity <= 0f ? float.PositiveInfinity : health / capacity;
@@ -148,7 +171,15 @@ namespace Game.Balance
         public static WaveLoad Of(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules) => Of(level, wave, difficulty, rules, -1f);
 
         /// <summary>As above with the gates at <paramref name="gateHealth"/> each instead of the level's full gate health (the plan model's worn gates; below zero = full).</summary>
-        public static WaveLoad Of(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules, float gateHealth)
+        public static WaveLoad Of(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules, float gateHealth) =>
+            Of(level, wave, difficulty, rules, gateHealth, false);
+
+        /// <summary>
+        /// As above; with <paramref name="book"/> the creatures carry their book health (the wave's own multiplier and its
+        /// boss scale count as one): the wave as a player expects it from the preview, which lists creatures and numbers
+        /// and never their toughness. The ledger's player decides its purchase on that load (<see cref="Ledger"/>, round 83).
+        /// </summary>
+        public static WaveLoad Of(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules, float gateHealth, bool book)
         {
             var load = new WaveLoad();
             load.CounterCheck = wave.CounterCheck;
@@ -170,8 +201,8 @@ namespace Game.Balance
             // When the ground stream and the flyers are really coming: a breather is no time the towers can use (round 79).
             var stretches = new List<(float Start, float End)>();
             var airStretches = new List<(float Start, float End)>();
-            float scale = difficulty.Health * level.HealthScale * wave.HealthMultiplier;
-            float bossScale = wave.BossHealthScale > 0f ? wave.BossHealthScale : 1f;
+            float scale = difficulty.Health * level.HealthScale * (book ? 1f : wave.HealthMultiplier);
+            float bossScale = book ? 1f : wave.BossHealthScale > 0f ? wave.BossHealthScale : 1f;
 
             foreach (GroupSpec group in wave.Groups)
             {

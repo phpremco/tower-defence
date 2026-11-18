@@ -236,18 +236,21 @@ namespace Game.Tests
                 Troops = new[] { new TroopSpec { Enemy = "Walker", Weight = 2f, Interval = 0.8f }, new TroopSpec { Enemy = "Brute", FirstWave = 4, Weight = 1f, Interval = 2f } },
             };
             LevelInput level = Level(Rifle());
-            float[] healths = WaveSolver.Solve(script, enemies, level, Medium, -1, Rules);
+            float[] healths = WaveSolver.Solve(script, enemies, level, Medium, -1, Rules, Rules, Rules.TargetPressure).Healths;
+            float[] shares = WaveSolver.Shares(script, enemies, 1, -1, Rules);
 
             var waves = new List<WaveSpec>();
             for (int i = 0; i < script.Waves; i++)
             {
-                waves.Add(WaveComposer.Compose(script, enemies, 1, i + 1, healths[i], -1, Rules));
+                WaveSpec wave = WaveComposer.Compose(script, enemies, 1, i + 1, healths[i], -1, Rules);
+                wave.StartDelay = i == 0 ? Rules.FirstWaveDelay : Rules.WaveDelay;
+                waves.Add(wave);
             }
 
             List<WaveLine> lines = Ledger.Evaluate(level, waves, Medium, Rules);
             for (int i = Rules.OpeningWaves; i < lines.Count; i++)
             {
-                Assert.AreEqual(WaveSolver.Target(script, i + 1, Rules), lines[i].Pressure, 0.15f, $"wave {i + 1}");
+                Assert.AreEqual(Rules.TargetPressure * shares[i], lines[i].Pressure, 0.15f, $"wave {i + 1}");
             }
         }
 
@@ -354,7 +357,10 @@ namespace Game.Tests
                 Bosses = new[] { new BossSpec { Wave = 12, Enemy = "Boss" } },
             };
             LevelInput level = Level(Rifle());
-            var model = new CampaignModel { Rules = Rules, Hero = level.Hero };
+            // The solver alone: no difficulty factor on top (BalanceRules.DifficultyScale is play's correction of the paper).
+            BalanceRules solverOnly = Rules.Copy();
+            solverOnly.DifficultyScale = new[] { 1f };
+            var model = new CampaignModel { Rules = solverOnly, Hero = level.Hero };
             model.Levels.Add(new CampaignLevel { Key = "Test", TowerIds = new List<string> { "Rifle" } });
             model.Facts.Add(new LevelFacts { Key = "Test", StartingMoney = level.StartingMoney, Shape = level.Shape, GateHealth = level.GateHealth });
             model.Towers["Rifle"] = Rifle();
@@ -377,6 +383,12 @@ namespace Game.Tests
                 Assert.AreEqual(Rules.HumanSurplusAt(d, 0), 1f / mean, Rules.HumanSurplusAt(d, 0) * Rules.HumanTargetTolerance, $"difficulty {d} on the curve");
                 foreach (WaveLine line in Ledger.Evaluate(input, sets[d], model.Difficulties[d], Rules.HumanWithHero()))
                 {
+                    // A level's boss never comes under its floor, whatever the cap (BalanceRules.LevelBossHealthFloor).
+                    if (line.Boss)
+                    {
+                        continue;
+                    }
+
                     Assert.LessOrEqual(line.Pressure, Rules.HeroCapFor(d) * (1f + Rules.BeatableTolerance), $"difficulty {d} wave {line.Wave} under the cap");
                 }
             }

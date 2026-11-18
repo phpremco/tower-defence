@@ -517,7 +517,39 @@ namespace Game.Balance
             bool rift = surprise == SurpriseKind.Rift;
             List<TroopSpec> troops = Unlocked(fill.Script, fill.Enemies, fill.Number, fill.Difficulty, rift);
             var plain = new FillContext(fill.Script, fill.Enemies, fill.Rules, fill.Difficulty, fill.Number, fill.SecondRoad, fill.Random, TraitGrowth.None, fill.Lanes);
-            return Fill(hidden, budget, troops, 1f, plain, 0f, TroopStagger, rift ? null : new[] { fill.SecondRoad });
+            float shortfall = Fill(hidden, budget, troops, 1f, plain, 0f, TroopStagger, rift ? null : new[] { fill.SecondRoad });
+            return shortfall + DropLoneWalkers(hidden, fill.Rules);
+        }
+
+        // No walker leaves a spawn point alone (round 83; Remco saw one Cragback walk the road behind a gate): where the
+        // default plan's share buys a single walker for a rift or a road, it stays home, and what it would have cost makes
+        // the wave's other creatures a little tougher, like any budget a wave could not spend. Two is the least, so the
+        // rule holds as played on every difficulty (the count multiplier never takes two under two). A level that wants
+        // one big creature out of a rift writes it (WaveScriptSpec.Surprises).
+        private static float DropLoneWalkers(List<GroupSpec> hidden, BalanceRules rules)
+        {
+            var walkers = new Dictionary<(int Source, int Nest, int Path), int>();
+            foreach (GroupSpec group in hidden)
+            {
+                if (group.Enemy != null && !group.Enemy.Flies)
+                {
+                    (int, int, int) point = (group.Source, group.Nest, group.Path);
+                    walkers[point] = (walkers.TryGetValue(point, out int count) ? count : 0) + group.Count;
+                }
+            }
+
+            float dropped = 0f;
+            for (int i = hidden.Count - 1; i >= 0; i--)
+            {
+                GroupSpec group = hidden[i];
+                if (group.Enemy != null && !group.Enemy.Flies && walkers[(group.Source, group.Nest, group.Path)] == 1)
+                {
+                    dropped += group.Count * Threat.Of(group.Enemy, rules);
+                    hidden.RemoveAt(i);
+                }
+            }
+
+            return dropped;
         }
 
         /// <summary>Spawn source of the element nests, as the game stores it (Game.Levels.SpawnSource.Nest).</summary>

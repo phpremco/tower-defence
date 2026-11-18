@@ -139,9 +139,21 @@ namespace Game.Tests
                         failures.Add($"{finale.Boss} {profile.name}: the boss alone asks {relative:0.00}x Medium's share of the cap (share {profile.BossHealthShare:0.00}, needs about {needed:0.00})");
                     }
 
+                    // Easy stays at or under Medium's share of the cap on paper, and under what the finale probe allows where
+                    // it played Easy. Round 83 dropped the paper half because the ratio had jumped to 2.6; round 83b found the
+                    // cause (the boss alone rode the stand-in crowd's multiplier, FinaleModel.Judge) and both hold again.
                     if (d < MediumIndex && relative > 1f + ShareTolerance)
                     {
                         failures.Add($"{finale.Boss} {profile.name}: the boss asks more of Easy's cap than of Medium's ({relative:0.00}x)");
+                    }
+
+                    if (d < MediumIndex && probed > 0f)
+                    {
+                        row.Append($" [probe allows {probed:0.00}]");
+                        if (profile.BossHealthShare > probed * (1f + ShareTolerance))
+                        {
+                            failures.Add($"{profile.name}: the boss health share {profile.BossHealthShare:0.00} is above what the finale probe allows ({probed:0.00})");
+                        }
                     }
                 }
 

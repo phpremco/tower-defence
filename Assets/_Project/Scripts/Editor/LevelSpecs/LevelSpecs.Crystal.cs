@@ -305,13 +305,18 @@ namespace Game.Editor
                     // Round 82 (Remco): nothing walks out of a rift alone. On Easy and Medium the grammar's default sent
                     // bats with one Cragback, which then walked the road by itself; the level writes those surprises, on
                     // the waves the default had them. Easy: bats only, out of both rifts. Medium: two Cragbacks out of the
-                    // rear rift with bats out of the other. Hard and Psycho keep the default: its one Cragback is two as
-                    // played there (the count multiplier).
+                    // rear rift with bats out of the other. Hard and Psycho (round 83): one Cragback out of the rear rift
+                    // (two as played, the count multiplier) with bats out of the other, in the cluster wave 10 (Hard) and
+                    // the combo wave 12, and none in the tank escort of wave 14, where the default plan put it and where
+                    // Hard was lost by every strategy (the escort's own Cragbacks at the front, two more behind the gate).
                     Surprises = new[]
                     {
                         Surprise(14, 0, 0, FromNest(QuartzFlatsFrontRift, "Shalebat", 2, delay: 7f), FromNest(QuartzFlatsRearRift, "Shalebat", 2, delay: 7f)),
                         Surprise(12, Medium, Medium, FromNest(QuartzFlatsRearRift, "Cragback", 2, delay: 7f), FromNest(QuartzFlatsFrontRift, "Shalebat", 2, delay: 7f)),
                         Surprise(16, Medium, Medium, FromNest(QuartzFlatsRearRift, "Cragback", 2, delay: 7f), FromNest(QuartzFlatsFrontRift, "Shalebat", 3, delay: 7f)),
+                        Surprise(10, Hard, Hard, FromNest(QuartzFlatsRearRift, "Cragback", 1, delay: 7f), FromNest(QuartzFlatsFrontRift, "Shalebat", 2, delay: 7f)),
+                        Surprise(12, Hard, Psycho, FromNest(QuartzFlatsRearRift, "Cragback", 1, delay: 7f), FromNest(QuartzFlatsFrontRift, "Shalebat", 2, delay: 7f)),
+                        Surprise(14, Hard, Psycho),
                     },
                 },
                 RewardGadgets = new[] { "Mine", "SlowField" },

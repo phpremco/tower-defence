@@ -1,0 +1,32 @@
+| Cell | Scalar | Rung: seeds won per multiple, break-even (target) | Factor | New scalar |
+| --- | --- | --- | --- | --- |
+| Landing Site Easy | 0.965 | sensible `3 3 3 3 3` x1.32 (weaker rung x1.4); skilled `3 3 3 3 3` x1.32 (weaker rung x1.4) | x1.000 | 0.965 |
+| Landing Site Medium | 1.045 | sensible `3 3 3 2 0` x1.18 (x1.18); skilled `3 2 0 0 0 stale pick, sensible `3 3 3 2 0`` x1.18 (at least x1.06) | x1.003 | 1.048 |
+| Landing Site Hard | 1.159 | sensible `3 3 1 0 0` x0.95 (x0.95); skilled `3 3 2 0 0` x1.06 (at least x1.06) | x0.998 | 1.157 |
+| Landing Site Psycho | 1.267 | skilled `3 3 3 0 0` x1.06 (x1.06) | x0.998 | 1.265 |
+| Glass Meadows Easy | 0.965 | sensible `3 3 3 3 3` x1.32 (weaker rung x1.4); skilled `3 3 3 3 3` x1.32 (weaker rung x1.4) | x1.000 | 0.965 |
+| Glass Meadows Medium | 0.935 | sensible `3 3 3 2 2` over x1.32 (x1.18); skilled `3 3 3 3 3` over x1.32 (at least x1.06) | x1.119 | 1.046 (open end: measure again) |
+| Glass Meadows Hard | 1.293 | sensible `3 3 0 0 0` x0.95 (x0.95); skilled `3 3 3 0 0` x1.06 (at least x1.06) | x0.998 | 1.291 |
+| Glass Meadows Psycho | 1.267 | skilled `3 3 2 1 0` x1.06 (x1.06) | x0.998 | 1.265 |
+| Shard Ridge Easy | 0.965 | sensible `3 3 3 3 3` x1.32 (weaker rung x1.4); skilled `3 3 3 3 3` x1.32 (weaker rung x1.4) | x1.000 | 0.965 |
+| Shard Ridge Medium | 1.045 | sensible `3 3 3 2 0` x1.18 (x1.18); skilled `3 1 1 0 0 stale pick, sensible `3 3 3 2 0`` x1.18 (at least x1.06) | x1.003 | 1.048 |
+| Shard Ridge Hard | 0.819 | sensible `3 2 1 0 0` x0.95 (x0.95); skilled `2 2 1 0 0` x0.95 (at least x1.06) | x0.895 | 0.733 |
+| Shard Ridge Psycho | 1.043 | skilled `2 0 1 0 0` x0.85 (x1.06) | x0.800 | 0.835 |
+| Fault Line Easy | 1.206 | sensible `3 3 3 3 3` x1.32 (weaker rung x1.4); skilled `3 3 3 3 3` x1.32 (weaker rung x1.4) | x1.000 | 1.206 |
+| Fault Line Medium | 1.166 | sensible `3 3 2 2 1` x1.18 (x1.18); skilled `3 3 1 1 0 stale pick, sensible `3 3 2 2 1`` x1.18 (at least x1.06) | x1.003 | 1.169 |
+| Fault Line Hard | 1.159 | sensible `3 3 2 0 0` x1.06 (x0.95); skilled `2 0 0 0 0 stale pick, sensible `3 3 2 0 0`` x1.06 (at least x1.06) | x0.998 | 1.157 |
+| Fault Line Psycho | 0.947 | skilled `3 3 2 1 0` x1.06 (x1.06) | x0.998 | 0.945 |
+| Quartz Flats Easy | 0.965 | sensible `3 3 3 3 3` x1.32 (weaker rung x1.4); skilled `3 3 3 3 3` x1.32 (weaker rung x1.4) | x1.000 | 0.965 |
+| Quartz Flats Medium | 0.825 | sensible `3 3 3 3 0` x1.18 (x1.18); skilled `3 3 1 0 0 stale pick, sensible `3 3 3 3 0`` x1.18 (at least x1.06) | x1.003 | 0.827 |
+| Quartz Flats Hard | 0.734 | sensible `3 3 3 0 0` x1.06 (x0.95); skilled `3 3 3 1 0` x1.06 (at least x1.06) | x0.998 | 0.733 |
+| Quartz Flats Psycho | 0.847 | skilled `3 3 2 2 0` x1.18 (x1.06) | x1.116 | 0.945 |
+| Crysium Vein Easy | 0.965 | sensible `3 3 3 3 3` x1.32 (weaker rung x1.4); skilled `3 3 3 3 3` x1.32 (weaker rung x1.4) | x1.000 | 0.965 |
+| Crysium Vein Medium | 1.166 | sensible `3 3 3 2 0` x1.18 (x1.18); skilled `3 1 0 0 0 stale pick, sensible `3 3 3 2 0`` x1.18 (at least x1.06) | x1.003 | 1.169 |
+| Crysium Vein Hard | 1.159 | sensible `3 3 3 0 0` x1.06 (x0.95); skilled `0 0 0 0 0 stale pick, sensible `3 3 3 0 0`` x1.06 (at least x1.06) | x0.998 | 1.157 |
+| Crysium Vein Psycho | 0.747 | skilled `3 3 3 1 1` x1.06 (x1.06) | x0.998 | 0.746 |
+
+Per difficulty: the geometric mean of the scalars (for BalanceRules.DifficultyScale, times the factor in use) and the scalars over it:
+  Easy: x1.002; cells 0.964 0.964 0.964 1.204 0.964 0.964
+  Medium: x1.044; cells 1.003 1.001 1.003 1.119 0.792 1.119
+  Hard: x1.012; cells 1.143 1.276 0.724 1.143 0.724 1.143
+  Psycho: x0.981; cells 1.290 1.290 0.851 0.964 0.964 0.761

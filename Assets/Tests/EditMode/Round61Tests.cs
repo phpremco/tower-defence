@@ -91,8 +91,9 @@ namespace Game.Tests
             WaveLine stood = Ledger.EvaluateWave(input, raid, loaded.Model.Difficulties[Easy], 656, with);
             WaveLine row = Ledger.EvaluateWave(input, raid, loaded.Model.Difficulties[Easy], 656, without);
             StringAssert.Contains(sky + ":", stood.Purchase, "with the rule a sky gun stands for the raid");
-            StringAssert.DoesNotContain(sky + ":", row.Purchase, "without the rule the small raid is held by the guns that merely reach the air (the bug)");
-            Assert.Less(stood.AirPressure, row.AirPressure, "the sky gun holds the raid better than the row");
+            // Since round 83 the purchase is decided on the raid at book health, where the row of all-rounders no longer holds
+            // it by itself and the greedy buys a sky gun too: the rule is then no worse, and it still stands the gun first.
+            Assert.LessOrEqual(stood.AirPressure, row.AirPressure, "the sky gun holds the raid at least as well as the row");
         }
 
         [Test]

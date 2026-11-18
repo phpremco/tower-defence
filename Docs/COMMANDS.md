@@ -1759,3 +1759,92 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
   `{0}` hole is a fixed gap; write no colon behind a hole. `PromptLineLayoutTests` holds the map hints to two rows.
 - **Pitfall:** `sed` and Python heredocs in this shell turn a written `\n` into a real line break in a table file; put
   the two characters in with the Edit tool.
+
+## Round 83: the monotone player, every wave to its own target, the closed loop (added 2026-11-18)
+
+- **The design** is in Docs/WAVE_GRAMMAR.md ("The solver", "How to balance a new level", "Rules of rounds 80 and 80b that
+  round 83 took out"). In code: `Ledger.PlanOf` and `WaveLoad.Of(..., book)` (the purchase is decided at book health),
+  `WaveLoad.StreamOverkill` (carried health is not overkilled), `WaveSolver.Solve` and `Shares` (one pass per difficulty),
+  `CampaignModel.SolveDifficulty` and `ModelTarget`, `BalanceRules.DifficultyScale`, `CellScalarLeast` / `CellScalarMost`,
+  `WaveComposer.DropLoneWalkers`. Gone: `WaveSolver.SolveVariant`, `CampaignModel.CalibrateToHuman` / `SizeBosses` /
+  `CapScale`, `BalanceRules.RaidsCappedAtHeldGuns`, `SurprisesLiftNoWave`, `SurpriseReliefMost`, `RearRiftGuardCells`,
+  `BooksRearGuard`, `CalibrateToHuman`, `LevelBossAloneMost`, `MaxBossGrowth`, `CampaignModel.ReferenceInputFor`.
+  `ScaleRefit.cs` (the refit to the previous round's waves) has no use any more, and `BalanceCurve.cs` prints a trim
+  of one (there is no solver shape apart from the stored waves): the ledger lab replaces both.
+- **The solve stage** is the same command (`ApplyRound68.cs`, "Round 79") and takes two to three seconds.
+- **The ledger lab** (`WaveLedgerLab.cs`, "Round 79") prints per wave: the multiplier now and stored, `aim` (the wave's own
+  target at scale one), the pressure with the hero and of the towers alone, the health multiplier a level boss carries
+  (now and stored), the purse and the purchase; at the foot per cell the scale in use, the sum against the stored set and
+  the lowest and highest ground wave over the median. All 24 cells take two seconds. `rule.<Field>=` still overrides a
+  number for one run (`rule.LevelBossAlone=0.35,0.55,0.65,0.7`, `rule.DifficultyScale=1,1,1,1`).
+- **The closed loop:** `python Tools/PlayTest/closed_loop.py <records> [--levels 0,1] [--centre] [--write]` (its header
+  has the targets). Wide ladder for a first pass:
+  `PR_RECORDS=Tools/PlayTest/<name>_records.txt PR_MULTIPLES="0.4,0.5,0.64,0.8,1,1.25,1.6,2" bash Tools/PlayTest/pressure.sh "0,1,2,3,4,5" "0,1,2,3"`
+  (1152 runs, about 95 minutes on five clones); then the standard ladder (720 runs, an hour). `--write` rewrites the
+  scale lines of `Tools/PlayTest/wave_tuning.txt`; then the solve stage.
+- **A rule that the calibration's hash counts** (`InputHash`: `LevelBossAlone`, the floors, the utilisations, ...) makes
+  every report STALE: re-stamp before the measurement ("Round 66"): move `plan_records.txt` out,
+  `r34b_editmode_worker.sh 6 CalibrationFitTests`, move it back, copy the clone's `calibration.txt` and
+  `calibration_waves.txt`, `balance_pipeline.sh apply-keep`, `eval_file r66_stale.cs` must say `stale False`.
+- **Waiting from the agent tool:** a foreground command is moved to the background after about three minutes and a
+  notification comes when it ends, so start a batch (or an `until grep -q DONE <log>; do sleep 10; done; <report>` line)
+  with the background flag and wait for the notification instead of polling.
+- **Pitfalls met this round:**
+  - A Python patch in a Bash heredoc with an apostrophe in a C# comment fails to parse (again): write the patch with
+    the editor tool and run it.
+  - `unity command` answers `AMBIGUOUS_EDITOR` now and then while the clones run (their Pipeline servers are up too);
+    repeat the call.
+  - A worker run that ends in 40 seconds with "no results.xml" and `Scripts have compiler errors` without a `error CS`
+    line in `Logs/unity_editmode.log` was a lost ILPP pipe; run it again.
+  - A capped swarm carries its unbought budget as health (`timing.HealthMultiplier`): every floor, band and median in
+    the solver must be read on the creatures as they walk in (multiplier times that lift), or a swarm passes them.
+  - The median the solver caps a wave with must be the median the gate reads (every ground wave, a boss wave's crowd
+    included).
+
+## Round 83b: the closed-loop acceptance, picks on break-even, the paper band on the solver's own waves (added 2026-11-18)
+
+- **The acceptance gate** is `ClosedLoopAcceptanceTests` (EditMode; `BalanceAcceptanceTests` is gone). It reads the
+  records files named in `Tools/PlayTest/closed_loop_records.txt` (one per line, `#` comments), computes every rung's
+  break-even as `closed_loop.py` does and writes `Tools/PlayTest/closed_loop_acceptance.txt`. Accepted: Easy both
+  rungs win every seed at the data and the weaker one holds the whole ladder; Medium the sensible rung within one
+  ladder step of x1.18; Hard the sensible rung within one step of x0.95; on both the better of the two rungs not
+  more than a step under x1.06; Psycho the better rung within a step of x1.06; on every level Hard breaks the
+  sensible rung earlier than Medium. A rung that holds or loses the whole ladder where a target is binding is a
+  finding (nobody knows how far off it is). **A measurement whose data stamp is not the project's makes the test
+  inconclusive** (`result="Inconclusive"`, the reading is in the message): after any change under
+  `Assets/_Project/Data`, measure again and point the file at the new records. `balance_pipeline.sh acceptance` runs
+  it. The old plan report still exists as a tool (menu `Tools/Generate/Balance/7 Acceptance report`,
+  `acceptance.txt`); nothing gates on it.
+- **A round's measurement, start to end** (what round 83b ran; each line is one batch, bot and data never together):
+  1. data: `PR_RECORDS=Tools/PlayTest/<name>_records.txt bash Tools/PlayTest/pressure.sh "0,1,2,3,4,5" "0,1,2,3"`,
+     `closed_loop.py <records> --centre`; move the scalars the sensible rung asks (Easy, Medium, Hard) by hand or
+     with `--write`, solve (`ApplyRound68.cs`).
+  2. bot: search on six clones side by side
+     (`for n in 0 1 2 3 4 5; do bash Tools/PlayTest/r34b_editmode_worker.sh $((n+1)) PlanSearchTests "levels=$n" & done; wait`,
+     two and a half minutes), replace the project's `Tools/PlayTest/Plans/Level_<key>_*` by each clone's, then play
+     the candidates: Easy on two multiples
+     (`PR_RECORDS=..._easy_records.txt PR_POLICIES="strategy1,strategy2,strategy3,strategy4,strategy5" PR_MULTIPLES="1,1.25" bash Tools/PlayTest/pressure.sh "0,1,2,3,4,5" "0"`)
+     and the rest on the standard ladder (`... pressure.sh "0,1,2,3,4,5" "1,2,3"`): 1014 runs, 80 minutes.
+     `python Tools/PlayTest/skilled_picks.py <easy records> <records> [--write]` ranks on break-even.
+  3. **Keep the old pick as a candidate where the search's best is under the last skilled reading:**
+     `git show HEAD:Tools/PlayTest/Plans/<old>.json > Tools/PlayTest/Plans/<cell>_strategy<N+1>.json`, set its `"Name"`
+     to the new file name, play it (`PR_UNITS="0:2:strategy2:1,0:2:strategy2:2,0:2:strategy2:3" PR_RECORDS=... bash Tools/PlayTest/pressure.sh`)
+     and write the cell's line in `skilled_picks.txt` by hand with a comment naming the records (the plan files are in
+     the bot stamp, so these records carry another stamp than the batch of step 2).
+  4. data: the Psycho cells and the skilled guards from the candidates' rows (the picked row is the skilled rung's),
+     the means folded into `BalanceRules.DifficultyScale` (new factor = old x geometric mean of the difficulty's six
+     scalars, scalars divided by the same), solve, finale probe, then the final measurement and the grace measure.
+- **The paper band is asserted on the solver's own waves** (`BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand`):
+  the stored multipliers over `DifficultyScale` times the cell's scalar. Its report
+  (`balance_ledger.txt`, last block) lists the waves over the hero cap that the solver cannot lower (a wave on the
+  lower edge of its band, a boss on its health floor or flying); any other wave over the cap fails, and so do more
+  than 3 % held waves.
+- **The paper finale reads a continent boss at its own health** (`FinaleModel.Judge`, `ArenaMultiplier`): the boss
+  alone no longer rides the stand-in wave's multiplier, which is the crowd's.
+- **Pitfalls met this round:**
+  - `pressure_versus.py` refuses round 82's final records against round 83's (the picks changed the bot between
+    them): `--mixed-bots` for the sensible rung, which does not read the pick file.
+  - A fresh plan search can be worse than the strategies it replaces (Landing Site Hard: best of the search
+    `3 0 0 0 0`, the old pick `3 3 2 0 0`). Never delete the old pick before the candidates are played.
+  - `PlanSearchTests` with `levels=<n>` writes fewer than five strategies for many cells (one to three on Medium and
+    Hard): the ranking then has little to choose from.

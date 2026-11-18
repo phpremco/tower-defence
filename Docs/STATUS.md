@@ -13609,3 +13609,415 @@ Remco's screenshot of the region level picker: "Arrow keysleft / right", Q / E g
   the sharp one. EditMode suite on clone w6: 1186 tests, 1132 passed, 0 failed, 54 skipped. Save MD5 7a848003... unchanged.
 - **Left as it was:** the wording "Down: buttons"; the letter that happens to sit on the globe's bright rim line reads
   a little weaker (no plate behind the line: tried, looked like a box, taken out).
+
+## Round 83: a monotone model player, every wave to its own target, one measured scalar per cell (2026-11-18)
+
+Not committed. One agent, on HEAD ce56b3d5. The critic's review (Docs/BALANCE_CRITIC_2026-11-18.md) was the brief: the
+model was patch-stacking around two properties of its own solver. Both are mended, the patch rules are out, and a
+cell's level as played now comes from one automated procedure. Remco's save `progress.json` has MD5
+7a848003ed6b1261e4bb58757548727b after every batch. The bot was not touched (no bot file changed).
+
+### What changed, and why
+
+0. **The calibration is re-stamped** (`apply-keep`, twice: at the start and after the boss factor changed the hash):
+   `inputs 29b36819 (current)`, factors of 2026-11-15 kept. The plan search no longer skips itself.
+1. **The ledger's player is monotone** (`Ledger.PlanOf`, `WaveLoad.Of(..., book)`): it decides its purchase on the wave
+   as the preview shows it (creatures and numbers at book health, plus what earlier waves left on the road) and never
+   on the trial multiplier. A wave's pressure can then only rise with its creatures' health. One more hole showed up
+   under the new test: health carried in by earlier waves was "overkilled" with the wave's own small creatures, so a
+   paper wave between carried tanks asked more the weaker it got (`WaveLoad.StreamOverkill` mends it). Tests:
+   `Round83Tests.AWavesPressure_NeverFalls_AsItsCreaturesGrowTougher` (every stored wave of the 24 cells, both lenses,
+   a tenth to ten times its health) and `AWavesAirPressure_NeverFalls_AsItsFlyersGrowTougher` (every raid).
+2. **Every wave is solved to its own target, one pass per difficulty** (`WaveSolver.Solve`; Docs/WAVE_GRAMMAR.md, "The
+   solver"). No Medium curve that the others copy, no common factor on a level mean, no second solve. Gone with it:
+   `WaveSolver.SolveVariant`, `CampaignModel.CalibrateToHuman`, `SizeBosses`, `CapScale`, the 160-step scan, the calm
+   solve. The solve stage takes 2 to 3 seconds (27 before); the ledger lab reads all 24 cells in 2 seconds.
+3. **Rules removed** (each with its evidence in WAVE_GRAMMAR.md, "Rules of rounds 80 and 80b that round 83 took out"):
+   `RaidsCappedAtHeldGuns` and the 5 % crossing walk (one crossing now), `SurprisesLiftNoWave` and
+   `SurpriseReliefMost` (no mean to redistribute; test `WaveGrammarTests.ASurprise_MakesNoOtherWaveTougher` on five
+   levels), the raids-out-of-the-mean special case in the calibration (`PlainMean` is a reading aid only), the rear-rift
+   guard gun (`RearRiftGuardCells`, `BooksRearGuard`: on paper it moved six waves of Glass Meadows and Quartz Flats by 2
+   to 14 %, `wave_ledger_r83_noguard.txt`; the cell's scalar is measured with that gun standing), `ScaleRefit`, the 24
+   builder scales, the 6 % curve gate in `BalanceLedgerTests`, `LevelBossAloneMost`, `MaxBossGrowth`,
+   `CampaignModel.ReferenceInputFor`. **Kept** (rules about the game): the grammar, `MinSurpriseGroup`, spawn roles and
+   schedules, road plans, `FlyersAfterBounties`, the Easy purse rule, `RaidHealthFloor`, the band, the 2.5-times-median gate.
+   **One rule added to the solver:** no ground wave above 2.2 times the median of the ground waves before it (three
+   band rises in a row took a Crysium Vein Psycho swarm to 2.8 times its median). **Known limit of "a surprise lifts no
+   wave":** a swarm lives on the upper edge of its band and follows the waves before it, surprise waves included (their
+   creatures are fewer and tougher); the test leaves swarms to the median gate.
+4. **Builder scales replaced** by `BalanceRules.DifficultyScale` (one factor per difficulty for every level) times one
+   scalar per cell from the closed loop (`Tools/PlayTest/closed_loop.py`; WAVE_GRAMMAR.md, "How to balance a new
+   level"). Both are plain factors on creature health, exactly what the probe's multiple is, so a measured break-even
+   turns into a scalar without a model. Targets: Easy the weaker rung breaks even at x1.4; Medium the sensible rung at
+   x1.18; Hard the sensible rung at x0.95 with the skilled rung at x1.06 at least; Psycho the skilled rung at x1.06.
+5. **A level's boss is sized first and alone, against the defence that stands for its whole wave**, so
+   `LevelBossAlone` is what the boss asks as stored. Read that way the bosses of round 82 ask about 0.35 / 0.55 / 0.65
+   / 0.7 (they were read against a defence bought for the boss alone at 0.2 / 0.33 / 0.4 / 0.45); the factors are now
+   0.4 / 0.6 / 0.7 / 0.75. The crowd of a boss wave gives way to its boss (down to the solver's floor where that
+   makes the wave fit its cap), the boss comes down only where no crowd does, never under its floor.
+6. **No walker leaves a spawn point alone in the default plan** (`WaveComposer.DropLoneWalkers`; test
+   `Round83Tests.TheDefaultPlan_SendsNoWalkerAlone_OutOfARift`).
+7. **Quartz Flats writes its Hard and Psycho surprises**: one Cragback (two as played) out of the rear rift with two
+   bats out of the other in wave 10 (Hard) and wave 12 (Hard and Psycho); none in the tank escort of wave 14.
+8. **Paper waves are gone by rule**: a ground wave whose pressure is carried in by earlier waves keeps the lower edge of
+   its band (x0.7 of the toughest of the three ground waves before it) instead of falling to the floor. Test
+   `Round83Tests.NoStoredGroundWave_IsPaper` (none under 0.4 times its cell's median; the four opening waves and the
+   crowd of a boss wave are not judged).
+9. Tests adjusted: `BalanceLedgerTests` (the paper's reading of the stored hero cap and of the order of the
+   difficulties is a report now, as the paper ramp has been since round 22e: the closed loop sets the level),
+   `BalanceModelTests` (the solver's API), `Round61Tests` (the purchase is planned at book health),
+   `ContinentFinaleTests` (Easy's boss share is judged by the finale probe where it played, as Hard and Psycho are),
+   `WaveGrammarTests` (Quartz Flats writes its own on every difficulty; the surprise test). New: `Round83Tests` (6).
+10. Docs: WAVE_GRAMMAR.md (the solver, how to balance a new level, the removed rules), COMMANDS.md ("Round 83").
+
+### The closed loop, first pass (M1: all scalars at one, 1152 runs on the ladder x0.4 to x2, 07:32 to 08:57)
+
+`Tools/PlayTest/pressure_r83_m1_records.txt` (five workers `Passed`, save untouched). Started from the model alone
+with a first guess of the difficulty factors (0.74 / 0.9 / 0.78 / 0.69, the level of round 82 in sums of multipliers).
+Reading (`closed_loop.py`): **with every cell at scalar one the six levels are far more even than the builder scales
+ever made them.** The scalars the targets ask, over their difficulty's mean:
+
+| Difficulty | Factor now (`DifficultyScale`) | Landing Site | Glass Meadows | Shard Ridge | Fault Line | Quartz Flats | Crysium Vein |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Easy | 0.98 | 0.965 | 0.965 | 0.965 | 1.206 | 0.965 | 0.965 |
+| Medium | 1.31 | 1.042 | 1.042 | 1.042 | 1.042 | 0.823 | 1.042 |
+| Hard | 1.00 | 1.161 | 1.161 | 0.735 | 1.161 | 0.735 | 1.161 |
+| Psycho | 0.87 | 1.269 | 1.269 | 0.837 | 1.058 | 1.058 | 0.669 |
+
+(Equal numbers in a row are one ladder step; the wide ladder has steps of a quarter, and a pass moves a scalar by x1.6
+at most.) Round 82's builder scales ran from 0.44 to 1.13, with residuals of plus or minus 20 to 35 % around their
+difficulty's mean, and were refitted every round. Here 23 of 24 lie inside 0.7 to 1.4 before any fine pass; the one
+outside is Crysium Vein Psycho (0.669), where the skilled rung's strategy is three data changes stale. Six skilled
+picks broke before the sensible rung did (`stale pick` in the table of `closed_loop.py`); off Easy the loop reads the
+sensible rung there instead of softening the cell. The difficulty factors say what the model itself misreads: almost
+nothing on Easy and Hard, Psycho 13 % too tough; Medium is a third tougher than the model's curve on purpose, because
+its target is no longer "wins everything". M1 was played on the waves of 07:31; the fixes of item 1 (carried health),
+the floors on the stored health and the median cap came after it and moved the sums of multipliers by -6 to +12 % per
+cell, which the second pass measures.
+
+### The closed loop, second pass (M2: the standard ladder on the scalars of the first pass, 720 runs, 08:59 to 09:55)
+
+`Tools/PlayTest/pressure_r83_m2_records.txt`, stamp `bot=3:0ad82383; data=652e4795; game=939f4845`, five workers
+`Passed`, 0 probe errors, save untouched. Seeds won at x0.8 / 0.9 / 1 / 1.12 / 1.25; "before" is round 82
+(`pressure_r82_final_records.txt` for the sensible rung, the same bot). The skilled column is the round 82b pick on
+new waves: a stale pick wherever it breaks before the sensible rung (marked).
+
+| Cell | Sensible, round 82 | Sensible, round 83 (M2) | Skilled, round 83 (M2) | Reads |
+| --- | --- | --- | --- | --- |
+| Landing Site Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | on target |
+| Landing Site Medium | 3 3 3 3 3 | **3 3 3 2 0** | 3 2 0 0 0 (stale) | on target (x1.18) |
+| Landing Site Hard | 3 3 1 0 0 | 3 3 1 0 0 | 3 3 2 0 0 | on target (x0.95, skilled x1.06) |
+| Landing Site Psycho | 0 0 0 0 0 | not the target | 3 3 3 0 0 | on target (x1.06) |
+| Glass Meadows Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | on target |
+| Glass Meadows Medium | 3 3 3 3 3 | **3 3 2 1 0** | 3 3 3 0 0 | a step tough (x1.06): scalar x0.9 |
+| Glass Meadows Hard | 3 3 3 0 0 | 3 3 2 0 0 | 3 3 3 3 0 | a step soft (x1.06): scalar x1.11 |
+| Glass Meadows Psycho | 0 0 0 0 0 | not the target | 3 3 2 1 0 | on target (fragile row) |
+| Shard Ridge Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | on target |
+| Shard Ridge Medium | 3 3 3 3 3 | **3 3 3 2 0** | 3 1 1 0 0 (stale) | on target |
+| Shard Ridge Hard | 3 3 3 3 2 | **3 3 2 1 0** | 3 3 2 2 0 | a step soft: scalar x1.11 |
+| Shard Ridge Psycho | 1 0 0 0 0 | not the target | 3 3 3 3 2 | soft (over x1.32): scalar x1.25 |
+| Fault Line Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | on target |
+| Fault Line Medium | 3 3 3 3 3 | 3 3 3 2 2 | 3 3 3 1 1 (stale) | soft (holds x1.25): scalar x1.12 |
+| Fault Line Hard | 3 3 3 3 3 | **3 3 2 0 0** | 2 0 0 0 0 (stale) | a step soft for the sensible rung; scalar kept |
+| Fault Line Psycho | 3 2 0 1 0 | not the target | 3 2 1 0 0 | a step tough (x0.95): scalar x0.9 |
+| Quartz Flats Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | on target |
+| Quartz Flats Medium | 3 3 3 3 3 | **3 3 3 2 0** | 3 3 1 0 0 (stale) | on target |
+| Quartz Flats Hard | 3 2 0 0 0 | **3 3 3 0 0** | 3 3 3 1 0 | a step soft for the sensible rung, kept: the skilled rung is on its guard (round 82: 0 of 3 for the skilled rung) |
+| Quartz Flats Psycho | 1 0 0 0 0 | not the target | 3 1 0 0 0 | tough (x0.85): scalar x0.8 |
+| Crysium Vein Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | on target |
+| Crysium Vein Medium | 3 3 3 3 3 | 3 3 3 3 2 | 3 3 2 1 0 (stale) | soft (holds x1.25): scalar x1.12 |
+| Crysium Vein Hard | 3 3 3 2 2 | **3 3 3 0 0** | 0 0 0 0 0 (stale) | a step soft for the sensible rung; the skilled pick loses everything; scalar kept |
+| Crysium Vein Psycho | 0 0 0 0 0 | not the target | 3 3 3 3 1 | a step soft (x1.18): scalar x1.12 |
+
+Break-even of the reference rung per difficulty (target), from `closed_loop.py`:
+
+| Difficulty | Target | Landing Site | Glass Meadows | Shard Ridge | Fault Line | Quartz Flats | Crysium Vein |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Easy (both rungs) | x1.4 | over x1.32 | over x1.32 | over x1.32 | over x1.32 | over x1.32 | over x1.32 |
+| Medium (sensible) | x1.18 | x1.18 | x1.06 | x1.18 | over x1.32 | x1.18 | over x1.32 |
+| Hard (sensible) | x0.95 | x0.95 | x1.06 | x1.06 | x1.06 | x1.06 | x1.06 |
+| Psycho (skilled) | x1.06 | x1.06 | x1.06 | over x1.32 | x0.95 | x0.85 | x1.18 |
+
+Reading: **one pass of the loop from "every scalar at one" put 12 of 24 cells on their target and 8 more within one
+ladder step** (further off: Fault Line and Crysium Vein Medium, Shard Ridge and Quartz Flats Psycho). Medium is no longer flat: the sensible rung loses x1.25 on four of six levels and wins x1 on all six
+(round 82: 15 of 15 on all six). Hard is above Medium for the same player on five of six levels (sensible break-even x0.95 to
+x1.06 against x1.18 to over x1.32); on Glass Meadows both read x1.06 (Medium a step tough, Hard a step soft; the second
+pass moves both). Where the sensible rung reads x1.06 on Hard and the skilled rung reads x1.06 too, the loop keeps the
+scalar: a tougher cell would take the skilled rung under its guard. Easy is won 180 of 180. Quartz Flats Hard, lost by every strategy in round 82, is
+won 3 of 3 at the data by both rungs (the surprise is out of the escort wave, and the cell's scalar is measured).
+Not yet right: Fault Line and Crysium Vein Medium are still soft; Shard Ridge Psycho is soft and Quartz Flats
+Psycho tough; and **the skilled rung's picks are stale on at least seven cells** (it loses Crysium Vein Hard 0 of 15
+and Fault Line Hard at x0.9 where the sensible rung wins): the picks want a refresh as a bot batch before any Hard or
+Psycho cell is read by the skilled rung.
+
+**The second pass is written and solved but not measured**: `wave_tuning.txt` holds the scalars the M2 table asks
+(Landing Site 0.965 / 1.045 / 1.159 / 1.267; Glass Meadows 0.965 / 0.935 / 1.293 / 1.267; Shard Ridge 0.965 / 1.045 /
+0.819 / 1.043; Fault Line 1.206 / 1.166 / 1.159 / 0.947; Quartz Flats 0.965 / 0.825 / 0.734 / 0.847; Crysium Vein
+0.965 / 1.166 / 1.159 / 0.747; all inside 0.7 to 1.4), with `DifficultyScale` 0.98 / 1.31 / 1.0 / 0.87, and the
+stored waves are that solve. The same solve carries one solver rule that came after M2's sync (a wave that drops under
+its band keeps 0.45 of the median of the ground waves before it: Crysium Vein Psycho wave 13 stood at x0.38 of a
+median of x1.59). So the stored waves are M2's times the factors in the table's last column, but for that rule.
+
+### Gates as they stand
+
+- **EditMode, whole suite on w6 at 09:15** (before the last three edits): 1191 tests, 1135 passed, **3 failed**, 53
+  skipped. The three: `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand` (the bot-lens pressure band on the
+  stored waves; made a report like the other paper readings, after the run), `Round83Tests.ACellsScalar_LiesNearOne`
+  (Crysium Vein Psycho at 0.669; 0.747 after the second pass) and `Round83Tests.NoStoredGroundWave_IsPaper` (the wave
+  13 above; the solver rule after the run). **Run again after those mends and the second-pass solve (10:20): 1191
+  tests, 1138 passed, 0 failed, 53 skipped.**
+- **Compile:** clean in the open editor after the last edit.
+- **Not run this round:** the third measurement, the picks batch, the grace measurement and report, the finale probe
+  (the continent bosses' own health was not touched, but every wave around them moved), the replay and acceptance,
+  `pressure_killers.py lost` on a final file, the boss table as played.
+
+### Known and open
+
+- `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand` now asserts nothing (every check of it is a report).
+  Either give it a measured meaning or fold it into the ledger report tool.
+- The per-cell script levers in `wave_tuning.txt` (plated, swarm, tempo, raid, bosscrowd, armourgrowth: 36 lines) are
+  still per-cell exceptions written by the old builder. Not touched: they change compositions (grace windows, kill
+  money). The critic's point 2.4 stands.
+- `BalanceChecks.CheckHumanTarget` and `HumanTargetTolerance` are only used by their own unit test and the BalanceLab
+  console tool now; `ScaleRefit.cs` has no use.
+- The crowd of a boss wave is paper in most Hard and Psycho finales (x0.28 to x0.4 as stored): with the boss at 0.7 to
+  0.75 of the wave's cap the crowd has little room. It is the old trade (round 82 had it on Shard Ridge) made general.
+- The acceptance gate (17 of 24 red in round 82) was not looked at.
+- Four old wait loops of earlier sessions (`bash.exe` pairs of 2026-11-15 and 11-17) still run; not this round's.
+
+## Round 83 – handover (2026-11-18, 10:00)
+
+State: uncommitted on HEAD ce56b3d5; no worker process left by this round; save MD5 7a848003... The model work
+(items 0 to 8 above) is done and compiled; the closed loop has run two measurements. To do, in this order:
+
+1. Done at 10:20: the whole EditMode suite on w6 on the stored state, 0 failed (run it again after any change).
+2. **M3, the data measurement of this round:** `PR_RECORDS=Tools/PlayTest/pressure_r83_final_records.txt bash Tools/PlayTest/pressure.sh "0,1,2,3,4,5" "0,1,2,3"`
+   (an hour, run it in the background), then `python Tools/PlayTest/closed_loop.py Tools/PlayTest/pressure_r83_final_records.txt --centre`,
+   `pressure_killers.py breakeven` and `lost`, `pressure_versus.py pressure_r82_final_records.txt pressure_r83_final_records.txt`.
+   Judge the sensible rung on Easy, Medium and Hard; do not move a scalar on a skilled reading before step 3. If
+   Medium or Hard cells are still off by a step, one more `--write`, solve and measure of those levels only.
+3. **Picks, a bot batch of its own** (COMMANDS, "Round 78" and "Round 82b"): search every cell anew on today's waves
+   (`PlanSearchTests` on w6; the calibration is current, so it no longer skips), play the candidates, and **change the
+   pick rule in `skilled_picks.py` to rank on break-even** (candidates on the standard ladder, not only x1; then base
+   kept), then the skilled rung alone (`PR_POLICIES="skilled"`). New bot stamp; bump nothing else.
+4. With fresh picks, the Psycho cells (skilled is their reference) and the skilled guards of Medium and Hard through
+   `closed_loop.py` once more; a data batch again if a scalar moves.
+5. Gates: finale probe (`finale_workers.sh`; re-run the finale stage if a continent boss no longer holds, report HP),
+   grace measurement and `GraceReport.cs` (allowances named with reasons, none added without one), replay and
+   acceptance (repair or delete that gate), `pressure_killers.py boss` for the Medium bosses against round 82.
+6. When the scalars are final: `closed_loop.py --centre`, fold the means into `BalanceRules.DifficultyScale`, solve,
+   check `Round62Tests` (stored = solve).
+7. The STATUS entry's final tables (before / after against round 82 in round 82's format, break-even per difficulty,
+   killer waves), the open questions for Remco, MEMORY.
+
+## Round 83b: the closed loop finished on all 24 cells, picks on break-even, the acceptance gate replaced (2026-11-18)
+
+Not committed. One agent, on HEAD ce56b3d5 with round 83 in the tree. Remco's save `progress.json` has MD5
+7a848003ed6b1261e4bb58757548727b after every batch; no worker process is left. The final measurement carries
+`bot=3:375f514b; data=d6dbcefe; game=5de73cea` (`Tools/PlayTest/pressure_r83b_final_records.txt`, 720 runs, five
+workers `Passed`, 0 probe errors).
+
+### What was done, in the handover's order
+
+1. **M3** (`pressure_r83_final_records.txt`, the scalars of round 83's second pass, old picks; `closed_loop_r83_m3.txt`,
+   `killers_r83_m3_*.txt`): the sensible rung read its target on 14 of 18 Easy, Medium and Hard cells; Glass Meadows
+   Medium held the whole ladder (scalar x1.119); Fault Line, Quartz Flats and Crysium Vein Hard read a step soft and
+   were kept by the skilled guard.
+   Only Glass Meadows Medium moved before the picks.
+2. **Picks, a bot batch of its own.** Every cell searched anew on six clones (two and a half minutes), every candidate
+   played on the ladder (Easy on x1 and x1.25, the rest on the standard ladder: 1014 runs,
+   `skilled_picks_r83b_easy_records.txt` and `skilled_picks_r83b_records.txt`, `bot=3:9c032f0e; data=0c8ecae3`).
+   **`skilled_picks.py` ranks on break-even now** (then seeds won at the data, seeds won over the ladder, base kept,
+   stars, number) and writes the break-even and the row behind every pick. The fresh search was worse than the old
+   pick on Landing Site Hard (`3 0 0 0 0` against `3 3 2 0 0`) and Glass Meadows Hard (`3 3 1 0 0` against
+   `3 3 3 0 0`): the old picks went back in as one more candidate (`skilled_picks_r83b_old_records.txt`) and are the
+   picks there, with a comment in `skilled_picks.txt`.
+3. **The loop once more for Psycho and the skilled guards**, read on the candidates' rows: Landing Site Psycho x1.116,
+   Quartz Flats Psycho x1.116, Crysium Vein Psycho x1.245 (the new pick held the whole ladder), Quartz Flats Hard
+   x1.116 (the new pick reads x1.18, so the guard no longer keeps the cell a step soft).
+4. **The means folded into `BalanceRules.DifficultyScale`**: 0.981 / 1.365 / 1.051 / 0.936 (was 0.98 / 1.31 / 1 /
+   0.87), the scalars divided by the same. All 24 scalars lie in 0.78 to 1.31 (`wave_tuning.txt`):
+
+   | Difficulty | Factor | Landing Site | Glass Meadows | Shard Ridge | Fault Line | Quartz Flats | Crysium Vein |
+   | --- | --- | --- | --- | --- | --- | --- | --- |
+   | Easy | 0.981 | 0.964 | 0.964 | 0.964 | 1.205 | 0.964 | 0.964 |
+   | Medium | 1.365 | 1.003 | 1.004 | 1.003 | 1.119 | 0.792 | 1.119 |
+   | Hard | 1.051 | 1.103 | 1.230 | 0.779 | 1.103 | 0.779 | 1.103 |
+   | Psycho | 0.936 | 1.314 | 1.178 | 0.969 | 0.880 | 0.879 | 0.864 |
+
+   The final measurement's own `--centre` reads x1.00 / 0.98 / 0.98 / 1.00: nothing more to fold.
+5. **The final measurement** (below), the finale probe, the grace measurement and report, the Medium boss table.
+
+### Final tables against round 82 (seeds won at x0.8 / 0.9 / 1 / 1.12 / 1.25)
+
+"Sensible, round 82" is `pressure_r82_final_records.txt`, "Skilled, round 82b" `pressure_r82b_skilled_records.txt`.
+
+| Cell | Sensible, round 82 | Sensible, round 83b | Skilled, round 82b | Skilled, round 83b | Break-even of the reference rung (target) |
+| --- | --- | --- | --- | --- | --- |
+| Landing Site Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 2 3 | weaker rung over x1.32 (x1.4) |
+| Landing Site Medium | 3 3 3 3 3 | 3 3 3 2 0 | 3 3 3 3 1 | 3 3 2 1 0 | sensible x1.18; skilled x1.06 (x1.18) |
+| Landing Site Hard | 3 3 1 0 0 | 3 3 1 0 0 | 3 3 3 3 3 | 3 3 2 0 0 | sensible x0.95; skilled x1.06 (x0.95) |
+| Landing Site Psycho | 0 0 0 0 0 | 0 0 0 0 0 | 3 3 3 1 0 | 3 3 2 0 0 | skilled x1.06 (x1.06) |
+| Glass Meadows Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | weaker rung over x1.32 (x1.4) |
+| Glass Meadows Medium | 3 3 3 3 3 | 3 3 2 1 0 | 3 3 3 3 3 | 3 3 3 3 0 | sensible x1.06; skilled x1.18 (x1.18) |
+| Glass Meadows Hard | 3 3 3 0 0 | 3 3 0 0 0 | 3 3 3 3 1 | 3 3 3 0 0 | sensible x0.95; skilled x1.06 (x0.95) |
+| Glass Meadows Psycho | 0 0 0 0 0 | 0 0 0 0 0 | 3 3 3 1 0 | 3 3 3 0 0 | skilled x1.06 (x1.06) |
+| Shard Ridge Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | weaker rung over x1.32 (x1.4) |
+| Shard Ridge Medium | 3 3 3 3 3 | 3 3 3 3 0 | 3 3 3 3 3 | 1 1 2 0 0 | sensible x1.18; skilled under x0.75 (x1.18) |
+| Shard Ridge Hard | 3 3 3 3 2 | 3 2 1 0 0 | 3 3 3 3 3 | 3 3 2 2 0 | sensible x0.95; skilled x1.18 (x0.95) |
+| Shard Ridge Psycho | 1 0 0 0 0 | 0 0 0 0 0 | 3 3 3 2 0 | 3 3 3 0 0 | skilled x1.06 (x1.06) |
+| Fault Line Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | weaker rung over x1.32 (x1.4) |
+| Fault Line Medium | 3 3 3 3 3 | 3 3 2 2 1 | 3 3 3 3 3 | 3 3 1 1 0 | sensible x1.18; skilled x0.95 (x1.18) |
+| Fault Line Hard | 3 3 3 3 3 | 3 3 2 0 0 | 3 3 3 3 3 | 2 0 0 0 0 | sensible x1.06; skilled x0.85 (x0.95) |
+| Fault Line Psycho | 3 2 0 1 0 | 3 3 1 0 0 | 3 3 3 3 3 | 3 2 2 0 1 | skilled x1.06 (x1.06) |
+| Quartz Flats Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | weaker rung over x1.32 (x1.4) |
+| Quartz Flats Medium | 3 3 3 3 3 | 3 3 3 3 0 | 3 3 3 3 3 | 3 3 3 0 0 | sensible x1.18; skilled x1.06 (x1.18) |
+| Quartz Flats Hard | 3 2 0 0 0 | 3 3 0 0 0 | 3 2 1 0 0 | 3 3 1 0 0 | sensible x0.95; skilled x0.95 (x0.95) |
+| Quartz Flats Psycho | 1 0 0 0 0 | 1 0 0 0 0 | 3 3 3 1 0 | 3 2 1 1 0 | skilled x0.95 (x1.06) |
+| Crysium Vein Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | weaker rung over x1.32 (x1.4) |
+| Crysium Vein Medium | 3 3 3 3 3 | 3 3 3 2 0 | 3 3 3 3 2 | 3 3 2 0 0 | sensible x1.18; skilled x1.06 (x1.18) |
+| Crysium Vein Hard | 3 3 3 2 2 | 3 3 3 0 0 | 3 3 3 3 2 | 1 0 0 0 0 | sensible x1.06; skilled under x0.75 (x0.95) |
+| Crysium Vein Psycho | 0 0 0 0 0 | 2 0 0 0 0 | 3 3 3 2 0 | 3 3 3 2 0 | skilled x1.18 (x1.06) |
+| Runs won of 360 | 251 | 208 | 322 | 228 | |
+
+| Difficulty | Target | Landing Site | Glass Meadows | Shard Ridge | Fault Line | Quartz Flats | Crysium Vein |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Easy (weaker rung) | x1.4 | over x1.32 | over x1.32 | over x1.32 | over x1.32 | over x1.32 | over x1.32 |
+| Medium (sensible) | x1.18 | x1.18 | x1.06 | x1.18 | x1.18 | x1.18 | x1.18 |
+| Hard (sensible) | x0.95 | x0.95 | x0.95 | x0.95 | x1.06 | x0.95 | x1.06 |
+| Psycho (skilled) | x1.06 | x1.06 | x1.06 | x1.06 | x1.06 | x0.95 | x1.18 |
+| Hard, better rung (guard x1.06) | at least x1.06 | x1.06 | x1.06 | x1.18 | x1.06 | x0.95 | x1.06 |
+
+Reading:
+- **Every cell reads within one ladder step of its target; 19 of 24 read the target itself.** A step off: Glass
+  Meadows Medium (x1.06, a step tough: the pass before it overshot from "holds the ladder"), Fault Line and Crysium
+  Vein Hard (the sensible rung x1.06, a step soft: kept there by the guard, because no strategy of the skilled rung
+  beats the sensible rung on those two cells), Quartz Flats Psycho (x0.95, a step tough), Crysium Vein Psycho (x1.18,
+  a step soft). On Quartz Flats Hard the better rung reads x0.95, a step under its guard. No further pass was made: a pass moves a cell by a step, and these five moved by a step between two
+  measurements of nearly the same data (the bot takes another build). One step is the resolution of the ladder.
+- **Easy**: 108 of 108 at the data and below; one seed of 72 lost above it (Landing Site, skilled, x1.12).
+- **Medium is not flat any more**: the sensible rung wins x1 on all six levels (16 of 18 seeds; Glass Meadows and
+  Fault Line lose one) and loses x1.25 on all six (1 of 18 seeds won). Round 82: 90 of 90.
+- **Hard is above Medium for the same player on every level** (sensible break-even x0.95 or x1.06 against x1.18,
+  Glass Meadows x0.95 against x1.06). Round 82: Fault Line and Crysium Vein were as soft as Medium.
+- **Psycho**: the skilled rung wins the data on five of six levels 3 of 3 or 2 of 3 and loses x1.25 (1 of 18 seeds won);
+  Quartz Flats wins 1 of 3 at the data (break-even x0.95).
+- **Runs won fell on purpose**: sensible 251 -> 208 of 360, skilled 322 -> 228. Round 82's levels sat a quarter
+  under these targets on Medium and on four Hard cells.
+- **The skilled rung is the weak instrument now.** On Shard Ridge and Fault Line Medium and on Fault Line and
+  Crysium Vein Hard it breaks before the sensible rung (Crysium Vein Hard: `1 0 0 0 0`, falls in wave 7 on every
+  seed), with picks one data step old. The plan search writes one to three strategies for most Medium and Hard
+  cells, and its best is often under what the sensible bot does on its own. The loop reads "the better of the two
+  rungs" for the guards, so no cell was softened for it, but Psycho hangs on this rung alone.
+- **Where lost runs at the data fall** (`killers_r83b_lost.txt`): Landing Site and Glass Meadows in their last three
+  waves (the finale boss or the surprise of wave 10); Shard Ridge Hard takes its damage in wave 13 and falls in 15
+  or 16; Fault Line in waves 13 and 14 (10 for the skilled rung on Hard); Quartz Flats Hard and Psycho in waves 14
+  to 16 (the tank escort and the swarm after it, as in round 82); Crysium Vein Psycho for the sensible rung in
+  waves 9 to 12.
+
+### Gates
+
+- **Closed-loop acceptance** (`ClosedLoopAcceptanceTests`, new; `closed_loop_acceptance.txt`): 24 of 24 cells
+  accepted, Easy 100 % at the data, Hard above Medium on six of six levels. On round 83's M2 it found five things
+  (Glass Meadows Hard not above Medium, Fault Line and Crysium Vein Medium and Shard Ridge Psycho holding the
+  ladder, Quartz Flats Psycho two steps tough), so it bites. The old `BalanceAcceptanceTests` is deleted; its report
+  stays as a menu tool.
+- **Finale probe** on the final waves: 24 of 24 boss cells won at the data; the Medium holding points are round
+  82's to three decimals (x1.183 on four bosses, Rotbloom x1.134, the Sealed One x1.4). **The finale stage was not
+  run and no boss health moved**: Gravemaw 49900, Cinder Matriarch 14150, Frost Warden 6000, Rotbloom 27200,
+  Shattered 15650, Sealed One 30300. `finale_probe_r83b_before.txt` is the same report.
+- **Grace windows** (24 cells measured again, `GraceReport.cs`): 94 rows: 53 in time, 1 early (Shard Ridge Medium,
+  Laser row on the first flyers, inside the window), 34 late inside an allowance, 6 not judged; **the gate holds
+  and no allowance was added**. 20 allowances stand, each with its reason in `GraceWindows.cs`: armour on Landing
+  Site Medium 1 / Hard 2 / Psycho 3 and Glass Meadows Easy 1 / Hard 1 / Psycho 3 (the edge of the growth), Glass
+  Meadows Medium 2 (the Medium scale; softer bites), Shard Ridge Easy 1 / Medium 1 (late Cragbacks) and Hard 6 /
+  Psycho 7 (the raid ends the row), Fault Line Easy 2 (softer bites, earlier plated), Quartz Flats Easy 2 (growth
+  1.5 left no winning plan) and Medium 3 (softer bites, later raids), Crysium Vein Medium 1 (earlier plated); air on
+  Fault Line Easy 2 / Medium 1 / Psycho 1 and Quartz Flats Medium 1 / Psycho 1 (one raid late; the boss entrance).
+  Two are unused now (Fault Line Easy and Psycho air) and Glass Meadows Medium armour uses 1 of 2: they can be
+  shortened; left alone because `GraceWindows.cs` is game code and the final records are stamped.
+- **The Medium bosses as played** (`killers_r83b_boss_medium.txt`, round 82 -> round 83b, the last wave):
+
+  | Level | Sensible at x1 | Sensible at x1.25 | Skilled at x1 |
+  | --- | --- | --- | --- |
+  | Landing Site | 3 of 3, gate damage 24 -> 414, base untouched | 3 of 3 -> 0 of 3 (gate 1133, base lost) | 3 of 3 -> 2 of 3, base 600 -> 400 |
+  | Glass Meadows | 3 of 3 -> 2 of 3, gate 0 -> 400, base 700 -> 467 | 3 of 3 -> 0 of 3 | 3 of 3, untouched both times |
+  | Shard Ridge | 3 of 3, base left 521 -> 179 | 3 of 3 -> 0 of 3 (falls before the boss) | 3 of 3 -> 2 of 3 |
+  | Fault Line | 3 of 3 -> 2 of 3, base left 680 -> 297 | 3 of 3 -> 1 of 3 | 3 of 3 -> 1 of 3 |
+  | Quartz Flats | 3 of 3, gate 253 -> 586, base 700 -> 698 | 3 of 3 -> 0 of 3 (gate 1417) | 3 of 3, gate 192 -> 926 |
+  | Crysium Vein | 3 of 3, gate 5 -> 55, base 700 -> 668 | 3 of 3 -> 0 of 3 (falls before the boss) | 2 of 3 both, base 467 -> 96 |
+
+  With `LevelBossAlone` at 0.4 / 0.6 / 0.7 / 0.75 the Medium boss wave reaches the gates on every level and takes
+  the base at a quarter more health on Landing Site, Glass Meadows and Quartz Flats; on Crysium Vein the finale
+  still costs the sensible rung almost nothing at the data (gate 55), the level is decided before it. Kept, as
+  asked. The crowd of a boss wave is still near its floor on Hard and Psycho finales (round 83, "Known").
+- **EditMode, whole suite on w6, final state** (after the final measurement and the grace report): **1191 tests, 1139 passed, 0 failed, 52
+  skipped** (round 83: 1191 / 1138 / 0 / 53; one test class out, one in). `python Tools/PlayTest/editmode_failures.py`.
+- **Compile:** clean in the open editor (0 errors).
+
+### Tests changed, and why
+
+- **`ClosedLoopAcceptanceTests` (new)** replaces `BalanceAcceptanceTests` (deleted). Per cell the break-even of the
+  reference rung within one ladder step of its target (Easy: both rungs win every seed at the data and the weaker
+  holds the ladder; Medium x1.18 and Hard x0.95 for the sensible rung, the better rung not more than a step under
+  x1.06; Psycho x1.06 for the better rung), Hard above Medium per level. It reads the records named in
+  `Tools/PlayTest/closed_loop_records.txt`; records of other data than the project's make it inconclusive, never
+  passed. A rung on an open end of the ladder where its target binds is a finding.
+- **`BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand` asserts again.** Round 83 had made all of it a
+  report, because the stored waves carry play's correction (up to x1.53 on Medium) and so leave the paper band by
+  design. The band is now held where the model answers for it: on the solver's own waves, the stored multipliers
+  over the difficulty's factor and the cell's scalar. Asserted on all 364 waves: the pressure band, the cliff and
+  late Easy (`BalanceChecks.Check`, bot lens: 0 findings), the beatable floor on the plain waves, and the hero cap
+  on every wave whose own health is what asks. Four waves are over the cap where the solver cannot lower them and
+  are named in the report, not failed: Fault Line Hard wave 7 (on the lower edge of its band, the pressure carried
+  in by the raid before it), Fault Line Hard and Psycho wave 10 (the boss on its health floor), Crysium Vein Psycho
+  wave 7 (a flying boss). More than 3 % such waves fails. The reading of the stored waves stays a report.
+- **`ContinentFinaleTests`, Easy's boss share: the cause is mended and the paper assertion is back.** The ledger's
+  ratio had jumped (Easy 2.6 times Medium's share of the cap) because `FinaleModel.Judge` read the boss alone at the
+  stand-in wave's multiplier, which is the crowd's, and since round 83 the crowd of a boss wave gives way to its
+  level boss by difficulty (Crysium Vein's last wave: x1.50 / 0.61 / 0.57 / 0.26). In play nothing had changed: the
+  finale probe plays the arena's waves from a multiplier of one. `Judge` reads the boss alone at its own health now
+  (`ArenaMultiplier`); Easy asks 0.78 to 0.83 of Medium's share (the Shattered 1.02, its Easy factor), and the test
+  asserts "Easy at or under Medium" again, plus the probe's bound that round 83 added.
+- **`WaveGrammarTests.ASurprise_MakesNoOtherWaveTougher`**: the bound is x1.15 (was x1.3), measured (most on a plain
+  wave x1.13, Crysium Vein Medium wave 10); boss waves and raids are judged too now (x1.06 and x1.05 at most), all
+  six levels. The swarm exemption stays, with its reason in the comment: a capped swarm sits on the solver's cap of
+  2.2 times the median of the ground waves before it, and surprise waves (fewer, tougher creatures) lift that
+  median: x1.59 on Crysium Vein Psycho wave 16, x1.16 or less elsewhere. Closing it means taking the surprise waves
+  out of the solver's median, a data change for a round of its own.
+- Not a test: `balance_pipeline.sh acceptance` runs the new gate.
+
+### The per-cell levers still in `wave_tuning.txt` (36 lines, not touched; next round)
+
+| Lever | Cells |
+| --- | --- |
+| `armourgrowth` (8) | Landing Site 1.4 / 1.4 / 1.5 / 1.5; Glass Meadows 1.4 / 1.2 / 1.5 / 1.5 |
+| `plated` (11) | Landing Site Hard, Psycho 1.5; Glass Meadows Medium, Hard, Psycho 1.5; Shard Ridge Hard, Psycho 1.5; Fault Line Hard 1.25; Crysium Vein Medium, Hard, Psycho 1.5 |
+| `swarm` (8) | Landing Site Hard, Psycho 1.5; Glass Meadows Medium 2, Hard, Psycho 1.5; Shard Ridge Hard 1.5, Psycho 1.25; Fault Line Psycho 1.5 |
+| `tempo` (3) | Landing Site Hard, Psycho 0.85; Glass Meadows Psycho 0.85 |
+| `raid` (4) | Landing Site Psycho 3; Glass Meadows Medium 5, Hard 5, Psycho 3 |
+| `bosscrowd` (2) | Shard Ridge Hard, Psycho 0.35 |
+
+Four of the six kinds are nearly "Hard and Psycho x1.5" already and read like a rule per difficulty waiting to be
+written; `armourgrowth` and `raid` are the two early levels only.
+
+### Known and open
+
+- The skilled rung (above): a bot round of its own, before Psycho is trusted to a step.
+- The swarm that follows the surprise-lifted median (the test's comment).
+- Three allowances can be shortened (Gates).
+- `BalanceChecks.CheckHumanTarget`, `HumanTargetTolerance`, `ScaleRefit.cs`: still unused (round 83).
+- Four old wait loops of earlier sessions (`bash.exe` pairs of 2026-11-15 and 11-17) still run; not this round's.
+- Files of this round: `pressure_r83_final_records.txt` (M3), `skilled_picks_r83b*_records.txt`,
+  `pressure_r83b_final_records.txt`, `closed_loop_r83_m3.txt`, `closed_loop_r83b_final.txt`, `killers_r83b_*.txt`,
+  `versus_r82_r83b.txt`, `r83b_tables.md`, `finale_probe_r83b_before.txt`, logs `r83b_*.log`.
+
+### Questions for Remco
+
+1. **The targets** (Easy x1.4 for the weaker rung; Medium x1.18; Hard x0.95 with the better rung at x1.06; Psycho
+   x1.06). Recommendation: keep them and play Medium on levels 1 to 3; the bot cannot say whether "wins at the data,
+   loses a quarter tougher" feels right.
+2. **The level bosses** at 0.4 / 0.6 / 0.7 / 0.75 of their wave. Recommendation: keep; judge the Medium boss of
+   Shard Ridge (the one that felt weak) by hand first.
+3. **One step is as fine as this ladder measures.** Recommendation: accept "within a step" as done for the first
+   continent and spend the next round on the skilled rung and the per-cell levers, not on a fourth pass.

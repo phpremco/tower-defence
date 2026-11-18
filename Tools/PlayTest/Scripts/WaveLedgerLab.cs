@@ -75,7 +75,6 @@ public static class WaveLedgerLab
         text.Append($"Wave ledger lab {DateTime.Now:yyyy-MM-dd HH:mm}; overrides: {(notes.Count > 0 ? string.Join("; ", notes) : "none")}\n");
         var summary = new StringBuilder();
         var solved = new Dictionary<string, List<List<WaveSpec>>>();
-        var curves = new Dictionary<string, float[]>();
         BalanceRules withHero = rules.HumanWithHero();
         foreach ((string key, int d) in cells)
         {
@@ -98,32 +97,29 @@ public static class WaveLedgerLab
 
             if (!solved.TryGetValue(key, out List<List<WaveSpec>> sets))
             {
-                sets = model.BuildWaves(index, script, out float[] mediumCurve);
+                sets = model.BuildWaves(index, script, out _);
                 solved[key] = sets;
-                curves[key] = mediumCurve;
             }
 
-            LevelInput input = model.ReferenceInputFor(index, d);
+            // The lens the solver reads (round 83): a competent player's towers alone, with the difficulty's real money.
+            LevelInput input = model.InputFor(index, d);
             DifficultyStats difficulty = model.Difficulties[d];
             var loads = new List<WaveLoad>();
-            List<WaveLine> lines = Ledger.Evaluate(input, sets[d], difficulty, rules, loads);
+            List<WaveLine> lines = Ledger.Evaluate(input, sets[d], difficulty, rules.HumanTowersOnly(), loads);
             WaveDefinition[] stored = level.GetWaves(catalog.Difficulties[d]);
-            // The solver's own multipliers, before the human calibration trims and caps them (the flyer floors as the solve left them).
-            // As the solve stage reads it: the other difficulties are compared with Medium's waves before Medium's flyer floors moved them.
-            int[] raidFloors = script.FirstAirWaveFloor;
-            int[] troopFloors = script.FlyingTroopFloor;
-            if (d != WaveSolver.SolveDifficulty)
+            // The solver's own multipliers, before the difficulty's factor and the cell's scalar.
+            float scale = rules.DifficultyScaleFor(d) * script.TargetScaleFor(d);
+            float[] shares = WaveSolver.Shares(script, model.Enemies, d, model.Facts[index].SecondRoad, rules);
+            float aim = model.ModelTarget(index, d);
+            var raw = new float[sets[d].Count];
+            for (int w = 0; w < raw.Length; w++)
             {
-                script.FirstAirWaveFloor = WithoutMedium(raidFloors);
-                script.FlyingTroopFloor = WithoutMedium(troopFloors);
+                raw[w] = shares[w] * aim;
             }
 
-            float[] raw = d == WaveSolver.SolveDifficulty ? curves[key] : WaveSolver.SolveVariant(script, model.Enemies, input, difficulty, curves[key], model.Facts[index].SecondRoad, rules);
-            script.FirstAirWaveFloor = raidFloors;
-            script.FlyingTroopFloor = troopFloors;
             List<WaveLine> hero = Ledger.Evaluate(model.InputFor(index, d), sets[d], difficulty, withHero);
             List<WaveLine> lens = Ledger.Evaluate(model.InputFor(index, d), sets[d], difficulty, rules.HumanTowersOnly());
-            text.Append($"\n{key} {names[d]} (the solver's reference player; solver = before the human calibration; hero = the human with the hero, cap {rules.HeroCapFor(d)}; span = active seconds of the ground stream, sky = the flyers' window)\n");
+            text.Append($"\n{key} {names[d]} (the human lens, towers alone; scale x{scale:0.###}; aim = the wave's own target at scale one; hero = the same player with the hero, cap {rules.HeroCapFor(d)}; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)\n");
             float sumNow = 0f;
             float sumStored = 0f;
             var moved = new List<string>();
@@ -140,18 +136,27 @@ public static class WaveLedgerLab
                 }
 
                 text.Append(string.Format(CultureInfo.InvariantCulture,
-                    "  w{0,-2} {1}{2}{3}{4} x{5,-7:0.###} (stored x{6,-7:0.###}, solver x{17,-6:0.###}, hero {18:0.00}, human {19:0.00}{20}) money {7,5} hp {8,6:0}/{9,5:0} span {10,5:0.0}s sky {11,5:0.0}s n {12,3}/{13,2} pressure {14:0.00}/{15:0.00} | {16}\n",
+                    "  w{0,-2} {1}{2}{3}{4} x{5,-7:0.###} (stored x{6,-7:0.###}, aim {17:0.00}, hero {18:0.00}, human {19:0.00}{20}, boss x{21:0.###} stored x{22:0.###}) money {7,5} hp {8,6:0}/{9,5:0} span {10,5:0.0}s sky {11,5:0.0}s n {12,3}/{13,2} pressure {14:0.00}/{15:0.00} | {16}\n",
                     w + 1, letters[(int)wave.Pattern], wave.Beats, wave.Surprise == SurpriseKind.Rift ? "!" : wave.Surprise == SurpriseKind.Flank ? "^" : wave.Surprise == SurpriseKind.Authored ? "*" : " ", line.Boss ? "B" : " ",
                     wave.HealthMultiplier, was, line.Money, line.GroundHealth, line.AirHealth, loads[w].Span, loads[w].AirWindow, loads[w].GroundCount, loads[w].AirCount,
-                    line.GroundPressure, line.AirPressure, line.Purchase, raw[w], hero[w].Pressure, lens[w].Pressure, w < BalanceChecks.OpeningWaves || lens[w].Boss || lens[w].CounterCheck || lens[w].AirRaid ? "-" : "p"));
+                    line.GroundPressure, line.AirPressure, line.Purchase, raw[w], hero[w].Pressure, lens[w].Pressure, w < BalanceChecks.OpeningWaves || lens[w].Boss || lens[w].CounterCheck || lens[w].AirRaid ? "-" : "p", wave.HealthMultiplier * wave.BossHealthScale, stored != null && w < stored.Length ? stored[w].HealthMultiplier * stored[w].BossHealthScale : 0f));
             }
 
-            // The human-curve gate as BalanceLedgerTests reads it: a competent player's towers alone on the plain waves.
-            float plain = BalanceChecks.PlainMean(Ledger.Evaluate(model.InputFor(index, d), sets[d], difficulty, rules.HumanTowersOnly()));
-            float asked = rules.HumanSurplusAt(d, model.ContinentIndexOf(index)) / model.Levels[index].TargetScaleFor(d);
-            float has = plain > 0f ? 1f / plain : 0f;
-            summary.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0} {1,-6} sum of multipliers x{2:0.000} of the stored set; human {4:0.00}x of {5:0.00}x asked ({6:+0.0;-0.0} %{7}); moved more than 3 %: {3}", key, names[d], sumStored > 0f ? sumNow / sumStored : 0f, moved.Count > 0 ? string.Join(", ", moved) : "none",
-                has, asked, (has / asked - 1f) * 100f, Math.Abs(has - asked) > asked * rules.HumanTargetTolerance ? ", OUT" : ""));
+            float plain = BalanceChecks.PlainMean(lens);
+            float asked = model.HumanTarget(index, d);
+            var ground = new List<float>();
+            for (int w = 0; w < sets[d].Count; w++)
+            {
+                if (!sets[d][w].AirRaid)
+                {
+                    ground.Add(sets[d][w].HealthMultiplier);
+                }
+            }
+
+            ground.Sort();
+            float median = ground.Count > 0 ? ground[ground.Count / 2] : 0f;
+            summary.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0} {1,-6} scale x{8:0.###}; sum of multipliers x{2:0.000} of the stored set; plain mean {4:0.00} against {5:0.00} at the scale; ground waves x{6:0.00} to x{7:0.00} of their median; moved more than 3 %: {3}", key, names[d], sumStored > 0f ? sumNow / sumStored : 0f, moved.Count > 0 ? string.Join(", ", moved) : "none",
+                plain, asked, median > 0f ? ground[0] / median : 0f, median > 0f ? ground[ground.Count - 1] / median : 0f, scale));
         }
 
         text.AppendLine().AppendLine("Against the stored waves:").Append(summary);
@@ -159,18 +164,6 @@ public static class WaveLedgerLab
         string path = "Tools/PlayTest/wave_ledger_" + label + ".txt";
         File.WriteAllText(path, text.ToString());
         return "written " + path + "\n" + text;
-    }
-
-    private static int[] WithoutMedium(int[] floors)
-    {
-        if (floors == null || floors.Length <= WaveSolver.SolveDifficulty)
-        {
-            return floors;
-        }
-
-        var copy = (int[])floors.Clone();
-        copy[WaveSolver.SolveDifficulty] = 0;
-        return copy;
     }
 
     private static void Set(System.Reflection.FieldInfo field, object target, string value)

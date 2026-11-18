@@ -1,0 +1,24 @@
+Landing Site Easy: skilled 3 3 3 3 3 break-even x1.25+ | sensible 3 3 3 3 3 break-even x1.25+
+Landing Site Medium: skilled 3 2 0 0 0 break-even x0.9 | sensible 3 3 3 2 0 break-even x1.12
+Landing Site Hard: skilled 3 3 2 0 0 break-even x1 | sensible 3 3 1 0 0 break-even x0.9
+Landing Site Psycho: skilled 3 3 3 0 0 break-even x1 | sensible 0 0 0 0 0 break-even under x0.8
+Glass Meadows Easy: skilled 3 3 3 3 3 break-even x1.25+ | sensible 3 3 3 3 3 break-even x1.25+
+Glass Meadows Medium: skilled 3 3 3 3 3 break-even x1.25+ | sensible 3 3 3 2 2 break-even x1.25+
+Glass Meadows Hard: skilled 3 3 3 0 0 break-even x1 | sensible 3 3 0 0 0 break-even x0.9
+Glass Meadows Psycho: skilled 3 3 2 1 0 break-even x1 | sensible 0 0 0 0 0 break-even under x0.8
+Shard Ridge Easy: skilled 3 3 3 3 3 break-even x1.25+ | sensible 3 3 3 3 3 break-even x1.25+
+Shard Ridge Medium: skilled 3 1 1 0 0 break-even x0.8 | sensible 3 3 3 2 0 break-even x1.12
+Shard Ridge Hard: skilled 2 2 1 0 0 break-even x0.9 | sensible 3 2 1 0 0 break-even x0.9
+Shard Ridge Psycho: skilled 2 0 1 0 0 break-even x0.8 fragile | sensible 0 0 0 0 0 break-even under x0.8
+Fault Line Easy: skilled 3 3 3 3 3 break-even x1.25+ | sensible 3 3 3 3 3 break-even x1.25+
+Fault Line Medium: skilled 3 3 1 1 0 break-even x0.9 | sensible 3 3 2 2 1 break-even x1.12
+Fault Line Hard: skilled 2 0 0 0 0 break-even x0.8 | sensible 3 3 2 0 0 break-even x1
+Fault Line Psycho: skilled 3 3 2 1 0 break-even x1 | sensible 3 3 1 0 0 break-even x0.9
+Quartz Flats Easy: skilled 3 3 3 3 3 break-even x1.25+ | sensible 3 3 3 3 3 break-even x1.25+
+Quartz Flats Medium: skilled 3 3 1 0 0 break-even x0.9 | sensible 3 3 3 3 0 break-even x1.12
+Quartz Flats Hard: skilled 3 3 3 1 0 break-even x1 | sensible 3 3 3 0 0 break-even x1
+Quartz Flats Psycho: skilled 3 3 2 2 0 break-even x1.12 | sensible 2 1 0 0 0 break-even x0.8
+Crysium Vein Easy: skilled 3 3 3 3 3 break-even x1.25+ | sensible 3 3 3 3 3 break-even x1.25+
+Crysium Vein Medium: skilled 3 1 0 0 0 break-even x0.8 | sensible 3 3 3 2 0 break-even x1.12
+Crysium Vein Hard: skilled 0 0 0 0 0 break-even under x0.8 | sensible 3 3 3 0 0 break-even x1
+Crysium Vein Psycho: skilled 3 3 3 1 1 break-even x1 | sensible 2 2 0 0 0 break-even x0.9

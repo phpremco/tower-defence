@@ -856,7 +856,11 @@ spots, mixes or timing) wave by wave, which tower where and when, and what to up
 decision at run time; the hero fights and wrecks are scrapped as before) over the seeds, records outcome, stars, base
 health and coins, and writes its wave records to `plan_records.txt`, so the next fit learns from plans as well as bots.
 
-**Acceptance per difficulty (`AcceptanceRules`, `BalanceAcceptanceTests`).** Remco's strategy rule holds on every
+*Since round 83b this is a report only (menu `Tools/Generate/Balance/7`); the gate is `ClosedLoopAcceptanceTests`:
+every cell's measured break-even within one ladder step of its difficulty target (Docs/WAVE_GRAMMAR.md, "How to
+balance a new level"). `BalanceAcceptanceTests` is gone.*
+
+**Acceptance per difficulty (`AcceptanceRules`, report).** Remco's strategy rule holds on every
 difficulty; only the margin grows. Judged on recorded runs; the one exception is explicit in the rule
 (`AcceptanceRules.TutorialCells`: C1_01 Medium may stay forgiving; its obvious wins are noted, not failed).
 

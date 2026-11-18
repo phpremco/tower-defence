@@ -1,0 +1,4 @@
+REFUSED: before: bot 3:f9f8c682; data bf820cba; game code fa3428f5
+         after:  bot 3:0ad82383; data 611a4c72; game code 0234288e
+         the bot AND the data differ: such a batch cannot say which of the two moved a cell
+(the probe is deterministic, so a difference between bots is not noise; pass --mixed-bots to print it anyway)

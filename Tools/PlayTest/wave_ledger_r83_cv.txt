@@ -1,0 +1,24 @@
+Wave ledger lab 2026-11-18 08:01; overrides: none
+
+C1_06 Psycho (the human lens, towers alone; scale x0.69; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.35; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  W1   x2.472   (stored x2.472  , aim 0.53, hero 0.34, human 0.37-, boss x2.472 stored x2.472) money   900 hp   1615/    0 span   3.8s sky   0.0s n  36/ 0 pressure 0.37/0.00 | 0:1x1 0:2x5
+  w2  s1   x2.27    (stored x2.27   , aim 0.65, hero 0.41, human 0.45-, boss x2.27 stored x2.27) money   900 hp   2538/    0 span   5.8s sky   0.0s n  24/ 0 pressure 0.45/0.00 | 1:0x9
+  w3  C2   x2.587   (stored x2.587  , aim 0.82, hero 0.53, human 0.57-, boss x2.587 stored x2.587) money   900 hp   3861/    0 span  13.5s sky   0.0s n  33/ 0 pressure 0.57/0.00 | 1:0x9
+  w4  T1   x3.042   (stored x3.042  , aim 1.14, hero 0.80, human 0.87-, boss x3.042 stored x3.042) money   942 hp   4956/    0 span   6.4s sky   0.0s n  27/ 0 pressure 0.87/0.00 | 1:0x9
+  w5  A1   x1.112   (stored x1.112  , aim 1.06, hero 0.73, human 0.73-, boss x1.112 stored x1.112) money  1018 hp   1331/  294 span   9.2s sky   0.6s n  19/ 2 pressure 0.25/0.73 | 0:1x1 0:2x5 3:0x1
+  w6  C2   x1.429   (stored x1.429  , aim 1.21, hero 0.59, human 0.59p, boss x1.429 stored x1.429) money  1055 hp   2464/  377 span  13.5s sky   6.1s n  38/ 2 pressure 0.52/0.59 | 0:2x4 1:0x2 3:1x1
+  w7  C2 B x0.377   (stored x0.377  , aim 1.73, hero 0.69, human 0.69-, boss x0.901 stored x0.901) money  1118 hp    442/ 1140 span   9.9s sky   8.1s n  20/ 3 pressure 0.11/0.69 | 0:0x1 0:2x4 3:0x1 3:2x1
+  w8  A1   x2.265   (stored x2.265  , aim 0.91, hero 0.62, human 0.62-, boss x2.265 stored x2.265) money  1189 hp   1713/ 1196 span   9.2s sky   3.1s n  18/ 4 pressure 0.37/0.62 | 0:0x1 0:1x1 0:2x4 3:0x1 3:2x1
+  w9  T1!  x3.954   (stored x3.954  , aim 1.48, hero 0.79, human 0.84p, boss x3.954 stored x3.954) money  1277 hp   5567/ 1827 span  10.7s sky  25.9s n  21/ 7 pressure 0.84/0.66 | 0:0x1 1:1x4 3:0x1 3:2x1
+  w10 C2   x1.196   (stored x1.196  , aim 1.31, hero 0.88, human 0.93p, boss x1.196 stored x1.196) money  1376 hp   5483/  316 span  15.3s sky   6.1s n  50/ 2 pressure 0.93/0.27 | 0:0x1 1:0x1 1:1x4 3:0x1 3:2x1
+  w11 A1   x2.437   (stored x2.437  , aim 1.20, hero 0.82, human 0.82-, boss x2.437 stored x2.437) money  1724 hp   5003/ 1930 span  10.9s sky   3.1s n  27/ 6 pressure 0.72/0.82 | 0:0x1 0:2x3 1:1x4 3:0x1 3:2x1
+  w12 X1 B x0.276   (stored x0.276  , aim 1.91, hero 0.75, human 0.80-, boss x1.32 stored x1.32) money  1811 hp   3933/   73 span   6.3s sky   6.1s n  36/ 2 pressure 0.80/0.06 | 1:1x7 3:0x1 3:2x1
+  w13 C2!  x1.022   (stored x1.022  , aim 1.11, hero 0.73, human 0.76p, boss x1.022 stored x1.022) money  1923 hp   7517/ 1484 span  15.3s sky  23.4s n  57/18 pressure 0.76/0.37 | 1:0x1 1:1x7 3:0x1 3:2x1
+  w14 A1   x1.78    (stored x1.78   , aim 1.27, hero 0.85, human 0.85-, boss x1.78 stored x1.78) money  2305 hp   6203/ 2350 span  10.9s sky   4.7s n  32/10 pressure 0.58/0.85 | 0:0x1 0:2x3 1:1x7 3:0x1 3:2x1
+  w15 A1   x1.641   (stored x1.641  , aim 1.30, hero 0.87, human 0.87-, boss x1.641 stored x1.641) money  2468 hp   4627/ 2599 span  11.3s sky   4.7s n  36/12 pressure 0.77/0.87 | 0:0x1 0:1x1 0:2x11 1:1x1 3:0x1 3:2x1
+  w16 W3   x5.142   (stored x5.142  , aim 1.61, hero 0.82, human 0.85p, boss x5.142 stored x5.142) money  2547 hp  22168/    0 span  50.0s sky   0.0s n 218/ 0 pressure 0.85/0.00 | 0:2x4 1:0x15 3:0x1 3:2x1
+  w17 A2   x1.39    (stored x1.39   , aim 1.34, hero 0.89, human 0.89-, boss x1.39 stored x1.39) money  3150 hp   7254/ 2936 span  13.2s sky   5.9s n  49/16 pressure 0.79/0.89 | 0:0x1 0:1x1 0:2x11 1:0x1 1:1x4 3:0x1 3:2x1
+  w18 T3 B x0.276   (stored x0.276  , aim 2.13, hero 0.66, human 0.68-, boss x1.843 stored x1.843) money  3254 hp   7070/  255 span  24.5s sky  37.0s n  69/ 7 pressure 0.68/0.07 | 0:0x1 0:2x1 1:1x8 1:2x3 3:0x1 3:2x1
+
+Against the stored waves:
+C1_06 Psycho scale x0.69; sum of multipliers x1.000 of the stored set; plain mean 0.79 against 0.93 at the scale; ground waves x0.12 to x2.27 of their median; moved more than 3 %: none

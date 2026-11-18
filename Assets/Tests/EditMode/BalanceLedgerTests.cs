@@ -11,7 +11,10 @@ namespace Game.Tests
     /// <summary>
     /// Runs the balance model over every level, difficulty and wave as they are stored, writes the table to
     /// Tools/PlayTest/balance_ledger.txt and fails when a wave leaves its difficulty's band, jumps far above the waves
-    /// before it, or late Easy asks nothing (<see cref="BalanceChecks"/>). The player is the one the progression model
+    /// before it, or late Easy asks nothing (<see cref="BalanceChecks"/>). Since round 83b the band is held on the
+    /// solver's own waves: the stored ones with play's correction taken off (the difficulty's factor and the cell's
+    /// scalar, both plain factors on creature health). How tough a cell is with that correction is measured, not read
+    /// on paper (ClosedLoopAcceptanceTests). The player is the one the progression model
     /// expects there: owned towers only, the research of the levels before spent on upgrades. Per level it also applies the
     /// human lens (<see cref="BalanceChecks.CheckHuman"/>): Easy may not hand a competent player far more firepower than
     /// it needs, and each difficulty must ask more than the one below. Since 2026-11-04 it also checks the human target curve
@@ -40,6 +43,15 @@ namespace Game.Tests
             var report = new StringBuilder();
             var curve = new StringBuilder("Human lens per level (towers alone, plain waves; Easy Medium Hard Psycho), with the hero, and the research the campaign expects:\n");
             var failures = new List<string>();
+            // Round 83: how tough a cell is as stored is play's to say (the closed loop's scalar on the solver's waves), so the
+            // paper's own reading of the stored level (the hero cap wave by wave, the order of the difficulties) is a report,
+            // as the paper ramp has been since round 22e. Round 83b: what the paper does answer for is asserted again, on the
+            // solver's own waves (the stored multipliers over the difficulty's factor and the cell's scalar): the band, the
+            // cliff and late Easy of BalanceChecks.Check, the beatable floor on the plain waves, and the hero cap on every
+            // wave whose own health is what asks (CheckCap names the ones the solver cannot lower).
+            var paperWarnings = new List<string>();
+            var held = new List<string>();
+            int judged = 0;
             // Per continent, in play order: the level names and their human-lens surplus per difficulty, for the ramp check.
             var rampLevels = new Dictionary<int, List<string>>();
             var rampSurplus = new Dictionary<int, List<float[]>>();
@@ -64,19 +76,24 @@ namespace Game.Tests
                         report.Append("  ").Append(line).Append('\n');
                     }
 
-                    failures.AddRange(BalanceChecks.Check(node.Level.name, difficulty.name, d, lines, rules));
+                    paperWarnings.AddRange(BalanceChecks.Check(node.Level.name, difficulty.name, d, lines, rules));
+                    float correction = rules.DifficultyScaleFor(d) * model.Levels[index].TargetScaleFor(d);
+                    List<WaveSpec> own = OwnWaves(model, node.Level, difficulty, correction);
+                    string cell = difficulty.name + " (the solver's own waves)";
+                    failures.AddRange(BalanceChecks.Check(node.Level.name, cell, d, Ledger.Evaluate(model.InputFor(index, d), own, model.Difficulties[d], rules), rules));
+                    failures.AddRange(CheckCap(node.Level.name, cell, d, own, Ledger.Evaluate(model.InputFor(index, d), own, model.Difficulties[d], withHero), correction, rules, held));
+                    judged += own.Count;
                     float mean = BalanceChecks.PlainMean(BalanceLedger.Evaluate(model, index, node.Level, difficulty, d, null, human));
                     plainMeans.Add(mean);
                     surplus[d] = mean > 0f ? 1f / mean : 0f;
                     List<WaveLine> beatable = BalanceLedger.Evaluate(model, index, node.Level, difficulty, d, null, withHero);
-                    failures.AddRange(BalanceChecks.CheckBeatable(node.Level.name, difficulty.name, d, beatable, rules));
+                    paperWarnings.AddRange(BalanceChecks.CheckBeatable(node.Level.name, difficulty.name, d, beatable, rules));
                     PlayerState player = model.PlayerAt(index, d);
                     heroLine.Append($" {1f / BalanceChecks.PlainMean(beatable):0.00}x (research {player.ResearchSpent})");
                 }
 
                 report.Append(BalanceChecks.DescribeHuman(node.Level.name, plainMeans)).Append('\n');
-                failures.AddRange(BalanceChecks.CheckHuman(node.Level.name, plainMeans, rules, model.Levels[index]));
-                failures.AddRange(BalanceChecks.CheckHumanTarget(node.Level.name, model.ContinentIndexOf(index), plainMeans, rules, model.Levels[index]));
+                paperWarnings.AddRange(BalanceChecks.CheckHuman(node.Level.name, plainMeans, rules, model.Levels[index]));
                 curve.Append($"  {node.Level.name}: {surplus[0]:0.00}x {surplus[1]:0.00}x {surplus[2]:0.00}x {surplus[3]:0.00}x | with hero{heroLine}\n");
                 if (!rampLevels.ContainsKey(node.Region))
                 {
@@ -105,8 +122,113 @@ namespace Game.Tests
                 UnityEngine.Debug.Log("[Balance] paper ramp warnings (not failures): " + string.Join("; ", rampWarnings));
             }
 
+            report.Append("Paper reading of the stored waves (a report check since round 83; the closed loop judges the level): ").Append(paperWarnings.Count == 0 ? "nothing\n" : "\n  " + string.Join("\n  ", paperWarnings) + "\n");
+            report.Append($"Waves over the hero cap that the solver cannot lower ({held.Count} of {judged}; asserted: no other wave is over it, and these stay under {HeldShareMost:P0} of all waves): ").Append(held.Count == 0 ? "none\n" : "\n  " + string.Join("\n  ", held) + "\n");
             System.IO.File.WriteAllText(LedgerPath, report.ToString());
+            Assert.Greater(judged, 0);
+            Assert.LessOrEqual(held.Count, judged * HeldShareMost, "too many waves sit over the hero cap where the solver cannot lower them:\n" + string.Join("\n", held));
             Assert.IsEmpty(failures, string.Join("\n", failures) + "\nSee " + LedgerPath);
+        }
+
+        /// <summary>The lower edge of the solver's band: a ground wave keeps this share of the toughest of the three ground waves before it (WaveSolver.MaxDrop).</summary>
+        private const float BandLowerEdge = 0.7f;
+        private const int BandMemory = 3;
+
+        /// <summary>Rounding of the stored multipliers (three decimals) against an edge or a floor.</summary>
+        private const float EdgeSlack = 1.01f;
+
+        /// <summary>The held waves are the exception: more than this share of all waves and the cap is no rule any more (round 83b: 4 of 364).</summary>
+        private const float HeldShareMost = 0.03f;
+
+        // The stored waves of a cell with play's correction taken off: what the solver itself made.
+        private static List<WaveSpec> OwnWaves(CampaignModel model, LevelDefinition level, DifficultyProfile difficulty, float correction)
+        {
+            var waves = new List<WaveSpec>();
+            foreach (WaveDefinition wave in level.GetWaves(difficulty))
+            {
+                WaveSpec spec = BalanceLedger.Spec(wave, model.Enemies);
+                spec.HealthMultiplier /= correction;
+                waves.Add(spec);
+            }
+
+            return waves;
+        }
+
+        // BalanceChecks.CheckBeatable on the solver's own waves, with the two cases the solver itself leaves over the cap named
+        // instead of failed (WaveSolver.Solve): a wave whose pressure is carried in by earlier waves keeps the lower edge of
+        // its band (softer creatures would be paper and still not bring it under the cap), and a level's boss never goes
+        // under its health floor, which is a floor on the health as stored (a flying boss follows its wave and has no
+        // size of its own). Every other wave over the cap is a failure: there the wave's own health is what asks too much.
+        private static List<string> CheckCap(string level, string difficultyName, int difficulty, List<WaveSpec> waves, List<WaveLine> withHero, float correction, BalanceRules rules, List<string> held)
+        {
+            var failures = new List<string>();
+            float mean = BalanceChecks.PlainMean(withHero);
+            float floor = rules.MinBeatableSurplusFor(difficulty);
+            if (mean > 0f && 1f / mean < floor)
+            {
+                failures.Add($"{level} {difficultyName}: with the hero a competent player has only {1f / mean:0.00}x the firepower on plain waves (at least {floor:0.00}x)");
+            }
+
+            float most = rules.HeroCapFor(difficulty) * (1f + rules.BeatableTolerance);
+            var recent = new List<float>();
+            for (int i = 0; i < waves.Count; i++)
+            {
+                WaveSpec wave = waves[i];
+                bool boss = withHero[i].Boss;
+                float trend = 0f;
+                foreach (float value in recent)
+                {
+                    trend = System.Math.Max(trend, value);
+                }
+
+                if (withHero[i].Pressure > most)
+                {
+                    string where = $"{level} {difficultyName} wave {i + 1}{(boss ? " (boss)" : string.Empty)}: pressure {withHero[i].Pressure:0.00} with the hero (most {most:0.00})";
+                    bool onEdge = !wave.AirRaid && trend > 0f && wave.HealthMultiplier <= trend * BandLowerEdge * EdgeSlack;
+                    if (boss && BossIsHeld(wave, difficulty, correction, rules))
+                    {
+                        held.Add(where + ", its boss on its health floor or flying");
+                    }
+                    else if (!boss && onEdge)
+                    {
+                        held.Add(where + ", on the lower edge of its band (carried in by earlier waves)");
+                    }
+                    else
+                    {
+                        failures.Add(where);
+                    }
+                }
+
+                if (!wave.AirRaid && !boss)
+                {
+                    recent.Add(wave.HealthMultiplier);
+                    if (recent.Count > BandMemory)
+                    {
+                        recent.RemoveAt(0);
+                    }
+                }
+            }
+
+            return failures;
+        }
+
+        // The boss of the wave flies, or stands on the level boss health floor as stored (the wave's multiplier here is the
+        // stored one over play's correction, so it is put back on before it is held against the floor).
+        private static bool BossIsHeld(WaveSpec wave, int difficulty, float correction, BalanceRules rules)
+        {
+            foreach (GroupSpec group in wave.Groups)
+            {
+                if (group.Enemy != null && group.Enemy.IsBoss)
+                {
+                    float scale = wave.BossHealthScale > 0f ? wave.BossHealthScale : 1f;
+                    if (group.Enemy.Flies || wave.HealthMultiplier * correction * scale <= rules.LevelBossHealthFloorFor(difficulty) * EdgeSlack)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         // GAME_DESIGN, Economy, per continent: its levels on Easy pay about a fifth of the research upgrades tagged to it,

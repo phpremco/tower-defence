@@ -31,23 +31,23 @@
             "Tower": "Cannon",
             "X": [
                 11,
+                12,
                 11,
-                12,
-                12,
-                12,
-                13,
                 5,
-                31
+                31,
+                12,
+                12,
+                13
             ],
             "Y": [
-                2,
                 6,
                 2,
-                6,
-                7,
                 2,
                 14,
-                14
+                14,
+                6,
+                7,
+                2
             ]
         },
         {
@@ -77,34 +77,29 @@
     "Weights": [
         {
             "Threat": "swarm",
-            "Tower": "Cannon",
-            "Weight": 2.414491653442383
-        },
-        {
-            "Threat": "pack",
-            "Tower": "PulseRifle",
-            "Weight": 2.2508647441864014
-        },
-        {
-            "Threat": "plated",
-            "Tower": "PulseRifle",
-            "Weight": 1.5315616130828857
+            "Tower": "Laser",
+            "Weight": 0.6293986439704895
         },
         {
             "Threat": "air",
-            "Tower": "PulseRifle",
-            "Weight": 1.707548975944519
+            "Tower": "Cannon",
+            "Weight": 0.8583898544311523
+        },
+        {
+            "Threat": "boss",
+            "Tower": "Cannon",
+            "Weight": 2.2493200302124023
         }
     ],
-    "UpgradeBias": 1.7400000095367432,
-    "TowersBeforeUpgrades": 1,
+    "UpgradeBias": 1.2999999523162842,
+    "TowersBeforeUpgrades": 3,
     "MineCoverBelow": 1.0,
-    "MineOnBoss": false,
-    "FieldCoverBelow": 0.0,
-    "HarvesterCover": 1.0,
-    "HarvesterShare": 0.30000001192092896,
-    "RepairDroneWear": 0.25,
-    "AttackDroneAfterTowers": 8,
+    "MineOnBoss": true,
+    "FieldCoverBelow": 1.0,
+    "HarvesterCover": 1.2000000476837158,
+    "HarvesterShare": 0.4000000059604645,
+    "RepairDroneWear": 9.0,
+    "AttackDroneAfterTowers": 0,
     "GateUpgradeBias": 0.0,
     "AllowSell": true
 }

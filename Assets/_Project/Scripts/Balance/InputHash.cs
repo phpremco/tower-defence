@@ -106,10 +106,6 @@ namespace Game.Balance
             }
 
             text.Append(F(r.BossWaveShare));
-            foreach (float most in r.LevelBossAloneMost)
-            {
-                text.Append(F(most));
-            }
 
             return Fnv(text.ToString());
         }

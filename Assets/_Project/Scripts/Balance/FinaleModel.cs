@@ -174,7 +174,7 @@ namespace Game.Balance
             DifficultyStats stats = planned.Difficulties[difficulty];
             BalanceRules human = rules.HumanTowersOnly();
             BalanceRules withHero = rules.HumanWithHero();
-            float target = planned.HumanTarget(levelIndex, difficulty);
+            float target = planned.ModelTarget(levelIndex, difficulty);
             double scale = Bisect(log => BalanceChecks.PlainMean(Ledger.Evaluate(input, Scaled(waves, Math.Exp(log)), stats, human)), target);
             List<WaveSpec> trimmed = Scaled(waves, scale);
             List<WaveLine> towers = Ledger.Evaluate(input, trimmed, stats, human);
@@ -196,18 +196,26 @@ namespace Game.Balance
                 ResearchEarned = player.ResearchEarned,
                 Towers = input.Towers.Count,
             };
+            // The boss alone at its own health (round 83b): the data's, as its arena plays it (the finale probe scales the
+            // arena's waves from a multiplier of one), never the stand-in wave's multiplier or the plain trim on top. That
+            // multiplier is the crowd's, and since round 83 the crowd of a boss wave gives way to its level boss by
+            // difficulty (Crysium Vein's last wave: x1.50 / 0.61 / 0.57 / 0.26), which made Easy's continent boss read 2.6
+            // times Medium's share of the cap on paper while nothing had changed in play.
             line.BossAlone = Ledger.Evaluate(input, Alone(trimmed, finale), stats, withHero)[finale].Pressure;
             line.TooHard = line.BossAlone > line.Cap * (1f + rules.BeatableTolerance);
             line.TooEasy = line.BossAlone < line.PlainHero;
             return line;
         }
 
-        // The same waves with the boss wave reduced to its boss.
+        /// <summary>The wave multiplier a continent boss is fought at: its arena's waves at the data (BossArenaDefinition).</summary>
+        private const float ArenaMultiplier = 1f;
+
+        // The same waves with the boss wave reduced to its boss, at its own health.
         private static List<WaveSpec> Alone(List<WaveSpec> waves, int finale)
         {
             var alone = new List<WaveSpec>(waves);
             WaveSpec boss = waves[finale];
-            var only = new WaveSpec { StartDelay = boss.StartDelay, HealthMultiplier = boss.HealthMultiplier, BossHealthScale = boss.BossHealthScale };
+            var only = new WaveSpec { StartDelay = boss.StartDelay, HealthMultiplier = ArenaMultiplier, BossHealthScale = boss.BossHealthScale };
             only.Groups.AddRange(boss.Groups.FindAll(g => g.Enemy.IsBoss));
             alone[finale] = only;
             return alone;

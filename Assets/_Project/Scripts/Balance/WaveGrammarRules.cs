@@ -58,8 +58,8 @@ namespace Game.Balance
         public int SecondRoadEvery = 2;
 
         /// <summary>
-        /// Off for the solver's second look at a level, without its surprises (<see cref="BalanceRules.SurprisesLiftNoWave"/>);
-        /// never off in the rules a level is composed with.
+        /// Off only to read a level without its surprises (a lab run, the test that a surprise lifts no other wave); never
+        /// off in the rules a level is composed with.
         /// </summary>
         public bool Surprises = true;
 

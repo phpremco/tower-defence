@@ -34,7 +34,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 2.6999998
         Nest: 0
-      _healthMultiplier: 0.674
+      _healthMultiplier: 0.711
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -65,7 +65,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 5.85
         Nest: 0
-      _healthMultiplier: 0.876
+      _healthMultiplier: 0.816
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -96,7 +96,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 0.945
+      _healthMultiplier: 0.886
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -135,7 +135,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.201
+      _healthMultiplier: 1.152
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -182,7 +182,7 @@ MonoBehaviour:
         Delay: 14.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.562
+      _healthMultiplier: 1.497
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -229,7 +229,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.398
+      _healthMultiplier: 1.474
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -276,7 +276,7 @@ MonoBehaviour:
         Delay: 19
         Stagger: 0
         Nest: 1
-      _healthMultiplier: 1.19
+      _healthMultiplier: 1.257
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -323,7 +323,7 @@ MonoBehaviour:
         Delay: 12.916666
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.873
+      _healthMultiplier: 1.946
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -410,7 +410,7 @@ MonoBehaviour:
         Delay: 21.1
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.281
+      _healthMultiplier: 1.625
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -481,7 +481,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 7.7999997
         Nest: 0
-      _healthMultiplier: 2.435
+      _healthMultiplier: 2.53
       _bossHealthScale: 1
       _counterCheck: 1
       _airRaid: 0
@@ -552,7 +552,7 @@ MonoBehaviour:
         Delay: 21.508333
         Stagger: 0
         Nest: 1
-      _healthMultiplier: 2.365
+      _healthMultiplier: 1.75
       _bossHealthScale: 1
       _counterCheck: 1
       _airRaid: 0
@@ -639,8 +639,8 @@ MonoBehaviour:
         Delay: 32.53
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 0.898
-      _bossHealthScale: 1
+      _healthMultiplier: 0.964
+      _bossHealthScale: 0.664
       _counterCheck: 1
       _airRaid: 0
   - Difficulty: {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}
@@ -664,7 +664,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 2.6999998
         Nest: 0
-      _healthMultiplier: 0.692
+      _healthMultiplier: 0.548
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -695,7 +695,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 5.85
         Nest: 0
-      _healthMultiplier: 0.9
+      _healthMultiplier: 0.712
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -726,7 +726,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 0.971
+      _healthMultiplier: 0.926
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -765,7 +765,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.234
+      _healthMultiplier: 1.203
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -812,7 +812,7 @@ MonoBehaviour:
         Delay: 13.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.605
+      _healthMultiplier: 1.565
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -859,7 +859,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.436
+      _healthMultiplier: 2.034
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -906,7 +906,7 @@ MonoBehaviour:
         Delay: 19
         Stagger: 0
         Nest: 1
-      _healthMultiplier: 1.143
+      _healthMultiplier: 2.117
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -953,7 +953,7 @@ MonoBehaviour:
         Delay: 12.916666
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.597
+      _healthMultiplier: 2.648
       _bossHealthScale: 1
       _counterCheck: 1
       _airRaid: 0
@@ -1040,7 +1040,7 @@ MonoBehaviour:
         Delay: 20.1
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.229
+      _healthMultiplier: 2.474
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -1103,7 +1103,7 @@ MonoBehaviour:
         Delay: 19
         Stagger: 0
         Nest: 1
-      _healthMultiplier: 2.076
+      _healthMultiplier: 2.664
       _bossHealthScale: 1
       _counterCheck: 1
       _airRaid: 0
@@ -1190,7 +1190,7 @@ MonoBehaviour:
         Delay: 12.916666
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.473
+      _healthMultiplier: 1.792
       _bossHealthScale: 1
       _counterCheck: 1
       _airRaid: 0
@@ -1277,8 +1277,8 @@ MonoBehaviour:
         Delay: 30.529999
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 0.773
-      _bossHealthScale: 1
+      _healthMultiplier: 0.548
+      _bossHealthScale: 1.765
       _counterCheck: 1
       _airRaid: 0
   - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
@@ -1302,7 +1302,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 2.295
         Nest: 0
-      _healthMultiplier: 0.945
+      _healthMultiplier: 0.464
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -1333,7 +1333,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 4.9725
         Nest: 0
-      _healthMultiplier: 1.228
+      _healthMultiplier: 0.603
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -1364,7 +1364,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.325
+      _healthMultiplier: 0.784
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -1403,7 +1403,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.684
+      _healthMultiplier: 1.019
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -1450,7 +1450,7 @@ MonoBehaviour:
         Delay: 12.1
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 2.19
+      _healthMultiplier: 1.325
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -1497,7 +1497,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.96
+      _healthMultiplier: 1.723
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -1544,7 +1544,7 @@ MonoBehaviour:
         Delay: 19
         Stagger: 0
         Nest: 1
-      _healthMultiplier: 1.307
+      _healthMultiplier: 1.788
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -1591,8 +1591,8 @@ MonoBehaviour:
         Delay: 7
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 0.526
-      _bossHealthScale: 1.710614
+      _healthMultiplier: 0.656
+      _bossHealthScale: 1.372
       _counterCheck: 1
       _airRaid: 0
     - _startDelay: 8
@@ -1678,7 +1678,7 @@ MonoBehaviour:
         Delay: 17.710001
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.785
+      _healthMultiplier: 1.71
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -1741,7 +1741,7 @@ MonoBehaviour:
         Delay: 19
         Stagger: 0
         Nest: 1
-      _healthMultiplier: 1.794
+      _healthMultiplier: 2.08
       _bossHealthScale: 1
       _counterCheck: 1
       _airRaid: 0
@@ -1820,7 +1820,7 @@ MonoBehaviour:
         Delay: 12.916666
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.87
+      _healthMultiplier: 1.755
       _bossHealthScale: 1
       _counterCheck: 1
       _airRaid: 0
@@ -1915,8 +1915,8 @@ MonoBehaviour:
         Delay: 26.7
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.117
-      _bossHealthScale: 1
+      _healthMultiplier: 0.464
+      _bossHealthScale: 2.863
       _counterCheck: 1
       _airRaid: 0
   - Difficulty: {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
@@ -1940,7 +1940,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 2.295
         Nest: 0
-      _healthMultiplier: 1.015
+      _healthMultiplier: 2.43
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -1971,7 +1971,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 4.9725
         Nest: 0
-      _healthMultiplier: 1.32
+      _healthMultiplier: 2.755
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -2010,7 +2010,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.423
+      _healthMultiplier: 2.82
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -2049,7 +2049,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.81
+      _healthMultiplier: 3.666
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -2096,8 +2096,8 @@ MonoBehaviour:
         Delay: 10.2
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 0.751
-      _bossHealthScale: 1.1989294
+      _healthMultiplier: 1.615
+      _bossHealthScale: 0.998
       _counterCheck: 0
       _airRaid: 0
     - _startDelay: 8
@@ -2143,7 +2143,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 2.106
+      _healthMultiplier: 3.069
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -2190,7 +2190,7 @@ MonoBehaviour:
         Delay: 19
         Stagger: 0
         Nest: 1
-      _healthMultiplier: 1.861
+      _healthMultiplier: 4.342
       _bossHealthScale: 1
       _counterCheck: 1
       _airRaid: 0
@@ -2237,8 +2237,8 @@ MonoBehaviour:
         Delay: 6.7735
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.229
-      _bossHealthScale: 1
+      _healthMultiplier: 0.492
+      _bossHealthScale: 2.353
       _counterCheck: 1
       _airRaid: 0
     - _startDelay: 8
@@ -2324,7 +2324,7 @@ MonoBehaviour:
         Delay: 17.210001
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.872
+      _healthMultiplier: 3.134
       _bossHealthScale: 1
       _counterCheck: 0
       _airRaid: 0
@@ -2387,7 +2387,7 @@ MonoBehaviour:
         Delay: 19
         Stagger: 0
         Nest: 1
-      _healthMultiplier: 2.473
+      _healthMultiplier: 2.596
       _bossHealthScale: 1
       _counterCheck: 1
       _airRaid: 0
@@ -2466,7 +2466,7 @@ MonoBehaviour:
         Delay: 12.916666
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 2.351
+      _healthMultiplier: 2.483
       _bossHealthScale: 1
       _counterCheck: 1
       _airRaid: 0
@@ -2561,7 +2561,7 @@ MonoBehaviour:
         Delay: 24.7
         Stagger: 0
         Nest: 0
-      _healthMultiplier: 1.287
-      _bossHealthScale: 1
+      _healthMultiplier: 0.492
+      _bossHealthScale: 3.373
       _counterCheck: 1
       _airRaid: 0

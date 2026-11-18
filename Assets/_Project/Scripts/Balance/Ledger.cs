@@ -136,9 +136,10 @@ namespace Game.Balance
             {
                 purse.Begin(waves[i]);
                 var next = new AirHoldings();
-                WaveLoad load = LoadOf(level, waves[i], difficulty, rules, purse.Carried(waves[i]));
+                float carried = purse.Carried(waves[i]);
+                WaveLoad load = LoadOf(level, waves[i], difficulty, rules, carried);
                 loads?.Add(load);
-                WaveLine line = EvaluateLoad(level, load, purse.Money(i, waves.Count), rules, held, next);
+                WaveLine line = EvaluateLoad(level, load, PlanOf(level, waves[i], difficulty, rules, carried), purse.Money(i, waves.Count), rules, held, next);
                 held = next;
                 line.Wave = i + 1;
                 lines.Add(line);
@@ -161,9 +162,26 @@ namespace Game.Balance
         /// they stay on the map and their price is gone from the purse). <paramref name="next"/>, when given, receives the air
         /// guns standing after this wave. <paramref name="carried"/> is the ground health of earlier waves that reaches the
         /// defence at the same time (<see cref="KillPurse.Carried"/>); the towers share their window with it.
+        /// <paramref name="plan"/> is the wave the purchase is decided on (null: this wave): a part of a wave, such as its
+        /// boss alone, is judged against the defence bought for the whole wave.
         /// </summary>
-        public static WaveLine EvaluateWave(LevelInput level, WaveSpec wave, DifficultyStats difficulty, int money, BalanceRules rules, AirHoldings held, AirHoldings next, float carried = 0f) =>
-            EvaluateLoad(level, LoadOf(level, wave, difficulty, rules, carried), money, rules, held, next);
+        public static WaveLine EvaluateWave(LevelInput level, WaveSpec wave, DifficultyStats difficulty, int money, BalanceRules rules, AirHoldings held, AirHoldings next, float carried = 0f, WaveSpec plan = null) =>
+            EvaluateLoad(level, LoadOf(level, wave, difficulty, rules, carried), PlanOf(level, plan ?? wave, difficulty, rules, carried), money, rules, held, next);
+
+        /// <summary>
+        /// The wave as the player plans for it (round 83): its creatures and their numbers at book health, with what earlier
+        /// waves left on the road. The purchase is decided on this load and never on the wave's own health multiplier, so
+        /// the pressure of a wave only rises with its creatures' health: one multiplier meets a target, and a plain
+        /// bisection finds it. Before, the player re-bought its defence for every trial multiplier, and a raid met its target
+        /// twice or more (a sky gun's next step bought in between).
+        /// </summary>
+        internal static WaveLoad PlanOf(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules, float carried)
+        {
+            WaveLoad plan = WaveLoad.Of(level, wave, difficulty, rules, -1f, true);
+            plan.CarriedHealth = carried * rules.CarriedShare;
+            plan.StreamHealth += plan.CarriedHealth;
+            return plan;
+        }
 
         /// <summary>
         /// Ground and air pressure of one wave against towers that already stand (tower id and level index), with the hero,
@@ -201,14 +219,17 @@ namespace Game.Balance
         internal static WaveLoad LoadOf(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules, float carried, float gateHealth = -1f)
         {
             WaveLoad load = WaveLoad.Of(level, wave, difficulty, rules, gateHealth);
-            load.StreamHealth += carried * rules.CarriedShare;
+            load.CarriedHealth = carried * rules.CarriedShare;
+            load.StreamHealth += load.CarriedHealth;
             return load;
         }
 
-        private static WaveLine EvaluateLoad(LevelInput level, WaveLoad load, int money, BalanceRules rules, AirHoldings held, AirHoldings next)
+        private static WaveLine EvaluateLoad(LevelInput level, WaveLoad load, WaveLoad plan, int money, BalanceRules rules, AirHoldings held, AirHoldings next)
         {
-            List<Option> options = Options(level, load, rules);
-            Defence defence = Buy(options, load, rules, money - (held?.Cost ?? 0), Cap(level, rules), held, next);
+            // Bought for the wave as planned, standing against the wave as it comes.
+            Dictionary<(int, int), int> built = Buy(Options(level, plan, rules), plan, rules, money - (held?.Cost ?? 0), Cap(level, rules), held, next, out string purchase);
+            Defence defence = Standing(built, Options(level, load, rules));
+            defence.Purchase = purchase;
             return new WaveLine
             {
                 Purchase = defence.Purchase,
@@ -399,7 +420,7 @@ namespace Game.Balance
                 Level = towerLevel,
                 Cost = stats.Cost,
                 AirOnly = air && !ground,
-                Stream = ground ? stream * Overkill(groundHit, load.MeanHealth) * ((load.Span + pass) * Splash(tower.Splash, load.GroundDensity, cap) + queue * (tower.Splash > 0f ? cap : 1f)) : 0f,
+                Stream = ground ? stream * load.StreamOverkill(groundHit) * ((load.Span + pass) * Splash(tower.Splash, load.GroundDensity, cap) + queue * (tower.Splash > 0f ? cap : 1f)) : 0f,
                 Single = ground ? single * load.BossSeconds(bossQueue + cover.GroundPass / Math.Max(0.01f, load.BossSpeed), rules) : 0f,
                 Air = air ? sky * Overkill(airHit, load.MeanAirHealth) * Splash(tower.Splash, load.AirDensity, cap) * (load.AirWindow + cover.AirPass / Math.Max(0.01f, load.AirSpeed)) : 0f,
             };
@@ -445,7 +466,7 @@ namespace Game.Balance
 
         // Greedy purchase, step by step: build a new tower or raise one already built by a level, whichever lowers the
         // wave's worse pressure most per coin. Raising needs a tower at the level below, so steps are never bought alone.
-        private static Defence Buy(List<Option> options, WaveLoad load, BalanceRules rules, int money, int cap, AirHoldings held, AirHoldings after)
+        private static Dictionary<(int, int), int> Buy(List<Option> options, WaveLoad load, BalanceRules rules, int money, int cap, AirHoldings held, AirHoldings after, out string purchase)
         {
             var built = new Dictionary<(int, int), int>();
             var defence = new Defence();
@@ -471,7 +492,28 @@ namespace Game.Balance
             Fill(options, load, rules, ref money, cap, built, ref defence);
             Improve(options, load, rules, ref money, cap, built, kept, ref defence);
             after?.Keep(built, options);
-            defence.Purchase = Describe(built, options);
+            purchase = Describe(built, options);
+            return built;
+        }
+
+        // What the towers bought (type and level, how many) can take of a load.
+        private static Defence Standing(Dictionary<(int, int), int> built, List<Option> options)
+        {
+            var defence = new Defence();
+            foreach (KeyValuePair<(int Tower, int Level), int> step in built)
+            {
+                Option option = Find(options, step.Key.Tower, step.Key.Level);
+                if (option == null || step.Value <= 0)
+                {
+                    continue;
+                }
+
+                defence.Stream += option.Stream * step.Value;
+                defence.Single += option.Single * step.Value;
+                defence.Air += option.Air * step.Value;
+                defence.Towers += step.Value;
+            }
+
             return defence;
         }
 

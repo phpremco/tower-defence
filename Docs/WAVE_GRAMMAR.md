@@ -1,4 +1,4 @@
-# Wave grammar (round 79, rules of rounds 80, 80b, 81 and 82 marked)
+# Wave grammar and the balance algorithm (round 79; rules of rounds 80 to 83 marked)
 
 How the creatures of a wave arrive. Remco, 2026-11-17: surprises ("everything stands at the front gate, and poof, something
 comes behind it"), waves that are long and distributed (spread clusters or big swarms, small pauses, combo swarms), and
@@ -12,9 +12,11 @@ The grammar sits on the existing pipeline and replaces nothing in it:
   wave's creatures are laid out in time and which waves carry a surprise. One set of numbers per difficulty for every level.
 - **The solver** (`WaveSolver`) still only sets how tough the creatures are. The grammar never changes how many creatures
   a wave has, so the kill money of a level is what the script's budget says (test: `TheGrammar_MovesCreaturesInTime_NeverTheirNumber`).
+- **The closed loop** (`Tools/PlayTest/closed_loop.py`, round 83) sets how tough the level is as played: one scalar per
+  level and difficulty, measured, never typed.
 
 A new level therefore needs a roster, a rhythm and a map. Where the clusters, the breathers, the surprises and the finale
-fall follows from the rules below.
+fall follows from the rules below; how tough it is follows from "How to balance a new level" at the end of this file.
 
 ## The vocabulary
 
@@ -92,14 +94,14 @@ level that forks.
 How the model budgets it: the choice only sets the path of the front's groups, and the ledger already reads a wave by
 its groups (`WaveLoad.Reach` the defence a lane meets, `KillPurse` the walk to the defence and so when a kill pays and
 which wave a slow creature arrives in, the route model the guns a route passes). The number of creatures and the kill
-money are the script's whatever the roads (test `TheLevelsOwnRoads_ReplaceTheRule_OnTheirWaveAndDifficulties`). A wave
-on other roads than Medium's has no Medium twin and is solved on its own difficulty (`WaveSolver.SolveVariant`).
+money are the script's whatever the roads (test `TheLevelsOwnRoads_ReplaceTheRule_OnTheirWaveAndDifficulties`). Every
+difficulty is solved on its own since round 83, so a wave needs no Medium twin.
 
 Known: on Shard Ridge the second road is short (46 cells against 109) and skips the first two gates. A slow plated
 creature on the long road arrives waves later (`KillPurse.Carried`), one on the short road in its own wave; where
-carried Cragbacks meet a model player who holds no Cannon yet, no multiplier of the wave itself reaches the target and
-the wave drops to the solver's floor (the "paper" waves, STATUS round 82). That was so before the road rule (Shard Ridge
-Hard wave 8 at x0.22 in round 81); the rule moves which waves it falls on.
+carried Cragbacks are what asks, no multiplier of the wave itself reaches its target. Until round 82 such a wave fell to
+the solver's floor (ten "paper" waves in the stored set); since round 83 it keeps the lower edge of its band ("The
+solver", below; test `Round83Tests.NoStoredGroundWave_IsPaper`).
 
 ## Surprises
 
@@ -198,6 +200,10 @@ Surprises = new[]
   wave, a heavy rift troop) the wave carries none and the first later wave that can takes it. Several rift troops may
   open several nests at once; the group is the whole surprise (Quartz Flats: bats out of both rifts and a Cragback out
   of the rear one).
+  **No walker leaves a spawn point alone (round 83).** Where the share buys a single walker for a rift or a road, it
+  stays home and what it would have cost makes the wave's other creatures a little tougher, like any budget a wave could
+  not spend (`WaveComposer.DropLoneWalkers`). Two is the least, so it holds as played on every difficulty. One big
+  creature out of a rift is the level's to write. Test: `Round83Tests.TheDefaultPlan_SendsNoWalkerAlone_OutOfARift`.
   The growth of plated troops past their grace window (round 68) is the front's alone: a surprise is sized by its share
   (with the growth on top, seven Cragbacks came out behind the gate of Glass Meadows on Psycho where the share asked two).
   The shares are the second set tried: at 0.2 / 0.3 / 0.35 / 0.4 the rifts behind the gate of Glass Meadows and Quartz
@@ -220,85 +226,27 @@ First continent (the level's own roster decides the source):
 | Glass Meadows | the level's own since round 82: two Cragbacks in wave 10, Medium and up | its rear rift (the default plan still sends none: one rift, one heavy rift troop) |
 | Shard Ridge | a flank | the second road |
 | Fault Line | Shalebats | its three rifts (drawn per bat, as before) |
-| Quartz Flats | Hard and Psycho: the default (Shalebats, from wave 9 with a Cragback that is two as played). Easy and Medium: the level's own since round 82, so nothing walks alone (Easy wave 14: bats out of both rifts; Medium waves 12 and 16: two Cragbacks out of the rear rift with bats out of the other) | bats: both rifts; Cragbacks: the rift behind the first gate |
+| Quartz Flats | Easy and Medium: the level's own since round 82 (Easy wave 14: bats out of both rifts; Medium waves 12 and 16: two Cragbacks out of the rear rift with bats out of the other). Hard and Psycho: the level's own since round 83 (Hard waves 10 and 12, Psycho wave 12: one Cragback, two as played, out of the rear rift with bats out of the other; none in the tank escort of wave 14, where Hard was lost); the other surprise waves keep the default, which is bats only | bats: both rifts; Cragbacks: the rift behind the first gate |
 | Crysium Vein | Shalebats | its rift |
 
-## A surprise lifts no other wave (round 80)
+## Rules of rounds 80 and 80b that round 83 took out
 
-`BalanceRules.SurprisesLiftNoWave`. A surprise wave is hard for the model (a rift behind the gate gets only the defence
-behind its join cell), so it sits on the hero cap, and it pays less (its share buys few, heavy bodies). The human
-calibration holds the level's plain mean on its target with one common factor, so what the cap took off the surprise
-waves went onto every other wave. Glass Meadows Psycho: every uncapped wave was 8 % tougher with the surprises than
-the same level solved without them; the swarm of wave 8 took the first gate in play where round 78 lost a fifth of it,
-and the gates never came back before the finale.
+The critic of 2026-11-18 (Docs/BALANCE_CRITIC_2026-11-18.md) traced four rules to two properties of the solver itself:
+the model's player re-bought its defence for every trial multiplier (so pressure was not monotone in health), and one
+common factor held a level's mean (so lowering one wave lifted the others). Round 83 mended both properties ("The
+solver", below), and the rules went:
 
-The rule: every difficulty is solved a second time without its surprises (`WaveGrammarRules.Surprises` off for that
-pass only), and a wave that carries no surprise takes the lower of its two multipliers. A boss keeps the health it was
-sized at. Surprise waves keep their own solve. So a surprise takes from its own wave, never from the others, and a level
-with surprises is never tougher outside them than the level without.
+| Rule | What it repaired | Why it is not needed |
+| --- | --- | --- |
+| A raid is capped at the sky guns held (`RaidsCappedAtHeldGuns`, the 5 % walk to the lowest crossing) | A raid met its target two or three times, with a sky gun's next step bought in between | The purchase is decided before the multiplier: one crossing, a plain bisection. A raid is sized against the sky guns the player plans for it |
+| A surprise lifts no other wave (`SurprisesLiftNoWave`, the second "calm" solve) | The common factor put what the hero cap took off a surprise wave onto every other wave | Every wave has its own target; a capped wave is just lower. Test `WaveGrammarTests.ASurprise_MakesNoOtherWaveTougher` |
+| The relief bound (`SurpriseReliefMost` 0.05) | The rule above left levels under the 6 % curve gate | No level mean is held and the gate is gone |
+| Raids out of the plain mean, as a special case of the calibration | Capped raids pushed the ground waves up through the mean | There is no mean to push. `BalanceChecks.PlainMean` (a reading aid now) still leaves raids out |
+| The guard gun of a rear rift (`RearRiftGuardCells`, `BooksRearGuard`) | The model's purse was all at the front while both reference players stand a gun at a far rift | On paper it moved six waves of Glass Meadows and Quartz Flats by 2 to 14 % (`wave_ledger_r83_noguard.txt`); the cell's scalar is measured with that gun standing, so the level carries it |
+| The scale refit (`ScaleRefit.cs`) and the 24 builder scales | Re-expressed every scale after a rule changed what the mean was read on | A cell's scalar is a plain factor on creature health and comes from the closed loop |
 
-**The curve comes first (round 80b, `BalanceRules.SurpriseReliefMost` 0.05).** Taken alone the rule left a level under
-its human curve by what it took (Glass Meadows Psycho 8.9 %, Shard Ridge Psycho 8.5 %, Crysium Vein Psycho 6.5 %, Fault
-Line Easy 6 %), outside the 6 % the curve's own gate allows (`BalanceRules.HumanTargetTolerance`). So the relief is
-bounded: where the lowered waves leave a competent player more than 5 % above the surplus the curve asks, they come back
-up together (a share of the way from the calm multiplier to the level's own, found by bisection) until the level sits
-5 % under its curve. A wave without a surprise is still never tougher than the rule leaves it without, and the level
-without surprises is solved for the same purse (the guard gun of a rear rift stays booked, see below). Test:
-`WaveGrammarTests.ASurprise_MakesNoOtherWaveTougher_AndTheLevelStaysInsideItsBand`.
-
-## A raid is capped at the sky guns held (round 80)
-
-`BalanceRules.RaidsCappedAtHeldGuns` (the cap is approved by Remco, 2026-11-17). The ledger's player buys a sky gun's next step only once the flyers' pressure is
-above one (`SkyHoldPressure`, round 22d); an air raid aims below one (target 0.8 x the phase x `AirFactor` 0.9). So as a
-raid's creatures grow tougher its pressure crosses the target with the sky guns the player holds, rises to one, drops
-when the player buys the step, and crosses the target again: a raid has two or more solutions, and the solver's
-bisection over the whole range landed on either by a hair of the purse. Quartz Flats wave 13 (the raid every difficulty
-copies from the Medium curve): x1.18 in round 78, x2.46 in round 79, with the same crowd and 10 coins less (the lab,
-grammar off against on: the player holds a level-2 Flak at x1.18 and jumps to level 3 at x2.46). The cuts and the
-surprises of round 79 only moved the purse by that hair; no grammar rule carries the step.
-
-The rule as round 80 built it: every difficulty was solved a second time with each raid at the lowest multiplier that
-meets its target, and a raid took the lower of its two multipliers while no other wave moved. That left ten cells softer
-than their human curve by more than the curve's gate allows (Quartz Flats Medium 1.75x where 1.43x is asked).
-
-**The rule since round 80b:**
-
-- The solver takes a raid's lowest crossing in the one solve (it walks up in steps of 5 % and bisects inside the first
-  step that crosses; `WaveSolver.BisectOn`). There is no second solve.
-- **An air raid is no plain wave** (`WaveSpec.AirRaid`, stored as `WaveDefinition._airRaid`; `BalanceChecks.PlainMean`
-  leaves it out, as it leaves out a boss wave and a counter check). The human curve is held by the ground waves alone,
-  in the calibration and in the gate (`BalanceLedgerTests`) alike.
-- The trim to the human curve may soften a raid with its level, never lift it above the solver's crossing
-  (`CampaignModel.CalibrateToHuman`). So it stays a cap: it only ever takes health off a raid.
-- What round 80 read as "the calibration answers a softer raid" is mostly the purse, not the mean: with softer raids
-  the ledger's player buys no further sky gun and has that money on the ground (Quartz Flats Medium: a fifth more
-  firepower on the ground waves with the raids out of the mean and capped). The ground waves are now sized for that
-  purse; that is the curve doing its work, and the builder's scale is the lever where play says a cell is too tough.
-- **Every builder scale was re-expressed** for the new reading (`Tools/PlayTest/Scripts/ScaleRefit.cs`): leaving the
-  raids out of the mean alone moved the ground waves of raid-heavy cells by up to 60 % (Shard Ridge Psycho), because the
-  raids used to hold the mean down. Per cell the scale was searched at which the ground waves sum to round 80's measured
-  ones again; a cell that moved less than 3 % kept its scale, and so did the cells whose change is a rule's intent (Glass
-  Meadows: the guard gun; Fault Line Easy: its ground waves now grow, see STATUS round 80b).
-
-Not done, and the honest limit of this rule: the ledger's air side is still the model of round 61 (the spawn window
-plus one pass); a raid sized "to the guns held" is sized to that model's guns.
-
-## The guard gun of a rear rift (round 80b)
-
-`BalanceRules.RearRiftGuardCells` (8 cells), `BooksRearGuard`. Walkers out of a rift that joins the road more than
-eight cells behind the defence (the first gate every road passes) are out of reach of every gun at the front. Both
-reference players stand a gun at such a rift a wave ahead, at the price of an upgrade at the front; the model's purse
-was all at the front. From the first wave such a rift opens, the human lens books the cheapest gun that shoots the
-ground: `KillPurse.Money` is short its price for the rest of the level, in the level without surprises too. Which rifts:
-Glass Meadows (joins 24 cells behind the first gate) and Quartz Flats' rear rift; not Landing Site (3 cells: the guard
-still fires on the front). **Since round 81 only Quartz Flats books it**: the gun is booked from the first wave the rift
-opens, and the default plan no longer opens the rift of Glass Meadows (no group of Cragbacks fits a wave's share). The solver's reference player does not book it: its factors are fitted to the probe bot's
-recorded runs, in which the bot already stands that gun, and booked twice it pushed a counter check out of its band
-(Glass Meadows Medium wave 10 at pressure 1.65 where 1.55 is the most).
-
-Measured on Glass Meadows before the final solve (`pressure_r80b_guard_records.txt`, the guard still in both lenses):
-Psycho skilled `3 2 0 0 0` -> `3 2 2 0 0`, the sensible rung unchanged. The final measurement is in STATUS, round 80b.
-What it does not do: the price booked is the cheapest gun's, the players stand a Cannon there.
+Kept, because they are rules about the game: the grammar, `MinSurpriseGroup`, spawn-point roles and schedules, road
+plans, `FlyersAfterBounties`, the Easy purse rule, `RaidHealthFloor`, the band and its 2.5-times-the-median gate.
 
 ## No ground wave far tougher than the waves before it (round 82)
 
@@ -312,11 +260,11 @@ x6.36), and half of that wave's health reached the gates in the lost runs:
 - a swarm whose groups are capped at 64 creatures carries what it could not buy as health on top of the solved
   multiplier (`WaveComposer.Compose`, the shortfall), and the band looked at the multiplier before that lift.
 
-Since round 82 the band holds in both solves and on the creatures as they walk in (the lift included). A raid and a
-boss wave stay free, and a wave may still drop as far as it needs. The human calibration then holds the plain mean, so
-what the swarm lost is spread over the level's other ground waves. Gate on the stored waves:
+Since round 82 the band holds on the creatures as they walk in (the lift included). A raid stays free. Since round 83
+there is one solve per difficulty and the band has a lower edge too ("The solver", below). Gates on the stored waves:
 `WaveGrammarTests.NoStoredGroundWave_IsFarTougherThanItsLevel` (no ground wave above 2.5 times the median of its level
-and difficulty).
+and difficulty) and `Round83Tests.NoStoredGroundWave_IsPaper` (none under 0.4 times it, the opening waves and the crowd
+of a boss wave aside).
 
 ## The finale rule
 
@@ -340,8 +288,7 @@ boss; a boss's own powers no longer fall on the whole crowd at once. The wave's 
 - **Surprises**: the groups carry their source and nest, so the existing reads apply: `WaveLoad.Reach` and `RouteKill` give a
   rift behind the gate only the defence that lies behind its join cell, a flank the second road's share.
 - **Tank escort and combo**: only spacing and delays, which the ledger reads from the groups (span, density, carried health).
-- **Solver**: a wave with a surprise is solved on its own difficulty (its share and its place differ per difficulty), like
-  an extra raid or boss (`WaveSolver.SolveVariant`).
+- **Solver**: every difficulty is solved on its own, wave by wave, each wave to its own target ("The solver", below).
 - **What the model does not see**: that a tank in front costs single-target guns time on the small ones behind it, and that
   a breather lets the base's guns clear besiegers. Both are measured by the pressure probe, not predicted.
 
@@ -390,14 +337,101 @@ Each was reverted; the stored waves are the first half's (data stamp `c75b37f7`)
   answers with tougher creatures (wave 10: x1.19 -> x2.20, the wave's health +37 %), so a surprise wave pays a little less
   and each body is harder. Over a level it is small (Glass Meadows Psycho: 731 -> 704 creatures). The test
   `TheGrammar_MovesCreaturesInTime_NeverTheirNumber` covers the cuts, not the surprise.
-- **A raid of a harder difficulty copies Medium's multiplier** when Medium has the same raid in its script (before the
-  flyer floors move Medium's raids), as before the grammar. The step of Quartz Flats wave 13 (x1.18 -> x2.46) was the
-  solver's two crossings, mended in round 80 ("A raid is sized against the sky guns held" above).
+- **The step of Quartz Flats wave 13** (the raid at x1.18 in round 78, x2.46 in round 79) was the solver's two crossings:
+  gone with the monotone player of round 83 (test `Round83Tests.AWavesAirPressure_NeverFalls_AsItsFlyersGrowTougher`).
 - **The rear rift of Glass Meadows costs the front a gun (round 80, the cause of Glass Meadows Psycho).** The road index
   of every gate and rift (`Tools/PlayTest/r80_gates.cs`): Landing Site's rear rift joins the road 3 cells behind the first
   gate, where a gun that guards it still fires on the front; Glass Meadows' rift joins 24 cells behind the first gate
   (index 35, gates at 11, 45, 81, 89), out of reach of every gun at the front. Both reference players guard a marked
   rear rift with a gun a wave ahead; on Psycho that is a Cannon in wave 6 at the price of the front Cannon's upgrade,
-  and the swarm of wave 8 then takes the first gate. Round 80b books that gun in the model ("The guard gun of a rear
-  rift" above). The other way, not built: the map (a rift that joins within a gun's reach of the first gate, as on
+  and the swarm of wave 8 then takes the first gate. Round 80b booked that gun in the model's purse; round 83 took the
+  booking out again (the cell's scalar is measured with the gun standing). The other way, not built: the map (a rift that joins within a gun's reach of the first gate, as on
   Landing Site; needs a relayout and a new plan search, so a bot batch of its own).
+
+## The solver (round 83)
+
+One pass per difficulty, wave by wave, in `WaveSolver.Solve` (called by `CampaignModel.BuildWaves`). No difficulty
+copies another, no level mean is held, nothing is solved twice.
+
+1. **The player.** A competent player's towers alone (`BalanceRules.HumanTowersOnly`: the fitted tower efficiencies at
+   `HumanUtilisation`), with the difficulty's real money (`KillPurse`: a kill pays when the creature reaches the defence).
+2. **The purchase is decided before the wave's toughness is known** (`Ledger.PlanOf`): the player buys for the creatures
+   and numbers the preview shows, at book health, with what earlier waves left on the road. The pressure of a wave
+   therefore never falls when its creatures get tougher, and one multiplier meets a target. Tests:
+   `Round83Tests.AWavesPressure_NeverFalls_AsItsCreaturesGrowTougher` (ground, both lenses, every stored wave) and
+   `AWavesAirPressure_NeverFalls_AsItsFlyersGrowTougher` (every raid).
+3. **Every wave has its own target**: the level's target (`CampaignModel.ModelTarget`: one over `HumanSurplus` per
+   difficulty, with the ramp per level of a continent) times the wave's share of the curve (`WaveSolver.Shares`: the
+   opening ramp, the slow rise, the factor of its kind, the boss peak and the breather after it, the growth of plated
+   troops and of raids; normalised so the plain waves average one). A bisection finds the multiplier.
+4. **The band.** A ground wave stays within x0.7 to x1.3 of the toughest of the three ground waves before it, as its
+   creatures walk in. A wave drops under the band only when its own health is what asks too much (a thin purse after
+   the sky guns of a raid); where the pressure is carried in by earlier waves it keeps the lower edge instead of
+   becoming paper. Once four ground waves are solved, no ground wave is above 2.2 times their median or, when it drops
+   under its band, under 0.45 times it (the gates on the stored waves allow 2.5 and 0.4). All of it is read on the
+   creatures as they walk in (a capped swarm carries its unbought budget as health). A raid is free; its flyers keep
+   `RaidHealthFloor`.
+5. **The hero cap.** No wave asks more of that player with the hero (`HumanWithHero`) than `HeroCap`; a boss wave no
+   more than `LevelBossGrowthCap`. The wave's own health gives way, by the same band rule.
+6. **A level's boss** is sized first and alone: a walking boss asks `LevelBossAlone` (0.4 / 0.6 / 0.7 / 0.75) of the
+   defence that stands for its whole wave, never under `LevelBossHealthFloor`; the crowd then fills the wave up to its
+   target around it. Over the cap the crowd gives way first; where no crowd makes the wave fit, the boss comes down to
+   its floor. A flying boss follows its wave. So the factor is what the boss asks as stored (it used to be read against
+   a defence bought for the boss alone, before the surprise relief moved the wave).
+7. **The flyer rules** stay as they were and solve a difficulty again when they move a raid: the Easy purse rule and
+   `FlyersAfterBounties`.
+8. **Play's correction, as two plain factors on creature health** (`CampaignModel.SolveDifficulty`): the difficulty's
+   factor (`BalanceRules.DifficultyScale`, one number per difficulty for every level) and the cell's scalar
+   (`Tools/PlayTest/wave_tuning.txt`, `KEY D scale`). They act on every creature alike, a boss included, exactly as the
+   probe's health multiple does.
+
+The solve stage takes two to three seconds for the six levels (it took 27).
+
+Why a wave's multiplier is what it is: `WaveLedgerLab.cs` (Docs/COMMANDS.md, "Round 83") prints per wave its own target
+(`aim`), the pressure with and without the hero, the purse, the purchase and the boss's health multiplier.
+
+## How to balance a new level (round 83)
+
+The model shapes a level; it does not know how tough it is as played to better than a quarter. So the last step is
+measured, by one procedure that is the same for every level.
+
+1. Write the level's script (roster, rhythm, raids, bosses, teasers; its own surprises and road plan where wanted) and
+   make its map. No scale, no lever: the cell starts at scalar one, on top of the difficulty's factor.
+2. Solve: `unity command run_script --file Tools/PlayTest/Scripts/ApplyRound68.cs --entry ApplyRound68.Run --timeout_ms 900000 --timeout 960`.
+3. Search the skilled rung's strategies for the level (`PlanSearchTests` with `levels=<node>`, two minutes a level),
+   play every candidate on the standard ladder and pick per cell the one that breaks even highest
+   (`skilled_picks.py`, round 83b: the loop reads the rung's break-even, so the pick is ranked on it and not on the
+   base kept at the data). A fresh search is not always better than the strategy a cell had: keep the old pick as one
+   more candidate. This is a bot batch: never together with a data change.
+4. Measure on the wide ladder:
+   `PR_RECORDS=Tools/PlayTest/<name>_records.txt PR_MULTIPLES="0.4,0.5,0.64,0.8,1,1.25,1.6,2" bash Tools/PlayTest/pressure.sh "<node>" "0,1,2,3"`
+   (192 runs a level, about a quarter of an hour).
+5. `python Tools/PlayTest/closed_loop.py <records> --levels <node> --write`: per difficulty the break-even of the
+   reference rung (the geometric middle of the last multiple two of three seeds hold and the first they lose) over its
+   target gives the new scalar. Targets:
+
+   | Difficulty | Target | Reads on the standard ladder (x0.8 / 0.9 / 1 / 1.12 / 1.25) |
+   | --- | --- | --- |
+   | Easy | the weaker of the two rungs breaks even at x1.4 | both rungs win every multiple |
+   | Medium | the sensible rung breaks even at x1.18; the skilled rung at x1.06 at least | sensible wins to x1.12 and loses x1.25 |
+   | Hard | the sensible rung breaks even at x0.95; the skilled rung at x1.06 at least | sensible wins to x0.9 and loses x1; skilled wins x1 |
+   | Psycho | the skilled rung breaks even at x1.06 | skilled wins x1 and loses x1.12 |
+
+   So Medium is never flat, Hard is a quarter tougher than Medium for the same player on every level, and Easy is
+   won by both rungs with room.
+6. Solve again and measure on the standard ladder (`pressure.sh "<node>" "0,1,2,3"`, 120 runs). A cell whose reference
+   rung reads its target is done; else `closed_loop.py` once more (the scalar is a plain factor, so one pass lands
+   within a ladder step unless the bot takes another build).
+7. Gates: `ClosedLoopAcceptanceTests` (round 83b: every cell's reference rung breaks even within one ladder step of
+   its target in the measurement named in `Tools/PlayTest/closed_loop_records.txt`, Easy is won on every seed at the
+   data and holds the ladder, Hard breaks the sensible rung earlier than Medium on every level; a measurement of
+   other data than the project's is inconclusive, never a pass), `Round83Tests.ACellsScalar_LiesNearOne` (0.7 to 1.4:
+   outside it the model misreads the level, look at the map or the script), the two median gates,
+   `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand` (the paper band and the hero cap on the solver's own
+   waves, the stored ones with both factors taken off), the grace report, the finale probe when the level is a
+   continent's last.
+8. When a continent is done: `closed_loop.py <records> --centre` gives the geometric mean of each difficulty's scalars;
+   fold it into `BalanceRules.DifficultyScale` and divide the scalars by it, so the next level starts closer.
+
+What the procedure does not do: it does not choose which wave is the hard one (the script and the solver do), and it
+does not judge fun. A level that reads its targets and plays badly is a script or map question.

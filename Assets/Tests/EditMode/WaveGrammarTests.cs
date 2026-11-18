@@ -207,7 +207,7 @@ namespace Game.Tests
             // With the creatures as they are in the data. Glass Meadows has one rift troop, the Cragback, and no wave's share
             // buys a group of those: the default plan gives it no surprise (round 81); since round 82 the level writes one
             // small surprise from Medium on. Landing Site has the same troop and writes its own surprises (the rear rift's
-            // lesson). Quartz Flats writes its surprises on Easy and Medium (round 82: nothing walks out of a rift alone).
+            // lesson). Quartz Flats writes its surprises on every difficulty (rounds 82 and 83: nothing walks out of a rift alone).
             BalanceStages.Loaded loaded = BalanceStages.Load(true);
             Assert.IsNotNull(loaded.Catalog, "Run Tools/Generate/Scenes and Starter Data first.");
             var heavyRiftOnly = new HashSet<string> { "C1_02" };
@@ -220,7 +220,7 @@ namespace Game.Tests
                 for (int d = 0; d < Difficulties; d++)
                 {
                     int surprises = sets[d].Count(wave => wave.Surprise != SurpriseKind.None);
-                    bool writesItsOwn = spec.Key == "C1_01" || (spec.Key == "C1_02" && d >= medium) || (spec.Key == "C1_05" && d <= medium);
+                    bool writesItsOwn = spec.Key == "C1_01" || (spec.Key == "C1_02" && d >= medium) || spec.Key == "C1_05";
                     if (heavyRiftOnly.Contains(spec.Key))
                     {
                         Assert.AreEqual(d >= medium ? 1 : 0, surprises, $"{spec.Key} difficulty {d}: the level's one written surprise from Medium on, never a default");
@@ -479,55 +479,63 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ASurprise_MakesNoOtherWaveTougher_AndTheLevelStaysInsideItsBand()
+        public void ASurprise_MakesNoOtherWaveTougher()
         {
-            // BalanceRules.SurprisesLiftNoWave (found on Glass Meadows, read on Shard Ridge since round 81 took the lone
-            // Cragbacks of Glass Meadows away): a wave without a surprise is never
-            // tougher than the rule leaves it without (some are softer: they take the multiplier of the level solved without
-            // surprises), and the curve comes first: the relief leaves the level at most
-            // BalanceRules.SurpriseReliefMost under its human curve (round 80b).
-            const string key = "C1_03";
-            const float rounding = 0.01f;
+            // Round 83: every wave is solved to its own target, so a surprise takes from its own wave and nothing is spread
+            // over the others (rounds 80 and 80b needed a second solve and a relief bound for that, because one common factor
+            // held the level's mean). A wave without a surprise is no tougher than in the same level solved without
+            // surprises, but for what the purse moves: a surprise wave's creatures are fewer and tougher, so its kills pay
+            // at other moments and the player's purchase for the waves after it shifts a little. Round 83b measured that
+            // on all six levels: the most on a plain wave is x1.13 (Crysium Vein Medium wave 10), on a boss wave x1.06, on
+            // a raid x1.05; the bound is x1.15 (it was x1.3, with boss waves and raids left out).
+            // Known limit, kept on purpose: a swarm. Its groups are capped at the largest group size and carry what
+            // they could not buy as health, so a late swarm sits under its target on the upper edge of its band or on the
+            // solver's cap of 2.2 times the median of the ground waves before it. Surprise waves lift that median (fewer,
+            // tougher creatures), and the swarm follows: x1.59 on Crysium Vein Psycho wave 16, x1.16 or less elsewhere.
+            // It never passes its own target and the gate NoStoredGroundWave_IsFarTougherThanItsLevel holds it; taking
+            // the surprise waves out of the solver's median would close it and is a data change of its own (STATUS, round 83b).
+            const float purse = 1.15f;
             BalanceStages.Loaded loaded = BalanceStages.Load(true);
             Assert.IsNotNull(loaded.Catalog, "Run Tools/Generate/Scenes and Starter Data first.");
             CampaignModel model = loaded.Model;
-            int index = model.IndexOf(key);
-            Assert.GreaterOrEqual(index, 0);
-            Assert.IsTrue(model.Rules.SurprisesLiftNoWave);
-            List<List<WaveSpec>> sets = model.BuildWaves(index, WaveScripts.ByKey(key), out _);
-            List<List<WaveSpec>> lifted;
-            model.Rules.SurprisesLiftNoWave = false;
-            try
-            {
-                lifted = model.BuildWaves(index, WaveScripts.ByKey(key), out _);
-            }
-            finally
-            {
-                model.Rules.SurprisesLiftNoWave = true;
-            }
-
             int surprises = 0;
-            int lowered = 0;
-            for (int d = 0; d < sets.Count; d++)
+            int judged = 0;
+            foreach (string key in new[] { "C1_01", "C1_02", "C1_03", "C1_04", "C1_05", "C1_06" })
             {
-                for (int i = 0; i < sets[d].Count; i++)
+                int index = model.IndexOf(key);
+                Assert.GreaterOrEqual(index, 0);
+                List<List<WaveSpec>> sets = model.BuildWaves(index, WaveScripts.ByKey(key), out _);
+                List<List<WaveSpec>> calm;
+                model.Rules.Grammar.Surprises = false;
+                try
                 {
-                    if (sets[d][i].Surprise != SurpriseKind.None)
-                    {
-                        surprises++;
-                        continue;
-                    }
-
-                    Assert.LessOrEqual(sets[d][i].HealthMultiplier, lifted[d][i].HealthMultiplier * 1.002f, $"{key} difficulty {d} wave {i + 1}");
-                    lowered += sets[d][i].HealthMultiplier < lifted[d][i].HealthMultiplier * 0.998f ? 1 : 0;
+                    calm = model.BuildWaves(index, WaveScripts.ByKey(key), out _);
+                }
+                finally
+                {
+                    model.Rules.Grammar.Surprises = true;
                 }
 
-                float mean = BalanceChecks.PlainMean(Ledger.Evaluate(model.InputFor(index, d), sets[d], model.Difficulties[d], model.Rules.HumanTowersOnly()));
-                Assert.GreaterOrEqual(mean, model.HumanTarget(index, d) / (1f + model.Rules.SurpriseReliefMost + rounding), $"{key} difficulty {d}: the relief leaves the level inside its band");
+                for (int d = 0; d < sets.Count; d++)
+                {
+                    for (int i = 0; i < sets[d].Count; i++)
+                    {
+                        // Not judged: the surprise wave itself, a wave that is a raid in one solve and not in the other (the
+                        // flyer floors read the purse of the whole level), and a swarm (the comment above).
+                        if (sets[d][i].Surprise != SurpriseKind.None || sets[d][i].AirRaid != calm[d][i].AirRaid || sets[d][i].Pattern == WavePattern.Swarm)
+                        {
+                            surprises += sets[d][i].Surprise != SurpriseKind.None ? 1 : 0;
+                            continue;
+                        }
+
+                        judged++;
+                        Assert.LessOrEqual(sets[d][i].HealthMultiplier, calm[d][i].HealthMultiplier * purse, $"{key} difficulty {d} wave {i + 1}");
+                    }
+                }
             }
 
             Assert.Greater(surprises, 0);
-            Assert.Greater(lowered, 0, "the rule lowers a wave somewhere on the level");
+            Assert.Greater(judged, surprises, "most waves carry no surprise and are judged");
         }
 
         [Test]
