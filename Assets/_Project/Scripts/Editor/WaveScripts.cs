@@ -14,7 +14,7 @@ namespace Game.Editor
     public static class WaveScripts
     {
         /// <summary>Spawn source of the element nests, as the game stores it (Game.Levels.SpawnSource).</summary>
-        public const int Nest = 4;
+        public const int Nest = WaveComposer.NestSource;
 
         public const int Medium = 1;
         public const int Hard = 2;
@@ -58,5 +58,20 @@ namespace Game.Editor
             new BossSpec { Wave = wave, Enemy = enemy, MinDifficulty = minDifficulty, Routes = routes ?? Gate };
 
         public static TeaserSpec Teaser(string enemy, int wave, int count) => new TeaserSpec { Enemy = enemy, Wave = wave, Count = count };
+
+        /// <summary>The level's own surprise on one wave, on every difficulty: its entries replace the grammar's default there.</summary>
+        public static SurpriseSpec Surprise(int wave, params SurpriseEntrySpec[] entries) => new SurpriseSpec { Wave = wave, Entries = entries };
+
+        /// <summary>The same for a range of difficulties (indices, Easy 0 to Psycho 3); the others keep the grammar's default.</summary>
+        public static SurpriseSpec Surprise(int wave, int minDifficulty, int maxDifficulty, params SurpriseEntrySpec[] entries) =>
+            new SurpriseSpec { Wave = wave, MinDifficulty = minDifficulty, MaxDifficulty = maxDifficulty, Entries = entries };
+
+        /// <summary>A group of an authored surprise out of a nest of the level (counted from 1).</summary>
+        public static SurpriseEntrySpec FromNest(int nest, string enemy, int count, WavePattern pattern = WavePattern.Stream, float interval = 0f, float delay = 0f) =>
+            new SurpriseEntrySpec { Kind = SpawnPointKind.Nest, Point = nest, Enemy = enemy, Count = count, Pattern = pattern, Interval = interval, Delay = delay };
+
+        /// <summary>A group of an authored surprise down a surprise path of the level (the path's index).</summary>
+        public static SurpriseEntrySpec DownPath(int path, string enemy, int count, WavePattern pattern = WavePattern.Stream, float interval = 0f, float delay = 0f) =>
+            new SurpriseEntrySpec { Kind = SpawnPointKind.Path, Point = path, Enemy = enemy, Count = count, Pattern = pattern, Interval = interval, Delay = delay };
     }
 }

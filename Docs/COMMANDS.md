@@ -1546,7 +1546,7 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
   spawn seconds and its creatures; `--rev HEAD` reads a revision instead of the working tree (before against after);
   `--waves C1_05:1` lists every wave of one cell with its groups (level key, difficulty index).
 - **The validator's rule** on the stored waves is `Game.Levels.WaveShape.Check` (silence between two spawns at most 16 s, a
-  wave at most 120 s of spawning, walkers out of one authored nest per wave); `LevelValidator` runs it, so every test that
+  wave at most 120 s of spawning; the one-nest-per-wave rule went in round 81); `LevelValidator` runs it, so every test that
   validates a level does. The grammar's own tests: `bash Tools/PlayTest/r34b_editmode_worker.sh 6 WaveGrammarTests`.
 - **Several test classes in one worker run:** the filter takes names separated by a semicolon
   (`r34b_editmode_worker.sh 6 "WaveGrammarTests;WorldContentTests;Round64Tests"`); `Game.Tests` runs the whole suite (about
@@ -1557,8 +1557,9 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
 - **Pitfalls met this round:** a Bash heredoc whose text holds an odd number of apostrophes fails to parse in this shell even
   when its delimiter is quoted (write such a file with the editor tool, or a patch script from a file); a rift flyer in a
   surprise before the difficulty's first raid makes the ledger's Easy player buy a sky gun out of a thin purse, and the
-  human calibration then halves the whole level (Fault Line Easy fell to x0.4 of its health): rift flyers now wait for the
-  first raid (`WaveComposer.Unlocked`).
+  human calibration then halves the whole level (Fault Line Easy fell to x0.4 of its health): rift flyers waited for the
+  first raid in round 79 (`WaveComposer.Unlocked`); round 80 took that wait away and holds them on Easy with the purse
+  floor of the Easy raid rule instead (see "Round 80").
 - **Why a wave's multiplier is what it is (round 79, second half):** `Tools/PlayTest/Scripts/WaveLedgerLab.cs` solves a level in
   memory as the solve stage does and prints, per wave of the cells named in `Tools/PlayTest/wave_ledger_arg.txt`
   (`cell=C1_05:2`, one per line): the grammar's pattern, the multiplier of this solve against the stored one, the solver's own
@@ -1584,3 +1585,98 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
   the round's own changes away with the experiment (`WaveSolver.cs` was restored from a worker clone, which is a byte copy of
   the tree at its last sync: `cmp` against `TowerDefenseWorkers\wN\...` shows what an experiment left behind). A Python
   patch written through a Bash heredoc turns `\n` inside a C# string into a real line break; write C# with the editor tool.
+
+## Round 80: no wait for the raid, raids capped at the guns held, a surprise lifts no wave (added 2026-11-17)
+
+- **The three rules** are in Docs/WAVE_GRAMMAR.md ("Surprises", "A surprise lifts no other wave", "A raid is capped at the
+  sky guns held"): `WaveComposer.Unlocked` (no wait for the first raid), `CampaignModel.BuildWaves` (Easy: the flying troops
+  wait for `EasyRaidFloor`), `BalanceRules.RaidsCappedAtHeldGuns` and `SurprisesLiftNoWave` (`CampaignModel.SolveDifficulty`
+  solves a difficulty up to three times and lowers raids and surprise-free waves to the other solves). The solve stage now
+  takes about 32 seconds (was 17).
+- **`WaveLedgerLab.cs` takes `bool` and `bool[]` rule fields** (`rule.FlyersAfterBounties=false,false,false,false`,
+  `rule.RaidsCappedAtHeldGuns=false`, `rule.SurprisesLiftNoWave=false`, `grammar.Surprises=false`). With the first-flyer
+  rule off the Medium line is the curve the other difficulties copy (raids where the script writes them): that is where
+  to read why a raid a harder difficulty copies has the multiplier it has. Round 80's runs: `wave_ledger_r80_*.txt`
+  (`noguard`: the guard gone and nothing else; `easyfloor`; `phantom` and `phantom_off`: Quartz Flats Medium with raids
+  unmoved, grammar on and off; `lowest`: every wave at its lowest crossing, not kept; `gm` and `gm_nosurprise`: Glass
+  Meadows Psycho with and without surprises).
+- **Where the gates and the rifts lie on the road:** `unity command eval_file --file Tools/PlayTest/r80_gates.cs` prints per
+  level of the first continent the main road's length in cells, the defence gate's index, every gate's index and the
+  index each rift's walkers join at.
+- **The build order of one run** is field 24 of a pressure record (`build:<tower>:<x>:<y>:<wave>;upgrade::<x>:<y>:<wave>;...`),
+  the base damage per wave field 21, the gate damage per wave field 22:
+  `awk -F'|' '$2=="Level_C1_02" && $3==3 && $4=="skilled" && $6==1 {print $5, $7, $21, $22, $24}' <records>`.
+- **Waiting for a batch from a tool call:** a foreground `sleep` chain is cut off after about three minutes; run the batch in
+  the background and poll its records file in loops of under three minutes.
+- **Pitfall:** a rule that softens one kind of wave is answered by the human calibration (one common factor holds the plain
+  mean on its target), so the other waves get tougher. Check the lab's foot ("sum of multipliers") for every cell before a
+  solve; round 80's first try lost Quartz Flats Psycho that way.
+
+## Round 80b: raids out of the plain mean, the relief bound, the guard gun, scales re-expressed (added 2026-11-17)
+
+- **The rules** are in Docs/WAVE_GRAMMAR.md ("A raid is capped at the sky guns held", "A surprise lifts no other wave",
+  "The guard gun of a rear rift"). In code: `BalanceChecks.PlainMean` (no air raid), `WaveSpec.AirRaid` /
+  `WaveDefinition._airRaid` (written by the solve stage), `WaveSolver.BisectOn` (a raid's lowest crossing whenever
+  `BalanceRules.RaidsCappedAtHeldGuns`), `CampaignModel.CalibrateToHuman` (a raid is never lifted above the solver's
+  crossing), `CampaignModel.SolveDifficulty` (the calm solve and `BalanceRules.SurpriseReliefMost`), `KillPurse`
+  (`RearRiftGuardCells`, `BooksRearGuard`, `RearGuardFromWave`). `BalanceRules.LowestRaidCrossing` and the raid's second
+  solve of round 80 are gone; the solve stage takes about 27 seconds.
+- **The human-curve gate on paper, before a solve:** `WaveLedgerLab.cs` now prints at its foot, per cell, the human
+  surplus against the surplus the curve asks, with `OUT` where `BalanceLedgerTests` would fail, and per wave the
+  human-lens pressure (`p` = a plain wave, `-` = left out of the mean). All 24 cells in one run:
+  `cell=C1_01:0` ... `cell=C1_06:3` in `Tools/PlayTest/wave_ledger_arg.txt` (25 to 40 seconds).
+- **Re-expressing the builder scales** after a change of what the curve is read on:
+  `unity command run_script --file Tools/PlayTest/Scripts/ScaleRefit.cs --entry ScaleRefit.Run --timeout_ms 900000 --timeout 960`
+  (about six minutes; run it in the background and wait for `Tools/PlayTest/scale_refit.txt`). Per cell it bisects the
+  scale at which this solve gives the measured waves' sum of multipliers again, raids aside. The measured waves are
+  the copies in `Tools/PlayTest/r80_waves/` (round 80's wave assets, taken from a worker clone before the first solve);
+  `skip=C1_04:0` lines in `Tools/PlayTest/scale_refit_arg.txt` keep a cell's scale. The lines it proposes go into
+  `Tools/PlayTest/wave_tuning.txt` by hand, then the solve stage. Mind: the search is not monotone everywhere (Fault Line
+  Psycho jumps from x0.82 at scale 0.50 to x1.10 at 0.51); read the "sum" it prints for the fitted scale.
+- **Ground and raid sums of the stored waves against round 80's:** the snippet in STATUS round 80b ("How the waves
+  moved") reads `_healthMultiplier` and `_airRaid` from the wave assets and from `Tools/PlayTest/r80_waves/`.
+- **Pitfalls met this round:**
+  - Save the measured wave assets before the first solve of a round that is not committed (`cp` from the tree, or from
+    `TowerDefenseWorkers\w1\Assets\_Project\Data\Waves` while the clones still hold the last sync): the solve stage
+    overwrites them and git only has the round before.
+  - A foreground command that runs longer than about two minutes is moved to the background by the tool; start long
+    Unity scripts in the background and poll the file they write with sleeps under two minutes.
+  - `eval_file` times out ("Main thread operation timed out after 5000ms") right after a refresh while the editor
+    still reloads; `run_script` waits.
+  - Leaving a kind of wave out of the plain mean shrinks the set the curve is held on: with raids and surprise waves
+    both out, Glass Meadows Psycho, Fault Line Hard and Crysium Vein Psycho were held on two waves each and one came out
+    at x0.24. Surprise waves stay in the mean.
+
+## Round 81: surprises from the spawn points, the level's own surprise schedule, the Medium boss factor (added 2026-11-17)
+
+- **The design** is in Docs/WAVE_GRAMMAR.md, "Surprises" (roles of spawn points, "Writing a level's surprises", the
+  default plan). In code: `WaveScriptSpec.Surprises` (`SurpriseSpec`, `SurpriseEntrySpec`, `SpawnPointKind`), the helpers
+  `Surprise(...)`, `FromNest(...)`, `DownPath(...)` in `WaveScripts`, `WaveGrammar.Plan` (a written surprise first, else
+  the default with `WaveGrammarRules.MinSurpriseGroup`), `WaveComposer.FillAuthored` / `SurpriseHeads`,
+  `LevelDefinition.RoleOfPath` / `RoleOfNest` (`SpawnRole`, `_surprisePaths`, `_mainNests`), `SurpriseSchedule.Check`.
+- **After writing or changing a level's surprises:** recompile, read `compilationFailed`, the solve stage
+  (`ApplyRound68.cs`, as in "Round 79"; it logs every schedule error as `[Validator]`:
+  `unity command console --result-only | grep Validator`), then `WaveGrammarReport.cs` (`*` marks a written surprise,
+  `!` a default rift surprise, `^` a flank) and `bash Tools/PlayTest/r34b_editmode_worker.sh 6 "WaveGrammarTests;RearNestTests"`.
+- **What comes out of the nests in the stored waves** (per cell and wave: creature, count as stored and as played, nest):
+  the listing used in STATUS round 81 is a twenty-line Python read of the wave assets (source 4 = nest); the same per
+  wave with the groups' timing is `python Tools/PlayTest/wave_shape.py --waves C1_05:1`.
+- **The threshold on paper:** `grammar.MinSurpriseGroup=1` in `Tools/PlayTest/wave_ledger_arg.txt` gives round 80's
+  default plan without the filler (`WaveLedgerLab.cs`); `WaveGrammarReport.cs` shows the plan of every cell.
+- **A boss factor on paper:** `rule.LevelBossAlone=0.2,0.33,0.4,0.45` and `label=<name>` in `Tools/PlayTest/r64_lab_arg.txt`,
+  then `BossLab.cs` ("Round 64"); it prints every level boss with its health as spawned and what it asks alone. Put the
+  arg file back to `label=final`. Round 81's runs: `r64_lab_r81_alone025.txt`, `_alone0.3.txt`, `_alone0.33.txt`.
+- **The gates after a measurement:** `Tools/PlayTest/r81_chain.sh` (finale probe, grace measurement, replay, acceptance,
+  plan files back to HEAD's; it waits for `Tools/PlayTest/r81_final.log`). Then, with the open editor free:
+  `unity command eval_file --file Tools/PlayTest/refresh_assets.cs`, `GraceReport.cs`, the allowances in
+  `Assets/_Project/Scripts/Editor/GraceWindows.cs`, and the whole suite: `bash Tools/PlayTest/r34b_editmode_worker.sh 6 Game.Tests`,
+  `python Tools/PlayTest/editmode_failures.py`. The chain's last EditMode run of round 80b came before the grace report
+  and so read the old rows; round 81 splits them.
+- **Pitfalls met this round:**
+  - A rule that changes which waves carry a surprise moves a cell's solve by far more than the surprise itself (Shard
+    Ridge Hard: the flank one wave later made the ground waves 19 % softer at the same builder scale). Run
+    `ScaleRefit.cs` after such a change and read every cell against the last measured waves before measuring.
+  - A background batch started from the agent tool cannot be waited for with a bare `sleep`; wait with an
+    `until grep -q ... ; do sleep 5; done` loop on the file the batch writes.
+  - While a chain runs, do not edit anything under `Assets`, `Packages`, `ProjectSettings` or `Tools`: every stage syncs
+    the clones again and would pick a half-made change up (and a data or bot change would split the stamps).

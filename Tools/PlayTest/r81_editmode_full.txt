@@ -1,0 +1,14 @@
+total="1176" passed="1122" failed="1" skipped="53"
+Game.Tests.ContinentFinaleTests.FinaleProbe_DerivedBossHealth_MatchesTheData
+      Gravemaw: health 43750 against the probe's 56637 (run the finale stage)
+    Boss health from the finale probe (data / derived)
+    Gravemaw         43750 / 56637
+    CinderMatriarch  14700 / 14169
+    FrostWarden      5050 / 6010
+    Rotbloom         28200 / 23970
+    Shattered        14300 / 17017
+    SealedOne        25450 / 29031
+    
+      Expected: <empty>
+      But was:  < "Gravemaw: health 43750 against the probe's 56637 (run the finale stage)" >
+    

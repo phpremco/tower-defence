@@ -122,6 +122,7 @@ public static class WaveLedgerLab
             script.FirstAirWaveFloor = raidFloors;
             script.FlyingTroopFloor = troopFloors;
             List<WaveLine> hero = Ledger.Evaluate(model.InputFor(index, d), sets[d], difficulty, withHero);
+            List<WaveLine> lens = Ledger.Evaluate(model.InputFor(index, d), sets[d], difficulty, rules.HumanTowersOnly());
             text.Append($"\n{key} {names[d]} (the solver's reference player; solver = before the human calibration; hero = the human with the hero, cap {rules.HeroCapFor(d)}; span = active seconds of the ground stream, sky = the flyers' window)\n");
             float sumNow = 0f;
             float sumStored = 0f;
@@ -139,13 +140,18 @@ public static class WaveLedgerLab
                 }
 
                 text.Append(string.Format(CultureInfo.InvariantCulture,
-                    "  w{0,-2} {1}{2}{3}{4} x{5,-7:0.###} (stored x{6,-7:0.###}, solver x{17,-6:0.###}, hero {18:0.00}) money {7,5} hp {8,6:0}/{9,5:0} span {10,5:0.0}s sky {11,5:0.0}s n {12,3}/{13,2} pressure {14:0.00}/{15:0.00} | {16}\n",
-                    w + 1, letters[(int)wave.Pattern], wave.Beats, wave.Surprise == SurpriseKind.Rift ? "!" : wave.Surprise == SurpriseKind.Flank ? "^" : " ", line.Boss ? "B" : " ",
+                    "  w{0,-2} {1}{2}{3}{4} x{5,-7:0.###} (stored x{6,-7:0.###}, solver x{17,-6:0.###}, hero {18:0.00}, human {19:0.00}{20}) money {7,5} hp {8,6:0}/{9,5:0} span {10,5:0.0}s sky {11,5:0.0}s n {12,3}/{13,2} pressure {14:0.00}/{15:0.00} | {16}\n",
+                    w + 1, letters[(int)wave.Pattern], wave.Beats, wave.Surprise == SurpriseKind.Rift ? "!" : wave.Surprise == SurpriseKind.Flank ? "^" : wave.Surprise == SurpriseKind.Authored ? "*" : " ", line.Boss ? "B" : " ",
                     wave.HealthMultiplier, was, line.Money, line.GroundHealth, line.AirHealth, loads[w].Span, loads[w].AirWindow, loads[w].GroundCount, loads[w].AirCount,
-                    line.GroundPressure, line.AirPressure, line.Purchase, raw[w], hero[w].Pressure));
+                    line.GroundPressure, line.AirPressure, line.Purchase, raw[w], hero[w].Pressure, lens[w].Pressure, w < BalanceChecks.OpeningWaves || lens[w].Boss || lens[w].CounterCheck || lens[w].AirRaid ? "-" : "p"));
             }
 
-            summary.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0} {1,-6} sum of multipliers x{2:0.000} of the stored set; moved more than 3 %: {3}", key, names[d], sumStored > 0f ? sumNow / sumStored : 0f, moved.Count > 0 ? string.Join(", ", moved) : "none"));
+            // The human-curve gate as BalanceLedgerTests reads it: a competent player's towers alone on the plain waves.
+            float plain = BalanceChecks.PlainMean(Ledger.Evaluate(model.InputFor(index, d), sets[d], difficulty, rules.HumanTowersOnly()));
+            float asked = rules.HumanSurplusAt(d, model.ContinentIndexOf(index)) / model.Levels[index].TargetScaleFor(d);
+            float has = plain > 0f ? 1f / plain : 0f;
+            summary.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0} {1,-6} sum of multipliers x{2:0.000} of the stored set; human {4:0.00}x of {5:0.00}x asked ({6:+0.0;-0.0} %{7}); moved more than 3 %: {3}", key, names[d], sumStored > 0f ? sumNow / sumStored : 0f, moved.Count > 0 ? string.Join(", ", moved) : "none",
+                has, asked, (has / asked - 1f) * 100f, Math.Abs(has - asked) > asked * rules.HumanTargetTolerance ? ", OUT" : ""));
         }
 
         text.AppendLine().AppendLine("Against the stored waves:").Append(summary);
@@ -184,6 +190,14 @@ public static class WaveLedgerLab
         else if (field.FieldType == typeof(int[]))
         {
             field.SetValue(target, Array.ConvertAll(value.Trim().Split(','), v => int.Parse(v.Trim(), CultureInfo.InvariantCulture)));
+        }
+        else if (field.FieldType == typeof(bool[]))
+        {
+            field.SetValue(target, Array.ConvertAll(value.Trim().Split(','), v => bool.Parse(v.Trim())));
+        }
+        else if (field.FieldType == typeof(bool))
+        {
+            field.SetValue(target, bool.Parse(value.Trim()));
         }
     }
 }

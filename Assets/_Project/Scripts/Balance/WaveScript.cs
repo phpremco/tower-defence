@@ -207,5 +207,25 @@ namespace Game.Balance
 
         /// <summary>Small fixed groups that preview a coming creature late in the level.</summary>
         public TeaserSpec[] Teasers = new TeaserSpec[0];
+
+        /// <summary>
+        /// The level's own surprises, per wave (round 81): each replaces the grammar's default for its wave on the
+        /// difficulties it names. Empty leaves every wave to the grammar's rules.
+        /// </summary>
+        public SurpriseSpec[] Surprises = new SurpriseSpec[0];
+
+        /// <summary>The surprise the level writes for this wave on this difficulty (the first that applies), or null.</summary>
+        public SurpriseSpec SurpriseFor(int number, int difficulty)
+        {
+            foreach (SurpriseSpec surprise in Surprises)
+            {
+                if (surprise.AppliesTo(number, difficulty))
+                {
+                    return surprise;
+                }
+            }
+
+            return null;
+        }
     }
 }

@@ -1,0 +1,23 @@
+Wave ledger lab 2026-11-17 19:14; overrides: FlyersAfterBounties = false,false,false,false; BeatSeconds = 1000; SwarmBeatSeconds = 1000; ComboBeatSeconds = 1000; EscortBeatSeconds = 1000; SurpriseFreeWaves = 99; PauseCredit = 1000; ComboFrom = 2; BossBeats = 1; FinaleBeats = 1; EscortCatchCells = 0; EscortTempo = 1
+
+C1_05 Medium (the solver's reference player; solver = before the human calibration; hero = the human with the hero, cap 1.15; span = active seconds of the ground stream, sky = the flyers' window)
+  w1  s1   x1.345   (stored x1.266  , solver x1.65  , hero 0.21) money   280 hp    252/    0 span   6.1s sky   0.0s n  17/ 0 pressure 0.25/0.00 | 0:1x1 0:2x1
+  w2  s1   x1.749   (stored x1.646  , solver x2.145 , hero 0.28) money   293 hp    404/    0 span  11.5s sky   0.0s n  21/ 0 pressure 0.33/0.00 | 0:1x1 0:2x1
+  w3  W1   x2.216   (stored x2.086  , solver x2.718 , hero 0.43) money   316 hp    731/    0 span  10.3s sky   0.0s n  30/ 0 pressure 0.51/0.00 | 0:2x2
+  w4  A1   x0.326   (stored x1.699  , solver x0.4   , hero 0.41) money   345 hp     36/   26 span   5.5s sky   0.0s n  10/ 1 pressure 0.06/0.52 | 0:1x2 3:0x1
+  w5  T1   x1.808   (stored x2.586  , solver x2.218 , hero 0.59) money   363 hp    736/    0 span   9.5s sky   0.0s n  18/ 0 pressure 0.70/0.00 | 1:0x2 3:0x1
+  w6  s1   x1.551   (stored x1.155  , solver x1.903 , hero 0.53) money   380 hp    819/    0 span  14.5s sky   0.0s n  29/ 0 pressure 0.63/0.00 | 0:0x1 1:0x2 3:0x1
+  w7  W1   x1.688   (stored x0.816  , solver x2.071 , hero 0.59) money   423 hp   1170/    0 span  19.9s sky   0.0s n  63/ 0 pressure 0.69/0.00 | 0:0x1 0:1x1 0:2x1 3:0x1
+  w8  A1   x1.189   (stored x1.81   , solver x1.458 , hero 0.84) money   515 hp    458/  190 span   8.5s sky   2.5s n  16/ 2 pressure 0.41/0.59 | 0:1x1 1:0x2 3:1x1
+  w9  T1   x1.409   (stored x1.81   , solver x1.728 , hero 0.51) money   586 hp   1259/    0 span  12.5s sky   0.0s n  28/ 0 pressure 0.77/0.00 | 0:0x1 1:0x3 3:1x1
+  w10 s1   x2.01    (stored x1.765  , solver x2.465 , hero 0.48) money   674 hp   1622/    0 span  19.5s sky   0.0s n  43/ 0 pressure 0.68/0.00 | 0:0x1 1:0x4 3:1x1
+  w11 W1   x2.515   (stored x1.655  , solver x2.971 , hero 0.60) money   797 hp   3486/    0 span  39.1s sky   0.0s n 126/ 0 pressure 0.77/0.00 | 0:1x1 1:0x5 3:1x1
+  w12 s1   x2.094   (stored x1.583  , solver x2.569 , hero 0.59) money   978 hp   2992/    0 span  23.5s sky   0.0s n  58/ 0 pressure 0.80/0.00 | 0:0x1 1:0x7 3:1x1
+  w13 A1   x0.96    (stored x2.06   , solver x1.177 , hero 0.52) money  1131 hp    537/  384 span  11.5s sky   3.3s n  25/ 5 pressure 0.29/0.65 | 0:2x6 3:1x1
+  w14 T1   x2.857   (stored x2.493  , solver x3.504 , hero 0.75) money  1228 hp   5180/    0 span  26.5s sky   0.0s n  65/ 0 pressure 0.85/0.00 | 0:0x1 1:1x5 3:1x1
+  w15 W1   x5.374   (stored x1.331  , solver x2.453 , hero 0.82) money  1399 hp   9340/    0 span  40.3s sky   0.0s n 131/ 0 pressure 0.94/0.00 | 1:1x6 3:1x1
+  w16 A1   x1.678   (stored x2.633  , solver x2.058 , hero 0.68) money  1544 hp   1655/ 1074 span  15.5s sky   4.9s n  38/ 8 pressure 0.68/0.85 | 0:0x1 0:2x7 1:0x1 3:2x1
+  w17 T1 B x1.886   (stored x2.131  , solver x2.314 , hero 0.95) money  1640 hp   4598/  151 span  25.5s sky  19.0s n  65/ 1 pressure 1.09/0.20 | 0:2x1 1:1x6 3:2x1
+
+Against the stored waves:
+C1_05 Medium sum of multipliers x1.070 of the stored set; moved more than 3 %: w1 x1.266->x1.345, w2 x1.646->x1.749, w3 x2.086->x2.216, w4 x1.699->x0.326, w5 x2.586->x1.808, w6 x1.155->x1.551, w7 x0.816->x1.688, w8 x1.81->x1.189, w9 x1.81->x1.409, w10 x1.765->x2.01, w11 x1.655->x2.515, w12 x1.583->x2.094, w13 x2.06->x0.96, w14 x2.493->x2.857, w15 x1.331->x5.374, w16 x2.633->x1.678, w17 x2.131->x1.886

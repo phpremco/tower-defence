@@ -39,6 +39,14 @@ namespace Game.Editor
                     continue;
                 }
 
+                // The level's own surprises are checked against its spawn points before a wave is written with them.
+                var scheduleErrors = new List<string>();
+                SurpriseSchedule.Check(level, script.Surprises, script.Waves, bestiary.ById, scheduleErrors);
+                foreach (string error in scheduleErrors)
+                {
+                    Debug.LogError("[Validator] " + error);
+                }
+
                 List<List<WaveSpec>> sets = model.BuildWaves(index, script, out _);
                 WriteWaveSets(level, campaign, sets, bestiary, model.PlayerAt(index, WaveSolver.SolveDifficulty).MeanTowerBonus, script.TargetScale);
                 written.Add(WavesPath(level));
@@ -196,6 +204,7 @@ namespace Game.Editor
             wave.FindPropertyRelative("_healthMultiplier").floatValue = spec.HealthMultiplier;
             wave.FindPropertyRelative("_bossHealthScale").floatValue = spec.BossHealthScale;
             wave.FindPropertyRelative("_counterCheck").boolValue = spec.CounterCheck;
+            wave.FindPropertyRelative("_airRaid").boolValue = spec.AirRaid;
             SerializedProperty array = wave.FindPropertyRelative("_groups");
             array.arraySize = spec.Groups.Count;
             for (int g = 0; g < spec.Groups.Count; g++)

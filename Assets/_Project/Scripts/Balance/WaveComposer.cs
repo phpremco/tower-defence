@@ -172,7 +172,7 @@ namespace Game.Balance
         /// </summary>
         public static int FirstTraitWave(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int secondRoad, BalanceRules rules, bool air)
         {
-            long key = ((long)script.FlyingTroopFloorFor(difficulty) << 24) | ((long)script.FirstAirWaveFloorFor(difficulty) << 8) | ((long)difficulty << 1) | (air ? 1L : 0L);
+            long key = (rules.Grammar.Surprises ? 0L : 1L << 40) | ((long)script.FlyingTroopFloorFor(difficulty) << 24) | ((long)script.FirstAirWaveFloorFor(difficulty) << 8) | ((long)difficulty << 1) | (air ? 1L : 0L);
             if (script.FirstTraitWaves.TryGetValue(key, out int first))
             {
                 return first;
@@ -213,9 +213,12 @@ namespace Game.Balance
             WaveGrammarRules grammar = rules.Grammar;
             WavePattern pattern = WaveGrammar.PatternOf(script, difficulty, number, grammar);
             SurpriseKind surprise = WaveGrammar.SurpriseOn(script, enemies, difficulty, number, secondRoad, rules);
-            float hiddenBudget = surprise != SurpriseKind.None ? budget * grammar.SurpriseShareFor(difficulty) : 0f;
-            float frontBudget = budget - hiddenBudget;
             var fill = new FillContext(script, enemies, rules, difficulty, number, secondRoad, random, growth);
+            // An authored surprise is what the level writes; the front gives up what it costs, so the wave is no bigger for it.
+            var authored = new List<GroupSpec>();
+            float hiddenBudget = surprise == SurpriseKind.Authored ? Math.Min(budget, FillAuthored(authored, script.SurpriseFor(number, difficulty), fill))
+                : surprise != SurpriseKind.None ? budget * grammar.SurpriseShareFor(difficulty) : 0f;
+            float frontBudget = budget - hiddenBudget;
             // The creatures at the gate, on a clock of their own until the grammar has cut them into clusters.
             var front = new List<GroupSpec>();
             // A troop capped at the largest group size cannot take its whole share; what it could not buy makes every
@@ -255,23 +258,20 @@ namespace Game.Balance
             result.AddRange(front);
             wave.Pattern = pattern == WavePattern.SpreadClusters && beats == 1 ? WavePattern.Stream : pattern;
             wave.Beats = beats;
+            wave.AirRaid = pattern == WavePattern.AirRaid;
 
             if (surprise != SurpriseKind.None)
             {
                 // Out of the rifts, or down the second road alone, once the front is well under way: the player is committed there.
-                var hidden = new List<GroupSpec>();
-                List<TroopSpec> troops = surprise == SurpriseKind.Rift ? Unlocked(script, enemies, number, difficulty, true) : open;
-                // Sized by its share alone: the growth past a grace window is the front's (seven Cragbacks behind the gate of Glass
-                // Meadows on Psycho, where the share asked for two, ended every run of the first measurement).
-                var plain = new FillContext(script, enemies, rules, difficulty, number, secondRoad, random, TraitGrowth.None);
-                shortfall += Fill(hidden, hiddenBudget, troops, 1f, plain, 0f, TroopStagger, surprise == SurpriseKind.Flank ? new[] { secondRoad } : null);
-                if (hidden.Count == 0)
+                // The grammar's plan gave the wave a surprise only where its share fills a real group (WaveGrammar.SurpriseOn).
+                List<GroupSpec> hidden = authored;
+                if (surprise != SurpriseKind.Authored)
                 {
-                    // A surprise is never empty: where its share buys no creature yet (an early wave, a heavy rift troop), one comes.
-                    AddOne(hidden, Cheapest(troops, 1, enemies, rules), enemies, surprise == SurpriseKind.Flank ? secondRoad : Road);
+                    shortfall += FillSurprise(hidden, surprise, hiddenBudget, fill);
                 }
 
-                WaveTimeline.Shift(hidden, Math.Max(grammar.SurpriseMinDelay, WaveTimeline.Span(front) * grammar.SurpriseAt));
+                // A surprise that is the whole wave (the level wrote away the front) has nothing to wait for.
+                WaveTimeline.Shift(hidden, front.Count == 0 ? 0f : Math.Max(grammar.SurpriseMinDelay, WaveTimeline.Span(front) * grammar.SurpriseAt));
                 result.AddRange(hidden);
                 wave.Surprise = hidden.Count > 0 ? surprise : SurpriseKind.None;
             }
@@ -413,18 +413,17 @@ namespace Game.Balance
             return floor > 0 && first != int.MaxValue ? Math.Max(0, floor - first) : 0;
         }
 
-        // The troops a wave may draw from. A flying troop also waits for the difficulty's floor of its own (WaveScriptSpec.FlyingTroopFloor),
-        // and one out of a rift for the difficulty's first air raid (round 79): a surprise never introduces the sky. The raid does,
-        // on the wave the raid rules allow it, and the rifts' flyers follow.
+        // The troops a wave may draw from. A flying troop, at the gate or out of a rift, also waits for the difficulty's floor of
+        // its own (WaveScriptSpec.FlyingTroopFloor: the first-flyer rule of Easy and Medium). Nothing else holds a rift's flyers
+        // back (Remco, round 80): they may come before the first air raid, being caught out is part of the game.
         internal static List<TroopSpec> Unlocked(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int number, int difficulty, bool pools)
         {
             var list = new List<TroopSpec>();
             int floor = script.FlyingTroopFloorFor(difficulty);
-            bool skyKnown = !pools || script.AirWaves.Length == 0 || number > FirstAirWave(script, difficulty);
             foreach (TroopSpec troop in script.Troops)
             {
                 if (troop.FirstWave <= number && troop.MinDifficulty <= difficulty && difficulty <= troop.MaxDifficulty && (troop.Source != 0) == pools
-                    && ((number >= floor && skyKnown) || !(Get(enemies, troop.Enemy)?.Flies ?? false)))
+                    && (number >= floor || !(Get(enemies, troop.Enemy)?.Flies ?? false)))
                 {
                     list.Add(troop);
                 }
@@ -492,17 +491,105 @@ namespace Game.Balance
             public TraitGrowth Growth { get; }
         }
 
-        // One creature of the first of the given troops, on the troop's own delay.
-        private static void AddOne(List<GroupSpec> output, List<TroopSpec> troops, IReadOnlyDictionary<string, EnemyStats> enemies, int path)
+        // The groups of a surprise: the rift's troops out of their nests (one troop, one nest; several troops may open several
+        // nests at once), or the wave's own troops down the second road alone. Sized by its share alone: the growth past a
+        // grace window is the front's (seven Cragbacks behind the gate of Glass Meadows on Psycho, where the share asked for
+        // two, ended every run of the first measurement).
+        private static float FillSurprise(List<GroupSpec> hidden, SurpriseKind surprise, float budget, FillContext fill)
         {
-            EnemyStats enemy = troops.Count > 0 ? Get(enemies, troops[0].Enemy) : null;
-            if (enemy == null)
+            bool rift = surprise == SurpriseKind.Rift;
+            List<TroopSpec> troops = Unlocked(fill.Script, fill.Enemies, fill.Number, fill.Difficulty, rift);
+            var plain = new FillContext(fill.Script, fill.Enemies, fill.Rules, fill.Difficulty, fill.Number, fill.SecondRoad, fill.Random, TraitGrowth.None);
+            return Fill(hidden, budget, troops, 1f, plain, 0f, TroopStagger, rift ? null : new[] { fill.SecondRoad });
+        }
+
+        /// <summary>Spawn source of the element nests, as the game stores it (Game.Levels.SpawnSource.Nest).</summary>
+        public const int NestSource = 4;
+
+        // Seconds between two creatures of an authored surprise whose creature has no troop in the roster.
+        private const float AuthoredInterval = 1f;
+
+        // The groups of the level's own surprise, each out of the point it names and in its pattern; returns their threat,
+        // which the wave's front gives up.
+        private static float FillAuthored(List<GroupSpec> hidden, SurpriseSpec surprise, FillContext fill)
+        {
+            float cost = 0f;
+            WaveGrammarRules grammar = fill.Rules.Grammar;
+            foreach (SurpriseEntrySpec entry in surprise.Entries)
             {
-                return;
+                EnemyStats enemy = Get(fill.Enemies, entry.Enemy);
+                if (enemy == null || entry.Count <= 0)
+                {
+                    continue;
+                }
+
+                float interval = (entry.Interval > 0f ? entry.Interval : RosterInterval(fill.Script, entry.Enemy)) * fill.Script.TempoFor(fill.Difficulty)
+                    * (entry.Pattern == WavePattern.Swarm ? RushTempo : 1f);
+                bool nest = entry.Kind == SpawnPointKind.Nest;
+                var groups = new List<GroupSpec>
+                {
+                    new GroupSpec { Enemy = enemy, Count = entry.Count, Interval = interval, Source = nest ? NestSource : 0, Path = nest ? Road : entry.Point, Nest = nest ? entry.Point : 0 },
+                };
+                if (entry.Pattern == WavePattern.SpreadClusters)
+                {
+                    WaveTimeline.Spread(groups, WaveTimeline.Beats(WaveTimeline.Span(groups), grammar.BeatSeconds, grammar.MinBeatShare, grammar.MaxBeats), grammar.BreatherFor(fill.Difficulty));
+                }
+
+                WaveTimeline.Shift(groups, entry.Delay);
+                hidden.AddRange(groups);
+                cost += entry.Count * Threat.Of(enemy, fill.Rules);
             }
 
-            TroopSpec troop = troops[0];
-            output.Add(new GroupSpec { Enemy = enemy, Count = 1, Interval = troop.Interval, Delay = troop.Delay, Source = troop.Source, Path = troop.Source != 0 || enemy.Flies ? Road : path, Nest = troop.Source != 0 ? troop.Nest : 0 });
+            return cost;
+        }
+
+        private static float RosterInterval(WaveScriptSpec script, string enemy)
+        {
+            foreach (TroopSpec troop in script.Troops)
+            {
+                if (troop.Enemy == enemy)
+                {
+                    return troop.Interval;
+                }
+            }
+
+            return AuthoredInterval;
+        }
+
+        /// <summary>
+        /// How many creatures the surprise of this wave would be, all its groups together, if the wave carried one of this
+        /// kind: what its share of the wave's budget buys. The grammar gives a wave a surprise only when this is a real group
+        /// (<see cref="WaveGrammarRules.MinSurpriseGroup"/>): one stray creature behind the gate is no surprise (Remco, round 81).
+        /// </summary>
+        public static int SurpriseHeads(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int number, int secondRoad, BalanceRules rules, SurpriseKind surprise)
+        {
+            if (surprise == SurpriseKind.None)
+            {
+                return 0;
+            }
+
+            if (surprise == SurpriseKind.Authored)
+            {
+                int written = 0;
+                foreach (SurpriseEntrySpec entry in script.SurpriseFor(number, difficulty)?.Entries ?? new SurpriseEntrySpec[0])
+                {
+                    written += Math.Max(0, entry.Count);
+                }
+
+                return written;
+            }
+
+            // The dice only pick lanes and cluster patterns, never a number of creatures.
+            var fill = new FillContext(script, enemies, rules, difficulty, number, secondRoad, new Random(0), TraitGrowth.None);
+            var hidden = new List<GroupSpec>();
+            FillSurprise(hidden, surprise, script.BudgetOf(number) * rules.Grammar.SurpriseShareFor(difficulty), fill);
+            int heads = 0;
+            foreach (GroupSpec group in hidden)
+            {
+                heads += group.Count;
+            }
+
+            return heads;
         }
 
         // The clusters of a boss wave's crowd: the grammar's number (more for the last wave of the level), fewer for a crowd too thin to cut.

@@ -5,8 +5,8 @@ namespace Game.Levels
 {
     /// <summary>
     /// The wave grammar's bounds on a stored wave (round 79, Docs/WAVE_GRAMMAR.md), as the scheduler will play it on its
-    /// difficulty: a breather never becomes dead air, a wave never drags on, and a wave opens one rift for walkers at most
-    /// (one surprise per wave). The level validator runs it on every wave. Pure timing, no scene objects.
+    /// difficulty: a breather never becomes dead air and a wave never drags on. Which spawn points a wave uses is free (round 81:
+    /// any main paths with any surprise points; a surprise the level wrote may be one creature). The level validator runs it on every wave. Pure timing, no scene objects.
     /// </summary>
     public static class WaveShape
     {
@@ -16,19 +16,19 @@ namespace Game.Levels
         /// <summary>The longest silence between two spawns of the wave, in seconds, without jitter.</summary>
         public static float LongestPause(WaveDefinition wave, DifficultyProfile difficulty) => Times(wave, difficulty, out _, out float pause) ? pause : 0f;
 
-        /// <summary>The authored nests the wave's walkers come out of (each counted once): more than one is more than one surprise.</summary>
-        public static int WalkerRifts(WaveDefinition wave)
+        /// <summary>
+        /// The creatures the wave sends out of the level's nests on this difficulty, all nests together: the wave's surprise
+        /// (a rift opens on a surprise wave only). The groups may come out of several nests at once.
+        /// </summary>
+        public static int RiftHeads(WaveDefinition wave, DifficultyProfile difficulty)
         {
-            var nests = new HashSet<int>();
+            int heads = 0;
             foreach (SpawnGroup group in wave.Groups)
             {
-                if (group.Source == SpawnSource.Nest && group.Nest > 0 && group.Enemy != null && !group.Enemy.Flies)
-                {
-                    nests.Add(group.Nest);
-                }
+                heads += group.Source == SpawnSource.Nest && group.Enemy != null ? WaveScheduler.CountOf(group, difficulty) : 0;
             }
 
-            return nests.Count;
+            return heads;
         }
 
         /// <summary>Adds an error for every bound the wave breaks.</summary>
@@ -47,12 +47,6 @@ namespace Game.Levels
             if (pause > WaveGrammarRules.MaxPauseSeconds)
             {
                 errors.Add($"Wave '{name}' has {pause:0.#} s of silence between two spawns: a breather is at most {WaveGrammarRules.MaxPauseSeconds:0} s.");
-            }
-
-            int rifts = WalkerRifts(wave);
-            if (rifts > 1)
-            {
-                errors.Add($"Wave '{name}' sends walkers out of {rifts} authored nests: a wave carries one surprise at most.");
             }
         }
 

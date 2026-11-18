@@ -47,8 +47,21 @@ namespace Game.Balance
         public float ComboFrom = 0.45f;
         public float ComboTempo = 1f;
 
+        /// <summary>
+        /// Off for the solver's second look at a level, without its surprises (<see cref="BalanceRules.SurprisesLiftNoWave"/>);
+        /// never off in the rules a level is composed with.
+        /// </summary>
+        public bool Surprises = true;
+
         /// <summary>Share of a surprise wave's budget that comes as the surprise, per difficulty.</summary>
         public float[] SurpriseShare = { 0.12f, 0.18f, 0.22f, 0.26f };
+
+        /// <summary>
+        /// The fewest creatures a surprise is, all its groups together, before the difficulty's count multiplier (round 81,
+        /// Remco: one stray creature behind a gate is no surprise). A wave whose share buys fewer carries none. The groups may
+        /// come out of several nests at once; the number is the whole surprise's, not one nest's.
+        /// </summary>
+        public int MinSurpriseGroup = 3;
 
         /// <summary>Waves from one surprise to the next at the least, per difficulty: never more than one surprise in so many waves.</summary>
         public int[] SurpriseSpacing = { 4, 3, 3, 2 };

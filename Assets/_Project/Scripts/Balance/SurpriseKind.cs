@@ -10,5 +10,8 @@ namespace Game.Balance
 
         /// <summary>A share of the wave comes down the second road alone, while the front is busy on the first.</summary>
         Flank = 2,
+
+        /// <summary>The level's own surprise for this wave (<see cref="SurpriseSpec"/>, round 81): its entries, out of the points it names.</summary>
+        Authored = 3,
     }
 }

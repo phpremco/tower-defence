@@ -42,6 +42,12 @@ namespace Game.Levels
         [SerializeField] private BossEntrance _bossEntrance;
         /// <summary>Where element creatures come up. Each nest names a cell off the road and the element it belongs to.</summary>
         [SerializeField] private ElementNest[] _nests = new ElementNest[0];
+        /// <summary>
+        /// The roles of the spawn points (round 81, <see cref="SpawnRole"/>). A ground path is a main path unless its index is
+        /// listed here as a surprise path; a nest is a surprise point unless its number (from 1) is listed as a main nest.
+        /// </summary>
+        [SerializeField] private int[] _surprisePaths = new int[0];
+        [SerializeField] private int[] _mainNests = new int[0];
         /// <summary>How the nests open and close per wave and what they and the route gates look like; empty keeps the static ones.</summary>
         [SerializeField] private SpawnOriginDefinition _spawnOrigins;
         [SerializeField] private Texture2D _terrainAlbedo;
@@ -128,6 +134,12 @@ namespace Game.Levels
 
         /// <summary>The element nests of this level; a spawn group with source Nest picks one that matches its creature.</summary>
         public ElementNest[] Nests => _nests;
+
+        /// <summary>The role of the path with this index: main, unless the level lists it as a surprise path.</summary>
+        public SpawnRole RoleOfPath(int index) => System.Array.IndexOf(_surprisePaths, index) >= 0 ? SpawnRole.Surprise : SpawnRole.Main;
+
+        /// <summary>The role of the nest with this number (from 1): a surprise point, unless the level lists it as a main nest.</summary>
+        public SpawnRole RoleOfNest(int number) => System.Array.IndexOf(_mainNests, number) >= 0 ? SpawnRole.Main : SpawnRole.Surprise;
 
         /// <summary>The living spawn origins and gates, or null for the static nests and procedural gates.</summary>
         public SpawnOriginDefinition SpawnOrigins => _spawnOrigins;
@@ -230,6 +242,42 @@ namespace Game.Levels
             {
                 error = "Visual theme is missing.";
                 return false;
+            }
+
+            return SpawnRolesAreValid(out error);
+        }
+
+        // A surprise path is a ground path of the level and never the only one; a main nest is a nest of the level.
+        private bool SpawnRolesAreValid(out string error)
+        {
+            int mainGround = 0;
+            for (int i = 0; i < _paths.Length; i++)
+            {
+                mainGround += !_paths[i].Flying && RoleOfPath(i) == SpawnRole.Main ? 1 : 0;
+            }
+
+            foreach (int index in _surprisePaths)
+            {
+                if (index < 0 || index >= _paths.Length || _paths[index].Flying)
+                {
+                    error = $"Surprise path {index} is not a ground path of the level.";
+                    return false;
+                }
+            }
+
+            if (_surprisePaths.Length > 0 && mainGround == 0)
+            {
+                error = "Every ground path is a surprise path: a level needs a main path.";
+                return false;
+            }
+
+            foreach (int number in _mainNests)
+            {
+                if (number < 1 || number > _nests.Length)
+                {
+                    error = $"Main nest {number} is not a nest of the level.";
+                    return false;
+                }
             }
 
             error = null;

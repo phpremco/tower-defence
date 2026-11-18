@@ -69,7 +69,9 @@ namespace Game.Balance
 
         /// <summary>
         /// Mean pressure of a level's plain waves after the opening: what the player meets on an ordinary wave. A boss wave is
-        /// none, and neither is a wave that asks for a counter tower (round 68): both aim above the curve on purpose.
+        /// none, and neither is a wave that asks for a counter tower (round 68): both aim above the curve on purpose. An air
+        /// raid is none either (round 80b): it aims below the curve and is capped at the sky guns the player holds, and as a
+        /// plain wave every softer raid was paid for by tougher ground waves.
         /// </summary>
         public static float PlainMean(IReadOnlyList<WaveLine> lines)
         {
@@ -77,7 +79,7 @@ namespace Game.Balance
             int count = 0;
             for (int i = OpeningWaves; i < lines.Count; i++)
             {
-                if (!lines[i].Boss && !lines[i].CounterCheck)
+                if (!lines[i].Boss && !lines[i].CounterCheck && !lines[i].AirRaid)
                 {
                     sum += lines[i].Pressure;
                     count++;

@@ -12644,3 +12644,599 @@ suite passed on it (1170 / 1116 / 0 / 54), the stored waves are the first half's
 at its last sync and shows what an experiment left behind (`diff -rq Assets/_Project/Scripts TowerDefenseWorkers\w6\Assets\_Project\Scripts`).
 `GraceWindows.cs` changed after the measurements, so the tree's game stamp differs from the records' `c2d7fb7c` by that
 editor file alone.
+
+## Round 80: no wait for the raid, raids capped at the sky guns held, a surprise lifts no other wave; 24 cells measured (2026-11-17)
+
+Not committed. One agent. Three rules went in (Docs/WAVE_GRAMMAR.md has the design of each), the waves were solved again and
+all 24 cells measured on both rungs with the bot untouched (`bot=3:f9f8c682`, round 79's refreshed picks). Result against
+round 79 with the same picks: 585 of 720 runs won (567), skilled 326 (314), sensible 259 (253); no cell lost its 3 of 3 at
+the data; Quartz Flats Hard 0 -> 1 of 3 (x0.9: 1 -> 3), Glass Meadows Psycho unchanged (0 of 3). Both stay open, each with
+a named cause. **Three EditMode tests fail on this state (below); the round ends as a handover.** Save MD5
+42fbe06b38e133cecfe2014def5c833c after every batch; no `settings.json`.
+
+### What changed, and why
+
+1. **The guard is gone (Remco's decision).** `WaveComposer.Unlocked` no longer makes a rift's flyers wait for the
+   difficulty's first air raid. Round 77's `FlyersAfterBounties` is untouched. On paper (`wave_ledger_r80_noguard.txt`) the
+   removal alone moved only six cells: Hard and Psycho of Fault Line and Quartz Flats already had their first raid before
+   the rift's bats; Crysium Vein Medium and Hard meet bats in wave 6 before the raid of wave 8 (the model's player buys the
+   sky gun two waves early, the level comes out 5 % and 10 % lighter); and the three Easy cells with rift bats collapsed
+   (Fault Line Easy x0.62 with waves at x0.12 to x0.19, Quartz Flats Easy x0.86, Crysium Vein Easy x0.82): one bat in wave
+   5 or 6 passes round 77's rule (the bounties pay a Flak by the end of the grace window) but the ledger's Easy player buys
+   it at once out of its ground defence.
+2. **Easy: the flying troops wait for the purse of the Easy raid rule** (`CampaignModel.BuildWaves`; round 22f's
+   `EasyRaidFloor`, which until now moved only the raids). A purse rule, not a wait for the raid. With it the three Easy
+   cells are the stored ones again (Crysium Vein Easy: two waves moved). **This is the one place where a hold remains on
+   Easy beyond round 77's rule; question 1 for Remco.**
+3. **Quartz Flats' raid of wave 13: the cause is the solver, not the grammar.** The ledger buys a sky gun's next step only
+   above pressure one (`SkyHoldPressure`), a raid aims at about 0.8, so a raid meets its target with the guns held and
+   again after every step bought; the bisection landed on either by a hair of the purse. Seen in the lab with the
+   first-flyer rule off (the curve every difficulty copies): the same raid, 25 creatures and 5 flyers, purse 1131 against
+   1121, x1.18 with a level-2 Flak (grammar off) and x2.46 with a level-3 Flak (grammar on). Raids left whole instead of
+   cut in clusters changed nothing (tried, `wave_ledger_r80_raidwhole.txt`). **Rule `BalanceRules.RaidsCappedAtHeldGuns`:**
+   a second solve with every raid at its lowest crossing; a raid takes the lower multiplier, no other wave moves.
+   Quartz Flats Hard wave 13 x2.249 -> x0.616, wave 6 x2.222 -> x1.162, wave 16 x1.877 -> x1.484; Crysium Vein's raids of
+   waves 8, 14 and 17 about halve on Medium to Psycho; Fault Line Hard x0.81.
+   - First try, not kept: the lowest crossing in the one solve (`pressure_r80_try1_records.txt`). The human calibration
+     put the pressure the raids lost onto the ground waves (Quartz Flats Medium +20 %, waves 14 to 17 of its Hard and
+     Psycho +11 to +31 %); the skilled rung lost Quartz Flats Psycho 0 of 3 (was 3), Fault Line Psycho sensible 3 -> 1.
+   - Also tried on paper, not kept: the lowest crossing for every wave (`wave_ledger_r80_lowest.txt`; ground waves have
+     purchase glitches of their own, Fault Line Hard got waves at x0.12 and x0.37).
+4. **Glass Meadows Psycho: the cause is the rift's place on the map plus the model's blind spot for the guard gun.** The
+   rift joins the road 24 cells behind the first gate (`r80_gates.cs`: gates at road index 11, 45, 81, 89, the rift at 35;
+   Landing Site's rear rift joins 3 cells behind its gate). Both reference players guard it a wave ahead: a Cannon at
+   (16, 20) in wave 6 instead of the front Cannon's upgrade (build orders of round 78 and now, seed 1), and the swarm of
+   wave 8 takes the first gate (gate damage 700; round 78: 140 to 180). The gates never recover, the finale takes the
+   base from 100 %. A second, smaller cause is mended: **rule `BalanceRules.SurprisesLiftNoWave`**. The surprise waves sit
+   on the hero cap and pay less, and the calibration's common factor had put that onto every other wave (+8 % on every
+   uncapped wave of Glass Meadows Psycho; the lab with and without surprises, `wave_ledger_r80_gm*.txt`). Now a wave
+   without a surprise takes at most its multiplier in the level solved without surprises. Glass Meadows Psycho x0.938,
+   Hard x0.96, Shard Ridge Medium x0.91 and Psycho x0.93, Landing Site Hard x0.96. It did not win the cell
+   (`3 2 0 0 0` before and after): the guard gun's price is the larger part. **No map was changed** (a relayout makes the
+   searched plans and picks of the level stale, which is a bot batch); recommended next step under "Open".
+5. No bot file was touched (`ProbeStamp`, picks, plans: stamp `3:f9f8c682` in every record of this round).
+
+### The full measurement (720 runs, 19:53 to 20:52, five clones, 0 probe errors)
+
+`Tools/PlayTest/pressure_r80_final_records.txt`, stamp `bot=3:f9f8c682; data=7403b7d7; game=64e73c82`. "Before" is round 79
+as played with the same picks (`pressure_r79_asplayed_records.txt`: the skilled runs of `pressure_r79_picks_records.txt`
+and the sensible runs of `pressure_r79_final_records.txt`). Seeds won at x0.8 / x0.9 / x1 / x1.12 / x1.25:
+
+| Cell | Skilled, before | after | Sensible, before | after |
+| --- | --- | --- | --- | --- |
+| Landing Site Easy | 3 3 3 3 3 | **3 3 3 3 2** | 3 3 3 3 3 | 3 3 3 3 3 |
+| Landing Site Medium | 3 3 3 3 2 | 3 3 3 3 2 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Landing Site Hard | 3 3 3 2 1 | **3 3 3 3 2** | 3 3 2 0 0 | 3 3 2 0 0 |
+| Landing Site Psycho | 3 3 3 1 0 | 3 3 3 1 0 | 0 0 0 0 0 | 0 0 0 0 0 |
+| Glass Meadows Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Glass Meadows Medium | 3 3 3 3 2 | 3 3 3 3 2 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Glass Meadows Hard | 3 3 3 2 1 | **3 3 3 3 2** | 3 3 2 1 0 | **3 3 3 3 0** |
+| Glass Meadows Psycho | 3 2 0 0 0 | 3 2 0 0 0 | 0 0 0 0 0 | **1 0 0 0 0** |
+| Shard Ridge Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Shard Ridge Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Shard Ridge Hard | 3 3 3 3 3 | 3 3 3 3 3 | 3 2 0 0 0 | **3 2 1 1 0** |
+| Shard Ridge Psycho | 3 3 3 3 3 | 3 3 3 3 3 | 1 0 0 0 0 | **0 0 0 0 0** |
+| Fault Line Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Hard | 3 3 3 3 1 | **3 3 3 3 3** | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Psycho | 3 3 3 3 3 | 3 3 3 3 3 | 3 2 3 2 0 | **3 3 3 1 0** |
+| Quartz Flats Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Quartz Flats Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Quartz Flats Hard | 3 1 0 0 0 | **3 3 1 0 0** | 3 2 1 0 0 | **3 3 1 1 0** |
+| Quartz Flats Psycho | 3 3 3 1 0 | **3 3 3 2 0** | 1 0 0 0 0 | **0 0 0 0 0** |
+| Crysium Vein Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Crysium Vein Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Crysium Vein Hard | 3 3 3 3 2 | **3 3 3 3 1** | 3 3 3 3 2 | **3 3 3 3 3** |
+| Crysium Vein Psycho | 3 3 3 2 0 | **3 3 3 3 3** | 3 1 0 0 0 | **1 1 1 0 0** |
+| Runs won | 314 of 360 | 326 of 360 | 253 of 360 | 259 of 360 |
+
+| | Round 79 (picks refreshed) | Round 80 |
+| --- | --- | --- |
+| Runs won | 567 of 720 (skilled 314, sensible 253) | 585 of 720 (skilled 326, sensible 259) |
+| Skilled, cells won 3 of 3 at the data | 22 of 24 (not: Glass Meadows Psycho 0, Quartz Flats Hard 0) | 22 of 24 (not: Glass Meadows Psycho 0, Quartz Flats Hard 1) |
+| Sensible, cells won 3 of 3 at the data | 15 of 24 | 16 of 24 |
+| Easy | 180 of 180 | 179 of 180 (Landing Site, skilled, x1.25, seed lost in the last wave from a full base) |
+| Medium | 178 of 180 | 178 of 180 (the same two: skilled at x1.25, Landing Site and Glass Meadows) |
+| Hard / Psycho | 127 / 82 of 180 | 143 / 85 of 180 |
+| All-or-nothing (lost in the last wave from a base at 90 %+), both rungs | 41 of 153 lost (27 %) | 40 of 135 (30 %) |
+| the same, skilled / sensible | 21 of 46 (46 %) / 20 of 107 (19 %) | 19 of 34 (56 %) / 21 of 101 (21 %) |
+| the same, Hard / Psycho | 10 of 53 (19 %) / 29 of 98 (30 %) | 8 of 37 (22 %) / 29 of 95 (31 %) |
+| Lost in one wave, any wave, from 90 %+ | 78 of 153 (51 %) | 65 of 135 (48 %) |
+| Game seconds of a run both rounds won at the data: all / Easy / Medium / Hard / Psycho | 512 / 561 / 498 / 488 / 477 | 510 / 555 / 497 / 490 / 476 |
+
+Reading: the count of all-or-nothing losses is the same (41 -> 40); its share rises because the other losses fell. Hard
+is still harder than Medium for the sensible rung on Landing Site, Glass Meadows (at x1.25), Shard Ridge and Quartz Flats;
+equal on Fault Line and now on Crysium Vein (15 of 15 both: its Hard lost 16 % of its health to rules 1 and 3). Rows that
+moved against the direction of the data (softer waves, a seed fewer: Landing Site Easy x1.25, Shard Ridge Psycho and
+Quartz Flats Psycho sensible at x0.8, Crysium Vein Psycho sensible at x0.8 and x0.9) are the deterministic bot taking
+another path, not noise; none is at the data for the skilled rung.
+
+### Gates
+
+- **Finale probe** (`finale_workers.sh`, 5 min 28 s): 24 of 24 boss cells won at the data, lowest hold x1.09 (as round 79);
+  eight holds moved by a step of the probe's grid. `finale_probe.txt` is the new measurement (copy: `finale_probe_r80.txt`).
+- **Grace windows** (all 24 cells measured again, 432 runs, 22 minutes, then `GraceReport.cs`; the measured rows are in the
+  tree): 94 rows, **three break the gate, no allowance was changed**:
+  - **Glass Meadows Easy, armoured, Gun Turret row wins 1 of 3** (round 79: 0 of 3). A row without the counter may never
+    win; no allowance can cover it. The level is 2 % lighter (wave 10 x2.566 -> x2.39 by rule 4). To mend by a rule or the
+    cell's armour growth, not by an allowance.
+  - Crysium Vein Medium and Hard, airborne, Gun Turret row: the window now opens in wave 6 (the rift's bats, rule 1) where
+    it opened with the raid of wave 8; the rows fall where they fell (waves 12 and 10): 2 late (allowed 1) and 1 late
+    (allowed 0). Candidates for an allowance with the reason "the rift's flyers open the window before the raid" (Medium
+    1 -> 2, Hard new 1), as `EarlierPlated` in round 79. Not written.
+- **Acceptance:** the replay of all 24 cells and `BalanceAcceptanceTests` ran in a chain (`Tools/PlayTest/r80_chain.log`,
+  result `acceptance_r80.txt`, the replayed plans `plan_records_r80_replay.txt`); see the handover below for its state.
+- **EditMode, whole suite on w6** (before the grace rows were measured again): 1172 tests, 1115 passed, **3 failed**, 54
+  skipped (named under "Open"). The two new tests of `WaveGrammarTests` passed.
+- **Compile:** clean (0 errors; the one warning is round 78's CS0618 in `BalanceProbeTests.cs`, a bot file, not touched).
+
+### Open
+
+1. **Three failing EditMode tests on this state** (whole suite on w6 before the grace rows were measured again: 1172
+   tests, 1115 passed, 3 failed, 54 skipped):
+   - `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand`: ten cells are now softer than the human curve by more
+     than `HumanTargetTolerance` 6 % (Quartz Flats Medium 1.75x against 1.43x asked, Fault Line Hard 1.20x against 1.01x,
+     the others 7 to 10 %). That is rules 3 and 4 doing what they say: they take health off raids and off the waves a
+     surprise had lifted, and nothing puts it back. The gate must follow the rule, and how is a design decision: either
+     the plain mean leaves air raids out (as it leaves boss waves and counter checks out; then the calibration never
+     answers a raid and rule 3 needs no second solve: cleanest, needs a solve and the measurement again), or the check
+     gets a named slack on the soft side for what the two caps take. Not done: both change `Assets/_Project/Scripts`.
+   - `WorldContentTests.EveryLevel_GrowsEnemyHealthWaveByWave`: Fault Line Easy "never grows": its one late wave above x1
+     was the raid of wave 13 (x1.145 -> x0.789 by rule 3). The cell was thin before (waves at x0.16 and x0.18).
+   - `CombatRulesTests.NoRowWithoutTheCounter_OutlastsItsWindow_AsPlayed`: read the rows of round 79; see "Gates" for the
+     rows measured again.
+2. **Glass Meadows Psycho** (skilled `3 2 0 0 0`): recommended is the model, not the map: book the guard gun (the purse
+   short the cheapest gun from the first surprise of a rift that joins out of reach of the front, read from the geometry
+   the ledger already has), then measure; the map change (a rift within a gun's reach of the first gate) only if that
+   fails, as a bot batch with a new plan search for the level.
+3. **Quartz Flats Hard** (skilled `3 3 1 0 0`, sensible `3 3 1 1 0`): the raids are no longer the problem (wave 13 at
+   x0.62); the runs fall in waves 16 and 17 with the gates worn from wave 9 on. A new strategy search (bot version 4, its
+   own batch) is the next step: round 79b's search already won 2 of 3 on the harder waves.
+4. **The ledger's air side** (round 79's open point 3) stands; rule 3 sizes a raid to that model's guns.
+
+### Questions for Remco (yes / no, with the recommendation)
+
+1. On Easy, a rift's flyers wait until the model's player has earned a sky gun (they no longer wait for a raid). Without
+   it one bat makes Fault Line Easy 38 % lighter. Keep? Recommended: yes.
+2. Raids are no tougher than the sky guns a player already has can take (a late raid on Hard is now about x0.6 to x1.5
+   of book health where some were x2.2). Raids that force a Flak upgrade would be a rule of their own. Keep the cap?
+   Recommended: yes, until the air model is rebuilt.
+3. Still open from round 79: may a surprise fall on a tank escort wave? Recommended: no (not built).
+
+## Round 80 – handover (2026-11-17, 21:50)
+
+The agent stops on its context limit. Not committed. The tree compiles clean; the stored waves are the round's (data
+`7403b7d7`, the state of the full measurement); no worker runs; save MD5 42fbe06b38e133cecfe2014def5c833c, no
+`settings.json`; `plan_records.txt` and `plan_replay_partial.txt` are byte for byte HEAD's again. Read "Round 80" above first.
+
+**Acceptance ran to completion** (replay of all 24 cells 25 min 33 s on five clones, 0 probe errors, then
+`BalanceAcceptanceTests` on w6; the test is explicit, its result line reads Skipped and the report is written):
+`Tools/PlayTest/acceptance_r80.txt` has 7 cells PASS and 17 FAIL, against 8 and 16 in HEAD's `acceptance.txt` (round 76's
+state of this old gate). New FAIL: Landing Site Easy ("only 1 of 3 obvious kinds win on most seeds") and Quartz Flats Hard;
+new PASS: Fault Line Medium. Not analysed further. The replayed plans are kept as `plan_records_r80_replay.txt`.
+
+**Not done, in order:**
+
+1. **Decide how the human-curve gate follows the two caps** ("Open" 1 above), then make
+   `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand` pass. Recommended: leave air raids out of
+   `BalanceChecks.PlainMean` (calibration and check alike), solve, read `WaveLedgerLab` on all 24 cells against the stored
+   set, and measure again; the slack on the soft side is the quick alternative.
+2. **Glass Meadows Easy: the Gun Turret row wins 1 of 3** (grace gate, `grace_windows.txt`). Mend by the cell's armour
+   growth or by rule; then `workers.sh run measure 5 "cells=1:0" "seeds=1,2,3"` and `GraceReport.cs`.
+3. **Two allowances to write with their reason** in `GraceWindows.cs` (Crysium Vein Medium airborne 1 -> 2, Hard new 1:
+   the rift's flyers open the window two waves before the raid), if Remco keeps rule 1 as measured; then
+   `CombatRulesTests` passes once item 2 is mended.
+4. **Fault Line Easy "never grows"** (`WorldContentTests.EveryLevel_GrowsEnemyHealthWaveByWave`): its late raid is capped
+   under x1. The cell's builder scale (`wave_tuning.txt`, `C1_04 0 0.87`) is the lever round 79 used.
+5. Whole EditMode suite again after 1 to 4 (0 failed is the bar), the full measurement if any wave moved.
+6. Bot version 4 as its own batch: a new strategy search (Quartz Flats Hard, Glass Meadows Psycho), the rear-rift guard
+   rule; and the guard gun in the model ("Open" 2).
+
+**Mind:** `Tools/PlayTest/wave_ledger_arg.txt` holds the last lab run's cells (restore it or leave it: it is an argument
+file); `Tools/PlayTest/plan_records.txt.workers` was there before this round. Files of this round: `git status`.
+
+## Round 80b: raids out of the plain mean, the relief bound, the guard gun of a rear rift, scales re-expressed (2026-11-17)
+
+Not committed. One agent, on top of round 80 in the tree. The bot is untouched (`bot=3:f9f8c682` in every record). Save
+MD5 42fbe06b38e133cecfe2014def5c833c after every batch; no `settings.json`.
+
+### Decisions recorded (Remco, 2026-11-17, through the coordinator)
+
+- **A surprise may fall on a tank escort wave**: the behaviour as built stays, no rule against it.
+- **The Easy purse rule for a rift's flyers is approved** (round 80, rule 2) and so is **the raid cap** (rule 3).
+- The coordinator's decisions for this round: raids out of the plain mean in the calibration and in the check, no named
+  slack; Fault Line Easy mended by rule or data, not by the test; Glass Meadows Easy's row mended by cause; the guard gun
+  in the model's purse before any map change; no bot change.
+
+### What changed, and why
+
+1. **An air raid is no plain wave** (`BalanceChecks.PlainMean`; the mark is `WaveSpec.AirRaid`, stored per wave as
+   `WaveDefinition._airRaid` and written by the solve stage). Calibration and gate read the same mean.
+2. **That alone did not mend the gate, and the reason is not the one round 80 gave.** With the raids out of the mean
+   and round 80's cap as it was, nine cells were still out (Quartz Flats Medium +20.6 %, Fault Line Hard +28 %). The
+   softer raids are answered through the purse: the ledger's player buys no further sky gun and has that money on the
+   ground. So the cap moved into the one solve: the solver takes a raid's lowest crossing, the trim to the curve never
+   lifts a raid above it, and the ground waves are sized for the purse the player then has (`WaveSolver.BisectOn`,
+   `CampaignModel.CalibrateToHuman`; `BalanceRules.LowestRaidCrossing` and the second solve are gone).
+3. **The relief of "a surprise lifts no wave" is bounded by the curve** (`BalanceRules.SurpriseReliefMost` 0.05). The
+   rule alone left five cells 6 to 9 % under their curve, outside the gate's 6 %. Where it takes more than 5 %, the
+   lowered waves come back up together until the level sits 5 % under its curve. In the stored waves Glass Meadows
+   Psycho and Crysium Vein Psycho sit on that bound; all 24 cells lie between 0 and 5 % on the soft side of their curve
+   (`wave_ledger_r80b_final.txt`). This is not a slack in the check: the check is unchanged (6 %, both sides).
+   - Tried and not kept: surprise waves out of the plain mean as well. With raids and surprises both out, three cells
+     were held to the curve on two waves each (Fault Line Hard wave 7 came out at x0.24).
+4. **Every builder scale re-expressed** (`Tools/PlayTest/Scripts/ScaleRefit.cs`, `Tools/PlayTest/scale_refit_r80b_first.txt`
+   and `scale_refit_r80b_guard.txt`): with the raids out of the mean the ground waves of raid-heavy cells moved by up to
+   60 % at the old scales (Shard Ridge Psycho x1.51, Fault Line Psycho x1.26, Quartz Flats Medium x1.20; Fault Line
+   Medium x0.88, Quartz Flats Hard x0.90), because the raids used to hold the mean down or up. The scale of a cell is
+   the builder's lever on a curve whose reading changed, so per cell the scale was searched at which the ground waves sum
+   to round 80's measured ones again. Kept as they were: Landing Site and Crysium Vein Medium (moved under 3 %), Glass
+   Meadows (its change is the guard gun's intent) and Fault Line Easy (below). New scales, Easy to Psycho: Shard Ridge
+   0.83 / 0.72 / 0.53 / 0.48 (were 0.8 / 0.757 / 0.66 / 0.574), Fault Line 0.87 (kept) / 1.13 / 0.87 / 0.51 (were
+   0.87 / 1 / 0.9 / 0.574), Quartz Flats 0.64 / 0.67 / 0.73 / 0.43 (were 0.66 / 0.757 / 0.66 / 0.45), Crysium Vein
+   0.67 / 0.78 (kept) / 0.68 / 0.58 (were 0.66 / 0.78 / 0.658 / 0.52). Fault Line Psycho has a cliff in its solve
+   (ground x0.82 at 0.50, x1.10 at 0.51); 0.51 is taken, so that cell is 10 % tougher than round 80's.
+5. **Fault Line Easy grows again, by the rule and not by the test.** Its ground waves are held to the curve by
+   themselves now: wave 14 x0.18 -> x0.93, wave 15 x0.94 -> x1.09 (the late raid had carried the mean). The cell keeps
+   its scale 0.87 and is 18 % tougher on the ground than round 80's; `EveryLevel_GrowsEnemyHealthWaveByWave` passes.
+6. **The guard gun of a rear rift is booked in the model** (`BalanceRules.RearRiftGuardCells` 8, `BooksRearGuard`,
+   `KillPurse`): from the first wave a rift opens that joins the road more than eight cells behind the defence, the
+   human lens is short the cheapest gun that shoots the ground, in the level without surprises too. It applies to
+   Glass Meadows and Quartz Flats, not to Landing Site. The solver's reference player does not book it (fitted to runs
+   in which the bot already stands that gun; booked twice, Glass Meadows Medium wave 10 left its band at 1.65 of 1.55).
+   Glass Meadows' ground waves against round 80: Easy x0.85, Medium x0.92, Hard x0.99, Psycho x0.98.
+7. **Glass Meadows Easy, the Gun Turret row.** The cause was round 80's rule 4: it took 2 % off wave 10, a counter
+   check (x2.566 -> x2.39), and one seed of the row then held. A first mend (a counter check keeps its own multiplier)
+   was built and taken out again: with the guard gun booked the cell is softer as a whole, so the row is judged on the
+   measurement below and the cell's `armourgrowth` is the lever if it wins.
+
+### How the waves moved against round 80 (sum of health multipliers per cell; ground waves, raids)
+
+```
+C1_01 Easy ground x1.000 raids - | Medium ground x1.000 raids - | Hard ground x1.000 raids - | Psycho ground x1.000 raids -
+C1_02 Easy ground x0.851 raids - | Medium ground x0.921 raids - | Hard ground x0.985 raids - | Psycho ground x0.982 raids -
+C1_03 Easy ground x1.004 raids x1.000 | Medium ground x1.006 raids x1.343 | Hard ground x0.989 raids x0.985 | Psycho ground x0.968 raids x1.102
+C1_04 Easy ground x1.177 raids x0.971 | Medium ground x1.005 raids x1.003 | Hard ground x1.004 raids x1.148 | Psycho ground x1.101 raids x0.812
+C1_05 Easy ground x0.965 raids x0.998 | Medium ground x0.978 raids x0.801 | Hard ground x0.954 raids x0.886 | Psycho ground x0.940 raids x0.827
+C1_06 Easy ground x0.980 raids x1.000 | Medium ground x1.000 raids x0.901 | Hard ground x1.008 raids x0.915 | Psycho ground x1.010 raids x0.806
+```
+
+(From `_healthMultiplier` and `_airRaid` of the wave assets against the copies of round 80's in `Tools/PlayTest/r80_waves/`.)
+
+### Measured so far
+
+- **EditMode, the classes the round touches, on w6** (`BalanceLedgerTests;WorldContentTests;WaveGrammarTests;CounterAffordabilityTests;BalanceModelTests;LevelValidatorTests`):
+  62 tests, 62 passed. `EveryWave_StaysInsideItsDifficultyBand` and `EveryLevel_GrowsEnemyHealthWaveByWave` pass on the
+  stored waves. The whole suite has not run on the final state.
+- **Glass Meadows with the guard gun** (120 runs, an earlier solve of this round with the gun booked in both lenses;
+  `pressure_r80b_guard_records.txt`, data `b70d97a1`): skilled Psycho `3 2 0 0 0` -> `3 2 2 0 0`, sensible Psycho
+  unchanged `1 0 0 0 0`; Hard sensible `3 3 3 3 0` -> `3 3 3 2 1`; Medium skilled x1.25 2 -> 3; Easy and Medium
+  otherwise 3 of 3 everywhere. Not the final waves (the gun is now booked in the human lens only; Glass Meadows Psycho's
+  ground waves went from x1.03 to x0.98 of round 80's with that).
+- **The full measurement was started and stopped at 185 of 720 runs** (see the handover): Remco began to play in the
+  main editor, the clones ran at a quarter of their speed and this agent's context ran out. The partial records are
+  `Tools/PlayTest/pressure_r80b_partial_records.txt` (final waves; not a complete set for any conclusion).
+- Not run on the final state: grace rows, finale probe, acceptance, the whole EditMode suite.
+  `grace_windows.txt`, `calibration_records.txt`, `yardstick_partial.txt` and `finale_probe.txt` in the tree are still
+  round 80's.
+
+## Round 80b – handover (2026-11-17, 23:10)
+
+The agent stops on its context limit. Not committed. The tree compiled clean at the last solve; the stored waves are the
+round's final ones (the last solve of the round, guard gun in the human lens only). **No worker runs** (all clone processes were
+stopped, lock files removed). **Remco is playing in the main editor (pid 9940): the coordinator's ban on the main
+editor holds until lifted** (no `unity` command against it, no refresh, no solve, no edit of scripts or assets in the
+tree; clones only). His save changes legitimately now: never restore, back up or compare `progress.json`; the
+`settings.json` and `progress.json.bak` in the save folder are his play's, not a run's. **`workers.sh run ...` restores
+the save when its MD5 changed: use `Tools/PlayTest/workers_keepsave.sh` (the same script without the restore) while he
+plays.** `pressure.sh` and `finale_workers.sh` only warn.
+
+**To do, in order:**
+
+1. **Remco's playtest feedback of 2026-11-17 (round 80 tree), first because it changes data:**
+   - Positive: "the waves feel a lot better": the grammar stays.
+   - **A surprise must not be one lone creature on the road behind a gate.** He means the spawn points of the map: a
+     real group, possibly of an unexpected type, out of an authored spawn point (nest). The lone creature is the
+     grammar's own rule "a surprise is never empty" (`WaveComposer.Compose`: `AddOne(hidden, Cheapest(troops, 1, ...))`
+     when the surprise share buys nothing) and a small share buying one heavy troop (`SurpriseShare` 0.12 on Easy, one
+     Cragback). Mend by rule: a surprise comes out of an authored nest only, with a minimum group size (reuse
+     `LevelValidator.SmallNestGroup`); a wave whose share cannot fill that group carries no surprise (or takes the
+     group's cost from the front); a validator rule and a test in `WaveGrammarTests` that no stored surprise is smaller.
+     Check what a flank on the second road looks like against the same sentence (Shard Ridge) and ask if unsure.
+   - **Shard Ridge Medium's boss "feels quite weak".** Read its boss scale and what it asks alone on Medium
+     (`BalanceRules.LevelBossAlone` Medium 0.25 since round 77, `LevelBossHealthFloor`, the boss health share per
+     difficulty 1 / 1 / 1.45 / 1.7) against the finale probe's hold for that cell (`finale_probe.txt`); mend by the
+     factor, not for the level, and state the as-played margin after.
+   Both need a solve in the main editor (when the ban is lifted) and the measurement after.
+2. **The full measurement on the final waves** (after item 1's solve, else on the tree as it is):
+   `PR_RECORDS=Tools/PlayTest/pressure_r80b_final_records.txt bash Tools/PlayTest/pressure.sh "0,1,2,3,4,5" "0,1,2,3" > Tools/PlayTest/r80b_final.log 2>&1`
+   in the background (delete the old log and records first), then `Tools/PlayTest/r80b_chain.sh` in the background: it
+   waits for that log's save line and runs the finale probe, the grace measurement of all 24 cells, the replay, the
+   acceptance report (`acceptance_r80b.txt`), puts `plan_records.txt` and `plan_replay_partial.txt` back to HEAD's and
+   runs the whole EditMode suite on w6 (`r80b_editmode_full.txt`). Before/after against round 80:
+   `python Tools/PlayTest/pressure_versus.py Tools/PlayTest/pressure_r80_final_records.txt Tools/PlayTest/pressure_r80b_final_records.txt`
+   and `pressure_endings.py` with the same two files.
+3. **The grace gate:** `GraceReport.cs` needs the main editor (after the ban). Expected from round 80: Crysium Vein Medium
+   and Hard, airborne, Gun Turret row late because the rift's bats open the window in wave 6: write the two allowances
+   in `Assets/_Project/Scripts/Editor/GraceWindows.cs` (Medium 1 -> 2, Hard new 1) with the reason "the rift's flyers
+   open the window two waves before the first raid (round 80, no wait for the raid)". Glass Meadows Easy, Gun Turret
+   row: must lose all three seeds; the cell is 15 % softer on the ground with the guard gun, so if the row wins, raise
+   `C1_02 0 armourgrowth` (1.3 now) in `wave_tuning.txt`, solve, measure the cell
+   (`workers_keepsave.sh run measure 5 "cells=1:0" "seeds=1,2,3"`). `CombatRulesTests` passes only after both.
+4. **Cells to read first in the measurement:** Fault Line Psycho (ground x1.10, sensible was `3 3 3 1 0`; the scale has
+   a cliff between 0.50 and 0.51), Fault Line Easy (x1.18), Shard Ridge Medium (raids x1.34), Glass Meadows Psycho
+   (2 of 3 with the guard gun; if it stays short: book the price of the gun the players really stand there, the
+   counter of the rift's troop, instead of the cheapest gun, before any map change), Quartz Flats Hard (still open:
+   bot version 4, out of scope here).
+5. **Whole EditMode suite with 0 failed**, compile check, then the "Round 80b" entry gets its tables (same format as
+   round 80's) and the coordinator's report.
+
+**Mind:** stopping a background batch from the agent tool stops only the wrapper: `pressure.sh` and the chain went on and had to be stopped by their `bash.exe` processes and the clones' `Unity.exe` (the command in Docs/COMMANDS.md, "Stopping a batch by hand"); check with a process list that nothing is left. `Tools/PlayTest/wave_ledger_arg.txt` holds all 24 cells and `label=r80b_final`; `Tools/PlayTest/r80_waves/` is the
+only copy of round 80's stored waves (the refit tool and the sums read it); `pressure_r80b_guard_records.txt` is from an
+intermediate solve; `Tools/PlayTest/Scripts/ScaleRefit.cs`, `workers_keepsave.sh`, `r80b_chain.sh`, `scale_refit*.txt`,
+`wave_ledger_r80b_*.txt` are new files of this round. Questions for Remco that are open: the re-expressed scales (a
+list of fourteen numbers, item 4 of "What changed"), the 5 % bound on the surprise relief, the guard gun's price.
+
+## Round 81: surprises out of the spawn points (roles, a level's own schedule, no filler), Medium boss factor 0.3; rounds 80, 80b and 81 as one state (2026-11-18)
+
+Not committed. One agent, on top of rounds 80 and 80b in the tree (HEAD 172bdb0f is round 79). The bot is untouched:
+`bot=3:f9f8c682` in every record. Remco's save `progress.json` has MD5 7a848003ed6b1261e4bb58757548727b after every
+batch (his play of 2026-11-17; the `settings.json` and `progress.json.bak` beside it are his). No worker process is left.
+
+### For the commit: what rounds 80, 80b and 81 are together
+
+- **Round 80** (entry above): a rift's flyers no longer wait for the first raid (Remco); on Easy they wait for the purse
+  of the Easy raid rule; a raid is capped at the sky guns the model's player holds; a surprise lifts no other wave.
+- **Round 80b** (entry above): an air raid is no plain wave (`WaveSpec.AirRaid`, out of `BalanceChecks.PlainMean` in the
+  calibration and in the gate); the raid cap sits in the one solve; the relief of "a surprise lifts no wave" is bounded
+  at 5 % under the curve (`SurpriseReliefMost`, kept: coordinator); the guard gun of a rear rift is booked in the human
+  lens; every builder scale re-expressed for the new reading of the curve (accepted: coordinator).
+- **Round 81** (this entry): Remco's playtest feedback and his design for surprises; the Medium boss factor; the scales
+  refitted once more after the surprise rule; the full measurement and every gate on the final state.
+
+### Remco's playtest of the round 80 tree and his decisions (2026-11-17, through the coordinator)
+
+- "The waves feel a lot better": the grammar stays.
+- "Sometimes 1 random enemy appears on the road behind a gate; that's not what I meant with surprises." And the design
+  that followed, in his words as relayed: all spawn points are the same kind of thing, with a role per level in data
+  (main paths, surprise paths); what comes out of a surprise path is configurable per level and per wave (size, creature
+  types, pattern; several surprise paths in one wave); a small group, even one big creature, is fine when it is
+  authored; what is not fine is a stray creature the composer adds as filler; the grammar may make a default plan by
+  rule (spacing and share per difficulty), the level's data overrides it per wave, the solver and ledger budget what is
+  configured; any combination of main and surprise paths is allowed in one wave; the threshold stays a data value.
+- "Shard Ridge Medium's boss feels quite weak."
+- He may place spawn points himself when maps are made or adjusted (none was added this round, see "Not built").
+
+### What changed, and why
+
+1. **The filler is gone** (`WaveComposer.Compose`: "a surprise is never empty" and `AddOne`). That rule, with the Easy
+   share buying one heavy troop, made the lone Cragback Remco saw: in the stored waves before this round every surprise of Landing
+   Site and Glass Meadows was one Cragback (two as played on Hard and Psycho), and Fault Line Medium wave 7 and Quartz
+   Flats Easy wave 10 sent one Shalebat.
+2. **The default plan sends a real group or nothing** (`WaveGrammarRules.MinSurpriseGroup` 3, a data value;
+   `WaveGrammar.Plan`, `WaveComposer.SurpriseHeads`): the creatures of a default surprise, all its groups together, as
+   composed. A wave whose share buys fewer carries none and the next wave that can takes it. The groups may open several
+   nests at once (Quartz Flats: bats out of both rifts and a Cragback out of the rear one).
+3. **Spawn points have a role in the level's data** (`SpawnRole`; `LevelDefinition._surprisePaths`, `_mainNests`,
+   `RoleOfPath`, `RoleOfNest`): a ground path is main unless listed as a surprise path, a nest is a surprise point
+   unless listed as a main nest. The defaults are what the six levels are, so no level asset was rewritten.
+   `LevelDefinition.IsValid` (and so `OnValidate`) checks the roles.
+4. **A level writes its own surprises per wave** (`WaveScriptSpec.Surprises`: `SurpriseSpec`, `SurpriseEntrySpec`;
+   helpers `Surprise`, `FromNest`, `DownPath`): creature, number, point, pattern (stream, clusters, swarm), spacing and
+   delay per entry; any number of points in one wave; per difficulty range; an entry-less surprise keeps a wave free. A
+   written surprise replaces the default on its wave; the front gives up the threat it costs, so the wave is no bigger
+   and the kill money stays the script's; the solver and the ledger read the composed groups. `SurpriseSchedule.Check`
+   validates a schedule against the level (the solve stage logs `[Validator]` errors; two tests). How a designer sets a
+   level's surprises: Docs/WAVE_GRAMMAR.md, "Writing a level's surprises".
+5. **Any combination of spawn points in one wave is valid**: the validator's rule "walkers out of at most one authored
+   nest per wave" (`WaveShape.WalkerRifts`) is gone.
+6. **Landing Site's rear rift is the level's own surprise now** (`LevelSpecs.Crystal`): one Cragback out of the rear
+   rift in the middle of wave 7 and once more late (wave 11 on Easy, 10 from Medium on; two as played on Hard and
+   Psycho), the waves it had in round 80. That lesson is Remco's (round 31, kept 2026-11-10; Voss's warning hangs on
+   it), no wave's share buys three Cragbacks (threat 15 a head; wave 7 has 29), and "one big creature is fine when it is
+   authored". **Glass Meadows has no surprise any more**: its rear-rift Cragback was round 79's addition and all filler.
+   Question 1 below.
+7. **The flank of Shard Ridge was checked against "out of a spawn point"**: it walks in at the start of the second
+   road, at that road's route gate, which is an authored spawn point of the level (`LevelVisualBuilder`, the living
+   route gate); nothing spawns on a road segment, and a flank's share buys a group on every wave that carries one (the
+   group rule holds for it too). Nothing changed. Its role in the data is a main path: see "Not built".
+8. **`LevelBossAlone` Medium 0.25 -> 0.3** (the value of rounds 64 to 76; round 77 lowered it for Quartz Flats Medium,
+   which has since gone from 2 of 3 to 15 of 15 on both rungs). Shard Ridge Medium's Brood Mother asked 0.21 of the
+   expected player alone, the whole finale 0.68 where the cap is 1.15; she had 868 hp, less than Glass Meadows'
+   Medium boss (1194). On paper (`r64_lab_r81_alone*.txt`): Shard Ridge 868 -> 1042 hp, Quartz Flats' Core Wisp
+   1346 -> 1615, Crysium Vein's Pack Alpha 957 -> 1085; Landing Site, Glass Meadows and Fault Line unmoved. The floor
+   (`LevelBossHealthFloor` 0.75) does not bind (her scale is 1.6 to 1.9). The finale probe is about the continent
+   bosses and has no hold for a level's boss; the as-played margin is read from the pressure records (below).
+   - Found on the way, not built: after the relief of "a surprise lifts no wave" a boss asks less alone than the factor
+     says (Shard Ridge Medium 0.21 for 0.25, now 0.25 for 0.3), because the bosses are sized before the relief moves
+     the waves. Sizing them once more at the end is the rule as written; it would also lift Psycho bosses of cells that
+     are open. Open point 4.
+9. **Seven builder scales refitted** (`ScaleRefit.cs`, `scale_refit_r81.txt`), because a surprise one wave later moves a
+   cell's whole solve (Shard Ridge Hard: the flank in wave 8 instead of 7 made the ground waves 19 % softer at the same
+   scale). Against round 80b: Shard Ridge Hard 0.53 -> 0.62, Fault Line Easy 0.87 -> 0.84, Fault Line Hard 0.87 -> 0.9,
+   Quartz Flats Easy 0.64 -> 0.66 and Psycho 0.43 -> 0.44, Crysium Vein Medium 0.78 -> 0.75 and Hard 0.68 -> 0.63. Fault
+   Line Psycho keeps 0.51 (its cliff), Landing Site and Glass Meadows keep theirs. Fault Line Easy: at 0.87 its ground
+   waves came out 31 % above round 80's, at 0.8 the level "never grows" again; 0.84 is 9 % above round 80 and grows.
+10. **Glass Meadows Easy `armourgrowth` 1.3 -> 1.4**: the Gun Turret row won 1 of 3 (as in round 80); now 0 of 3.
+11. **Two allowances written for Quartz Flats Psycho** (`GraceWindows.cs`, reason `SofterOpening`): armour new 1, air
+    1 -> 2. Since round 80b the cell's waves 1 to 8 are a tenth softer at the re-expressed scale and the rows fall to
+    wave 8, one wave later; every row still loses all three seeds. **The two Crysium Vein allowances round 80 asked for
+    are not needed and were not written**: with the group rule the rift's bats first come in wave 9, after the raid of
+    wave 8, so the window opens with the raid again and the rows are in time.
+12. Coordinator's answers recorded: the fourteen re-expressed scales of round 80b accepted; the 5 % bound kept; the
+    Cannon's price for the rear-rift guard only if Glass Meadows Psycho stayed under 3 of 3: it is 3 of 3 (and its rift
+    no longer opens), so the price is unchanged. Since this round the guard gun is booked on Quartz Flats alone.
+13. No bot file was touched. `plan_records.txt` and `plan_replay_partial.txt` are HEAD's.
+
+### The waves against round 80 (sum of health multipliers per cell; ground waves, raids)
+
+```
+C1_01 | Easy ground x1.014 raids - | Medium ground x1.004 raids - | Hard ground x1.005 raids - | Psycho ground x0.995 raids -
+C1_02 | Easy ground x1.029 raids - | Medium ground x1.032 raids - | Hard ground x1.003 raids - | Psycho ground x0.994 raids -
+C1_03 | Easy ground x1.004 raids x1.000 | Medium ground x1.006 raids x1.343 | Hard ground x0.991 raids x1.170 | Psycho ground x0.968 raids x1.102
+C1_04 | Easy ground x1.094 raids x0.976 | Medium ground x1.005 raids x1.003 | Hard ground x1.008 raids x1.146 | Psycho ground x1.041 raids x0.819
+C1_05 | Easy ground x1.001 raids x0.998 | Medium ground x0.980 raids x0.801 | Hard ground x1.003 raids x0.929 | Psycho ground x0.985 raids x0.874
+C1_06 | Easy ground x1.004 raids x1.000 | Medium ground x1.004 raids x0.915 | Hard ground x1.006 raids x0.910 | Psycho ground x1.023 raids x0.807
+```
+
+What comes out of the nests in the stored waves (creature, number as played; `n` the authored nest, none = drawn per creature):
+
+```
+Landing Site   Easy w7 and w11, Medium w7 and w10: 1 Cragback (n1); Hard and Psycho w7 and w10: 2 Cragbacks (n1)  [the level's own]
+Glass Meadows  none
+Shard Ridge    none out of nests (its surprise is the flank down the second road: Easy w7 w11, Medium w7 w13, Hard w8 w13, Psycho w7 w9 w13)
+Fault Line     Easy w14: 3 bats; Medium w11: 3, w14: 5; Hard w11: 4, w14: 8; Psycho w11: 7
+Quartz Flats   Easy w14: 2 bats + 1 Cragback (n2); Medium w12: 2 + 1, w16: 3 + 1; Hard w10: 3 + 2, w14: 4 + 2; Psycho w9: 4 + 2, w12: 5 + 2, w14: 5 + 2
+Crysium Vein   Easy w13: 4 bats, w17: 7; Medium w9: 3, w12: 4, w15: 8; Hard w9: 4, w13: 10; Psycho w9: 7, w13: 14
+```
+
+### The full measurement (720 runs, 23:40 to 00:37, five clones, 0 probe errors)
+
+`Tools/PlayTest/pressure_r81_final_records.txt`, stamp `bot=3:f9f8c682; data=c3ba97b7; game=efb62c8e`. "Before" is round
+80 (`pressure_r80_final_records.txt`, the same bot). Seeds won at x0.8 / x0.9 / x1 / x1.12 / x1.25. Glass Meadows Easy
+was measured again after its `armourgrowth` moved (`pressure_r81_gm_easy_records.txt`, data `32c889df`): 15 of 15 on both
+rungs, as in the table.
+
+| Cell | Skilled, before | after | Sensible, before | after |
+| --- | --- | --- | --- | --- |
+| Landing Site Easy | 3 3 3 3 2 | **3 3 3 3 3** | 3 3 3 3 3 | 3 3 3 3 3 |
+| Landing Site Medium | 3 3 3 3 2 | **3 3 3 3 1** | 3 3 3 3 3 | 3 3 3 3 3 |
+| Landing Site Hard | 3 3 3 3 2 | **3 3 3 3 3** | 3 3 2 0 0 | **3 3 1 0 0** |
+| Landing Site Psycho | 3 3 3 1 0 | 3 3 3 1 0 | 0 0 0 0 0 | 0 0 0 0 0 |
+| Glass Meadows Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Glass Meadows Medium | 3 3 3 3 2 | **3 3 3 3 3** | 3 3 3 3 3 | 3 3 3 3 3 |
+| Glass Meadows Hard | 3 3 3 3 2 | **3 3 3 2 1** | 3 3 3 3 0 | **3 3 1 0 0** |
+| Glass Meadows Psycho | 3 2 0 0 0 | **3 3 3 3 0** | 1 0 0 0 0 | **0 0 0 0 0** |
+| Shard Ridge Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Shard Ridge Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Shard Ridge Hard | 3 3 3 3 3 | 3 3 3 3 3 | 3 2 1 1 0 | **3 3 2 0 0** |
+| Shard Ridge Psycho | 3 3 3 3 3 | 3 3 3 3 3 | 0 0 0 0 0 | **1 1 0 0 0** |
+| Fault Line Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Hard | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Psycho | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 1 0 | **2 2 3 2 0** |
+| Quartz Flats Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Quartz Flats Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Quartz Flats Hard | 3 3 1 0 0 | **3 1 0 0 0** | 3 3 1 1 0 | **3 0 0 0 0** |
+| Quartz Flats Psycho | 3 3 3 2 0 | **3 0 1 1 0** | 0 0 0 0 0 | **1 0 0 0 0** |
+| Crysium Vein Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Crysium Vein Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Crysium Vein Hard | 3 3 3 3 1 | **3 3 3 2 0** | 3 3 3 3 3 | 3 3 3 3 3 |
+| Crysium Vein Psycho | 3 3 3 3 3 | **3 3 3 2 1** | 1 1 1 0 0 | **2 1 0 0 0** |
+| Runs won | 326 of 360 | 319 of 360 | 259 of 360 | 250 of 360 |
+
+| | Round 80 | Round 81 (80b and 81 on top) |
+| --- | --- | --- |
+| Runs won | 585 of 720 (skilled 326, sensible 259) | 569 of 720 (skilled 319, sensible 250) |
+| Skilled, cells won 3 of 3 at the data | 22 of 24 (not: Glass Meadows Psycho 0, Quartz Flats Hard 1) | 22 of 24 (not: Quartz Flats Hard 0, Quartz Flats Psycho 1) |
+| Sensible, cells won 3 of 3 at the data | 16 of 24 | 15 of 24 (Glass Meadows Hard 3 -> 1, Landing Site Hard 2 -> 1, Quartz Flats Hard 1 -> 0, Crysium Vein Psycho 1 -> 0; Shard Ridge Hard 1 -> 2) |
+| Easy | 179 of 180 | 180 of 180 |
+| Medium | 178 of 180 | 178 of 180 (skilled at x1.25, Landing Site twice) |
+| Hard / Psycho | 143 / 85 of 180 | 127 / 84 of 180 |
+| All-or-nothing (lost in the last wave from a base at 90 %+), both rungs | 40 of 135 lost (30 %) | 38 of 151 (25 %) |
+| the same, skilled / sensible | 19 of 34 (56 %) / 21 of 101 (21 %) | 11 of 41 (27 %) / 27 of 110 (25 %) |
+| the same, Hard / Psycho | 8 of 37 (22 %) / 29 of 95 (31 %) | 9 of 53 (17 %) / 27 of 96 (28 %) |
+| Lost in one wave, any wave, from 90 %+ | 65 of 135 (48 %) | 64 of 151 (42 %) |
+| Game seconds of a run both rounds won at the data: all / Easy / Medium / Hard / Psycho | 513 / 555 / 497 / 499 / 471 | 512 / 554 / 504 / 486 / 475 |
+
+Reading: Easy and Medium are where they were. Hard lost 16 runs: Quartz Flats Hard 9, Glass Meadows Hard 6, the rest
+single seeds. Psycho is level in sum (Glass Meadows Psycho +7 for the skilled rung, Quartz Flats Psycho -6).
+
+**The cells round 80b flagged:**
+
+- **Glass Meadows Psycho: mended for the skilled rung, `3 2 0 0 0` -> `3 3 3 3 0`.** The rift no longer opens, so no
+  gun is spent on guarding it and the gates hold to the finale. The sensible rung stays at 0 of 3 at the data (1 seed
+  at x0.8 before, none now). The Cannon's price was not booked (its condition did not arise).
+- **Glass Meadows Hard pays for it on the sensible rung** (`3 3 3 3 0` -> `3 3 1 0 0`; skilled 3 of 3 at the data, one
+  seed less at x1.12 and x1.25): without the Cragback behind the gate wave 7 is a whole tank escort again, at x3.24
+  where the wave with the surprise had fewer bodies at x2.83. The sensible runs fall in the last wave.
+- **Fault Line Psycho** (ground x1.04 against round 80, the scale's cliff): skilled 15 of 15; sensible `3 3 3 1 0` ->
+  `2 2 3 2 0` (ten seeds before, nine now, 3 of 3 at the data): the deterministic bot on another path.
+- **Fault Line Easy** (ground x1.09): 15 of 15 on both rungs, as before.
+- **Shard Ridge Medium** (raids x1.34, boss 868 -> 1042 hp): 15 of 15 on both rungs. The boss's as-played margin, last
+  wave, mean of three seeds: skilled at the data, gate damage 27 -> 94 hp, the base untouched before and after (700 of
+  700), and still 3 of 3 at x1.25 (gate damage 66 -> 98, base damage 11 -> 26). Sensible at the data: base left 606 ->
+  534 of 700, 3 of 3 at x1.25 before and after (538 -> 438). So she takes about three times as much out of the gates
+  and the cell still has more than a quarter of health to spare: **stronger, not yet strong**. Question 2.
+- **Quartz Flats Hard: worse** (skilled `3 3 1 0 0` -> `3 1 0 0 0`, sensible `3 3 1 1 0` -> `3 0 0 0 0`) **and Quartz
+  Flats Psycho lost its 3 of 3** (skilled `3 3 3 2 0` -> `3 0 1 1 0`). Both fall in waves 16 and 17 with the gates
+  worn, as Hard did before. The sums are round 80's (ground x1.00 and x0.99) but the weight moved to the back: Psycho's
+  waves 1 to 8 are 10 % softer and wave 14 (a tank escort with a surprise) is 19 % tougher (x2.44 -> x2.91), Hard's
+  waves 14, 15 and 17 are 4 to 9 % tougher. That shift is round 80b's (round 80b's own partial records already lost
+  Psycho seed 1 at the data): with the raids capped and out of the mean the model's player holds fewer sky guns and
+  more ground guns late, so the late waves are sized up, and the re-expressed scale takes the same sum off the front.
+  Nothing is on the hero cap there (wave 14 asks 0.67 of 1.35), so the scale moves every wave alike and cannot mend the
+  shape: softer still at the front breaks the grace rows further, tougher loses more seeds. **Not mended.** Open point 1.
+
+### Gates
+
+- **Finale probe** (`finale_workers.sh`, 5 min, run twice with the same result): 24 of 24 boss cells won at the data.
+  Eleven holds moved against round 80 by a step or two of the probe's grid (Gravemaw Medium x1.40 -> x1.52, which
+  fails an EditMode gate, below); **Rotbloom holds exactly x1.00 on Medium and Hard** (round 80: x1.09 and
+  x1.18), the lowest of the set. `finale_probe.txt` is the new measurement (copy: `finale_probe_r81.txt`). No rule of
+  this round touches a continent boss; the finale player's purse is the campaign model's, which the boss factor and
+  the scales move.
+- **Grace windows** (all 24 cells measured again, 216 units; Glass Meadows Easy once more after its growth moved; then
+  `GraceReport.cs`): 94 rows: 49 in time, 39 late inside an allowance, 6 not judged, **no row breaks the gate**.
+  Glass Meadows Easy, Gun Turret row: 0 of 3 (was 1 of 3). Allowance changes: Quartz Flats Psycho armour new 1 and air
+  1 -> 2 (item 11); none for Crysium Vein.
+- **Acceptance** (the old gate; replay of all 24 cells 32 min 43 s, 0 probe errors, then `BalanceAcceptanceTests` on
+  w6): `acceptance_r81.txt` has 7 cells PASS and 17 FAIL, the same cells as `acceptance_r80.txt`. The replayed plans
+  are kept as `plan_records_r81_replay.txt`; the replay ran before Glass Meadows Easy's growth moved.
+- **EditMode, whole suite on w6, final state** (`r81_editmode_full.txt`): 1176 tests, 1122 passed, **1 failed**, 53
+  skipped. The one: `ContinentFinaleTests.FinaleProbe_DerivedBossHealth_MatchesTheData`: Gravemaw holds x1.52 on
+  Medium in the new finale probe (x1.40 since round 77, which sat on the edge of the gate's 20 % band), so the probe's
+  derived health is 56637 against the data's 43750. The probe ran twice on the final state with identical results (it
+  is deterministic), so it is the state, not noise: the finale player's purse moved by a few coins (1281 -> 1287 on
+  Easy) with the composition of the last level's waves, and one more step of the probe's grid was won. The gate's own
+  remedy is the finale stage, which rewrites every continent boss's health from the probe (Gravemaw up to about 56600,
+  Rotbloom down to about 24000 from the 28200 Remco set in round 77). **Not run: continent boss health is Remco's
+  call.** Question 5. The 21 tests of this round's classes pass (`WaveGrammarTests` 28 of 28, `RearNestTests`,
+  `CombatRulesTests`, `BalanceLedgerTests`, `WorldContentTests`).
+- **Compile:** clean (0 errors; the one warning is round 78's CS0618 in `BalanceProbeTests.cs`, a bot file).
+
+### Not built, and why
+
+- **A default plan that varies the main paths per wave** (Remco: any subset of main paths with any subset of surprise
+  paths, more and bigger combinations on the harder difficulties). The default plan varies the surprises per difficulty
+  as before (share 0.12 to 0.26, spacing 4 to 2 waves, opening 4 to 2 waves free; several nests at once where the
+  roster has several rift troops) and the data model takes any combination, but the front still uses every main road
+  on every wave. Choosing roads per wave re-lays every wave of the levels that fork and needs its own measurement;
+  it is the first design item for the next round.
+- **A surprise path in a layout.** No road template lays one out, so `_surprisePaths` is empty in all six levels and a
+  surprise comes out of nests (stone nests send Cragbacks and Shalebats only). No spawn point was added to a map this
+  round: every surprise already comes out of an authored one. A new nest or road makes a level's plans and picks stale
+  (a bot batch); the candidates are Glass Meadows (its rift is quiet now) and Shard Ridge (a surprise road instead of
+  the flank down a main road).
+- **Bot version 4** and a strategy search (Quartz Flats Hard and Psycho): out of scope, its own batch.
+
+### Open
+
+1. **Quartz Flats Hard (0 of 3) and Psycho (1 of 3) for the skilled rung.** The cause is the shape round 80b gave the
+   level (above), not a surprise. Two ways: a strategy search on today's waves as bot version 4 (planned for Hard
+   anyway), or a rule that sizes late ground waves for the sky guns a player really holds (the air side of the ledger,
+   round 79's open point 3). Until then these two cells are the known red ones.
+2. **Glass Meadows Hard and Landing Site Hard are harder for the sensible rung** (1 of 3 at the data each).
+3. **One EditMode test fails: the finale probe's derived health of Gravemaw** (Gates). And Rotbloom's finale margin
+   is zero on Medium and Hard in the same probe (x1.00). Both are one step of the probe's grid.
+4. **A level's boss is sized before the surprise relief** (item 8): it asks about a sixth less alone than its factor.
+5. `Tools/PlayTest/wave_ledger_arg.txt` is round 80b's again (24 cells, `label=r80b_final`); `r64_lab_arg.txt` is
+   `label=final`; `scale_refit_arg.txt` skips Landing Site, Glass Meadows and Fault Line Easy.
+
+### Questions for Remco (yes / no, with the recommendation)
+
+1. **Glass Meadows has no surprise now** (its lone Cragback behind the gate was the filler you saw), and Landing Site
+   keeps its one Cragback out of the rear rift as a written surprise (your round 31 lesson with Voss's warning). Write
+   one for Glass Meadows too, for example two Cragbacks out of its rift late in the level (wave 10)? Recommended: yes,
+   small, from Medium on; or say that Landing Site's single Cragback should go as well.
+2. **Shard Ridge Medium's boss is a fifth tougher (1042 hp) and the level is still won with room to spare.** Raise the
+   Medium factor further (0.33: 1145 hp, Quartz Flats' Core Wisp 1750)? Recommended: play it once first; then 0.33.
+3. **Quartz Flats: the default surprise is bats out of both rifts plus one Cragback out of the rear rift** (three or
+   more creatures together, so by the rule a group, but the Cragback walks the road alone). Keep? Recommended: yes for
+   now; a written surprise can replace it per wave.
+4. **Next round: let the default plan pick which main roads a wave uses** (one road early, both later, per
+   difficulty)? It changes every wave of the forked levels. Recommended: yes, as its own round with a measurement.
+5. **Gravemaw is beaten at 1.5 times its health on Medium in the finale probe, Rotbloom only just at its own** (the one
+   failing test). Run the finale stage, which sets every continent boss's health from the probe (Gravemaw about +29 %,
+   Rotbloom about -15 %, the others within a fifth)? Recommended: yes for Gravemaw and Rotbloom together, as its own
+   small batch with the finale probe after it; until then the test stays red and the commit says so.

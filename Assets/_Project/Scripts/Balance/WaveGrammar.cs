@@ -46,24 +46,27 @@ namespace Game.Balance
         public static float Phase(WaveScriptSpec script, int number) => script.Waves > 1 ? (number - 1) / (float)(script.Waves - 1) : 0f;
 
         /// <summary>
-        /// The surprise a wave carries, if any. A wave can carry one when the level has a source for it (rift troops that have
+        /// The surprise a wave carries, if any. The level's own schedule comes first (<see cref="WaveScriptSpec.Surprises"/>);
+        /// the rest is the default plan: a wave can carry one when the level has a source for it (rift troops that have
         /// joined, else a second road once the level is under way), and it is no air raid, no swarm, no boss wave and not the
-        /// last wave: those are events of their own. The first such wave after the difficulty's surprise-free opening takes one, then the
+        /// last wave: those are events of their own, and its share of the budget buys a real group
+        /// (<see cref="WaveGrammarRules.MinSurpriseGroup"/>). The first such wave after the difficulty's surprise-free opening takes one, then the
         /// first again after the difficulty's spacing: never two surprises closer than that, never two in one wave.
         /// </summary>
         public static SurpriseKind SurpriseOn(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int number, int secondRoad, BalanceRules rules)
         {
-            SurpriseKind[] plan = Plan(script, enemies, difficulty, secondRoad, rules.Grammar);
+            SurpriseKind[] plan = Plan(script, enemies, difficulty, secondRoad, rules);
             return number >= 1 && number <= plan.Length ? plan[number - 1] : SurpriseKind.None;
         }
 
         // The level's surprises on one difficulty, wave by wave. Remembered on the script per difficulty, flyer floors and the
         // rules that place them, because the solver composes a wave thousands of times.
-        private static SurpriseKind[] Plan(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int secondRoad, WaveGrammarRules grammar)
+        private static SurpriseKind[] Plan(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int secondRoad, BalanceRules rules)
         {
+            WaveGrammarRules grammar = rules.Grammar;
             int spacing = System.Math.Max(1, grammar.SurpriseSpacingFor(difficulty));
             int free = grammar.SurpriseFreeWavesFor(difficulty);
-            long key = ((long)script.FlyingTroopFloorFor(difficulty) << 40) | ((long)script.FirstAirWaveFloorFor(difficulty) << 32) | ((long)(int)(grammar.FlankFrom * 100f) << 24)
+            long key = ((long)grammar.MinSurpriseGroup << 59) | ((long)(int)(grammar.SurpriseShareFor(difficulty) * 1000f) << 49) | (grammar.Surprises ? 0L : 1L << 48) | ((long)script.FlyingTroopFloorFor(difficulty) << 40) | ((long)script.FirstAirWaveFloorFor(difficulty) << 32) | ((long)(int)(grammar.FlankFrom * 100f) << 24)
                 | ((long)spacing << 16) | ((long)free << 8) | ((long)difficulty << 1) | (secondRoad >= 0 ? 1L : 0L);
             if (script.SurprisePlans.TryGetValue(key, out SurpriseKind[] plan))
             {
@@ -74,7 +77,22 @@ namespace Game.Balance
             int next = free + 1;
             for (int w = 1; w <= script.Waves; w++)
             {
-                SurpriseKind source = w >= next && CanCarry(script, difficulty, w) ? SourceOn(script, enemies, difficulty, w, secondRoad, grammar) : SurpriseKind.None;
+                // The level's own surprise for the wave comes first (SurpriseSpec): where it will, as small as it will. One
+                // without entries keeps the wave free of the default too.
+                SurpriseSpec authored = script.SurpriseFor(w, difficulty);
+                SurpriseKind source;
+                if (authored != null)
+                {
+                    source = grammar.Surprises && authored.Entries.Length > 0 ? SurpriseKind.Authored : SurpriseKind.None;
+                }
+                else
+                {
+                    source = grammar.Surprises && w >= next && CanCarry(script, difficulty, w) ? SourceOn(script, enemies, difficulty, w, secondRoad, grammar) : SurpriseKind.None;
+                    // The default is a real group out of the level's spawn points: a wave whose share buys fewer creatures
+                    // carries none, and the next wave that can takes it (round 81: never a stray creature as filler).
+                    source = WaveComposer.SurpriseHeads(script, enemies, difficulty, w, secondRoad, rules, source) >= grammar.MinSurpriseGroup ? source : SurpriseKind.None;
+                }
+
                 plan[w - 1] = source;
                 next = source != SurpriseKind.None ? w + spacing : next;
             }

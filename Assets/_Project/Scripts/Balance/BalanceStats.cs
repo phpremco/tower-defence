@@ -307,6 +307,13 @@ namespace Game.Balance
         public bool CounterCheck;
 
         /// <summary>
+        /// True for an air raid of the script (round 80b). A raid aims below the level's curve and is capped at the sky guns the
+        /// player holds (BalanceRules.RaidsCappedAtHeldGuns), so the mean of the plain waves (BalanceChecks.PlainMean) leaves
+        /// it out: the human calibration never answers a softer raid with tougher ground waves.
+        /// </summary>
+        public bool AirRaid;
+
+        /// <summary>
         /// How the wave grammar laid the wave out (round 79): the front pattern, the clusters it was cut into and the surprise
         /// it carries. For the reports and the tests; the game reads the groups.
         /// </summary>

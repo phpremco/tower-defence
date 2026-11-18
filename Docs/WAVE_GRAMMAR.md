@@ -1,4 +1,4 @@
-# Wave grammar (round 79)
+# Wave grammar (round 79, rules of rounds 80, 80b and 81 marked)
 
 How the creatures of a wave arrive. Remco, 2026-11-17: surprises ("everything stands at the front gate, and poof, something
 comes behind it"), waves that are long and distributed (spread clusters or big swarms, small pauses, combo swarms), and
@@ -30,8 +30,9 @@ may carry **one surprise** (`SurpriseKind`).
 | Combo swarm | Every troop of the level at once, no head start for anyone | Every second plain wave from `ComboFrom` 0.45 of the level on | `ComboTempo` 1, `ComboBeatSeconds` 12 |
 | Air raid | A packed raid over a thin ground stream | The script's raid waves (unchanged) | the script's |
 | Breather | Silence between two clusters | Whenever a front is longer than about a beat and a half | `Breather` per difficulty |
-| Surprise: rift | The level's rift troops surface mid-wave, behind the gate where the level has such a rift | See "Surprises" | `SurpriseShare` 0.12 / 0.18 / 0.22 / 0.26, `SurpriseAt` 0.5, `SurpriseMinDelay` 12 s |
+| Surprise: rift | The level's rift troops surface mid-wave, behind the gate where the level has such a rift | See "Surprises" | `SurpriseShare` 0.12 / 0.18 / 0.22 / 0.26, `SurpriseAt` 0.5, `SurpriseMinDelay` 12 s, `MinSurpriseGroup` 3 |
 | Surprise: flank | A share of the wave comes down the second road alone, mid-wave | A level without rift troops but with a second road | the same, `FlankFrom` 0.35 |
+| Surprise: authored | What the level writes for that wave: any creatures, any number, out of any of its surprise points at once | The level's own schedule (`WaveScriptSpec.Surprises`), see "Writing a level's surprises" | the entry's |
 | Boss entrance / finale | The crowd in clusters with long breathers; the boss walks in with the last cluster | Every boss wave; the last wave takes three clusters | `BossBeats` 2, `FinaleBeats` 3, `BossBreather` 9 / 8 / 7 / 6 s, `MinBossBeatSeconds` 3 |
 
 Notes on what is emergent and what is not:
@@ -59,27 +60,109 @@ Notes on what is emergent and what is not:
    difficulty's breather between them. A front shorter than a beat and a half stays whole.
 5. A boss wave is cut into `BossBeats` clusters (the last wave of the level: `FinaleBeats`) with the long boss breather,
    whatever its length, and the boss walks in with the last cluster.
-6. A surprise rides on the wave when the surprise rule says so.
+6. A surprise rides on the wave when the level's own schedule writes one for it, else when the surprise rule says so.
 
 The rhythm string stays the level's own (variety between levels); the ramp comes from the script's budget curve and the
 solver's target curve, as before. The old letter `M` (ambush) is gone: surprises are placed by rule, not written per level.
 
 ## Surprises
 
+Remco's design (2026-11-17, round 81), which the rest of this section follows:
+
+- **All spawn points are the same kind of thing; each has a role in the level's data.** A level's spawn points are the
+  starts of its ground paths (the route gates) and its nests (the rifts). `LevelDefinition.RoleOfPath` /
+  `RoleOfNest` (`SpawnRole`): a ground path is a **main** path unless the level lists it in `_surprisePaths`; a nest is a
+  **surprise** point unless the level lists it in `_mainNests`. The front of a wave comes through the main points, a
+  surprise through surprise points. It is a role, not a different mechanism: the same spawn groups, the same scheduler.
+- **Any combination is allowed in one wave**: any main paths together with any surprise points, one or all of them. No
+  validator rule limits a wave to one nest (round 79's rule "walkers out of one authored nest per wave" is gone).
+- **What comes out of a surprise point can be written per level and per wave** ("Writing a level's surprises" below).
+  A small group, even one big creature, is fine when the level wrote it.
+- **The grammar still makes a default plan by rule** (below) for every wave the level does not write. The default is
+  never a stray creature: round 79's filler ("a surprise is never empty: where the share buys no creature, one comes")
+  is gone. A default surprise is a real group of at least `WaveGrammarRules.MinSurpriseGroup` creatures (3, a data value;
+  all its groups together, before the difficulty's count multiplier), and a wave whose share buys fewer carries none: the
+  next wave that can takes it. What Remco saw in play, one Cragback walking the road behind a gate, was that filler and
+  the Easy share buying a single heavy troop.
+
+### Writing a level's surprises
+
+In the level's spec (`LevelSpecs`, the `Waves = new WaveScriptSpec { ... }` block), next to the roster, the rhythm, the
+bosses and the teasers:
+
+```csharp
+Surprises = new[]
+{
+    // Wave 6, every difficulty: three Cragbacks out of nest 2.
+    Surprise(6, FromNest(2, "Cragback", 3)),
+    // Wave 9 on Hard and Psycho only: a swarm of bats out of nests 1 and 3 at once, and a file of Skitters in
+    // clusters down surprise path 4. Easy and Medium keep the grammar's default on wave 9.
+    Surprise(9, Hard, Psycho,
+        FromNest(1, "Shalebat", 8, WavePattern.Swarm),
+        FromNest(3, "Shalebat", 8, WavePattern.Swarm),
+        DownPath(4, "Skitter", 12, WavePattern.SpreadClusters)),
+    // Wave 11: no surprise at all, whatever the default plan would have put there.
+    Surprise(11),
+},
+```
+
+- An entry (`SurpriseEntrySpec`): the creature, how many, the point (a nest counted from 1 in the level's nests, or a
+  ground path's index), the pattern (`Stream` one file at the creature's roster spacing, `SpreadClusters` that file cut
+  into clusters with the difficulty's breather, `Swarm` close together as a rush wave), and optionally its own spacing
+  (`interval`) and a delay after the surprise's moment (`delay`).
+- A written surprise **replaces the default on that wave** for the difficulties it names; the other difficulties and the
+  other waves keep the default plan, which counts a written surprise for its spacing. It may fall on any wave, a raid, a
+  swarm or a boss wave included: that is the designer's call.
+- **The wave is no bigger for it.** The front gives up the threat the entries cost, so the level's kill money stays what
+  the script's budget says; entries that cost more than the whole wave leave no front and open at once. The solver and
+  the ledger read the wave as composed (the groups carry their nest or path), so the health multiplier is sized for
+  whatever is written, and `KillPurse` books each kill where it happens.
+- The count is the script's, like every count in a wave: the difficulty's count multiplier (0.9 / 1 / 1.3 / 1.65)
+  applies in play. Write an entry per difficulty where the exact number matters.
+- It comes mid-wave like every surprise (halfway the front, never before twelve seconds).
+- **Validation.** `SurpriseSchedule.Check` (the solve stage logs every error as `[Validator]`; the tests
+  `WaveGrammarTests.TheSurpriseSchedule_IsCheckedAgainstTheLevelsSpawnPoints` and `EveryLevelsOwnSurprises_FitItsSpawnPoints`):
+  the wave exists, every entry has a known creature and a count of at least one, its point exists and has the surprise
+  role, a nest sends only creatures of its element (in the first continent: Cragback and Shalebat out of the stone
+  nests), a path only walkers. `LevelDefinition.OnValidate` checks the roles themselves (a surprise path is a ground path
+  and never the only one; a main nest exists) and, as before, every stored spawn group (the nest exists and fits the
+  creature, the path exists; every nest leaves its walkers a real walk to the base).
+- After writing one: recompile, read `compilationFailed`, run the solve stage (Docs/COMMANDS.md, "Round 79"), then
+  `WaveGrammarReport.cs`: a written surprise shows as `*`.
+- Not there yet: no road template lays out a surprise **path** (the generator writes every ground path as main), so in
+  the six levels as they are a surprise comes out of nests; `_surprisePaths` and `DownPath` are ready for the first
+  layout that has one. No level of the first continent writes a surprise of its own yet (question for Remco in STATUS,
+  round 81).
+
+### The default plan (the rules)
+
 - **Source.** A level with rift troops (a `TroopSpec` with the nest source) surprises through its rifts only, once those
   troops have joined; a level without them uses its second road once `FlankFrom` of its waves have passed. A level with
   neither has no surprise.
-- **A surprise never introduces the sky.** Flyers out of a rift wait for the difficulty's first air raid: the raid is the
-  announced first meeting with flyers (the Easy raid rule and the first-flyer rule place it where a sky gun is payable),
-  the rifts follow. Measured on paper: one Shalebat out of a rift in wave 5 of Fault Line Easy made the ledger's player
-  buy a sky gun out of a thin purse and the calibration halved the health of the whole level.
+- **A rift's flyers do not wait for an air raid (round 80, Remco: "a bit of panic belongs to it").** Round 79 held them
+  back until the difficulty's first raid; that guard is gone, on every difficulty. What still holds any flyer back,
+  whatever sends it, is the purse:
+  - Easy and Medium: the first-flyer rule of round 77 (`BalanceRules.FlyersAfterBounties`, unchanged): no flyer before
+    the bounties pay for a sky gun by the end of the grace window.
+  - Easy only: the flying troops also wait for the wave of the Easy raid rule (round 22f: the expected player's kills
+    have paid for a sky gun, plus a wave; `CampaignModel.EasyRaidFloor`). Before round 80 that rule moved only the raids.
+    Without it the guard's removal put one Shalebat in wave 5 of Fault Line Easy, the ledger's Easy player bought the sky
+    gun out of its ground defence and the human calibration took 38 % off the whole level (waves at x0.12 to x0.19);
+    Quartz Flats Easy lost 14 %, Crysium Vein Easy 18 %. It is a purse rule, not a wait for the raid: on Easy a rift's
+    bats may still come before the first raid when the purse is there. **Approved by Remco (2026-11-17).**
+  - Hard and Psycho: nothing. Crysium Vein Hard meets its rift's Shalebats in wave 6, two waves before its first raid.
 - **Where they may fall.** Never in the surprise-free opening (`SurpriseFreeWaves` 4 / 3 / 2 / 2 waves), never on an air
   raid, a swarm, a boss wave or the last wave (those are events of their own; a swarm also carries a high health
   multiplier that a rift's tanks would inherit: three Cragbacks at x5.4 behind the gate ended every skilled run of Glass
   Meadows Easy in the first measurement). The first wave that may carry one does; the next comes `SurpriseSpacing` waves
   later at the earliest (4 / 3 / 3 / 2). So there is never more than one surprise per wave and never more than one in N waves.
+  **A surprise may fall on a tank escort wave (Remco's decision, 2026-11-17):** that is the behaviour as built, and no
+  rule is to be added against it.
 - **How big.** `SurpriseShare` of the wave's budget comes as the surprise, the rest at the front; the wave is no bigger
-  for it. A surprise is never empty: where the share buys no creature yet (an early wave, a heavy rift troop), one comes.
+  for it. **A default surprise is a real group** (`MinSurpriseGroup` 3, round 81): where the share buys fewer (an early
+  wave, a heavy rift troop) the wave carries none and the first later wave that can takes it. Several rift troops may
+  open several nests at once; the group is the whole surprise (Quartz Flats: bats out of both rifts and a Cragback out
+  of the rear one).
   The growth of plated troops past their grace window (round 68) is the front's alone: a surprise is sized by its share
   (with the growth on top, seven Cragbacks came out behind the gate of Glass Meadows on Psycho where the share asked two).
   The shares are the second set tried: at 0.2 / 0.3 / 0.35 / 0.4 the rifts behind the gate of Glass Meadows and Quartz
@@ -98,12 +181,89 @@ First continent (the level's own roster decides the source):
 
 | Level | Surprise | Out of |
 | --- | --- | --- |
-| Landing Site | Cragbacks | the rift behind the first gate (as before, from wave 7; now repeated by the spacing) |
-| Glass Meadows | Cragbacks, from wave 7 | its one rift, which lies behind the first gate (new troop in the script) |
+| Landing Site | none since round 81 | its rift troop is the Cragback alone and no wave's share buys three of them (threat 15 a head; three cost more than wave 7 has); a written surprise is the way to open that rift |
+| Glass Meadows | none since round 81 | the same: one rift, one heavy rift troop |
 | Shard Ridge | a flank | the second road |
 | Fault Line | Shalebats | its three rifts (drawn per bat, as before) |
 | Quartz Flats | Shalebats, from wave 9 with Cragbacks | bats: both rifts; Cragbacks: the rift behind the first gate (new troop) |
 | Crysium Vein | Shalebats | its rift |
+
+## A surprise lifts no other wave (round 80)
+
+`BalanceRules.SurprisesLiftNoWave`. A surprise wave is hard for the model (a rift behind the gate gets only the defence
+behind its join cell), so it sits on the hero cap, and it pays less (its share buys few, heavy bodies). The human
+calibration holds the level's plain mean on its target with one common factor, so what the cap took off the surprise
+waves went onto every other wave. Glass Meadows Psycho: every uncapped wave was 8 % tougher with the surprises than
+the same level solved without them; the swarm of wave 8 took the first gate in play where round 78 lost a fifth of it,
+and the gates never came back before the finale.
+
+The rule: every difficulty is solved a second time without its surprises (`WaveGrammarRules.Surprises` off for that
+pass only), and a wave that carries no surprise takes the lower of its two multipliers. A boss keeps the health it was
+sized at. Surprise waves keep their own solve. So a surprise takes from its own wave, never from the others, and a level
+with surprises is never tougher outside them than the level without.
+
+**The curve comes first (round 80b, `BalanceRules.SurpriseReliefMost` 0.05).** Taken alone the rule left a level under
+its human curve by what it took (Glass Meadows Psycho 8.9 %, Shard Ridge Psycho 8.5 %, Crysium Vein Psycho 6.5 %, Fault
+Line Easy 6 %), outside the 6 % the curve's own gate allows (`BalanceRules.HumanTargetTolerance`). So the relief is
+bounded: where the lowered waves leave a competent player more than 5 % above the surplus the curve asks, they come back
+up together (a share of the way from the calm multiplier to the level's own, found by bisection) until the level sits
+5 % under its curve. A wave without a surprise is still never tougher than the rule leaves it without, and the level
+without surprises is solved for the same purse (the guard gun of a rear rift stays booked, see below). Test:
+`WaveGrammarTests.ASurprise_MakesNoOtherWaveTougher_AndTheLevelStaysInsideItsBand`.
+
+## A raid is capped at the sky guns held (round 80)
+
+`BalanceRules.RaidsCappedAtHeldGuns` (the cap is approved by Remco, 2026-11-17). The ledger's player buys a sky gun's next step only once the flyers' pressure is
+above one (`SkyHoldPressure`, round 22d); an air raid aims below one (target 0.8 x the phase x `AirFactor` 0.9). So as a
+raid's creatures grow tougher its pressure crosses the target with the sky guns the player holds, rises to one, drops
+when the player buys the step, and crosses the target again: a raid has two or more solutions, and the solver's
+bisection over the whole range landed on either by a hair of the purse. Quartz Flats wave 13 (the raid every difficulty
+copies from the Medium curve): x1.18 in round 78, x2.46 in round 79, with the same crowd and 10 coins less (the lab,
+grammar off against on: the player holds a level-2 Flak at x1.18 and jumps to level 3 at x2.46). The cuts and the
+surprises of round 79 only moved the purse by that hair; no grammar rule carries the step.
+
+The rule as round 80 built it: every difficulty was solved a second time with each raid at the lowest multiplier that
+meets its target, and a raid took the lower of its two multipliers while no other wave moved. That left ten cells softer
+than their human curve by more than the curve's gate allows (Quartz Flats Medium 1.75x where 1.43x is asked).
+
+**The rule since round 80b:**
+
+- The solver takes a raid's lowest crossing in the one solve (it walks up in steps of 5 % and bisects inside the first
+  step that crosses; `WaveSolver.BisectOn`). There is no second solve.
+- **An air raid is no plain wave** (`WaveSpec.AirRaid`, stored as `WaveDefinition._airRaid`; `BalanceChecks.PlainMean`
+  leaves it out, as it leaves out a boss wave and a counter check). The human curve is held by the ground waves alone,
+  in the calibration and in the gate (`BalanceLedgerTests`) alike.
+- The trim to the human curve may soften a raid with its level, never lift it above the solver's crossing
+  (`CampaignModel.CalibrateToHuman`). So it stays a cap: it only ever takes health off a raid.
+- What round 80 read as "the calibration answers a softer raid" is mostly the purse, not the mean: with softer raids
+  the ledger's player buys no further sky gun and has that money on the ground (Quartz Flats Medium: a fifth more
+  firepower on the ground waves with the raids out of the mean and capped). The ground waves are now sized for that
+  purse; that is the curve doing its work, and the builder's scale is the lever where play says a cell is too tough.
+- **Every builder scale was re-expressed** for the new reading (`Tools/PlayTest/Scripts/ScaleRefit.cs`): leaving the
+  raids out of the mean alone moved the ground waves of raid-heavy cells by up to 60 % (Shard Ridge Psycho), because the
+  raids used to hold the mean down. Per cell the scale was searched at which the ground waves sum to round 80's measured
+  ones again; a cell that moved less than 3 % kept its scale, and so did the cells whose change is a rule's intent (Glass
+  Meadows: the guard gun; Fault Line Easy: its ground waves now grow, see STATUS round 80b).
+
+Not done, and the honest limit of this rule: the ledger's air side is still the model of round 61 (the spawn window
+plus one pass); a raid sized "to the guns held" is sized to that model's guns.
+
+## The guard gun of a rear rift (round 80b)
+
+`BalanceRules.RearRiftGuardCells` (8 cells), `BooksRearGuard`. Walkers out of a rift that joins the road more than
+eight cells behind the defence (the first gate every road passes) are out of reach of every gun at the front. Both
+reference players stand a gun at such a rift a wave ahead, at the price of an upgrade at the front; the model's purse
+was all at the front. From the first wave such a rift opens, the human lens books the cheapest gun that shoots the
+ground: `KillPurse.Money` is short its price for the rest of the level, in the level without surprises too. Which rifts:
+Glass Meadows (joins 24 cells behind the first gate) and Quartz Flats' rear rift; not Landing Site (3 cells: the guard
+still fires on the front). **Since round 81 only Quartz Flats books it**: the gun is booked from the first wave the rift
+opens, and the default plan no longer opens the rift of Glass Meadows (no group of Cragbacks fits a wave's share). The solver's reference player does not book it: its factors are fitted to the probe bot's
+recorded runs, in which the bot already stands that gun, and booked twice it pushed a counter check out of its band
+(Glass Meadows Medium wave 10 at pressure 1.65 where 1.55 is the most).
+
+Measured on Glass Meadows before the final solve (`pressure_r80b_guard_records.txt`, the guard still in both lenses):
+Psycho skilled `3 2 0 0 0` -> `3 2 2 0 0`, the sensible rung unchanged. The final measurement is in STATUS, round 80b.
+What it does not do: the price booked is the cheapest gun's, the players stand a Cannon there.
 
 ## The finale rule
 
@@ -138,10 +298,14 @@ boss; a boss's own powers no longer fall on the whole crowd at once. The wave's 
   a pause is no window; patterns follow the rhythm; surprises keep their spacing and stay off the opening, raids, boss waves
   and the last wave on every level and difficulty; every level of the first continent has a surprise; a rift opens
   mid-wave through the authored nest and on surprise waves only; a flank comes down the second road alone; a boss walks in
-  with the last cluster after a breather; the escort's lag; counts never change.
+  with the last cluster after a breather; the escort's lag; counts never change; a default surprise is a group or the wave
+  carries none; a level's own surprise replaces the default on its wave and difficulties, out of several points at once,
+  and the front pays for it; the schedule is checked against the level's spawn points.
 - `LevelValidator` (rule `WaveShape.Check`, on every stored wave as the scheduler plays it): no silence between two spawns
-  longer than `WaveGrammarRules.MaxPauseSeconds` (16 s), no wave that spawns longer than `MaxWaveSeconds` (120 s), walkers
-  out of at most one authored nest per wave (one surprise per wave).
+  longer than `WaveGrammarRules.MaxPauseSeconds` (16 s), no wave that spawns longer than `MaxWaveSeconds` (120 s). Any
+  combination of spawn points in one wave is valid (round 81). The default plan's group rule is checked where the plan
+  is made (`WaveGrammarTests.ASurprise_IsARealGroup_AndAWaveWhoseShareBuysFewerCarriesNone`), not on the stored waves:
+  there a written surprise of one creature is as valid as a swarm.
 - `python Tools/PlayTest/wave_shape.py [--rev <revision>] [--waves C1_05:1]`: spans, clusters and creature types of the
   stored waves, per cell or wave by wave.
 
@@ -174,10 +338,13 @@ Each was reverted; the stored waves are the first half's (data stamp `c75b37f7`)
   and each body is harder. Over a level it is small (Glass Meadows Psycho: 731 -> 704 creatures). The test
   `TheGrammar_MovesCreaturesInTime_NeverTheirNumber` covers the cuts, not the surprise.
 - **A raid of a harder difficulty copies Medium's multiplier** when Medium has the same raid in its script (before the
-  flyer floors move Medium's raids), as before the grammar. Quartz Flats wave 13: the Medium solve now gives that raid
-  x2.46 before the calibration (round 78: x1.18; without surprises x1.98, with the cuts alone about x1.9), and Easy, Hard and
-  Psycho take it over (Hard x1.02 -> x2.25). No single rule explains the step; the level now really has its rift bats (they
-  were in the script from wave 6 but never came: the level had no ambush wave), and the cuts give the towers more time.
-- **The reference players and the rear rift:** both put one gun at the gate a rift's walkers reach. On Glass Meadows the
-  walkers of the rift behind the first gate meet no gate and walk to the base (every surprise Cragback of the skilled runs on
-  Psycho reached it). A matter for bot version 4.
+  flyer floors move Medium's raids), as before the grammar. The step of Quartz Flats wave 13 (x1.18 -> x2.46) was the
+  solver's two crossings, mended in round 80 ("A raid is sized against the sky guns held" above).
+- **The rear rift of Glass Meadows costs the front a gun (round 80, the cause of Glass Meadows Psycho).** The road index
+  of every gate and rift (`Tools/PlayTest/r80_gates.cs`): Landing Site's rear rift joins the road 3 cells behind the first
+  gate, where a gun that guards it still fires on the front; Glass Meadows' rift joins 24 cells behind the first gate
+  (index 35, gates at 11, 45, 81, 89), out of reach of every gun at the front. Both reference players guard a marked
+  rear rift with a gun a wave ahead; on Psycho that is a Cannon in wave 6 at the price of the front Cannon's upgrade,
+  and the swarm of wave 8 then takes the first gate. Round 80b books that gun in the model ("The guard gun of a rear
+  rift" above). The other way, not built: the map (a rift that joins within a gun's reach of the first gate, as on
+  Landing Site; needs a relayout and a new plan search, so a bot batch of its own).

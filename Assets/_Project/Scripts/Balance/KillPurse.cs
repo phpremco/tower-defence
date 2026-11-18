@@ -21,6 +21,8 @@ namespace Game.Balance
         private float _clock;
         private float _waveStart;
         private float _paid;
+        private int _guard;
+        private int _begun;
 
         public KillPurse(LevelInput level, DifficultyStats difficulty, BalanceRules rules)
         {
@@ -49,10 +51,57 @@ namespace Game.Balance
                     _pending.RemoveAt(i);
                 }
             }
+
+            _begun++;
+            if (_guard == 0 && _rules.BooksRearGuard && _rules.RearRiftGuardCells > 0f && (ComesFarBehind(_level, wave, _rules) || (_rules.RearGuardFromWave > 0 && _begun >= _rules.RearGuardFromWave)))
+            {
+                _guard = CheapestGroundGun();
+            }
         }
 
-        /// <summary>Money before the current wave: start, the kills paid by now and the mines, less one harvester.</summary>
-        public int Money(int waveIndex, int waveCount) => Ledger.MoneyAt(_level, waveIndex, waveCount, _paid, _rules);
+        /// <summary>
+        /// <see cref="BalanceRules.RearRiftGuardCells"/>: whether the wave sends walkers out of a rift that joins the road
+        /// further behind the defence than a gun at the front reaches.
+        /// </summary>
+        public static bool ComesFarBehind(LevelInput level, WaveSpec wave, BalanceRules rules)
+        {
+            float defenceRemaining = DefenceRemaining(level.Shape);
+            foreach (GroupSpec group in wave.Groups)
+            {
+                EnemyStats enemy = group.Enemy;
+                if (enemy == null || enemy.IsBoss || !Layer.Has(enemy.Layer, Layer.Ground) || group.Source == 0 || group.Source == WaveLoad.EntranceSource)
+                {
+                    continue;
+                }
+
+                if (defenceRemaining - WaveLoad.NestRemaining(level.Shape, group.Nest) * level.Shape.MainLength > rules.RearRiftGuardCells)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private int CheapestGroundGun()
+        {
+            int cheapest = 0;
+            foreach (TowerStats tower in _level.Towers)
+            {
+                if (tower.IsGun && Layer.Has(tower.Targets, Layer.Ground) && tower.Levels.Length > 0 && (cheapest == 0 || tower.Levels[0].Cost < cheapest))
+                {
+                    cheapest = tower.Levels[0].Cost;
+                }
+            }
+
+            return cheapest;
+        }
+
+        /// <summary>
+        /// Money before the current wave: start, the kills paid by now and the mines, less one harvester, and less the gun
+        /// that guards a rift far behind the defence once such a rift has opened (<see cref="BalanceRules.RearRiftGuardCells"/>).
+        /// </summary>
+        public int Money(int waveIndex, int waveCount) => Math.Max(0, Ledger.MoneyAt(_level, waveIndex, waveCount, _paid, _rules) - _guard);
 
         /// <summary>
         /// Books the wave's kills for the moment each creature reaches the defence. A wave over pressure one leaks in

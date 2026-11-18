@@ -23,7 +23,8 @@ namespace Game.Editor
         private const float LooseRunners = 1f;
 
         // The nest behind the first gate of the levels that have one, counted from 1 in the level's nests (RearNestTests pins
-        // each to a rear one). The level's rift walkers come out of it as the wave grammar's surprise (round 79).
+        // each to a rear one). The level's rift walkers come out of it as a surprise: the wave grammar's default where a
+        // wave's share fills a group (Quartz Flats), the level's own schedule on Landing Site (round 81).
         private const int LandingSiteRearRift = 1;
         private const int GlassMeadowsRearRift = 1;
         private const int QuartzFlatsRearRift = 2;
@@ -74,6 +75,16 @@ namespace Game.Editor
                     Rhythm = "PPRHPRPHRPHP",
                     AirSprinkleFrom = 4,
                     Bosses = new[] { Boss(12, "BroodMother"), Boss(8, "BroodMother", Hard), Boss(5, "BroodMother", Psycho) },
+                    // Round 81: the lesson of the rear rift is the level's own surprise. No wave's share buys a group of
+                    // Cragbacks, and the grammar's default never sends a stray, so the level writes it: one Cragback out of
+                    // the rear rift in the middle of wave 7 and once more late, on the waves the lesson had in round 80 (the
+                    // count multiplier makes it two on Hard and Psycho).
+                    Surprises = new[]
+                    {
+                        Surprise(7, FromNest(LandingSiteRearRift, "Cragback", 1, delay: 7f)),
+                        Surprise(11, 0, 0, FromNest(LandingSiteRearRift, "Cragback", 1, delay: 7f)),
+                        Surprise(10, Medium, Psycho, FromNest(LandingSiteRearRift, "Cragback", 1, delay: 7f)),
+                    },
                 },
                 RewardTower = "Laser",
                 Source = "HomePlanetIntel",

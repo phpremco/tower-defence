@@ -21,6 +21,10 @@ namespace Game.Tests
 
         private static readonly BalanceRules Rules = BalanceRules.Default;
 
+        // The rules with any number of creatures counting as a surprise: for the tests of where and when a surprise falls,
+        // on scripts too small to fill a group early.
+        private static readonly BalanceRules AnyGroup = new BalanceRules { Grammar = new WaveGrammarRules { MinSurpriseGroup = 1 } };
+
         private static Dictionary<string, EnemyStats> Enemies() => new Dictionary<string, EnemyStats>
         {
             ["Ant"] = new EnemyStats { Id = "Ant", Health = 11f, Speed = 1.6f, Reward = 1 },
@@ -192,16 +196,191 @@ namespace Game.Tests
         }
 
         [Test]
-        public void EveryLevelOfTheFirstContinent_HasASurprise_OnEveryDifficulty()
+        public void EveryLevelOfTheFirstContinent_HasASurprise_WhereItsShareFillsAGroup()
         {
+            // With the creatures as they are in the data. Glass Meadows has one rift troop, the Cragback, and no wave's share
+            // buys a group of those: the default plan gives it no surprise (round 81). Landing Site has the same troop and
+            // writes its own surprises (the rear rift's lesson).
+            BalanceStages.Loaded loaded = BalanceStages.Load(true);
+            Assert.IsNotNull(loaded.Catalog, "Run Tools/Generate/Scenes and Starter Data first.");
+            var heavyRiftOnly = new HashSet<string> { "C1_02" };
             foreach (CampaignLevelSpec spec in LevelSpecs.Crystal)
             {
-                // A level without rift troops needs its second road for the flank; the layouts that fork have one.
-                bool forks = spec.Layout.Template == RoadTemplate.Fork || spec.Layout.Template == RoadTemplate.LateJoin;
+                int index = loaded.Model.IndexOf(spec.Key);
+                Assert.GreaterOrEqual(index, 0, spec.Key);
+                List<List<WaveSpec>> sets = loaded.Model.BuildWaves(index, spec.Waves, out _);
                 for (int d = 0; d < Difficulties; d++)
                 {
-                    Assert.Greater(WaveGrammar.SurpriseWaves(spec.Waves, CrystalEnemies(), d, forks ? SecondRoad : -1, Rules).Count, 0, $"{spec.Key} difficulty {d}");
+                    int surprises = sets[d].Count(wave => wave.Surprise != SurpriseKind.None);
+                    if (heavyRiftOnly.Contains(spec.Key))
+                    {
+                        Assert.AreEqual(0, surprises, $"{spec.Key} difficulty {d}: a lone Cragback is no surprise");
+                    }
+                    else
+                    {
+                        Assert.Greater(surprises, 0, $"{spec.Key} difficulty {d}");
+                        Assert.AreEqual(spec.Key == "C1_01", sets[d].Any(wave => wave.Surprise == SurpriseKind.Authored), $"{spec.Key} difficulty {d}: only Landing Site writes its own");
+                    }
                 }
+            }
+        }
+
+        [Test]
+        public void ASurprise_IsARealGroup_AndAWaveWhoseShareBuysFewerCarriesNone()
+        {
+            // Remco, round 81: one stray creature behind a gate is no surprise. The fixture's rift troop is a tank: its share
+            // of an early wave buys one or two, so the first surprise waits for the wave whose share fills the group.
+            Dictionary<string, EnemyStats> enemies = Enemies();
+            var scripts = new List<WaveScriptSpec> { Script() };
+            scripts.AddRange(LevelSpecs.All.Select(spec => spec.Waves));
+            int group = Rules.Grammar.MinSurpriseGroup;
+            int seen = 0;
+            foreach (WaveScriptSpec script in scripts)
+            {
+                Dictionary<string, EnemyStats> roster = CrystalOr(enemies, script);
+                foreach (int road in new[] { -1, SecondRoad })
+                {
+                    for (int d = 0; d < Difficulties; d++)
+                    {
+                        List<int> loose = WaveGrammar.SurpriseWaves(script, roster, d, road, AnyGroup);
+                        List<int> waves = WaveGrammar.SurpriseWaves(script, roster, d, road, Rules);
+                        foreach (int number in waves)
+                        {
+                            WaveSpec wave = WaveComposer.Compose(script, roster, d, number, 1f, road, Rules);
+                            int heads = wave.Surprise == SurpriseKind.Rift
+                                ? wave.Groups.Where(g => g.Source == NestSource).Sum(g => g.Count)
+                                : WaveComposer.SurpriseHeads(script, roster, d, number, road, Rules, wave.Surprise);
+                            // What the level wrote itself may be as small as it likes; the default plan sends a group.
+                            Assert.GreaterOrEqual(heads, wave.Surprise == SurpriseKind.Authored ? 1 : group, $"{script.Key} difficulty {d} wave {number}: {heads} is a stray, not a surprise");
+                            seen++;
+                        }
+
+                        if (script.Surprises.Length > 0)
+                        {
+                            continue;
+                        }
+
+                        // The group rule only ever takes a surprise away or moves it to a later wave.
+                        Assert.LessOrEqual(waves.Count, loose.Count, $"{script.Key} difficulty {d}");
+                        if (waves.Count > 0)
+                        {
+                            Assert.GreaterOrEqual(waves[0], loose[0], $"{script.Key} difficulty {d}");
+                        }
+                    }
+                }
+            }
+
+            Assert.Greater(seen, 0);
+            WaveScriptSpec tanks = Script();
+            int first = WaveGrammar.SurpriseWaves(tanks, enemies, 1, -1, AnyGroup)[0];
+            Assert.Less(WaveComposer.SurpriseHeads(tanks, enemies, 1, first, -1, Rules, SurpriseKind.Rift), group, "the share of the first open wave buys less than a group of tanks");
+            Assert.AreEqual(SurpriseKind.None, WaveComposer.Compose(tanks, enemies, 1, first, 1f, -1, Rules).Surprise);
+            Assert.IsEmpty(WaveComposer.Compose(tanks, enemies, 1, first, 1f, -1, Rules).Groups.Where(g => g.Source == NestSource), "and the wave sends nothing out of the rift");
+        }
+
+        [Test]
+        public void TheLevelsOwnSurprise_ReplacesTheDefault_OnItsWaveAndDifficulties_AndTheFrontPaysForIt()
+        {
+            // Remco, round 81: what comes out of a surprise point is the level's to write, per wave: three creatures out of
+            // one point on wave 6, a swarm out of two points on wave 9. Small is fine when it is written.
+            Dictionary<string, EnemyStats> enemies = Enemies();
+            WaveScriptSpec script = Script();
+            script.Surprises = new[]
+            {
+                WaveScripts.Surprise(5, WaveScripts.FromNest(1, "Tank", 1)),
+                WaveScripts.Surprise(9, 2, 3, WaveScripts.FromNest(1, "Ant", 12, WavePattern.Swarm), WaveScripts.FromNest(2, "Tank", 2), WaveScripts.DownPath(SecondRoad, "Ant", 6, WavePattern.SpreadClusters, 2f)),
+                WaveScripts.Surprise(10),
+            };
+
+            for (int d = 0; d < Difficulties; d++)
+            {
+                WaveSpec five = WaveComposer.Compose(script, enemies, d, 5, 1f, -1, Rules);
+                Assert.AreEqual(SurpriseKind.Authored, five.Surprise, $"difficulty {d}");
+                List<GroupSpec> rift = five.Groups.Where(g => g.Source == NestSource).ToList();
+                Assert.AreEqual(1, rift.Count);
+                Assert.AreEqual(1, rift[0].Count, "one big creature is fine when the level writes it");
+                Assert.AreEqual(1, rift[0].Nest);
+                Assert.GreaterOrEqual(WaveTimeline.Start(rift[0]), Rules.Grammar.SurpriseMinDelay, "mid-wave, as every surprise");
+                // The front gives up what the surprise costs: the wave is no bigger for it.
+                float Threat(WaveSpec wave) => wave.Groups.Where(g => g.Source == 0).Sum(g => g.Count * Game.Balance.Threat.Of(g.Enemy, Rules));
+                Assert.Less(Threat(five), Threat(WaveComposer.Compose(NoRift(), enemies, d, 5, 1f, -1, Rules)), $"difficulty {d}: the front pays");
+
+                WaveSpec nine = WaveComposer.Compose(script, enemies, d, 9, 1f, SecondRoad, Rules);
+                if (d < 2)
+                {
+                    Assert.AreNotEqual(SurpriseKind.Authored, nine.Surprise, $"difficulty {d}: outside the entry's difficulties the default plan decides");
+                }
+                else
+                {
+                    Assert.AreEqual(SurpriseKind.Authored, nine.Surprise);
+                    Assert.AreEqual(12, nine.Groups.Where(g => g.Source == NestSource && g.Nest == 1).Sum(g => g.Count), "a swarm out of the first point");
+                    Assert.AreEqual(2, nine.Groups.Where(g => g.Source == NestSource && g.Nest == 2).Sum(g => g.Count), "and two tanks out of the second, in the same wave");
+                    List<GroupSpec> road = nine.Groups.Where(g => g.Source == 0 && g.Path == SecondRoad && g.Enemy.Id == "Ant" && WaveTimeline.Start(g) >= Rules.Grammar.SurpriseMinDelay).ToList();
+                    Assert.GreaterOrEqual(road.Sum(g => g.Count), 6, "and a file down the surprise path");
+                    GroupSpec swarm = nine.Groups.First(g => g.Source == NestSource && g.Nest == 1);
+                    Assert.Less(swarm.Interval, 0.5f, "a swarm comes closer together than the creature's own spacing");
+                }
+
+                Assert.AreEqual(SurpriseKind.None, WaveComposer.Compose(script, enemies, d, 10, 1f, -1, AnyGroup).Surprise, "a surprise without entries keeps the wave free, of the default too");
+                Assert.IsEmpty(WaveComposer.Compose(script, enemies, d, 10, 1f, -1, AnyGroup).Groups.Where(g => g.Source == NestSource));
+            }
+        }
+
+        // The fixture without its rift troop: what the front is with the whole budget.
+        private static WaveScriptSpec NoRift()
+        {
+            WaveScriptSpec script = Script();
+            script.Troops = script.Troops.Where(t => t.Source == 0).ToArray();
+            return script;
+        }
+
+        [Test]
+        public void TheSurpriseSchedule_IsCheckedAgainstTheLevelsSpawnPoints()
+        {
+            LevelDefinition level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(LevelFolder + "/Level_C1_05.asset");
+            Assert.IsNotNull(level, "Run Tools/Generate/Scenes and Starter Data first.");
+            Game.Enemies.EnemyDefinition ById(string id) => AssetDatabase.LoadAssetAtPath<Game.Enemies.EnemyDefinition>($"Assets/_Project/Data/Enemies/{id}.asset");
+            int road = System.Array.FindIndex(level.Paths, path => !path.Flying);
+            Assert.AreEqual(SpawnRole.Main, level.RoleOfPath(road));
+            Assert.AreEqual(SpawnRole.Surprise, level.RoleOfNest(1), "a nest is a surprise point unless the level says otherwise");
+
+            var errors = new List<string>();
+            // Any combination of the level's surprise points in one wave is fine.
+            var fine = new[] { WaveScripts.Surprise(6, WaveScripts.FromNest(1, "Cragback", 1), WaveScripts.FromNest(2, "Shalebat", 5, WavePattern.Swarm)), WaveScripts.Surprise(8) };
+            SurpriseSchedule.Check(level, fine, 17, ById, errors);
+            Assert.IsEmpty(errors, string.Join("\n", errors));
+
+            var wrong = new[]
+            {
+                WaveScripts.Surprise(30, WaveScripts.FromNest(1, "Cragback", 1)),
+                WaveScripts.Surprise(6, WaveScripts.FromNest(9, "Cragback", 1), WaveScripts.FromNest(1, "Skitter", 3), WaveScripts.FromNest(1, "Cragback", 0),
+                    WaveScripts.DownPath(road, "Skitter", 3), WaveScripts.FromNest(1, "Nobody", 1)),
+            };
+            SurpriseSchedule.Check(level, wrong, 17, ById, errors);
+            Assert.AreEqual(6, errors.Count, string.Join("\n", errors));
+            StringAssert.Contains("waves 1 to 17", errors[0]);
+            StringAssert.Contains("nest 9 does not exist", errors[1]);
+            StringAssert.Contains("Skitter cannot come out of", errors[2]);
+            StringAssert.Contains("empty group", errors[3]);
+            StringAssert.Contains("is a main path", errors[4]);
+            StringAssert.Contains("unknown creature", errors[5]);
+        }
+
+        [Test]
+        public void EveryLevelsOwnSurprises_FitItsSpawnPoints()
+        {
+            Game.Enemies.EnemyDefinition ById(string id) => AssetDatabase.LoadAssetAtPath<Game.Enemies.EnemyDefinition>($"Assets/_Project/Data/Enemies/{id}.asset");
+            foreach (CampaignLevelSpec spec in LevelSpecs.All)
+            {
+                LevelDefinition level = AssetDatabase.LoadAssetAtPath<LevelDefinition>($"{LevelFolder}/Level_{spec.Key}.asset");
+                if (level == null)
+                {
+                    continue;
+                }
+
+                var errors = new List<string>();
+                SurpriseSchedule.Check(level, spec.Waves.Surprises, spec.Waves.Waves, ById, errors);
+                Assert.IsEmpty(errors, string.Join("\n", errors));
             }
         }
 
@@ -212,10 +391,10 @@ namespace Game.Tests
             WaveScriptSpec script = Script();
             for (int d = 0; d < Difficulties; d++)
             {
-                List<int> surprises = WaveGrammar.SurpriseWaves(script, enemies, d, -1, Rules);
+                List<int> surprises = WaveGrammar.SurpriseWaves(script, enemies, d, -1, AnyGroup);
                 for (int number = 1; number <= script.Waves; number++)
                 {
-                    WaveSpec wave = WaveComposer.Compose(script, enemies, d, number, 1f, -1, Rules);
+                    WaveSpec wave = WaveComposer.Compose(script, enemies, d, number, 1f, -1, AnyGroup);
                     List<GroupSpec> rift = wave.Groups.Where(g => g.Source == NestSource).ToList();
                     if (!surprises.Contains(number))
                     {
@@ -229,12 +408,116 @@ namespace Game.Tests
                     float front = wave.Groups.Where(g => g.Source == 0 && !g.Enemy.IsBoss).Max(WaveTimeline.End);
                     foreach (GroupSpec group in rift)
                     {
-                        Assert.GreaterOrEqual(WaveTimeline.Start(group), Rules.Grammar.SurpriseMinDelay, "never in the first seconds of a wave");
-                        Assert.GreaterOrEqual(WaveTimeline.Start(group), front * Rules.Grammar.SurpriseAt, "the front is under way when the rift opens");
+                        Assert.GreaterOrEqual(WaveTimeline.Start(group), AnyGroup.Grammar.SurpriseMinDelay, "never in the first seconds of a wave");
+                        Assert.GreaterOrEqual(WaveTimeline.Start(group), front * AnyGroup.Grammar.SurpriseAt, "the front is under way when the rift opens");
                         Assert.AreEqual(1, group.Nest, "through the troop's authored nest");
                     }
                 }
             }
+        }
+
+        // Ants at the gate, bats out of a rift from wave 3, one air raid in wave 9 on every difficulty.
+        private static WaveScriptSpec RiftBatScript() => new WaveScriptSpec
+        {
+            Key = "GrammarBats",
+            Waves = 12,
+            Budget = 10f,
+            FinalBudget = 160f,
+            Rhythm = "P",
+            Flyer = "Bat",
+            AirWaves = new[] { 9 },
+            AirWavesPerDifficulty = new[] { 1, 1, 1, 1 },
+            Troops = new[]
+            {
+                new TroopSpec { Enemy = "Ant", Weight = 3f, Interval = 0.5f },
+                new TroopSpec { Enemy = "Bat", FirstWave = 3, Weight = 1f, Interval = 1.5f, Source = NestSource, Delay = 7f },
+            },
+        };
+
+        private static int FirstRiftFlyerWave(WaveScriptSpec script, Dictionary<string, EnemyStats> enemies, int difficulty)
+        {
+            for (int number = 1; number <= script.Waves; number++)
+            {
+                if (WaveComposer.Compose(script, enemies, difficulty, number, 1f, -1, AnyGroup).Groups.Any(g => g.Source == NestSource && g.Enemy.Flies))
+                {
+                    return number;
+                }
+            }
+
+            return 0;
+        }
+
+        [Test]
+        public void ARiftsFlyers_DoNotWaitForTheFirstRaid_OnlyForTheFlyingTroopFloor()
+        {
+            // Remco, round 80: being caught out by flyers from a rift is part of the game. Only the first-flyer rule of Easy and
+            // Medium (the flying troop floor the solve sets) holds them back.
+            Dictionary<string, EnemyStats> enemies = Enemies();
+            for (int d = 0; d < Difficulties; d++)
+            {
+                WaveScriptSpec script = RiftBatScript();
+                int free = AnyGroup.Grammar.SurpriseFreeWavesFor(d);
+                int first = FirstRiftFlyerWave(script, enemies, d);
+                Assert.AreEqual(9, WaveComposer.FirstAirWave(script, d));
+                Assert.AreEqual(free + 1, first, $"difficulty {d}: the first wave that may carry a surprise sends the rift's bats");
+                Assert.Less(first, 9, $"difficulty {d}: before the first raid");
+
+                WaveScriptSpec held = RiftBatScript();
+                held.FlyingTroopFloor = new[] { 7 };
+                Assert.GreaterOrEqual(FirstRiftFlyerWave(held, enemies, d), 7, $"difficulty {d}: the flying troop floor holds a rift's flyers too");
+            }
+        }
+
+        [Test]
+        public void ASurprise_MakesNoOtherWaveTougher_AndTheLevelStaysInsideItsBand()
+        {
+            // BalanceRules.SurprisesLiftNoWave (found on Glass Meadows, read on Shard Ridge since round 81 took the lone
+            // Cragbacks of Glass Meadows away): a wave without a surprise is never
+            // tougher than the rule leaves it without (some are softer: they take the multiplier of the level solved without
+            // surprises), and the curve comes first: the relief leaves the level at most
+            // BalanceRules.SurpriseReliefMost under its human curve (round 80b).
+            const string key = "C1_03";
+            const float rounding = 0.01f;
+            BalanceStages.Loaded loaded = BalanceStages.Load(true);
+            Assert.IsNotNull(loaded.Catalog, "Run Tools/Generate/Scenes and Starter Data first.");
+            CampaignModel model = loaded.Model;
+            int index = model.IndexOf(key);
+            Assert.GreaterOrEqual(index, 0);
+            Assert.IsTrue(model.Rules.SurprisesLiftNoWave);
+            List<List<WaveSpec>> sets = model.BuildWaves(index, WaveScripts.ByKey(key), out _);
+            List<List<WaveSpec>> lifted;
+            model.Rules.SurprisesLiftNoWave = false;
+            try
+            {
+                lifted = model.BuildWaves(index, WaveScripts.ByKey(key), out _);
+            }
+            finally
+            {
+                model.Rules.SurprisesLiftNoWave = true;
+            }
+
+            int surprises = 0;
+            int lowered = 0;
+            for (int d = 0; d < sets.Count; d++)
+            {
+                for (int i = 0; i < sets[d].Count; i++)
+                {
+                    if (sets[d][i].Surprise != SurpriseKind.None)
+                    {
+                        surprises++;
+                        continue;
+                    }
+
+                    Assert.LessOrEqual(sets[d][i].HealthMultiplier, lifted[d][i].HealthMultiplier * 1.002f, $"{key} difficulty {d} wave {i + 1}");
+                    lowered += sets[d][i].HealthMultiplier < lifted[d][i].HealthMultiplier * 0.998f ? 1 : 0;
+                }
+
+                float mean = BalanceChecks.PlainMean(Ledger.Evaluate(model.InputFor(index, d), sets[d], model.Difficulties[d], model.Rules.HumanTowersOnly()));
+                Assert.GreaterOrEqual(mean, model.HumanTarget(index, d) / (1f + model.Rules.SurpriseReliefMost + rounding), $"{key} difficulty {d}: the relief leaves the level inside its band");
+            }
+
+            Assert.Greater(surprises, 0);
+            Assert.Greater(lowered, 0, "the rule lowers a wave somewhere on the level");
         }
 
         [Test]
@@ -243,16 +526,16 @@ namespace Game.Tests
             Dictionary<string, EnemyStats> enemies = Enemies();
             WaveScriptSpec script = Script();
             script.Troops = script.Troops.Where(t => t.Source == 0).ToArray();
-            List<int> surprises = WaveGrammar.SurpriseWaves(script, enemies, 1, SecondRoad, Rules);
+            List<int> surprises = WaveGrammar.SurpriseWaves(script, enemies, 1, SecondRoad, AnyGroup);
             Assert.IsNotEmpty(surprises);
-            Assert.IsEmpty(WaveGrammar.SurpriseWaves(script, enemies, 1, -1, Rules), "no rift troops and no second road: nothing to surprise with");
+            Assert.IsEmpty(WaveGrammar.SurpriseWaves(script, enemies, 1, -1, AnyGroup), "no rift troops and no second road: nothing to surprise with");
             foreach (int number in surprises)
             {
-                Assert.GreaterOrEqual(WaveGrammar.Phase(script, number), Rules.Grammar.FlankFrom);
-                WaveSpec wave = WaveComposer.Compose(script, enemies, 1, number, 1f, SecondRoad, Rules);
+                Assert.GreaterOrEqual(WaveGrammar.Phase(script, number), AnyGroup.Grammar.FlankFrom);
+                WaveSpec wave = WaveComposer.Compose(script, enemies, 1, number, 1f, SecondRoad, AnyGroup);
                 Assert.AreEqual(SurpriseKind.Flank, wave.Surprise);
                 // The flank is the tail of the group list: everything from the first group that starts at the surprise's moment.
-                List<GroupSpec> late = wave.Groups.Where(g => g.Delay >= Rules.Grammar.SurpriseMinDelay && g.Path == SecondRoad).ToList();
+                List<GroupSpec> late = wave.Groups.Where(g => g.Delay >= AnyGroup.Grammar.SurpriseMinDelay && g.Path == SecondRoad).ToList();
                 Assert.IsNotEmpty(late, $"wave {number}: a group down the second road after the opening");
             }
         }
@@ -344,25 +627,34 @@ namespace Game.Tests
         public void TheStoredWaves_KeepTheGrammarsBounds()
         {
             int checkedWaves = 0;
+            int storedSurprises = 0;
             foreach (LevelDefinition level in AssetDatabase.FindAssets("t:LevelDefinition", new[] { LevelFolder }).Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<LevelDefinition>))
             {
-                foreach (DifficultyWaves set in level.DifficultyWaves)
+                for (int d = 0; d < level.DifficultyWaves.Length; d++)
                 {
+                    DifficultyWaves set = level.DifficultyWaves[d];
                     for (int i = 0; i < set.Waves.Length; i++)
                     {
                         var errors = new List<string>();
                         WaveShape.Check($"{level.name} {set.Difficulty.name} {i + 1}", set.Waves[i], set.Difficulty, errors);
                         Assert.IsEmpty(errors, string.Join("\n", errors));
                         checkedWaves++;
+                        // What the default plan sends out of the nests is a group; only a surprise the level wrote may be smaller.
+                        int heads = WaveShape.RiftHeads(set.Waves[i], set.Difficulty);
+                        storedSurprises += heads > 0 ? 1 : 0;
+                        WaveScriptSpec script = WaveScripts.ByKey(level.name.Replace("Level_", string.Empty));
+                        bool written = script != null && script.SurpriseFor(i + 1, d) != null;
+                        Assert.IsTrue(heads == 0 || written || heads >= Rules.Grammar.MinSurpriseGroup, $"{level.name} {set.Difficulty.name} wave {i + 1}: {heads} out of the nests is a stray, not a surprise");
                     }
                 }
             }
 
             Assert.Greater(checkedWaves, 0);
+            Assert.Greater(storedSurprises, 0, "the first continent opens a rift somewhere");
         }
 
         [Test]
-        public void TheValidator_NamesAWaveThatDragsOrOpensTwoRifts()
+        public void TheValidator_NamesAWaveThatDrags_AndTakesAnyCombinationOfSpawnPoints()
         {
             var difficulty = UnityEngine.ScriptableObject.CreateInstance<DifficultyProfile>();
             var walker = UnityEngine.ScriptableObject.CreateInstance<Game.Enemies.EnemyDefinition>();
@@ -373,15 +665,13 @@ namespace Game.Tests
                     new SpawnGroup { Enemy = walker, Count = 2, Interval = 1f },
                     new SpawnGroup { Enemy = walker, Count = 2, Interval = 1f, Delay = WaveGrammarRules.MaxPauseSeconds + 2f },
                 });
+                // Remco, round 81: any main paths with any surprise points in one wave; one creature is fine when it is written.
                 var twoRifts = new WaveDefinition(new[]
                 {
-                    new SpawnGroup { Enemy = walker, Count = 2, Interval = 1f, Source = SpawnSource.Nest, Nest = 1 },
-                    new SpawnGroup { Enemy = walker, Count = 2, Interval = 1f, Source = SpawnSource.Nest, Nest = 2 },
-                });
-                var fine = new WaveDefinition(new[]
-                {
                     new SpawnGroup { Enemy = walker, Count = 6, Interval = 1f },
+                    new SpawnGroup { Enemy = walker, Count = 6, Interval = 1f, PathIndex = SecondRoad },
                     new SpawnGroup { Enemy = walker, Count = 2, Interval = 1f, Delay = 12f, Source = SpawnSource.Nest, Nest = 1 },
+                    new SpawnGroup { Enemy = walker, Count = 1, Interval = 1f, Delay = 12f, Source = SpawnSource.Nest, Nest = 2 },
                 });
 
                 var errors = new List<string>();
@@ -389,13 +679,10 @@ namespace Game.Tests
                 Assert.AreEqual(1, errors.Count, "a silence longer than the longest breather");
                 errors.Clear();
                 WaveShape.Check("two rifts", twoRifts, difficulty, errors);
-                Assert.AreEqual(1, errors.Count, "two authored nests for walkers in one wave");
-                errors.Clear();
-                WaveShape.Check("fine", fine, difficulty, errors);
-                Assert.IsEmpty(errors);
-                Assert.AreEqual(1, WaveShape.WalkerRifts(fine));
-                Assert.AreEqual(13f, WaveShape.Span(fine, difficulty), 1e-3f);
-                Assert.AreEqual(7f, WaveShape.LongestPause(fine, difficulty), 1e-3f);
+                Assert.IsEmpty(errors, "two roads and two nests in one wave");
+                Assert.AreEqual(3, WaveShape.RiftHeads(twoRifts, difficulty));
+                Assert.AreEqual(13f, WaveShape.Span(twoRifts, difficulty), 1e-3f);
+                Assert.AreEqual(7f, WaveShape.LongestPause(twoRifts, difficulty), 1e-3f);
             }
             finally
             {

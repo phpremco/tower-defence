@@ -85,6 +85,9 @@ namespace Game.Balance
 
         /// <summary>The wave asks for a counter tower (WaveSpec.CounterCheck): no plain wave.</summary>
         public bool CounterCheck;
+
+        /// <summary>The wave is an air raid (WaveSpec.AirRaid): no plain wave.</summary>
+        public bool AirRaid;
         public int Money;
         public int Towers;
         public float GroundHealth;
@@ -211,6 +214,7 @@ namespace Game.Balance
                 Purchase = defence.Purchase,
                 Boss = load.HasBoss,
                 CounterCheck = load.CounterCheck,
+                AirRaid = load.AirRaid,
                 Money = money,
                 Towers = defence.Towers,
                 GroundHealth = load.StreamHealth + load.BossHealth,

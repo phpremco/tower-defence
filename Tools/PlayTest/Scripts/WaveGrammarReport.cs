@@ -1,7 +1,7 @@
 /// <summary>
 /// Round 79: the wave grammar's plan of every campaign level and difficulty, as the solve stage composes it (nothing is
 /// written to the assets): one letter per wave for the front pattern (s stream, C spread clusters, W swarm, T tank escort,
-/// X combo swarm, A air raid), the clusters it is cut into, "!" for a rift surprise, "^" for a flank and "B" for a boss.
+/// X combo swarm, A air raid), the clusters it is cut into, "!" for a rift surprise, "^" for a flank, "*" for a surprise the level wrote itself and "B" for a boss.
 /// Writes Tools/PlayTest/wave_grammar.txt. Run:
 /// unity command run_script --file Tools/PlayTest/Scripts/WaveGrammarReport.cs --entry WaveGrammarReport.Run --timeout_ms 900000 --timeout 960
 /// </summary>
@@ -13,7 +13,7 @@ public static class WaveGrammarReport
         string[] names = { "Easy", "Medium", "Hard", "Psycho" };
         string letters = "sCWTXA";
         var text = new System.Text.StringBuilder();
-        text.AppendLine("# wave grammar plan: pattern letter + clusters per wave; ! rift surprise, ^ flank, B boss");
+        text.AppendLine("# wave grammar plan: pattern letter + clusters per wave; ! rift surprise, ^ flank, * authored surprise, B boss");
         foreach (Game.Balance.WaveScriptSpec script in Game.Editor.WaveScripts.All)
         {
             int index = loaded.Model.IndexOf(script.Key);
@@ -35,7 +35,7 @@ public static class WaveGrammarReport
                     counts[(int)wave.Pattern]++;
                     surprises += wave.Surprise != Game.Balance.SurpriseKind.None ? 1 : 0;
                     text.Append(' ').Append(letters[(int)wave.Pattern]).Append(wave.Beats)
-                        .Append(wave.Surprise == Game.Balance.SurpriseKind.Rift ? "!" : wave.Surprise == Game.Balance.SurpriseKind.Flank ? "^" : string.Empty)
+                        .Append(wave.Surprise == Game.Balance.SurpriseKind.Rift ? "!" : wave.Surprise == Game.Balance.SurpriseKind.Flank ? "^" : wave.Surprise == Game.Balance.SurpriseKind.Authored ? "*" : string.Empty)
                         .Append(Game.Balance.WaveComposer.BossOn(script, d, number) != null ? "B" : string.Empty);
                 }
 

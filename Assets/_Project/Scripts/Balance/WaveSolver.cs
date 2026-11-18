@@ -25,6 +25,9 @@ namespace Game.Balance
         private const float MaxRise = 1.3f;
         private const float MaxDrop = 0.7f;
 
+        /// <summary>The step (a factor of health) the search for a raid's lowest crossing of its target walks up in.</summary>
+        private const float CrossingStep = 1.05f;
+
         /// <summary>The pressure the solver aims a wave at, on Medium.</summary>
         public static float Target(WaveScriptSpec script, int number, BalanceRules rules, float airGrowth = 1f) => TargetOn(script, SolveDifficulty, number, rules, airGrowth);
 
@@ -198,7 +201,14 @@ namespace Game.Balance
             return healths;
         }
 
-        // Pressure grows with health, so a bisection on its logarithm finds the multiplier that meets the target.
+        // Pressure grows with health, so a bisection on its logarithm finds the multiplier that meets the target. Not on an air
+        // raid, though: the ledger's player buys a sky gun's next step only once the flyers' pressure is above
+        // BalanceRules.SkyHoldPressure, a raid aims below that, and with the step bought the pressure drops under the target
+        // again. So a raid meets its target with the sky guns held and once more after every step, and a bisection over the
+        // whole range lands on either by a hair of the purse (the raid of Quartz Flats wave 13: x1.18 in round 78, x2.46 in
+        // round 79 with the same crowd and nearly the same purse, and every difficulty copied it). With
+        // BalanceRules.RaidsCappedAtHeldGuns a raid walks up from the low end in steps and bisects inside the first step that
+        // crosses: the raid sized against the sky guns the player holds.
         private static float BisectOn(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, LevelInput level, DifficultyStats difficulty, int secondRoad, BalanceRules rules, int number, int money, Ledger.AirHoldings held, float carried, float target, float low, float high)
         {
             double lo = Math.Log(low);
@@ -211,7 +221,30 @@ namespace Game.Balance
                 return (float)Math.Exp(lo);
             }
 
-            if (Pressure(hi) <= target)
+            if (rules.RaidsCappedAtHeldGuns && WaveComposer.KindOf(script, difficulty.Index, number) == WaveComposer.Kind.Air)
+            {
+                double step = Math.Log(CrossingStep);
+                double from = lo;
+                bool crossed = false;
+                while (from < hi && !crossed)
+                {
+                    double to = Math.Min(hi, from + step);
+                    if (Pressure(to) >= target)
+                    {
+                        lo = from;
+                        hi = to;
+                        crossed = true;
+                    }
+
+                    from = to;
+                }
+
+                if (!crossed)
+                {
+                    return (float)Math.Exp(hi);
+                }
+            }
+            else if (Pressure(hi) <= target)
             {
                 return (float)Math.Exp(hi);
             }

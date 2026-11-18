@@ -84,6 +84,9 @@ namespace Game.Balance
         /// <summary>The wave asks for a counter tower (WaveSpec.CounterCheck).</summary>
         public bool CounterCheck;
 
+        /// <summary>The wave is an air raid (WaveSpec.AirRaid).</summary>
+        public bool AirRaid;
+
         /// <summary>Creatures of the ground stream and bosses in the wave (after the difficulty's count share), for the leak model.</summary>
         public int GroundCount;
         public int BossCount;
@@ -149,6 +152,7 @@ namespace Game.Balance
         {
             var load = new WaveLoad();
             load.CounterCheck = wave.CounterCheck;
+            load.AirRaid = wave.AirRaid;
             float speed = 0f;
             float airSpeed = 0f;
             float bossSpeed = 0f;

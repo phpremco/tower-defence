@@ -1,0 +1,9 @@
+skip=C1_04:0
+skip=C1_01:0
+skip=C1_01:1
+skip=C1_01:2
+skip=C1_01:3
+skip=C1_02:0
+skip=C1_02:1
+skip=C1_02:2
+skip=C1_02:3

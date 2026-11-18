@@ -58,6 +58,7 @@ namespace Game.Balance
 
         /// <summary>Times the bosses are sized; between two sizings the waves are trimmed again around them.</summary>
         private const int BossPasses = 2;
+        private const int ReliefIterations = 8;
 
         public readonly List<CampaignLevel> Levels = new List<CampaignLevel>();
         public readonly List<LevelFacts> Facts = new List<LevelFacts>();
@@ -153,6 +154,7 @@ namespace Game.Balance
             script.FlyingTroopFloor = new[] { 0 };
             int medium = Math.Min(WaveSolver.SolveDifficulty, Difficulties.Count - 1);
             healths = WaveSolver.Solve(script, Enemies, ReferenceInputFor(levelIndex, medium), Difficulties[medium], facts.SecondRoad, Rules);
+            _calmCurve = Rules.SurprisesLiftNoWave ? WithoutSurprises(() => WaveSolver.Solve(script, Enemies, ReferenceInputFor(levelIndex, medium), Difficulties[medium], facts.SecondRoad, Rules)) : null;
             var sets = new List<List<WaveSpec>>();
             int mediumFloor = 0;
             int mediumTroopFloor = 0;
@@ -162,14 +164,21 @@ namespace Game.Balance
                 if (d == EasyDifficulty)
                 {
                     // The Easy raid rule (the curator, round 22f): the first raid waits until the expected player's kills have paid for
-                    // a sky gun, plus a wave. Judged on the waves as solved; when it moves the raids, Easy is solved again with them moved.
+                    // a sky gun, plus a wave. Since round 80 the flying troops wait for the same wave (a rift's flyers no longer wait
+                    // for the raid itself): one bat out of a rift before that purse made the ledger's Easy player buy the sky gun
+                    // out of its ground defence, and the human calibration took 38 % off Fault Line Easy. The floor is read on the
+                    // waves without any flying troop, so the troops it holds back do not move it.
+                    script.FlyingTroopFloor = WithFloor(script.FlyingTroopFloor, d, script.Waves + 1);
+                    own = SolveDifficulty(levelIndex, script, d, medium, healths, out bossScales);
                     int first = WaveComposer.FirstAirWave(script, d);
                     int floor = EasyRaidFloor(levelIndex, ComposedWaves(script, d, own, facts.SecondRoad, bossScales));
+                    script.FlyingTroopFloor = WithFloor(script.FlyingTroopFloor, d, floor);
                     if (first != int.MaxValue && floor > first)
                     {
                         script.FirstAirWaveFloor = WithFloor(script.FirstAirWaveFloor, d, floor);
-                        own = SolveDifficulty(levelIndex, script, d, medium, healths, out bossScales);
                     }
+
+                    own = SolveDifficulty(levelIndex, script, d, medium, healths, out bossScales);
                 }
 
                 if (Rules.FlyersAfterBountiesFor(d))
@@ -190,7 +199,25 @@ namespace Game.Balance
             }
 
             SetFlyerFloors(script, medium, mediumFloor, mediumTroopFloor);
+            _calmCurve = null;
             return sets;
+        }
+
+        // The Medium curve of the level being built, solved without its surprises (BalanceRules.SurprisesLiftNoWave).
+        private float[] _calmCurve;
+
+        // Runs a solve with the grammar's surprises switched off. The rules object is this model's own, so nothing else sees it.
+        private T WithoutSurprises<T>(Func<T> solve)
+        {
+            Rules.Grammar.Surprises = false;
+            try
+            {
+                return solve();
+            }
+            finally
+            {
+                Rules.Grammar.Surprises = true;
+            }
         }
 
         /// <summary>
@@ -344,6 +371,89 @@ namespace Game.Balance
         // the model does not calibrate). The bosses are sized on the trimmed waves, the waves are trimmed once more around the
         // bosses as sized (a tougher boss costs kill money and so shifts the waves after it), and the bosses are sized again.
         private float[] SolveDifficulty(int levelIndex, WaveScriptSpec script, int d, int medium, float[] healths, out float[] bossScales)
+        {
+            float[] own = SolveAsComposed(levelIndex, script, d, medium, healths, out bossScales);
+            int secondRoad = Facts[levelIndex].SecondRoad;
+            if (_calmCurve == null || !Rules.CalibrateToHuman || WaveGrammar.SurpriseWaves(script, Enemies, d, secondRoad, Rules).Count == 0)
+            {
+                return own;
+            }
+
+            // BalanceRules.SurprisesLiftNoWave: the same difficulty once more without its surprises. A wave that carries none
+            // takes the lower of its two multipliers; a boss keeps the health it was sized at.
+            float[] calmCurve = _calmCurve;
+            // The guard gun of a rear rift stays bought in the level without surprises (BalanceRules.RearRiftGuardCells).
+            List<WaveSpec> composed = ComposedWaves(script, d, own, secondRoad, bossScales);
+            LevelInput shape = InputFor(levelIndex, d);
+            for (int i = 0; i < composed.Count && Rules.RearGuardFromWave == 0; i++)
+            {
+                Rules.RearGuardFromWave = KillPurse.ComesFarBehind(shape, composed[i], Rules) ? i + 1 : 0;
+            }
+
+            float[] calm;
+            try
+            {
+                calm = WithoutSurprises(() => SolveAsComposed(levelIndex, script, d, medium, calmCurve, out _));
+            }
+            finally
+            {
+                Rules.RearGuardFromWave = 0;
+            }
+
+            float[] full = (float[])own.Clone();
+            float[] fullBosses = bossScales != null ? (float[])bossScales.Clone() : null;
+            var lowered = new float[own.Length];
+            for (int i = 0; i < own.Length; i++)
+            {
+                bool takes = calm[i] < own[i] && WaveGrammar.SurpriseOn(script, Enemies, d, i + 1, secondRoad, Rules) == SurpriseKind.None;
+                lowered[i] = takes ? calm[i] : own[i];
+            }
+
+            // The curve comes first (BalanceRules.SurpriseReliefMost): the lowered waves come back up together, as little as
+            // keeps the level's plain mean inside its band. Zero is the calm level's waves, one the level's own.
+            float[] bosses = bossScales;
+            float leastMean = HumanTarget(levelIndex, d) / (1f + Rules.SurpriseReliefMost);
+            LevelInput input = InputFor(levelIndex, d);
+            BalanceRules human = Rules.HumanTowersOnly();
+            float Mean(float share)
+            {
+                for (int i = 0; i < own.Length; i++)
+                {
+                    own[i] = (float)Math.Round(lowered[i] + (full[i] - lowered[i]) * share, 3);
+                    if (bosses != null && WaveComposer.BossOn(script, d, i + 1) != null)
+                    {
+                        bosses[i] = fullBosses[i] * full[i] / own[i];
+                    }
+                }
+
+                return BalanceChecks.PlainMean(Ledger.Evaluate(input, ComposedWaves(script, d, own, secondRoad, bosses), Difficulties[d], human));
+            }
+
+            if (Mean(0f) >= leastMean)
+            {
+                return own;
+            }
+
+            float below = 0f;
+            float above = 1f;
+            for (int i = 0; i < ReliefIterations; i++)
+            {
+                float mid = (below + above) * 0.5f;
+                if (Mean(mid) >= leastMean)
+                {
+                    above = mid;
+                }
+                else
+                {
+                    below = mid;
+                }
+            }
+
+            Mean(above);
+            return own;
+        }
+
+        private float[] SolveAsComposed(int levelIndex, WaveScriptSpec script, int d, int medium, float[] healths, out float[] bossScales)
         {
             int secondRoad = Facts[levelIndex].SecondRoad;
             // Medium is the solver's own curve. With its raids moved by a flyer floor that curve no longer fits its waves (a raid's
@@ -574,6 +684,11 @@ namespace Game.Balance
             var capped = new bool[healths.Length];
             float raidFloor = Rules.RaidHealthFloorFor(difficulty);
 
+            // BalanceRules.RaidsCappedAtHeldGuns: the trim may soften a raid with the level, never lift it above the solver's
+            // crossing (the sky guns held).
+            float Trimmed(int wave, float health) =>
+                Rules.RaidsCappedAtHeldGuns && WaveComposer.KindOf(script, difficulty, wave + 1) == WaveComposer.Kind.Air ? Math.Min(health, healths[wave]) : health;
+
             List<WaveLine> Evaluate(float[] health, BalanceRules rules)
             {
                 var waves = new List<WaveSpec>(script.Waves);
@@ -616,14 +731,14 @@ namespace Game.Balance
                     var trial = new float[start.Length];
                     for (int i = 0; i < start.Length; i++)
                     {
-                        trial[i] = capped[i] ? start[i] : start[i] * scale;
+                        trial[i] = capped[i] ? start[i] : Trimmed(i, start[i] * scale);
                     }
 
                     return BalanceChecks.PlainMean(Evaluate(trial, human));
                 }, target, Math.Log(CalibrationMinScale), Math.Log(CalibrationMaxScale));
                 for (int i = 0; i < trimmed.Length; i++)
                 {
-                    trimmed[i] = capped[i] ? start[i] : start[i] * (float)factor;
+                    trimmed[i] = capped[i] ? start[i] : Trimmed(i, start[i] * (float)factor);
                     // BalanceRules.RaidHealthFloor: the flyers of a raid keep their book toughness whatever the trim makes of the
                     // wave. A raid on its floor is held there, so the next pass trims the other waves around it and the plain mean
                     // still meets the curve; the cap below may soften a raid no player with the hero could hold.

@@ -1,0 +1,18 @@
+Wave ledger lab 2026-11-17 19:19; overrides: SurpriseFreeWaves = 99
+
+C1_02 Psycho (the solver's reference player; solver = before the human calibration; hero = the human with the hero, cap 1.35; span = active seconds of the ground stream, sky = the flyers' window)
+  w1  C2   x2.46    (stored x2.678  , solver x2.041 , hero 0.25) money   220 hp   1072/    0 span  15.1s sky   0.0s n  24/ 0 pressure 0.75/0.00 | 1:0x2
+  w2  W1   x2.294   (stored x2.497  , solver x1.903 , hero 0.37) money   244 hp   1457/    0 span  12.1s sky   0.0s n  35/ 0 pressure 1.11/0.00 | 1:0x2
+  w3  s1   x3.198   (stored x3.481  , solver x2.653 , hero 0.39) money   275 hp   1683/    0 span  11.3s sky   0.0s n  29/ 0 pressure 1.15/0.00 | 0:0x1 1:1x1
+  w4  T1   x3.742   (stored x4.073  , solver x3.104 , hero 0.36) money   300 hp   1970/    0 span  16.2s sky   0.0s n  29/ 0 pressure 0.93/0.00 | 1:0x1 1:1x1
+  w5  W2 B x1.389   (stored x1.512  , solver x1.152 , hero 0.82) money   329 hp   3222/    0 span  12.7s sky   0.0s n  46/ 0 pressure 2.24/0.00 | 0:2x2
+  w6  s1   x2.293   (stored x2.496  , solver x1.902 , hero 0.66) money   350 hp   3311/    0 span  10.7s sky   0.0s n  37/ 0 pressure 1.99/0.00 | 0:0x1 1:0x1 1:1x1
+  w7  T1   x4.244   (stored x3.836  , solver x3.94  , hero 1.35) money   441 hp   9285/    0 span   9.6s sky   0.0s n  21/ 0 pressure 4.52/0.00 | 0:1x1 1:2x1
+  w8  W2   x3.956   (stored x4.305  , solver x3.152 , hero 0.77) money   478 hp  10697/    0 span  38.4s sky   0.0s n 149/ 0 pressure 2.37/0.00 | 0:0x1 1:1x2
+  w9  X2 B x1.438   (stored x1.479  , solver x2.865 , hero 1.35) money   540 hp   7128/    0 span  11.5s sky   0.0s n  43/ 0 pressure 4.01/0.00 | 0:1x1 1:0x1 1:2x1
+  w10 T1   x1.57    (stored x2.201  , solver x1.68  , hero 1.35) money   612 hp  14235/    0 span  19.7s sky   0.0s n  58/ 0 pressure 4.54/0.00 | 0:0x1 1:1x1 1:2x1
+  w11 W2   x4.518   (stored x4.917  , solver x1.99  , hero 1.02) money   660 hp  17984/    0 span  38.4s sky   0.0s n 195/ 0 pressure 3.18/0.00 | 0:0x1 1:1x3
+  w12 C3 B x1.462   (stored x1.428  , solver x2.636 , hero 1.35) money   758 hp  15680/    0 span  21.8s sky   0.0s n  63/ 0 pressure 4.41/0.00 | 0:0x1 1:2x2
+
+Against the stored waves:
+C1_02 Psycho sum of multipliers x0.933 of the stored set; moved more than 3 %: w1 x2.678->x2.46, w2 x2.497->x2.294, w3 x3.481->x3.198, w4 x4.073->x3.742, w5 x1.512->x1.389, w6 x2.496->x2.293, w7 x3.836->x4.244, w8 x4.305->x3.956, w10 x2.201->x1.57, w11 x4.917->x4.518

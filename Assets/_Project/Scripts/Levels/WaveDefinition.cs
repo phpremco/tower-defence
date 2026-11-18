@@ -23,6 +23,9 @@ namespace Game.Levels
         [Tooltip("The wave asks for a counter tower: its plated troops have grown past their grace window. For the balance checks only; the game does not read it.")]
         [SerializeField] private bool _counterCheck;
 
+        [Tooltip("The wave is an air raid of the level's script. For the balance checks only; the game does not read it.")]
+        [SerializeField] private bool _airRaid;
+
         /// <summary>Unity's serializer builds waves through this constructor, so the field defaults apply.</summary>
         public WaveDefinition()
         {
@@ -58,6 +61,13 @@ namespace Game.Levels
         /// of the mean of the plain waves, as they leave a boss wave out. The game itself does not read it.
         /// </summary>
         public bool CounterCheck => _counterCheck;
+
+        /// <summary>
+        /// True for an air raid (round 80b): sized against the sky guns the player holds and aimed below the level's curve, so
+        /// the balance checks leave it out of the mean of the plain waves, as they leave a boss wave out. The game itself does
+        /// not read it.
+        /// </summary>
+        public bool AirRaid => _airRaid;
 
         /// <summary>
         /// How far each spawn may drift from its scheduled moment, as a share of its group's interval. Zero spawns
