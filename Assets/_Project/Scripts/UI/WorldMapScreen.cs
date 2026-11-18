@@ -68,9 +68,10 @@ namespace Game.UI
         private const int BriefingSize = 26;
         private const int CaptionSize = 34;
         private const int HintSize = 24;
-        private const float HintBottom = 114f;
+        private const float HintBottom = 112f;
         private const float HintWidth = 1760f;
-        private const float HintHeight = 44f;
+        private const float HintHeight = 76f;
+        private const float CaptionBottom = HintBottom + HintHeight + 2f;
         private const string LeftStickPath = "<Gamepad>/leftStick";
         private static readonly Vector2 ViewHome = new Vector2(0f, 56f);
         private static readonly Color LockedColor = new Color(0.4f, 0.43f, 0.5f);
@@ -193,7 +194,7 @@ namespace Game.UI
             chrome.offsetMax = Vector2.zero;
             _overview = chrome.gameObject.AddComponent<CanvasGroup>();
             _title = UiKit.CreateFixedText(chrome, Loc.Get("map.title_planet"), UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(1200f, 100f));
-            _caption = UiKit.CreateFixedText(chrome, string.Empty, CaptionSize, TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, 150f), new Vector2(1200f, 50f));
+            _caption = UiKit.CreateFixedText(chrome, string.Empty, CaptionSize, TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, CaptionBottom), new Vector2(1200f, 50f));
             _hint = CreateHintLine(chrome);
             RefreshHint();
             BuildSideButtons(chrome);
@@ -821,7 +822,8 @@ namespace Game.UI
             return PromptGlyphs.ForControl(GlyphFamilies.For(InputDeviceKind.Gamepad, layout), LeftStickPath, Loc.Get("map.turn_stick"));
         }
 
-        // The help line's box under the globe: the line shrinks to fit it when a translation runs long.
+        // The help line's box between the caption and the buttons, two rows tall: the line hangs from its top and
+        // shrinks to fit its width when a translation runs long.
         private static PromptLine CreateHintLine(RectTransform chrome)
         {
             var area = new GameObject("Hint", typeof(RectTransform)).GetComponent<RectTransform>();

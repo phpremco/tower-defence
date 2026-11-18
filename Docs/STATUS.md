@@ -13581,3 +13581,31 @@ round 81's level; it needs the solve, the level's four cells measured again and 
    that round.
 6. A general rule "no walker leaves a spawn point alone as played" for the default plan, instead of writing it per
    level? Recommended: yes, small, with round 83.
+
+## UI fix: level picker hints (2026-11-18)
+
+Remco's screenshot of the region level picker: "Arrow keysleft / right", Q / E glued to their words, the ESC glyph over
+"back to the planet", a colon hanging loose, five hints in one line. Not committed.
+
+- **Cause:** the help line (`PromptLine`) was one horizontal layout stretched over a fixed box. The keyboard hint was
+  wider than the box, so the layout squeezed every piece below its own width (they then overlap) before the line was
+  scaled down; and the gaps were the spaces at the ends of text runs, which a text component does not measure.
+- **Fix in the shared helper** (`Scripts/UI/Glyphs/PromptLine.cs`, new `PromptLineLayout.cs` and `PromptPiece.cs`): a
+  template is read into rows (`\n`), hint groups (two or more spaces) and pieces (words or a hole); the gaps between a
+  glyph and its words, around the slash of a glyph pair, between groups and between rows are fixed sizes of the layout.
+  The block takes the size its rows ask for and only then shrinks as a whole, so nothing can be squeezed into its
+  neighbour. A hole without a glyph (the keyboard's "Arrow keys") prints its name in the key colour.
+- **Texts** (`en.ui_menus.txt`, keys unchanged): no colon behind a glyph; the region hints are two centred rows
+  (keyboard: move / play / back, then "Down: buttons" and the click hint; pad: move, then play / back / "Down: buttons");
+  the planet hint stays one row. `WorldMapScreen` gives the line a two-row box and lifts the caption 40 units above it.
+- **Only user of `PromptLine`** is the planet map (planet and region layer), so no other screen changes.
+- **Test:** `PromptLineLayoutTests` (4): rows, groups and pieces of a template; punctuation stays tight to its hole; no
+  piece has spaces at its ends or double spaces; the three map hints have at most two rows, four groups a row, 96
+  characters a row, and words after a glyph start with a letter after a gap (no hanging colon).
+- **Checked:** stills at 1920x1080 and 1280x720 of the region and planet layer with keyboard, Xbox and PlayStation
+  glyphs, before and after: `ArtSource/Previews/QA/ui_levelpicker_hints_{before,after}_{keys_region,keys_planet,xbox_region,ps_region,ps_planet}_{1080,720}.png`
+  and the editor's own Game view `ui_levelpicker_hints_after_keys_region_gameview.png` (`Tools/PlayTest/ui_map_hints.sh`).
+  The off-screen stills draw the words over the globe's bright rim fainter than the game does; the Game view capture is
+  the sharp one. EditMode suite on clone w6: 1186 tests, 1132 passed, 0 failed, 54 skipped. Save MD5 7a848003... unchanged.
+- **Left as it was:** the wording "Down: buttons"; the letter that happens to sit on the globe's bright rim line reads
+  a little weaker (no plate behind the line: tried, looked like a box, taken out).

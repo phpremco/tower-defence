@@ -1747,3 +1747,15 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
 - **The EditMode suite beside a pressure batch** takes 17 minutes instead of 12.
 - **Pitfall:** a foreground `sleep N` of more than a few seconds is refused by the agent tool; wait with a bounded loop
   (`n=0; until grep -q "<done line>" <log> || [ $n -ge 22 ]; do sleep 5; n=$((n+1)); done`) and repeat the call.
+
+## UI fix: level picker hints (added 2026-11-18)
+
+- **Stills of the planet map's help line:** `[GAMEVIEW=1] bash Tools/PlayTest/ui_map_hints.sh <tag>` plays Boot, opens the map
+  and writes `ArtSource/Previews/QA/ui_levelpicker_hints_<tag>_<state>_<1080|720>.png` for the region and planet layer with
+  the keyboard and the region layer with an Xbox and a PlayStation pad (`r73_still.cs`, `r70_pad.cs`). It copies
+  `progress.json`, its `.bak` and `settings.json` aside and puts them back, printing the MD5 at both ends. `GAMEVIEW=1`
+  adds the editor's Game view capture, which shows the text as sharp as the game does.
+- **Help-line templates** (`PromptLine`): `\n` starts a row, two or more spaces start a hint group, one space next to a
+  `{0}` hole is a fixed gap; write no colon behind a hole. `PromptLineLayoutTests` holds the map hints to two rows.
+- **Pitfall:** `sed` and Python heredocs in this shell turn a written `\n` into a real line break in a table file; put
+  the two characters in with the Edit tool.
