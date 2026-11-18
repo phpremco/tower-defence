@@ -116,11 +116,6 @@ namespace Game.Editor
         private const string EarlierPlated = "round 79: the level's first Cragback walks in one or two waves earlier (a single one in the plain wave 7, where the ambush wave of round 78 brought none), so the window opens earlier while the row falls at the wave it fell at before; it still loses every seed";
         private const string BossEntrance = "round 79: the row used to fall inside the window to the boss wave of wave 5, on the ground; with the crowd in clusters and the boss walking in after a breather (the finale rule) it holds that wave and falls to the flyers two waves later; it still loses every seed";
 
-        // Round 80b (an air raid is no plain wave): the human curve is held by the ground waves alone, and at the re-expressed
-        // builder scale the opening waves of Quartz Flats Psycho are a tenth softer than in round 80 (waves 1 to 8). The rows
-        // fall to wave 8, one wave later than before. Every such row still loses all three seeds.
-        private const string SofterOpening = "round 80b: with the air raids out of the plain mean the cell's opening waves are a tenth softer at the re-expressed builder scale; the row falls to wave 8, one wave later, and still loses every seed";
-
         /// <summary>
         /// The cells that do not meet the window yet, each with the most waves its rows may be late and the reason. A row later
         /// than its allowance fails the gate (<c>CombatRulesTests</c>), and so does a row without the counter that wins a level:
@@ -136,22 +131,18 @@ namespace Game.Editor
             new Allowance("Level_C1_02", 2, EnemyTraits.Armoured, 1, EdgeOfGrowth),
             new Allowance("Level_C1_02", 3, EnemyTraits.Armoured, 3, EdgeOfGrowth),
             new Allowance("Level_C1_03", 0, EnemyTraits.Armoured, 1, LateCragbacks),
-            new Allowance("Level_C1_03", 1, EnemyTraits.Armoured, 2, LateCragbacks + "; round 77: " + SofterBites),
+            new Allowance("Level_C1_03", 1, EnemyTraits.Armoured, 1, LateCragbacks + "; round 77: " + SofterBites),
             new Allowance("Level_C1_03", 2, EnemyTraits.Armoured, 6, RaidEndsIt),
             new Allowance("Level_C1_03", 3, EnemyTraits.Armoured, 7, RaidEndsIt),
             new Allowance("Level_C1_04", 0, EnemyTraits.Armoured, 2, SofterBites + "; " + EarlierPlated),
             new Allowance("Level_C1_04", 0, EnemyTraits.Airborne, 2, OneRaidLate + "; round 77: " + SofterBites),
-            new Allowance("Level_C1_04", 1, EnemyTraits.Armoured, 1, EarlierPlated),
-            new Allowance("Level_C1_04", 1, EnemyTraits.Airborne, 2, SofterBitesLaterRaids),
-            new Allowance("Level_C1_04", 3, EnemyTraits.Airborne, 2, BossEntrance),
+            new Allowance("Level_C1_04", 1, EnemyTraits.Airborne, 1, SofterBitesLaterRaids),
+            new Allowance("Level_C1_04", 3, EnemyTraits.Airborne, 1, BossEntrance),
             new Allowance("Level_C1_05", 0, EnemyTraits.Armoured, 2, "growth 1.5 here left no searched plan winning (round 68: best plan 0/3); the row falls to the raid of wave 8 and the waves after it"),
             new Allowance("Level_C1_05", 1, EnemyTraits.Armoured, 3, SofterBitesLaterRaids),
             new Allowance("Level_C1_05", 1, EnemyTraits.Airborne, 1, OneRaidLate),
-            new Allowance("Level_C1_05", 3, EnemyTraits.Armoured, 1, SofterOpening),
-            new Allowance("Level_C1_05", 3, EnemyTraits.Airborne, 2, OneRaidLate + "; " + SofterOpening),
-            new Allowance("Level_C1_06", 0, EnemyTraits.Airborne, 1, SofterBites),
+            new Allowance("Level_C1_05", 3, EnemyTraits.Airborne, 1, OneRaidLate),
             new Allowance("Level_C1_06", 1, EnemyTraits.Armoured, 1, EarlierPlated),
-            new Allowance("Level_C1_06", 1, EnemyTraits.Airborne, 1, OneRaidLate),
         };
 
         /// <summary>The allowance of a cell and trait, or null.</summary>

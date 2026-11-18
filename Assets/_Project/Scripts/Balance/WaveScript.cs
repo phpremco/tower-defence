@@ -214,6 +214,26 @@ namespace Game.Balance
         /// </summary>
         public SurpriseSpec[] Surprises = new SurpriseSpec[0];
 
+        /// <summary>
+        /// The main roads the level writes per wave (round 82): each replaces the grammar's default choice for its wave on
+        /// the difficulties it names. Empty leaves every wave to the grammar's rule (<see cref="WaveGrammar.RoadsOn"/>).
+        /// </summary>
+        public RoadSpec[] RoadPlan = new RoadSpec[0];
+
+        /// <summary>The roads the level writes for this wave on this difficulty (the first that applies), or null.</summary>
+        public RoadSpec RoadsFor(int number, int difficulty)
+        {
+            foreach (RoadSpec roads in RoadPlan)
+            {
+                if (roads.AppliesTo(number, difficulty))
+                {
+                    return roads;
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>The surprise the level writes for this wave on this difficulty (the first that applies), or null.</summary>
         public SurpriseSpec SurpriseFor(int number, int difficulty)
         {

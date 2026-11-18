@@ -1,0 +1,32 @@
+C1_03 second road 3; lanes: path 0 length 109.0 trunk 0.27 path 3 length 46.0 trunk 0.63; gates: path 0 at 0.14 own path 0 at 0.72 own path 0 at 0.79 trunk path 0 at 0.95 trunk
+C1_03 d2 w5 x0.828 roads Both surprise None | stream 230 reach 0.97 span 11.0 gate s 16.0 window 27.0 density 1.25 money 24
+    ledger: w5   money   316 towers  2 hp    443/    0 window   27s pressure 0.30/0.00
+    6 x hp 11 path 3 source 0 start 0.0 every 0.20
+    3 x hp 11 path 0 source 0 start 2.5 every 0.20
+    4 x hp 11 path 3 source 0 start 2.5 every 2.00
+    3 x hp 11 path 0 source 0 start 3.5 every 2.00
+C1_03 d2 w6 x1.077 roads First surprise None | stream 886 reach 0.93 span 16.8 gate s 16.0 window 32.8 density 2.42 money 72
+    ledger: w6   money   377 towers  3 hp    886/    0 window   33s pressure 0.47/0.00
+    6 x hp 11 path 0 source 0 start 0.0 every 0.20
+    7 x hp 11 path 0 source 0 start 1.5 every 0.20
+    6 x hp 11 path 0 source 0 start 3.3 every 0.20
+    7 x hp 11 path 0 source 0 start 4.8 every 0.20
+    22 x hp 11 path 0 source 0 start 2.5 every 0.60
+C1_03 d2 w7 x0.179 roads Both surprise None | stream 154 reach 0.99 span 13.5 gate s 14.9 window 28.4 density 1.45 money 63
+    ledger: w7   money   382 towers  4 hp    607/    0 window   28s pressure 0.84/0.00
+    6 x hp 11 path 0 source 0 start 0.0 every 0.20
+    5 x hp 11 path 3 source 0 start 2.5 every 0.20
+    2 x hp 11 path 3 source 0 start 2.5 every 2.00
+    3 x hp 11 path 3 source 0 start 10.5 every 2.00
+    1 x hp 11 path 0 source 0 start 3.5 every 2.00
+    3 x hp 11 path 0 source 0 start 9.5 every 2.00
+    1 x hp 220 plated path 3 source 0 start 5.0 every 1.25
+C1_03 d2 w8 x1.034 roads First surprise Flank | stream 1021 reach 0.94 span 15.1 gate s 10.8 window 25.9 density 1.39 money 74
+    ledger: w8   money   447 towers  4 hp   1037/    0 window   26s pressure 0.55/0.00
+    6 x hp 11 path 0 source 0 start 0.0 every 0.20
+    3 x hp 11 path 0 source 0 start 2.5 every 0.20
+    7 x hp 11 path 0 source 0 start 2.5 every 1.00
+    1 x hp 220 plated path 0 source 0 start 5.0 every 1.25
+    1 x hp 36 path 0 source 0 start 7.5 every 0.65
+    2 x hp 11 path 3 source 0 start 12.0 every 1.00
+    1 x hp 36 path 3 source 0 start 14.5 every 0.65

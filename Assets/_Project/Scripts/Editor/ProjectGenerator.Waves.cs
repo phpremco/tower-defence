@@ -42,6 +42,7 @@ namespace Game.Editor
                 // The level's own surprises are checked against its spawn points before a wave is written with them.
                 var scheduleErrors = new List<string>();
                 SurpriseSchedule.Check(level, script.Surprises, script.Waves, bestiary.ById, scheduleErrors);
+                RoadSchedule.Check(level, script.RoadPlan, script.Waves, scheduleErrors);
                 foreach (string error in scheduleErrors)
                 {
                     Debug.LogError("[Validator] " + error);

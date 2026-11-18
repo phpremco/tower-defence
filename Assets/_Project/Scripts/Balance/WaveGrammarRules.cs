@@ -48,6 +48,16 @@ namespace Game.Balance
         public float ComboTempo = 1f;
 
         /// <summary>
+        /// A level that forks (round 82): the share of its waves whose front comes down every main road at once, per
+        /// difficulty; the other waves keep to one road. Spread evenly over the level, so Easy is mostly one road at a time
+        /// and Psycho mostly both. One on every difficulty is the behaviour before round 82: every wave down every road.
+        /// </summary>
+        public float[] MultiRoadShare = { 0.3f, 0.45f, 0.6f, 0.75f };
+
+        /// <summary>Of the waves that keep to one road, every so-manieth takes the second road; the others the first.</summary>
+        public int SecondRoadEvery = 2;
+
+        /// <summary>
         /// Off for the solver's second look at a level, without its surprises (<see cref="BalanceRules.SurprisesLiftNoWave"/>);
         /// never off in the rules a level is composed with.
         /// </summary>
@@ -91,6 +101,8 @@ namespace Game.Balance
         public float BossBreatherFor(int difficulty) => At(BossBreather, difficulty);
 
         public float SurpriseShareFor(int difficulty) => At(SurpriseShare, difficulty);
+
+        public float MultiRoadShareFor(int difficulty) => At(MultiRoadShare, difficulty);
 
         public int SurpriseSpacingFor(int difficulty) => At(SurpriseSpacing, difficulty);
 

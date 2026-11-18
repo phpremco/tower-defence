@@ -1,0 +1,43 @@
+Wave ledger lab 2026-11-18 02:13; overrides: RaidsCappedAtHeldGuns = false
+
+C1_05 Hard (the solver's reference player; solver = before the human calibration; hero = the human with the hero, cap 1.25; span = active seconds of the ground stream, sky = the flyers' window)
+  w1  s1   x1.31    (stored x1.388  , solver x1.65  , hero 0.29, human 0.39-) money   280 hp    398/    0 span   5.5s sky   0.0s n  24/ 0 pressure 0.34/0.00 | 0:1x1 0:2x1
+  w2  C2   x1.703   (stored x1.804  , solver x2.145 , hero 0.31, human 0.40-) money   298 hp    625/    0 span  14.3s sky   0.0s n  29/ 0 pressure 0.36/0.00 | 0:0x1 0:1x1 0:2x1
+  w3  W1   x2.158   (stored x2.286  , solver x2.718 , hero 0.53, human 0.67-) money   331 hp   1119/    0 span  11.7s sky   0.0s n  41/ 0 pressure 0.63/0.00 | 0:2x2
+  w4  A1   x0.318   (stored x0.336  , solver x0.4   , hero 0.19, human 0.19-) money   371 hp     56/   59 span   6.8s sky   0.7s n  14/ 2 pressure 0.08/0.24 | 0:1x1 0:2x1 3:0x1
+  w5  T1   x1.755   (stored x1.859  , solver x2.21  , hero 0.82, human 0.99p) money   400 hp   1399/    0 span  11.5s sky   0.0s n  25/ 0 pressure 1.03/0.00 | 0:0x1 1:0x2 3:0x1
+  w6  A1   x1.929   (stored x1.056  , solver x2.43  , hero 0.59, human 0.59-) money   450 hp    366/  355 span   7.6s sky   0.7s n  15/ 2 pressure 0.30/0.74 | 0:0x1 1:0x2 3:1x1
+  w7  W1   x1.644   (stored x1.742  , solver x2.071 , hero 0.71, human 0.94p) money   480 hp   1747/    0 span  21.9s sky   0.0s n  84/ 0 pressure 0.93/0.00 | 0:1x1 0:2x1 3:1x1
+  w8  A1   x0.668   (stored x0.707  , solver x0.841 , hero 0.38, human 0.38-) money   578 hp    515/  246 span  10.2s sky   3.2s n  23/ 4 pressure 0.36/0.49 | 0:0x1 1:0x3 3:1x1
+  w9  T1   x2.217   (stored x2.349  , solver x2.792 , hero 0.87, human 0.94p) money   669 hp   3103/    0 span  15.0s sky   0.0s n  40/ 0 pressure 1.25/0.00 | 0:0x1 1:1x2 3:1x1
+  w10 C2!  x1.472   (stored x1.588  , solver x1.854 , hero 0.73, human 0.73p) money   810 hp   2722/  474 span  21.8s sky  10.6s n  52/ 5 pressure 0.81/0.93 | 1:0x4 1:1x1 3:1x1
+  w11 W2 B x2.218   (stored x2.323  , solver x2.794 , hero 0.82, human 0.96-) money  1002 hp   2974/ 1785 span  28.1s sky  18.5s n 106/ 1 pressure 0.89/1.27 | 0:1x2 0:2x2 3:1x1 3:2x1
+  w12 X2   x1.165   (stored x1.245  , solver x1.48  , hero 0.47, human 0.51p) money  1271 hp   2800/  429 span  25.8s sky   8.9s n  81/ 4 pressure 0.65/0.34 | 0:0x1 1:0x7 3:1x1 3:2x1
+  w13 A2   x1.572   (stored x0.559  , solver x1.98  , hero 0.33, human 0.33-) money  1502 hp   1698/ 1012 span  14.3s sky   3.9s n  36/ 7 pressure 0.46/0.52 | 0:0x1 0:2x2 1:0x6 3:1x1 3:2x1
+  w14 T1!  x2.648   (stored x2.856  , solver x3.335 , hero 0.81, human 0.84p) money  1627 hp   7704/  487 span  24.0s sky  23.1s n  72/ 4 pressure 1.11/0.28 | 1:0x1 1:1x5 3:1x1 3:2x1
+  w15 W3   x5.223   (stored x6.072  , solver x2.448 , hero 0.72, human 0.75p) money  1857 hp  14008/    0 span  47.7s sky   0.0s n 176/ 0 pressure 1.01/0.00 | 0:0x1 1:0x1 1:1x6 3:1x1 3:2x1
+  w16 A2   x1.341   (stored x1.399  , solver x2.458 , hero 0.38, human 0.38-) money  2052 hp   2269/ 1480 span  18.6s sky   5.9s n  54/12 pressure 0.55/0.61 | 0:0x1 0:2x7 1:0x4 3:1x1 3:2x1
+  w17 T3 B x1.702   (stored x2.157  , solver x2.144 , hero 1.11, human 1.15-) money  2202 hp   9038/  470 span  31.6s sky  37.9s n  92/ 3 pressure 1.47/0.16 | 0:2x4 1:0x1 1:1x5 3:1x1 3:2x1
+
+C1_05 Psycho (the solver's reference player; solver = before the human calibration; hero = the human with the hero, cap 1.35; span = active seconds of the ground stream, sky = the flyers' window)
+  w1  s1   x1.316   (stored x1.285  , solver x1.65  , hero 0.17, human 0.19-) money   280 hp    693/    0 span   4.7s sky   0.0s n  29/ 0 pressure 0.53/0.00 | 0:1x1 0:2x1
+  w2  C2   x1.711   (stored x1.67   , solver x2.145 , hero 0.17, human 0.18-) money   301 hp   1118/    0 span  14.3s sky   0.0s n  36/ 0 pressure 0.57/0.00 | 0:2x1 1:0x1
+  w3  W1   x2.168   (stored x2.116  , solver x2.718 , hero 0.31, human 0.33-) money   343 hp   2007/    0 span  12.2s sky   0.0s n  51/ 0 pressure 0.96/0.00 | 0:2x2
+  w4  A1   x0.319   (stored x0.311  , solver x0.4   , hero 0.21, human 0.21-) money   392 hp     98/   84 span   6.7s sky   0.6s n  17/ 2 pressure 0.10/0.28 | 0:1x1 0:2x1 3:0x1
+  w5  T2 B x0.648   (stored x0.632  , solver x0.812 , hero 0.77, human 0.82-) money   425 hp   3416/    0 span   8.5s sky   0.0s n  21/ 0 pressure 2.48/0.00 | 0:0x1 0:2x1 1:0x1 3:0x1
+  w6  A1   x1.691   (stored x0.848  , solver x2.12  , hero 0.59, human 0.59-) money   433 hp    583/  446 span   8.1s sky   0.6s n  19/ 2 pressure 0.45/0.75 | 0:0x1 0:2x1 3:1x1
+  w7  W1   x1.652   (stored x1.612  , solver x2.071 , hero 0.33, human 0.35p) money   543 hp   3178/    0 span  23.1s sky   0.0s n 106/ 0 pressure 1.21/0.00 | 0:2x2 3:1x1
+  w8  A1   x0.671   (stored x0.655  , solver x0.841 , hero 0.38, human 0.38-) money   644 hp    804/  354 span  10.2s sky   3.1s n  28/ 4 pressure 0.40/0.55 | 0:0x1 0:1x1 1:0x3 3:1x1
+  w9  T1!  x2.452   (stored x2.422  , solver x2.79  , hero 0.62, human 0.62p) money   741 hp   5434/  647 span  15.6s sky  21.7s n  37/ 4 pressure 1.63/0.82 | 0:1x1 1:0x1 1:2x1 3:1x1
+  w10 A1   x1.819   (stored x1.776  , solver x2.281 , hero 0.76, human 0.76-) money   877 hp   2611/ 1441 span  10.2s sky   3.1s n  32/ 6 pressure 0.92/1.02 | 0:0x1 1:0x1 1:1x2 3:2x1
+  w11 W2 B x2.006   (stored x1.958  , solver x2.515 , hero 0.85, human 0.85-) money   988 hp   5466/ 2553 span  29.0s sky  17.5s n 132/ 1 pressure 1.45/1.56 | 0:2x3 3:1x1 3:2x1
+  w12 C3!  x1.287   (stored x1.272  , solver x1.465 , hero 0.43, human 0.44p) money  1271 hp   5903/ 1104 span  26.2s sky  14.3s n  80/ 9 pressure 1.18/0.46 | 0:0x1 1:0x1 1:1x3 3:1x1 3:2x1
+  w13 A2   x1.579   (stored x0.518  , solver x1.98  , hero 0.45, human 0.45-) money  1498 hp   2741/ 1876 span  14.3s sky   4.2s n  44/ 9 pressure 0.69/0.76 | 0:1x1 0:2x2 1:1x3 3:1x1 3:2x1
+  w14 T1!  x2.764   (stored x2.914  , solver x3.146 , hero 0.64, human 0.65p) money  1672 hp  12368/  912 span  22.2s sky  23.0s n  84/ 5 pressure 1.47/0.41 | 1:0x1 1:2x3 3:1x1 3:2x1
+  w15 W3   x5.248   (stored x5.618  , solver x2.448 , hero 0.74, human 0.77p) money  1870 hp  25335/    0 span  49.2s sky   0.0s n 221/ 0 pressure 1.57/0.00 | 1:1x7 3:1x1 3:2x1
+  w16 A2   x1.326   (stored x1.295  , solver x2.458 , hero 0.51, human 0.51-) money  2026 hp   4098/ 2450 span  19.4s sky   5.9s n  67/14 pressure 0.76/0.83 | 0:0x1 0:2x5 1:0x1 1:1x3 3:1x1 3:2x1
+  w17 T3 B x1.884   (stored x1.996  , solver x2.144 , hero 1.00, human 1.02-) money  2227 hp  15185/ 1741 span  31.3s sky  39.6s n 114/ 7 pressure 2.04/0.43 | 0:2x4 1:0x1 1:1x5 3:1x1 3:2x1
+
+Against the stored waves:
+C1_05 Hard   sum of multipliers x0.978 of the stored set; human 1.23x of 1.23x asked (+0.1 %); moved more than 3 %: w1 x1.388->x1.31, w2 x1.804->x1.703, w3 x2.286->x2.158, w4 x0.336->x0.318, w5 x1.859->x1.755, w6 x1.056->x1.929, w7 x1.742->x1.644, w8 x0.707->x0.668, w9 x2.349->x2.217, w10 x1.588->x1.472, w11 x2.323->x2.218, w12 x1.245->x1.165, w13 x0.559->x1.572, w14 x2.856->x2.648, w15 x6.072->x5.223, w16 x1.399->x1.341, w17 x2.157->x1.702
+C1_05 Psycho sum of multipliers x1.057 of the stored set; human 1.77x of 1.72x asked (+3.1 %); moved more than 3 %: w6 x0.848->x1.691, w13 x0.518->x1.579, w14 x2.914->x2.764, w15 x5.618->x5.248, w17 x1.996->x1.884

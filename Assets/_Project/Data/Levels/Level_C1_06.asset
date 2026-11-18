@@ -355,8 +355,8 @@ MonoBehaviour:
   _enemyHealthMultiplier: 1
   _expectedUpgradeBonus: 0.1
   _balanceTargetScale:
-  - 0.67
-  - 0.75
+  - 0.64
+  - 0.71
   - 0.63
   - 0.58
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}

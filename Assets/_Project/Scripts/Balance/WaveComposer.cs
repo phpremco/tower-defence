@@ -213,7 +213,10 @@ namespace Game.Balance
             WaveGrammarRules grammar = rules.Grammar;
             WavePattern pattern = WaveGrammar.PatternOf(script, difficulty, number, grammar);
             SurpriseKind surprise = WaveGrammar.SurpriseOn(script, enemies, difficulty, number, secondRoad, rules);
-            var fill = new FillContext(script, enemies, rules, difficulty, number, secondRoad, random, growth);
+            // The main roads this wave's front comes down (round 82): the grammar's choice per wave and difficulty.
+            MainRoads roads = WaveGrammar.RoadsOn(script, enemies, difficulty, number, secondRoad, rules);
+            wave.Roads = roads;
+            var fill = new FillContext(script, enemies, rules, difficulty, number, secondRoad, random, growth, LanesOf(roads, secondRoad));
             // An authored surprise is what the level writes; the front gives up what it costs, so the wave is no bigger for it.
             var authored = new List<GroupSpec>();
             float hiddenBudget = surprise == SurpriseKind.Authored ? Math.Min(budget, FillAuthored(authored, script.SurpriseFor(number, difficulty), fill))
@@ -246,7 +249,7 @@ namespace Game.Balance
 
             if (script.RaidWaveFor(difficulty) == number)
             {
-                AddRaid(front, open, secondRoad, random, enemies, rules);
+                AddRaid(front, open, fill.Lanes, random, enemies, rules);
             }
 
             // Clusters and breathers. A boss wave's thin crowd comes in a fixed number of clusters with long breathers, and the
@@ -469,8 +472,9 @@ namespace Game.Balance
         // What every fill of one wave shares: the script and its difficulty, the wave, the roads and the wave's own dice.
         private readonly struct FillContext
         {
-            public FillContext(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules, int difficulty, int number, int secondRoad, Random random, TraitGrowth growth)
+            public FillContext(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules, int difficulty, int number, int secondRoad, Random random, TraitGrowth growth, int[] lanes)
             {
+                Lanes = lanes;
                 Script = script;
                 Enemies = enemies;
                 Rules = rules;
@@ -489,6 +493,19 @@ namespace Game.Balance
             public int SecondRoad { get; }
             public Random Random { get; }
             public TraitGrowth Growth { get; }
+
+            /// <summary>The ground lanes the wave's front walks in on.</summary>
+            public int[] Lanes { get; }
+        }
+
+        private static readonly int[] FirstRoadOnly = { Road };
+
+        // The ground lanes of a choice of main roads: path indices, the first road before the second.
+        private static int[] LanesOf(MainRoads roads, int secondRoad)
+        {
+            bool second = secondRoad >= 0 && (roads & MainRoads.Second) != 0;
+            bool first = !second || (roads & MainRoads.First) != 0;
+            return first && second ? new[] { Road, secondRoad } : second ? new[] { secondRoad } : FirstRoadOnly;
         }
 
         // The groups of a surprise: the rift's troops out of their nests (one troop, one nest; several troops may open several
@@ -499,7 +516,7 @@ namespace Game.Balance
         {
             bool rift = surprise == SurpriseKind.Rift;
             List<TroopSpec> troops = Unlocked(fill.Script, fill.Enemies, fill.Number, fill.Difficulty, rift);
-            var plain = new FillContext(fill.Script, fill.Enemies, fill.Rules, fill.Difficulty, fill.Number, fill.SecondRoad, fill.Random, TraitGrowth.None);
+            var plain = new FillContext(fill.Script, fill.Enemies, fill.Rules, fill.Difficulty, fill.Number, fill.SecondRoad, fill.Random, TraitGrowth.None, fill.Lanes);
             return Fill(hidden, budget, troops, 1f, plain, 0f, TroopStagger, rift ? null : new[] { fill.SecondRoad });
         }
 
@@ -580,7 +597,9 @@ namespace Game.Balance
             }
 
             // The dice only pick lanes and cluster patterns, never a number of creatures.
-            var fill = new FillContext(script, enemies, rules, difficulty, number, secondRoad, new Random(0), TraitGrowth.None);
+            // The roads only place the creatures, so any lane will do for a head count (and the road choice asks for the
+            // surprise plan, which is being made here).
+            var fill = new FillContext(script, enemies, rules, difficulty, number, secondRoad, new Random(0), TraitGrowth.None, FirstRoadOnly);
             var hidden = new List<GroupSpec>();
             FillSurprise(hidden, surprise, script.BudgetOf(number) * rules.Grammar.SurpriseShareFor(difficulty), fill);
             int heads = 0;
@@ -712,7 +731,7 @@ namespace Game.Balance
                 bool ranks = enemy.Armor > 0f && growth.Armour > 1f;
                 if (troop.Source == 0)
                 {
-                    Scatter(group, fill.Random.Next(0, 1000), lanes != null && !enemy.Flies ? lanes : LanesFor(enemy, fill.SecondRoad), output, ranks ? Math.Max(troop.Pack, GrownPack) : troop.Pack, troop.Loose && !ranks);
+                    Scatter(group, fill.Random.Next(0, 1000), lanes != null && !enemy.Flies ? lanes : LanesFor(enemy, fill.Lanes), output, ranks ? Math.Max(troop.Pack, GrownPack) : troop.Pack, troop.Loose && !ranks);
                 }
                 else
                 {
@@ -767,7 +786,7 @@ namespace Game.Balance
         }
 
         // The builder's raid lever (round 22e): the wave opens with a few fast, spread runners of the cheapest troop, ahead of its fill.
-        private static void AddRaid(List<GroupSpec> output, List<TroopSpec> open, int secondRoad, Random random, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules)
+        private static void AddRaid(List<GroupSpec> output, List<TroopSpec> open, int[] lanes, Random random, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules)
         {
             List<TroopSpec> runners = Cheapest(open, 1, enemies, rules);
             EnemyStats enemy = runners.Count > 0 ? Get(enemies, runners[0].Enemy) : null;
@@ -777,7 +796,7 @@ namespace Game.Balance
             }
 
             var group = new GroupSpec { Enemy = enemy, Count = RaidCount, Interval = runners[0].Interval * RaidSpread, Delay = 0f, Source = runners[0].Source, Path = Road };
-            Scatter(group, random.Next(0, 1000), LanesFor(enemy, secondRoad), output, 0, true);
+            Scatter(group, random.Next(0, 1000), LanesFor(enemy, lanes), output, 0, true);
         }
 
         // Flyers split over both flight routes, the second route a little behind the first.
@@ -797,8 +816,7 @@ namespace Game.Balance
             }
         }
 
-        private static int[] LanesFor(EnemyStats enemy, int secondRoad) =>
-            !enemy.Flies && secondRoad >= 0 ? new[] { Road, secondRoad } : new[] { Road };
+        private static int[] LanesFor(EnemyStats enemy, int[] lanes) => enemy.Flies ? FirstRoadOnly : lanes;
 
         // Cuts one stream into clusters that take turns on the lanes; a cluster of n claims n stream intervals.
         private static void Scatter(GroupSpec group, int seed, int[] lanes, List<GroupSpec> output, int pack, bool loose = false)

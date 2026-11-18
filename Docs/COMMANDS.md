@@ -1680,3 +1680,70 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
     `until grep -q ... ; do sleep 5; done` loop on the file the batch writes.
   - While a chain runs, do not edit anything under `Assets`, `Packages`, `ProjectSettings` or `Tools`: every stage syncs
     the clones again and would pick a half-made change up (and a data or bot change would split the stamps).
+
+## Round 82: which roads a wave uses, the band on every ground wave, two written surprise schedules (added 2026-11-18)
+
+- **The design** is in Docs/WAVE_GRAMMAR.md ("Which roads a wave uses", "No ground wave far tougher than the waves before
+  it"). In code: `MainRoads`, `RoadSpec`, `WaveScriptSpec.RoadPlan` (helper `OnRoads` in `WaveScripts`),
+  `WaveGrammar.RoadsOn`, `WaveGrammarRules.MultiRoadShare` and `SecondRoadEvery`, `WaveComposer.LanesOf`,
+  `RoadSchedule.Check`; the band in `WaveSolver.Solve` and `SolveVariant` (`Trend`, the lift of a capped group).
+- **The road plan of every cell:** `WaveGrammarReport.cs` ("Round 79") now prints `-` (first road), `_` (second road) or
+  `=` (both) behind every wave of a level that forks.
+- **The old behaviour on paper:** `grammar.MultiRoadShare=1,1,1,1` in `Tools/PlayTest/wave_ledger_arg.txt` (every wave
+  down every road; a flank wave's front still keeps to the first road).
+- **What the ledger reads of single waves:** `Tools/PlayTest/Scripts/WaveLoadProbe.cs` with lines `C1_03:2:7` (level key,
+  difficulty index, wave) in `Tools/PlayTest/wave_load_arg.txt` writes `Tools/PlayTest/wave_load.txt`: the level's lanes
+  (length, trunk share) and gates, and per wave the roads, the load (stream health, reach, span, gate seconds, window),
+  the ledger's line (its health includes what earlier waves carry in) and every group with its path. This is how the
+  paper waves of Shard Ridge were traced to carried Cragbacks (the wave's own health was a quarter of the ledger's).
+- **Paper waves and outliers of a wave set:** a ground wave under x0.4 or above 2.5 times its cell's median is worth a
+  look; the test `WaveGrammarTests.NoStoredGroundWave_IsFarTougherThanItsLevel` gates the upper side. The listing used in
+  STATUS round 82 is a twenty-line Python read of `_healthMultiplier` and `_airRaid` per difficulty block of the wave assets.
+- **The scale refit reads `Tools/PlayTest/r81_waves/`** now (round 81's measured waves). Mind: with the road rule the
+  sum of multipliers is no measure of a forked cell any more (a wave that drops to the floor takes the sum down while
+  the cell plays as hard): Shard Ridge Hard read x0.72 of round 81's sum at the same scale and the sensible rung won
+  one seed fewer. Round 82 took the refit only for Easy and Medium cells whose sum had grown; the others kept their
+  scale and were judged by the measurement.
+- **The finale stage:** `bash Tools/PlayTest/finale_workers.sh` (the probe on the waves as they are), then
+  `unity command run_script --file Tools/PlayTest/Scripts/ApplyFinale.cs --entry ApplyFinale.Run --timeout_ms 120000 --timeout 180`
+  (writes every continent boss's health from the probe), then the probe once more and `ContinentFinaleTests`.
+- **An EditMode run on w6 beside a pressure batch on w1 to w5** works (the probe runs on fixed steps), and so does the
+  ledger lab in the open editor; the solve stage may run once the batch has synced, since the clones are copies.
+- **Pitfalls met this round:**
+  - A Bash heredoc with an odd number of apostrophes fails even with a quoted delimiter (again): write patch scripts
+    with the editor tool and run them.
+  - `unity command recompile_status` answers `up_to_date` when the editor had already compiled on its own; a wait loop
+    must take that as done too.
+  - A boss arena plays a campaign level's wave asset (Arena_Bog: Glass Meadows'), so a test over every
+    `LevelDefinition` meets a level's written surprise under a name that has no script.
+  - A lower band on a wave solved on its own (never softer than 0.7 of the waves before) was tried and taken out: where
+    the pressure is carried in by earlier waves the wave cannot be softened into its band, and Shard Ridge Hard left the
+    human curve's gate (1.36x where 1.49x is asked).
+
+## Round 82b: reading a measurement, the picks with a fresh search (added 2026-11-18)
+
+- **`result="Skipped"` on `BalanceAcceptanceTests` is the test working:** it writes `acceptance.txt` and then ignores
+  itself with the list of failing cells whenever one fails. Read the report (`grep -c ": PASS"`), not the result line.
+  The same holds for `PlanSearchTests.Search_WritesPlansForEveryCell` on a stale calibration hash (the files are written).
+- **The calibration's input hash goes stale after the finale stage** (it counts creature health): every report header
+  then reads `inputs ... (STALE, data now ...)` and the plan search skips itself. Remedy: `apply-keep` ("Round 66");
+  it rewrites `Data/Balance/BalanceCalibration.asset`, so do it before a round's first measurement, not after.
+- **Lost runs, boss margins and break-even from a records file:** `python Tools/PlayTest/pressure_killers.py lost <records> [--multiple 1]`
+  (per lost run: the wave it fell in, base damage per wave, the wave that took the most, gate damage of the last waves,
+  the guns standing by type and level), `... boss <records> <records before> [--difficulty 1]` (per level and rung at x1
+  and x1.25: seeds won, the last wave's gate and base damage, base left) and `... breakeven <records>` (the highest
+  multiple at which two of three seeds win; `fragile` marks a row that is not monotone).
+- **A cell where no pick wins 3 of 3** (after step 2 of "Refreshing the skilled rung's picks", Round 78): search it on
+  today's waves and try the result through an overlay ("Round 79", `PlanSearchTests` with `cells=<node>:<difficulty>`).
+  If the search's best beats the old best, replace the cell's files in `Tools/PlayTest/Plans/` (delete the old
+  `Level_<key>_<d>*` first) and write that cell's line in `skilled_picks.txt` by hand from the search's records, with a
+  comment naming them (`skilled_picks.py` refuses a records file with two stamps). All of it is one bot batch; measure
+  the skilled rung alone afterwards ("Round 79"). Round 82b: Crysium Vein Medium (`skilled_search_r82_records.txt`).
+- **Before softening a Medium cell for the skilled rung, look at the sensible rung:** when the lower rung wins 15 of 15
+  there, the upper rung's strategy is stale, not the level too hard.
+- **The old gates on one cell with new plans:** `cp plan_records_<round>_replay.txt plan_records.txt`, then
+  `workers.sh run replay 5 "cells=5:1" "seeds=1,2,3"`, `r34b_editmode_worker.sh 6 BalanceAcceptanceTests`, copy the
+  clone's `acceptance.txt` aside and put both plan files back with `git show HEAD:<path> > <path>` (they are in the bot stamp).
+- **The EditMode suite beside a pressure batch** takes 17 minutes instead of 12.
+- **Pitfall:** a foreground `sleep N` of more than a few seconds is refused by the agent tool; wait with a bounded loop
+  (`n=0; until grep -q "<done line>" <log> || [ $n -ge 22 ]; do sleep 5; n=$((n+1)); done`) and repeat the call.

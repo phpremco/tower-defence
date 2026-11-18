@@ -1,34 +1,37 @@
-Scale refit 2026-11-17 23:27: per cell the scale now, the sum of multipliers (raids aside) at that scale against the stored waves, the scale that gives the stored sum again, and the sum there.
-C1_01 0: scale 0.8 sum x1.010 -> scale 0.8 sum x1.010 (kept)
-C1_01 1: scale 0.757 sum x1.032 -> scale 0.757 sum x1.032 (kept)
-C1_01 2: scale 1 sum x1.031 -> scale 1 sum x1.031 (kept)
-C1_01 3: scale 0.7 sum x1.031 -> scale 0.7 sum x1.031 (kept)
-C1_02 0: scale 0.658 sum x1.034 -> scale 0.658 sum x1.034 (kept)
-C1_02 1: scale 1 sum x1.032 -> scale 1 sum x1.032 (kept)
-C1_02 2: scale 1 sum x1.003 -> scale 1 sum x1.003 (kept)
-C1_02 3: scale 0.757 sum x0.994 -> scale 0.757 sum x0.994 (kept)
-C1_03 0: scale 0.83 sum x1.004 -> scale 0.83 sum x1.004 (kept)
-C1_03 1: scale 0.72 sum x1.006 -> scale 0.72 sum x1.006 (kept)
-C1_03 2: scale 0.53 sum x0.805 -> scale 0.62 sum x0.991
-C1_03 3: scale 0.48 sum x0.968 -> scale 0.48 sum x0.968 (kept)
-C1_04 0: scale 0.87 sum x1.313 -> scale 0.87 sum x1.313 (kept)
-C1_04 1: scale 1.13 sum x1.005 -> scale 1.13 sum x1.005 (kept)
-C1_04 2: scale 0.87 sum x0.965 -> scale 0.9 sum x1.008
-C1_04 3: scale 0.51 sum x1.041 -> scale 0.5 sum x0.943
-C1_05 0: scale 0.64 sum x0.954 -> scale 0.66 sum x1.001
-C1_05 1: scale 0.67 sum x0.980 -> scale 0.67 sum x0.980 (kept)
-C1_05 2: scale 0.73 sum x1.003 -> scale 0.73 sum x1.003 (kept)
-C1_05 3: scale 0.43 sum x0.940 -> scale 0.44 sum x0.985
-C1_06 0: scale 0.67 sum x1.004 -> scale 0.67 sum x1.004 (kept)
-C1_06 1: scale 0.78 sum x1.048 -> scale 0.75 sum x1.004
-C1_06 2: scale 0.68 sum x1.084 -> scale 0.63 sum x1.006
-C1_06 3: scale 0.58 sum x1.023 -> scale 0.58 sum x1.023 (kept)
+Scale refit 2026-11-18 02:44: per cell the scale now, the sum of multipliers (raids aside) at that scale against the stored waves, the scale that gives the stored sum again, and the sum there.
+C1_01 0: scale 0.8 sum x1.000 -> scale 0.8 sum x1.000 (kept)
+C1_01 1: scale 0.757 sum x1.000 -> scale 0.757 sum x1.000 (kept)
+C1_01 2: scale 1 sum x1.000 -> scale 1 sum x1.000 (kept)
+C1_01 3: scale 0.7 sum x1.000 -> scale 0.7 sum x1.000 (kept)
+C1_02 0: scale 0.658 sum x1.002 -> scale 0.658 sum x1.002 (kept)
+C1_02 1: scale 1 sum x0.970 -> scale 1 sum x0.970 (kept)
+C1_02 2: scale 1 sum x0.988 -> scale 1 sum x0.988 (kept)
+C1_02 3: scale 0.757 sum x1.001 -> scale 0.757 sum x1.001 (kept)
+C1_03 0: scale 0.83 sum x0.981 -> scale 0.83 sum x0.981 (kept)
+C1_03 1: scale 0.72 sum x0.881 -> scale 0.82 sum x1.004
+C1_03 2: scale 0.62 sum x0.715 -> scale 0.79 sum x1.001
+C1_03 3: scale 0.48 sum x1.391 -> scale 0.38 sum x0.995
+C1_04 0: scale 0.84 sum x1.286 -> scale 0.77 sum x1.001
+C1_04 1: scale 1.13 sum x1.169 -> scale 0.97 sum x1.005
+C1_04 2: scale 0.9 sum x0.634 -> scale 1.2 sum x1.008
+C1_04 3: scale 0.51 sum x0.766 -> scale 0.55 sum x0.981
+C1_05 0: scale 0.66 sum x1.036 -> scale 0.66 sum x1.036 (kept)
+C1_05 1: scale 0.67 sum x0.991 -> scale 0.67 sum x0.991 (kept)
+C1_05 2: scale 0.73 sum x0.940 -> scale 0.73 sum x0.940 (kept)
+C1_05 3: scale 0.44 sum x1.043 -> scale 0.44 sum x1.043 (kept)
+C1_06 0: scale 0.67 sum x1.076 -> scale 0.64 sum x0.993
+C1_06 1: scale 0.75 sum x1.004 -> scale 0.75 sum x1.004 (kept)
+C1_06 2: scale 0.63 sum x0.919 -> scale 0.68 sum x1.004
+C1_06 3: scale 0.58 sum x0.796 -> scale 0.79 sum x0.997
 
 Lines for wave_tuning.txt:
-C1_03 2 0.62
-C1_04 2 0.9
-C1_04 3 0.5
-C1_05 0 0.66
-C1_05 3 0.44
-C1_06 1 0.75
-C1_06 2 0.63
+C1_03 1 0.82
+C1_03 2 0.79
+C1_03 3 0.38
+C1_04 0 0.77
+C1_04 1 0.97
+C1_04 2 1.2
+C1_04 3 0.55
+C1_06 0 0.64
+C1_06 2 0.68
+C1_06 3 0.79

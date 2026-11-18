@@ -1,0 +1,108 @@
+Measured with: bot 3:2b232b90; data bf820cba; game code d1551f0d
+
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 0 of 0 curves monotone = 0.0%  ->  FAIL
+  the same check on other scores (all rungs): P 0 of 0; A 0 of 0; R+D (furthest creature) 0 of 0; D 0 of 0; won/lost 0 of 0
+  curves that are not monotone (P per multiple, the drops marked):
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 0 of 0 cells within the limit  ->  FAIL
+  cell                  
+  Quartz Flats Hard
+  Crysium Vein Medium
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  strategy1                         strategy2                         strategy3                         strategy4                         strategy5                         
+  Quartz Flats Hard     1.288 (1.281-1.358) 0/3           1.267 (0.912-1.353) 1/3           1.358 (1.354-1.370) 0/3           -                                 -
+  Crysium Vein Medium   0.602 (0.602-0.607) 3/3           0.602 (0.598-1.666) 2/3           0.600 (0.595-1.716) 2/3           0.598 (0.597-0.598) 3/3           0.597 (0.597-0.602) 3/3
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  strategy1
+    Quartz Flats Hard     x1 1.29 (1.28-1.36) 0/3
+    Crysium Vein Medium   x1 0.60 (0.60-0.61) 3/3
+  strategy2
+    Quartz Flats Hard     x1 1.27 (0.91-1.35) 1/3
+    Crysium Vein Medium   x1 0.60 (0.60-1.67) 2/3
+  strategy3
+    Quartz Flats Hard     x1 1.36 (1.35-1.37) 0/3
+    Crysium Vein Medium   x1 0.60 (0.60-1.72) 2/3
+  strategy4
+    Crysium Vein Medium   x1 0.60 (0.60-0.60) 3/3
+  strategy5
+    Crysium Vein Medium   x1 0.60 (0.60-0.60) 3/3
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  strategy1   Quartz Flats Hard     A 0.288 (0.281-0.358)  D 1.00 (1.00-1.00)  leaked 0.113 (0.080-0.129)
+  strategy1   Crysium Vein Medium   A 0.602 (0.602-0.607)  D 0.00 (0.00-0.00)  leaked 0.033 (0.033-0.033)
+  strategy2   Quartz Flats Hard     A 0.287 (0.267-0.353)  D 1.00 (0.62-1.00)  leaked 0.102 (0.065-0.121)
+  strategy2   Crysium Vein Medium   A 0.602 (0.598-0.666)  D 0.00 (0.00-1.00)  leaked 0.033 (0.033-0.033)
+  strategy3   Quartz Flats Hard     A 0.358 (0.354-0.370)  D 1.00 (1.00-1.00)  leaked 0.090 (0.088-0.114)
+  strategy3   Crysium Vein Medium   A 0.600 (0.595-0.716)  D 0.00 (0.00-1.00)  leaked 0.029 (0.029-0.034)
+  strategy4   Crysium Vein Medium   A 0.598 (0.597-0.598)  D 0.00 (0.00-0.00)  leaked 0.033 (0.033-0.033)
+  strategy5   Crysium Vein Medium   A 0.597 (0.597-0.602)  D 0.00 (0.00-0.00)  leaked 0.033 (0.033-0.033)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<1' / '>1' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  strategy1
+    Quartz Flats Hard     median <1     pooled <1     per seed: <1 <1 <1                             spread -
+    Crysium Vein Medium   median >1     pooled <1     per seed: >1 >1 >1                             spread -
+  strategy2
+    Quartz Flats Hard     median <1     pooled <1     per seed: <1 <1 <1                             spread -
+    Crysium Vein Medium   median <1     pooled <1     per seed: >1 <1 >1                             spread -
+  strategy3
+    Quartz Flats Hard     median <1     pooled <1     per seed: <1 <1 <1                             spread -
+    Crysium Vein Medium   median <1     pooled <1     per seed: >1 <1 >1                             spread -
+  strategy4
+    Crysium Vein Medium   median >1     pooled <1     per seed: >1 >1 >1                             spread -
+  strategy5
+    Crysium Vein Medium   median >1     pooled <1     per seed: >1 >1 >1                             spread -
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x1     H50
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  strategy1   Quartz Flats Hard       8   8   9  45  10  45   8  33  11  41  50  42  41  47  39  38   2
+                                    base hit: w14 3/3, w15 3/3, w17 2/3
+  strategy1   Crysium Vein Medium    76  41  51  76  58  44  67  77  64  47  74  62  44  68  76  48  51  62
+                                    base hit: never
+  strategy2   Quartz Flats Hard       7   7   9  43  10  44   8  32  11  41  48  27  42  52  34  39  17
+                                    base hit: w14 3/3, w15 2/3, w17 2/3
+  strategy2   Crysium Vein Medium    77  41  50  76  57  44  66  78  64  47  74  62  44  67  76  48  51  62
+                                    base hit: w12 1/3, w13 1/3, w14 1/3
+  strategy3   Quartz Flats Hard       8   8   9  45  10  45   8  30  11  41  54  49  44  60  50  27   .
+                                    base hit: w14 3/3, w15 3/3, w16 2/3
+  strategy3   Crysium Vein Medium    77  41  50  76  57  44  66  77  63  45  74  62  43  67  76  47  51  62
+                                    base hit: w12 1/3, w13 1/3
+  strategy4   Crysium Vein Medium    76  40  50  77  53  42  65  80  62  44  76  60  41  68  77  50  51  62
+                                    base hit: never
+  strategy5   Crysium Vein Medium    76  41  51  77  56  43  67  78  64  44  75  61  45  68  76  44  50  63
+                                    base hit: never
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  strategy1   Quartz Flats Hard     lost w15/17; built 11, upgrades 6, left 29, earned 1355, repairs 369
+                                    w1 build Cannon@3,11; w1 build Rocket@34,3; w1 build PulseRifle@7,13; w5 drone HarvestDrone@0,0; w6 build PulseRifle@3,15; w6 upgrade@3,15; w7 drone RepairDrone@0,0; w8 upgrade@7,13; w9 build Cannon@30,5; w11 build Rocket@34,4; w12 upgrade@3,15; w13 build PulseRifle@7,11
+  strategy1   Crysium Vein Medium   won w18/18; built 9, upgrades 11, left 78, earned 1789, repairs 0
+                                    w1 build Cannon@13,10; w1 build Rocket@36,10; w1 build PulseRifle@14,11; w7 drone HarvestDrone@0,0; w8 upgrade@14,11; w10 upgrade@14,11; w10 build PulseRifle@12,11; w12 build Rocket@36,7; w13 build Cannon@12,10; w13 build Cannon@14,7; w14 build Cannon@13,11; w15 build Cannon@36,11
+  strategy2   Quartz Flats Hard     won w17/17; built 18, upgrades 15, left 46, earned 2542, repairs 568
+                                    w1 build Cannon@3,11; w1 build Rocket@34,3; w1 build PulseRifle@3,15; w5 drone HarvestDrone@0,0; w6 upgrade@3,15; w7 gate gates@4,8; w7 upgrade@3,15; w8 build PulseRifle@7,11; w9 build Cannon@30,5; w9 upgrade@7,11; w10 build Rocket@34,4; w11 build Rocket@33,3
+  strategy2   Crysium Vein Medium   won w18/18; built 9, upgrades 12, left 73, earned 1789, repairs 0
+                                    w1 build Cannon@12,10; w1 build Rocket@36,10; w1 build PulseRifle@12,11; w7 drone HarvestDrone@0,0; w7 upgrade@12,11; w10 upgrade@12,11; w10 build PulseRifle@13,10; w12 build Rocket@36,7; w12 upgrade@13,10; w13 upgrade@13,10; w13 field SlowField@41,9; w14 build Cannon@14,7
+  strategy3   Quartz Flats Hard     lost w16/17; built 10, upgrades 7, left 45, earned 1780, repairs 626
+                                    w1 build Cannon@3,11; w1 build Rocket@34,3; w1 build PulseRifle@7,11; w5 drone HarvestDrone@0,0; w6 build PulseRifle@3,15; w6 upgrade@7,11; w7 upgrade@3,15; w7 upgrade@34,3; w8 build PulseRifle@34,0; w9 build Cannon@30,5; w12 drone RepairDrone@0,0; w13 upgrade@34,0
+  strategy3   Crysium Vein Medium   won w18/18; built 9, upgrades 12, left 92, earned 1789, repairs 0
+                                    w1 build Cannon@12,10; w1 build Rocket@36,11; w1 build PulseRifle@12,11; w7 drone HarvestDrone@0,0; w7 upgrade@12,11; w10 upgrade@12,11; w10 build PulseRifle@13,10; w12 build Rocket@36,10; w13 field SlowField@41,9; w13 build Cannon@14,7; w13 upgrade@13,10; w14 upgrade@13,10
+  strategy4   Crysium Vein Medium   won w18/18; built 8, upgrades 9, left 44, earned 1789, repairs 0
+                                    w1 build Cannon@12,10; w1 build Rocket@36,7; w1 build PulseRifle@13,10; w3 upgrade@13,10; w7 upgrade@13,10; w8 upgrade@12,10; w10 upgrade@36,7; w12 build Cannon@14,7; w13 field SlowField@41,9; w13 build Cannon@12,11; w14 build Cannon@13,11; w15 build Cannon@14,11
+  strategy5   Crysium Vein Medium   won w18/18; built 9, upgrades 13, left 23, earned 1789, repairs 0
+                                    w1 build Cannon@13,10; w1 build Rocket@34,10; w1 build PulseRifle@12,10; w7 drone HarvestDrone@0,0; w8 upgrade@12,10; w10 upgrade@12,10; w10 build PulseRifle@12,11; w12 build Rocket@36,10; w13 drone RepairDrone@0,0; w13 field SlowField@41,9; w14 upgrade@12,11; w14 build PulseRifle@14,7
+
+Cost: 24 runs, 11 machine minutes of play (26 s a run), 0 reference runs for the typical scripts; 1 batches, 3 wall-clock minutes in all.
+  batch 1794977188: 24 units on 5 workers, 3.3 min

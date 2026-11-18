@@ -15,7 +15,7 @@ MonoBehaviour:
   _displayName: data.enemy.SealedOne.displayName
   _layer: 1
   _flies: 0
-  _maxHealth: 25450
+  _maxHealth: 30300
   _armor: 3500
   _speed: 0.25
   _reward: 5501

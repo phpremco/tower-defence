@@ -171,7 +171,7 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "Rotbloom",
-                Creature = Titan("Rotbloom", "A walking flower of rot that makes the map itself hostile.", 28200f, 0f, 0.3f, new Color(0.35f, 0.45f, 0.15f), new Color(0.75f, 1f, 0.3f)),
+                Creature = Titan("Rotbloom", "A walking flower of rot that makes the map itself hostile.", 27200f, 0f, 0.3f, new Color(0.35f, 0.45f, 0.15f), new Color(0.75f, 1f, 0.3f)),
                 Phases = new[] { new BossPhase("Rooted", 1f), new BossPhase("Uprooted", 0.5f) },
                 Signature = BossSignature.Overgrowth,
                 Arrival = BossArrival.Pool,

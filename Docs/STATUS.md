@@ -13240,3 +13240,344 @@ single seeds. Psycho is level in sum (Glass Meadows Psycho +7 for the skilled ru
    failing test). Run the finale stage, which sets every continent boss's health from the probe (Gravemaw about +29 %,
    Rotbloom about -15 %, the others within a fifth)? Recommended: yes for Gravemaw and Rotbloom together, as its own
    small batch with the finale probe after it; until then the test stays red and the commit says so.
+
+## Round 82: a wave picks its roads, the band on every ground wave, two written surprise schedules, the finale stage; measured on all 24 cells; picks refreshed (2026-11-18)
+
+Not committed. Two agents (82: the changes and the measurement chain; 82b: the reading, the gates, the picks), on HEAD
+9f398792 (rounds 80-81). Remco's save `progress.json` has MD5 7a848003ed6b1261e4bb58757548727b after every batch (his
+`settings.json` and `progress.json.bak` untouched). No worker process is left. The data measurement carries
+`bot=3:f9f8c682; data=bf820cba; game=fa3428f5`; the picks are a second batch with their own stamp (below). The
+ledger / monotone-player rework the critic asks for (Docs/BALANCE_CRITIC_2026-11-18.md) is round 83 and was not started.
+
+### What changed, and why
+
+1. **A wave picks its main roads** (Docs/WAVE_GRAMMAR.md, "Which roads a wave uses"): `MainRoads`, `RoadSpec`,
+   `WaveScriptSpec.RoadPlan` (helper `OnRoads`), `WaveGrammar.RoadsOn`, `WaveGrammarRules.MultiRoadShare`
+   0.3 / 0.45 / 0.6 / 0.75 and `SecondRoadEvery` 2, `WaveComposer.LanesOf`, `RoadSchedule.Check` (solve stage and a test),
+   `WaveSolver.SolveVariant` solves a wave on other roads than Medium's on its own difficulty. Order: the level's own plan,
+   a flank wave keeps its front on the first road, a boss wave and the last wave use every road, else the rule (the
+   waves on both roads spread evenly, the single-road waves in turns). No level writes a `RoadPlan` yet. The ledger
+   budgets per road through the groups' paths, as it already did. Five tests in `WaveGrammarTests`. The plan of every
+   cell: `Tools/PlayTest/wave_grammar.txt` (`-` first road, `_` second, `=` both).
+2. **Glass Meadows writes one surprise**: two Cragbacks out of its rear rift in wave 10, Medium and up (Hard and Psycho
+   write one, which the count multiplier plays as two). Easy has none.
+3. **Quartz Flats writes its Easy and Medium surprises**: Easy wave 14 bats only, out of both rifts (2 + 2); Medium
+   waves 12 and 16 two Cragbacks out of the rear rift with 2 and 3 bats out of the other. Hard and Psycho keep the
+   default, whose one Cragback is two as played. Nothing walks out of a rift alone on any difficulty now.
+4. **`LevelBossAlone` Medium 0.3 -> 0.33.** On paper (`r64_lab_r82.txt` against `r64_lab_r81_alone0.3.txt`): Shard Ridge's
+   Brood Mother 1042 -> 1097 hp, Quartz Flats' Core Wisp 1615 -> 1750, Crysium Vein's Pack Alpha 1085 -> 1194; Landing
+   Site 696 (unmoved, the wave is on its cap), Glass Meadows 1063, Fault Line's Storm Matriarch 1202 (those two follow
+   their waves, not the factor). Shard Ridge's boss asks 0.29 alone, not 0.33: she is still sized before the surprise
+   relief (round 81's open point 4), so the step is +5 % where the factor says +10 %. As played: below.
+5. **The finale stage ran** on the probe of the new waves (`finale_probe_r82_before.txt`): Gravemaw 43750 -> 49900,
+   Cinder Matriarch 14700 -> 14150, Frost Warden 5050 -> 6000, Rotbloom 28200 -> 27200, Shattered 14300 -> 15650, Sealed
+   One 25450 -> 30300 (`finale_apply.txt`; difficulty shares unchanged). On the new waves the probe held Gravemaw at
+   x1.34 and Rotbloom at x1.13 on Medium, not the x1.52 and x1.00 of round 81, so the moves are smaller than announced
+   (+14 % and -3.5 %). The generator spec of Rotbloom follows (27200). Finale probe after (`finale_probe_r82.txt`): 24 of
+   24 won at the data; Medium holds x1.13 (Rotbloom) to x1.40 (Sealed One), Gravemaw x1.18.
+6. **No ground wave far tougher than the waves before it** (Docs/WAVE_GRAMMAR.md, the section of that name; the
+   critic's finding 4). The lost runs of Quartz Flats Hard and Psycho let half of wave 15's health reach the gates; the
+   wave stood at x6.07 (Hard) and x5.62 (Psycho), three times the cell's median. Two holes closed by rule in
+   `WaveSolver`: a wave solved on its own difficulty had no trend band (`SolveVariant` has it now), and a swarm capped at
+   64 creatures a group carried its unbought budget as health past the band (the band holds on the creatures as they
+   walk in). Stored waves: Quartz Flats wave 15 x4.19 on Hard (was x6.07), x4.47 on Psycho (x5.62), x3.42 on Easy
+   (x4.36); Crysium Vein Psycho wave 16 x2.42 (x6.36), Medium wave 16 x1.22 (x3.44). No ground wave of the 24 cells is
+   above 2.5 times its median (test `NoStoredGroundWave_IsFarTougherThanItsLevel`).
+7. **Scales** (`wave_tuning.txt`): Fault Line Medium 1.13 -> 0.97 and Crysium Vein Easy 0.67 -> 0.64 (the refit, their
+   sums had grown 17 % and 8 %), Crysium Vein Medium 0.75 -> 0.71 (the skilled rung lost a seed in the quick reading;
+   it did not help, see "Crysium Vein Medium" below). Fault Line Easy stays 0.84 (at the refit's 0.77 the level "never
+   grows"). Every other scale kept: with the road rule the sum of multipliers is no measure of a forked cell.
+8. **Eight grace allowances shortened or removed, none added** (`GraceWindows.cs`, round 82b; the table's own rule is
+   "shorten an allowance when a cell is tuned further"): Shard Ridge Medium armour 2 -> 1; Fault Line Medium armour
+   gone (rows in time), air 2 -> 1; Fault Line Psycho air 2 -> 1; Quartz Flats Psycho armour gone and air 2 -> 1 (round
+   81's `SofterOpening` reason and its constant are gone: the opening waves are 15 % tougher again, since wave 15 gave
+   its health back to the others); Crysium Vein Easy air gone; Crysium Vein Medium air gone.
+9. **The skilled rung's picks refreshed and Crysium Vein Medium searched anew** (round 82b, a bot batch of its own;
+   below). `Tools/PlayTest/Plans/Level_C1_06_1*` are the new search's five plans (were three);
+   `Tools/PlayTest/skilled_picks.txt` is new (copy `skilled_picks_r82.txt`). `ProbeStamp.BotVersion` stays 3 (no rule of
+   a reference player changed); the bot hash is new.
+10. Tests adjusted (round 82): the default plan's placing rules skip a written surprise; a boss arena plays a level's
+    waves (Arena_Bog: Glass Meadows'), so its written surprise is not judged under the arena's name; the per-level
+    surprise expectations follow items 2 and 3.
+11. Docs: WAVE_GRAMMAR.md (two new sections, the table), COMMANDS.md ("Round 82", "Round 82b"). New tools:
+    `Tools/PlayTest/Scripts/WaveLoadProbe.cs`, `Tools/PlayTest/r82_chain.sh`, `Tools/PlayTest/pressure_killers.py`
+    (round 82b: lost runs with the wave that did the damage and the guns held, Medium boss margins, break-even
+    multiples); `ScaleRefit.cs` reads `Tools/PlayTest/r81_waves/` (`r82_waves/` is this state's copy).
+
+### The chain (`r82_chain.sh`, 03:15 to 05:09): every stage checked
+
+- **Pressure** (`r82_final.log`): 720 runs in 56 min, five workers `Passed`, 0 probe errors, save untouched.
+- **Grace measurement**: 432 runs in 22 min, five workers `Passed`, 0 probe errors, save untouched.
+- **Replay**: 309 runs in 35 min, five workers `Passed`, 0 probe errors, save untouched; kept as
+  `plan_records_r82_replay.txt`. `plan_records.txt` and `plan_replay_partial.txt` are HEAD's again (`git status` clean
+  on both), as the chain intends.
+- **Acceptance: the `result="Skipped"` is the test's own verdict, not a filter or records fault.**
+  `BalanceAcceptanceTests.Acceptance_EveryRecordedCell_MeetsItsDifficultyRule` writes the report and then calls
+  `Assert.Ignore` with the list of failing cells whenever one fails ("the levels are tuned by the builder, not by this
+  test"); rounds 80 and 81 read `Skipped` the same way. It ran on all 24 cells: `acceptance_r82.txt` has **6 PASS, 18
+  FAIL** (round 81: 7 and 17). The one that moved is Crysium Vein Medium ("the best plan wins 2/3"): the same stale
+  plans the skilled rung lost a seed with. Replayed with the cell's new plans (round 82b: `plan_records_r82b_replay.txt`,
+  `acceptance_r82b.txt`; the two plan files went back to HEAD's afterwards) it passes: **7 PASS, 17 FAIL, round 81's
+  verdicts cell for cell.**
+  New in the report's header: `inputs 5fea0658 (STALE, data now ca63e809)`. The calibration's input hash counts
+  creature health, and the finale stage (item 5) moved six continent bosses; nothing in the acceptance verdict reads
+  the hash. Its other effect is one more skipped test (`PlanSearchTests.Search_WritesPlansForEveryCell` ignores itself
+  on a stale calibration, as in round 77). The remedy is `balance_pipeline.sh apply-keep` (COMMANDS, round 66: re-stamps
+  the hash, keeps every factor). **Not run:** it rewrites `Data/Balance/BalanceCalibration.asset`, which changes the
+  data stamp of every record of this round without changing a wave. Question 5.
+
+### The waves against round 81 (sum of health multipliers per cell; ground waves, raids)
+
+```
+C1_01 | Easy ground x1.000 raids - | Medium ground x1.000 raids - | Hard ground x1.000 raids - | Psycho ground x1.000 raids -
+C1_02 | Easy ground x1.002 raids - | Medium ground x0.970 raids - | Hard ground x0.988 raids - | Psycho ground x1.001 raids -
+C1_03 | Easy ground x0.981 raids x1.000 | Medium ground x0.881 raids x0.973 | Hard ground x0.715 raids x0.667 | Psycho ground x1.391 raids x1.066
+C1_04 | Easy ground x1.286 raids x0.889 | Medium ground x1.005 raids x1.111 | Hard ground x0.634 raids x0.802 | Psycho ground x0.766 raids x1.200
+C1_05 | Easy ground x1.036 raids x1.053 | Medium ground x0.991 raids x1.000 | Hard ground x0.940 raids x1.000 | Psycho ground x1.043 raids x1.150
+C1_06 | Easy ground x0.840 raids x1.000 | Medium ground x0.937 raids x1.131 | Hard ground x0.919 raids x1.903 | Psycho ground x0.796 raids x1.779
+```
+
+The sums hide the shape. Crysium Vein Medium: wave 16 fell from x3.44 to x1.22 (the band) while the single-road waves
+2, 4, 6 and 10 are 19 to 26 % tougher (x1.52, x1.83, x1.81, x1.27). Crysium Vein Hard and Psycho: the raids nearly
+doubled (Psycho wave 8 x0.85 -> x2.09, wave 11 x0.40 -> x2.30, wave 17 x0.88 -> x2.37). Fault Line Hard's ground waves
+are a third softer (median x0.64; waves 7, 10, 11 at x0.23, x0.13, x0.23). Paper waves (ground, under x0.4): ten, as the
+handover listed (Shard Ridge finale crowd on Easy, Medium, Hard; Shard Ridge Medium wave 13, Hard waves 7 and 13; Fault
+Line Hard waves 7, 10, 11; Crysium Vein Easy wave 15). Cause and mend: "Known and not mended".
+
+### The full measurement (720 runs, 03:15 to 04:11, five clones, 0 probe errors)
+
+`Tools/PlayTest/pressure_r82_final_records.txt`. "Before" is round 81 (`pressure_r81_final_records.txt`, the same bot).
+Seeds won at x0.8 / x0.9 / x1 / x1.12 / x1.25.
+
+| Cell | Skilled, before | after | Sensible, before | after |
+| --- | --- | --- | --- | --- |
+| Landing Site Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Landing Site Medium | 3 3 3 3 1 | 3 3 3 3 1 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Landing Site Hard | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 1 0 0 | 3 3 1 0 0 |
+| Landing Site Psycho | 3 3 3 1 0 | 3 3 3 1 0 | 0 0 0 0 0 | 0 0 0 0 0 |
+| Glass Meadows Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Glass Meadows Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Glass Meadows Hard | 3 3 3 2 1 | **3 3 3 3 1** | 3 3 1 0 0 | **3 3 3 0 0** |
+| Glass Meadows Psycho | 3 3 3 3 0 | **3 3 3 1 0** | 0 0 0 0 0 | 0 0 0 0 0 |
+| Shard Ridge Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Shard Ridge Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Shard Ridge Hard | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 2 0 0 | **3 3 3 3 2** |
+| Shard Ridge Psycho | 3 3 3 3 3 | **3 3 2 3 2** | 1 1 0 0 0 | **1 0 0 0 0** |
+| Fault Line Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Hard | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Fault Line Psycho | 3 3 3 3 3 | 3 3 3 3 3 | 2 2 3 2 0 | **3 2 0 1 0** |
+| Quartz Flats Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Quartz Flats Medium | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Quartz Flats Hard | 3 1 0 0 0 | 3 1 0 0 0 | 3 0 0 0 0 | **3 2 0 0 0** |
+| Quartz Flats Psycho | 3 0 1 1 0 | **3 3 3 1 0** | 1 0 0 0 0 | 1 0 0 0 0 |
+| Crysium Vein Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 |
+| Crysium Vein Medium | 3 3 3 3 3 | **3 3 2 2 2** | 3 3 3 3 3 | 3 3 3 3 3 |
+| Crysium Vein Hard | 3 3 3 2 0 | **3 3 3 3 2** | 3 3 3 3 3 | **3 3 3 2 2** |
+| Crysium Vein Psycho | 3 3 3 2 1 | **3 3 3 3 3** | 2 1 0 0 0 | **0 0 0 0 0** |
+| Runs won | 319 of 360 | 324 of 360 | 250 of 360 | 251 of 360 |
+
+| | Round 81 | Round 82 |
+| --- | --- | --- |
+| Runs won | 569 of 720 (skilled 319, sensible 250) | 575 of 720 (skilled 324, sensible 251) |
+| Skilled, cells won 3 of 3 at the data | 22 of 24 (not: Quartz Flats Hard 0, Quartz Flats Psycho 1) | 21 of 24 (not: Quartz Flats Hard 0, Shard Ridge Psycho 2, Crysium Vein Medium 2); **23 of 24 with the refreshed picks** (below) |
+| Sensible, cells won 3 of 3 at the data | 15 of 24 | 16 of 24 (Glass Meadows Hard 1 -> 3, Shard Ridge Hard 2 -> 3; Fault Line Psycho 3 -> 0) |
+| Easy | 180 of 180 | 180 of 180 |
+| Medium | 178 of 180 (skilled at x1.25, Landing Site twice) | 175 of 180 (the same two, and Crysium Vein skilled three times: one seed at x1, x1.12 and x1.25) |
+| Hard / Psycho | 127 / 84 of 180 | 139 / 81 of 180 |
+| All-or-nothing (lost in the last wave from a base at 90 %+), both rungs | 38 of 151 lost (25 %) | 37 of 145 (26 %) |
+| the same, skilled / sensible | 11 of 41 (27 %) / 27 of 110 (25 %) | 13 of 36 (36 %) / 24 of 109 (22 %) |
+| the same, Hard / Psycho | 9 of 53 (17 %) / 27 of 96 (28 %) | 8 of 41 (20 %) / 27 of 99 (27 %) |
+| Lost in one wave, any wave, from 90 %+ | 64 of 151 (42 %) | 65 of 145 (45 %) |
+| Won but hurt (base under 90 %) | 57 of 569 (10 %) | 87 of 575 (15 %) |
+| Game seconds of a run both rounds won at the data: all / Easy / Medium / Hard / Psycho | 508 / 554 / 502 / 483 / 449 | 504 / 545 / 504 / 479 / 450 |
+
+Reading: Easy is where it was. Medium lost three runs, all one stale strategy on Crysium Vein (mended by the picks
+batch, not by softening the cell). Hard won 12 more runs (Shard Ridge sensible +6, Crysium Vein skilled +3, Glass
+Meadows +3, Quartz Flats sensible +2, Crysium Vein sensible -2). Psycho lost three (Quartz Flats skilled +5,
+Crysium Vein skilled +3; Fault Line sensible -3, Crysium Vein sensible -3, Glass Meadows skilled -2, Shard Ridge
+skilled -2 and sensible -1).
+
+**Break-even (the highest multiple at which two of three seeds win; the critic's reading), cells under x1.25:**
+skilled: Landing Site Medium x1.12, Landing Site Psycho x1, Glass Meadows Hard x1.12, Glass Meadows Psycho x1, Quartz
+Flats Hard x0.8, Quartz Flats Psycho x1; fragile (not monotone): Shard Ridge Psycho `3 3 2 3 2`. Sensible: Landing Site
+Hard x0.9, Glass Meadows Hard x1, Fault Line Psycho x0.9 (fragile, `3 2 0 1 0`), Quartz Flats Hard x0.9; under x0.8:
+Landing Site, Glass Meadows, Shard Ridge, Quartz Flats and Crysium Vein Psycho. Every other cell holds x1.25 on both
+rungs: all six Easy cells, five of six Medium cells, and **Fault Line Hard, Shard Ridge Hard and Crysium Vein Hard**,
+which are no harder than their Medium for either reference player (the critic's item 3; Fault Line Hard's ground waves
+are x0.63 of round 81's).
+
+**The cells that moved by two or more seeds at the data (x1):**
+
+- **Quartz Flats Psycho, skilled 1 -> 3** (`3 0 1 1 0` -> `3 3 3 1 0`): the band on wave 15 (x5.62 -> x4.47). The row
+  is monotone again. Break-even x1.
+- **Glass Meadows Hard, sensible 1 -> 3** (`3 3 1 0 0` -> `3 3 3 0 0`): round 81's runs fell in waves 11 and 12 (base
+  339 to 696 lost there); now the base is untouched at the data in all three and gone at x1.12 in all three. The waves
+  moved by 1 to 3 % only (wave 11 x3.37 -> x3.26, the boss wave x1.35 -> x1.24) and wave 10 carries the written two
+  Cragbacks instead of part of its front. A cliff, not a margin.
+- **Fault Line Psycho, sensible 3 -> 0** (`2 2 3 2 0` -> `3 2 0 1 0`): all three runs lose 450 to 630 of 800 base
+  health in wave 13, the swarm, which the road rule now sends down the second road alone (x2.04 on one road where
+  round 81 had x2.33 over both); the bot holds two level-1 Cannons there. The skilled rung is 15 of 15.
+- Also worth naming though the x1 column moved by one: **Shard Ridge Hard, sensible `3 3 2 0 0` -> `3 3 3 3 2`** (ground
+  x0.72: the cell is a quarter softer, three waves on the solver floor) and **Crysium Vein Psycho, sensible
+  `2 1 0 0 0` -> `0 0 0 0 0`** (the raids x1.78; the runs lose the base to the raid of wave 11 and the escort of wave 9).
+
+### Medium bosses as played (`LevelBossAlone` Medium 0.33): last wave, mean of three seeds, round 81 -> round 82
+
+| Level (boss, hp 81 -> 82) | Skilled x1: gate / base damage | Skilled x1.25 | Sensible x1: gate / base damage, base left | Sensible x1.25 |
+| --- | --- | --- | --- | --- |
+| Landing Site (Brood Mother 696 -> 696) | 464 / 0 -> 464 / 0 | 942 / 398, 1 of 3 -> the same | 24 / 0 -> 24 / 0, 600 of 600 | 447 / 0 -> 447 / 0 |
+| Glass Meadows (Brood Mother -> 1063) | 0 / 0 -> 0 / 0 | 0 / 0 -> 0 / 0 | 0 / 0 -> 0 / 0, 700 of 700 | 41 / 0 -> 19 / 0 |
+| Shard Ridge (Brood Mother 1042 -> 1097) | 94 / 0 -> 88 / 0 | 98 / 26 -> 41 / 6 | 74 / 68 -> 80 / 108, 534 -> 521 of 700 | 79 / 133 -> 91 / 167, 438 -> 432 left |
+| Fault Line (Storm Matriarch 1103 -> 1202) | 8 / 3 -> 14 / 64 | 14 / 20 -> 46 / 175, 685 -> 524 left | 11 / 0 -> 16 / 4, 687 -> 680 of 700 | 19 / 31 -> 20 / 103, 623 -> 565 left |
+| Quartz Flats (Core Wisp 1615 -> 1750) | 202 / 0 -> 192 / 0 | 324 / 0 -> 228 / 0 | 164 / 0 -> 253 / 0, 700 of 700 | 286 / 0 -> 471 / 0 |
+| Crysium Vein (Pack Alpha 1085 -> 1194) | 23 / 0 -> 7 / 0 | 27 / 0 -> 30 / 0 | 2 / 0 -> 5 / 0, 700 of 700 | 5 / 0 -> 8 / 0 |
+
+Every Medium finale is won 3 of 3 at x1 and at x1.25 by both rungs wherever the run reaches it (Landing Site skilled
+x1.25 1 of 3, as before). **The step to 0.33 is hardly felt.** Shard Ridge's Brood Mother, the one Remco called weak,
+takes no more out of the gates than in round 81 and the base is untouched for the skilled rung; the sensible rung
+loses 40 hp more to her wave. Fault Line's Storm Matriarch is the only Medium boss that reaches the base against the
+skilled rung now (64 of 700 at x1, 175 at x1.25), and that is the waves' doing (the scale and the road rule), not the
+factor. Question 2.
+
+### Lost cells at the data: the wave that did it and the guns held (`pressure_killers.py lost`)
+
+Skilled rung under 3 of 3:
+
+| Cell, seeds lost | Fell in | Where the base went | Guns held at that wave (levels) |
+| --- | --- | --- | --- |
+| Quartz Flats Hard, 3 of 3 | wave 16 (raid), 17 (finale), 16 | **wave 14** (tank escort with the default surprise: two Cragbacks out of the rear rift and bats): 184 to 490 of 800 base and 1000 to 1260 gate health; the swarm of wave 15 then takes 1470 to 2080 off the gates; the base goes in the raid or the finale with no gate left | at wave 14: Cannon 1/1, Gun Turret 3/3/3/2, Flak 2/1 (seven guns) |
+| Shard Ridge Psycho, seed 3 | wave 16 (finale, both roads) | 717 of 800 in the finale from a base at 90 % (wave 15, a raid, took 78 and 778 off the gates) | Cannon 1/1, twelve Gun Turrets (four at 3, seven at 2), Flak 2/1/1 |
+| Crysium Vein Medium, seed 2 | wave 13 | **wave 12** (combo swarm with the rift's bats): 627 of 700. The gates leak from wave 7 (160, 323, 107, 239, 400 a wave), the purse goes into gate repairs and no gun is built between wave 1 and wave 9 | at wave 12: Cannon 1/1, Gun Turret 1, Flak 1/1 (five guns; the winning seeds hold eight with four upgrades) |
+
+Sensible rung, the cells at 0 or 1 of 3 (all three seeds alike unless noted):
+
+| Cell | Fell in | Where the base went | Guns held |
+| --- | --- | --- | --- |
+| Landing Site Hard (1 of 3) | wave 12, the finale | all of it in the finale from a full base; the gates lose 1100+ there | Cannon 3/1/1/1, Laser 2, nine or ten Gun Turrets |
+| Landing Site Psycho | wave 12, the finale | the same (seed 3: 231 in wave 11) | Cannon 1/1/1, Laser 2 x5, eight or nine Gun Turrets |
+| Glass Meadows Psycho | waves 10, 11, 11 | waves 10 (escort with the written Cragbacks) and 11 (swarm); the gates lose 800 to 2350 a wave from wave 8 | Cannon 2/2/1/1, Laser 2/1/1/1, three or four Gun Turrets |
+| Shard Ridge Psycho | wave 13 | 690 to 740 of 800 in wave 13 alone (tank escort with the flank), from 87 to 97 % | two or three level-1 Cannons (one at 3 in seed 1), three or four Lasers, Flak 1/1 |
+| Fault Line Psycho | waves 14, 15, 16 | wave 13, the swarm down the second road: 450 to 630 of 800 | Cannon 1/1, Laser x3-4, Gun Turret x4-6, Flak 2/1 |
+| Quartz Flats Hard | wave 17, the finale | wave 14 (244 to 492, gates 1170 to 1960) and the finale (255 to 456) | at wave 17: Cannon 2/2/1 (3/2/2/1/1 in seed 3), ten or eleven Gun Turrets, Flak 2/2/1 |
+| Quartz Flats Psycho | waves 15, 15, 14 | wave 11 (swarm with a boss) 134 to 370, wave 14 129 to 524, wave 15 450 to 500 | four or five Cannons at 2/1, five level-1 Lasers, Flak 2/2/1 |
+| Crysium Vein Psycho | waves 11, 12, 12 | wave 9 (escort with the rift) 157 to 414, wave 11 (raid, x2.30) 496 to 568 | Cannon 1/1, five level-1 Lasers, Gun Turret 2/2, Flak 2/1 |
+
+Two patterns: the sensible rung on Psycho holds two or three level-1 Cannons when a plated or swarm wave takes the
+base in one go (it buys Lasers and Gun Turrets wide instead of Cannon upgrades), and Quartz Flats Hard is lost in wave
+14 by every strategy tried, old and new (below), with the gates gone before the swarm.
+
+### Crysium Vein Medium: mended by a fresh strategy, not by its scale
+
+The to-do said: a Medium cell that loses a seed for the skilled rung is mended by its scale and measured again. That
+was not done, on this evidence:
+
+- The **sensible rung wins 15 of 15** there, x1.25 included, with the base untouched and no gate damage after wave 6.
+  The cell is not too hard; the upper rung plays worse than the lower one.
+- The lost runs are one fork of one stale strategy (round 68's search, on waves that used both roads): Flak in wave 1
+  for a raid that comes in wave 8, a harvest drone in wave 7, and then the single-road waves 7 to 11 leak onto the
+  gates and the purse goes into repairs. Round 82's own scale step 0.75 -> 0.71 for this did not change it (seed 2 lost
+  in wave 11 before, in wave 13 after).
+- All three old strategies of the cell win 2 of 3 on today's waves (the picks batch), so a pick alone could not mend it.
+- A fresh search on today's waves (`PlanSearchTests` on w6, `cells=5:1`; a minute) gives five strategies, three of
+  which win 3 of 3 with the base untouched (`skilled_search_r82_records.txt`). They are the cell's plans now.
+
+Softening the cell further would have fitted the data to a stale bot (the critic's point 3) on the difficulty the
+critic already calls flat. If the coordinator still wants the scale: 0.71 -> about 0.6 brings waves 2 to 10 back to
+round 81's level; it needs the solve, the level's four cells measured again and its picks once more.
+
+### The picks, as their own batch (round 82b; bot files only, no data file touched)
+
+1. **Candidates** (`skilled_picks_r82_records.txt`, 309 runs at the data in 26 min, 0 probe errors, stamp
+   `bot=3:f9f8c682; data=bf820cba; game=d1551f0d`; the game hash differs from the measurement's by `GraceWindows.cs`,
+   an editor file no run reads): 22 cells have a strategy that wins 3 of 3. Not: Quartz Flats Hard (best 1 of 3,
+   strategy 4) and Crysium Vein Medium (all three 2 of 3).
+2. **Searched anew:** Crysium Vein Medium (above) and Quartz Flats Hard (three strategies; best 1 of 3, no better than
+   the old ones, so the cell keeps its plans). Played through an overlay, project untouched
+   (`skilled_search_r82_records.txt`, 24 runs).
+3. **Picks written** (`skilled_picks.py --write`, then the Crysium Vein Medium line by hand from the search's records,
+   with a comment in the file naming the source: the script takes one stamp per file). Eight cells play another
+   strategy: Shard Ridge Hard 2 -> 1 and Psycho 1 -> 2, Fault Line Medium 1 -> 5, Hard 3 -> 2 and Psycho 3 -> 1, Quartz
+   Flats Hard 1 -> 4, Crysium Vein Medium (new plans, strategy 1) and Psycho 5 -> 2.
+4. **The skilled rung alone with the new picks** (`pressure_r82b_skilled_records.txt`, 360 runs):
+
+   | Cell | Skilled, old picks (the full measurement) | new picks |
+   | --- | --- | --- |
+   | Shard Ridge Psycho | 3 3 2 3 2 | **3 3 3 2 0** |
+   | Quartz Flats Hard | 3 1 0 0 0 | **3 2 1 0 0** |
+   | Crysium Vein Medium | 3 3 2 2 2 | **3 3 3 3 2** |
+   | Crysium Vein Psycho | 3 3 3 3 3 | **3 3 3 2 0** |
+   | the other twenty cells | unchanged, run for run in the seeds won | |
+   | Runs won | 324 of 360 | 322 of 360 |
+   | Cells won 3 of 3 at the data | 21 of 24 | **23 of 24** (not: Quartz Flats Hard, 1 of 3) |
+   | Easy / Medium / Hard / Psycho | 90 / 85 / 76 / 73 of 90 | 90 / 87 / 78 / 67 of 90 |
+
+   Stamp `bot=3:0ad82383; data=bf820cba; game=d1551f0d`, 30 min, five workers `Passed`, 0 probe errors, save untouched.
+   The sensible rung does not read the pick file: its half of the full measurement stands. Reading: **every Easy and
+   Medium cell wins 3 of 3 at the data for both rungs** (Medium's three lost runs are at x1.25: Landing Site twice, as
+   before, and Crysium Vein once). Shard Ridge Psycho's row is monotone again. The picks cost six runs at x1.12 and
+   x1.25 on Psycho (Shard Ridge and Crysium Vein): the pick rule reads the data (x1) only, so a strategy that keeps
+   more base at x1 can break earlier above it. Quartz Flats Hard wins one seed; the two it loses take 350 to 400 base
+   and 1440 to 1610 gate health in wave 14 and fall in the finale (guns at wave 14: Cannon 1/1, Gun Turret 3/3/3/2/1
+   or 3/3/2/2/2, Flak 2/1).
+   All-or-nothing for this file: 13 of 38 lost runs (34 %).
+
+### Gates
+
+- **Finale probe**: 24 of 24 boss cells won at the data (item 5); `ContinentFinaleTests` passes (round 81's one red
+  test is green).
+- **Grace windows** (all 24 cells measured again by the chain, then `GraceReport.cs`): 94 rows: 50 in time, 38 late
+  inside an allowance, 6 not judged, **no row breaks the gate, no allowance was added**; eight were shortened or
+  removed (item 8) and the report was run again on the shortened table: the gate holds. Rows that moved against round
+  81: Glass Meadows Hard armour, Laser row, one wave later (w10, inside its allowance of 1); Quartz Flats Psycho, all
+  five rows one wave earlier (w7); Crysium Vein Easy, the first flyer comes in wave 10 (was 9), rows in time.
+- **Acceptance** (the old gate): 6 PASS, 18 FAIL (above). With Crysium Vein Medium's new plans replayed: 7 PASS, 17 FAIL, as in
+  rounds 80 and 81. The gate is red on 17 cells and steers nothing (the critic's point; repair or delete it: round 83).
+- **EditMode, whole suite on w6, final state** (after the allowances and the picks): **1182 tests, 1128 passed, 0 failed, 54
+  skipped** (round 81: 1176 / 1122 / 1 failed / 53; six more tests; the extra skip is
+  `PlanSearchTests.Search_WritesPlansForEveryCell` on the stale calibration hash). `python Tools/PlayTest/editmode_failures.py`.
+- **Compile:** clean (0 errors; the one warning is round 78's CS0618 in `BalanceProbeTests.cs`, a bot file).
+
+### Known and not mended
+
+- **Quartz Flats Hard: 0 of 3 for the skilled rung, with the old picks and the new, and no searched strategy wins more
+  than 1 of 3.** The band took wave 15 from x6.07 to x4.19 and the cell did not move: the base is hit in wave 14 (the
+  tank escort, x2.99, with the default surprise of two Cragbacks and bats behind the gate) and the gates are gone
+  before the swarm. The sensible rung breaks even at x0.9. This is the cell's data now, not a pick: the scale (0.73)
+  moves every wave alike; the honest lever is the round 83 rework (the ledger's player holds splash and a Cannon when
+  plated health is on the road) or, before it, a written surprise for Hard and Psycho that keeps the Cragbacks out of
+  the escort wave. Not mended here (a Hard cell; the round's rule was Easy and Medium).
+- **Paper waves** (ground waves under x0.4): ten in the stored set (listed under the waves). Cause, traced with
+  `WaveLoadProbe.cs`: the pressure of such a wave is carried in by slow plated creatures of earlier waves
+  (`KillPurse.Carried`) while the model's player holds only Gun Turrets, so no multiplier of the wave reaches its
+  target and it falls to the solver floor. The road rule moves which waves it hits (Shard Ridge's long road is 109
+  cells, the short one 46). A lower band was tried and taken out (it broke the human-curve gate on Shard Ridge Hard).
+  The mend is in the ledger's player: round 83.
+- **Hard is no harder than Medium on Fault Line, Shard Ridge and Crysium Vein** for either rung (break-even x1.25 and
+  up). Fault Line Hard's ground waves are x0.63 of round 81's at an unchanged scale (the refit asked 1.2 for 0.9; not
+  taken, see item 7), Shard Ridge Hard's x0.72.
+- **The sensible rung on Psycho** wins 3 of 3 at the data nowhere (round 81: Fault Line). Not a target of this round.
+- **The calibration's input hash is stale** (the finale stage; one extra skipped test). Question 5.
+- A level's boss is still sized before the surprise relief (item 4).
+- Old wait loops of earlier sessions (four `bash.exe` pairs of 2026-11-15 and 11-17, polling files that no longer
+  come) are still running; not started by this round and left alone.
+
+### Questions for Remco (yes / no, with the recommendation)
+
+1. **The road rule sends whole waves down the short second road** of Shard Ridge, Fault Line and Crysium Vein from
+   wave 2 on (shares 0.3 / 0.45 / 0.6 / 0.75 of the waves use both roads). It made Fault Line Psycho's swarm of wave 13
+   a base-breaker for the sensible bot and Crysium Vein Medium's early waves a fifth tougher. Keep the shares?
+   Recommended: play Shard Ridge on Easy and Hard once; a level can pin any wave with `OnRoads`.
+2. **Medium bosses at 0.33 still take little** (Shard Ridge's Brood Mother 1097 hp: the skilled bot's base is
+   untouched, the sensible bot keeps 521 of 700). Go further? Recommended: not by the factor again. Size the boss after
+   the surprise relief (she asks 0.29 where the rule says 0.33) in round 83, then play it.
+3. **Quartz Flats Hard and Psycho keep the default surprise** (two Cragbacks as played, in the escort wave 14, which is
+   where Hard is lost). Write those surprises too, in another wave than the escort? Recommended: yes, small, with
+   round 83.
+4. **Paper waves and the Hard cells that are no harder than Medium:** mend through the ledger's player next round
+   (round 83), not by more scales? Recommended: yes.
+5. **Re-stamp the calibration** (`apply-keep`: no wave moves, one data file changes, the plan search stops skipping
+   itself)? Recommended: yes, as the first step of round 83, before its first measurement, so one data stamp covers
+   that round.
+6. A general rule "no walker leaves a spawn point alone as played" for the default plan, instead of writing it per
+   level? Recommended: yes, small, with round 83.

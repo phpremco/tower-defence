@@ -10,7 +10,7 @@ using UnityEditor;
 /// <summary>
 /// Round 80b: re-expresses the builder's target scale of every cell after a change of what the human curve is read on
 /// (BalanceChecks.PlainMean without the air raids). Per cell it searches the scale at which this solve gives the stored
-/// waves' sum of health multipliers again, raids aside, so the cell stays the level that was measured. The measured waves are read from copies of the wave assets in Tools/PlayTest/r80_waves (round 80's, taken
+/// waves' sum of health multipliers again, raids aside, so the cell stays the level that was measured. The measured waves are read from copies of the wave assets in Tools/PlayTest/r81_waves (the last measured round, taken
 /// from a worker clone), so it can run after a solve. No asset is written: the result is Tools/PlayTest/scale_refit.txt
 /// with the lines for Tools/PlayTest/wave_tuning.txt. A cell whose waves moved less than <see cref="Keep"/> keeps its
 /// scale; the cells named in Tools/PlayTest/scale_refit_arg.txt ("skip=C1_04:0", one per line) keep theirs whatever moved.
@@ -22,7 +22,7 @@ public static class ScaleRefit
     private const int Iterations = 9;
     private const float Lowest = 0.3f;
     private const float Highest = 1.6f;
-    private const string Measured = "Tools/PlayTest/r80_waves/Waves_{0}.asset";
+    private const string Measured = "Tools/PlayTest/r81_waves/Waves_{0}.asset";
     private const string ArgPath = "Tools/PlayTest/scale_refit_arg.txt";
 
     // The health multipliers of a stored wave asset, per difficulty in the asset's order, read from its text.

@@ -101,6 +101,58 @@ namespace Game.Balance
             return plan;
         }
 
+        /// <summary>
+        /// The main roads the front of a wave walks in on (round 82, Remco: any subset of the main roads per wave, simple on
+        /// Easy, more combinations on the harder difficulties). A level with one road has no choice. Else the level's own
+        /// plan comes first (<see cref="WaveScriptSpec.RoadPlan"/>); then the events: a flank comes down the second road
+        /// alone, so its front keeps to the first, and a boss wave and the last wave come down every road. Every other wave
+        /// follows the rule: <see cref="WaveGrammarRules.MultiRoadShare"/> of the waves, spread evenly over the level, use
+        /// both roads; the rest take one road each, in turns (<see cref="WaveGrammarRules.SecondRoadEvery"/>).
+        /// </summary>
+        public static MainRoads RoadsOn(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int number, int secondRoad, BalanceRules rules)
+        {
+            if (secondRoad < 0)
+            {
+                return MainRoads.First;
+            }
+
+            RoadSpec written = script.RoadsFor(number, difficulty);
+            if (written != null && written.Roads != MainRoads.None)
+            {
+                return written.Roads;
+            }
+
+            if (SurpriseOn(script, enemies, difficulty, number, secondRoad, rules) == SurpriseKind.Flank)
+            {
+                return MainRoads.First;
+            }
+
+            if (number >= script.Waves || WaveComposer.BossOn(script, difficulty, number) != null)
+            {
+                return MainRoads.Both;
+            }
+
+            return DefaultRoads(number, difficulty, rules.Grammar);
+        }
+
+        // Guards the whole-number steps of the share against a float that falls a hair short (0.6 x 5).
+        private const float ShareEpsilon = 1e-4f;
+
+        // The rule alone. The waves on both roads are the whole-number steps of the share (0.3: waves 4, 7, 10, 14, ...), so
+        // they are spread evenly and the first wave of a level is always one road; the single-road waves take turns.
+        private static MainRoads DefaultRoads(int number, int difficulty, WaveGrammarRules grammar)
+        {
+            float share = System.Math.Max(0f, System.Math.Min(1f, grammar.MultiRoadShareFor(difficulty)));
+            int both = (int)(number * share + ShareEpsilon);
+            if (both > (int)((number - 1) * share + ShareEpsilon))
+            {
+                return MainRoads.Both;
+            }
+
+            int single = number - both;
+            return grammar.SecondRoadEvery > 0 && single % grammar.SecondRoadEvery == 0 ? MainRoads.Second : MainRoads.First;
+        }
+
         /// <summary>Every wave (from 1) of the difficulty that carries a surprise, in order.</summary>
         public static List<int> SurpriseWaves(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int secondRoad, BalanceRules rules)
         {

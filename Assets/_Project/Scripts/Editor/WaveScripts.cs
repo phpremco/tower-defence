@@ -66,6 +66,13 @@ namespace Game.Editor
         public static SurpriseSpec Surprise(int wave, int minDifficulty, int maxDifficulty, params SurpriseEntrySpec[] entries) =>
             new SurpriseSpec { Wave = wave, MinDifficulty = minDifficulty, MaxDifficulty = maxDifficulty, Entries = entries };
 
+        /// <summary>The main roads the level writes for one wave, on every difficulty: they replace the grammar's choice there.</summary>
+        public static RoadSpec OnRoads(int wave, MainRoads roads) => new RoadSpec { Wave = wave, Roads = roads };
+
+        /// <summary>The same for a range of difficulties (indices, Easy 0 to Psycho 3); the others keep the grammar's choice.</summary>
+        public static RoadSpec OnRoads(int wave, int minDifficulty, int maxDifficulty, MainRoads roads) =>
+            new RoadSpec { Wave = wave, MinDifficulty = minDifficulty, MaxDifficulty = maxDifficulty, Roads = roads };
+
         /// <summary>A group of an authored surprise out of a nest of the level (counted from 1).</summary>
         public static SurpriseEntrySpec FromNest(int nest, string enemy, int count, WavePattern pattern = WavePattern.Stream, float interval = 0f, float delay = 0f) =>
             new SurpriseEntrySpec { Kind = SpawnPointKind.Nest, Point = nest, Enemy = enemy, Count = count, Pattern = pattern, Interval = interval, Delay = delay };

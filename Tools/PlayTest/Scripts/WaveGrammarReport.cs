@@ -13,7 +13,8 @@ public static class WaveGrammarReport
         string[] names = { "Easy", "Medium", "Hard", "Psycho" };
         string letters = "sCWTXA";
         var text = new System.Text.StringBuilder();
-        text.AppendLine("# wave grammar plan: pattern letter + clusters per wave; ! rift surprise, ^ flank, * authored surprise, B boss");
+        text.AppendLine("# wave grammar plan: pattern letter + clusters per wave; ! rift surprise, ^ flank, * authored surprise, B boss;");
+        text.AppendLine("# on a level that forks the main roads of the front: - the first road, _ the second, = both");
         foreach (Game.Balance.WaveScriptSpec script in Game.Editor.WaveScripts.All)
         {
             int index = loaded.Model.IndexOf(script.Key);
@@ -36,7 +37,8 @@ public static class WaveGrammarReport
                     surprises += wave.Surprise != Game.Balance.SurpriseKind.None ? 1 : 0;
                     text.Append(' ').Append(letters[(int)wave.Pattern]).Append(wave.Beats)
                         .Append(wave.Surprise == Game.Balance.SurpriseKind.Rift ? "!" : wave.Surprise == Game.Balance.SurpriseKind.Flank ? "^" : wave.Surprise == Game.Balance.SurpriseKind.Authored ? "*" : string.Empty)
-                        .Append(Game.Balance.WaveComposer.BossOn(script, d, number) != null ? "B" : string.Empty);
+                        .Append(Game.Balance.WaveComposer.BossOn(script, d, number) != null ? "B" : string.Empty)
+                        .Append(loaded.Model.Facts[index].SecondRoad < 0 ? string.Empty : wave.Roads == Game.Balance.MainRoads.Both ? "=" : wave.Roads == Game.Balance.MainRoads.Second ? "_" : "-");
                 }
 
                 text.Append("   | stream ").Append(counts[0]).Append(", clusters ").Append(counts[1]).Append(", swarm ").Append(counts[2]).Append(", tank escort ").Append(counts[3])

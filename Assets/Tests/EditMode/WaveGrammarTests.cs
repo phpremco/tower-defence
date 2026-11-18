@@ -178,6 +178,12 @@ namespace Game.Tests
                         for (int i = 0; i < waves.Count; i++)
                         {
                             string where = $"{script.Key} difficulty {d} wave {waves[i]}";
+                            // The rules are the default plan's. A surprise the level wrote may fall on any wave (round 81).
+                            if (script.SurpriseFor(waves[i], d) != null)
+                            {
+                                continue;
+                            }
+
                             Assert.Greater(waves[i], Rules.Grammar.SurpriseFreeWavesFor(d), where + ": inside the surprise-free opening");
                             Assert.Less(waves[i], script.Waves, where + ": the last wave is the finale");
                             Assert.IsNull(WaveComposer.BossOn(script, d, waves[i]), where + ": a boss wave");
@@ -199,11 +205,13 @@ namespace Game.Tests
         public void EveryLevelOfTheFirstContinent_HasASurprise_WhereItsShareFillsAGroup()
         {
             // With the creatures as they are in the data. Glass Meadows has one rift troop, the Cragback, and no wave's share
-            // buys a group of those: the default plan gives it no surprise (round 81). Landing Site has the same troop and
-            // writes its own surprises (the rear rift's lesson).
+            // buys a group of those: the default plan gives it no surprise (round 81); since round 82 the level writes one
+            // small surprise from Medium on. Landing Site has the same troop and writes its own surprises (the rear rift's
+            // lesson). Quartz Flats writes its surprises on Easy and Medium (round 82: nothing walks out of a rift alone).
             BalanceStages.Loaded loaded = BalanceStages.Load(true);
             Assert.IsNotNull(loaded.Catalog, "Run Tools/Generate/Scenes and Starter Data first.");
             var heavyRiftOnly = new HashSet<string> { "C1_02" };
+            const int medium = 1;
             foreach (CampaignLevelSpec spec in LevelSpecs.Crystal)
             {
                 int index = loaded.Model.IndexOf(spec.Key);
@@ -212,14 +220,16 @@ namespace Game.Tests
                 for (int d = 0; d < Difficulties; d++)
                 {
                     int surprises = sets[d].Count(wave => wave.Surprise != SurpriseKind.None);
+                    bool writesItsOwn = spec.Key == "C1_01" || (spec.Key == "C1_02" && d >= medium) || (spec.Key == "C1_05" && d <= medium);
                     if (heavyRiftOnly.Contains(spec.Key))
                     {
-                        Assert.AreEqual(0, surprises, $"{spec.Key} difficulty {d}: a lone Cragback is no surprise");
+                        Assert.AreEqual(d >= medium ? 1 : 0, surprises, $"{spec.Key} difficulty {d}: the level's one written surprise from Medium on, never a default");
+                        Assert.AreEqual(surprises, sets[d].Count(wave => wave.Surprise == SurpriseKind.Authored), $"{spec.Key} difficulty {d}");
                     }
                     else
                     {
                         Assert.Greater(surprises, 0, $"{spec.Key} difficulty {d}");
-                        Assert.AreEqual(spec.Key == "C1_01", sets[d].Any(wave => wave.Surprise == SurpriseKind.Authored), $"{spec.Key} difficulty {d}: only Landing Site writes its own");
+                        Assert.AreEqual(writesItsOwn, sets[d].Any(wave => wave.Surprise == SurpriseKind.Authored), $"{spec.Key} difficulty {d}: a written surprise where the level writes its own");
                     }
                 }
             }
@@ -643,7 +653,8 @@ namespace Game.Tests
                         int heads = WaveShape.RiftHeads(set.Waves[i], set.Difficulty);
                         storedSurprises += heads > 0 ? 1 : 0;
                         WaveScriptSpec script = WaveScripts.ByKey(level.name.Replace("Level_", string.Empty));
-                        bool written = script != null && script.SurpriseFor(i + 1, d) != null;
+                        // A level without a script of its own (a boss arena) plays a campaign level's waves, judged there.
+                        bool written = script == null || script.SurpriseFor(i + 1, d) != null;
                         Assert.IsTrue(heads == 0 || written || heads >= Rules.Grammar.MinSurpriseGroup, $"{level.name} {set.Difficulty.name} wave {i + 1}: {heads} out of the nests is a stray, not a surprise");
                     }
                 }
@@ -714,5 +725,199 @@ namespace Game.Tests
         }
 
         private static Dictionary<string, EnemyStats> CrystalOr(Dictionary<string, EnemyStats> own, WaveScriptSpec script) => script.Key == "Grammar" ? own : CrystalEnemies();
+
+        // The gate script without its rift troop: its surprise is a flank, as on a level that forks without rifts.
+        private static WaveScriptSpec ForkScript()
+        {
+            WaveScriptSpec script = Script("PRPH");
+            script.Troops = script.Troops.Where(t => t.Source == 0).ToArray();
+            return script;
+        }
+
+        private static List<int> FrontPaths(WaveSpec wave) =>
+            wave.Groups.Where(g => !g.Enemy.IsBoss && !g.Enemy.Flies && g.Source == 0 && (wave.Surprise != SurpriseKind.Flank || g.Delay < Rules.Grammar.SurpriseMinDelay || g.Path != SecondRoad))
+                .Select(g => g.Path).Distinct().OrderBy(p => p).ToList();
+
+        [Test]
+        public void ALevelWithOneRoad_UsesIt_OnEveryWave()
+        {
+            Dictionary<string, EnemyStats> enemies = Enemies();
+            WaveScriptSpec script = Script("PRPH");
+            for (int d = 0; d < Difficulties; d++)
+            {
+                for (int number = 1; number <= script.Waves; number++)
+                {
+                    Assert.AreEqual(MainRoads.First, WaveGrammar.RoadsOn(script, enemies, d, number, -1, Rules), $"difficulty {d} wave {number}");
+                    WaveSpec wave = WaveComposer.Compose(script, enemies, d, number, 1f, -1, Rules);
+                    Assert.IsTrue(wave.Groups.Where(g => !g.Enemy.Flies).All(g => g.Path == WaveComposer.Road), $"difficulty {d} wave {number}");
+                }
+            }
+        }
+
+        [Test]
+        public void OnALevelThatForks_AWaveTakesASubsetOfTheMainRoads_MoreCombinationsOnTheHarderDifficulties()
+        {
+            Dictionary<string, EnemyStats> enemies = Enemies();
+            WaveScriptSpec script = ForkScript();
+            int before = -1;
+            for (int d = 0; d < Difficulties; d++)
+            {
+                int both = 0;
+                var singles = new List<MainRoads>();
+                for (int number = 1; number <= script.Waves; number++)
+                {
+                    MainRoads roads = WaveGrammar.RoadsOn(script, enemies, d, number, SecondRoad, Rules);
+                    WaveSpec wave = WaveComposer.Compose(script, enemies, d, number, 1f, SecondRoad, Rules);
+                    Assert.AreEqual(roads, wave.Roads);
+                    Assert.AreNotEqual(MainRoads.None, roads);
+                    bool boss = WaveComposer.BossOn(script, d, number) != null;
+                    bool flank = wave.Surprise == SurpriseKind.Flank;
+                    if (boss || number == script.Waves)
+                    {
+                        Assert.AreEqual(MainRoads.Both, roads, $"difficulty {d} wave {number}: a boss wave and the last wave come down every road");
+                    }
+                    else if (flank)
+                    {
+                        Assert.AreEqual(MainRoads.First, roads, $"difficulty {d} wave {number}: the front of a flank wave keeps to the first road");
+                    }
+                    else
+                    {
+                        both += roads == MainRoads.Both ? 1 : 0;
+                        if (roads != MainRoads.Both)
+                        {
+                            singles.Add(roads);
+                        }
+                    }
+
+                    // The front walks in on exactly the roads the grammar chose (a wave too small for two clusters may fill one).
+                    List<int> paths = FrontPaths(wave);
+                    var allowed = new List<int>();
+                    if ((roads & MainRoads.First) != 0)
+                    {
+                        allowed.Add(WaveComposer.Road);
+                    }
+
+                    if ((roads & MainRoads.Second) != 0)
+                    {
+                        allowed.Add(SecondRoad);
+                    }
+
+                    Assert.IsNotEmpty(paths, $"difficulty {d} wave {number}");
+                    Assert.IsTrue(paths.All(allowed.Contains), $"difficulty {d} wave {number}: roads {roads}, walked {string.Join(",", paths)}");
+                    if (roads != MainRoads.Both)
+                    {
+                        Assert.AreEqual(allowed, paths, $"difficulty {d} wave {number}");
+                    }
+                }
+
+                Assert.AreEqual(MainRoads.First, WaveGrammar.RoadsOn(script, enemies, d, 1, SecondRoad, Rules), "the first wave of a level is one road");
+                // The rule alone (no flank to take a wave's front back to one road): harder is never fewer.
+                var calm = new BalanceRules { Grammar = new WaveGrammarRules { Surprises = false } };
+                int difficulty = d;
+                int byRule = Enumerable.Range(1, script.Waves).Count(n => WaveGrammar.RoadsOn(script, enemies, difficulty, n, SecondRoad, calm) == MainRoads.Both);
+                Assert.GreaterOrEqual(byRule, before, $"difficulty {d}: no fewer waves on both roads than the difficulty below");
+                Assert.GreaterOrEqual(byRule, both);
+                before = byRule;
+                // The single-road waves take turns: both roads are used alone on a difficulty that has two such waves.
+                if (singles.Count >= 2)
+                {
+                    Assert.Contains(MainRoads.First, singles);
+                    Assert.Contains(MainRoads.Second, singles);
+                }
+            }
+
+            Assert.Greater(before, 0, "Psycho sends waves down both roads");
+        }
+
+        [Test]
+        public void TheLevelsOwnRoads_ReplaceTheRule_OnTheirWaveAndDifficulties()
+        {
+            Dictionary<string, EnemyStats> enemies = Enemies();
+            WaveScriptSpec script = ForkScript();
+            MainRoads byRule = WaveGrammar.RoadsOn(script, enemies, 0, 3, SecondRoad, Rules);
+            MainRoads other = byRule == MainRoads.Second ? MainRoads.First : MainRoads.Second;
+            script.RoadPlan = new[] { new RoadSpec { Wave = 3, MinDifficulty = 0, MaxDifficulty = 1, Roads = other } };
+            Assert.AreEqual(other, WaveGrammar.RoadsOn(script, enemies, 0, 3, SecondRoad, Rules));
+            Assert.AreEqual(other, WaveGrammar.RoadsOn(script, enemies, 1, 3, SecondRoad, Rules));
+            WaveScriptSpec plain = ForkScript();
+            Assert.AreEqual(WaveGrammar.RoadsOn(plain, enemies, 2, 3, SecondRoad, Rules), WaveGrammar.RoadsOn(script, enemies, 2, 3, SecondRoad, Rules), "Hard keeps the rule");
+            WaveSpec wave = WaveComposer.Compose(script, enemies, 0, 3, 1f, SecondRoad, Rules);
+            Assert.AreEqual(new List<int> { other == MainRoads.Second ? SecondRoad : WaveComposer.Road }, FrontPaths(wave));
+            // The kill money is the script's whatever the roads.
+            Assert.AreEqual(WaveComposer.Compose(plain, enemies, 0, 3, 1f, SecondRoad, Rules).Groups.Sum(g => g.Count), wave.Groups.Sum(g => g.Count));
+        }
+
+        [Test]
+        public void EveryWaveOnEveryRoad_IsTheRuleAtAShareOfOne()
+        {
+            Dictionary<string, EnemyStats> enemies = Enemies();
+            WaveScriptSpec script = ForkScript();
+            var every = new BalanceRules { Grammar = new WaveGrammarRules { MultiRoadShare = new[] { 1f } } };
+            for (int number = 1; number <= script.Waves; number++)
+            {
+                bool flank = WaveGrammar.SurpriseOn(script, enemies, 1, number, SecondRoad, every) == SurpriseKind.Flank;
+                Assert.AreEqual(flank ? MainRoads.First : MainRoads.Both, WaveGrammar.RoadsOn(script, enemies, 1, number, SecondRoad, every), $"wave {number}");
+            }
+        }
+
+        [Test]
+        public void TheRoadPlan_IsCheckedAgainstTheLevelsRoads()
+        {
+            LevelDefinition forked = AssetDatabase.LoadAssetAtPath<LevelDefinition>($"{LevelFolder}/Level_C1_03.asset");
+            LevelDefinition single = AssetDatabase.LoadAssetAtPath<LevelDefinition>($"{LevelFolder}/Level_C1_05.asset");
+            Assert.IsNotNull(forked);
+            Assert.IsNotNull(single);
+            var fine = new[] { new RoadSpec { Wave = 3, Roads = MainRoads.Second }, new RoadSpec { Wave = 16, Roads = MainRoads.Both } };
+            var errors = new List<string>();
+            RoadSchedule.Check(forked, fine, 16, errors);
+            Assert.IsEmpty(errors, string.Join("\n", errors));
+            RoadSchedule.Check(single, fine, 17, errors);
+            Assert.AreEqual(2, errors.Count, "a level with one road has no second road to name");
+            errors.Clear();
+            RoadSchedule.Check(forked, new[] { new RoadSpec { Wave = 17, Roads = MainRoads.First }, new RoadSpec { Wave = 2, Roads = MainRoads.None }, new RoadSpec { Wave = 2, MinDifficulty = 2, MaxDifficulty = 1 } }, 16, errors);
+            Assert.AreEqual(3, errors.Count, string.Join("\n", errors));
+            foreach (CampaignLevelSpec spec in LevelSpecs.Crystal)
+            {
+                LevelDefinition level = AssetDatabase.LoadAssetAtPath<LevelDefinition>($"{LevelFolder}/Level_{spec.Key}.asset");
+                errors.Clear();
+                RoadSchedule.Check(level, spec.Waves.RoadPlan, spec.Waves.Waves, errors);
+                Assert.IsEmpty(errors, string.Join("\n", errors));
+            }
+        }
+
+        // The most a stored ground wave's multiplier may stand above the median of its level and difficulty (round 82).
+        private const float MostOverTheMedian = 2.5f;
+
+        [Test]
+        public void NoStoredGroundWave_IsFarTougherThanItsLevel()
+        {
+            // Round 82: a swarm solved on its own difficulty came out at three times its level's median (Quartz Flats Hard
+            // wave 15, x6.07: more health than the finale, and the wave the cell was lost on). The trend band of the solver
+            // now holds every ground wave, the lift of a capped group included; this is its gate on the stored waves.
+            int checkedWaves = 0;
+            foreach (LevelDefinition level in AssetDatabase.FindAssets("t:LevelDefinition", new[] { LevelFolder }).Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<LevelDefinition>))
+            {
+                foreach (DifficultyWaves set in level.DifficultyWaves)
+                {
+                    List<float> ground = set.Waves.Where(w => !w.AirRaid).Select(w => w.HealthMultiplier).OrderBy(m => m).ToList();
+                    if (ground.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    float median = ground.Count % 2 == 1 ? ground[ground.Count / 2] : (ground[ground.Count / 2 - 1] + ground[ground.Count / 2]) * 0.5f;
+                    for (int i = 0; i < set.Waves.Length; i++)
+                    {
+                        if (!set.Waves[i].AirRaid)
+                        {
+                            Assert.LessOrEqual(set.Waves[i].HealthMultiplier, median * MostOverTheMedian, $"{level.name} {set.Difficulty.name} wave {i + 1}: x{set.Waves[i].HealthMultiplier:0.00} against a median of x{median:0.00}");
+                            checkedWaves++;
+                        }
+                    }
+                }
+            }
+
+            Assert.Greater(checkedWaves, 0);
+        }
     }
 }

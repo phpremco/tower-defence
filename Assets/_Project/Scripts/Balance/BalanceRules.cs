@@ -406,7 +406,8 @@ namespace Game.Balance
         /// pressure is the sky's, and the sky guns the ledger buys for it stay out of the purse for the rest of the level).
         /// When the wave as a whole then asks more than the hero cap, its crowd gives way and the boss keeps its health.
         /// </summary>
-        public float[] LevelBossAlone = { 0.2f, 0.3f, 0.4f, 0.45f };
+        /// <remarks>Medium: 0.25 in round 77, 0.3 in round 81, 0.33 in round 82 (Remco: Shard Ridge Medium's boss felt weak).</remarks>
+        public float[] LevelBossAlone = { 0.2f, 0.33f, 0.4f, 0.45f };
 
         public float LevelBossAloneFor(int difficulty) => LevelBossAlone.Length == 0 ? 0f : LevelBossAlone[System.Math.Min(difficulty, LevelBossAlone.Length - 1)];
 

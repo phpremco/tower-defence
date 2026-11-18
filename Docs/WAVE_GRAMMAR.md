@@ -1,4 +1,4 @@
-# Wave grammar (round 79, rules of rounds 80, 80b and 81 marked)
+# Wave grammar (round 79, rules of rounds 80, 80b, 81 and 82 marked)
 
 How the creatures of a wave arrive. Remco, 2026-11-17: surprises ("everything stands at the front gate, and poof, something
 comes behind it"), waves that are long and distributed (spread clusters or big swarms, small pauses, combo swarms), and
@@ -64,6 +64,42 @@ Notes on what is emergent and what is not:
 
 The rhythm string stays the level's own (variety between levels); the ramp comes from the script's budget curve and the
 solver's target curve, as before. The old letter `M` (ambush) is gone: surprises are placed by rule, not written per level.
+
+## Which roads a wave uses (round 82)
+
+Remco, 2026-11-18: any subset of the main paths in a wave, varied across the level, Easy mostly simple, Psycho more
+combinations of roads; by rule, and a level may overrule it.
+
+A level that forks has two main roads (Shard Ridge, Fault Line, Crysium Vein; the composer's `Road` and the level's
+second road). `WaveGrammar.RoadsOn` picks per wave and difficulty which of them the front walks in on (`MainRoads`:
+`First`, `Second`, `Both`), in this order:
+
+1. **The level's own plan** (`WaveScriptSpec.RoadPlan`, helper `OnRoads(wave, MainRoads.Second)` or
+   `OnRoads(wave, Hard, Psycho, MainRoads.Both)` in the level's spec, next to `Surprises`). Validated by
+   `RoadSchedule.Check` (the solve stage logs `[Validator]`): the wave exists, a road is named, and a second road only on
+   a level that has two main ground paths.
+2. **A flank wave**: the flank comes down the second road alone, so the front keeps to the first road.
+3. **A boss wave and the last wave**: every road.
+4. **The rule**: `WaveGrammarRules.MultiRoadShare` (0.3 / 0.45 / 0.6 / 0.75) of the waves come down both roads, on the
+   whole-number steps of the share (Easy: waves 4, 7, 10, 14, 17; Psycho: 2, 3, 4, 6, 7, 8, ...), so they are spread
+   evenly and the first wave of a level is always one road. The other waves take one road each, in turns
+   (`SecondRoadEvery` 2: the first road, the second, the first, ...). A share of 1 on every difficulty is the behaviour
+   before round 82 (every wave down every road).
+
+The plan of every cell: `WaveGrammarReport.cs` prints `-` (first road), `_` (second) or `=` (both) behind each wave of a
+level that forks.
+
+How the model budgets it: the choice only sets the path of the front's groups, and the ledger already reads a wave by
+its groups (`WaveLoad.Reach` the defence a lane meets, `KillPurse` the walk to the defence and so when a kill pays and
+which wave a slow creature arrives in, the route model the guns a route passes). The number of creatures and the kill
+money are the script's whatever the roads (test `TheLevelsOwnRoads_ReplaceTheRule_OnTheirWaveAndDifficulties`). A wave
+on other roads than Medium's has no Medium twin and is solved on its own difficulty (`WaveSolver.SolveVariant`).
+
+Known: on Shard Ridge the second road is short (46 cells against 109) and skips the first two gates. A slow plated
+creature on the long road arrives waves later (`KillPurse.Carried`), one on the short road in its own wave; where
+carried Cragbacks meet a model player who holds no Cannon yet, no multiplier of the wave itself reaches the target and
+the wave drops to the solver's floor (the "paper" waves, STATUS round 82). That was so before the road rule (Shard Ridge
+Hard wave 8 at x0.22 in round 81); the rule moves which waves it falls on.
 
 ## Surprises
 
@@ -131,8 +167,7 @@ Surprises = new[]
   `WaveGrammarReport.cs`: a written surprise shows as `*`.
 - Not there yet: no road template lays out a surprise **path** (the generator writes every ground path as main), so in
   the six levels as they are a surprise comes out of nests; `_surprisePaths` and `DownPath` are ready for the first
-  layout that has one. No level of the first continent writes a surprise of its own yet (question for Remco in STATUS,
-  round 81).
+  layout that has one. Landing Site (round 81), Glass Meadows and Quartz Flats (round 82) write surprises of their own.
 
 ### The default plan (the rules)
 
@@ -182,10 +217,10 @@ First continent (the level's own roster decides the source):
 | Level | Surprise | Out of |
 | --- | --- | --- |
 | Landing Site | none since round 81 | its rift troop is the Cragback alone and no wave's share buys three of them (threat 15 a head; three cost more than wave 7 has); a written surprise is the way to open that rift |
-| Glass Meadows | none since round 81 | the same: one rift, one heavy rift troop |
+| Glass Meadows | the level's own since round 82: two Cragbacks in wave 10, Medium and up | its rear rift (the default plan still sends none: one rift, one heavy rift troop) |
 | Shard Ridge | a flank | the second road |
 | Fault Line | Shalebats | its three rifts (drawn per bat, as before) |
-| Quartz Flats | Shalebats, from wave 9 with Cragbacks | bats: both rifts; Cragbacks: the rift behind the first gate (new troop) |
+| Quartz Flats | Hard and Psycho: the default (Shalebats, from wave 9 with a Cragback that is two as played). Easy and Medium: the level's own since round 82, so nothing walks alone (Easy wave 14: bats out of both rifts; Medium waves 12 and 16: two Cragbacks out of the rear rift with bats out of the other) | bats: both rifts; Cragbacks: the rift behind the first gate |
 | Crysium Vein | Shalebats | its rift |
 
 ## A surprise lifts no other wave (round 80)
@@ -264,6 +299,24 @@ recorded runs, in which the bot already stands that gun, and booked twice it pus
 Measured on Glass Meadows before the final solve (`pressure_r80b_guard_records.txt`, the guard still in both lenses):
 Psycho skilled `3 2 0 0 0` -> `3 2 2 0 0`, the sensible rung unchanged. The final measurement is in STATUS, round 80b.
 What it does not do: the price booked is the cheapest gun's, the players stand a Cannon there.
+
+## No ground wave far tougher than the waves before it (round 82)
+
+The Medium solve always held a ground wave's multiplier inside a band of the three ground waves before it (at most
+x1.3 over the toughest, `WaveSolver.MaxRise`). Two holes let a swarm through at three times its level's median
+(Quartz Flats Hard wave 15: x6.07, 16 300 health where the finale has 10 400; Psycho x5.62; Crysium Vein Psycho wave 16
+x6.36), and half of that wave's health reached the gates in the lost runs:
+
+- a wave solved on its own difficulty (`SolveVariant`: Medium has a raid there, or a surprise, or other roads) was
+  searched over the whole range, without the band;
+- a swarm whose groups are capped at 64 creatures carries what it could not buy as health on top of the solved
+  multiplier (`WaveComposer.Compose`, the shortfall), and the band looked at the multiplier before that lift.
+
+Since round 82 the band holds in both solves and on the creatures as they walk in (the lift included). A raid and a
+boss wave stay free, and a wave may still drop as far as it needs. The human calibration then holds the plain mean, so
+what the swarm lost is spread over the level's other ground waves. Gate on the stored waves:
+`WaveGrammarTests.NoStoredGroundWave_IsFarTougherThanItsLevel` (no ground wave above 2.5 times the median of its level
+and difficulty).
 
 ## The finale rule
 

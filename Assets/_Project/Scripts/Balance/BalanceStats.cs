@@ -320,6 +320,9 @@ namespace Game.Balance
         public WavePattern Pattern;
         public int Beats = 1;
         public SurpriseKind Surprise;
+
+        /// <summary>The main roads the wave's front walks in on (round 82, <see cref="WaveGrammar.RoadsOn"/>).</summary>
+        public MainRoads Roads = MainRoads.First;
     }
 }
 

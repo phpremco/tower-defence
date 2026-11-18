@@ -104,18 +104,17 @@ namespace Game.Balance
                 bool boss = WaveComposer.BossOn(script, SolveDifficulty, number) != null;
                 // The same creature should not change much from one wave to the next: the multiplier follows the recent
                 // trend within a band, so a wave that is light for its kind stays light instead of growing a wall.
-                float trend = 0f;
-                foreach (float value in recent)
-                {
-                    trend = Math.Max(trend, value);
-                }
+                // The band is on the creatures as they walk in: a troop capped at the largest group size makes every creature
+                // of its wave tougher by what it could not buy (WaveComposer.Compose), on top of the multiplier solved here.
+                float lift = timing.HealthMultiplier;
+                float trend = Trend(recent);
 
                 // Air raids and boss waves are a different kind of wave (other creatures, other guns), so they may drop as
                 // far as they need below the ground trend.
                 WaveComposer.Kind kind = WaveComposer.KindOf(script, SolveDifficulty, number);
                 bool free = boss || kind == WaveComposer.Kind.Air;
-                float low = recent.Count == 0 || free ? MinHealth : Math.Max(MinHealth, trend * MaxDrop);
-                float high = recent.Count == 0 ? MaxHealth : Math.Min(MaxHealth, trend * MaxRise);
+                float low = recent.Count == 0 || free ? MinHealth : Math.Max(MinHealth, trend * MaxDrop / lift);
+                float high = recent.Count == 0 ? MaxHealth : Math.Max(low, Math.Min(MaxHealth, trend * MaxRise / lift));
                 // Rounded so the editor and the BalanceLab tool land on the same numbers.
                 float health = (float)Math.Round(BisectOn(script, enemies, level, medium, secondRoad, rules, number, money, held, carried, target, low, high), 3);
                 WaveSpec solved = WaveComposer.Compose(script, enemies, SolveDifficulty, number, health, secondRoad, rules);
@@ -136,7 +135,7 @@ namespace Game.Balance
                 purse.Add(solved, line);
                 if (!free)
                 {
-                    recent.Add(health);
+                    recent.Add(solved.HealthMultiplier);
                     if (recent.Count > TrendMemory)
                     {
                         recent.RemoveAt(0);
@@ -159,6 +158,7 @@ namespace Game.Balance
             float share = rules.DifficultyPressure[Math.Min(d, rules.DifficultyPressure.Length - 1)];
             var purse = new KillPurse(level, difficulty, rules);
             var held = new Ledger.AirHoldings();
+            var recent = new List<float>();
             for (int i = 0; i < script.Waves; i++)
             {
                 int number = i + 1;
@@ -175,11 +175,23 @@ namespace Game.Balance
                     || armourAim != ArmourAim(script, enemies, SolveDifficulty, number, secondRoad, rules)
                     // A surprise is sized per difficulty (its share of the wave, and which waves carry one), so it has no Medium twin.
                     || WaveGrammar.SurpriseOn(script, enemies, d, number, secondRoad, rules) != SurpriseKind.None
-                    || WaveGrammar.SurpriseOn(script, enemies, SolveDifficulty, number, secondRoad, rules) != SurpriseKind.None;
+                    || WaveGrammar.SurpriseOn(script, enemies, SolveDifficulty, number, secondRoad, rules) != SurpriseKind.None
+                    // The roads a wave comes down are picked per difficulty (round 82): the defence a road meets differs, so a
+                    // wave on other roads than Medium's has no Medium twin either.
+                    || WaveGrammar.RoadsOn(script, enemies, d, number, secondRoad, rules) != WaveGrammar.RoadsOn(script, enemies, SolveDifficulty, number, secondRoad, rules);
+                // The trend band of the Medium solve holds here too (round 82): the creatures of a ground wave solved on its own
+                // difficulty are no tougher than MaxRise over those of the ground waves just before it, the lift of a capped
+                // group included (timing.HealthMultiplier). Without it a swarm where Medium has a raid was searched over the
+                // whole range, and a swarm capped at the largest group size carried the rest of its budget as health on top:
+                // Quartz Flats Hard wave 15 came out at x6.07, three times its level's median and more health than the
+                // finale. A raid and a boss wave are another kind of wave and stay free.
+                bool free = WaveComposer.BossOn(script, d, number) != null || WaveComposer.KindOf(script, d, number) == WaveComposer.Kind.Air;
                 if (changed)
                 {
                     float target = TargetOn(script, d, number, rules, airGrowth) * share * armourAim;
-                    healths[i] = (float)Math.Round(BisectOn(script, enemies, level, difficulty, secondRoad, rules, number, money, held, carried, target, MinHealth, MaxHealth), 3);
+                    // Upwards only: a wave may drop as far as it needs, as on Medium once its band is at stake.
+                    float high = free || recent.Count == 0 ? MaxHealth : Math.Max(MinHealth, Math.Min(MaxHealth, Trend(recent) * MaxRise / timing.HealthMultiplier));
+                    healths[i] = (float)Math.Round(BisectOn(script, enemies, level, difficulty, secondRoad, rules, number, money, held, carried, target, MinHealth, high), 3);
                 }
 
                 WaveLine line = Ledger.EvaluateWave(level, WaveComposer.Compose(script, enemies, d, number, healths[i], secondRoad, rules), difficulty, money, rules, held, null, carried);
@@ -196,9 +208,29 @@ namespace Game.Balance
                 Ledger.EvaluateWave(level, WaveComposer.Compose(script, enemies, d, number, healths[i], secondRoad, rules), difficulty, money, rules, held, next, carried);
                 held = next;
                 purse.Add(WaveComposer.Compose(script, enemies, d, number, healths[i], secondRoad, rules), line);
+                if (!free)
+                {
+                    recent.Add(healths[i] * timing.HealthMultiplier);
+                    if (recent.Count > TrendMemory)
+                    {
+                        recent.RemoveAt(0);
+                    }
+                }
             }
 
             return healths;
+        }
+
+        // The toughest of the ground waves just solved: what the next one is held against.
+        private static float Trend(List<float> recent)
+        {
+            float trend = 0f;
+            foreach (float value in recent)
+            {
+                trend = Math.Max(trend, value);
+            }
+
+            return trend;
         }
 
         // Pressure grows with health, so a bisection on its logarithm finds the multiplier that meets the target. Not on an air

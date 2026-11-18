@@ -481,7 +481,7 @@ MonoBehaviour:
         Delay: 0
         Stagger: 7.7999997
         Nest: 0
-      _healthMultiplier: 2.439
+      _healthMultiplier: 2.435
       _bossHealthScale: 1
       _counterCheck: 1
       _airRaid: 0
@@ -552,7 +552,7 @@ MonoBehaviour:
         Delay: 21.508333
         Stagger: 0
         Nest: 1
-      _healthMultiplier: 2.366
+      _healthMultiplier: 2.365
       _bossHealthScale: 1
       _counterCheck: 1
       _airRaid: 0

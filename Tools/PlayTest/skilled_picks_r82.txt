@@ -1,0 +1,31 @@
+# The skilled rung's strategy per cell (round 78): of the cell's searched strategies (Tools/PlayTest/Plans), the one that
+# did best played as the skilled rung plays it, at the data, on seeds 1-3. Written by Tools/PlayTest/skilled_picks.py;
+# refresh it after a wave or tower change (Docs/COMMANDS.md, "Round 78"). It is part of the bot stamp.
+# measured with bot=3:f9f8c682;data=bf820cba;game=d1551f0d
+# Level_C1_06 1: no strategy of the round 68 search won 3 of 3 on round 82's waves, so the cell was searched anew (PlanSearchTests,
+# its five plans replace the old three) and its pick comes from Tools/PlayTest/skilled_search_r82_records.txt (bot=3:2b232b90;data=bf820cba;game=d1551f0d)
+# pick|level|difficulty|strategy|seeds won|base kept over the seeds|stars|candidates
+pick|Level_C1_01|0|Level_C1_01_0_strategy1|3/3|3.0000|9|5
+pick|Level_C1_01|1|Level_C1_01_1_strategy1|3/3|3.0000|9|4
+pick|Level_C1_01|2|Level_C1_01_2_strategy1|3/3|3.0000|9|5
+pick|Level_C1_01|3|Level_C1_01_3_strategy1|3/3|3.0000|9|5
+pick|Level_C1_02|0|Level_C1_02_0_strategy1|3/3|3.0000|9|5
+pick|Level_C1_02|1|Level_C1_02_1_strategy1|3/3|3.0000|9|1
+pick|Level_C1_02|2|Level_C1_02_2_strategy1|3/3|3.0000|9|3
+pick|Level_C1_02|3|Level_C1_02_3_strategy1|3/3|3.0000|9|3
+pick|Level_C1_03|0|Level_C1_03_0_strategy1|3/3|3.0000|9|5
+pick|Level_C1_03|1|Level_C1_03_1_strategy1|3/3|3.0000|9|5
+pick|Level_C1_03|2|Level_C1_03_2_strategy1|3/3|3.0000|9|3
+pick|Level_C1_03|3|Level_C1_03_3_strategy2|3/3|2.9160|9|5
+pick|Level_C1_04|0|Level_C1_04_0_strategy1|3/3|3.0000|9|5
+pick|Level_C1_04|1|Level_C1_04_1_strategy5|3/3|2.9524|9|5
+pick|Level_C1_04|2|Level_C1_04_2_strategy2|3/3|3.0000|9|5
+pick|Level_C1_04|3|Level_C1_04_3_strategy1|3/3|3.0000|9|5
+pick|Level_C1_05|0|Level_C1_05_0_strategy1|3/3|3.0000|9|5
+pick|Level_C1_05|1|Level_C1_05_1_strategy1|3/3|3.0000|9|5
+pick|Level_C1_05|2|Level_C1_05_2_strategy4|1/3|0.7500|2|5
+pick|Level_C1_05|3|Level_C1_05_3_strategy2|3/3|2.9409|9|5
+pick|Level_C1_06|0|Level_C1_06_0_strategy1|3/3|3.0000|9|5
+pick|Level_C1_06|1|Level_C1_06_1_strategy1|3/3|3.0000|9|5
+pick|Level_C1_06|2|Level_C1_06_2_strategy1|3/3|2.4800|7|1
+pick|Level_C1_06|3|Level_C1_06_3_strategy2|3/3|2.6573|8|5
