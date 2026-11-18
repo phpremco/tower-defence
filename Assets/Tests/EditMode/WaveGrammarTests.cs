@@ -483,18 +483,22 @@ namespace Game.Tests
         {
             // Round 83: every wave is solved to its own target, so a surprise takes from its own wave and nothing is spread
             // over the others (rounds 80 and 80b needed a second solve and a relief bound for that, because one common factor
-            // held the level's mean). A wave without a surprise is no tougher than in the same level solved without
-            // surprises, but for what the purse moves: a surprise wave's creatures are fewer and tougher, so its kills pay
-            // at other moments and the player's purchase for the waves after it shifts a little. Round 83b measured that
-            // on all six levels: the most on a plain wave is x1.13 (Crysium Vein Medium wave 10), on a boss wave x1.06, on
-            // a raid x1.05; the bound is x1.15 (it was x1.3, with boss waves and raids left out).
-            // Known limit, kept on purpose: a swarm. Its groups are capped at the largest group size and carry what
-            // they could not buy as health, so a late swarm sits under its target on the upper edge of its band or on the
-            // solver's cap of 2.2 times the median of the ground waves before it. Surprise waves lift that median (fewer,
-            // tougher creatures), and the swarm follows: x1.59 on Crysium Vein Psycho wave 16, x1.16 or less elsewhere.
-            // It never passes its own target and the gate NoStoredGroundWave_IsFarTougherThanItsLevel holds it; taking
-            // the surprise waves out of the solver's median would close it and is a data change of its own (STATUS, round 83b).
+            // held the level's mean). Round 84: the waves after a surprise wave are held against the wave it would have been
+            // without its surprise (the band and the median of WaveSolver.Solve read the calm solve there), so a swarm on
+            // the upper edge of its band no longer follows a surprise wave's fewer, tougher creatures (Crysium Vein Psycho
+            // wave 16 stood x1.59 above the calm level) and the swarm is judged like every other wave.
+            // What is left is what the purse moves: a surprise wave's kills pay at other moments and leave other creatures
+            // on the road, so the player's purchase for the waves after it shifts a little. Measured on all six levels
+            // (Tools/PlayTest/Scripts/SurpriseLiftLab.cs): a plain wave x1.09 at most, a raid x1.03: bound x1.15, as it was.
+            // A swarm x1.23 (Glass Meadows Psycho wave 11: its pressure rises slowly with its health, so what wave 10
+            // leaves on the road shows large in the multiplier): bound x1.25; round 83b left swarms out.
+            // A boss wave is read on the health of the whole wave, boss included (round 83b read the crowd alone, which
+            // is what is left beside the boss and says little: 5 % more wave reads as 39 % more crowd, and it missed the
+            // boss): x1.29 at most (Shard Ridge Psycho wave 10, the boss sized against a defence the flank waves before it
+            // changed): bound x1.3.
             const float purse = 1.15f;
+            const float swarm = 1.25f;
+            const float bossWave = 1.3f;
             BalanceStages.Loaded loaded = BalanceStages.Load(true);
             Assert.IsNotNull(loaded.Catalog, "Run Tools/Generate/Scenes and Starter Data first.");
             CampaignModel model = loaded.Model;
@@ -520,22 +524,44 @@ namespace Game.Tests
                 {
                     for (int i = 0; i < sets[d].Count; i++)
                     {
-                        // Not judged: the surprise wave itself, a wave that is a raid in one solve and not in the other (the
-                        // flyer floors read the purse of the whole level), and a swarm (the comment above).
-                        if (sets[d][i].Surprise != SurpriseKind.None || sets[d][i].AirRaid != calm[d][i].AirRaid || sets[d][i].Pattern == WavePattern.Swarm)
+                        // Not judged: the surprise wave itself and a wave that is a raid in one solve and not in the other (the
+                        // flyer floors read the purse of the whole level).
+                        if (sets[d][i].Surprise != SurpriseKind.None || sets[d][i].AirRaid != calm[d][i].AirRaid)
                         {
                             surprises += sets[d][i].Surprise != SurpriseKind.None ? 1 : 0;
                             continue;
                         }
 
                         judged++;
-                        Assert.LessOrEqual(sets[d][i].HealthMultiplier, calm[d][i].HealthMultiplier * purse, $"{key} difficulty {d} wave {i + 1}");
+                        if (sets[d][i].Groups.Exists(g => g.Enemy != null && g.Enemy.IsBoss))
+                        {
+                            Assert.LessOrEqual(WaveHealth(sets[d][i]), WaveHealth(calm[d][i]) * bossWave, $"{key} difficulty {d} wave {i + 1} (boss wave)");
+                            continue;
+                        }
+
+                        float bound = sets[d][i].Pattern == WavePattern.Swarm ? swarm : purse;
+                        Assert.LessOrEqual(sets[d][i].HealthMultiplier, calm[d][i].HealthMultiplier * bound, $"{key} difficulty {d} wave {i + 1}");
                     }
                 }
             }
 
             Assert.Greater(surprises, 0);
             Assert.Greater(judged, surprises, "most waves carry no surprise and are judged");
+        }
+
+        // The health of every creature of a wave as it walks in, a boss with its own scale.
+        private static float WaveHealth(WaveSpec wave)
+        {
+            float health = 0f;
+            foreach (GroupSpec group in wave.Groups)
+            {
+                if (group.Enemy != null)
+                {
+                    health += group.Count * group.Enemy.Health * wave.HealthMultiplier * (group.Enemy.IsBoss ? wave.BossHealthScale : 1f);
+                }
+            }
+
+            return health;
         }
 
         [Test]

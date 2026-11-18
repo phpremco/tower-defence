@@ -191,16 +191,20 @@ and onto every wave script.
 
 - **The window opens on the first wave a plated troop walks in.** Through the grace waves the troops come as the script
   writes them: a few, so guns that are not made for armour can still deal with them.
-- **Then they grow.** With every wave past the window the plated troops come in greater numbers, by the level's growth
-  factor per wave (`armourgrowth` in `Tools/PlayTest/wave_tuning.txt`, per level and difficulty), through the waves a row
-  must fall in; after that they stay as they are. They also close ranks (packs of three, a tight file from a nest), so a
-  blast catches several.
+- **Then they grow.** With every wave past the window the plated troops come in greater numbers, by the difficulty's
+  growth factor per wave (`BalanceRules.ArmourGrowth`, 1.4 / 1.4 / 1.5 / 1.5; a lever per cell in
+  `Tools/PlayTest/wave_tuning.txt` until round 84), through the waves a row must fall in; after that they stay as they
+  are. They also close ranks (packs of three, a tight file from a nest), so a blast catches several. **The growth
+  applies where a difficulty of a level sends no flyers** (round 84; Landing Site and Glass Meadows in the first
+  continent): there armour is the only trait that asks for a counter. Where flyers come too, the raids end a row
+  without a counter, and growth on top was measured (round 68) and read on paper (round 84, Docs/WAVE_GRAMMAR.md,
+  "What a wave is made of") as more than those levels carry.
 - **A grown wave aims above the level's curve** by as much as it has grown, so the extra bodies keep their toughness. It
   is marked as a *counter check* (`WaveDefinition.CounterCheck`) and is left out of the mean of the plain waves, as a boss
   wave is: the ordinary waves stay on the human curve, the counter checks sit above it on purpose. The cap "no wave asks
   more than the player with the hero can hold" still applies to them.
-- The same lever exists for flyers (`airgrowth`: the raids, the sprinkle and flying troops). It is built (the composer and the solver) but
-  set on no level yet (see below).
+- The same exists for flyers (`BalanceRules.AirGrowth`: the raids, the sprinkle and flying troops). It is built (the composer and the solver) and
+  stands at one on every difficulty (see below).
 - **Composition is the second lever**: when a trait opens its window long before the waves are big enough to end a row in
   it, the troop can walk in later on the easier difficulties (`Join(..., maxDifficulty: Medium)` next to a Hard troop from
   the old wave; round 68 on Shard Ridge). The window opens on the first plated troop of that difficulty.
@@ -233,6 +237,7 @@ an allowance, 8 not judged. The allowances (`GraceWindows.Allowances`, each with
 | Fault Line Easy, Quartz Flats Medium and Psycho, Crysium Vein Medium | air | 1 wave | The row falls to the raid one wave after the window closes. A bigger raid there costs the mixed plan its margin (these are the cells the creative bot already loses seeds on). |
 | **Round 77:** Glass Meadows Medium 1 -> 2, Shard Ridge Medium 1 -> 2 (armour); Fault Line Easy 1 (armour, new) and 1 -> 2 (air); Crysium Vein Easy 1 (air, new) | armour, air | 1 to 2 waves | The structure damage factor (Remco, round 77: creatures bite every structure at 0.45 of their damage on Easy and Medium) keeps a row's base a wave or two longer. Measured with the factor on base and gates alone the rows were as late, so it is the softer siege itself. Every row still loses all three seeds. |
 | **Round 77:** Fault Line Medium 2 (air, new), Quartz Flats Medium 3 (armour, new) | air, armour | 2 to 3 waves | The same softer bites, and the first-flyer rule moved the raids that used to end these rows (first raid wave 6, was 3 and 4). Every row still loses all three seeds. |
+| **Round 84:** Glass Meadows Medium 2 -> 1 (armour); Fault Line Easy and Psycho (air) removed | armour, air | - | Glass Meadows Medium grows by the rule (1.4, was its own 1.2) and its row is one wave late in two measurements; the two air allowances were unused in two measurements (rounds 83b and 84). 18 allowances stand. |
 
 What stands in the way of closing the rest: on Shard Ridge Hard and Psycho the early plated pack is Remco's choice (a later
 pack, or the window counted from the first *grown* plated wave, would close it; his call); on Landing Site and Glass

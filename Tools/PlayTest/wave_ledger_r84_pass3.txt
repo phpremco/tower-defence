@@ -1,0 +1,439 @@
+Wave ledger lab 2026-11-18 17:04; overrides: none
+
+C1_01 Easy (the human lens, towers alone; scale x0.946; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x0.711   (stored x0.711  , aim 0.24, hero 0.13, human 0.23-, boss x0.711 stored x0.711) money   160 hp     64/    0 span   4.4s sky   0.0s n  12/ 0 pressure 0.23/0.00 | 0:0x1 0:1x1
+  w2  s1   x0.816   (stored x0.816  , aim 0.33, hero 0.17, human 0.31-, boss x0.816 stored x0.816) money   166 hp     98/    0 span   7.1s sky   0.0s n  16/ 0 pressure 0.31/0.00 | 0:0x1 0:1x1
+  w3  W1   x0.886   (stored x0.886  , aim 0.47, hero 0.24, human 0.44-, boss x0.886 stored x0.886) money   179 hp    152/    0 span   9.7s sky   0.0s n  23/ 0 pressure 0.44/0.00 | 0:0x1 0:1x1
+  w4  T1   x1.152   (stored x1.152  , aim 0.60, hero 0.30, human 0.48-, boss x1.152 stored x1.152) money   199 hp    207/    0 span   7.6s sky   0.0s n  24/ 0 pressure 0.48/0.00 | 0:1x2
+  w5  C2   x1.497   (stored x1.497  , aim 0.63, hero 0.31, human 0.52p, boss x1.497 stored x1.497) money   218 hp    358/    0 span  21.8s sky   0.0s n  32/ 0 pressure 0.52/0.00 | 0:1x2
+  w6  W1   x1.474   (stored x1.474  , aim 0.71, hero 0.44, human 0.67p, boss x1.474 stored x1.474) money   244 hp    507/    0 span  17.6s sky   0.0s n  46/ 0 pressure 0.67/0.00 | 0:0x1 0:1x2
+  w7  s1*  x1.257   (stored x1.257  , aim 0.67, hero 0.50, human 0.63p, boss x1.257 stored x1.257) money   280 hp    508/    0 span  11.7s sky   0.0s n  16/ 0 pressure 0.63/0.00 | 0:0x1 1:0x2
+  w8  T1   x1.946   (stored x1.946  , aim 0.79, hero 0.45, human 0.56p, boss x1.946 stored x1.946) money   305 hp    684/    0 span  14.6s sky   0.0s n  28/ 0 pressure 0.56/0.00 | 1:0x3
+  w9  W2   x1.625   (stored x1.625  , aim 0.78, hero 0.52, human 0.74p, boss x1.625 stored x1.625) money   350 hp   1143/    0 span  36.0s sky   0.0s n  94/ 0 pressure 0.74/0.00 | 0:0x1 0:1x3
+  w10 X2   x2.53    (stored x2.53   , aim 1.43, hero 0.93, human 1.08-, boss x2.53 stored x2.53) money   424 hp   2347/    0 span  25.0s sky   0.0s n  48/ 0 pressure 1.08/0.00 | 1:0x4
+  w11 T1*  x1.749   (stored x1.749  , aim 2.36, hero 0.81, human 0.91-, boss x1.749 stored x1.749) money   502 hp   2433/    0 span  25.4s sky   0.0s n  53/ 0 pressure 0.91/0.00 | 1:0x5
+  w12 C3 B x0.964   (stored x0.964  , aim 4.13, hero 0.90, human 1.02-, boss x0.64 stored x0.64) money   623 hp   1949/    0 span  28.1s sky   0.0s n  45/ 0 pressure 1.02/0.00 | 0:0x1 0:2x1 1:0x4
+
+C1_01 Medium (the human lens, towers alone; scale x1.373; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.15; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x0.549   (stored x0.549  , aim 0.31, hero 0.17, human 0.33-, boss x0.549 stored x0.549) money   200 hp     72/    0 span   3.7s sky   0.0s n  12/ 0 pressure 0.33/0.00 | 0:2x1
+  w2  s1   x0.714   (stored x0.714  , aim 0.41, hero 0.19, human 0.30-, boss x0.714 stored x0.714) money   207 hp    126/    0 span   6.3s sky   0.0s n  16/ 0 pressure 0.30/0.00 | 0:0x1 0:2x1
+  w3  W1   x0.928   (stored x0.928  , aim 0.58, hero 0.29, human 0.43-, boss x0.928 stored x0.928) money   223 hp    245/    0 span   9.1s sky   0.0s n  24/ 0 pressure 0.43/0.00 | 0:0x1 0:2x1
+  w4  T1   x1.207   (stored x1.207  , aim 0.75, hero 0.37, human 0.53-, boss x1.207 stored x1.207) money   247 hp    332/    0 span   7.0s sky   0.0s n  25/ 0 pressure 0.53/0.00 | 0:1x1 0:2x1
+  w5  C2   x1.569   (stored x1.569  , aim 0.78, hero 0.41, human 0.59p, boss x1.569 stored x1.569) money   271 hp    552/    0 span  18.5s sky   0.0s n  32/ 0 pressure 0.59/0.00 | 0:1x1 0:2x1
+  w6  W1   x2.04    (stored x2.04   , aim 0.89, hero 0.76, human 1.06p, boss x2.04 stored x2.04) money   302 hp   1077/    0 span  16.3s sky   0.0s n  48/ 0 pressure 1.06/0.00 | 0:0x1 0:1x1 0:2x1
+  w7  s1*  x2.123   (stored x2.123  , aim 0.83, hero 0.96, human 1.14p, boss x2.123 stored x2.123) money   344 hp   1261/    0 span  10.5s sky   0.0s n  16/ 0 pressure 1.14/0.00 | 1:0x3
+  w8  T1   x2.656   (stored x2.656  , aim 1.38, hero 1.27, human 1.52-, boss x2.656 stored x2.656) money   370 hp   1987/    0 span  14.5s sky   0.0s n  30/ 0 pressure 1.52/0.00 | 0:0x1 1:0x3
+  w9  W2   x2.481   (stored x2.481  , aim 0.97, hero 1.05, human 1.34p, boss x2.481 stored x2.481) money   418 hp   2675/    0 span  32.7s sky   0.0s n  98/ 0 pressure 1.34/0.00 | 0:1x1 0:2x2
+  w10 X1*  x2.672   (stored x2.672  , aim 2.50, hero 1.58, human 2.15-, boss x2.672 stored x2.672) money   487 hp   3939/    0 span  18.0s sky   0.0s n  39/ 0 pressure 2.15/0.00 | 0:0x1 1:0x4
+  w11 T1   x1.797   (stored x1.797  , aim 4.13, hero 1.83, human 2.08-, boss x1.797 stored x1.797) money   530 hp   5495/    0 span  28.5s sky   0.0s n  69/ 0 pressure 2.08/0.00 | 1:0x5
+  w12 C3 B x0.549   (stored x0.549  , aim 5.17, hero 1.40, human 1.83-, boss x0.969 stored x0.969) money   610 hp   2374/    0 span  24.4s sky   0.0s n  45/ 0 pressure 1.83/0.00 | 0:0x1 0:2x1 1:1x2
+
+C1_01 Hard (the human lens, towers alone; scale x1.157; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.25; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x0.463   (stored x0.463  , aim 0.39, hero 0.22, human 0.45-, boss x0.463 stored x0.463) money   200 hp     94/    0 span   3.5s sky   0.0s n  16/ 0 pressure 0.45/0.00 | 0:2x1
+  w2  s1   x0.602   (stored x0.602  , aim 0.53, hero 0.26, human 0.43-, boss x0.602 stored x0.602) money   212 hp    168/    0 span   5.5s sky   0.0s n  22/ 0 pressure 0.43/0.00 | 0:0x1 0:2x1
+  w3  W1   x0.782   (stored x0.782  , aim 0.75, hero 0.36, human 0.54-, boss x0.782 stored x0.782) money   237 hp    317/    0 span  10.2s sky   0.0s n  32/ 0 pressure 0.54/0.00 | 0:0x1 0:2x1
+  w4  T1   x1.017   (stored x1.017  , aim 0.96, hero 0.48, human 0.68-, boss x1.017 stored x1.017) money   274 hp    450/    0 span   8.3s sky   0.0s n  35/ 0 pressure 0.68/0.00 | 0:1x1 0:2x1
+  w5  C2   x1.322   (stored x1.322  , aim 1.00, hero 0.41, human 0.55p, boss x1.322 stored x1.322) money   313 hp    736/    0 span  21.1s sky   0.0s n  44/ 0 pressure 0.55/0.00 | 0:2x2
+  w6  W1   x1.719   (stored x1.719  , aim 1.14, hero 0.78, human 1.02p, boss x1.719 stored x1.719) money   362 hp   1413/    0 span  18.3s sky   0.0s n  65/ 0 pressure 1.02/0.00 | 0:0x1 0:2x2
+  w7  s1*  x1.872   (stored x1.872  , aim 1.07, hero 1.10, human 1.24p, boss x1.872 stored x1.872) money   432 hp   2368/    0 span  14.4s sky   0.0s n  24/ 0 pressure 1.24/0.00 | 1:1x2
+  w8  T2 B x0.707   (stored x0.707  , aim 2.31, hero 1.29, human 1.65-, boss x0.9 stored x0.9) money   492 hp   1504/    0 span  11.4s sky   0.0s n  26/ 0 pressure 1.65/0.00 | 0:1x1 0:2x1 1:0x2
+  w9  W2   x1.9     (stored x1.9    , aim 1.00, hero 0.95, human 1.16p, boss x1.9 stored x1.9) money   530 hp   3173/    0 span  36.3s sky   0.0s n 132/ 0 pressure 1.16/0.00 | 0:0x1 0:2x3
+  w10 X1*  x2.171   (stored x2.171  , aim 3.94, hero 1.45, human 1.78-, boss x2.171 stored x2.171) money   772 hp   6234/    0 span  21.2s sky   0.0s n  56/ 0 pressure 1.78/0.00 | 0:0x1 1:0x1 1:1x3
+  w11 T1   x1.869   (stored x1.869  , aim 4.66, hero 1.46, human 1.73-, boss x1.869 stored x1.869) money   859 hp   7991/    0 span  32.6s sky   0.0s n  91/ 0 pressure 1.73/0.00 | 0:0x1 1:0x8
+  w12 C3 B x0.463   (stored x0.463  , aim 5.82, hero 1.26, human 1.52-, boss x1.406 stored x1.406) money  1059 hp   3154/    0 span  27.0s sky   0.0s n  62/ 0 pressure 1.52/0.00 | 0:2x1 1:0x1 1:1x4
+
+C1_01 Psycho (the human lens, towers alone; scale x1.1; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.35; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x2.204   (stored x2.204  , aim 0.51, hero 0.49, human 0.57-, boss x2.204 stored x2.204) money   600 hp    800/    0 span   3.2s sky   0.0s n  20/ 0 pressure 0.57/0.00 | 0:1x1 0:2x3
+  w2  s1   x2.535   (stored x2.535  , aim 0.70, hero 0.67, human 0.77-, boss x2.535 stored x2.535) money   615 hp   1242/    0 span   4.7s sky   0.0s n  27/ 0 pressure 0.77/0.00 | 0:0x1 0:1x1 0:2x3
+  w3  W1   x3.254   (stored x3.254  , aim 0.98, hero 0.94, human 1.08-, boss x3.254 stored x3.254) money   646 hp   2362/    0 span  10.5s sky   0.0s n  40/ 0 pressure 1.08/0.00 | 0:2x4
+  w4  T1   x3.882   (stored x3.882  , aim 1.26, hero 1.23, human 1.39-, boss x3.882 stored x3.882) money   690 hp   3030/    0 span   8.8s sky   0.0s n  43/ 0 pressure 1.39/0.00 | 0:0x1 0:2x4
+  w5  C2 B x1.514   (stored x1.514  , aim 1.84, hero 1.10, human 1.18-, boss x1.441 stored x1.441) money   725 hp   2965/    0 span  12.9s sky   0.0s n  30/ 0 pressure 1.18/0.00 | 0:1x1 0:2x4
+  w6  W1   x2.804   (stored x2.804  , aim 1.19, hero 1.17, human 1.38p, boss x2.804 stored x2.804) money   752 hp   4122/    0 span  18.9s sky   0.0s n  81/ 0 pressure 1.38/0.00 | 0:1x1 0:2x4
+  w7  s1*  x4.081   (stored x4.081  , aim 2.10, hero 1.48, human 1.73-, boss x4.081 stored x4.081) money   968 hp   7703/    0 span  14.0s sky   0.0s n  28/ 0 pressure 1.73/0.00 | 0:0x1 1:0x1 1:1x4
+  w8  T2 B x0.44    (stored x0.44   , aim 4.54, hero 1.07, human 1.22-, boss x1.085 stored x1.085) money  1013 hp   2490/    0 span  12.5s sky   0.0s n  34/ 0 pressure 1.22/0.00 | 0:2x2 1:0x1 1:1x3
+  w9  W2   x3.134   (stored x3.134  , aim 1.31, hero 1.32, human 1.49p, boss x3.134 stored x3.134) money  1062 hp   9386/    0 span  37.4s sky   0.0s n 165/ 0 pressure 1.49/0.00 | 0:2x6 1:0x1
+  w10 X1*  x2.259   (stored x2.259  , aim 5.15, hero 1.48, human 1.55-, boss x2.259 stored x2.259) money  1371 hp  11398/    0 span  20.8s sky   0.0s n  69/ 0 pressure 1.55/0.00 | 1:1x7
+  w11 T1   x2.402   (stored x2.402  , aim 6.09, hero 1.48, human 1.64-, boss x2.402 stored x2.402) money  1499 hp  18223/    0 span  35.0s sky   0.0s n 114/ 0 pressure 1.64/0.00 | 1:0x1 1:1x7
+  w12 C3 B x0.44    (stored x0.44   , aim 7.62, hero 1.07, human 1.27-, boss x1.586 stored x1.586) money  1756 hp   5087/    0 span  25.8s sky   0.0s n  76/ 0 pressure 1.27/0.00 | 1:1x9
+
+C1_02 Easy (the human lens, towers alone; scale x0.946; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  C2   x1.072   (stored x1.072  , aim 0.24, hero 0.12, human 0.23-, boss x1.072 stored x1.072) money   176 hp    112/    0 span  16.4s sky   0.0s n  14/ 0 pressure 0.23/0.00 | 0:0x1 0:1x1
+  w2  W1   x1.394   (stored x1.394  , aim 0.36, hero 0.20, human 0.33-, boss x1.394 stored x1.394) money   187 hp    198/    0 span  13.0s sky   0.0s n  19/ 0 pressure 0.33/0.00 | 0:1x2
+  w3  C3   x1.812   (stored x1.812  , aim 0.42, hero 0.21, human 0.36-, boss x1.812 stored x1.812) money   202 hp    312/    0 span  28.0s sky   0.0s n  23/ 0 pressure 0.36/0.00 | 0:1x2
+  w4  T1   x1.8     (stored x1.8    , aim 0.59, hero 0.33, human 0.56-, boss x1.8 stored x1.8) money   220 hp    377/    0 span  16.8s sky   0.0s n  28/ 0 pressure 0.56/0.00 | 0:1x2
+  w5  W1   x1.9     (stored x1.9    , aim 0.68, hero 0.41, human 0.64p, boss x1.9 stored x1.9) money   243 hp    583/    0 span  20.2s sky   0.0s n  41/ 0 pressure 0.64/0.00 | 0:0x1 0:1x2
+  w6  C2   x1.878   (stored x1.878  , aim 0.64, hero 0.45, human 0.60p, boss x1.878 stored x1.878) money   276 hp    724/    0 span  20.6s sky   0.0s n  28/ 0 pressure 0.60/0.00 | 0:0x1 1:0x2
+  w7  T1   x2.47    (stored x2.47   , aim 0.76, hero 0.54, human 0.66p, boss x2.47 stored x2.47) money   312 hp    878/    0 span  12.1s sky   0.0s n  24/ 0 pressure 0.66/0.00 | 1:0x3
+  w8  W3   x2.272   (stored x2.272  , aim 0.74, hero 0.50, human 0.70p, boss x2.272 stored x2.272) money   346 hp   1411/    0 span  43.6s sky   0.0s n  83/ 0 pressure 0.70/0.00 | 0:0x1 0:1x3
+  w9  X2   x3.211   (stored x3.211  , aim 1.37, hero 0.90, human 1.05-, boss x3.211 stored x3.211) money   412 hp   2675/    0 span  29.6s sky   0.0s n  43/ 0 pressure 1.05/0.00 | 1:0x4
+  w10 T1   x1.745   (stored x1.745  , aim 2.26, hero 0.95, human 1.08-, boss x1.745 stored x1.745) money   485 hp   2498/    0 span  25.4s sky   0.0s n  47/ 0 pressure 1.08/0.00 | 0:0x1 1:0x4
+  w11 W3   x3.183   (stored x3.183  , aim 0.81, hero 0.58, human 0.71p, boss x3.183 stored x3.183) money   599 hp   2595/    0 span  45.5s sky   0.0s n 109/ 0 pressure 0.71/0.00 | 0:0x1 0:1x6
+  w12 C3 B x1.092   (stored x1.092  , aim 4.07, hero 0.95, human 1.07-, boss x0.868 stored x0.868) money   686 hp   2603/    0 span  31.9s sky   0.0s n  50/ 0 pressure 1.07/0.00 | 0:2x1 1:0x5
+
+C1_02 Medium (the human lens, towers alone; scale x1.453; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.15; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  C2   x2.161   (stored x2.161  , aim 0.30, hero 0.28, human 0.43-, boss x2.161 stored x2.161) money   220 hp    333/    0 span  14.0s sky   0.0s n  14/ 0 pressure 0.43/0.00 | 0:0x1 0:2x1
+  w2  W1   x2.023   (stored x2.023  , aim 0.44, hero 0.42, human 0.64-, boss x2.023 stored x2.023) money   233 hp    467/    0 span  12.0s sky   0.0s n  21/ 0 pressure 0.64/0.00 | 0:0x1 0:2x1
+  w3  C3   x2.809   (stored x2.809  , aim 0.51, hero 0.40, human 0.59-, boss x2.809 stored x2.809) money   253 hp    711/    0 span  24.0s sky   0.0s n  23/ 0 pressure 0.59/0.00 | 0:1x1 0:2x1
+  w4  T1   x3.188   (stored x3.188  , aim 0.73, hero 0.73, human 1.06-, boss x3.188 stored x3.188) money   275 hp   1017/    0 span  15.0s sky   0.0s n  29/ 0 pressure 1.06/0.00 | 0:1x1 0:2x1
+  w5  W1   x3.072   (stored x3.072  , aim 0.83, hero 0.87, human 1.21p, boss x3.072 stored x3.072) money   301 hp   1487/    0 span  18.6s sky   0.0s n  44/ 0 pressure 1.21/0.00 | 0:0x1 0:1x1 0:2x1
+  w6  C2   x3.117   (stored x3.117  , aim 0.78, hero 0.92, human 1.14p, boss x3.117 stored x3.117) money   335 hp   1767/    0 span  17.5s sky   0.0s n  28/ 0 pressure 1.14/0.00 | 1:0x3
+  w7  T1   x3.486   (stored x3.486  , aim 1.30, hero 1.58, human 1.89-, boss x3.486 stored x3.486) money   374 hp   2628/    0 span  12.0s sky   0.0s n  26/ 0 pressure 1.89/0.00 | 0:0x1 1:0x3
+  w8  W3   x3.733   (stored x3.733  , aim 0.92, hero 1.04, human 1.33p, boss x3.733 stored x3.733) money   403 hp   3654/    0 span  40.6s sky   0.0s n  89/ 0 pressure 1.33/0.00 | 0:1x1 0:2x2
+  w9  X2   x3.769   (stored x3.769  , aim 2.35, hero 1.67, human 2.29-, boss x3.769 stored x3.769) money   466 hp   5529/    0 span  27.0s sky   0.0s n  46/ 0 pressure 2.29/0.00 | 0:0x1 1:0x4
+  w10 T1*  x2.771   (stored x2.771  , aim 3.90, hero 1.99, human 2.22-, boss x2.771 stored x2.771) money   513 hp   5877/    0 span  17.6s sky   0.0s n  34/ 0 pressure 2.22/0.00 | 1:0x1 1:1x2
+  w11 W3   x4.898   (stored x4.898  , aim 1.00, hero 1.28, human 1.72p, boss x4.898 stored x4.898) money   578 hp   6250/    0 span  41.1s sky   0.0s n 116/ 0 pressure 1.72/0.00 | 0:1x1 0:2x3
+  w12 C3 B x0.581   (stored x0.581  , aim 5.01, hero 1.37, human 1.76-, boss x1.307 stored x1.307) money   642 hp   2798/    0 span  27.4s sky   0.0s n  50/ 0 pressure 1.76/0.00 | 0:1x1 0:2x1 1:1x2
+
+C1_02 Hard (the human lens, towers alone; scale x1.223; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.25; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  C2   x1.655   (stored x1.655  , aim 0.36, hero 0.30, human 0.44-, boss x1.655 stored x1.655) money   220 hp    419/    0 span  17.3s sky   0.0s n  20/ 0 pressure 0.44/0.00 | 0:0x1 0:2x1
+  w2  W1   x1.603   (stored x1.603  , aim 0.54, hero 0.44, human 0.66-, boss x1.603 stored x1.603) money   242 hp    568/    0 span  13.8s sky   0.0s n  28/ 0 pressure 0.66/0.00 | 0:0x1 0:2x1
+  w3  C2   x2.152   (stored x2.152  , aim 0.62, hero 0.30, human 0.41-, boss x2.152 stored x2.152) money   272 hp    436/    0 span  13.9s sky   0.0s n  16/ 0 pressure 0.41/0.00 | 0:1x1 0:2x1
+  w4  T1   x2.798   (stored x2.798  , aim 0.88, hero 0.51, human 0.71-, boss x2.798 stored x2.798) money   290 hp    814/    0 span  17.0s sky   0.0s n  23/ 0 pressure 0.71/0.00 | 0:1x1 0:2x1
+  w5  W1   x2.782   (stored x2.782  , aim 1.01, hero 0.95, human 1.24p, boss x2.782 stored x2.782) money   315 hp   2076/    0 span  20.9s sky   0.0s n  59/ 0 pressure 1.24/0.00 | 0:2x2
+  w6  s1   x1.986   (stored x1.986  , aim 0.95, hero 0.99, human 1.16p, boss x1.986 stored x1.986) money   368 hp   1823/    0 span  11.9s sky   0.0s n  30/ 0 pressure 1.16/0.00 | 0:0x1 1:0x3
+  w7  T1   x3.637   (stored x3.637  , aim 1.69, hero 1.48, human 1.64-, boss x3.637 stored x3.637) money   398 hp   3568/    0 span   9.5s sky   0.0s n  16/ 0 pressure 1.64/0.00 | 1:1x2
+  w8  W3   x3.524   (stored x3.524  , aim 1.11, hero 1.12, human 1.36p, boss x3.524 stored x3.524) money   468 hp   5304/    0 span  45.8s sky   0.0s n 119/ 0 pressure 1.36/0.00 | 0:2x3
+  w9  X2 B x0.489   (stored x0.489  , aim 4.90, hero 1.29, human 1.60-, boss x1.046 stored x1.046) money   565 hp   1783/    0 span  12.2s sky   0.0s n  34/ 0 pressure 1.60/0.00 | 0:2x1 1:1x2
+  w10 T1*  x1.77    (stored x1.77   , aim 3.31, hero 1.53, human 1.76-, boss x1.77 stored x1.77) money   736 hp   8476/    0 span  18.9s sky   0.0s n  32/ 0 pressure 1.76/0.00 | 1:2x2
+  w11 W3   x4.55    (stored x4.55   , aim 1.21, hero 1.18, human 1.49p, boss x4.55 stored x4.55) money   860 hp   9369/    0 span  46.2s sky   0.0s n 155/ 0 pressure 1.49/0.00 | 0:0x1 0:2x5
+  w12 C3 B x0.489   (stored x0.489  , aim 5.33, hero 1.34, human 1.57-, boss x1.623 stored x1.623) money  1030 hp   4291/    0 span  23.7s sky   0.0s n  52/ 0 pressure 1.57/0.00 | 1:0x1 1:1x1 1:2x2
+
+C1_02 Psycho (the human lens, towers alone; scale x1.101; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.35; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  C2   x3.376   (stored x3.376  , aim 0.39, hero 0.38, human 0.43-, boss x3.376 stored x3.376) money   660 hp   1471/    0 span  17.4s sky   0.0s n  24/ 0 pressure 0.43/0.00 | 0:2x4
+  w2  W1   x3.364   (stored x3.364  , aim 0.59, hero 0.57, human 0.65-, boss x3.364 stored x3.364) money   686 hp   2137/    0 span  14.3s sky   0.0s n  35/ 0 pressure 0.65/0.00 | 0:0x1 0:2x4
+  w3  C2   x4.388   (stored x4.388  , aim 0.68, hero 0.40, human 0.45-, boss x4.388 stored x4.388) money   724 hp   1593/    0 span  14.6s sky   0.0s n  20/ 0 pressure 0.45/0.00 | 0:1x1 0:2x4
+  w4  T1   x5.705   (stored x5.705  , aim 0.97, hero 0.70, human 0.79-, boss x5.705 stored x5.705) money   746 hp   3003/    0 span  17.3s sky   0.0s n  29/ 0 pressure 0.79/0.00 | 0:1x1 0:2x4
+  w5  W2 B x1.454   (stored x1.454  , aim 1.41, hero 1.10, human 1.18-, boss x2.1 stored x2.1) money   778 hp   4332/    0 span  14.6s sky   0.0s n  46/ 0 pressure 1.18/0.00 | 0:2x5
+  w6  s1   x4.117   (stored x4.117  , aim 1.25, hero 1.28, human 1.37-, boss x4.117 stored x4.117) money   821 hp   5944/    0 span  12.6s sky   0.0s n  37/ 0 pressure 1.37/0.00 | 1:0x8
+  w7  T1   x3.983   (stored x3.983  , aim 2.77, hero 1.50, human 1.56-, boss x3.983 stored x3.983) money  1003 hp   8714/    0 span  10.9s sky   0.0s n  21/ 0 pressure 1.56/0.00 | 1:1x5
+  w8  W3   x4.827   (stored x4.827  , aim 1.21, hero 1.22, human 1.34p, boss x4.827 stored x4.827) money  1094 hp  13141/    0 span  46.9s sky   0.0s n 150/ 0 pressure 1.34/0.00 | 0:2x7
+  w9  X2 B x0.44    (stored x0.44   , aim 5.37, hero 1.06, human 1.12-, boss x1.439 stored x1.439) money  1217 hp   3170/    0 span  13.2s sky   0.0s n  43/ 0 pressure 1.12/0.00 | 0:0x1 0:2x1 1:1x5
+  w10 T1*  x2.084   (stored x2.084  , aim 3.63, hero 1.49, human 1.59-, boss x2.084 stored x2.084) money  1499 hp  16701/    0 span  19.9s sky   0.0s n  38/ 0 pressure 1.59/0.00 | 0:1x1 1:2x4
+  w11 W3   x6.275   (stored x6.275  , aim 1.32, hero 1.34, human 1.44p, boss x6.275 stored x6.275) money  1658 hp  23079/    0 span  47.4s sky   0.0s n 196/ 0 pressure 1.44/0.00 | 0:2x1 1:0x15
+  w12 C3 B x0.44    (stored x0.44   , aim 5.84, hero 1.05, human 1.18-, boss x1.824 stored x1.824) money  1881 hp   6782/    0 span  24.1s sky   0.0s n  64/ 0 pressure 1.18/0.00 | 1:0x1 1:2x5
+
+C1_03 Easy (the human lens, towers alone; scale x0.946; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x0.972   (stored x0.972  , aim 0.25, hero 0.15, human 0.24-, boss x0.972 stored x0.972) money   192 hp    116/    0 span   6.9s sky   0.0s n  16/ 0 pressure 0.24/0.00 | 0:1x2
+  w2  W1   x1.23    (stored x1.23   , aim 0.37, hero 0.22, human 0.35-, boss x1.23 stored x1.23) money   192 hp    193/    0 span   8.3s sky   0.0s n  21/ 0 pressure 0.35/0.00 | 0:1x2
+  w3  C2   x1.515   (stored x1.515  , aim 0.43, hero 0.25, human 0.41-, boss x1.515 stored x1.515) money   197 hp    249/    0 span  14.6s sky   0.0s n  22/ 0 pressure 0.41/0.00 | 0:1x2
+  w4  T1   x0.924   (stored x0.924  , aim 0.60, hero 0.35, human 0.57-, boss x0.924 stored x0.924) money   214 hp    311/    0 span   9.2s sky   0.0s n  27/ 0 pressure 0.57/0.00 | 0:1x2
+  w5  C2   x1.523   (stored x1.523  , aim 0.62, hero 0.36, human 0.59p, boss x1.523 stored x1.523) money   227 hp    453/    0 span  20.6s sky   0.0s n  33/ 0 pressure 0.59/0.00 | 0:1x2
+  w6  W1   x1.854   (stored x1.854  , aim 0.70, hero 0.46, human 0.66p, boss x1.854 stored x1.854) money   272 hp    638/    0 span  16.2s sky   0.0s n  46/ 0 pressure 0.66/0.00 | 0:1x3
+  w7  C3^  x1.074   (stored x1.074  , aim 0.65, hero 0.42, human 0.63p, boss x1.074 stored x1.074) money   287 hp    722/    0 span  26.7s sky   0.0s n  51/ 0 pressure 0.63/0.00 | 0:1x1 0:2x1
+  w8  C2   x2.016   (stored x2.016  , aim 0.67, hero 0.52, human 0.63p, boss x2.016 stored x2.016) money   324 hp   1009/    0 span  17.0s sky   0.0s n  31/ 0 pressure 0.63/0.00 | 1:0x3
+  w9  T1   x2.621   (stored x2.621  , aim 0.79, hero 0.60, human 0.71p, boss x2.621 stored x2.621) money   395 hp    996/    0 span  11.2s sky   0.0s n  25/ 0 pressure 0.71/0.00 | 0:1x1 1:0x3
+  w10 W2   x2.296   (stored x2.296  , aim 0.77, hero 0.69, human 0.87p, boss x2.296 stored x2.296) money   465 hp   1985/    0 span  34.4s sky   0.0s n  98/ 0 pressure 0.87/0.00 | 0:1x3 0:2x1
+  w11 X1^  x2.18    (stored x2.18   , aim 0.72, hero 0.60, human 0.68p, boss x2.18 stored x2.18) money   552 hp   1622/    0 span  17.0s sky   0.0s n  49/ 0 pressure 0.68/0.00 | 0:0x1 1:0x5
+  w12 A1   x0.862   (stored x0.862  , aim 0.66, hero 0.62, human 0.62-, boss x0.862 stored x0.862) money   626 hp    471/  188 span  10.9s sky   3.0s n  22/ 4 pressure 0.62/0.62 | 0:2x3 3:0x1
+  w13 T1   x2.02    (stored x2.02   , aim 0.86, hero 0.72, human 0.81p, boss x2.02 stored x2.02) money   680 hp   2270/    0 span  22.3s sky   0.0s n  51/ 0 pressure 0.81/0.00 | 0:0x1 1:0x5 3:0x1
+  w14 W3   x2.984   (stored x2.984  , aim 0.84, hero 0.65, human 0.78p, boss x2.984 stored x2.984) money   784 hp   3005/    0 span  48.0s sky   0.0s n 123/ 0 pressure 0.78/0.00 | 0:1x7 3:0x1
+  w15 A2   x1.308   (stored x1.308  , aim 0.70, hero 0.66, human 0.66-, boss x1.308 stored x1.308) money   939 hp    764/  498 span  15.8s sky   3.6s n  31/ 7 pressure 0.66/0.66 | 0:1x1 0:2x4 3:1x1
+  w16 T3 B x0.879   (stored x0.879  , aim 1.11, hero 0.95, human 1.06-, boss x1.436 stored x1.436) money   985 hp   2099/    0 span  25.2s sky   0.0s n  53/ 0 pressure 1.06/0.00 | 0:2x1 1:0x6 3:1x1
+
+C1_03 Medium (the human lens, towers alone; scale x1.373; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.15; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x1.556   (stored x1.556  , aim 0.31, hero 0.29, human 0.42-, boss x1.556 stored x1.556) money   240 hp    274/    0 span   5.9s sky   0.0s n  16/ 0 pressure 0.42/0.00 | 0:0x1 0:2x1
+  w2  W1   x1.926   (stored x1.926  , aim 0.45, hero 0.43, human 0.62-, boss x1.926 stored x1.926) money   240 hp    466/    0 span   7.9s sky   0.0s n  22/ 0 pressure 0.62/0.00 | 0:0x1 0:2x1
+  w3  C2   x2.413   (stored x2.413  , aim 0.52, hero 0.52, human 0.72-, boss x2.413 stored x2.413) money   246 hp    721/    0 span  12.5s sky   0.0s n  22/ 0 pressure 0.72/0.00 | 0:1x1 0:2x1
+  w4  T1   x2.835   (stored x2.835  , aim 0.73, hero 0.74, human 1.00-, boss x2.835 stored x2.835) money   268 hp    842/    0 span   7.7s sky   0.0s n  27/ 0 pressure 1.00/0.00 | 0:1x1 0:2x1
+  w5  C2   x1.744   (stored x1.744  , aim 0.76, hero 0.71, human 0.96p, boss x1.744 stored x1.744) money   286 hp   1200/    0 span  17.5s sky   0.0s n  33/ 0 pressure 0.96/0.00 | 0:2x1 1:0x1
+  w6  W1   x2.963   (stored x2.963  , aim 0.85, hero 0.91, human 1.17p, boss x2.963 stored x2.963) money   310 hp   1750/    0 span  15.1s sky   0.0s n  48/ 0 pressure 1.17/0.00 | 0:2x2
+  w7  C3^  x3.777   (stored x3.777  , aim 0.79, hero 0.86, human 1.09p, boss x3.777 stored x3.777) money   370 hp   2077/    0 span  24.7s sky   0.0s n  50/ 0 pressure 1.09/0.00 | 0:0x1 0:2x2
+  w8  C2   x3.57    (stored x3.57   , aim 0.81, hero 0.97, human 1.12p, boss x3.57 stored x3.57) money   417 hp   2231/    0 span  14.5s sky   0.0s n  31/ 0 pressure 1.12/0.00 | 1:0x4
+  w9  T1   x3.381   (stored x3.381  , aim 0.96, hero 1.15, human 1.31p, boss x3.381 stored x3.381) money   479 hp   2650/    0 span  10.8s sky   0.0s n  26/ 0 pressure 1.31/0.00 | 0:0x1 1:0x4
+  w10 W2   x3.135   (stored x3.135  , aim 0.93, hero 1.08, human 1.28p, boss x3.135 stored x3.135) money   538 hp   4013/    0 span  30.9s sky   0.0s n 102/ 0 pressure 1.28/0.00 | 0:0x1 0:2x3
+  w11 A1   x2.481   (stored x2.481  , aim 1.02, hero 1.40, human 1.40-, boss x2.481 stored x2.481) money   706 hp   1161/  794 span   8.8s sky   2.9s n  19/ 4 pressure 1.10/1.40 | 0:1x1 0:2x2 1:0x1 3:1x1
+  w12 A1   x2.288   (stored x2.288  , aim 1.04, hero 1.44, human 1.45-, boss x2.288 stored x2.288) money   757 hp   2177/  915 span   9.5s sky   3.0s n  22/ 5 pressure 0.94/1.45 | 0:0x1 1:0x5 3:1x1
+  w13 T1^  x1.942   (stored x1.942  , aim 1.04, hero 1.34, human 1.46p, boss x1.942 stored x1.942) money   803 hp   3968/    0 span  17.5s sky   0.0s n  56/ 0 pressure 1.46/0.00 | 1:0x6 3:1x1
+  w14 W3   x3.881   (stored x3.881  , aim 1.02, hero 1.23, human 1.48p, boss x3.881 stored x3.881) money   863 hp   6872/    0 span  43.4s sky   0.0s n 128/ 0 pressure 1.48/0.00 | 0:1x1 0:2x3 1:0x1 3:1x1
+  w15 A2   x2.742   (stored x2.742  , aim 1.10, hero 2.55, human 2.58-, boss x2.742 stored x2.742) money   998 hp   2996/ 1974 span  13.8s sky   3.9s n  31/ 9 pressure 1.65/2.58 | 0:1x1 0:2x3 1:0x2 3:1x1
+  w16 T3 B x0.549   (stored x0.549  , aim 1.35, hero 1.34, human 1.56-, boss x1.397 stored x1.397) money  1038 hp   3835/   44 span  22.6s sky  32.2s n  53/ 1 pressure 1.56/0.05 | 0:0x1 0:2x1 1:0x6 3:1x1
+
+C1_03 Hard (the human lens, towers alone; scale x0.817; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.25; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x0.784   (stored x0.784  , aim 0.38, hero 0.23, human 0.34-, boss x0.784 stored x0.784) money   240 hp    218/    0 span   5.2s sky   0.0s n  22/ 0 pressure 0.34/0.00 | 0:0x1 0:2x1
+  w2  W1   x0.718   (stored x0.718  , aim 0.56, hero 0.34, human 0.51-, boss x0.718 stored x0.718) money   240 hp    382/    0 span   9.1s sky   0.0s n  30/ 0 pressure 0.51/0.00 | 0:0x1 0:2x1
+  w3  s1   x1.019   (stored x1.019  , aim 0.65, hero 0.22, human 0.30-, boss x1.019 stored x1.019) money   248 hp    318/    0 span  10.2s sky   0.0s n  22/ 0 pressure 0.30/0.00 | 0:1x1 0:2x1
+  w4  T1   x1.174   (stored x1.174  , aim 0.91, hero 0.61, human 0.75-, boss x1.174 stored x1.174) money   271 hp    816/    0 span   8.5s sky   0.0s n  16/ 0 pressure 0.75/0.00 | 0:0x1 1:0x2
+  w5  s1   x1.526   (stored x1.526  , aim 0.94, hero 0.41, human 0.52p, boss x1.526 stored x1.526) money   316 hp    744/    0 span  11.0s sky   0.0s n  22/ 0 pressure 0.52/0.00 | 0:2x2
+  w6  W1   x1.886   (stored x1.886  , aim 1.06, hero 0.69, human 0.87p, boss x1.886 stored x1.886) money   377 hp   1551/    0 span  16.8s sky   0.0s n  65/ 0 pressure 0.87/0.00 | 0:0x1 0:2x2
+  w7  C2   x0.609   (stored x0.609  , aim 0.99, hero 0.72, human 0.86p, boss x0.609 stored x0.609) money   382 hp   1319/    0 span  13.5s sky   0.0s n  30/ 0 pressure 0.86/0.00 | 0:0x1 1:0x3
+  w8  s1^  x1.653   (stored x1.653  , aim 1.01, hero 0.73, human 0.83p, boss x1.653 stored x1.653) money   447 hp   1687/    0 span  15.1s sky   0.0s n  31/ 0 pressure 0.83/0.00 | 1:0x4
+  w9  T1   x2.412   (stored x2.412  , aim 1.19, hero 0.71, human 0.76p, boss x2.412 stored x2.412) money   604 hp   2298/    0 span   9.7s sky   0.0s n  23/ 0 pressure 0.76/0.00 | 1:0x6
+  w10 W2 B x1.028   (stored x1.028  , aim 1.48, hero 0.94, human 1.04-, boss x2.161 stored x2.161) money   678 hp   2943/    0 span  22.5s sky   0.0s n  83/ 0 pressure 1.04/0.00 | 0:0x1 0:2x4
+  w11 A1   x1.156   (stored x1.156  , aim 1.17, hero 0.95, human 0.95-, boss x1.156 stored x1.156) money   835 hp   1318/  744 span   8.1s sky   3.3s n  19/ 7 pressure 0.87/0.95 | 0:1x1 0:2x2 1:0x2 3:1x1
+  w12 A1   x1.12    (stored x1.12   , aim 1.49, hero 1.01, human 1.01-, boss x1.12 stored x1.12) money   904 hp   1854/  824 span   8.5s sky   3.6s n  22/ 8 pressure 0.94/1.01 | 0:1x1 0:2x2 1:0x3 3:1x1
+  w13 T1^  x1.022   (stored x1.022  , aim 1.30, hero 0.98, human 1.06p, boss x1.022 stored x1.022) money   989 hp   3407/    0 span  14.8s sky   0.0s n  47/ 0 pressure 1.06/0.00 | 0:0x1 1:0x7 3:1x1
+  w14 A1   x1.381   (stored x1.381  , aim 1.56, hero 1.02, human 1.02-, boss x1.381 stored x1.381) money  1067 hp   2941/ 1525 span  11.0s sky   4.4s n  27/12 pressure 0.91/1.02 | 0:0x1 1:0x7 3:2x1
+  w15 A1   x1.307   (stored x1.307  , aim 1.59, hero 1.02, human 1.02-, boss x1.307 stored x1.307) money  1312 hp   1539/ 1683 span  11.0s sky   4.8s n  27/14 pressure 0.83/1.02 | 0:1x1 0:2x5 1:0x1 3:2x1
+  w16 T3 B x0.327   (stored x0.327  , aim 1.68, hero 0.89, human 0.94-, boss x1.154 stored x1.154) money  1441 hp   3653/   90 span  16.9s sky  27.5s n  38/ 3 pressure 0.94/0.06 | 0:2x1 1:1x5 3:2x1
+
+C1_03 Psycho (the human lens, towers alone; scale x1.013; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.35; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x2.672   (stored x2.672  , aim 0.47, hero 0.43, human 0.48-, boss x2.672 stored x2.672) money   720 hp   1309/    0 span   4.4s sky   0.0s n  27/ 0 pressure 0.48/0.00 | 0:1x1 0:2x4
+  w2  W1   x2.902   (stored x2.902  , aim 0.69, hero 0.64, human 0.70-, boss x2.902 stored x2.902) money   720 hp   2656/    0 span   9.6s sky   0.0s n  38/ 0 pressure 0.70/0.00 | 0:2x2 1:0x4
+  w3  s1   x3.773   (stored x3.773  , aim 0.80, hero 0.72, human 0.80-, boss x3.773 stored x3.773) money   732 hp   3004/    0 span  10.9s sky   0.0s n  27/ 0 pressure 0.80/0.00 | 1:2x2
+  w4  T1   x4.119   (stored x4.119  , aim 1.12, hero 1.07, human 1.13-, boss x4.119 stored x4.119) money   747 hp   4971/    0 span   8.8s sky   0.0s n  20/ 0 pressure 1.13/0.00 | 0:0x1 1:0x1 1:1x3
+  w5  s1   x5.354   (stored x5.354  , aim 1.16, hero 0.62, human 0.68p, boss x5.354 stored x5.354) money   799 hp   2829/    0 span  10.2s sky   0.0s n  27/ 0 pressure 0.68/0.00 | 0:2x3 1:0x3
+  w6  W2 B x0.984   (stored x0.984  , aim 1.66, hero 1.01, human 1.07-, boss x2.327 stored x2.327) money   850 hp   4516/    0 span  13.4s sky   0.0s n  51/ 0 pressure 1.07/0.00 | 0:0x1 0:2x5
+  w7  s1^  x2.208   (stored x2.208  , aim 0.97, hero 0.93, human 0.98p, boss x2.208 stored x2.208) money   884 hp   4924/    0 span  16.6s sky   0.0s n  42/ 0 pressure 0.98/0.00 | 0:0x1 1:0x8
+  w8  C2   x2.371   (stored x2.371  , aim 1.24, hero 1.20, human 1.26p, boss x2.371 stored x2.371) money   937 hp   5861/    0 span  14.3s sky   0.0s n  41/ 0 pressure 1.26/0.00 | 1:0x9
+  w9  T1^  x2.229   (stored x2.229  , aim 1.46, hero 1.37, human 1.43p, boss x2.229 stored x2.229) money  1038 hp   6327/    0 span   9.9s sky   0.0s n  40/ 0 pressure 1.43/0.00 | 1:0x10
+  w10 W2 B x0.405   (stored x0.405  , aim 1.82, hero 1.01, human 1.07-, boss x3.096 stored x3.096) money  1150 hp   5375/    0 span  23.1s sky   0.0s n 104/ 0 pressure 1.07/0.00 | 0:0x1 0:2x7
+  w11 A1   x1.899   (stored x1.899  , aim 1.44, hero 1.38, human 1.38-, boss x1.899 stored x1.899) money  1311 hp   4186/ 2256 span   8.1s sky   3.4s n  23/ 9 pressure 0.83/1.38 | 0:1x1 1:0x1 1:1x4 3:2x1
+  w12 A1   x1.786   (stored x1.786  , aim 1.84, hero 1.37, human 1.37-, boss x1.786 stored x1.786) money  1390 hp   4066/ 2358 span   8.8s sky   3.8s n  26/10 pressure 0.91/1.37 | 0:1x1 0:2x2 1:0x1 1:1x3 3:2x1
+  w13 T1^  x1.918   (stored x1.918  , aim 1.60, hero 1.37, human 1.41p, boss x1.918 stored x1.918) money  1485 hp   9036/    0 span  14.2s sky   0.0s n  56/ 0 pressure 1.41/0.00 | 1:1x6 3:2x1
+  w14 A1   x1.742   (stored x1.742  , aim 1.91, hero 1.37, human 1.37-, boss x1.742 stored x1.742) money  1766 hp   4955/ 3219 span  10.9s sky   4.4s n  32/14 pressure 0.88/1.37 | 0:0x1 0:1x1 0:2x2 1:0x1 1:1x4 3:0x1 3:2x1
+  w15 A1   x1.448   (stored x1.448  , aim 1.95, hero 1.36, human 1.37-, boss x1.448 stored x1.448) money  1970 hp   5765/ 3440 span  10.9s sky   5.0s n  33/18 pressure 1.04/1.37 | 0:1x2 0:2x3 1:1x1 1:2x2 3:0x1 3:2x1
+  w16 T3 B x0.405   (stored x0.405  , aim 2.06, hero 1.01, human 1.05-, boss x1.527 stored x1.527) money  2111 hp   7033/  374 span  16.6s sky  30.5s n  46/ 7 pressure 1.05/0.14 | 0:1x1 1:1x1 1:2x4 3:0x1 3:2x1
+
+C1_04 Easy (the human lens, towers alone; scale x1.182; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x1.081   (stored x1.081  , aim 0.26, hero 0.19, human 0.30-, boss x1.081 stored x1.081) money   208 hp    129/    0 span   6.7s sky   0.0s n  16/ 0 pressure 0.30/0.00 | 0:1x2
+  w2  W1   x1.405   (stored x1.405  , aim 0.38, hero 0.28, human 0.44-, boss x1.405 stored x1.405) money   208 hp    221/    0 span   8.3s sky   0.0s n  21/ 0 pressure 0.44/0.00 | 0:1x2
+  w3  C2   x1.711   (stored x1.711  , aim 0.44, hero 0.32, human 0.52-, boss x1.711 stored x1.711) money   208 hp    282/    0 span  14.6s sky   0.0s n  22/ 0 pressure 0.52/0.00 | 0:1x2
+  w4  C2   x1.283   (stored x1.283  , aim 0.53, hero 0.39, human 0.63-, boss x1.283 stored x1.283) money   224 hp    390/    0 span  17.0s sky   0.0s n  26/ 0 pressure 0.63/0.00 | 0:1x2
+  w5  T1   x2.224   (stored x2.224  , aim 0.73, hero 0.51, human 0.75p, boss x2.224 stored x2.224) money   239 hp    485/    0 span   9.2s sky   0.0s n  28/ 0 pressure 0.75/0.00 | 0:0x1 0:1x2
+  w6  W1   x1.867   (stored x1.867  , aim 0.72, hero 0.57, human 0.85p, boss x1.867 stored x1.867) money   260 hp    573/    0 span  14.7s sky   0.0s n  41/ 0 pressure 0.85/0.00 | 0:0x1 0:1x2
+  w7  C2   x0.764   (stored x0.764  , aim 0.67, hero 0.55, human 0.76p, boss x0.764 stored x0.764) money   293 hp    552/    0 span  14.0s sky   0.0s n  23/ 0 pressure 0.76/0.00 | 0:1x1 1:0x2
+  w8  C2   x2.272   (stored x2.272  , aim 0.68, hero 0.66, human 0.81p, boss x2.272 stored x2.272) money   300 hp   1019/    0 span  14.8s sky   0.0s n  26/ 0 pressure 0.81/0.00 | 1:0x3
+  w9  W1   x2.447   (stored x2.447  , aim 0.77, hero 0.69, human 0.91p, boss x2.447 stored x2.447) money   369 hp   1190/    0 span  21.9s sky   0.0s n  65/ 0 pressure 0.91/0.00 | 0:1x4
+  w10 A1   x0.765   (stored x0.765  , aim 0.80, hero 0.74, human 0.91-, boss x0.765 stored x0.765) money   448 hp    810/  125 span   7.5s sky   2.5s n  14/ 3 pressure 0.91/0.53 | 1:0x1 1:1x1 3:0x1
+  w11 X1   x0.965   (stored x0.965  , aim 0.73, hero 0.63, human 0.81p, boss x0.965 stored x0.965) money   483 hp    812/    0 span  14.4s sky   0.0s n  34/ 0 pressure 0.81/0.00 | 0:0x1 1:0x3 3:0x1
+  w12 C2   x2.17    (stored x2.17   , aim 0.74, hero 0.75, human 0.88p, boss x2.17 stored x2.17) money   551 hp   1451/    0 span  20.6s sky   0.0s n  40/ 0 pressure 0.88/0.00 | 1:0x4 3:0x1
+  w13 A1   x1.435   (stored x1.435  , aim 0.86, hero 1.01, human 1.01-, boss x1.435 stored x1.435) money   661 hp    847/  312 span   9.7s sky   3.0s n  18/ 4 pressure 0.83/1.01 | 0:2x2 1:1x1 3:0x1
+  w14 X1!  x2.723   (stored x2.723  , aim 0.78, hero 0.82, human 0.92p, boss x2.723 stored x2.723) money   723 hp   2241/  222 span  18.0s sky  21.9s n  43/ 3 pressure 0.92/0.73 | 1:0x6 3:0x1
+  w15 T1   x2.575   (stored x2.575  , aim 0.91, hero 0.97, human 1.08p, boss x2.575 stored x2.575) money   772 hp   2673/    0 span  21.9s sky   0.0s n  49/ 0 pressure 1.08/0.00 | 0:0x1 1:0x6 3:0x1
+  w16 A2 B x1.666   (stored x1.666  , aim 1.13, hero 1.95, human 1.95-, boss x1.666 stored x1.666) money   839 hp   1967/ 1156 span   9.8s sky   5.0s n  14/ 5 pressure 1.18/1.95 | 0:1x1 0:2x1 1:1x2 3:1x1
+
+C1_04 Medium (the human lens, towers alone; scale x1.532; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.15; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x1.665   (stored x1.665  , aim 0.31, hero 0.35, human 0.48-, boss x1.665 stored x1.665) money   260 hp    293/    0 span   5.6s sky   0.0s n  16/ 0 pressure 0.48/0.00 | 0:1x1 0:2x1
+  w2  W1   x2.165   (stored x2.165  , aim 0.46, hero 0.51, human 0.70-, boss x2.165 stored x2.165) money   260 hp    524/    0 span   7.9s sky   0.0s n  22/ 0 pressure 0.70/0.00 | 0:1x1 0:2x1
+  w3  C2   x2.146   (stored x2.146  , aim 0.57, hero 0.58, human 0.81-, boss x2.146 stored x2.146) money   260 hp    666/    0 span  12.5s sky   0.0s n  22/ 0 pressure 0.81/0.00 | 0:1x1 0:2x1
+  w4  C2   x2.814   (stored x2.814  , aim 0.65, hero 0.71, human 0.99-, boss x2.814 stored x2.814) money   280 hp    805/    0 span  14.5s sky   0.0s n  26/ 0 pressure 0.99/0.00 | 0:1x1 0:2x1
+  w5  T1   x2.188   (stored x2.188  , aim 0.89, hero 0.94, human 1.22p, boss x2.188 stored x2.188) money   306 hp   1124/    0 span   8.4s sky   0.0s n  29/ 0 pressure 1.22/0.00 | 0:0x1 0:2x1 1:0x1
+  w6  A1   x1.883   (stored x1.883  , aim 0.85, hero 1.31, human 1.31-, boss x1.883 stored x1.883) money   309 hp    269/  151 span   5.5s sky   0.0s n  10/ 1 pressure 1.17/1.31 | 0:1x1 3:1x1
+  w7  C2   x1.633   (stored x1.633  , aim 0.81, hero 1.64, human 2.61p, boss x1.633 stored x1.633) money   325 hp   1044/    0 span  12.0s sky   0.0s n  23/ 0 pressure 2.61/0.00 | 1:0x1 3:1x1
+  w8  C2   x1.595   (stored x1.595  , aim 0.83, hero 1.62, human 2.48p, boss x1.595 stored x1.595) money   373 hp   1118/    0 span  12.7s sky   0.0s n  26/ 0 pressure 2.48/0.00 | 0:0x1 1:0x1 3:1x1
+  w9  A1   x3.536   (stored x3.536  , aim 0.91, hero 1.40, human 1.56-, boss x3.536 stored x3.536) money   434 hp    852/  566 span   5.5s sky   2.0s n  11/ 2 pressure 1.56/1.37 | 0:0x1 0:2x1 3:1x1
+  w10 T1   x2.122   (stored x2.122  , aim 1.00, hero 1.19, human 1.53p, boss x2.122 stored x2.122) money   475 hp   1341/    0 span  10.1s sky   0.0s n  24/ 0 pressure 1.53/0.00 | 0:0x1 1:0x2 3:1x1
+  w11 X1!  x1.115   (stored x1.115  , aim 0.88, hero 0.87, human 1.06p, boss x1.115 stored x1.115) money   533 hp   1055/  134 span  10.0s sky  21.4s n  29/ 3 pressure 1.06/0.23 | 1:0x3 3:1x1
+  w12 A1   x2.934   (stored x2.934  , aim 0.98, hero 1.50, human 1.50-, boss x2.934 stored x2.934) money   602 hp   1683/  704 span   7.5s sky   2.5s n  16/ 3 pressure 1.13/1.50 | 1:0x4 3:1x1
+  w13 W3   x2.611   (stored x2.611  , aim 1.02, hero 1.28, human 1.70p, boss x2.611 stored x2.611) money   663 hp   4380/    0 span  40.5s sky   0.0s n 123/ 0 pressure 1.70/0.00 | 0:0x1 0:1x1 0:2x2 3:1x1
+  w14 C2!  x3.395   (stored x3.395  , aim 0.94, hero 1.24, human 1.39p, boss x3.395 stored x3.395) money   805 hp   3423/  679 span  17.5s sky  23.8s n  39/ 5 pressure 1.39/0.96 | 1:0x6 3:1x1
+  w15 A1   x2.765   (stored x2.765  , aim 1.04, hero 1.66, human 1.69-, boss x2.765 stored x2.765) money   852 hp   1859/ 1106 span   9.5s sky   3.0s n  21/ 5 pressure 1.07/1.69 | 0:1x1 0:2x1 1:0x4 3:1x1
+  w16 X3 B x1.864   (stored x1.864  , aim 1.37, hero 1.73, human 1.84-, boss x1.864 stored x1.864) money   864 hp   2647/ 1454 span  14.9s sky  24.9s n  35/ 2 pressure 1.37/1.84 | 0:1x1 0:2x1 1:0x4 3:1x1
+
+C1_04 Hard (the human lens, towers alone; scale x1.096; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.25; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x1.02    (stored x1.02   , aim 0.39, hero 0.31, human 0.43-, boss x1.02 stored x1.02) money   260 hp    284/    0 span   4.9s sky   0.0s n  22/ 0 pressure 0.43/0.00 | 0:1x1 0:2x1
+  w2  W1   x0.988   (stored x0.988  , aim 0.58, hero 0.45, human 0.64-, boss x0.988 stored x0.988) money   260 hp    517/    0 span   9.1s sky   0.0s n  30/ 0 pressure 0.64/0.00 | 0:1x1 0:2x1
+  w3  A1   x1.567   (stored x1.567  , aim 0.84, hero 0.93, human 0.93-, boss x1.567 stored x1.567) money   260 hp    278/  288 span   6.8s sky   0.4s n  14/ 2 pressure 0.71/0.93 | 0:0x1 0:1x1 3:0x1
+  w4  C2   x0.781   (stored x0.781  , aim 0.82, hero 0.60, human 0.90-, boss x0.781 stored x0.781) money   274 hp    459/  144 span  17.7s sky   6.4s n  37/ 2 pressure 0.90/0.60 | 0:0x1 0:1x1 3:0x1
+  w5  T1   x1.325   (stored x1.325  , aim 1.12, hero 0.72, human 1.08p, boss x1.325 stored x1.325) money   325 hp    759/    0 span  10.7s sky   0.0s n  40/ 0 pressure 1.08/0.00 | 0:0x1 0:2x1 3:0x1
+  w6  A1   x2.608   (stored x2.608  , aim 1.26, hero 1.37, human 1.37-, boss x2.608 stored x2.608) money   353 hp    462/  960 span   6.8s sky   2.8s n  14/ 4 pressure 1.34/1.37 | 0:0x1 0:1x1 3:1x1
+  w7  C2   x0.927   (stored x0.927  , aim 1.02, hero 1.89, human 2.87p, boss x0.927 stored x0.927) money   373 hp   1373/  171 span  14.5s sky   6.4s n  36/ 2 pressure 2.87/0.40 | 0:0x1 1:0x1 3:1x1
+  w8  A1   x2.668   (stored x2.668  , aim 1.32, hero 1.37, human 1.37-, boss x2.668 stored x2.668) money   466 hp    842/  982 span   6.8s sky   2.8s n  16/ 4 pressure 1.06/1.37 | 0:1x1 0:2x1 3:1x1
+  w9  A1   x2.708   (stored x2.708  , aim 1.35, hero 1.39, human 1.37-, boss x2.708 stored x2.708) money   540 hp   1070/  997 span   7.6s sky   2.8s n  17/ 4 pressure 1.03/1.37 | 0:2x2 3:1x1
+  w10 T2 B x0.927   (stored x0.927  , aim 1.53, hero 1.61, human 1.93-, boss x0.899 stored x0.899) money   612 hp   1889/    0 span   9.4s sky   0.0s n  22/ 0 pressure 1.93/0.00 | 0:0x1 0:2x1 1:0x2 3:1x1
+  w11 C2!  x1.599   (stored x1.599  , aim 0.89, hero 0.87, human 0.98p, boss x1.599 stored x1.599) money   704 hp   2037/  588 span  16.2s sky  11.4s n  42/ 6 pressure 0.98/0.82 | 1:0x5 3:1x1
+  w12 A1   x2.075   (stored x2.075  , aim 1.44, hero 1.37, human 1.37-, boss x2.075 stored x2.075) money   805 hp   2856/ 1145 span   8.6s sky   3.3s n  23/ 6 pressure 1.21/1.37 | 1:0x6 3:1x1
+  w13 W3   x1.949   (stored x1.949  , aim 1.28, hero 0.84, human 0.98p, boss x1.949 stored x1.949) money   877 hp   4534/    0 span  45.1s sky   0.0s n 168/ 0 pressure 0.98/0.00 | 0:0x1 0:2x4 3:1x1
+  w14 X1!  x2.095   (stored x2.095  , aim 1.19, hero 1.30, human 1.30p, boss x2.095 stored x2.095) money  1170 hp   3969/ 1542 span  17.0s sky  18.0s n  55/12 pressure 1.08/1.30 | 0:2x1 1:0x8 3:1x1
+  w15 A1   x1.662   (stored x1.662  , aim 1.53, hero 1.39, human 1.40-, boss x1.662 stored x1.662) money  1260 hp   3752/ 1223 span  11.9s sky   3.6s n  32/ 8 pressure 0.95/1.40 | 0:0x1 1:0x6 1:1x2 3:1x1
+  w16 C3 B x1.436   (stored x1.436  , aim 1.73, hero 1.26, human 1.27-, boss x1.436 stored x1.436) money  1283 hp   3862/ 1817 span  20.6s sky  12.9s n  52/ 6 pressure 1.12/1.27 | 0:1x1 0:2x1 1:0x7 3:2x1
+
+C1_04 Psycho (the human lens, towers alone; scale x0.823; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.35; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x2.097   (stored x2.097  , aim 0.48, hero 0.36, human 0.40-, boss x2.097 stored x2.097) money   780 hp   1028/    0 span   4.2s sky   0.0s n  27/ 0 pressure 0.40/0.00 | 0:2x5
+  w2  W1   x2.37    (stored x2.37   , aim 0.71, hero 0.53, human 0.59-, boss x2.37 stored x2.37) money   780 hp   2148/    0 span   9.6s sky   0.0s n  38/ 0 pressure 0.59/0.00 | 0:2x1 1:0x6
+  w3  A1   x1.128   (stored x1.128  , aim 0.89, hero 0.73, human 0.73-, boss x1.128 stored x1.128) money   780 hp   1291/  298 span   7.4s sky   0.3s n  18/ 2 pressure 0.54/0.73 | 0:2x4 3:0x1
+  w4  C2   x1.346   (stored x1.346  , aim 1.00, hero 0.83, human 0.83-, boss x1.346 stored x1.346) money   799 hp   1651/  355 span  17.8s sky   6.1s n  45/ 2 pressure 0.52/0.83 | 0:0x1 0:2x4 3:0x1
+  w5  T1 B x0.573   (stored x0.573  , aim 1.67, hero 0.83, human 0.91-, boss x1.585 stored x1.585) money   847 hp   2191/    0 span   6.4s sky   0.0s n  31/ 0 pressure 0.91/0.00 | 0:1x1 0:2x4 3:0x1
+  w6  A1   x1.379   (stored x1.379  , aim 1.06, hero 0.87, human 0.87-, boss x1.379 stored x1.379) money   892 hp    560/  364 span   7.4s sky   0.3s n  18/ 2 pressure 0.20/0.87 | 0:0x1 0:1x1 0:2x4 3:0x1
+  w7  C2   x1.283   (stored x1.283  , aim 1.25, hero 0.96, human 0.99p, boss x1.283 stored x1.283) money   932 hp   2364/  339 span  15.0s sky   6.1s n  44/ 2 pressure 0.99/0.96 | 0:1x1 0:2x2 1:0x4 3:0x1
+  w8  A1   x1.959   (stored x1.959  , aim 1.38, hero 1.11, human 1.11-, boss x1.959 stored x1.959) money  1016 hp   1131/ 1034 span   7.4s sky   2.6s n  20/ 4 pressure 0.38/1.11 | 0:2x5 3:1x1
+  w9  A1   x1.988   (stored x1.988  , aim 1.42, hero 1.11, human 1.11-, boss x1.988 stored x1.988) money  1114 hp   1038/ 1050 span   8.1s sky   2.6s n  21/ 4 pressure 0.32/1.11 | 0:1x1 0:2x5 3:1x1
+  w10 T2 B x1.659   (stored x1.659  , aim 1.88, hero 1.23, human 1.31-, boss x0.899 stored x0.899) money  1181 hp   4225/    0 span   9.0s sky   0.0s n  26/ 0 pressure 1.31/0.00 | 0:2x1 1:1x4 3:1x1
+  w11 C2!  x1.235   (stored x1.235  , aim 1.10, hero 0.88, human 0.88p, boss x1.235 stored x1.235) money  1264 hp   3981/  897 span  17.1s sky  13.2s n  48/ 9 pressure 0.83/0.88 | 0:0x1 1:0x10 3:1x1
+  w12 A1   x1.469   (stored x1.469  , aim 1.51, hero 1.08, human 1.08-, boss x1.469 stored x1.469) money  1541 hp   2681/ 1163 span   8.8s sky   2.8s n  28/ 6 pressure 0.91/1.08 | 0:2x6 1:0x4 3:1x1
+  w13 W3   x1.749   (stored x1.749  , aim 1.57, hero 0.55, human 0.58p, boss x1.749 stored x1.749) money  1670 hp   7870/    0 span  46.1s sky   0.0s n 208/ 0 pressure 0.58/0.00 | 0:2x3 1:0x10 3:1x1
+  w14 A1   x1.837   (stored x1.837  , aim 1.57, hero 1.11, human 1.11-, boss x1.837 stored x1.837) money  2024 hp   3185/ 2182 span  11.6s sky   3.4s n  35/ 9 pressure 0.92/1.11 | 0:0x1 0:2x8 1:0x4 3:2x1
+  w15 A1   x1.837   (stored x1.837  , aim 1.61, hero 1.09, human 1.09-, boss x1.837 stored x1.837) money  2143 hp   3561/ 2182 span  11.6s sky   3.4s n  37/ 9 pressure 0.91/1.09 | 0:2x9 1:0x4 3:2x1
+  w16 X3 B x0.995   (stored x0.995  , aim 2.12, hero 0.77, human 0.79-, boss x0.995 stored x0.995) money  2166 hp   4514/ 2331 span  19.4s sky  16.4s n  64/10 pressure 0.79/0.77 | 0:0x1 0:2x5 1:0x9 3:0x1 3:2x1
+
+C1_05 Easy (the human lens, towers alone; scale x0.946; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x1.161   (stored x1.161  , aim 0.26, hero 0.16, human 0.24-, boss x1.161 stored x1.161) money   224 hp    148/    0 span   7.2s sky   0.0s n  17/ 0 pressure 0.24/0.00 | 0:1x2
+  w2  C2   x1.509   (stored x1.509  , aim 0.35, hero 0.17, human 0.26-, boss x1.509 stored x1.509) money   234 hp    237/    0 span  14.6s sky   0.0s n  21/ 0 pressure 0.26/0.00 | 0:0x1 0:1x2
+  w3  W1   x1.773   (stored x1.773  , aim 0.48, hero 0.31, human 0.46-, boss x1.773 stored x1.773) money   252 hp    385/    0 span  11.1s sky   0.0s n  29/ 0 pressure 0.46/0.00 | 0:0x1 0:1x2
+  w4  C2   x1.903   (stored x1.903  , aim 0.53, hero 0.41, human 0.52-, boss x1.903 stored x1.903) money   275 hp    584/    0 span  14.6s sky   0.0s n  22/ 0 pressure 0.52/0.00 | 0:0x1 1:0x2
+  w5  T1   x2.474   (stored x2.474  , aim 0.73, hero 0.50, human 0.63p, boss x2.474 stored x2.474) money   292 hp    685/    0 span  10.4s sky   0.0s n  18/ 0 pressure 0.63/0.00 | 0:1x1 1:0x2
+  w6  C2   x3.041   (stored x3.041  , aim 0.65, hero 0.51, human 0.61p, boss x3.041 stored x3.041) money   330 hp   1092/    0 span  18.2s sky   0.0s n  29/ 0 pressure 0.61/0.00 | 1:0x3
+  w7  W1   x2.352   (stored x2.352  , aim 0.73, hero 0.51, human 0.69p, boss x2.352 stored x2.352) money   352 hp   1056/    0 span  21.2s sky   0.0s n  60/ 0 pressure 0.69/0.00 | 0:0x1 0:1x3
+  w8  C3   x2.486   (stored x2.486  , aim 0.68, hero 0.50, human 0.64p, boss x2.486 stored x2.486) money   412 hp   1041/    0 span  24.8s sky   0.0s n  37/ 0 pressure 0.64/0.00 | 0:2x2 1:0x1
+  w9  A1   x1.155   (stored x1.155  , aim 0.62, hero 0.59, human 0.59-, boss x1.155 stored x1.155) money   468 hp    342/  126 span   8.5s sky   2.0s n  16/ 2 pressure 0.46/0.59 | 0:1x1 0:2x1 1:0x1 3:0x1
+  w10 C3   x3.17    (stored x3.17   , aim 0.71, hero 0.57, human 0.67p, boss x3.17 stored x3.17) money   523 hp   1826/    0 span  26.4s sky   0.0s n  43/ 0 pressure 0.67/0.00 | 1:0x4 3:0x1
+  w11 W3   x2.949   (stored x2.949  , aim 0.80, hero 0.61, human 0.75p, boss x2.949 stored x2.949) money   626 hp   2669/    0 span  47.0s sky   0.0s n 121/ 0 pressure 0.75/0.00 | 0:0x1 0:1x5 3:0x1
+  w12 X2   x2.565   (stored x2.565  , aim 0.74, hero 0.63, human 0.70p, boss x2.565 stored x2.565) money   756 hp   2454/    0 span  23.6s sky   0.0s n  56/ 0 pressure 0.70/0.00 | 1:0x6 3:0x1
+  w13 A2   x0.854   (stored x0.854  , aim 0.68, hero 0.64, human 0.64-, boss x0.854 stored x0.854) money   874 hp    325/  232 span  14.6s sky   3.5s n  25/ 5 pressure 0.20/0.64 | 0:1x1 0:2x4 3:0x1
+  w14 T1*  x2.526   (stored x2.526  , aim 0.88, hero 0.83, human 0.83p, boss x2.526 stored x2.526) money   954 hp   2460/  275 span  24.0s sky  22.4s n  55/ 4 pressure 0.51/0.83 | 1:0x8 3:0x1
+  w15 W3   x4.705   (stored x4.705  , aim 0.86, hero 0.63, human 0.70p, boss x4.705 stored x4.705) money  1078 hp   5384/    0 span  48.0s sky   0.0s n 126/ 0 pressure 0.70/0.00 | 0:2x6 3:0x1
+  w16 C4   x4.03    (stored x4.03   , aim 0.80, hero 0.71, human 0.75p, boss x4.03 stored x4.03) money  1191 hp   6596/    0 span  46.4s sky   0.0s n  92/ 0 pressure 0.75/0.00 | 0:0x1 1:0x10 3:0x1
+  w17 T3 B x3.335   (stored x3.335  , aim 1.14, hero 0.95, human 1.01-, boss x2.335 stored x2.335) money  1343 hp   4987/    0 span  29.9s sky   0.0s n  63/ 0 pressure 1.01/0.00 | 0:2x2 1:0x9 3:0x1
+
+C1_05 Medium (the human lens, towers alone; scale x1.084; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.15; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x1.572   (stored x1.572  , aim 0.31, hero 0.25, human 0.34-, boss x1.572 stored x1.572) money   280 hp    294/    0 span   6.1s sky   0.0s n  17/ 0 pressure 0.34/0.00 | 0:1x1 0:2x1
+  w2  C2   x2.044   (stored x2.044  , aim 0.42, hero 0.32, human 0.44-, boss x2.044 stored x2.044) money   292 hp    472/    0 span  12.5s sky   0.0s n  21/ 0 pressure 0.44/0.00 | 0:1x1 0:2x1
+  w3  W1   x2.531   (stored x2.531  , aim 0.58, hero 0.49, human 0.63-, boss x2.531 stored x2.531) money   314 hp    835/    0 span  10.3s sky   0.0s n  30/ 0 pressure 0.63/0.00 | 0:2x2
+  w4  C2   x2.492   (stored x2.492  , aim 0.58, hero 0.59, human 0.70-, boss x2.492 stored x2.492) money   341 hp   1124/    0 span  12.5s sky   0.0s n  22/ 0 pressure 0.70/0.00 | 1:0x3
+  w5  T1   x3.29    (stored x3.29   , aim 0.88, hero 0.74, human 0.87p, boss x3.29 stored x3.29) money   362 hp   1339/    0 span   9.4s sky   0.0s n  18/ 0 pressure 0.87/0.00 | 0:0x1 1:0x3
+  w6  A1   x1.175   (stored x1.175  , aim 0.78, hero 0.76, human 0.76-, boss x1.175 stored x1.175) money   407 hp    142/   94 span   6.5s sky   0.0s n  11/ 1 pressure 0.19/0.76 | 0:0x1 0:2x1 3:1x1
+  w7  W1   x1.451   (stored x1.451  , aim 0.88, hero 0.64, human 0.95p, boss x1.451 stored x1.451) money   424 hp   1006/    0 span  19.9s sky   0.0s n  63/ 0 pressure 0.95/0.00 | 0:0x1 0:2x1 3:1x1
+  w8  C3   x2.061   (stored x2.061  , aim 0.74, hero 0.69, human 0.88p, boss x2.061 stored x2.061) money   489 hp   1270/    0 span  21.3s sky   0.0s n  37/ 0 pressure 0.88/0.00 | 0:0x1 1:0x2 3:1x1
+  w9  T1   x2.26    (stored x2.26   , aim 0.96, hero 0.89, human 1.04p, boss x2.26 stored x2.26) money   578 hp   1810/    0 span  13.5s sky   0.0s n  28/ 0 pressure 1.04/0.00 | 0:0x1 1:0x3 3:1x1
+  w10 A1   x1.867   (stored x1.867  , aim 0.85, hero 0.83, human 0.83-, boss x1.867 stored x1.867) money   668 hp    853/  448 span   8.8s sky   2.5s n  18/ 3 pressure 0.78/0.83 | 0:0x1 0:2x2 1:0x1 3:1x1
+  w11 W3   x2.654   (stored x2.654  , aim 0.96, hero 0.87, human 1.04p, boss x2.654 stored x2.654) money   747 hp   3884/    0 span  42.2s sky   0.0s n 126/ 0 pressure 1.04/0.00 | 0:0x1 0:2x3 3:1x1
+  w12 C2*  x2.92    (stored x2.92   , aim 0.89, hero 0.89, human 0.96p, boss x2.92 stored x2.92) money   921 hp   3793/  234 span  19.2s sky  20.3s n  34/ 2 pressure 0.96/0.39 | 1:0x7 3:1x1
+  w13 X2   x3.028   (stored x3.028  , aim 0.82, hero 0.91, human 0.98p, boss x3.028 stored x3.028) money  1037 hp   4745/    0 span  25.3s sky   0.0s n  65/ 0 pressure 0.98/0.00 | 1:0x8 3:1x1
+  w14 T1   x3.937   (stored x3.937  , aim 1.06, hero 1.05, human 1.11p, boss x3.937 stored x3.937) money  1213 hp   6992/    0 span  26.6s sky   0.0s n  65/ 0 pressure 1.11/0.00 | 1:0x10 3:1x1
+  w15 A2   x1.471   (stored x1.471  , aim 1.04, hero 0.92, human 0.92-, boss x1.471 stored x1.471) money  1340 hp   1834/  824 span  17.4s sky   4.1s n  37/ 7 pressure 0.75/0.92 | 0:0x1 0:2x7 3:1x1
+  w16 C4*  x3.615   (stored x3.615  , aim 0.86, hero 0.99, human 1.05p, boss x3.615 stored x3.615) money  1438 hp   8422/  434 span  31.3s sky  29.4s n  71/ 3 pressure 1.05/0.55 | 1:0x12 3:1x1
+  w17 T3 B x1.909   (stored x1.909  , aim 1.37, hero 1.08, human 1.19-, boss x3.354 stored x3.354) money  1639 hp   5451/  153 span  26.8s sky  37.3s n  65/ 1 pressure 1.19/0.14 | 0:2x2 1:0x11 3:1x1
+
+C1_05 Hard (the human lens, towers alone; scale x0.695; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.25; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x0.896   (stored x0.896  , aim 0.38, hero 0.20, human 0.28-, boss x0.896 stored x0.896) money   280 hp    272/    0 span   5.5s sky   0.0s n  24/ 0 pressure 0.28/0.00 | 0:1x1 0:2x1
+  w2  C2   x1.165   (stored x1.165  , aim 0.51, hero 0.21, human 0.28-, boss x1.165 stored x1.165) money   299 hp    427/    0 span  14.3s sky   0.0s n  29/ 0 pressure 0.28/0.00 | 0:0x1 0:1x1 0:2x1
+  w3  W1   x1.515   (stored x1.515  , aim 0.71, hero 0.37, human 0.47-, boss x1.515 stored x1.515) money   336 hp    786/    0 span  11.7s sky   0.0s n  41/ 0 pressure 0.47/0.00 | 0:2x2
+  w4  A1   x0.831   (stored x0.831  , aim 0.71, hero 0.49, human 0.49-, boss x0.831 stored x0.831) money   380 hp    147/  153 span   6.8s sky   0.7s n  14/ 2 pressure 0.15/0.49 | 0:1x1 0:2x1 3:0x1
+  w5  T1   x1.321   (stored x1.321  , aim 1.08, hero 0.62, human 0.75p, boss x1.321 stored x1.321) money   411 hp   1053/    0 span  11.5s sky   0.0s n  25/ 0 pressure 0.75/0.00 | 0:1x1 1:0x2 3:0x1
+  w6  A1   x1.014   (stored x1.014  , aim 0.86, hero 0.60, human 0.60-, boss x1.014 stored x1.014) money   469 hp    192/  187 span   7.6s sky   0.7s n  15/ 2 pressure 0.13/0.60 | 0:2x2 3:0x1
+  w7  W1   x1.687   (stored x1.687  , aim 1.08, hero 0.60, human 0.75p, boss x1.687 stored x1.687) money   502 hp   1793/    0 span  21.9s sky   0.0s n  84/ 0 pressure 0.75/0.00 | 0:0x1 0:2x2 3:0x1
+  w8  A1   x1.106   (stored x1.106  , aim 0.90, hero 0.63, human 0.63-, boss x1.106 stored x1.106) money   624 hp    853/  407 span  10.2s sky   3.2s n  23/ 4 pressure 0.55/0.63 | 0:0x1 0:2x1 1:0x2 3:1x1
+  w9  T1   x1.928   (stored x1.928  , aim 1.18, hero 0.74, human 0.82p, boss x1.928 stored x1.928) money   724 hp   2612/    0 span  15.6s sky   0.0s n  41/ 0 pressure 0.82/0.00 | 1:0x5 3:1x1
+  w10 C2*  x1.555   (stored x1.555  , aim 1.04, hero 0.71, human 0.71p, boss x1.555 stored x1.555) money   902 hp   2396/  501 span  19.5s sky  10.6s n  39/ 5 pressure 0.62/0.71 | 0:0x1 0:2x1 1:0x3 1:1x1 3:1x1
+  w11 W2 B x1.329   (stored x1.329  , aim 1.49, hero 0.79, human 0.79-, boss x1.329 stored x1.329) money  1044 hp   1782/ 1070 span  28.1s sky  18.5s n 106/ 1 pressure 0.35/0.79 | 0:1x1 0:2x4 3:2x1
+  w12 X1*  x1.522   (stored x1.522  , aim 0.87, hero 0.56, human 0.56p, boss x1.522 stored x1.522) money  1445 hp   3887/  770 span  21.1s sky  13.1s n  64/ 7 pressure 0.56/0.56 | 1:0x11 3:2x1
+  w13 A2   x1.818   (stored x1.818  , aim 1.00, hero 0.69, human 0.69-, boss x1.818 stored x1.818) money  1705 hp   1882/ 1171 span  16.0s sky   3.9s n  37/ 7 pressure 0.58/0.69 | 0:2x9 3:2x1
+  w14 T1   x2.507   (stored x2.507  , aim 1.30, hero 0.63, human 0.65p, boss x2.507 stored x2.507) money  1856 hp   8119/    0 span  33.2s sky   0.0s n  98/ 0 pressure 0.65/0.00 | 1:0x15 3:2x1
+  w15 W3   x3.259   (stored x3.259  , aim 1.27, hero 0.50, human 0.52p, boss x3.259 stored x3.259) money  2137 hp   8741/    0 span  47.7s sky   0.0s n 176/ 0 pressure 0.52/0.00 | 0:1x1 0:2x11 3:2x1
+  w16 A2   x1.455   (stored x1.455  , aim 1.06, hero 0.73, human 0.73-, boss x1.455 stored x1.455) money  2353 hp   2336/ 1606 span  19.4s sky   5.9s n  54/12 pressure 0.51/0.73 | 0:2x13 3:2x1
+  w17 T3 B x1.829   (stored x1.829  , aim 1.68, hero 0.79, human 0.82-, boss x3.323 stored x3.323) money  2534 hp   8391/  505 span  35.7s sky  42.2s n 101/ 3 pressure 0.82/0.23 | 0:2x1 1:0x7 1:1x7 3:2x1
+
+C1_05 Psycho (the human lens, towers alone; scale x0.822; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.35; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  s1   x2.85    (stored x2.85   , aim 0.44, hero 0.33, human 0.36-, boss x2.85 stored x2.85) money   840 hp   1500/    0 span   4.7s sky   0.0s n  29/ 0 pressure 0.36/0.00 | 0:0x1 0:2x5
+  w2  C2   x3.705   (stored x3.705  , aim 0.59, hero 0.40, human 0.44-, boss x3.705 stored x3.705) money   863 hp   2421/    0 span  14.3s sky   0.0s n  36/ 0 pressure 0.44/0.00 | 0:0x1 0:2x5
+  w3  W1   x4.015   (stored x4.015  , aim 0.83, hero 0.62, human 0.68-, boss x4.015 stored x4.015) money   909 hp   3716/    0 span  12.2s sky   0.0s n  51/ 0 pressure 0.68/0.00 | 0:1x1 0:2x5
+  w4  A1   x1.018   (stored x1.018  , aim 0.83, hero 0.68, human 0.68-, boss x1.018 stored x1.018) money   963 hp    314/  269 span   6.7s sky   0.6s n  17/ 2 pressure 0.07/0.68 | 0:0x1 0:2x5 3:0x1
+  w5  T2 B x0.713   (stored x0.713  , aim 1.52, hero 0.82, human 0.88-, boss x1.821 stored x1.821) money   999 hp   3468/    0 span   8.5s sky   0.0s n  21/ 0 pressure 0.88/0.00 | 0:2x3 1:0x4 3:0x1
+  w6  A1   x0.991   (stored x0.991  , aim 0.80, hero 0.66, human 0.66-, boss x0.991 stored x0.991) money  1019 hp    342/  262 span   8.1s sky   0.6s n  19/ 2 pressure 0.07/0.66 | 0:1x1 0:2x5 3:0x1
+  w7  W1   x4.652   (stored x4.652  , aim 1.25, hero 0.93, human 1.00p, boss x4.652 stored x4.652) money  1267 hp   8950/    0 span  23.1s sky   0.0s n 106/ 0 pressure 1.00/0.00 | 0:0x1 0:2x7 3:0x1
+  w8  A1   x1.51    (stored x1.51   , aim 1.05, hero 0.86, human 0.86-, boss x1.51 stored x1.51) money  1413 hp   1809/  797 span  10.2s sky   3.1s n  28/ 4 pressure 0.70/0.86 | 0:1x1 0:2x7 3:1x1
+  w9  T1   x3.63    (stored x3.63   , aim 1.37, hero 1.01, human 1.05p, boss x3.63 stored x3.63) money  1519 hp   8900/    0 span  16.4s sky   0.0s n  50/ 0 pressure 1.05/0.00 | 1:0x13 3:1x1
+  w10 A1   x1.306   (stored x1.306  , aim 1.09, hero 0.89, human 0.89-, boss x1.306 stored x1.306) money  1717 hp   1767/ 1034 span  11.6s sky   3.1s n  32/ 6 pressure 0.50/0.89 | 0:1x1 0:2x9 3:1x1
+  w11 W2 B x1.447   (stored x1.447  , aim 1.74, hero 0.80, human 0.80-, boss x1.447 stored x1.447) money  1840 hp   3941/ 1671 span  29.0s sky  17.5s n 132/ 1 pressure 0.31/0.80 | 0:0x1 0:1x1 0:2x9 3:2x1
+  w12 C3*  x2.126   (stored x2.126  , aim 1.01, hero 0.82, human 0.82p, boss x2.126 stored x2.126) money  2268 hp   9577/ 1684 span  26.2s sky  13.4s n  80/ 8 pressure 0.77/0.82 | 0:1x1 0:2x3 1:0x8 1:1x3 3:2x1
+  w13 A2   x1.835   (stored x1.835  , aim 1.16, hero 0.95, human 0.95-, boss x1.835 stored x1.835) money  2547 hp   3067/ 2180 span  15.7s sky   4.2s n  45/ 9 pressure 0.53/0.95 | 0:0x1 0:2x14 3:2x1
+  w14 T1   x4.847   (stored x4.847  , aim 1.51, hero 1.01, human 1.08p, boss x4.847 stored x4.847) money  2750 hp  24856/    0 span  33.2s sky   0.0s n 120/ 0 pressure 1.08/0.00 | 1:0x6 1:1x9 3:2x1
+  w15 W3   x4.952   (stored x4.952  , aim 1.48, hero 1.11, human 1.16p, boss x4.952 stored x4.952) money  3040 hp  23908/    0 span  49.2s sky   0.0s n 221/ 0 pressure 1.16/0.00 | 0:2x5 1:0x10 3:2x1
+  w16 A2   x1.504   (stored x1.504  , aim 1.23, hero 1.01, human 1.01-, boss x1.504 stored x1.504) money  3273 hp   4373/ 2779 span  19.9s sky   5.9s n  66/14 pressure 0.76/1.01 | 0:2x15 3:2x1
+  w17 T3 B x0.329   (stored x0.329  , aim 1.95, hero 0.76, human 0.87-, boss x4.123 stored x4.123) money  3498 hp   5933/  304 span  35.1s sky  43.7s n 124/ 7 pressure 0.87/0.11 | 1:1x14 1:2x1 3:2x1
+
+C1_06 Easy (the human lens, towers alone; scale x0.946; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  W1   x1.251   (stored x1.251  , aim 0.29, hero 0.19, human 0.28-, boss x1.251 stored x1.251) money   240 hp    197/    0 span   6.0s sky   0.0s n  21/ 0 pressure 0.28/0.00 | 0:0x1 0:1x2
+  w2  s1   x1.491   (stored x1.491  , aim 0.36, hero 0.22, human 0.34-, boss x1.491 stored x1.491) money   240 hp    257/    0 span   6.5s sky   0.0s n  14/ 0 pressure 0.34/0.00 | 0:0x1 0:2x1
+  w3  C2   x1.318   (stored x1.318  , aim 0.45, hero 0.28, human 0.42-, boss x1.318 stored x1.318) money   244 hp    374/    0 span  14.0s sky   0.0s n  19/ 0 pressure 0.42/0.00 | 0:0x1 0:2x1
+  w4  T1   x1.939   (stored x1.939  , aim 0.63, hero 0.48, human 0.68-, boss x1.939 stored x1.939) money   259 hp    581/    0 span   5.9s sky   0.0s n  15/ 0 pressure 0.68/0.00 | 0:1x1 0:2x1
+  w5  W1   x2.294   (stored x2.294  , aim 0.71, hero 0.48, human 0.67p, boss x2.294 stored x2.294) money   281 hp    770/    0 span  13.3s sky   0.0s n  42/ 0 pressure 0.67/0.00 | 0:1x3
+  w6  C2   x2.465   (stored x2.465  , aim 0.66, hero 0.47, human 0.63p, boss x2.465 stored x2.465) money   315 hp    886/    0 span  14.0s sky   0.0s n  22/ 0 pressure 0.63/0.00 | 0:2x2
+  w7  C2   x1.612   (stored x1.612  , aim 0.68, hero 0.52, human 0.64p, boss x1.612 stored x1.612) money   348 hp   1092/    0 span  14.0s sky   0.0s n  22/ 0 pressure 0.64/0.00 | 1:0x3
+  w8  W1   x1.465   (stored x1.465  , aim 0.76, hero 0.52, human 0.72p, boss x1.465 stored x1.465) money   359 hp   1128/    0 span  20.5s sky   0.0s n  71/ 0 pressure 0.72/0.00 | 0:0x1 0:1x3
+  w9  T1   x2.679   (stored x2.679  , aim 0.81, hero 0.67, human 0.77p, boss x2.679 stored x2.679) money   450 hp   1601/    0 span  11.9s sky   0.0s n  19/ 0 pressure 0.77/0.00 | 0:0x1 1:0x4
+  w10 A1   x0.967   (stored x0.967  , aim 0.65, hero 0.61, human 0.61-, boss x0.967 stored x0.967) money   507 hp    567/  158 span   8.1s sky   2.5s n  14/ 3 pressure 0.42/0.61 | 0:0x1 0:2x2 3:0x1
+  w11 W2   x1.986   (stored x1.986  , aim 0.81, hero 0.59, human 0.76p, boss x1.986 stored x1.986) money   543 hp   1952/    0 span  37.2s sky   0.0s n 108/ 0 pressure 0.76/0.00 | 0:0x1 0:1x4 3:0x1
+  w12 C2!  x2.456   (stored x2.456  , aim 0.75, hero 0.62, human 0.71p, boss x2.456 stored x2.456) money   683 hp   2149/  200 span  17.8s sky  23.4s n  35/ 3 pressure 0.71/0.59 | 0:0x1 1:0x5 3:0x1
+  w13 A1   x0.6     (stored x0.6    , aim 0.69, hero 0.56, human 0.67-, boss x0.6 stored x0.6) money   760 hp   1177/  163 span   9.5s sky   3.5s n  18/ 5 pressure 0.67/0.49 | 0:1x1 0:2x2 1:0x2 3:0x1
+  w14 T1   x2.196   (stored x2.196  , aim 0.89, hero 0.77, human 0.84p, boss x2.196 stored x2.196) money   798 hp   3088/    0 span  19.2s sky   0.0s n  35/ 0 pressure 0.84/0.00 | 0:0x1 1:0x6 3:0x1
+  w15 X1   x1.318   (stored x1.318  , aim 0.79, hero 0.69, human 0.75p, boss x1.318 stored x1.318) money   924 hp   2794/    0 span  16.8s sky   0.0s n  59/ 0 pressure 0.75/0.00 | 1:0x8 3:0x1
+  w16 A2   x1.271   (stored x1.271  , aim 0.72, hero 0.69, human 0.69-, boss x1.271 stored x1.271) money  1013 hp   1546/  553 span  15.1s sky   5.4s n  27/ 8 pressure 0.57/0.69 | 0:1x1 0:2x4 1:0x1 3:1x1
+  w17 C3!  x1.417   (stored x1.417  , aim 0.82, hero 0.71, human 0.78p, boss x1.417 stored x1.417) money  1060 hp   3928/  270 span  28.9s sky  34.5s n  68/ 7 pressure 0.78/0.28 | 0:0x1 1:0x8 3:1x1
+  w18 T3 B x1.504   (stored x1.504  , aim 1.17, hero 0.95, human 1.04-, boss x1.254 stored x1.254) money  1229 hp   3683/    0 span  23.3s sky   0.0s n  39/ 0 pressure 1.04/0.00 | 0:2x2 1:0x7 3:1x1
+
+C1_06 Medium (the human lens, towers alone; scale x1.37; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.15; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  W1   x2.084   (stored x2.084  , aim 0.36, hero 0.36, human 0.50-, boss x2.084 stored x2.084) money   300 hp    481/    0 span   5.0s sky   0.0s n  21/ 0 pressure 0.50/0.00 | 0:0x1 0:1x1 0:2x1
+  w2  s1   x2.505   (stored x2.505  , aim 0.44, hero 0.43, human 0.61-, boss x2.505 stored x2.505) money   300 hp    634/    0 span   5.7s sky   0.0s n  14/ 0 pressure 0.61/0.00 | 0:0x1 0:1x1 0:2x1
+  w3  C2   x2.504   (stored x2.504  , aim 0.56, hero 0.56, human 0.76-, boss x2.504 stored x2.504) money   305 hp   1095/    0 span  12.3s sky   0.0s n  19/ 0 pressure 0.76/0.00 | 0:0x1 0:2x1 1:0x1
+  w4  T1   x2.908   (stored x2.908  , aim 0.78, hero 0.79, human 1.07-, boss x2.908 stored x2.908) money   330 hp   1166/    0 span   5.3s sky   0.0s n  15/ 0 pressure 1.07/0.00 | 0:2x2
+  w5  W1   x2.986   (stored x2.986  , aim 0.89, hero 0.90, human 1.21p, boss x2.986 stored x2.986) money   353 hp   1730/    0 span  12.1s sky   0.0s n  43/ 0 pressure 1.21/0.00 | 0:2x2
+  w6  C2   x3.575   (stored x3.575  , aim 0.82, hero 0.88, human 1.13p, boss x3.575 stored x3.575) money   372 hp   2059/    0 span  12.3s sky   0.0s n  22/ 0 pressure 1.13/0.00 | 0:2x1 1:0x2
+  w7  C2   x2.876   (stored x2.876  , aim 0.84, hero 0.97, human 1.15p, boss x2.876 stored x2.876) money   402 hp   2406/    0 span  12.3s sky   0.0s n  22/ 0 pressure 1.15/0.00 | 1:0x4
+  w8  A1   x1.59    (stored x1.59   , aim 0.77, hero 1.06, human 1.07-, boss x1.59 stored x1.59) money   453 hp    742/  254 span   6.5s sky   2.0s n  10/ 2 pressure 0.75/1.07 | 0:0x1 0:1x1 0:2x1 3:0x1
+  w9  T1!  x2.142   (stored x2.142  , aim 1.01, hero 1.01, human 1.27p, boss x2.142 stored x2.142) money   493 hp   2146/  257 span   9.5s sky  22.8s n  15/ 3 pressure 1.27/0.70 | 0:0x1 1:0x1 1:1x1 3:0x1
+  w10 C2   x1.94    (stored x1.94   , aim 0.89, hero 1.23, human 1.27p, boss x1.94 stored x1.94) money   546 hp   2148/  155 span  14.2s sky   5.0s n  31/ 1 pressure 1.11/1.27 | 0:1x1 1:0x3 3:0x1
+  w11 A1   x1.344   (stored x1.344  , aim 0.82, hero 1.14, human 1.15-, boss x1.344 stored x1.344) money   643 hp   1633/  323 span   9.5s sky   2.5s n  16/ 3 pressure 0.89/1.15 | 0:0x1 0:2x1 1:0x1 1:1x1 3:0x1
+  w12 X1!  x1.758   (stored x1.758  , aim 0.93, hero 1.40, human 1.44p, boss x1.758 stored x1.758) money   705 hp   2538/  563 span   9.0s sky  13.2s n  33/ 6 pressure 1.18/1.44 | 0:2x1 1:0x4 3:0x1
+  w13 C2   x1.694   (stored x1.694  , aim 0.95, hero 1.39, human 1.35p, boss x1.694 stored x1.694) money   787 hp   3904/  271 span  18.8s sky   7.0s n  46/ 2 pressure 1.19/1.35 | 0:0x1 1:0x6 3:0x1
+  w14 A1   x1.913   (stored x1.913  , aim 0.87, hero 1.22, human 1.24-, boss x1.913 stored x1.913) money   939 hp   2269/  918 span  10.0s sky   4.1s n  21/ 6 pressure 0.84/1.24 | 0:2x2 1:0x4 3:1x1
+  w15 X1!  x2.317   (stored x2.317  , aim 0.98, hero 1.35, human 1.41p, boss x2.317 stored x2.317) money  1015 hp   4508/ 1298 span  12.0s sky  19.3s n  48/11 pressure 1.41/1.35 | 1:0x8 3:1x1
+  w16 W3   x2.553   (stored x2.553  , aim 1.10, hero 0.62, human 0.75p, boss x2.553 stored x2.553) money  1089 hp   4750/    0 span  43.4s sky   0.0s n 128/ 0 pressure 0.75/0.00 | 0:2x5 1:0x1 3:1x1
+  w17 A2   x1.76    (stored x1.76   , aim 0.92, hero 1.31, human 1.33-, boss x1.76 stored x1.76) money  1260 hp   3357/ 1267 span  13.8s sky   4.9s n  32/ 9 pressure 0.99/1.33 | 0:2x4 1:0x4 3:1x1
+  w18 T3 B x1.032   (stored x1.032  , aim 1.45, hero 1.49, human 1.68-, boss x2.36 stored x2.36) money  1342 hp   4981/   83 span  21.6s sky  34.7s n  39/ 1 pressure 1.68/0.09 | 0:2x1 1:1x5 3:1x1
+
+C1_06 Hard (the human lens, towers alone; scale x1.157; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.25; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  W1   x1.624   (stored x1.624  , aim 0.45, hero 0.40, human 0.52-, boss x1.624 stored x1.624) money   300 hp    596/    0 span   4.4s sky   0.0s n  29/ 0 pressure 0.52/0.00 | 0:0x1 0:1x1 0:2x1
+  w2  s1   x0.789   (stored x0.789  , aim 0.55, hero 0.45, human 0.62-, boss x0.789 stored x0.789) money   300 hp    707/    0 span   7.5s sky   0.0s n  23/ 0 pressure 0.62/0.00 | 0:2x1 1:0x1
+  w3  C2   x1.57    (stored x1.57   , aim 0.69, hero 0.60, human 0.80-, boss x1.57 stored x1.57) money   300 hp   1314/    0 span  14.9s sky   0.0s n  31/ 0 pressure 0.80/0.00 | 0:0x1 0:1x1 0:2x1
+  w4  T1   x2.111   (stored x2.111  , aim 0.97, hero 0.69, human 0.85-, boss x2.111 stored x2.111) money   360 hp   1506/    0 span   6.1s sky   0.0s n  21/ 0 pressure 0.85/0.00 | 0:2x1 1:0x2
+  w5  W1   x2.744   (stored x2.744  , aim 1.10, hero 0.80, human 0.98p, boss x2.744 stored x2.744) money   422 hp   2208/    0 span  13.7s sky   0.0s n  59/ 0 pressure 0.98/0.00 | 0:1x1 0:2x2
+  w6  C2   x2.819   (stored x2.819  , aim 1.02, hero 1.00, human 1.18p, boss x2.819 stored x2.819) money   467 hp   3269/    0 span  15.6s sky   0.0s n  39/ 0 pressure 1.18/0.00 | 0:2x1 1:0x3
+  w7  C2   x1.661   (stored x1.661  , aim 1.04, hero 1.04, human 1.17p, boss x1.661 stored x1.661) money   497 hp   3803/    0 span  16.5s sky   0.0s n  37/ 0 pressure 1.17/0.00 | 1:0x3 1:1x1
+  w8  A1   x1.975   (stored x1.975  , aim 0.96, hero 1.11, human 1.11-, boss x1.975 stored x1.975) money   572 hp   1772/  727 span   7.6s sky   3.2s n  14/ 4 pressure 0.93/1.11 | 0:2x1 1:0x2 3:1x1
+  w9  T1!  x3.654   (stored x3.654  , aim 1.25, hero 1.21, human 1.37p, boss x3.654 stored x3.654) money   665 hp   3668/  672 span  11.6s sky  23.6s n  22/ 4 pressure 1.37/0.81 | 0:0x1 1:0x4 3:1x1
+  w10 C2   x2.893   (stored x2.893  , aim 1.11, hero 1.28, human 1.40p, boss x2.893 stored x2.893) money   795 hp   4720/  532 span  19.4s sky   6.4s n  50/ 2 pressure 1.40/1.24 | 0:1x1 1:0x5 3:1x1
+  w11 A1   x1.927   (stored x1.927  , aim 1.02, hero 1.18, human 1.18-, boss x1.927 stored x1.927) money   920 hp   4035/  886 span  11.1s sky   3.2s n  26/ 5 pressure 0.91/1.18 | 1:0x1 1:1x3 3:1x1
+  w12 X2 B x0.463   (stored x0.463  , aim 1.62, hero 1.28, human 1.49-, boss x1.467 stored x1.467) money   971 hp   3871/   85 span  10.9s sky   6.4s n  38/ 2 pressure 1.49/0.19 | 0:2x1 1:0x2 1:1x2 3:1x1
+  w13 C2!  x1.886   (stored x1.886  , aim 0.94, hero 1.09, human 1.11p, boss x1.886 stored x1.886) money  1103 hp   4247/ 1562 span  18.4s sky  21.6s n  57/14 pressure 0.96/1.11 | 0:0x1 0:1x1 0:2x1 1:0x6 3:1x1
+  w14 A2   x1.844   (stored x1.844  , aim 1.08, hero 1.25, human 1.25-, boss x1.844 stored x1.844) money  1337 hp   2509/ 1357 span  14.2s sky   4.5s n  33/ 8 pressure 0.94/1.25 | 0:0x1 0:2x7 3:1x1
+  w15 X2   x2.094   (stored x2.094  , aim 1.22, hero 1.50, human 1.53p, boss x2.094 stored x2.094) money  1430 hp   9143/  963 span  24.1s sky   8.9s n  94/ 5 pressure 1.26/1.53 | 1:0x12 3:1x1
+  w16 W3   x3.759   (stored x3.759  , aim 1.37, hero 0.58, human 0.64p, boss x3.759 stored x3.759) money  1657 hp   8180/    0 span  47.7s sky   0.0s n 172/ 0 pressure 0.64/0.00 | 0:0x1 0:2x9 3:1x1
+  w17 A2   x2.158   (stored x2.158  , aim 1.14, hero 1.35, human 1.36-, boss x2.158 stored x2.158) money  1916 hp   7888/ 2581 span  18.2s sky   5.9s n  51/13 pressure 0.89/1.36 | 0:0x1 0:2x1 1:0x8 1:1x3 3:2x1
+  w18 T3 B x1.428   (stored x1.428  , aim 1.80, hero 1.47, human 1.55-, boss x3.257 stored x3.257) money  2085 hp  10072/  394 span  25.2s sky  33.8s n  65/ 3 pressure 1.55/0.19 | 0:2x2 1:0x1 1:1x7 3:2x1
+
+C1_06 Psycho (the human lens, towers alone; scale x0.808; aim = the wave's own target at scale one; hero = the same player with the hero, cap 1.35; span = active seconds of the ground stream, sky = the flyers' window; boss = the health multiplier a level boss carries, now and stored)
+  w1  W1   x2.894   (stored x2.894  , aim 0.53, hero 0.39, human 0.43-, boss x2.894 stored x2.894) money   900 hp   1891/    0 span   3.8s sky   0.0s n  36/ 0 pressure 0.43/0.00 | 0:1x1 0:2x5
+  w2  s1   x2.561   (stored x2.561  , aim 0.65, hero 0.49, human 0.52-, boss x2.561 stored x2.561) money   900 hp   3084/    0 span   6.7s sky   0.0s n  28/ 0 pressure 0.52/0.00 | 1:0x9
+  w3  C2   x3.103   (stored x3.103  , aim 0.82, hero 0.62, human 0.67-, boss x3.103 stored x3.103) money   900 hp   4880/    0 span  15.3s sky   0.0s n  37/ 0 pressure 0.67/0.00 | 1:0x9
+  w4  T1   x3.46    (stored x3.46   , aim 1.14, hero 0.86, human 0.92-, boss x3.46 stored x3.46) money   956 hp   5477/    0 span   6.4s sky   0.0s n  27/ 0 pressure 0.92/0.00 | 0:0x1 1:0x9
+  w5  A1   x1.301   (stored x1.301  , aim 1.06, hero 0.86, human 0.86-, boss x1.301 stored x1.301) money  1027 hp    758/  343 span   6.7s sky   0.6s n  19/ 2 pressure 0.15/0.86 | 0:1x1 0:2x5 3:0x1
+  w6  C2   x1.673   (stored x1.673  , aim 1.21, hero 0.96, human 0.96p, boss x1.673 stored x1.673) money  1050 hp   3174/  442 span  16.0s sky   6.1s n  47/ 2 pressure 0.57/0.96 | 0:2x6 3:0x1
+  w7  C2 B x0.94    (stored x0.94   , aim 1.73, hero 0.81, human 0.81-, boss x0.94 stored x0.94) money  1125 hp    988/ 1334 span  10.6s sky   8.1s n  23/ 3 pressure 0.24/0.81 | 0:0x1 0:2x4 3:0x1 3:2x1
+  w8  A1   x2.652   (stored x2.652  , aim 0.91, hero 0.73, human 0.73-, boss x2.652 stored x2.652) money  1198 hp   2158/ 1400 span   9.2s sky   3.1s n  18/ 4 pressure 0.47/0.73 | 0:0x1 0:1x1 0:2x4 3:0x1 3:2x1
+  w9  T1!  x4.498   (stored x4.498  , aim 1.48, hero 1.04, human 1.11p, boss x4.498 stored x4.498) money  1291 hp   6661/ 2078 span  11.7s sky  25.9s n  25/ 7 pressure 1.11/0.76 | 0:0x1 1:0x8 3:0x1 3:2x1
+  w10 C2   x1.657   (stored x1.657  , aim 1.31, hero 0.98, human 1.04p, boss x1.657 stored x1.657) money  1387 hp   6676/  437 span  19.2s sky   6.1s n  60/ 2 pressure 1.04/0.38 | 0:0x1 1:0x9 3:0x1 3:2x1
+  w11 A1   x2.806   (stored x2.806  , aim 1.20, hero 0.97, human 0.97-, boss x2.806 stored x2.806) money  1743 hp   6083/ 2222 span  10.9s sky   3.1s n  32/ 6 pressure 0.73/0.97 | 0:0x1 0:1x1 1:1x6 3:0x1 3:2x1
+  w12 X2 B x0.323   (stored x0.323  , aim 1.91, hero 0.82, human 0.87-, boss x1.603 stored x1.603) money  1812 hp   4706/   85 span  12.1s sky   6.1s n  48/ 2 pressure 0.87/0.07 | 0:0x1 0:2x1 1:1x6 3:0x1 3:2x1
+  w13 C2!  x1.821   (stored x1.821  , aim 1.11, hero 0.94, human 0.98p, boss x1.821 stored x1.821) money  1942 hp   9931/ 2644 span  18.1s sky  23.4s n  67/18 pressure 0.98/0.67 | 1:0x15 3:0x1 3:2x1
+  w14 A2   x2.079   (stored x2.079  , aim 1.27, hero 1.01, human 1.01-, boss x2.079 stored x2.079) money  2325 hp   7401/ 2744 span  13.5s sky   4.7s n  40/10 pressure 0.62/1.01 | 0:2x2 1:1x8 3:0x1 3:2x1
+  w15 A2   x1.943   (stored x1.943  , aim 1.30, hero 1.03, human 1.04-, boss x1.943 stored x1.943) money  2467 hp   5299/ 3078 span  15.3s sky   4.7s n  46/12 pressure 0.82/1.04 | 0:1x1 0:2x11 1:0x2 3:0x1 3:2x1
+  w16 W3   x2.996   (stored x2.996  , aim 1.61, hero 0.46, human 0.49p, boss x2.996 stored x2.996) money  2682 hp  13502/    0 span  50.0s sky   0.0s n 218/ 0 pressure 0.49/0.00 | 0:1x1 0:2x3 1:0x17 3:0x1 3:2x1
+  w17 A2   x1.686   (stored x1.686  , aim 1.34, hero 1.06, human 1.06-, boss x1.686 stored x1.686) money  3140 hp   7881/ 3561 span  16.7s sky   5.9s n  60/16 pressure 0.86/1.06 | 0:1x1 0:2x13 1:1x3 3:0x1 3:2x1
+  w18 T3 B x0.323   (stored x0.323  , aim 2.13, hero 0.77, human 0.80-, boss x1.983 stored x1.983) money  3255 hp   7942/  298 span  25.8s sky  38.3s n  79/ 7 pressure 0.80/0.09 | 1:0x1 1:1x14 3:0x1 3:2x1
+
+Against the stored waves:
+C1_01 Easy   scale x0.946; sum of multipliers x1.000 of the stored set; plain mean 0.62 against 0.68 at the scale; ground waves x0.48 to x1.72 of their median; moved more than 3 %: none
+C1_01 Medium scale x1.373; sum of multipliers x1.000 of the stored set; plain mean 1.03 against 1.19 at the scale; ground waves x0.31 to x1.49 of their median; moved more than 3 %: none
+C1_01 Hard   scale x1.157; sum of multipliers x1.000 of the stored set; plain mean 0.99 against 1.22 at the scale; ground waves x0.35 to x1.64 of their median; moved more than 3 %: none
+C1_01 Psycho scale x1.1; sum of multipliers x1.000 of the stored set; plain mean 1.44 against 1.37 at the scale; ground waves x0.17 to x1.61 of their median; moved more than 3 %: none
+C1_02 Easy   scale x0.946; sum of multipliers x1.000 of the stored set; plain mean 0.66 against 0.69 at the scale; ground waves x0.57 to x1.71 of their median; moved more than 3 %: none
+C1_02 Medium scale x1.453; sum of multipliers x1.000 of the stored set; plain mean 1.35 against 1.28 at the scale; ground waves x0.19 to x1.57 of their median; moved more than 3 %: none
+C1_02 Hard   scale x1.223; sum of multipliers x1.000 of the stored set; plain mean 1.31 against 1.31 at the scale; ground waves x0.23 to x2.11 of their median; moved more than 3 %: none
+C1_02 Psycho scale x1.101; sum of multipliers x1.000 of the stored set; plain mean 1.39 against 1.40 at the scale; ground waves x0.11 to x1.58 of their median; moved more than 3 %: none
+C1_03 Easy   scale x0.946; sum of multipliers x1.000 of the stored set; plain mean 0.71 against 0.70 at the scale; ground waves x0.47 to x1.61 of their median; moved more than 3 %: none
+C1_03 Medium scale x1.373; sum of multipliers x1.000 of the stored set; plain mean 1.23 against 1.23 at the scale; ground waves x0.19 to x1.37 of their median; moved more than 3 %: none
+C1_03 Hard   scale x0.817; sum of multipliers x1.000 of the stored set; plain mean 0.82 against 0.89 at the scale; ground waves x0.32 to x2.35 of their median; moved more than 3 %: none
+C1_03 Psycho scale x1.013; sum of multipliers x1.000 of the stored set; plain mean 1.15 against 1.30 at the scale; ground waves x0.17 to x2.26 of their median; moved more than 3 %: none
+C1_04 Easy   scale x1.182; sum of multipliers x1.000 of the stored set; plain mean 0.86 against 0.88 at the scale; ground waves x0.41 to x1.46 of their median; moved more than 3 %: none
+C1_04 Medium scale x1.532; sum of multipliers x1.000 of the stored set; plain mean 1.71 against 1.39 at the scale; ground waves x0.52 to x1.58 of their median; moved more than 3 %: none
+C1_04 Hard   scale x1.096; sum of multipliers x1.000 of the stored set; plain mean 1.44 against 1.21 at the scale; ground waves x0.59 to x1.58 of their median; moved more than 3 %: none
+C1_04 Psycho scale x0.823; sum of multipliers x1.000 of the stored set; plain mean 0.82 against 1.07 at the scale; ground waves x0.43 to x1.76 of their median; moved more than 3 %: none
+C1_05 Easy   scale x0.946; sum of multipliers x1.000 of the stored set; plain mean 0.70 against 0.72 at the scale; ground waves x0.46 to x1.86 of their median; moved more than 3 %: none
+C1_05 Medium scale x1.084; sum of multipliers x1.000 of the stored set; plain mean 0.99 against 1.00 at the scale; ground waves x0.57 to x1.56 of their median; moved more than 3 %: none
+C1_05 Hard   scale x0.695; sum of multipliers x1.000 of the stored set; plain mean 0.68 against 0.78 at the scale; ground waves x0.58 to x2.10 of their median; moved more than 3 %: none
+C1_05 Psycho scale x0.822; sum of multipliers x1.000 of the stored set; plain mean 1.02 against 1.09 at the scale; ground waves x0.09 to x1.36 of their median; moved more than 3 %: none
+C1_06 Easy   scale x0.946; sum of multipliers x1.000 of the stored set; plain mean 0.73 against 0.73 at the scale; ground waves x0.78 to x1.66 of their median; moved more than 3 %: none
+C1_06 Medium scale x1.37; sum of multipliers x1.000 of the stored set; plain mean 1.22 against 1.28 at the scale; ground waves x0.41 to x1.43 of their median; moved more than 3 %: none
+C1_06 Hard   scale x1.157; sum of multipliers x1.000 of the stored set; plain mean 1.17 against 1.31 at the scale; ground waves x0.22 to x1.80 of their median; moved more than 3 %: none
+C1_06 Psycho scale x0.808; sum of multipliers x1.000 of the stored set; plain mean 0.91 against 1.09 at the scale; ground waves x0.13 to x1.76 of their median; moved more than 3 %: none

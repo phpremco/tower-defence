@@ -371,6 +371,16 @@ copies another, no level mean is held, nothing is solved twice.
    under its band, under 0.45 times it (the gates on the stored waves allow 2.5 and 0.4). All of it is read on the
    creatures as they walk in (a capped swarm carries its unbought budget as health). A raid is free; its flyers keep
    `RaidHealthFloor`.
+   **A surprise wave stands in the band and the median as the wave it would be without its surprise (round 84).** Its
+   creatures are fewer and tougher, and a late swarm lives on the upper edge of its band: Crysium Vein Psycho wave 16
+   stood x1.59 above the same level solved without surprises, because wave 9 (a rift surprise at x4.5 where the calm
+   wave is x2.3) lifted the band. A difficulty that carries surprises is therefore solved once without them first
+   (`CampaignModel.SolveDifficulty`, `WaveSolver.Solution.WalkIn`), and that solve is only a reference: what a
+   surprise wave counts as for the waves after it. Nothing is redistributed and no wave is lowered to it. Taking the
+   surprise waves out of the median alone was tried first and moved that swarm from x1.61 to x1.55: the band was the
+   channel, not the median. What is left is what the purse moves (`SurpriseLiftLab.cs`): a plain wave x1.09 at most, a
+   raid x1.03, a swarm x1.23 (Glass Meadows Psycho wave 11), a boss wave x1.29 in health (Shard Ridge Psycho wave 10).
+   Test `WaveGrammarTests.ASurprise_MakesNoOtherWaveTougher`, swarms included since this round.
 5. **The hero cap.** No wave asks more of that player with the hero (`HumanWithHero`) than `HeroCap`; a boss wave no
    more than `LevelBossGrowthCap`. The wave's own health gives way, by the same band rule.
 6. **A level's boss** is sized first and alone: a walking boss asks `LevelBossAlone` (0.4 / 0.6 / 0.7 / 0.75) of the
@@ -390,13 +400,35 @@ The solve stage takes two to three seconds for the six levels (it took 27).
 Why a wave's multiplier is what it is: `WaveLedgerLab.cs` (Docs/COMMANDS.md, "Round 83") prints per wave its own target
 (`aim`), the pressure with and without the hero, the purse, the purchase and the boss's health multiplier.
 
+## What a wave is made of: rules per difficulty, no lever per cell (round 84)
+
+Until round 83b `Tools/PlayTest/wave_tuning.txt` held 36 composition levers written by the old builder for single
+cells. They are rules in `BalanceRules` now, or gone; the file holds a cell's scalar and nothing else (test
+`Round83Tests.TheTuningFile_HoldsACellsScalar_AndNothingElse`). A new level gets all of it without a line written.
+
+| Lever (cells that had it) | Now | Paper evidence (`r84_lab.sh`, `ledger_compare.py`; ground health of the level against round 83b) |
+| --- | --- | --- |
+| `plated` (11: nine Hard or Psycho at 1.5, Glass Meadows and Crysium Vein Medium, Fault Line Hard 1.25) | `BalanceRules.PlatedBias` 1 / 1 / 1.5 / 1.5: on Hard and Psycho armour weighs half again as much in every fill | Alone (against no weight at all) it takes 4 to 13 % of the bodies on Hard and Psycho and moves the level's health by -8 to +9 %; the three cells that gain it (Fault Line Psycho, Quartz Flats Hard and Psycho) move by 5 % or less with the swarm weight beside it |
+| `swarm` (8: seven Hard or Psycho, Glass Meadows Medium at 2) | `BalanceRules.SwarmBias` 1 / 1 / 1.5 / 1.5: on Hard and Psycho the light unarmoured troops weigh half again as much | Alone it adds 3 to 13 % bodies on Hard and Psycho and moves the health by -6 to +6 %; the cells that gain it (Fault Line Hard, Quartz Flats and Crysium Vein Hard and Psycho) get 2 to 13 % more bodies and -1 to +16 % health with both weights |
+| `armourgrowth` (8: Landing Site and Glass Meadows, 1.4 / 1.4 / 1.5 / 1.5, Glass Meadows Medium 1.2) | `BalanceRules.ArmourGrowth` 1.4 / 1.4 / 1.5 / 1.5 **where a difficulty of a level sends no flyers** (`WaveComposer.GrowthOn`) | On every level alike it does not hold: ground health x1.3 to x2.8 on the four levels with flyers, and six and seven waves of Shard Ridge Hard and Psycho two to four times over the hero cap (`ledger_held.py`), four of Crysium Vein Medium, three of Crysium Vein Psycho. Round 68 measured the same (no plan won Shard Ridge Hard or Quartz Flats Easy with it). Without it Landing Site and Glass Meadows lose 15 to 20 % of their Easy and Medium health and the armour window. Where flyers come, the raids end a row without a counter (the grace report) |
+| `tempo` (3: Landing Site Hard and Psycho, Glass Meadows Psycho, 0.85) | gone | The difficulty's own spawn tempo and the cell's scalar do the work: the same bodies, the spawning 12 to 17 % longer, health +4 to 5 % |
+| `raid` (4: a few spread runners opening wave 3 or 5 of Landing Site Psycho and Glass Meadows Medium, Hard, Psycho) | gone | Five bodies; Glass Meadows Hard is the same level to a percent without it. The grammar's surprises do this job by rule |
+| `bosscrowd` (2: Shard Ridge Hard and Psycho, 0.35 where the rule is 0.6) | gone: `BalanceRules.BossWaveShare` 0.6 everywhere | The solver gives the crowd's health way to the boss since round 83. The two cells get the fuller crowd of every other level (83 bodies for 48 in wave 10) and their last boss is 17 and 33 % lighter on paper (x1.38 -> x1.15, x2.04 -> x1.37); a thinner crowd on every Hard and Psycho boss wave would make every boss tougher (0.35 everywhere: Medium bosses +20 to 50 %) and is Remco's call |
+
+The cells whose make-up moved: Glass Meadows Medium (growth 1.2 -> 1.4, no plated, swarm or raid lever), Crysium Vein
+Medium (no plated lever), Fault Line Hard and Psycho, Quartz Flats Hard and Psycho, Crysium Vein Hard and Psycho
+(the Hard and Psycho weights), Shard Ridge Hard and Psycho (the crowd, Psycho's swarm weight 1.25 -> 1.5), Landing
+Site Hard and Psycho and Glass Meadows Hard and Psycho (tempo, raid). Eleven cells have the same bodies in every wave (every Easy cell, four Medium cells, Landing Site Hard); over all 24 the bodies move by -7 to +22 % (Shard Ridge Psycho) and the paper health by -5 to +16 % (Crysium Vein Hard).
+
 ## How to balance a new level (round 83)
 
 The model shapes a level; it does not know how tough it is as played to better than a quarter. So the last step is
 measured, by one procedure that is the same for every level.
 
 1. Write the level's script (roster, rhythm, raids, bosses, teasers; its own surprises and road plan where wanted) and
-   make its map. No scale, no lever: the cell starts at scalar one, on top of the difficulty's factor.
+   make its map. No scale, no lever: the cell starts at scalar one, on top of the difficulty's factor, and what its
+   waves are made of per difficulty (plated and swarm weight, the growth of plated troops) is `BalanceRules`
+   ("What a wave is made of", above). `wave_tuning.txt` takes the cell's scalar from step 5 and nothing else.
 2. Solve: `unity command run_script --file Tools/PlayTest/Scripts/ApplyRound68.cs --entry ApplyRound68.Run --timeout_ms 900000 --timeout 960`.
 3. Search the skilled rung's strategies for the level (`PlanSearchTests` with `levels=<node>`, two minutes a level),
    play every candidate on the standard ladder and pick per cell the one that breaks even highest
@@ -421,7 +453,9 @@ measured, by one procedure that is the same for every level.
    won by both rungs with room.
 6. Solve again and measure on the standard ladder (`pressure.sh "<node>" "0,1,2,3"`, 120 runs). A cell whose reference
    rung reads its target is done; else `closed_loop.py` once more (the scalar is a plain factor, so one pass lands
-   within a ladder step unless the bot takes another build).
+   within a ladder step unless the bot takes another build). A cell that two passes read on opposite sides of its
+   target is bisected (round 84): the geometric middle of the two scales, not the loop's factor a third time. A
+   scalar the loop asks outside 0.7 to 1.4 stays on the bound and the cell is reported (Quartz Flats Hard, 0.7).
 7. Gates: `ClosedLoopAcceptanceTests` (round 83b: every cell's reference rung breaks even within one ladder step of
    its target in the measurement named in `Tools/PlayTest/closed_loop_records.txt`, Easy is won on every seed at the
    data and holds the ladder, Hard breaks the sensible rung earlier than Medium on every level; a measurement of

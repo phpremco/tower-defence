@@ -49,7 +49,6 @@ namespace Game.Editor
             plans.RemoveAll(r => r.FreshPlayer);
             Dictionary<(string Key, int Difficulty), float> scales = WaveTuning.Read();
             Dictionary<string, int> moves = ReadIterations();
-            Dictionary<(string Key, int Difficulty), ScriptLever> levers = WaveTuning.ReadLevers();
             var questions = new List<string>();
             bool changed = false;
             // The in-play ramp (round 22e): a cell the verdicts leave alone but that plays easier than the level before is nudged harder.
@@ -98,29 +97,17 @@ namespace Game.Editor
                         continue;
                     }
 
-                    // One script lever, counted as a move: the next of plated troops, tempo, an early raid; null when all are in.
-                    bool ScriptLeverMove(string why)
-                    {
-                        ScriptLever current = levers.TryGetValue((key, d), out ScriptLever l) ? l : ScriptLever.None;
-                        string applied = used < BuilderIterations ? NextScriptLever(ref current) : null;
-                        if (applied == null)
-                        {
-                            questions.Add(Invariant($"{map.Level.name} {DifficultyName(d)}: still {state} after {used} moves (plated {current.Plated:0.##}, swarm {current.Swarm:0.##}, tempo {current.Tempo:0.##}, raid wave {current.Raid}) ({why}); a design choice is needed."));
-                            return false;
-                        }
-
-                        levers[(key, d)] = current;
-                        moves[cell] = used + 1;
-                        changed = true;
-                        text.Append(Invariant($"    -> script lever: {applied} ({why})\n"));
-                        return true;
-                    }
+                    // The builder had script levers per cell until round 84 (plated, swarm, tempo, an early raid). They are rules
+                    // per difficulty now (BalanceRules) or gone, so a cell the scale cannot settle is a question for the level's
+                    // script or map; how tough the cell plays is the closed loop's (Docs/WAVE_GRAMMAR.md).
+                    void Ask(string why) =>
+                        questions.Add(Invariant($"{map.Level.name} {DifficultyName(d)}: still {state} after {used} moves ({why}); a question for the level's script or map (the composition is a rule per difficulty, the level as played the closed loop's)."));
 
                     // Psycho must ask more than Hard (the curator's answer 4, round 22f): where the paper says it does not, the solver's
-                    // scale cannot reach the Psycho curve there, so a script lever goes on the Psycho cell and the target is not lowered.
+                    // scale cannot reach the Psycho curve there, so the cell is asked about and the target is not lowered.
                     if (d == AcceptanceRules.Psycho && paper != null && paper[d] <= paper[d - 1])
                     {
-                        ScriptLeverMove(Invariant($"on paper Psycho asks no more than Hard: plain {paper[d]:0.00} against {paper[d - 1]:0.00}"));
+                        Ask(Invariant($"on paper Psycho asks no more than Hard: plain {paper[d]:0.00} against {paper[d - 1]:0.00}"));
                         continue;
                     }
 
@@ -134,11 +121,11 @@ namespace Game.Editor
                         continue;
                     }
 
-                    // A cell still too easy after a scale move gets a script-level lever instead (the curator's decision 4, round 22e):
-                    // the scale evidently does not bite there (C1_01 Easy and Hard keep the base whole at any scale).
+                    // A cell still too easy after a scale move is asked about (round 22e gave it a script lever; round 84 took
+                    // those away): the scale evidently does not bite there.
                     if (lever == AcceptanceRules.Lever.Harder && used >= 1)
                     {
-                        ScriptLeverMove(reason);
+                        Ask(reason);
                         continue;
                     }
 
@@ -159,7 +146,7 @@ namespace Game.Editor
 
             if (changed)
             {
-                WaveTuning.Write(scales, levers);
+                WaveTuning.Write(scales);
                 WriteIterations(moves);
                 text.Append("  tuning written to ").Append(WaveTuning.Path).Append("; solving the waves.\n");
                 SolveWaves();
@@ -220,42 +207,6 @@ namespace Game.Editor
             return floor > waves.Count
                 ? "the Easy raid rule removes the raids (the kills never pay for a sky gun); no lever this round"
                 : Invariant($"the Easy raid rule moves the first raid from wave {written} to wave {floor} at this solve; no lever this round");
-        }
-
-        // The script levers in order (the curator's decision 4; round 27 adds the swarm): plated troops against a light row, swarm
-        // troops against a splash row, a faster tempo, then a small early raid of spread runners. Each is applied once; null when all are in.
-        private const float PlatedLeverStep = 1.5f;
-        private const float SwarmLeverStep = 1.5f;
-        private const float TempoLeverStep = 0.85f;
-        private const int RaidLeverWave = 3;
-
-        private static string NextScriptLever(ref ScriptLever lever)
-        {
-            if (lever.Plated == 1f)
-            {
-                lever.Plated = PlatedLeverStep;
-                return Invariant($"plated troops weighted x{PlatedLeverStep}");
-            }
-
-            if (lever.Swarm == 1f)
-            {
-                lever.Swarm = SwarmLeverStep;
-                return Invariant($"swarm troops weighted x{SwarmLeverStep} (round 27: small, unarmoured bodies against a splash row)");
-            }
-
-            if (lever.Tempo == 1f)
-            {
-                lever.Tempo = TempoLeverStep;
-                return Invariant($"tempo x{TempoLeverStep} (groups come faster)");
-            }
-
-            if (lever.Raid == 0)
-            {
-                lever.Raid = RaidLeverWave;
-                return Invariant($"a raid of fast, spread runners opens wave {RaidLeverWave}");
-            }
-
-            return null;
         }
 
         [MenuItem("Tools/Generate/Balance/6b Build from stage-B verdicts (lever once, solve)")]

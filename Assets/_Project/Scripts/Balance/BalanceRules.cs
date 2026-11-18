@@ -246,7 +246,8 @@ namespace Game.Balance
         /// </summary>
         // Round 83b: the geometric means of the first continent's 24 scalars after three passes of the closed loop
         // (0.98 / 1.31 / 1 / 0.87 was the first guess, the level of round 82).
-        public float[] DifficultyScale = { 0.981f, 1.365f, 1.051f, 0.936f };
+        // Round 84: 0.981 / 1.365 / 1.051 / 0.936 times the means of the pass after the composition levers became rules.
+        public float[] DifficultyScale = { 0.982f, 1.369f, 0.993f, 0.918f };
 
         public float DifficultyScaleFor(int difficulty) => DifficultyScale.Length == 0 ? 1f : DifficultyScale[System.Math.Min(difficulty, DifficultyScale.Length - 1)];
 
@@ -388,13 +389,52 @@ namespace Game.Balance
         public float LevelBossGrowthCapFor(int difficulty) => LevelBossGrowthCap.Length == 0 ? BossWaveCap : LevelBossGrowthCap[System.Math.Min(difficulty, LevelBossGrowthCap.Length - 1)];
 
         /// <summary>
-        /// The share of a wave's budget its crowd keeps when a boss leads the wave (the composer's constant until round 65).
-        /// A cell may thin the crowd of its boss waves further with the script lever "bosscrowd"
-        /// (<see cref="WaveScriptSpec.BossCrowd"/>). Round 64 left Shard Ridge Hard's last boss at its floor because the crowd took all
-        /// the room; thinning every boss wave of the campaign (tried at 0.35 in round 65) made the mid-level bosses of four
-        /// other cells half again as tough and lost two cells, so the lever is per cell.
+        /// The share of a wave's budget its crowd keeps when a boss leads the wave (the composer's constant until round 65),
+        /// on every level and difficulty. Rounds 65 to 83 let a cell thin it further (the lever "bosscrowd", Shard Ridge
+        /// Hard and Psycho at 0.35, so the crowd left the boss room under the cap). Since round 83 the solver gives the
+        /// crowd's health way to the boss by rule, so the lever went in round 84.
         /// </summary>
         public float BossWaveShare = 0.6f;
+
+        /// <summary>
+        /// The growth layer of the combat rules (Docs/COMBAT_RULES.md, section 6), Easy to Psycho: the factor the plated
+        /// troops of a wave gain in number with each wave past the grace window of their trait (<see cref="GrowthWindow"/>),
+        /// through the waves a defence without the counter must fall in. One is no growth. It applies where armour is the
+        /// only counter trait a difficulty of a level sends (<see cref="WaveComposer.GrowthOn"/>: no flyer in any of its
+        /// waves). Where flyers come too, the raids end a defence that lacks a counter (the grace report: every such row
+        /// falls to a raid), and growth on top was measured (round 68: no plan won Shard Ridge Hard or Quartz Flats Easy)
+        /// and read on paper (round 84: six and seven waves of Shard Ridge Hard and Psycho two to four times over the hero
+        /// cap) as more than those levels carry. Rounds 68 to 83 wrote it per cell (the lever "armourgrowth", on the two
+        /// levels without flyers).
+        /// </summary>
+        public float[] ArmourGrowth = { 1.4f, 1.4f, 1.5f, 1.5f };
+
+        public float ArmourGrowthFor(int difficulty) => At(ArmourGrowth, difficulty);
+
+        /// <summary>The same for flyers (the raids, the sprinkle, a flying troop). Built in round 68 and never set: one on every difficulty.</summary>
+        public float[] AirGrowth = { 1f, 1f, 1f, 1f };
+
+        public float AirGrowthFor(int difficulty) => At(AirGrowth, difficulty);
+
+        /// <summary>
+        /// The weight of plated troops in every fill of a wave, Easy to Psycho (1 = as the level's roster writes them): on
+        /// the harder difficulties more of a wave's budget goes to armour, so the anti-armour gun is asked for in numbers.
+        /// The builder's per-cell lever "plated" until round 84 (eleven cells, nine of them Hard or Psycho at 1.5).
+        /// </summary>
+        public float[] PlatedBias = { 1f, 1f, 1.5f, 1.5f };
+
+        public float PlatedBiasFor(int difficulty) => At(PlatedBias, difficulty);
+
+        /// <summary>
+        /// The weight of swarm troops (no armour, at most twice the health of the lightest troop of the fill) in every fill,
+        /// Easy to Psycho: on the harder difficulties more small bodies than a blast catches. The builder's per-cell lever
+        /// "swarm" until round 84 (eight cells, seven of them Hard or Psycho).
+        /// </summary>
+        public float[] SwarmBias = { 1f, 1f, 1.5f, 1.5f };
+
+        public float SwarmBiasFor(int difficulty) => At(SwarmBias, difficulty);
+
+        private static float At(float[] values, int difficulty) => values == null || values.Length == 0 ? 1f : values[System.Math.Min(difficulty, values.Length - 1)];
 
         /// <summary>
         /// The Easy raid rule (the curator, round 22f): on Easy the first air raid comes no earlier than the wave by which the

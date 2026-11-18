@@ -5,86 +5,33 @@ using Game.Balance;
 
 namespace Game.Editor
 {
-    /// <summary>The builder's script-level levers of one cell (round 22e): plated weight, tempo and the raid wave; 1, 1 and 0 are "as written".</summary>
-    public struct ScriptLever
-    {
-        public float Plated;
-        public float Swarm;
-        public float Tempo;
-        public int Raid;
-
-        /// <summary>The share of a boss wave's budget its crowd keeps (round 65); zero leaves it to the rules.</summary>
-        public float BossCrowd;
-
-        /// <summary>Growth of plated troops and of flyers per wave past the grace window (round 68); 1 is none.</summary>
-        public float ArmourGrowth;
-        public float AirGrowth;
-
-        public static ScriptLever None => new ScriptLever { Plated = 1f, Swarm = 1f, Tempo = 1f, Raid = 0, BossCrowd = 0f, ArmourGrowth = 1f, AirGrowth = 1f };
-
-        public bool IsNone => Plated == 1f && Swarm == 1f && Tempo == 1f && Raid == 0 && BossCrowd == 0f && ArmourGrowth == 1f && AirGrowth == 1f;
-    }
-
     /// <summary>
-    /// The builder bot's levers (round 22): per level and difficulty a scale on the human target pressure the waves are
-    /// calibrated to (1 = the curve; 1.15 = fifteen percent harder), and since round 22e the script-level levers for cells the
-    /// scale cannot move (the curator's decision 4): plated troops weighted up, a faster tempo, an early raid, and since
-    /// round 65 a thinner crowd on the boss waves. Kept in Tools/PlayTest/wave_tuning.txt ("Key difficulty scale" and
-    /// "Key difficulty plated|swarm|tempo|raid|bosscrowd|armourgrowth|airgrowth value" per line; the last two are round 68's growth past the grace window), written by
-    /// the builder stage for failing cells only, read by <see cref="WaveScripts"/> every time the scripts are built, so the
-    /// generator, the BalanceLab tool and the tests all see the same tuned scripts. Pure C#.
+    /// A cell's scalar from the closed loop (round 83): per level and difficulty one factor on the health of every creature,
+    /// measured against the probe (Tools/PlayTest/closed_loop.py), never typed. Kept in Tools/PlayTest/wave_tuning.txt, one
+    /// line "Key difficulty scale" per cell; a cell not listed is at one. Read by <see cref="WaveScripts"/> every time the
+    /// scripts are built, so the generator, the BalanceLab tool and the tests all see the same scripts. The file holds
+    /// nothing else: the builder's per-cell composition levers of rounds 22 to 68 (plated, swarm, tempo, raid, bosscrowd,
+    /// armourgrowth) are rules per difficulty in <see cref="BalanceRules"/> or gone since round 84. Pure C#.
     /// </summary>
     public static class WaveTuning
     {
         public const string Path = "Tools/PlayTest/wave_tuning.txt";
-        private const string PlatedKey = "plated";
-        private const string SwarmKey = "swarm";
-        private const string TempoKey = "tempo";
-        private const string RaidKey = "raid";
-        private const string BossCrowdKey = "bosscrowd";
-        private const string ArmourGrowthKey = "armourgrowth";
-        private const string AirGrowthKey = "airgrowth";
 
-        /// <summary>Applies the file's scales and levers to the scripts (a script not listed keeps 1 on every difficulty).</summary>
+        /// <summary>Applies the file's scalars to the scripts (a script not listed keeps 1 on every difficulty).</summary>
         public static void Apply(IEnumerable<WaveScriptSpec> scripts)
         {
             Dictionary<(string, int), float> scales = Read();
-            Dictionary<(string, int), ScriptLever> levers = ReadLevers();
             foreach (WaveScriptSpec script in scripts)
             {
                 var values = new float[4];
-                var plated = new float[4];
-                var swarm = new float[4];
-                var tempo = new float[4];
-                var raid = new int[4];
-                var bossCrowd = new float[4];
-                var armourGrowth = new float[4];
-                var airGrowth = new float[4];
                 bool any = false;
-                bool anyLever = false;
                 for (int d = 0; d < values.Length; d++)
                 {
                     values[d] = scales.TryGetValue((script.Key, d), out float scale) ? scale : 1f;
                     any |= values[d] != 1f;
-                    ScriptLever lever = levers.TryGetValue((script.Key, d), out ScriptLever found) ? found : ScriptLever.None;
-                    plated[d] = lever.Plated;
-                    swarm[d] = lever.Swarm;
-                    tempo[d] = lever.Tempo;
-                    raid[d] = lever.Raid;
-                    bossCrowd[d] = lever.BossCrowd;
-                    armourGrowth[d] = lever.ArmourGrowth;
-                    airGrowth[d] = lever.AirGrowth;
-                    anyLever |= !lever.IsNone;
                 }
 
                 script.TargetScale = any ? values : new[] { 1f };
-                script.PlatedBias = anyLever ? plated : new[] { 1f };
-                script.SwarmBias = anyLever ? swarm : new[] { 1f };
-                script.Tempo = anyLever ? tempo : new[] { 1f };
-                script.RaidWave = anyLever ? raid : new[] { 0 };
-                script.BossCrowd = anyLever ? bossCrowd : new[] { 0f };
-                script.ArmourGrowth = anyLever ? armourGrowth : new[] { 1f };
-                script.AirGrowth = anyLever ? airGrowth : new[] { 1f };
                 script.GraceWaves = GrowthWindow.GraceWaves;
                 script.FallWithinWaves = GrowthWindow.FallWithinWaves;
             }
@@ -105,52 +52,24 @@ namespace Game.Editor
             return scales;
         }
 
-        public static Dictionary<(string Key, int Difficulty), ScriptLever> ReadLevers()
+        /// <summary>The lines of the file that are not a cell's scalar: none are allowed (a test holds the file to its format).</summary>
+        public static List<string> OtherLines()
         {
-            var levers = new Dictionary<(string, int), ScriptLever>();
+            var others = new List<string>();
             foreach (string[] parts in Lines())
             {
-                if (parts.Length != 4 || !int.TryParse(parts[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int difficulty)
-                    || !float.TryParse(parts[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float value))
+                bool scalar = parts.Length == 3 && int.TryParse(parts[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out _)
+                    && float.TryParse(parts[2], NumberStyles.Float, CultureInfo.InvariantCulture, out _);
+                if (!scalar && string.Join(" ", parts).Trim().Length > 0)
                 {
-                    continue;
+                    others.Add(string.Join(" ", parts));
                 }
-
-                ScriptLever lever = levers.TryGetValue((parts[0], difficulty), out ScriptLever found) ? found : ScriptLever.None;
-                switch (parts[2])
-                {
-                    case PlatedKey:
-                        lever.Plated = value;
-                        break;
-                    case SwarmKey:
-                        lever.Swarm = value;
-                        break;
-                    case TempoKey:
-                        lever.Tempo = value;
-                        break;
-                    case RaidKey:
-                        lever.Raid = (int)value;
-                        break;
-                    case BossCrowdKey:
-                        lever.BossCrowd = value;
-                        break;
-                    case ArmourGrowthKey:
-                        lever.ArmourGrowth = value;
-                        break;
-                    case AirGrowthKey:
-                        lever.AirGrowth = value;
-                        break;
-                }
-
-                levers[(parts[0], difficulty)] = lever;
             }
 
-            return levers;
+            return others;
         }
 
-        public static void Write(Dictionary<(string Key, int Difficulty), float> scales) => Write(scales, ReadLevers());
-
-        public static void Write(Dictionary<(string Key, int Difficulty), float> scales, Dictionary<(string Key, int Difficulty), ScriptLever> levers)
+        public static void Write(Dictionary<(string Key, int Difficulty), float> scales)
         {
             var lines = new List<string>();
             foreach (KeyValuePair<(string Key, int Difficulty), float> pair in scales)
@@ -158,45 +77,6 @@ namespace Game.Editor
                 if (pair.Value != 1f)
                 {
                     lines.Add(pair.Key.Key + " " + pair.Key.Difficulty.ToString(CultureInfo.InvariantCulture) + " " + pair.Value.ToString("0.###", CultureInfo.InvariantCulture));
-                }
-            }
-
-            foreach (KeyValuePair<(string Key, int Difficulty), ScriptLever> pair in levers)
-            {
-                string cell = pair.Key.Key + " " + pair.Key.Difficulty.ToString(CultureInfo.InvariantCulture) + " ";
-                if (pair.Value.Plated != 1f)
-                {
-                    lines.Add(cell + PlatedKey + " " + pair.Value.Plated.ToString("0.###", CultureInfo.InvariantCulture));
-                }
-
-                if (pair.Value.Swarm != 1f)
-                {
-                    lines.Add(cell + SwarmKey + " " + pair.Value.Swarm.ToString("0.###", CultureInfo.InvariantCulture));
-                }
-
-                if (pair.Value.Tempo != 1f)
-                {
-                    lines.Add(cell + TempoKey + " " + pair.Value.Tempo.ToString("0.###", CultureInfo.InvariantCulture));
-                }
-
-                if (pair.Value.Raid != 0)
-                {
-                    lines.Add(cell + RaidKey + " " + pair.Value.Raid.ToString(CultureInfo.InvariantCulture));
-                }
-
-                if (pair.Value.BossCrowd != 0f)
-                {
-                    lines.Add(cell + BossCrowdKey + " " + pair.Value.BossCrowd.ToString("0.###", CultureInfo.InvariantCulture));
-                }
-
-                if (pair.Value.ArmourGrowth != 1f)
-                {
-                    lines.Add(cell + ArmourGrowthKey + " " + pair.Value.ArmourGrowth.ToString("0.###", CultureInfo.InvariantCulture));
-                }
-
-                if (pair.Value.AirGrowth != 1f)
-                {
-                    lines.Add(cell + AirGrowthKey + " " + pair.Value.AirGrowth.ToString("0.###", CultureInfo.InvariantCulture));
                 }
             }
 

@@ -136,35 +136,6 @@ namespace Game.Balance
 
         public float TargetScaleFor(int difficulty) => TargetScale == null || TargetScale.Length == 0 ? 1f : TargetScale[difficulty < TargetScale.Length ? difficulty : TargetScale.Length - 1];
 
-        /// <summary>
-        /// The builder's script-level levers per difficulty (round 22e, the curator's decision 4; WaveTuning): the weight of plated
-        /// troops in every fill (1 = as written), the tempo of every group's interval (below 1 faster), and a wave that opens with a
-        /// small raid of fast, spread runners (0 = none). For cells the target scale cannot move, such as C1_01 Easy and Hard.
-        /// </summary>
-        public float[] PlatedBias = { 1f };
-
-        /// <summary>Round 27: the weight of swarm troops (no armour, at most twice the health of the lightest troop) in every fill (1 = as written): the runners-and-swarm lever against a splash row.</summary>
-        public float[] SwarmBias = { 1f };
-        public float[] Tempo = { 1f };
-        public int[] RaidWave = { 0 };
-
-        /// <summary>
-        /// The share of a boss wave's budget its crowd keeps on this script, per difficulty (the lever "bosscrowd", round 65);
-        /// zero leaves it to <see cref="BalanceRules.BossWaveShare"/>.
-        /// </summary>
-        public float[] BossCrowd = { 0f };
-
-        /// <summary>
-        /// Growth after a counter trait appears (round 68, Docs/COMBAT_RULES.md "Growth: the grace window"), per difficulty:
-        /// the factor the plated troops' weight in every fill gains with each wave past the grace window (1 = no growth). The
-        /// first wave with a plated troop opens the window; while it lasts the troops come as written, so a few guns that are
-        /// not made for armour may still hold. The lever "armourgrowth" (WaveTuning).
-        /// </summary>
-        public float[] ArmourGrowth = { 1f };
-
-        /// <summary>The same for flyers: the factor an air raid, the sprinkle and a flying troop gain per wave past the window. The lever "airgrowth".</summary>
-        public float[] AirGrowth = { 1f };
-
         /// <summary>Waves of grace per difficulty after a counter trait first appears (the combat rules' window; the generator writes both from one table).</summary>
         public int[] GraceWaves = { 0 };
 
@@ -173,10 +144,6 @@ namespace Game.Balance
 
         public int FallWithinWavesFor(int difficulty) => FallWithinWaves == null || FallWithinWaves.Length == 0 ? 0 : FallWithinWaves[difficulty < FallWithinWaves.Length ? difficulty : FallWithinWaves.Length - 1];
 
-        public float ArmourGrowthFor(int difficulty) => At(ArmourGrowth, difficulty, 1f);
-
-        public float AirGrowthFor(int difficulty) => At(AirGrowth, difficulty, 1f);
-
         public int GraceWavesFor(int difficulty) => GraceWaves == null || GraceWaves.Length == 0 ? 0 : GraceWaves[difficulty < GraceWaves.Length ? difficulty : GraceWaves.Length - 1];
 
         /// <summary>The composer's memory of the wave each counter trait first appears in, per difficulty (<see cref="WaveComposer.Growth"/>).</summary>
@@ -184,16 +151,6 @@ namespace Game.Balance
 
         /// <summary>The grammar's memory of the waves that carry a surprise, per difficulty (<see cref="WaveGrammar.SurpriseOn"/>).</summary>
         internal readonly System.Collections.Generic.Dictionary<long, SurpriseKind[]> SurprisePlans = new System.Collections.Generic.Dictionary<long, SurpriseKind[]>();
-
-        public float BossCrowdFor(int difficulty) => At(BossCrowd, difficulty, 0f);
-
-        public float PlatedBiasFor(int difficulty) => At(PlatedBias, difficulty, 1f);
-
-        public float SwarmBiasFor(int difficulty) => At(SwarmBias, difficulty, 1f);
-
-        public float TempoFor(int difficulty) => At(Tempo, difficulty, 1f);
-
-        public int RaidWaveFor(int difficulty) => RaidWave == null || RaidWave.Length == 0 ? 0 : RaidWave[difficulty < RaidWave.Length ? difficulty : RaidWave.Length - 1];
 
         private static float At(float[] values, int difficulty, float fallback) => values == null || values.Length == 0 ? fallback : values[difficulty < values.Length ? difficulty : values.Length - 1];
 

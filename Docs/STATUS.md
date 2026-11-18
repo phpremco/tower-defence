@@ -14021,3 +14021,177 @@ written; `armourgrowth` and `raid` are the two early levels only.
    Shard Ridge (the one that felt weak) by hand first.
 3. **One step is as fine as this ladder measures.** Recommendation: accept "within a step" as done for the first
    continent and spend the next round on the skilled rung and the per-cell levers, not on a fourth pass.
+
+## Round 84: the composition levers are rules per difficulty, a surprise wave no longer lifts the waves after it (2026-11-18)
+
+Not committed. One agent, on HEAD cbc50993. The bot was not touched (every records file carries `bot=3:375f514b`). The
+final measurement is `Tools/PlayTest/pressure_r84_final_records.txt` (720 runs, five workers `Passed`, 0 probe errors,
+`data=a0336c45; game=d51a9978`). No worker process is left.
+
+**Remco's save.** Until 17:04 `progress.json` had MD5 7a848003ed6b1261e4bb58757548727b after every batch. Remco then
+played in the open editor (level 1 on Easy, Medium and Hard), so the save changed legitimately. At 18:13 a grace
+measurement was running through `workers.sh`, which restores the save it copied at its start (18:01) when the save
+changes during the run; Remco had saved at 18:11. That chain was killed (its bash processes first, then its five
+worker editors) before it reached the restore, the save was left as Remco wrote it (MD5 d5b04a5d... at that moment),
+and the gates were run again through `workers_keepsave.sh`, which never writes the save. Nothing of this round wrote
+to the save. From the moment he played, nothing was run in the open editor: the last solve (17:03) was done with
+`playMode` stopped, and **the open editor holds round 84's waves, so what Remco played after 17:03 are these waves**
+(before that: round 83b's or the passes in between; level 1 on Easy and Medium has the same bodies in every wave
+throughout, with scales within 0.3 %; level 1 Hard lost its faster tempo, at the same scale).
+
+### What changed, and why
+
+1. **The 36 per-cell levers of `wave_tuning.txt` are gone**; the file holds the 24 scalars of the closed loop and
+   nothing else (`WaveTuning` reads no other line; test `Round83Tests.TheTuningFile_HoldsACellsScalar_AndNothingElse`).
+   The evidence per lever is in Docs/WAVE_GRAMMAR.md, "What a wave is made of" (ledger lab runs
+   `wave_ledger_r84_*.txt`, `ledger_compare.py`, `ledger_held.py`):
+
+   | Lever | Was | Now |
+   | --- | --- | --- |
+   | `plated` | 11 cells | `BalanceRules.PlatedBias` 1 / 1 / 1.5 / 1.5 on every level |
+   | `swarm` | 8 cells | `BalanceRules.SwarmBias` 1 / 1 / 1.5 / 1.5 on every level |
+   | `armourgrowth` | 8 cells (the two levels without flyers) | `BalanceRules.ArmourGrowth` 1.4 / 1.4 / 1.5 / 1.5 where a difficulty of a level sends no flyers (`WaveComposer.GrowthOn`) |
+   | `tempo` | 3 cells | dropped |
+   | `raid` | 4 cells | dropped (`WaveComposer.AddRaid` deleted) |
+   | `bosscrowd` | 2 cells | dropped: `BossWaveShare` 0.6 everywhere |
+
+   **The growth could not become "every level alike".** Tried on paper first: ground health x1.3 to x2.8 on the four
+   levels with flyers, six and seven waves of Shard Ridge Hard and Psycho two to four times over the hero cap, four
+   of Crysium Vein Medium (`wave_ledger_r84_rules.txt` against `r84_rules2`). Without any growth Landing Site and
+   Glass Meadows lose their armour window (round 67: the Gun Turret row won them). So the rule carries a condition
+   read from the level's own roster: armour grows where it is the only counter trait the difficulty sends. That is
+   one rule for level 7 as well, but it is the weakest of the six: see the questions.
+   The old builder stage (`BalanceStages.BuildFromVerdicts`) no longer moves a script lever; it asks a question.
+2. **A surprise wave stands in the band and the median as the wave it would be without its surprise**
+   (`WaveSolver.Solve(..., calm)`, `CampaignModel.SolveDifficulty`: a difficulty that carries surprises is solved
+   once without them, as a reference only). The brief's first idea, the median over the non-surprise waves, was
+   built and measured first: Crysium Vein Psycho wave 16 went from x1.61 to x1.55 above the calm level. The channel
+   was the band (the swarm sits 1.3 times over the toughest of the three ground waves before it, and wave 9, a rift
+   surprise, stood at x4.5 where the calm wave is x2.3). With the reference: x1.00. The solve stage takes about 3.5
+   seconds (was 2 to 3).
+3. **`WaveGrammarTests.ASurprise_MakesNoOtherWaveTougher` judges swarms now** (see "Tests changed").
+4. **Three allowances shortened** (`GraceWindows.cs`): Glass Meadows Medium armour 2 -> 1; Fault Line Easy air and
+   Fault Line Psycho air removed (unused in rounds 83b and 84). 18 allowances stand. Glass Meadows Psycho uses 2 of
+   3 and Shard Ridge Psycho 5 of 7 in this round only; left alone until a second round agrees.
+5. **The closed loop, two passes** (M1 `pressure_r84_m1_records.txt` on round 83b's scalars with the new rules, M2
+   `pressure_r84_m2_records.txt`, then the final). M1: 17 of 24 on target with no scalar moved; Landing Site Psycho
+   two steps tough, Glass Meadows Medium held the ladder, Quartz Flats Hard a step tough. The means were folded:
+   `DifficultyScale` 0.982 / 1.369 / 0.993 / 0.918 (was 0.981 / 1.365 / 1.051 / 0.936). After M2 five cells moved:
+   four by bisection between two passes that read them on opposite sides (Glass Meadows Medium 1.061, Glass Meadows
+   Hard 1.232, Landing Site Psycho 1.198, Fault Line Hard 1.104) and Quartz Flats Hard to the bound 0.7 (the loop
+   asked 0.657).
+
+### Final tables against round 83b (seeds won at x0.8 / 0.9 / 1 / 1.12 / 1.25; `r84_tables.md`, `round_tables.py`)
+
+| Cell | Sensible, round 83b | Sensible, round 84 | Skilled, round 83b | Skilled, round 84 | Reference rung's break-even, round 83b -> round 84 (target) |
+| --- | --- | --- | --- | --- | --- |
+| Landing Site Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 2 3 | 3 3 3 2 3 | over x1.32 -> over x1.32 (x1.4) |
+| Landing Site Medium | 3 3 3 2 0 | 3 3 3 2 0 | 3 3 2 1 0 | 3 3 2 1 0 | x1.18 -> x1.18 (x1.18) |
+| Landing Site Hard | 3 3 1 0 0 | 3 2 1 0 0 | 3 3 2 0 0 | 3 3 3 1 0 | x0.95 -> x0.95 (x0.95) |
+| Landing Site Psycho | 0 0 0 0 0 | 1 0 0 0 0 | 3 3 2 0 0 | 3 2 1 1 0 | x1.06 -> x0.95 (x1.06) |
+| Glass Meadows Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | over x1.32 -> over x1.32 (x1.4) |
+| Glass Meadows Medium | 3 3 2 1 0 | 3 3 3 1 0 | 3 3 3 3 0 | 3 3 1 0 0 | x1.06 -> x1.06 (x1.18) |
+| Glass Meadows Hard | 3 3 0 0 0 | 3 3 1 0 0 | 3 3 3 0 0 | 3 3 2 0 0 | x0.95 -> x0.95 (x0.95) |
+| Glass Meadows Psycho | 0 0 0 0 0 | 0 0 0 0 0 | 3 3 3 0 0 | 3 3 2 0 0 | x1.06 -> x1.06 (x1.06) |
+| Shard Ridge Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | over x1.32 -> over x1.32 (x1.4) |
+| Shard Ridge Medium | 3 3 3 3 0 | 3 3 3 3 0 | 1 1 2 0 0 | 1 1 2 0 0 | x1.18 -> x1.18 (x1.18) |
+| Shard Ridge Hard | 3 2 1 0 0 | 3 3 1 0 0 | 3 3 2 2 0 | 2 3 2 1 0 | x0.95 -> x0.95 (x0.95) |
+| Shard Ridge Psycho | 0 0 0 0 0 | 0 0 0 0 0 | 3 3 3 0 0 | 3 3 3 1 1 | x1.06 -> x1.06 (x1.06) |
+| Fault Line Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | over x1.32 -> over x1.32 (x1.4) |
+| Fault Line Medium | 3 3 2 2 1 | 3 3 2 3 1 | 3 3 1 1 0 | 3 3 1 1 0 | x1.18 -> x1.18 (x1.18) |
+| Fault Line Hard | 3 3 2 0 0 | 3 2 1 0 0 | 2 0 0 0 0 | 0 0 0 0 0 | x1.06 -> x0.95 (x0.95) |
+| Fault Line Psycho | 3 3 1 0 0 | 3 3 2 0 0 | 3 2 2 0 1 | 3 3 2 1 0 | x1.06 -> x1.06 (x1.06) |
+| Quartz Flats Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | over x1.32 -> over x1.32 (x1.4) |
+| Quartz Flats Medium | 3 3 3 3 0 | 3 3 3 2 0 | 3 3 3 0 0 | 3 3 3 0 0 | x1.18 -> x1.18 (x1.18) |
+| Quartz Flats Hard | 3 3 0 0 0 | 3 2 1 1 1 | 3 3 1 0 0 | 3 3 2 2 0 | x0.95 -> x0.95 (x0.95) |
+| Quartz Flats Psycho | 1 0 0 0 0 | 0 0 0 0 0 | 3 2 1 1 0 | 3 3 2 2 0 | x0.95 -> x1.18 (x1.06) |
+| Crysium Vein Easy | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | 3 3 3 3 3 | over x1.32 -> over x1.32 (x1.4) |
+| Crysium Vein Medium | 3 3 3 2 0 | 3 3 3 2 1 | 3 3 2 0 0 | 3 3 1 0 1 | x1.18 -> x1.18 (x1.18) |
+| Crysium Vein Hard | 3 3 3 0 0 | 3 3 2 0 0 | 1 0 0 0 0 | 3 3 1 0 0 | x1.06 -> x1.06 (x0.95) |
+| Crysium Vein Psycho | 2 0 0 0 0 | 2 0 0 0 0 | 3 3 3 2 0 | 3 3 3 1 0 | x1.18 -> x1.06 (x1.06) |
+| Runs won of 360 | 208 | 211 | 228 | 232 | |
+
+| Difficulty (rung) | Target | Landing Site | Glass Meadows | Shard Ridge | Fault Line | Quartz Flats | Crysium Vein |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Easy (weaker rung) | x1.4 | over x1.32 -> over x1.32 | over x1.32 -> over x1.32 | over x1.32 -> over x1.32 | over x1.32 -> over x1.32 | over x1.32 -> over x1.32 | over x1.32 -> over x1.32 |
+| Medium (sensible) | x1.18 | x1.18 -> x1.18 | x1.06 -> x1.06 | x1.18 -> x1.18 | x1.18 -> x1.18 | x1.18 -> x1.18 | x1.18 -> x1.18 |
+| Hard (sensible) | x0.95 | x0.95 -> x0.95 | x0.95 -> x0.95 | x0.95 -> x0.95 | x1.06 -> x0.95 | x0.95 -> x0.95 | x1.06 -> x1.06 |
+| Psycho (skilled) | x1.06 | x1.06 -> x0.95 | x1.06 -> x1.06 | x1.06 -> x1.06 | x1.06 -> x1.06 | x0.95 -> x1.18 | x1.18 -> x1.06 |
+| Hard, skilled (guard x1.06 for the better rung) | | x1.06 -> x1.06 | x1.06 -> x1.06 | x1.18 -> x1.06 | x0.85 -> under x0.75 | x0.95 -> x1.18 | under x0.75 -> x0.95 |
+
+Scalars (`wave_tuning.txt`, over `DifficultyScale` 0.982 / 1.369 / 0.993 / 0.918):
+
+| Difficulty | Landing Site | Glass Meadows | Shard Ridge | Fault Line | Quartz Flats | Crysium Vein |
+| --- | --- | --- | --- | --- | --- | --- |
+| Easy | 0.963 | 0.963 | 0.963 | 1.204 | 0.963 | 0.963 |
+| Medium | 1.003 | 1.061 | 1.003 | 1.119 | 0.792 | 1.001 |
+| Hard | 1.165 | 1.232 | 0.823 | 1.104 | 0.7 | 1.165 |
+| Psycho | 1.198 | 1.199 | 1.103 | 0.896 | 0.895 | 0.88 |
+
+Reading:
+- **Every cell reads within one ladder step of its target; 20 of 24 read the target itself** (round 83b: 19). A step
+  off: Landing Site Psycho (x0.95, tough; it read x0.85 and x1.18 in the two passes before), Glass Meadows Medium
+  (x1.06, tough, for the third measurement in a row at scalars 1.004, 1.121 and 1.061, with "holds the ladder" at
+  1.004 in between: the cell flips on which build the bot takes), Crysium Vein Hard (x1.06, soft, kept by the guard
+  as in round 83b), Quartz Flats Psycho (x1.18, soft; x1.06 on the same scale one pass earlier).
+- **Hard is above Medium for the same player on all six levels.** Fault Line Hard reads its target now.
+- **Quartz Flats Hard sits on the scalar's lower bound (0.7)** and the sensible rung's row is not monotone
+  (`3 2 1 1 1`). The Hard weights (plated and swarm at 1.5, which the cell did not have) are what the sensible bot
+  handles worst there; the skilled rung reads x1.18. The cell is on target, but it is the one to watch.
+- **The skilled rung is still the weak instrument**: its pick loses Fault Line Hard 0 of 15 and Shard Ridge Medium
+  4 of 15, and the composition of ten Hard and Psycho cells moved under picks that were not refreshed (no bot change
+  in this batch). Psycho hangs on it.
+
+### Gates
+
+- **Closed-loop acceptance** (`closed_loop_records.txt` -> the final records): 24 of 24 accepted.
+- **Finale probe** on the final waves: 24 of 24 boss cells won at the data; no boss health moved and the finale stage
+  was not run. Medium holding points: Gravemaw x1.183, Cinder Matriarch x1.183, Frost Warden x1.134 (was x1.183),
+  Rotbloom x1.088 (was x1.134), the Shattered x1.342 (was x1.183), the Sealed One x1.4.
+- **Grace windows** (measured on the final waves; the report was written by `CombatRulesTests` on w6, because the
+  open editor was in Play Mode): 94 rows: 51 in time, 1 early, 36 late inside an allowance, 6 not judged (round
+  83b: 53 / 1 / 34 / 6). The gate holds, no allowance was added, three were shortened (item 4). Two rows went from
+  in time to one wave late inside an allowance that stood (Glass Meadows Hard and Crysium Vein Medium, Laser row).
+- **EditMode, whole suite on w6, final state: 1192 tests, 1140 passed, 0 failed, 52 skipped** (round 83b: 1191 /
+  1139 / 0 / 52; one test added).
+- **Not run:** `SurpriseLiftLab.cs`, `GraceReport.cs` and the ledger lab on the final scalars in the open editor
+  (Play Mode); the surprise test passed on w6 with the bounds measured one pass earlier. `pressure_killers.py`.
+
+### Tests changed, and why
+
+- `WaveGrammarTests.ASurprise_MakesNoOtherWaveTougher`: the swarm exemption is gone (a swarm is judged at x1.25,
+  measured x1.23 on Glass Meadows Psycho wave 11; it was not judged at all and stood at x1.59). A boss wave is read
+  on the health of the whole wave, boss included, at x1.3 (it was the crowd's multiplier at x1.15): the crowd is
+  what is left beside the boss, so 5 % more wave read as 39 % more crowd on Crysium Vein Medium wave 18, and the old
+  reading did not see the boss at all (Shard Ridge Psycho wave 10: the boss x1.29 with surprises). Plain waves and
+  raids keep x1.15. Stricter for swarms and for bosses, looser for a boss wave's crowd.
+- `CombatRulesTests.PlatedTroops_ComeAsWrittenThroughTheWindow_AndGrowAfterIt`: the growth is read from the rules
+  (two `BalanceRules`, one script); same assertions.
+- New: `Round83Tests.TheTuningFile_HoldsACellsScalar_AndNothingElse`.
+
+### Known and open
+
+- The picks (above): a bot batch of its own, before Psycho is trusted to a step.
+- `workers.sh` restores the save when it changes during a run; `pressure.sh` and `finale_workers.sh` only warn.
+  While Remco plays, only `workers_keepsave.sh`. Making "never restore" the default wants a decision.
+- Unused since round 83, still there: `BalanceChecks.CheckHumanTarget`, `HumanTargetTolerance`, `ScaleRefit.cs`; the
+  old builder stage (`BuildFromVerdicts`) types scales and has no use beside the closed loop.
+- The four old wait loops of earlier sessions (`bash.exe` pairs of 2026-11-15 and 11-17) still run; not this round's.
+- Files of this round: `pressure_r84_m1/m2/final_records.txt`, `closed_loop_r84_*.txt`, `r84_tables.md`,
+  `wave_ledger_r84_*.txt`, `plated_share_r84_rules.txt`, `surprise_lift*.txt`, `finale_probe_r84_pass2.txt`,
+  `grace_windows_r83b.txt`, `wave_tuning_r83b_scalars.txt`, logs `r84_*.log`; tools `r84_lab.sh`,
+  `ledger_compare.py`, `ledger_held.py`, `round_tables.py`, `Scripts/PlatedShareLab.cs`, `Scripts/SurpriseLiftLab.cs`.
+
+### Questions for Remco
+
+1. **Armour growth only where a level sends no flyers.** It is a rule on the roster, not a number per level, but it
+   exists because growth on the four levels with flyers breaks them on paper. Recommendation: keep it for now; the
+   real mend is in the model (slow plated creatures carried over several waves on a long road), a round of its own.
+2. **Hard and Psycho weigh armour and swarms half again as much on every level.** Six cells got that for the first
+   time; Quartz Flats Hard went to the scalar's lower bound for it. Recommendation: keep, and look at Quartz Flats
+   Hard by hand once the targets are settled.
+3. **Boss crowds.** Shard Ridge Hard and Psycho have the full crowd of every other level again and their last boss
+   is lighter on paper (17 and 33 %). A thinner crowd on every Hard and Psycho boss wave would make every boss
+   tougher. Recommendation: decide it together with the boss feedback of today's play.
+4. **No further pass was made**: the targets change with today's feedback (Easy and Medium a little too hard, the
+   bosses, the laser), and the four cells a step off are inside what the ladder resolves.

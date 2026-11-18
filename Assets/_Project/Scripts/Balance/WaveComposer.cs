@@ -21,8 +21,6 @@ namespace Game.Balance
         private const float EscortDelaySeconds = 5f;
         private const float TroopStagger = 2.5f;
         private const float RushBudget = 1.2f;
-        private const int RaidCount = 5;
-        private const float RaidSpread = 2f;
         private const float HeavyBias = 0.6f;
         private const float MinShare = 0.35f;
         private const int MaxGroupCount = 64;
@@ -119,7 +117,7 @@ namespace Game.Balance
 
         /// <summary>
         /// What a counter trait's troops gain on one wave (round 68, the growth layer of the combat rules): 1 up to the end of the
-        /// grace window after the trait's first wave, then the script's growth factor per wave, capped. A defence without the
+        /// grace window after the trait's first wave, then the difficulty's growth factor per wave (BalanceRules.ArmourGrowth), capped. A defence without the
         /// counter tower may hold the first waves of a trait and must lose a few waves later; the player's own curve does not
         /// move, because the solver sizes the wave against a player who buys the counter.
         /// </summary>
@@ -145,11 +143,18 @@ namespace Game.Balance
 
         public static TraitGrowth GrowthOn(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int number, int secondRoad, BalanceRules rules)
         {
-            float armour = script.ArmourGrowthFor(difficulty);
-            float air = script.AirGrowthFor(difficulty);
+            float armour = rules.ArmourGrowthFor(difficulty);
+            float air = rules.AirGrowthFor(difficulty);
             if (armour == 1f && air == 1f)
             {
                 return TraitGrowth.None;
+            }
+
+            // Plated troops grow where armour is the only counter trait the difficulty of the level sends (BalanceRules.ArmourGrowth):
+            // where flyers come too, their raids are what ends a defence that lacks a counter.
+            if (armour != 1f && FirstTraitWave(script, enemies, difficulty, secondRoad, rules, true) > 0)
+            {
+                armour = 1f;
             }
 
             int grace = script.GraceWavesFor(difficulty);
@@ -204,8 +209,7 @@ namespace Game.Balance
             BossSpec boss = BossOn(script, difficulty, number);
             if (boss != null)
             {
-                float crowd = script.BossCrowdFor(difficulty);
-                budget *= crowd > 0f ? crowd : rules.BossWaveShare;
+                budget *= rules.BossWaveShare;
             }
 
             List<TroopSpec> open = Unlocked(script, enemies, number, difficulty, false);
@@ -245,11 +249,6 @@ namespace Game.Balance
                 default:
                     shortfall = Fill(front, frontBudget, open, 1f, fill);
                     break;
-            }
-
-            if (script.RaidWaveFor(difficulty) == number)
-            {
-                AddRaid(front, open, fill.Lanes, random, enemies, rules);
             }
 
             // Clusters and breathers. A boss wave's thin crowd comes in a fixed number of clusters with long breathers, and the
@@ -572,7 +571,7 @@ namespace Game.Balance
                     continue;
                 }
 
-                float interval = (entry.Interval > 0f ? entry.Interval : RosterInterval(fill.Script, entry.Enemy)) * fill.Script.TempoFor(fill.Difficulty)
+                float interval = (entry.Interval > 0f ? entry.Interval : RosterInterval(fill.Script, entry.Enemy))
                     * (entry.Pattern == WavePattern.Swarm ? RushTempo : 1f);
                 bool nest = entry.Kind == SpawnPointKind.Nest;
                 var groups = new List<GroupSpec>
@@ -715,7 +714,7 @@ namespace Game.Balance
             float totalWeight = 0f;
             foreach (TroopSpec troop in troops)
             {
-                totalWeight += Weight(troop, bias, enemies, rules) * PlatedLever(troop, script, difficulty, enemies) * SwarmLever(troop, troops, script, difficulty, enemies);
+                totalWeight += Weight(troop, bias, enemies, rules) * PlatedLever(troop, difficulty, enemies, rules) * SwarmLever(troop, troops, difficulty, enemies, rules);
             }
 
             int order = 0;
@@ -728,7 +727,7 @@ namespace Game.Balance
                 }
 
                 float threat = Threat.Of(enemy, rules);
-                float share = budget * Weight(troop, bias, enemies, rules) * PlatedLever(troop, script, difficulty, enemies) * SwarmLever(troop, troops, script, difficulty, enemies) / totalWeight;
+                float share = budget * Weight(troop, bias, enemies, rules) * PlatedLever(troop, difficulty, enemies, rules) * SwarmLever(troop, troops, difficulty, enemies, rules) / totalWeight;
                 // Growth past a grace window adds bodies on top of the troop's share: the other troops of the wave keep theirs.
                 int wanted = (int)Math.Round(share * Grown(troop, growth, enemies) / threat);
                 int count = Math.Min(MaxGroupCount, Math.Max(share >= threat * MinShare ? 1 : 0, wanted));
@@ -752,7 +751,7 @@ namespace Game.Balance
                 {
                     Enemy = enemy,
                     Count = count,
-                    Interval = troop.Interval * tempo * script.TempoFor(difficulty),
+                    Interval = troop.Interval * tempo,
                     Delay = troop.Delay + extraDelay + order * troopStagger,
                     Source = troop.Source,
                     Path = Road,
@@ -780,11 +779,11 @@ namespace Game.Balance
         private static float Weight(TroopSpec troop, float bias, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules) =>
             troop.Weight * (float)Math.Pow(ThreatOf(troop, enemies, rules), bias);
 
-        // The builder's plated lever (round 22e): armoured troops weigh more in every fill of the difficulty, soft ones as written.
-        private static float PlatedLever(TroopSpec troop, WaveScriptSpec script, int difficulty, IReadOnlyDictionary<string, EnemyStats> enemies)
+        // The plated weight of the difficulty (BalanceRules.PlatedBias): armoured troops weigh more in every fill, soft ones as written.
+        private static float PlatedLever(TroopSpec troop, int difficulty, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules)
         {
             EnemyStats enemy = Get(enemies, troop.Enemy);
-            return enemy != null && enemy.Armor > 0f ? script.PlatedBiasFor(difficulty) : 1f;
+            return enemy != null && enemy.Armor > 0f ? rules.PlatedBiasFor(difficulty) : 1f;
         }
 
         // Round 68, growth: a plated troop and a flying troop come in greater numbers with every wave past their trait's grace window.
@@ -794,13 +793,13 @@ namespace Game.Balance
             return enemy == null ? 1f : (enemy.Armor > 0f ? growth.Armour : 1f) * (enemy.Flies ? growth.Air : 1f);
         }
 
-        // Round 27, the swarm lever: troops without armour and no heavier than twice the lightest troop of the fill weigh more on the
-        // difficulty (the lever against a splash row: more small bodies than a blast can catch), the rest as written.
+        // The swarm weight of the difficulty (BalanceRules.SwarmBias; round 27): troops without armour and no heavier than twice the
+        // lightest troop of the fill weigh more (more small bodies than a blast can catch), the rest as written.
         private const float SwarmHealthShare = 2f;
 
-        private static float SwarmLever(TroopSpec troop, List<TroopSpec> troops, WaveScriptSpec script, int difficulty, IReadOnlyDictionary<string, EnemyStats> enemies)
+        private static float SwarmLever(TroopSpec troop, List<TroopSpec> troops, int difficulty, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules)
         {
-            float bias = script.SwarmBiasFor(difficulty);
+            float bias = rules.SwarmBiasFor(difficulty);
             EnemyStats enemy = Get(enemies, troop.Enemy);
             if (bias == 1f || enemy == null || enemy.Armor > 0f)
             {
@@ -815,20 +814,6 @@ namespace Game.Balance
             }
 
             return enemy.EffectiveHealth <= lightest * SwarmHealthShare ? bias : 1f;
-        }
-
-        // The builder's raid lever (round 22e): the wave opens with a few fast, spread runners of the cheapest troop, ahead of its fill.
-        private static void AddRaid(List<GroupSpec> output, List<TroopSpec> open, int[] lanes, Random random, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules)
-        {
-            List<TroopSpec> runners = Cheapest(open, 1, enemies, rules);
-            EnemyStats enemy = runners.Count > 0 ? Get(enemies, runners[0].Enemy) : null;
-            if (enemy == null)
-            {
-                return;
-            }
-
-            var group = new GroupSpec { Enemy = enemy, Count = RaidCount, Interval = runners[0].Interval * RaidSpread, Delay = 0f, Source = runners[0].Source, Path = Road };
-            Scatter(group, random.Next(0, 1000), LanesFor(enemy, lanes), output, 0, true);
         }
 
         // Flyers split over both flight routes, the second route a little behind the first.

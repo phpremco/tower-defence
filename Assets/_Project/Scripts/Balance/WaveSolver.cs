@@ -102,6 +102,9 @@ namespace Game.Balance
         {
             public float[] Healths;
             public float[] BossScales;
+
+            /// <summary>Per wave the multiplier its creatures walk in with: the solved one times what a capped troop could not buy.</summary>
+            public float[] WalkIn;
         }
 
         /// <summary>
@@ -143,13 +146,15 @@ namespace Game.Balance
         /// alone), <paramref name="withHero"/> the same player with the hero, whom no wave may ask more than the
         /// difficulty's hero cap; <paramref name="levelTarget"/> is the pressure a plain wave asks of the lens on average.
         /// <paramref name="stored"/> is the factor the caller stores the multipliers with (play's correction of the paper):
-        /// the floors of a raid and of a level's boss are floors on the health as stored.
+        /// the floors of a raid and of a level's boss are floors on the health as stored. <paramref name="calm"/> is
+        /// <see cref="Solution.WalkIn"/> of the same difficulty solved without surprises, or null: what a wave that
+        /// carries a surprise counts as for the waves after it.
         /// </summary>
-        public static Solution Solve(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, LevelInput level, DifficultyStats difficulty, int secondRoad, BalanceRules lens, BalanceRules withHero, float levelTarget, float stored = 1f)
+        public static Solution Solve(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, LevelInput level, DifficultyStats difficulty, int secondRoad, BalanceRules lens, BalanceRules withHero, float levelTarget, float stored = 1f, float[] calm = null)
         {
             stored = Math.Max(0.001f, stored);
             int d = difficulty.Index;
-            var solution = new Solution { Healths = new float[script.Waves], BossScales = new float[script.Waves] };
+            var solution = new Solution { Healths = new float[script.Waves], BossScales = new float[script.Waves], WalkIn = new float[script.Waves] };
             float[] shares = Shares(script, enemies, d, secondRoad, lens);
             var recent = new List<float>();
             var ground = new List<float>();
@@ -268,15 +273,22 @@ namespace Game.Balance
                 WaveLine line = Ledger.EvaluateWave(level, solved, difficulty, money, lens, held, next, carried);
                 held = next;
                 purse.Add(solved, line);
+                solution.WalkIn[i] = solved.HealthMultiplier;
+                // What the waves after this one are held against (the band, the median): its creatures as they walk in. A
+                // wave that carries a surprise stands there as the same wave of the level without surprises (round 84): its
+                // creatures are fewer and tougher, and a band or a median they lift would let the waves after it follow (a
+                // late swarm lives on the upper edge of its band: Crysium Vein Psycho wave 16 stood x1.59 above the same
+                // level solved without surprises). So a surprise takes from its own wave and moves no other, by construction.
+                float reference = calm != null && solved.Surprise != SurpriseKind.None ? calm[i] : solved.HealthMultiplier;
                 // The median is read on every ground wave, a boss wave's crowd included, as the gate on the stored waves reads it.
                 if (!raid)
                 {
-                    ground.Add(solved.HealthMultiplier);
+                    ground.Add(reference);
                 }
 
                 if (!raid && boss == null)
                 {
-                    recent.Add(solved.HealthMultiplier);
+                    recent.Add(reference);
                     if (recent.Count > TrendMemory)
                     {
                         recent.RemoveAt(0);

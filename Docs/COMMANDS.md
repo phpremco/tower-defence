@@ -1848,3 +1848,44 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
     `3 0 0 0 0`, the old pick `3 3 2 0 0`). Never delete the old pick before the candidates are played.
   - `PlanSearchTests` with `levels=<n>` writes fewer than five strategies for many cells (one to three on Medium and
     Hard): the ranking then has little to choose from.
+
+## Round 84: composition rules per difficulty, the calm reference of a surprise wave (added 2026-11-18)
+
+- **The design** is in Docs/WAVE_GRAMMAR.md ("What a wave is made of", "The solver" item 4). In code:
+  `BalanceRules.PlatedBias`, `SwarmBias`, `ArmourGrowth`, `AirGrowth` (one value per difficulty), `WaveComposer.GrowthOn`
+  (plated troops grow where the difficulty of the level sends no flyers), `WaveSolver.Solve(..., calm)` and
+  `Solution.WalkIn`, `CampaignModel.SolveDifficulty` (a difficulty with surprises is solved without them first, as a
+  reference only). Gone: `ScriptLever`, the fields `PlatedBias`, `SwarmBias`, `Tempo`, `RaidWave`, `BossCrowd`,
+  `ArmourGrowth`, `AirGrowth` of `WaveScriptSpec`, `WaveComposer.AddRaid`, the lever moves of the old builder stage
+  (`BalanceStages.BuildFromVerdicts` asks a question where it used to move a lever).
+- **`Tools/PlayTest/wave_tuning.txt` holds `Key difficulty scalar` lines only** (`WaveTuning.OtherLines`, test
+  `Round83Tests.TheTuningFile_HoldsACellsScalar_AndNothingElse`). A four-word line is not read any more.
+- **A composition rule on paper, all 24 cells in one call:**
+  `bash Tools/PlayTest/r84_lab.sh <label> ["rule.PlatedBias=1,1,1,1" "rule.ArmourGrowth=1,1,1,1" "grammar.Surprises=false" ...]`
+  writes the lab's arg file and `Tools/PlayTest/wave_ledger_<label>.txt` (`editor_status` first; it retries on
+  `AMBIGUOUS_EDITOR`). Then `python Tools/PlayTest/ledger_compare.py <base label> <label> ... [--cells C1_03:2] [--waves]`
+  (per cell: bodies, ground health, median, softest and toughest wave, spawning seconds; `--waves` every wave that
+  moved, with its boss) and `python Tools/PlayTest/ledger_held.py <label> ...` (the waves over the hero cap per cell).
+  The lab reads the cell's levers from the code, so the base of a comparison must be run **before** the code changes
+  (round 84: `wave_ledger_r84_base.txt`).
+- **How much of a wave is armour:** `Tools/PlayTest/Scripts/PlatedShareLab.cs` (arguments `rule.<Field>=` and `label=` in
+  `Tools/PlayTest/plated_share_arg.txt`) writes per cell and wave the plated troops' share of the threat and their
+  number, without growth and with it.
+- **What the surprises do to the other waves:** `unity command run_script --file Tools/PlayTest/Scripts/SurpriseLiftLab.cs --entry SurpriseLiftLab.Run --timeout_ms 900000 --timeout 960`
+  writes `Tools/PlayTest/surprise_lift.txt`: every wave more than 5 % above the same level solved without surprises and
+  the most per kind (a boss wave on the health of the whole wave). The bounds of
+  `WaveGrammarTests.ASurprise_MakesNoOtherWaveTougher` (plain and raid x1.15, swarm x1.25, boss wave x1.3) come from it.
+- **A cell that overshoots in the closed loop is bisected:** when two passes read a cell on opposite sides of its
+  target, take the geometric middle of the two effective scales (scalar times `DifficultyScale`), not the loop's
+  factor once more (Glass Meadows Medium went 1.004 -> 1.121 -> 1.061).
+- **After a fold into `DifficultyScale`** write the scalars from the `--centre` line of `closed_loop.py` (the cells
+  over the mean), recompile, then the solve stage; `r84_lab.sh` must print `moved more than 3 %: none` for all cells
+  (the stored waves are the solve).
+- **Pitfalls met this round:**
+  - The solve stage right after a recompile can answer `An error occurred while sending the request` (the domain
+    reload): nothing was written. Run it again and check the lab's foot.
+  - A Bash heredoc that holds an apostrophe fails here even when quoted (again), and one that writes Python with
+    `"\n"` in it turns the two characters into a line break: write patch scripts with the editor tool and use
+    `chr(10)`.
+  - A foreground wait loop over two minutes is moved to the background and reports "completed" on its own timeout;
+    wait for the batch's own notification.

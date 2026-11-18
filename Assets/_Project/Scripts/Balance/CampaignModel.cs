@@ -323,7 +323,27 @@ namespace Game.Balance
         private float[] SolveDifficulty(int levelIndex, WaveScriptSpec script, int d, out float[] bossScales)
         {
             float scale = Rules.DifficultyScaleFor(d) * script.TargetScaleFor(d);
-            WaveSolver.Solution solution = WaveSolver.Solve(script, Enemies, InputFor(levelIndex, d), Difficulties[d], Facts[levelIndex].SecondRoad, Rules.HumanTowersOnly(), Rules.HumanWithHero(), ModelTarget(levelIndex, d), scale);
+            int secondRoad = Facts[levelIndex].SecondRoad;
+            WaveSolver.Solution Solved(float[] calm) =>
+                WaveSolver.Solve(script, Enemies, InputFor(levelIndex, d), Difficulties[d], secondRoad, Rules.HumanTowersOnly(), Rules.HumanWithHero(), ModelTarget(levelIndex, d), scale, calm);
+
+            // A difficulty that carries surprises is solved without them first: a surprise wave's creatures are fewer and
+            // tougher, and the waves after it are held against the wave it would have been (WaveSolver.Solve, calm).
+            float[] reference = null;
+            if (Rules.Grammar.Surprises && CarriesSurprises(script, d, secondRoad))
+            {
+                Rules.Grammar.Surprises = false;
+                try
+                {
+                    reference = Solved(null).WalkIn;
+                }
+                finally
+                {
+                    Rules.Grammar.Surprises = true;
+                }
+            }
+
+            WaveSolver.Solution solution = Solved(reference);
             var own = new float[solution.Healths.Length];
             for (int i = 0; i < own.Length; i++)
             {
@@ -332,6 +352,19 @@ namespace Game.Balance
 
             bossScales = solution.BossScales;
             return own;
+        }
+
+        private bool CarriesSurprises(WaveScriptSpec script, int d, int secondRoad)
+        {
+            for (int number = 1; number <= script.Waves; number++)
+            {
+                if (WaveGrammar.SurpriseOn(script, Enemies, d, number, secondRoad, Rules) != SurpriseKind.None)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private List<WaveSpec> ComposedWaves(WaveScriptSpec script, int d, float[] healths, int secondRoad, float[] bossScales = null)

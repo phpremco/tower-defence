@@ -181,6 +181,15 @@ namespace Game.Tests
         }
 
         [Test]
+        public void TheTuningFile_HoldsACellsScalar_AndNothingElse()
+        {
+            // Round 84: what a wave is made of is a rule per difficulty (BalanceRules: plated and swarm weight, the growth
+            // of plated troops) or the level's own script. The builder's per-cell levers (plated, swarm, tempo, raid,
+            // bosscrowd, armourgrowth: 36 lines until round 83b) are gone, and a line of that kind is not read any more.
+            Assert.IsEmpty(WaveTuning.OtherLines(), "Tools/PlayTest/wave_tuning.txt holds 'Key difficulty scalar' lines only");
+        }
+
+        [Test]
         public void TheDefaultPlan_SendsNoWalkerAlone_OutOfARift()
         {
             // Remco saw one Cragback walk the road behind a gate. A default surprise gives a rift two walkers or none, so the

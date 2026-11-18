@@ -101,7 +101,6 @@ namespace Game.Editor
 
         private const string RaidEndsIt = "on Hard and Psycho the plated pack walks in from wave 3 (Remco, round 34b) and the troops stay few until the raids: growth strong enough to end a row by the window left no searched plan winning (round 68, growth 1.5: best plan 0/3; growth 1.2 moved no row and cost the creative bot Hard and Psycho), so the row falls to the first raid instead";
         private const string LateCragbacks = "the Cragbacks walk in from wave 8 on Easy and Medium (round 68, was wave 4: five waves late); the row falls to the first raid, one wave after the window";
-        private const string MediumScale = "at the old scale 1.15 with growth no searched plan won (best 0/3); scale 1.07 with growth 1.3 ends the row in time but leaves the best plan 2/3 and the creative bot 0/3, so the cell keeps scale 1.0 and growth 1.2 (best plan and creative bot 3/3)";
         private const string EdgeOfGrowth = "growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave";
         private const string OneRaidLate = "the row falls to the raid one wave after the window closes; a bigger raid there costs the mixed plan its margin (Quartz Flats and Fault Line are the cells the creative bot already loses seeds on)";
 
@@ -114,7 +113,6 @@ namespace Game.Editor
         // Round 79 (the wave grammar): the rows fall at the waves they fell at in round 78; what moved is the window or the wave
         // that used to end the row inside it. Every such row still loses all three seeds.
         private const string EarlierPlated = "round 79: the level's first Cragback walks in one or two waves earlier (a single one in the plain wave 7, where the ambush wave of round 78 brought none), so the window opens earlier while the row falls at the wave it fell at before; it still loses every seed";
-        private const string BossEntrance = "round 79: the row used to fall inside the window to the boss wave of wave 5, on the ground; with the crowd in clusters and the boss walking in after a breather (the finale rule) it holds that wave and falls to the flyers two waves later; it still loses every seed";
 
         /// <summary>
         /// The cells that do not meet the window yet, each with the most waves its rows may be late and the reason. A row later
@@ -127,7 +125,9 @@ namespace Game.Editor
             new Allowance("Level_C1_01", 2, EnemyTraits.Armoured, 2, EdgeOfGrowth),
             new Allowance("Level_C1_01", 3, EnemyTraits.Armoured, 3, EdgeOfGrowth),
             new Allowance("Level_C1_02", 0, EnemyTraits.Armoured, 1, EdgeOfGrowth),
-            new Allowance("Level_C1_02", 1, EnemyTraits.Armoured, 2, MediumScale + "; round 77: " + SofterBites),
+            // Round 84: growth is the rule of the difficulty (1.4; the cell had its own 1.2) and the row is one wave late, as on
+            // Landing Site Medium (two measurements, rounds 83b and 84); the allowance was 2.
+            new Allowance("Level_C1_02", 1, EnemyTraits.Armoured, 1, EdgeOfGrowth + "; round 77: " + SofterBites),
             new Allowance("Level_C1_02", 2, EnemyTraits.Armoured, 1, EdgeOfGrowth),
             new Allowance("Level_C1_02", 3, EnemyTraits.Armoured, 3, EdgeOfGrowth),
             new Allowance("Level_C1_03", 0, EnemyTraits.Armoured, 1, LateCragbacks),
@@ -135,9 +135,7 @@ namespace Game.Editor
             new Allowance("Level_C1_03", 2, EnemyTraits.Armoured, 6, RaidEndsIt),
             new Allowance("Level_C1_03", 3, EnemyTraits.Armoured, 7, RaidEndsIt),
             new Allowance("Level_C1_04", 0, EnemyTraits.Armoured, 2, SofterBites + "; " + EarlierPlated),
-            new Allowance("Level_C1_04", 0, EnemyTraits.Airborne, 2, OneRaidLate + "; round 77: " + SofterBites),
             new Allowance("Level_C1_04", 1, EnemyTraits.Airborne, 1, SofterBitesLaterRaids),
-            new Allowance("Level_C1_04", 3, EnemyTraits.Airborne, 1, BossEntrance),
             new Allowance("Level_C1_05", 0, EnemyTraits.Armoured, 2, "growth 1.5 here left no searched plan winning (round 68: best plan 0/3); the row falls to the raid of wave 8 and the waves after it"),
             new Allowance("Level_C1_05", 1, EnemyTraits.Armoured, 3, SofterBitesLaterRaids),
             new Allowance("Level_C1_05", 1, EnemyTraits.Airborne, 1, OneRaidLate),
