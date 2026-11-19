@@ -57,6 +57,11 @@ namespace Game.Editor
                 {
                     var serialized = new SerializedObject(boss);
                     serialized.FindProperty("_maxHealth").floatValue = health;
+                    // The armour moves with the body (round 85), so the whole bar scales by what the probe asks and the
+                    // pool never drops under the rule's share (BalanceRules.BossArmourShare). Kept as it was, a pool
+                    // written for a bigger body would outgrow a boss the probe makes smaller.
+                    float armour = boss.MaxHealth > 0f ? boss.Armor * health / boss.MaxHealth : boss.Armor;
+                    serialized.FindProperty("_armor").floatValue = loaded.Model.Rules.BossArmourFor(health, (float)Math.Round(armour));
                     serialized.ApplyModifiedPropertiesWithoutUndo();
                     EditorUtility.SetDirty(boss);
                     changed++;

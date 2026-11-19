@@ -51,6 +51,10 @@ namespace Game.Tests
             // wave whose own health is what asks (CheckCap names the ones the solver cannot lower).
             var paperWarnings = new List<string>();
             var held = new List<string>();
+            // Round 85: boss waves whose boss stands on its multiple of the toughest ordinary creature before it
+            // (BalanceRules.BossOverRegular). Remco asked for bosses far beyond the rest, so such a wave is over its band
+            // and its cap by rule; it is reported, and play judges it (the closed loop and the boss table of the killers).
+            var ruling = new List<string>();
             int judged = 0;
             // Per continent, in play order: the level names and their human-lens surplus per difficulty, for the ramp check.
             var rampLevels = new Dictionary<int, List<string>>();
@@ -80,8 +84,14 @@ namespace Game.Tests
                     float correction = rules.DifficultyScaleFor(d) * model.Levels[index].TargetScaleFor(d);
                     List<WaveSpec> own = OwnWaves(model, node.Level, difficulty, correction);
                     string cell = difficulty.name + " (the solver's own waves)";
-                    failures.AddRange(BalanceChecks.Check(node.Level.name, cell, d, Ledger.Evaluate(model.InputFor(index, d), own, model.Difficulties[d], rules), rules));
-                    failures.AddRange(CheckCap(node.Level.name, cell, d, own, Ledger.Evaluate(model.InputFor(index, d), own, model.Difficulties[d], withHero), correction, rules, held));
+                    HashSet<int> byRule = BossesOnTheirMultiple(own, d, rules);
+                    foreach (string finding in BalanceChecks.Check(node.Level.name, cell, d, Ledger.Evaluate(model.InputFor(index, d), own, model.Difficulties[d], rules), rules))
+                    {
+                        int wave = WaveOf(finding, node.Level.name + " " + cell + " wave ");
+                        (byRule.Contains(wave - 1) ? ruling : failures).Add(finding);
+                    }
+
+                    failures.AddRange(CheckCap(node.Level.name, cell, d, own, Ledger.Evaluate(model.InputFor(index, d), own, model.Difficulties[d], withHero), correction, rules, held, byRule, ruling));
                     judged += own.Count;
                     float mean = BalanceChecks.PlainMean(BalanceLedger.Evaluate(model, index, node.Level, difficulty, d, null, human));
                     plainMeans.Add(mean);
@@ -123,6 +133,7 @@ namespace Game.Tests
             }
 
             report.Append("Paper reading of the stored waves (a report check since round 83; the closed loop judges the level): ").Append(paperWarnings.Count == 0 ? "nothing\n" : "\n  " + string.Join("\n  ", paperWarnings) + "\n");
+            report.Append($"Boss waves over their band or cap because the boss stands on its multiple of the toughest ordinary creature (round 85, {ruling.Count} findings; not failures): ").Append(ruling.Count == 0 ? "none\n" : "\n  " + string.Join("\n  ", ruling) + "\n");
             report.Append($"Waves over the hero cap that the solver cannot lower ({held.Count} of {judged}; asserted: no other wave is over it, and these stay under {HeldShareMost:P0} of all waves): ").Append(held.Count == 0 ? "none\n" : "\n  " + string.Join("\n  ", held) + "\n");
             System.IO.File.WriteAllText(LedgerPath, report.ToString());
             Assert.Greater(judged, 0);
@@ -159,7 +170,7 @@ namespace Game.Tests
         // its band (softer creatures would be paper and still not bring it under the cap), and a level's boss never goes
         // under its health floor, which is a floor on the health as stored (a flying boss follows its wave and has no
         // size of its own). Every other wave over the cap is a failure: there the wave's own health is what asks too much.
-        private static List<string> CheckCap(string level, string difficultyName, int difficulty, List<WaveSpec> waves, List<WaveLine> withHero, float correction, BalanceRules rules, List<string> held)
+        private static List<string> CheckCap(string level, string difficultyName, int difficulty, List<WaveSpec> waves, List<WaveLine> withHero, float correction, BalanceRules rules, List<string> held, HashSet<int> byRule, List<string> ruling)
         {
             var failures = new List<string>();
             float mean = BalanceChecks.PlainMean(withHero);
@@ -185,7 +196,11 @@ namespace Game.Tests
                 {
                     string where = $"{level} {difficultyName} wave {i + 1}{(boss ? " (boss)" : string.Empty)}: pressure {withHero[i].Pressure:0.00} with the hero (most {most:0.00})";
                     bool onEdge = !wave.AirRaid && trend > 0f && wave.HealthMultiplier <= trend * BandLowerEdge * EdgeSlack;
-                    if (boss && BossIsHeld(wave, difficulty, correction, rules))
+                    if (boss && byRule.Contains(i))
+                    {
+                        ruling.Add(where + ", its boss on its multiple of the toughest ordinary creature");
+                    }
+                    else if (boss && BossIsHeld(wave, difficulty, correction, rules))
                     {
                         held.Add(where + ", its boss on its health floor or flying");
                     }
@@ -210,6 +225,65 @@ namespace Game.Tests
             }
 
             return failures;
+        }
+
+        // Round 85: the waves whose boss is no bigger than BalanceRules.BossOverRegular times the health bar of the toughest
+        // ordinary creature of the waves before it (WaveSolver.Solve sizes it so, and its crowd gives way): the waves that are
+        // over their band or cap because of that rule. Both bars carry the same correction, so the ratio is read on the
+        // solver's own waves. A surprise wave's creatures count at their own multiplier here (the solver reads them at the
+        // calm wave's), which only lets this check see a boss as on its floor where the solver's floor is a little lower.
+        private static HashSet<int> BossesOnTheirMultiple(List<WaveSpec> waves, int difficulty, BalanceRules rules)
+        {
+            var onIt = new HashSet<int>();
+            float toughest = 0f;
+            for (int i = 0; i < waves.Count; i++)
+            {
+                WaveSpec wave = waves[i];
+                foreach (GroupSpec group in wave.Groups)
+                {
+                    if (group.Enemy == null)
+                    {
+                        continue;
+                    }
+
+                    if (group.Enemy.IsBoss)
+                    {
+                        float scale = wave.BossHealthScale > 0f ? wave.BossHealthScale : 1f;
+                        float bar = group.Enemy.EffectiveHealth * wave.HealthMultiplier * scale;
+                        if (toughest > 0f && bar <= rules.BossOverRegularFor(difficulty) * toughest * EdgeSlack)
+                        {
+                            onIt.Add(i);
+                        }
+                    }
+                }
+
+                foreach (GroupSpec group in wave.Groups)
+                {
+                    if (group.Enemy != null && !group.Enemy.IsBoss)
+                    {
+                        toughest = System.Math.Max(toughest, group.Enemy.EffectiveHealth * wave.HealthMultiplier);
+                    }
+                }
+            }
+
+            return onIt;
+        }
+
+        // The wave number of a finding of BalanceChecks.Check ("<level> <cell> wave <n>: ..." or "... wave <n> (boss): ..."); 0 if none.
+        private static int WaveOf(string finding, string prefix)
+        {
+            if (!finding.StartsWith(prefix))
+            {
+                return 0;
+            }
+
+            int end = prefix.Length;
+            while (end < finding.Length && char.IsDigit(finding[end]))
+            {
+                end++;
+            }
+
+            return int.TryParse(finding.Substring(prefix.Length, end - prefix.Length), out int wave) ? wave : 0;
         }
 
         // The boss of the wave flies, or stands on the level boss health floor as stored (the wave's multiplier here is the

@@ -1,0 +1,46 @@
+Laser beside Gun Turret per difficulty 2026-11-18 19:38; levels C1_01; ground creatures of the stored waves as spawned, weighted by health sent.
+useful = damage that removed health per second something was in reach; share = useful over the data DPS; coin = useful per coin of the total price of the tower.
+| Difficulty | Median toughness as spawned (light fire) | Gun L1 share | Gun L3 share | Laser L1 share before -> after | Laser L3 share before -> after | Laser/Gun per coin L1 before -> after | Laser/Gun per coin L3 before -> after | Laser share of the damage of a Gun+Laser pair, L1 before -> after | L3 before -> after |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Easy | 1023 | 99% | 95% | 93% -> 93% | 86% -> 86% | x1.01 -> x1.01 | x0.98 -> x0.98 | 72% -> 72% | 64% -> 64% |
+| Medium | 1545 | 100% | 98% | 97% -> 97% | 90% -> 90% | x1.05 -> x1.05 | x0.99 -> x0.99 | 73% -> 73% | 65% -> 65% |
+| Hard | 1848 | 100% | 97% | 97% -> 97% | 90% -> 90% | x1.05 -> x1.05 | x1.01 -> x1.00 | 73% -> 73% | 65% -> 65% |
+| Psycho | 3206 | 100% | 99% | 99% -> 99% | 94% -> 94% | x1.07 -> x1.06 | x1.03 -> x1.03 | 73% -> 73% | 66% -> 66% |
+
+Per species, at the median toughness it spawns with on that difficulty (bodies = its share of the ground creatures sent):
+| Difficulty | Species | Bodies | Toughness (light fire) | Pulses to kill, Laser L1 / L3 | Laser L1 share before -> after | Laser L3 share before -> after | Gun L1 / L3 share | Laser/Gun per coin L1 before -> after | L3 before -> after |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Easy | Skitter | 95% | 12 | 2 / 1 | 110% -> 97% | 63% -> 58% | 92% / 61% | x1.29 -> x1.14 | x1.13 -> x1.04 |
+| Easy | Cragback | 5% | 1023 | 128 / 77 | 100% -> 100% | 99% -> 99% | 101% / 100% | x1.07 -> x1.07 | x1.08 -> x1.08 |
+| Medium | Skitter | 94% | 22 | 3 / 2 | 111% -> 98% | 94% -> 91% | 96% / 79% | x1.25 -> x1.10 | x1.29 -> x1.25 |
+| Medium | Cragback | 6% | 1545 | 194 / 116 | 100% -> 100% | 99% -> 99% | 101% / 100% | x1.07 -> x1.07 | x1.08 -> x1.08 |
+| Hard | Skitter | 94% | 22 | 3 / 2 | 108% -> 98% | 91% -> 85% | 95% / 77% | x1.24 -> x1.11 | x1.28 -> x1.20 |
+| Hard | Cragback | 6% | 1848 | 232 / 139 | 100% -> 100% | 99% -> 99% | 101% / 100% | x1.07 -> x1.07 | x1.08 -> x1.08 |
+| Psycho | Skitter | 94% | 51 | 7 / 4 | 97% -> 97% | 106% -> 97% | 98% / 94% | x1.07 -> x1.07 | x1.23 -> x1.12 |
+| Psycho | Cragback | 6% | 3206 | 401 / 241 | 100% -> 100% | 99% -> 99% | 100% / 100% | x1.07 -> x1.07 | x1.07 -> x1.07 |
+
+Kill rate in a packed stream (a body every 0.05 s, so the gun never waits for a target): health removed per second as a multiple of the data DPS, per tower level, at the toughness the species spawns with. A gun that wastes part of a shot on a small body reads under x1; the beam of rounds 23 to 84 read over x1, because a kill cost it the sweep time alone.
+| Difficulty | Species | Toughness | Gun L1 / L2 / L3 | Laser L1 before -> after | Laser L2 before -> after | Laser L3 before -> after |
+| --- | --- | --- | --- | --- | --- | --- |
+| Easy | Skitter | 12 | x0.95 / x0.95 / x0.81 | x1.04 -> x0.98 | x3.55 -> x0.99 | x1.97 -> x0.98 |
+| Easy | Cragback | 1023 | x1.01 / x1.01 / x1.01 | x0.99 -> x0.99 | x0.99 -> x0.99 | x0.99 -> x0.99 |
+| Medium | Skitter | 22 | x0.99 / x0.97 / x0.93 | x1.04 -> x0.99 | x1.09 -> x0.99 | x1.06 -> x0.98 |
+| Medium | Cragback | 1545 | x1.01 / x1.01 / x1.01 | x0.99 -> x0.99 | x0.99 -> x0.99 | x0.99 -> x0.99 |
+| Hard | Skitter | 22 | x0.98 / x0.96 / x0.93 | x1.03 -> x0.98 | x1.07 -> x0.99 | x1.03 -> x0.98 |
+| Hard | Cragback | 1848 | x1.01 / x1.01 / x1.01 | x0.99 -> x0.99 | x0.99 -> x0.99 | x0.99 -> x0.99 |
+| Psycho | Skitter | 51 | x0.99 / x0.99 / x0.96 | x0.99 -> x0.99 | x1.02 -> x0.99 | x1.02 -> x0.98 |
+| Psycho | Cragback | 3206 | x1.01 / x1.01 / x1.01 | x0.99 -> x0.99 | x0.99 -> x0.99 | x0.99 -> x0.99 |
+
+Holding power: one tower alone beside a stream of that species at its spacing; holds = the multiple of the health it spawns with that the tower still stops (at most a tenth leaking). Above x1 one tower stops the stream as the level sends it.
+| Difficulty | Species (spacing) | Gun L1 holds | Gun L3 holds | Laser L1 holds before -> after | Laser L3 holds before -> after | Laser/Gun held per coin L1 before -> after | L3 before -> after |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Easy | Skitter (0.2 s) | x0.0 | x0.8 | x1.3 -> x1.0 | x3.3 -> x2.8 | x12.31 -> x8.92 | x2.18 -> x1.85 |
+| Easy | Cragback (1.3 s) | x0.0 | x0.1 | x0.1 -> x0.1 | x0.2 -> x0.2 | x1.23 -> x1.17 | x1.13 -> x1.11 |
+| Medium | Skitter (0.2 s) | x0.0 | x0.4 | x0.7 -> x0.5 | x1.8 -> x1.5 | x12.31 -> x8.92 | x2.18 -> x1.85 |
+| Medium | Cragback (1.3 s) | x0.0 | x0.1 | x0.0 -> x0.0 | x0.1 -> x0.1 | x1.23 -> x1.17 | x1.13 -> x1.11 |
+| Hard | Skitter (0.2 s) | x0.0 | x0.5 | x0.7 -> x0.5 | x1.8 -> x1.6 | x12.31 -> x8.92 | x2.18 -> x1.85 |
+| Hard | Cragback (1.3 s) | x0.0 | x0.0 | x0.0 -> x0.0 | x0.1 -> x0.1 | x1.23 -> x1.17 | x1.13 -> x1.11 |
+| Psycho | Skitter (0.2 s) | x0.0 | x0.2 | x0.3 -> x0.2 | x0.8 -> x0.7 | x12.31 -> x8.92 | x2.18 -> x1.85 |
+| Psycho | Cragback (0.91 s) | x0.0 | x0.0 | x0.0 -> x0.0 | x0.0 -> x0.0 | x1.23 -> x1.16 | x1.21 -> x1.21 |
+
+Data: Gun Turret L1 5/0.35s (50 coins), L3 10/0.1666667s (155); Laser L1 8/0.2s (130), L3 13.33333/0.1111111s (285), sweep 0.05s.

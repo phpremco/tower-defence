@@ -15,12 +15,14 @@ for d in Assets Packages ProjectSettings Tools; do
   robocopy "$PROJECT\\$d" "$ROOT\\w$n\\$d" /MIR /MT:16 /R:1 /W:1 /NFL /NDL /NJH /NJS /NP /NS /NC > /dev/null || [ $? -le 7 ]
 done
 # The clone keeps its own product name (persistentDataPath), as workers.sh does.
-sed -i 's/^  productName: Tower defense$/  productName: Tower defense worker w'"$n"'/' "$dir/ProjectSettings/ProjectSettings.asset"
+sed -i 's/^  productName: Tower defense.*$/  productName: Tower defense worker w'"$n"'/' "$dir/ProjectSettings/ProjectSettings.asset"
 # Audio stays on in this clone (round 67): an EditMode run plays nothing, and the audio tests build clips, which a project
 # with audio disabled cannot (the PlayMode workers are silenced in workers.sh).
 if [ "$#" -gt 0 ]; then printf '%s\n' "$@" > "$dir/Tools/PlayTest/probe_arg.txt"; else rm -f "$dir/Tools/PlayTest/probe_arg.txt"; fi
 rm -f "$dir/Logs/results.xml"
 started=$(date +%s)
+# Round 85: at BelowNormal priority (Remco uses the PC meanwhile).
+(sleep 5; bash Tools/PlayTest/lower_priority.sh 120) &
 echo "== w$n: EditMode $test, filter: $* ($(date +%H:%M:%S))"
 "$UNITY" -batchmode -nographics -job-worker-count 2 -timestamps -projectPath "$ROOT\w$n" -runTests -testPlatform EditMode -testFilter "$test" \
   -testResults "$ROOT\w$n\Logs\results.xml" -logFile "$ROOT\w$n\Logs\unity_editmode.log" > /dev/null 2>&1 || true

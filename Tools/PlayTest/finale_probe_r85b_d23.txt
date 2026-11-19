@@ -1,0 +1,22 @@
+Finale probe as played 2026-11-18 20:23 (round 22f): creative bot, seed 1, the finale player of FinaleModel on the boss's arena field. calibration 2026-11-18 19:59 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs 29b36819 (STALE, data now d0a4b1fb)
+Per boss and difficulty: holds = the largest boss health multiple (1 = the data) the finale player still beat; as-is = the run at the data's health;
+share and health as the data had them when the probe ran. Lines starting with 'cell' are read by ContinentFinaleTests and the finale apply stage.
+
+  Gravemaw         Hard    money  1970 research  714 towers 6: holds x1.13 (x1.00 won base 1000/1000, x1.40 lost base 0/1000, x1.18 lost base 0/1000, x1.09 won base 1000/1000, x1.13 won base 1000/1000)
+  CinderMatriarch  Hard    money  1970 research  714 towers 7: holds x1.52 (x1.00 won base 1000/1000, x1.40 won base 1000/1000, x1.96 lost base 0/1000, x1.66 lost base 0/1000, x1.52 won base 1000/1000)
+  FrostWarden      Hard    money  1970 research  714 towers 7: holds x1.52 (x1.00 won base 1000/1000, x1.40 won base 1000/1000, x1.96 lost base 0/1000, x1.66 lost base 0/1000, x1.52 won base 1000/1000)
+  Rotbloom         Hard    money  1970 research  714 towers 7: holds x0.92 (x1.00 lost base 0/1000, x0.71 won base 1000/1000, x0.85 won base 1000/1000, x0.92 won base 1000/1000)
+  Shattered        Hard    money  1970 research  714 towers 7: holds x1.40 (x1.00 won base 1000/1000, x1.40 won base 1000/1000, x1.96 lost base 0/1000, x1.66 lost base 0/1000, x1.52 lost base 0/1000)
+  SealedOne        Hard    money  1970 research  714 towers 7: holds x1.40 (x1.00 won base 1000/1000, x1.40 won base 728/1000, x1.96 lost base 0/1000, x1.66 lost base 0/1000, x1.52 lost base 0/1000)
+cell|CinderMatriarch|2|1.523|won|1|1.25|12050|5
+cell|CinderMatriarch|3|1.728|won|1|1.25|12050|6
+cell|FrostWarden|2|1.523|won|1|1.25|5800|5
+cell|FrostWarden|3|1.96|won|1|1.25|5800|6
+cell|Gravemaw|2|1.134|won|1|1.25|46150|5
+cell|Gravemaw|3|1.183|won|1|1.25|46150|5
+cell|Rotbloom|2|0.919|lost|0|1.25|17950|4
+cell|Rotbloom|3|0.919|lost|0|1.25|17950|4
+cell|SealedOne|2|1.4|won|1|1.25|29200|5
+cell|SealedOne|3|1|won|1|1.25|29200|4
+cell|Shattered|2|1.4|won|1|1.25|15100|5
+cell|Shattered|3|1.4|won|1|1.25|15100|5

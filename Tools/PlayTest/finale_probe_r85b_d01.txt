@@ -1,0 +1,22 @@
+Finale probe as played 2026-11-18 20:18 (round 22f): creative bot, seed 1, the finale player of FinaleModel on the boss's arena field. calibration 2026-11-18 19:59 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs 29b36819 (STALE, data now d0a4b1fb)
+Per boss and difficulty: holds = the largest boss health multiple (1 = the data) the finale player still beat; as-is = the run at the data's health;
+share and health as the data had them when the probe ran. Lines starting with 'cell' are read by ContinentFinaleTests and the finale apply stage.
+
+  Gravemaw         Easy    money  1217 research  138 towers 6: holds x1.13 (x1.00 won base 800/800, x1.40 lost base 0/800, x1.18 lost base 0/800, x1.09 won base 800/800, x1.13 won base 800/800)
+  CinderMatriarch  Easy    money  1217 research  138 towers 7: holds x1.80 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 won base 800/800, x1.80 won base 800/800, x1.88 lost base 0/800)
+  FrostWarden      Easy    money  1217 research  138 towers 7: holds x1.66 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 won base 800/800, x1.80 lost base 0/800, x1.73 lost base 0/800)
+  Rotbloom         Easy    money  1217 research  138 towers 7: holds x1.40 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 lost base 0/800, x1.52 lost base 0/800)
+  Shattered        Easy    money  1217 research  138 towers 7: holds x1.18 (x1.00 won base 800/800, x1.40 lost base 0/800, x1.18 won base 800/800, x1.29 lost base 0/800, x1.23 lost base 0/800)
+  SealedOne        Easy    money  1217 research  138 towers 7: holds x1.52 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 lost base 0/800, x1.52 won base 800/800)
+cell|CinderMatriarch|0|1.802|won|1|0.8|12050|6
+cell|CinderMatriarch|1|1.183|won|1|1|12050|5
+cell|FrostWarden|0|1.657|won|1|0.8|5800|6
+cell|FrostWarden|1|1.134|won|1|1|5800|5
+cell|Gravemaw|0|1.134|won|1|0.8|46150|5
+cell|Gravemaw|1|1.183|won|1|1|46150|5
+cell|Rotbloom|0|1.4|won|1|0.8|17950|5
+cell|Rotbloom|1|0.919|lost|0|1|17950|4
+cell|SealedOne|0|1.523|won|1|0.8|29200|5
+cell|SealedOne|1|1.287|won|1|1|29200|5
+cell|Shattered|0|1.183|won|1|1.04|15100|5
+cell|Shattered|1|1.183|won|1|1|15100|5

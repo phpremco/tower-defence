@@ -1,0 +1,68 @@
+Measured with: bot 3:14d0d87b; data 9d6d6465; game code ee3ba6ef
+
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 0 of 6 curves monotone = 0.0%  ->  FAIL
+  skilled        0 of 3   curves (0%); 3 of 15 steps drop by more than the tolerance
+  sensible       0 of 3   curves (0%); 3 of 15 steps drop by more than the tolerance
+  the same check on other scores (all rungs): P 0 of 6; A 1 of 6; R+D (furthest creature) 0 of 6; D 5 of 6; won/lost 6 of 6
+  curves that are not monotone (P per multiple, the drops marked):
+    Fault Line Medium     sensible     seed 1: 0.9:1.24 1:1.35 1.12:1.30! 1.25:1.45 1.4:1.65 1.57:1.87L  (worst drop -0.058)
+    Fault Line Medium     sensible     seed 2: 0.9:1.20 1:1.29 1.12:1.40 1.25:1.73 1.4:1.87L 1.57:1.83L!  (worst drop -0.037)
+    Fault Line Medium     sensible     seed 3: 0.9:1.22 1:1.32 1.12:1.53 1.25:1.72 1.4:1.87L 1.57:1.82L!  (worst drop -0.051)
+    Fault Line Medium     skilled      seed 1: 0.9:1.27 1:1.85L 1.12:1.85L 1.25:1.86L 1.4:1.88L 1.57:1.82L!  (worst drop -0.054)
+    Fault Line Medium     skilled      seed 2: 0.9:1.85L 1:1.86L 1.12:1.86L 1.25:1.83L! 1.4:1.82L 1.57:1.88L  (worst drop -0.032)
+    Fault Line Medium     skilled      seed 3: 0.9:1.85L 1:1.85L 1.12:1.86L 1.25:1.82L! 1.4:1.81L 1.57:1.88L  (worst drop -0.042)
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 1 of 1 cells within the limit  ->  PASS
+  cell                  skilled                   sensible                  
+  Fault Line Medium     0.5% (abs 0.009, n=3)     5.2% (abs 0.068, n=3)
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  skilled                           sensible                          
+  Fault Line Medium     1.851 (1.849-1.858) 0/3           1.316 (1.286-1.354) 3/3
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  skilled
+    Fault Line Medium     x0.9 1.85 (1.27-1.85) 1/3 | x1 1.85 (1.85-1.86) 0/3 | x1.12 1.86 (1.85-1.86) 0/3 | x1.25 1.83 (1.82-1.86) 0/3 | x1.4 1.82 (1.81-1.88) 0/3 | x1.57 1.88 (1.82-1.88) 0/3
+  sensible
+    Fault Line Medium     x0.9 1.22 (1.20-1.24) 3/3 | x1 1.32 (1.29-1.35) 3/3 | x1.12 1.40 (1.30-1.53) 3/3 | x1.25 1.72 (1.45-1.73) 3/3 | x1.4 1.87 (1.65-1.87) 1/3 | x1.57 1.83 (1.82-1.87) 0/3
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  skilled     Fault Line Medium     A 0.851 (0.849-0.858)  D 1.00 (1.00-1.00)  leaked 0.239 (0.231-0.239)
+  sensible    Fault Line Medium     A 0.850 (0.846-0.852)  D 0.46 (0.44-0.51)  leaked 0.193 (0.192-0.199)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<0.9' / '>1.57' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  skilled
+    Fault Line Medium     median <0.9   pooled <0.9   per seed: 0.91 <0.9 <0.9                       spread -
+  sensible
+    Fault Line Medium     median 1.02   pooled 1.05   per seed: 0.99 1.06 1.02                       spread 7% (n=3)
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x0.9   x1     x1.12  x1.25  x1.4   x1.57  H50
+  skilled     Fault Line Medium     1/3    0/3    0/3    0/3    0/3    0/3    <0.9
+  sensible    Fault Line Medium     3/3    3/3    3/3    3/3    1/3    0/3    1.36
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  skilled     Fault Line Medium      81  80  82  81  82  83  88  87  92  80  87  88  81  85  92  93
+                                    base hit: w10 3/3, w11 2/3, w13 3/3, w16 3/3
+  sensible    Fault Line Medium      91  74  81  91  81  80  85  91  89  75  92  85  77  85  91  92
+                                    base hit: w10 3/3, w11 2/3, w13 3/3, w16 3/3
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  skilled     Fault Line Medium     lost w16/16; built 10, upgrades 8, left 3, earned 1102, repairs 84
+                                    w1 build Cannon@34,10; w1 build Rocket@34,9; w3 build PulseRifle@32,6; w10 drone HarvestDrone@0,0; w11 upgrade@32,6; w11 build PulseRifle@29,6; w12 upgrade@29,6; w13 build PulseRifle@29,5; w13 upgrade@29,5; w13 upgrade@32,6; w13 build PulseRifle@28,6; w13 upgrade@28,6
+  sensible    Fault Line Medium     won w16/16; built 10, upgrades 6, left 23, earned 1349, repairs 21
+                                    w1 build Cannon@32,5; w3 build PulseRifle@32,6; w5 build Rocket@34,9; w7 upgrade@32,6; w7 build PulseRifle@29,5; w11 build Cannon@33,6; w13 build Rocket@33,9; w13 upgrade@32,5; w14 upgrade@34,9; w16 upgrade@29,5; w16 upgrade@32,6; w16 build PulseRifle@30,9
+
+Cost: 36 runs, 14 machine minutes of play (24 s a run), 0 reference runs for the typical scripts; 1 batches, 5 wall-clock minutes in all.
+  batch 1795080610: 6 units on 5 workers, 4.7 min

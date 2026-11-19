@@ -247,7 +247,7 @@ namespace Game.Balance
         // Round 83b: the geometric means of the first continent's 24 scalars after three passes of the closed loop
         // (0.98 / 1.31 / 1 / 0.87 was the first guess, the level of round 82).
         // Round 84: 0.981 / 1.365 / 1.051 / 0.936 times the means of the pass after the composition levers became rules.
-        public float[] DifficultyScale = { 0.982f, 1.369f, 0.993f, 0.918f };
+        public float[] DifficultyScale = { 0.982f, 1.369f, 0.913f, 0.918f };
 
         public float DifficultyScaleFor(int difficulty) => DifficultyScale.Length == 0 ? 1f : DifficultyScale[System.Math.Min(difficulty, DifficultyScale.Length - 1)];
 
@@ -376,6 +376,29 @@ namespace Game.Balance
         public float[] LevelBossAlone = { 0.4f, 0.6f, 0.7f, 0.75f };
 
         public float LevelBossAloneFor(int difficulty) => LevelBossAlone.Length == 0 ? 0f : LevelBossAlone[System.Math.Min(difficulty, LevelBossAlone.Length - 1)];
+
+        /// <summary>
+        /// Every boss walks in armour (Remco, round 85: "they have no armour; that should be standard"): the armour pool of
+        /// a boss, a level's or a continent's, is at least this share of its body. A boss whose own data gives it more
+        /// keeps that. So light fire only chips every boss and the anti-armour guns are what a boss asks for, by the same
+        /// table as every other plated creature (Docs/COMBAT_RULES.md, section 1). The generator and the finale stage
+        /// write it (<see cref="BossArmourFor"/>); the solver and the finale probe size the boss with it on.
+        /// </summary>
+        public float BossArmourShare = 0.25f;
+
+        /// <summary>The armour pool a boss of this body carries: its own, or the rule's share of its body when that is more.</summary>
+        public float BossArmourFor(float body, float armour) => System.Math.Max(armour, (float)System.Math.Round(body * BossArmourShare));
+
+        /// <summary>
+        /// A boss is never a creature like the others (Remco, round 85: "on Easy the boss felt like nonsense, the lava
+        /// rocks seem stronger"): a level's boss has at least this many times the health bar (body plus armour, as
+        /// spawned) of the toughest ordinary creature that has walked in before it on that difficulty, Easy to Psycho.
+        /// It is a floor beside <see cref="LevelBossHealthFloor"/>: where the wave would then ask more than its cap the
+        /// crowd gives way, never the boss (<see cref="WaveSolver.Solve"/>). Zero: no such floor.
+        /// </summary>
+        public float[] BossOverRegular = { 3f, 3f, 3f, 3f };
+
+        public float BossOverRegularFor(int difficulty) => BossOverRegular == null || BossOverRegular.Length == 0 ? 0f : BossOverRegular[System.Math.Min(difficulty, BossOverRegular.Length - 1)];
 
         /// <summary>
         /// The most a boss wave may ask of a competent player with the hero, Easy to Psycho (round 64). A boss wave must

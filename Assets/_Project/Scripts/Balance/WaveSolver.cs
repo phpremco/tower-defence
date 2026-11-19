@@ -105,6 +105,7 @@ namespace Game.Balance
 
             /// <summary>Per wave the multiplier its creatures walk in with: the solved one times what a capped troop could not buy.</summary>
             public float[] WalkIn;
+
         }
 
         /// <summary>
@@ -158,6 +159,8 @@ namespace Game.Balance
             float[] shares = Shares(script, enemies, d, secondRoad, lens);
             var recent = new List<float>();
             var ground = new List<float>();
+            // The health bar (body plus armour, at the multiplier it walked in with) of the toughest ordinary creature so far.
+            float toughest = 0f;
             var purse = new KillPurse(level, difficulty, lens);
             var held = new Ledger.AirHoldings();
             float cap = lens.HeroCapFor(d);
@@ -220,7 +223,15 @@ namespace Game.Balance
 
                 // A level's walking boss is sized first, alone: it asks LevelBossAlone of the defence that stands for its wave,
                 // never under its floor. The crowd then fills the wave up to its target around the boss as sized.
-                float floor = levelBoss ? lens.LevelBossHealthFloorFor(d) / stored : 0f;
+                // Round 85: both floors are on the boss as it walks in, so they are taken off the wave's lift (a capped troop
+                // makes every creature of its wave tougher, the boss included); the stored waves are read that way.
+                float floor = levelBoss ? lens.LevelBossHealthFloorFor(d) / (stored * lift) : 0f;
+                // A boss is never a creature like the others: its bar is a multiple of the toughest ordinary creature the
+                // player has met in this level (round 85). Both carry the same factors as stored, so the ratio is read here.
+                if (levelBoss && toughest > 0f && enemies[boss.Enemy].EffectiveHealth > 0f)
+                {
+                    floor = Math.Max(floor, lens.BossOverRegularFor(d) * toughest / (enemies[boss.Enemy].EffectiveHealth * lift));
+                }
                 float bossHealth = 0f;
                 if (walks && lens.LevelBossAloneFor(d) > 0f)
                 {
@@ -261,6 +272,32 @@ namespace Game.Balance
                             bossHealth = Meet(health => Pressure(withHero, kept, health / kept), most, floor, sized);
                             crowd = kept;
                         }
+                        else if (boss == null && ground.Count >= MedianFrom)
+                        {
+                            // Round 85: a plain wave that what an earlier wave left on the road holds over the cap (the
+                            // wave after a boss on its multiple) gives way to its share of the median, which is no paper
+                            // crowd. Kept on the band's edge it was a cliff: Glass Meadows Psycho wave 10 stood x1.58 with
+                            // the cell's scalar at 0.96 and x2.65 at 0.94 (the cap met by a hair or missed by one), 1.7
+                            // times tougher for a softer cell, and over its band on every scalar under 0.96.
+                            crowd = least;
+                        }
+                    }
+                }
+
+                // Round 85: a boss wave still over its cap is the boss's fight. The crowd gives way to the lower edge of its
+                // band, not further: a crowd on its floor carried no plated troops worth the name, and a row of light guns
+                // then won Landing Site Easy without the Cannon (the grace gate). Then a walking boss that stands above its own
+                // floor comes down towards it, never under it. A boss on its floor (the multiple of the toughest ordinary
+                // creature) over the cap is so by rule; how tough the cell is as played is the closed loop's to set.
+                if (levelBoss && WithHero(crowd) > most)
+                {
+                    crowd = Math.Min(crowd, Math.Max(least, low));
+                    if (walks && bossHealth > floor && WithHero(crowd) > most)
+                    {
+                        float sized = bossHealth;
+                        float kept = crowd;
+                        bossHealth = floor;
+                        bossHealth = Meet(health => Pressure(withHero, kept, health / kept), most, floor, sized);
                     }
                 }
 
@@ -280,6 +317,17 @@ namespace Game.Balance
                 // late swarm lives on the upper edge of its band: Crysium Vein Psycho wave 16 stood x1.59 above the same
                 // level solved without surprises). So a surprise takes from its own wave and moves no other, by construction.
                 float reference = calm != null && solved.Surprise != SurpriseKind.None ? calm[i] : solved.HealthMultiplier;
+                // The toughest ordinary creature met so far (a boss's floor, round 85), as it walked in. A surprise's creatures
+                // count too: the player has met them, and a boss weaker than the stone heavy that came out of the rift before
+                // it is what the rule is there to prevent.
+                foreach (GroupSpec group in solved.Groups)
+                {
+                    if (group.Enemy != null && !group.Enemy.IsBoss)
+                    {
+                        toughest = Math.Max(toughest, group.Enemy.EffectiveHealth * solved.HealthMultiplier);
+                    }
+                }
+
                 // The median is read on every ground wave, a boss wave's crowd included, as the gate on the stored waves reads it.
                 if (!raid)
                 {

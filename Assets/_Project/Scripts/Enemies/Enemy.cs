@@ -10,7 +10,7 @@ namespace Game.Enemies
     /// flyers may stop to strike the gates they pass, trail layers drop a patch every so often, and anything can be
     /// slowed or hurried for a while. Has no knowledge of how it looks.
     /// </summary>
-    public sealed class Enemy : MonoBehaviour, ITargetable, ISourcedTarget
+    public sealed class Enemy : MonoBehaviour, ITargetable, ISourcedTarget, IHitBudget
     {
         private const float ArrivalDistance = 0.02f;
         private const float MinSpeedFactor = 0.1f;
@@ -214,6 +214,21 @@ namespace Game.Enemies
 
         // Anything without a source (a mine, the hero, a pulse) counts as a blast: it still reaches a hidden boss in part.
         public void TakeDamage(float amount) => TakeDamageFrom(amount, null, true);
+
+        /// <summary>
+        /// The size of the one aimed hit of this kind that would kill it now (<see cref="IHitBudget"/>); infinite while it
+        /// is warded or hidden. A boss's own scaling per source is left out: a boss never dies to one pulse.
+        /// </summary>
+        public float HitToKill(DamageProfile profile)
+        {
+            float share = profile.Against(Layer) * _damageScale;
+            if (Health == null || !_active || _warded || IsConcealed || share <= 0f)
+            {
+                return float.PositiveInfinity;
+            }
+
+            return Health.HitToKill(profile.Armour) / share;
+        }
 
         public void TakeDamageFrom(float amount, object source, bool splash, float armourFactor = 1f)
         {

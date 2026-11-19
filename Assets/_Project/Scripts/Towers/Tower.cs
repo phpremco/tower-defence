@@ -26,6 +26,7 @@ namespace Game.Towers
         private float _cooldown;
         private ITargetable _beamTarget;
         private bool _beamLive;
+        private float _beamSpareSeconds;
         private float _supportRange;
         private float _supportRate;
         private float _supportTimer;
@@ -486,9 +487,11 @@ namespace Game.Towers
                     }
                 }
 
+                float interval = level.FireInterval / (_modifiers.TowerFireRateMultiplier * (1f + _supportRate) * Mathf.Max(0.05f, Power) * _overgrowthRate);
+                _beamSpareSeconds = _definition.IsBeam ? interval * (1f - PulseShareNeeded(level, target)) : 0f;
                 Shoot(level, target);
                 _beamLive = _definition.IsBeam;
-                _cooldown = Cadence.Rearm(_cooldown, level.FireInterval / (_modifiers.TowerFireRateMultiplier * (1f + _supportRate) * Mathf.Max(0.05f, Power) * _overgrowthRate));
+                _cooldown = Cadence.Rearm(_cooldown, interval);
             }
 
             _cooldown = Cadence.Idle(_cooldown);
@@ -496,8 +499,20 @@ namespace Game.Towers
 
         private ITargetable FindTarget(TowerLevel level) => _registry.FindBest(transform.position, Range, _definition.Targets);
 
-        // A beam holds its creature until it dies or walks out of reach. A kill frees it at once: the beam sweeps on to the
-        // next creature within its sweep time instead of finishing the pulse, which is what makes it the swarm gun.
+        // The share of a pulse the creature still needs to die (one when the pulse does not kill it, or when the target
+        // cannot say).
+        private float PulseShareNeeded(TowerLevel level, ITargetable target)
+        {
+            float damage = level.Damage * _modifiers.TowerDamageMultiplier * Power;
+            return damage > 0f && target is IHitBudget budget ? Mathf.Clamp01(budget.HitToKill(_definition.Profile) / damage) : 1f;
+        }
+
+        // A beam holds its creature until it dies or walks out of reach. A kill frees it at once and the beam sweeps on to
+        // the next creature: it wastes nothing on a body that is already dead, which is what makes it the swarm gun. It
+        // gains nothing either (round 85): the pulse that killed is paid for by the share of it the creature needed, so a
+        // beam deals its damage per second on small bodies and on big ones alike. Until round 85 every kill cost the sweep
+        // time alone, so creatures that died in one pulse died four times as fast as the beam's data says (twenty a
+        // second), and the beam was worth the more the lower a difficulty's health: far too much on Easy and Medium.
         private void ReleaseBeam()
         {
             if (_beamTarget == null)
@@ -513,9 +528,10 @@ namespace Game.Towers
 
             if (killed && _beamLive && _definition.BeamSweepSeconds > 0f)
             {
-                _cooldown = Mathf.Min(_cooldown, _definition.BeamSweepSeconds);
+                _cooldown = Mathf.Min(_cooldown, Mathf.Max(_definition.BeamSweepSeconds, _cooldown - _beamSpareSeconds));
             }
 
+            _beamSpareSeconds = 0f;
             _beamTarget = null;
         }
 

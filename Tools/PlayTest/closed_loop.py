@@ -11,10 +11,15 @@ the probe's multiple is, so
 needs no model and is the same procedure for every level. Targets per difficulty (TARGETS below; a rung's break-even
 is the geometric middle of its last held and first lost multiple):
 
-    Easy    both rungs hold x1.25 with room: the weaker rung breaks even at x1.4
-    Medium  the sensible rung breaks even at x1.18 (wins x1.12, loses x1.25); the skilled rung at x1.06 at least
+    Easy    the weaker rung breaks even at x1.55 (wins x1.4, loses x1.76)
+    Medium  the sensible rung breaks even at x1.32 (wins x1.25, loses x1.4); the skilled rung at x1.06 at least
     Hard    the sensible rung breaks even at x0.95 (wins x0.9, loses x1); the skilled rung at x1.06 at least
     Psycho  the skilled rung breaks even at x1.06 (wins x1, loses x1.12)
+
+Round 85 (Remco after playing level 1: Easy and Medium a tad too hard, Hard right): Easy x1.4 -> x1.55 and Medium
+x1.18 -> x1.32, one step of the ladder each. The standard ladder (x0.8 to x1.25) does not reach those, so Easy is
+measured on x1 / 1.25 / 1.4 / 1.57 / 1.76 and Medium on x0.9 / 1 / 1.12 / 1.25 / 1.4 / 1.57 (Tools/PlayTest/r85_measure.sh
+plays the three ladders into three records files; give all three to this script).
 
 A cell takes the tightest of its difficulty's conditions. The skilled rung stands for the better of the two reference
 players: where its picked strategy breaks before the sensible rung does, the pick is stale and the sensible rung's
@@ -42,8 +47,8 @@ LEVELS = {"Level_C1_01": "Landing Site", "Level_C1_02": "Glass Meadows", "Level_
           "Level_C1_05": "Quartz Flats", "Level_C1_06": "Crysium Vein"}
 # Per difficulty: (rung, target break-even, binding). A binding condition is met from both sides; a guard only softens.
 TARGETS = {
-    0: [("sensible", 1.4, False), ("skilled", 1.4, False)],
-    1: [("sensible", 1.18, True), ("skilled", 1.06, False)],
+    0: [("sensible", 1.55, False), ("skilled", 1.55, False)],
+    1: [("sensible", 1.32, True), ("skilled", 1.06, False)],
     2: [("sensible", 0.95, True), ("skilled", 1.06, False)],
     3: [("skilled", 1.06, True)],
 }
@@ -85,7 +90,8 @@ def break_even(wins, played, level, d, rung):
     row = " ".join(str(wins[(level, d, rung, m)]) for m in multiples)
     held = None
     for m in multiples:
-        if wins[(level, d, rung, m)] >= SEEDS_HELD:
+        # Two of three seeds hold a multiple; a coarse pass on one seed (round 85, PR_SEEDS=1) holds it with that seed.
+        if wins[(level, d, rung, m)] >= min(SEEDS_HELD, played[(level, d, rung, m)]):
             held = m
         else:
             if held is None:

@@ -1,0 +1,180 @@
+Measured with: bot 3:375f514b; data 539eb4d2; game code 73bd2df3
+
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 15 of 15 curves monotone = 100.0%  ->  PASS
+  skilled        8 of 8   curves (100%); 0 of 16 steps drop by more than the tolerance
+  sensible       7 of 7   curves (100%); 0 of 14 steps drop by more than the tolerance
+  the same check on other scores (all rungs): P 15 of 15; A 15 of 15; R+D (furthest creature) 15 of 15; D 15 of 15; won/lost 15 of 15
+  curves that are not monotone (P per multiple, the drops marked):
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 0 of 0 cells within the limit  ->  FAIL
+  cell                  skilled                   sensible                  
+  Landing Site Easy     -                         -
+  Landing Site Medium   -                         -
+  Landing Site Hard     -                         -
+  Landing Site Psycho   -                         -
+  Glass Meadows Easy    -                         -
+  Glass Meadows Medium  -                         -
+  Glass Meadows Hard    -                         -
+  Glass Meadows Psycho  -                         -
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  skilled                           sensible                          
+  Landing Site Easy     0.268 (0.268-0.268) 1/1           0.116 (0.116-0.116) 1/1
+  Landing Site Medium   1.169 (1.169-1.169) 0/1           0.126 (0.126-0.126) 1/1
+  Landing Site Hard     1.197 (1.197-1.197) 1/1           1.240 (1.240-1.240) 0/1
+  Landing Site Psycho   1.272 (1.272-1.272) 0/1           1.375 (1.375-1.375) 0/1
+  Glass Meadows Easy    0.041 (0.041-0.041) 1/1           0.038 (0.038-0.038) 1/1
+  Glass Meadows Medium  1.105 (1.105-1.105) 0/1           0.068 (0.068-0.068) 1/1
+  Glass Meadows Hard    0.905 (0.905-0.905) 1/1           1.154 (1.154-1.154) 0/1
+  Glass Meadows Psycho  1.075 (1.075-1.075) 0/1           -
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  skilled
+    Landing Site Easy     x0.64 0.20 (0.20-0.20) 1/1 | x0.8 0.22 (0.22-0.22) 1/1 | x1 0.27 (0.27-0.27) 1/1
+    Landing Site Medium   x0.64 0.12 (0.12-0.12) 1/1 | x0.8 0.12 (0.12-0.12) 1/1 | x1 1.17 (1.17-1.17) 0/1
+    Landing Site Hard     x0.64 0.14 (0.14-0.14) 1/1 | x0.8 0.22 (0.22-0.22) 1/1 | x1 1.20 (1.20-1.20) 1/1
+    Landing Site Psycho   x0.64 0.13 (0.13-0.13) 1/1 | x0.8 0.14 (0.14-0.14) 1/1 | x1 1.27 (1.27-1.27) 0/1
+    Glass Meadows Easy    x0.64 0.03 (0.03-0.03) 1/1 | x0.8 0.03 (0.03-0.03) 1/1 | x1 0.04 (0.04-0.04) 1/1
+    Glass Meadows Medium  x0.64 0.04 (0.04-0.04) 1/1 | x0.8 0.05 (0.05-0.05) 1/1 | x1 1.11 (1.11-1.11) 0/1
+    Glass Meadows Hard    x0.64 0.05 (0.05-0.05) 1/1 | x0.8 0.07 (0.07-0.07) 1/1 | x1 0.90 (0.90-0.90) 1/1
+    Glass Meadows Psycho  x0.64 0.04 (0.04-0.04) 1/1 | x0.8 0.04 (0.04-0.04) 1/1 | x1 1.07 (1.07-1.07) 0/1
+  sensible
+    Landing Site Easy     x0.64 0.11 (0.11-0.11) 1/1 | x0.8 0.11 (0.11-0.11) 1/1 | x1 0.12 (0.12-0.12) 1/1
+    Landing Site Medium   x0.64 0.12 (0.12-0.12) 1/1 | x0.8 0.12 (0.12-0.12) 1/1 | x1 0.13 (0.13-0.13) 1/1
+    Landing Site Hard     x0.64 0.14 (0.14-0.14) 1/1 | x0.8 0.16 (0.16-0.16) 1/1 | x1 1.24 (1.24-1.24) 0/1
+    Landing Site Psycho   x0.64 0.27 (0.27-0.27) 1/1 | x0.8 1.25 (1.25-1.25) 0/1 | x1 1.38 (1.38-1.38) 0/1
+    Glass Meadows Easy    x0.64 0.03 (0.03-0.03) 1/1 | x0.8 0.03 (0.03-0.03) 1/1 | x1 0.04 (0.04-0.04) 1/1
+    Glass Meadows Medium  x0.64 0.06 (0.06-0.06) 1/1 | x0.8 0.06 (0.06-0.06) 1/1 | x1 0.07 (0.07-0.07) 1/1
+    Glass Meadows Hard    x0.64 0.05 (0.05-0.05) 1/1 | x0.8 0.05 (0.05-0.05) 1/1 | x1 1.15 (1.15-1.15) 0/1
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  skilled     Landing Site Easy     A 0.268 (0.268-0.268)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  skilled     Landing Site Medium   A 0.169 (0.169-0.169)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  skilled     Landing Site Hard     A 0.283 (0.283-0.283)  D 0.91 (0.91-0.91)  leaked 0.000 (0.000-0.000)
+  skilled     Landing Site Psycho   A 0.272 (0.272-0.272)  D 1.00 (1.00-1.00)  leaked 0.023 (0.023-0.023)
+  skilled     Glass Meadows Easy    A 0.041 (0.041-0.041)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  skilled     Glass Meadows Medium  A 0.105 (0.105-0.105)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  skilled     Glass Meadows Hard    A 0.118 (0.118-0.118)  D 0.79 (0.79-0.79)  leaked 0.000 (0.000-0.000)
+  skilled     Glass Meadows Psycho  A 0.075 (0.075-0.075)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  sensible    Landing Site Easy     A 0.116 (0.116-0.116)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  sensible    Landing Site Medium   A 0.126 (0.126-0.126)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  sensible    Landing Site Hard     A 0.240 (0.240-0.240)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  sensible    Landing Site Psycho   A 0.375 (0.375-0.375)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  sensible    Glass Meadows Easy    A 0.038 (0.038-0.038)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  sensible    Glass Meadows Medium  A 0.068 (0.068-0.068)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  sensible    Glass Meadows Hard    A 0.154 (0.154-0.154)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<0.64' / '>1' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  skilled
+    Landing Site Easy     median >1     pooled >1     per seed: >1                                   spread -
+    Landing Site Medium   median 0.89   pooled 0.89   per seed: 0.89                                 spread -
+    Landing Site Hard     median 0.90   pooled 0.90   per seed: 0.90                                 spread -
+    Landing Site Psycho   median 0.89   pooled 0.89   per seed: 0.89                                 spread -
+    Glass Meadows Easy    median >1     pooled >1     per seed: >1                                   spread -
+    Glass Meadows Medium  median 0.89   pooled 0.89   per seed: 0.89                                 spread -
+    Glass Meadows Hard    median 0.92   pooled 0.92   per seed: 0.92                                 spread -
+    Glass Meadows Psycho  median 0.89   pooled 0.89   per seed: 0.89                                 spread -
+  sensible
+    Landing Site Easy     median >1     pooled >1     per seed: >1                                   spread -
+    Landing Site Medium   median >1     pooled >1     per seed: >1                                   spread -
+    Landing Site Hard     median 0.89   pooled 0.89   per seed: 0.89                                 spread -
+    Landing Site Psycho   median 0.72   pooled 0.72   per seed: 0.72                                 spread -
+    Glass Meadows Easy    median >1     pooled >1     per seed: >1                                   spread -
+    Glass Meadows Medium  median >1     pooled >1     per seed: >1                                   spread -
+    Glass Meadows Hard    median 0.89   pooled 0.89   per seed: 0.89                                 spread -
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x0.64  x0.8   x1     H50
+  skilled     Landing Site Easy     1/1    1/1    1/1    >1
+  skilled     Landing Site Medium   1/1    1/1    0/1    0.89
+  skilled     Landing Site Hard     1/1    1/1    1/1    >1
+  skilled     Landing Site Psycho   1/1    1/1    0/1    0.89
+  skilled     Glass Meadows Easy    1/1    1/1    1/1    >1
+  skilled     Glass Meadows Medium  1/1    1/1    0/1    0.89
+  skilled     Glass Meadows Hard    1/1    1/1    1/1    >1
+  skilled     Glass Meadows Psycho  1/1    1/1    0/1    0.89
+  sensible    Landing Site Easy     1/1    1/1    1/1    >1
+  sensible    Landing Site Medium   1/1    1/1    1/1    >1
+  sensible    Landing Site Hard     1/1    1/1    0/1    0.89
+  sensible    Landing Site Psycho   1/1    0/1    0/1    0.72
+  sensible    Glass Meadows Easy    1/1    1/1    1/1    >1
+  sensible    Glass Meadows Medium  1/1    1/1    1/1    >1
+  sensible    Glass Meadows Hard    1/1    1/1    0/1    0.89
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  skilled     Landing Site Easy       9   8   8   8   8  10  32  11  23  70  70  64
+                                    base hit: never
+  skilled     Landing Site Medium     7   7   7   8   7   9  39  11   9  22  67  10
+                                    base hit: w12 1/1
+  skilled     Landing Site Hard       7   8   7   8   8   8  43  68  31  65  74  12
+                                    base hit: w12 1/1
+  skilled     Landing Site Psycho     9   9   9  10  11  10  44  61  32  16  15   .
+                                    base hit: w11 1/1
+  skilled     Glass Meadows Easy      0   3   0   3   2   5   7   3   7   8   2   7
+                                    base hit: never
+  skilled     Glass Meadows Medium    1   2   2   5   5   6   8   4   8  35  33  18
+                                    base hit: w12 1/1
+  skilled     Glass Meadows Hard      4   1   1   4   6   5   8   4  18  54  28   9
+                                    base hit: w12 1/1
+  skilled     Glass Meadows Psycho    3   1   1   5   5   7   7   6   7  16  31   1
+                                    base hit: w12 1/1
+  sensible    Landing Site Easy       7   7   7   8   7   9  38  10   8  10  18  10
+                                    base hit: never
+  sensible    Landing Site Medium     8   8   8   8   8   9  39  11  10  22  11  10
+                                    base hit: never
+  sensible    Landing Site Hard       8   8   8   8   8   8  41  69  27  28  62  12
+                                    base hit: w12 1/1
+  sensible    Landing Site Psycho     9  10  11  11  77  27  67  52  51  26   8   .
+                                    base hit: w11 1/1
+  sensible    Glass Meadows Easy      0   2   0   3   2   5   7   3   7   6   3   6
+                                    base hit: never
+  sensible    Glass Meadows Medium    5   5   3   6   5   6   8   5   8  17   7   7
+                                    base hit: never
+  sensible    Glass Meadows Hard      4   4   2   5   6   6   9  14  68  23  42   1
+                                    base hit: w12 1/1
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  skilled     Landing Site Easy     won w12/12; built 8, upgrades 6, left 175, earned 1206, repairs 81
+                                    w1 build Cannon@5,14; w1 build PulseRifle@9,3; w3 upgrade@9,3; w7 build Cannon@21,18; w10 build PulseRifle@11,2; w11 upgrade@11,2; w12 build PulseRifle@9,6; w12 upgrade@9,6; w12 build PulseRifle@10,6; w12 upgrade@10,6; w12 build PulseRifle@12,7; w12 upgrade@12,7
+  skilled     Landing Site Medium   lost w12/12; built 9, upgrades 11, left 6, earned 1207, repairs 60
+                                    w1 build Cannon@11,2; w1 build PulseRifle@9,3; w1 upgrade@9,3; w3 build PulseRifle@9,6; w5 upgrade@9,6; w8 upgrade@9,6; w8 build PulseRifle@10,6; w9 build Cannon@21,18; w10 upgrade@10,6; w11 build PulseRifle@11,6; w11 upgrade@11,6; w11 build PulseRifle@12,7
+  skilled     Landing Site Hard     won w12/12; built 17, upgrades 14, left 31, earned 1874, repairs 0
+                                    w1 build Cannon@11,2; w1 build PulseRifle@9,6; w1 upgrade@9,6; w3 upgrade@9,6; w4 build PulseRifle@11,6; w5 upgrade@11,6; w7 build Cannon@21,18; w8 build PulseRifle@9,3; w8 upgrade@9,3; w9 build PulseRifle@12,7; w9 upgrade@12,7; w9 build PulseRifle@10,6
+  skilled     Landing Site Psycho   lost w11/12; built 12, upgrades 16, left 0, earned 1764, repairs 60
+                                    w1 build Cannon@11,6; w1 build Cannon@12,2; w1 build Cannon@11,2; w1 upgrade@11,6; w1 upgrade@12,2; w1 upgrade@11,2; w2 build PulseRifle@9,3; w3 upgrade@9,3; w4 build PulseRifle@9,6; w5 upgrade@9,6; w6 build Cannon@21,18; w6 upgrade@11,6
+  skilled     Glass Meadows Easy    won w12/12; built 8, upgrades 8, left 125, earned 1250, repairs 0
+                                    w1 build Cannon@4,13; w1 build PulseRifle@1,15; w2 build PulseRifle@1,14; w4 upgrade@1,15; w7 gate gates@2,10; w8 upgrade@1,14; w9 build PulseRifle@4,15; w9 upgrade@4,15; w10 build PulseRifle@1,13; w10 upgrade@1,13; w10 build PulseRifle@4,14; w11 upgrade@4,14
+  skilled     Glass Meadows Medium  lost w12/12; built 12, upgrades 8, left 2, earned 1117, repairs 0
+                                    w1 build Cannon@1,14; w1 build Cannon@1,15; w2 build PulseRifle@4,15; w4 upgrade@4,15; w5 build PulseRifle@4,13; w6 upgrade@4,13; w7 build PulseRifle@1,13; w8 upgrade@1,13; w8 build PulseRifle@4,14; w10 build Cannon@16,20; w10 upgrade@4,14; w11 build PulseRifle@32,16
+  skilled     Glass Meadows Hard    won w12/12; built 17, upgrades 13, left 40, earned 1902, repairs 60
+                                    w1 build Cannon@1,14; w1 build Cannon@1,15; w2 build PulseRifle@4,15; w3 upgrade@4,15; w6 upgrade@4,15; w6 build PulseRifle@1,13; w7 upgrade@1,13; w7 build PulseRifle@4,13; w8 upgrade@4,13; w8 build PulseRifle@4,14; w8 upgrade@4,14; w9 build Cannon@16,20
+  skilled     Glass Meadows Psycho  lost w12/12; built 15, upgrades 21, left 74, earned 2468, repairs 129
+                                    w1 build Cannon@1,15; w1 build Cannon@4,15; w1 build Cannon@1,14; w1 build Cannon@1,13; w1 gate gates@2,10; w1 upgrade@4,15; w1 upgrade@1,15; w3 build PulseRifle@7,6; w5 build PulseRifle@4,14; w6 upgrade@4,14; w6 upgrade@4,15; w6 upgrade@4,14
+  sensible    Landing Site Easy     won w12/12; built 7, upgrades 7, left 15, earned 1136, repairs 0
+                                    w1 build Cannon@11,6; w1 build PulseRifle@10,6; w3 upgrade@10,6; w5 build PulseRifle@12,6; w6 upgrade@12,6; w9 build Cannon@21,18; w10 upgrade@11,6; w11 upgrade@10,6; w11 build PulseRifle@19,14; w12 upgrade@19,14; w12 build PulseRifle@12,7; w12 upgrade@12,7
+  sensible    Landing Site Medium   won w12/12; built 13, upgrades 6, left 22, earned 1282, repairs 60
+                                    w1 build Cannon@11,6; w1 build Cannon@12,6; w4 build PulseRifle@10,6; w5 upgrade@10,6; w6 build PulseRifle@19,14; w9 build Cannon@21,18; w9 upgrade@19,14; w10 build PulseRifle@12,7; w11 upgrade@12,7; w11 build PulseRifle@9,6; w11 build PulseRifle@13,6; w12 upgrade@11,6
+  sensible    Landing Site Hard     lost w12/12; built 11, upgrades 13, left 18, earned 1849, repairs 240
+                                    w1 build Cannon@11,6; w1 build Cannon@12,6; w3 build PulseRifle@10,6; w4 upgrade@10,6; w5 build PulseRifle@19,14; w6 upgrade@19,14; w6 build PulseRifle@12,7; w8 build Cannon@21,18; w9 upgrade@12,7; w11 upgrade@11,6; w11 upgrade@12,6; w11 build PulseRifle@9,6
+  sensible    Landing Site Psycho   lost w11/12; built 14, upgrades 7, left 20, earned 1419, repairs 0
+                                    w1 build Cannon@11,6; w1 build Laser@10,6; w1 build Laser@12,7; w1 build Laser@19,14; w1 build Cannon@12,6; w2 build PulseRifle@9,6; w3 upgrade@9,6; w5 build PulseRifle@13,6; w5 upgrade@13,6; w6 build PulseRifle@20,14; w7 upgrade@20,14; w8 build Cannon@21,18
+  sensible    Glass Meadows Easy    won w12/12; built 7, upgrades 7, left 56, earned 1245, repairs 0
+                                    w1 build Cannon@4,13; w1 build PulseRifle@1,15; w2 upgrade@1,15; w4 build PulseRifle@4,15; w6 upgrade@4,15; w7 build PulseRifle@13,17; w9 build Cannon@4,14; w10 upgrade@4,13; w10 upgrade@13,17; w11 build Cannon@4,12; w12 upgrade@1,15; w12 build PulseRifle@1,13
+  sensible    Glass Meadows Medium  won w12/12; built 8, upgrades 7, left 66, earned 1343, repairs 180
+                                    w1 build Cannon@4,13; w1 build Cannon@4,14; w2 build PulseRifle@1,15; w4 upgrade@1,15; w5 build PulseRifle@4,15; w6 upgrade@4,15; w7 build PulseRifle@13,17; w8 upgrade@4,13; w9 build Cannon@4,12; w11 build Cannon@16,20; w11 upgrade@13,17; w11 upgrade@4,14
+  sensible    Glass Meadows Hard    lost w12/12; built 9, upgrades 7, left 39, earned 1324, repairs 300
+                                    w1 build Cannon@4,13; w1 build Cannon@4,14; w2 build PulseRifle@1,15; w3 upgrade@1,15; w5 build PulseRifle@4,15; w5 upgrade@4,15; w6 build PulseRifle@13,17; w7 upgrade@13,17; w8 upgrade@4,13; w9 build Cannon@4,12; w11 build Cannon@16,20; w11 upgrade@4,14
+
+Cost: 45 runs, 18 machine minutes of play (24 s a run), 0 reference runs for the typical scripts; 1 batches, 7 wall-clock minutes in all.
+  batch 1795027454: 48 units on 5 workers, 6.6 min

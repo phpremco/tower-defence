@@ -15,8 +15,8 @@ MonoBehaviour:
   _displayName: data.enemy.Gravemaw.displayName
   _layer: 1
   _flies: 0
-  _maxHealth: 49900
-  _armor: 1200
+  _maxHealth: 46400
+  _armor: 11601
   _speed: 0.55
   _reward: 6965
   _baseDamage: 25

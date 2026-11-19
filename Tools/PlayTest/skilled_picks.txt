@@ -6,8 +6,11 @@
 # Level_C1_01 2 and Level_C1_02 2: the pick of round 82b (HEAD's strategy1, kept as strategy2 and strategy4) carries further on
 # today's waves than any strategy of the round 83b search; their lines come from Tools/PlayTest/skilled_picks_r83b_old_records.txt
 # (bot=3:7c6f0e14;data=0c8ecae3;game=b98124db, the same data).
+# Round 85: Level_C1_01 0 searched anew on the round 85 data (armoured bosses): the old pick (all Pulse Rifles, now
+# Level_C1_01_0_strategy4) broke at the boss from x1.25 (`3 1 1 0 0`); the fresh strategy2 holds x1 to x1.76 (`3 3 3 3 3`).
+# Its line comes from Tools/PlayTest/skilled_picks_r85_ls_easy_records.txt (bot=3:9fc04470;data=66f9d292;game=696f065a). The other 23 cells keep round 83b's picks.
 # pick|level|difficulty|strategy|seeds won at the data|base kept over those seeds|stars|candidates|break-even|seeds won per multiple
-pick|Level_C1_01|0|Level_C1_01_0_strategy1|3/3|3.0000|9|4|>1.40|3 3
+pick|Level_C1_01|0|Level_C1_01_0_strategy2|3/3|3.0000|9|4|>1.76|3 3 3 3 3
 pick|Level_C1_01|1|Level_C1_01_1_strategy2|2/3|2.0000|6|3|1.06|3 3 2 1 0
 pick|Level_C1_01|2|Level_C1_01_2_strategy2|2/3|2.0000|6|2|1.06|3 3 2 0 0
 pick|Level_C1_01|3|Level_C1_01_3_strategy3|3/3|3.0000|9|3|1.18|3 3 3 2 0

@@ -5,7 +5,8 @@
 # into its own probe_arg.txt; the records of all workers are merged into the project's records as measure_cells.sh and
 # replay_cells.sh do. The open editor is never touched. Each clone carries its own product name ("Tower defense worker wN"),
 # so its persistentDataPath is its own and Remco's save (DefaultCompany/Tower defense/Saves) is never read or written; the
-# script checks the save's MD5 before and after anyway and restores it if it changed.
+# script checks the save's MD5 before and after anyway and WARNS when it changed. It never restores, copies or writes the
+# save (round 85: Remco plays in the open editor while batches run, so his save changes legitimately).
 #
 #   bash Tools/PlayTest/workers.sh count                                   # the N this machine can carry
 #   bash Tools/PlayTest/workers.sh sync [N] [--library]                    # make or refresh N clones (Library only when missing, or --library)
@@ -53,7 +54,7 @@ sync_worker() {
     robocopy "$PROJECT\\Library" "$dir\\Library" /MIR /MT:16 /R:1 /W:1 /NFL /NDL /NJH /NJS /NP /NS /NC > /dev/null || [ $? -le 7 ]
   fi
   # The clone's own persistentDataPath: its product name differs, so it never sees Remco's save folder.
-  sed -i "s/^  productName: Tower defense\$/  productName: Tower defense worker w$i/" "$(cygpath -u "$dir")/ProjectSettings/ProjectSettings.asset"
+  sed -i "s/^  productName: Tower defense.*\$/  productName: Tower defense worker w$i/" "$(cygpath -u "$dir")/ProjectSettings/ProjectSettings.asset"
   # A clone never makes a sound (round 67: Remco heard the hidden workers play the game): audio is off in the clone's own
   # settings, never in the project's. The probe also mutes the listener in batch mode.
   sed -i 's/^  m_DisableAudio: 0$/  m_DisableAudio: 1/' "$(cygpath -u "$dir")/ProjectSettings/AudioManager.asset"
@@ -122,8 +123,8 @@ run() {
   mapfile -t UNITS < <(units)
   [ "${#UNITS[@]}" -gt 0 ] || { echo "no units match the filter" >&2; exit 1; }
   [ "$n" -gt "${#UNITS[@]}" ] && n=${#UNITS[@]}
-  local save_md5="" save_copy=""
-  if [ -f "$SAVE" ]; then save_md5=$(md5sum "$SAVE" | cut -d' ' -f1); save_copy=$(mktemp); cp "$SAVE" "$save_copy"; fi
+  local save_md5=""
+  if [ -f "$SAVE" ]; then save_md5=$(md5sum "$SAVE" | cut -d' ' -f1); fi
   local started=$(date +%s)
   echo "== workers: $stage, ${#UNITS[@]} units over $n workers ($(date +%H:%M:%S))"
   # Every clone refreshed first, side by side (a first Library copy takes a while), then every worker launched at once.
@@ -144,6 +145,8 @@ run() {
     "$UNITY" -batchmode $([ "$GRAPHICS" = 1 ] || echo -nographics) -job-worker-count "$JOB_WORKERS" -timestamps -projectPath "$ROOT\\w$i" -runTests -testPlatform PlayMode -testFilter "$test" \
       -testResults "$ROOT\\w$i\\Logs\\results.xml" -logFile "$ROOT\\w$i\\Logs\\unity.log" > /dev/null 2>&1 &
   done
+  # Round 85: the workers run at BelowNormal priority (Remco uses the PC meanwhile).
+  bash Tools/PlayTest/lower_priority.sh 120 &
   wait
   local ended=$(date +%s)
   echo "== workers done in $(( (ended - started) / 60 )) min $(( (ended - started) % 60 )) s ($(date +%H:%M:%S))"
@@ -162,13 +165,12 @@ run() {
   if [ -f "$SAVE" ] || [ -n "$save_md5" ]; then
     local now_md5=""; [ -f "$SAVE" ] && now_md5=$(md5sum "$SAVE" | cut -d' ' -f1)
     if [ "$now_md5" != "$save_md5" ]; then
-      echo "WARNING: the save changed during the run ($save_md5 -> $now_md5); restoring it." >&2
-      if [ -n "$save_copy" ]; then cp "$save_copy" "$SAVE"; else rm -f "$SAVE"; fi
+      # Never restored (round 85): the clones cannot reach this folder, so a change is Remco playing in the open editor.
+      echo "WARNING: the save changed during the run ($save_md5 -> $now_md5); left as it is (never restored)." >&2
     else
       echo "  save untouched (MD5 ${save_md5:-none})"
     fi
   fi
-  [ -n "$save_copy" ] && rm -f "$save_copy"
   if [ "$failed" = 1 ]; then echo "a worker wrote no records: see $ROOT\\wN\\Logs\\unity.log" >&2; exit 1; fi
   merge_records "Tools/PlayTest/$records" "$new"
   rm -f "$new"

@@ -40,6 +40,9 @@ public static class LaserDuel
         public float Lock;
         public float Swing;
         public bool Sticky;
+
+        /// <summary>Round 85: the pulse that kills costs the share of it the creature needed (Tower.ReleaseBeam); false is the beam of rounds 23 to 84.</summary>
+        public bool Conserve = true;
     }
 
     private sealed class Creature
@@ -157,6 +160,195 @@ public static class LaserDuel
         return sb.ToString();
     }
 
+    private const string ShareOutPath = "Tools/PlayTest/laser_share.txt";
+    private const float LightFireOnArmour = 0.2f;
+
+    /// <summary>
+    /// Round 85: what a Laser is worth beside a Gun Turret per difficulty, on the ground creatures of the stored waves as
+    /// they spawn (health x the difficulty factor x the wave multiplier; armour at what it costs light fire). Per
+    /// difficulty, weighted by the health the waves send: the useful damage per second of each gun as a share of its data
+    /// DPS, and the useful DPS per coin of the Laser over that of the Gun Turret, with the beam of rounds 23 to 84
+    /// ("before": every kill costs the sweep time alone) and the beam of round 85 ("after"). Levels: "levels=C1_01,C1_02"
+    /// in Tools/PlayTest/duel_arg.txt (default C1_01, the level Remco played). No asset is written.
+    /// unity command run_script --file Tools/PlayTest/Scripts/LaserDuel.cs --entry LaserDuel.Difficulties --timeout_ms 900000 --timeout 960
+    /// </summary>
+    public static string Difficulties()
+    {
+        string levels = "C1_01";
+        if (File.Exists(ArgPath))
+        {
+            foreach (string raw in File.ReadAllLines(ArgPath))
+            {
+                if (raw.StartsWith("levels=", StringComparison.Ordinal))
+                {
+                    levels = raw.Substring("levels=".Length).Trim();
+                }
+            }
+        }
+
+        Overrides.Clear();
+        var gun = new List<Gun>();
+        AddLevels(gun, "Gun", "Assets/_Project/Data/Towers/PulseRifle.asset", false, 0f, 0f, false);
+        var laserAsset = AssetDatabase.LoadAssetAtPath<Game.Towers.TowerDefinition>("Assets/_Project/Data/Towers/Laser.asset");
+        var after = new List<Gun>();
+        AddLevels(after, "Laser", "Assets/_Project/Data/Towers/Laser.asset", true, laserAsset.BeamLockSeconds, laserAsset.BeamSweepSeconds, true);
+        var before = new List<Gun>();
+        AddLevels(before, "Laser", "Assets/_Project/Data/Towers/Laser.asset", true, laserAsset.BeamLockSeconds, laserAsset.BeamSweepSeconds, true);
+        before.ForEach(g => g.Conserve = false);
+        int[] picks = { 0, gun.Count - 1 };
+
+        var sb = new StringBuilder();
+        sb.AppendLine($"Laser beside Gun Turret per difficulty {DateTime.Now:yyyy-MM-dd HH:mm}; levels {levels}; ground creatures of the stored waves as spawned, weighted by health sent.");
+        sb.AppendLine("useful = damage that removed health per second something was in reach; share = useful over the data DPS; coin = useful per coin of the total price of the tower.");
+        sb.AppendLine("| Difficulty | Median toughness as spawned (light fire) | Gun L1 share | Gun L3 share | Laser L1 share before -> after | Laser L3 share before -> after | Laser/Gun per coin L1 before -> after | Laser/Gun per coin L3 before -> after | Laser share of the damage of a Gun+Laser pair, L1 before -> after | L3 before -> after |");
+        sb.AppendLine("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
+        string[] names = { "Easy", "Medium", "Hard", "Psycho" };
+        var species = new StringBuilder();
+        species.AppendLine();
+        species.AppendLine("Per species, at the median toughness it spawns with on that difficulty (bodies = its share of the ground creatures sent):");
+        species.AppendLine("| Difficulty | Species | Bodies | Toughness (light fire) | Pulses to kill, Laser L1 / L3 | Laser L1 share before -> after | Laser L3 share before -> after | Gun L1 / L3 share | Laser/Gun per coin L1 before -> after | L3 before -> after |");
+        species.AppendLine("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
+        var packed = new StringBuilder();
+        packed.AppendLine();
+        packed.AppendLine("Kill rate in a packed stream (a body every 0.05 s, so the gun never waits for a target): health removed per second as a multiple of the data DPS, per tower level, at the toughness the species spawns with. A gun that wastes part of a shot on a small body reads under x1; the beam of rounds 23 to 84 read over x1, because a kill cost it the sweep time alone.");
+        packed.AppendLine("| Difficulty | Species | Toughness | Gun L1 / L2 / L3 | Laser L1 before -> after | Laser L2 before -> after | Laser L3 before -> after |");
+        packed.AppendLine("| --- | --- | --- | --- | --- | --- | --- |");
+        var holds = new StringBuilder();
+        holds.AppendLine();
+        holds.AppendLine("Holding power: one tower alone beside a stream of that species at its spacing; holds = the multiple of the health it spawns with that the tower still stops (at most a tenth leaking). Above x1 one tower stops the stream as the level sends it.");
+        holds.AppendLine("| Difficulty | Species (spacing) | Gun L1 holds | Gun L3 holds | Laser L1 holds before -> after | Laser L3 holds before -> after | Laser/Gun held per coin L1 before -> after | L3 before -> after |");
+        holds.AppendLine("| --- | --- | --- | --- | --- | --- | --- | --- |");
+        foreach (string name in names)
+        {
+            var kinds = new Dictionary<string, (List<(float Health, int Count)> Groups, float Speed, float Interval)>();
+            int bodies = 0;
+            var difficulty = AssetDatabase.LoadAssetAtPath<Game.Levels.DifficultyProfile>("Assets/_Project/Data/Difficulty/" + name + ".asset");
+            // (species, bucket of toughness) -> weight in health, with the speed and spacing of the group.
+            var buckets = new Dictionary<string, (float Health, float Speed, float Interval, float Weight)>();
+            var all = new List<(float Health, float Weight)>();
+            foreach (string key in levels.Split(','))
+            {
+                var waves = AssetDatabase.LoadAssetAtPath<Game.Levels.LevelWaves>("Assets/_Project/Data/Waves/Waves_" + key.Trim() + ".asset");
+                var level = AssetDatabase.LoadAssetAtPath<Game.Levels.LevelDefinition>("Assets/_Project/Data/Levels/Level_" + key.Trim() + ".asset");
+                foreach (Game.Levels.WaveDefinition wave in waves.For(difficulty))
+                {
+                    foreach (Game.Levels.SpawnGroup group in wave.Groups)
+                    {
+                        if (group.Enemy == null || group.Enemy.IsBoss || group.Enemy.Flies)
+                        {
+                            continue;
+                        }
+
+                        float scale = difficulty.HealthMultiplier * level.EnemyHealthScale * wave.HealthMultiplier;
+                        float tough = (group.Enemy.MaxHealth + group.Enemy.Armor / LightFireOnArmour) * scale;
+                        float weight = tough * group.Count;
+                        // Buckets a sixth apart, so a few hundred groups are a few dozen duels.
+                        double step = Math.Round(Math.Log(tough) / Math.Log(1.17));
+                        string id = group.Enemy.name + "|" + step.ToString(CultureInfo.InvariantCulture);
+                        buckets.TryGetValue(id, out var b);
+                        buckets[id] = ((float)Math.Pow(1.17, step), group.Enemy.Speed, Math.Max(0.2f, group.Interval), b.Weight + weight);
+                        all.Add((tough, weight));
+                        if (!kinds.TryGetValue(group.Enemy.name, out var kind))
+                        {
+                            kind = (new List<(float Health, int Count)>(), group.Enemy.Speed, Math.Max(0.2f, group.Interval));
+                            kinds[group.Enemy.name] = kind;
+                        }
+
+                        kind.Groups.Add((tough, group.Count));
+                        bodies += group.Count;
+                    }
+                }
+            }
+
+            all.Sort((a, b) => a.Health.CompareTo(b.Health));
+            float total = 0f;
+            all.ForEach(a => total += a.Weight);
+            float half = 0f;
+            float median = 0f;
+            foreach (var a in all)
+            {
+                half += a.Weight;
+                if (half >= total * 0.5f)
+                {
+                    median = a.Health;
+                    break;
+                }
+            }
+
+            // Per gun: health-weighted useful DPS.
+            var useful = new Dictionary<string, float>();
+            void Add(string id, Gun g, float health, float speed, float interval, float weight)
+            {
+                useful.TryGetValue(id, out float sum);
+                useful[id] = sum + Duel(g, health, speed, interval, 30) * weight / total;
+            }
+
+            foreach (var pair in buckets)
+            {
+                var b = pair.Value;
+                foreach (int i in picks)
+                {
+                    Add("gun" + i, gun[i], b.Health, b.Speed, b.Interval, b.Weight);
+                    Add("before" + i, before[i], b.Health, b.Speed, b.Interval, b.Weight);
+                    Add("after" + i, after[i], b.Health, b.Speed, b.Interval, b.Weight);
+                }
+            }
+
+            string Share(float value, Gun g) => (value / (g.Damage / g.Interval) * 100f).ToString("0", CultureInfo.InvariantCulture) + "%";
+            string Coin(float laser, Gun l, float pulse, Gun p) => "x" + (laser / l.Cost / (pulse / p.Cost)).ToString("0.00", CultureInfo.InvariantCulture);
+            string Pair(float laser, float pulse) => (laser / (laser + pulse) * 100f).ToString("0", CultureInfo.InvariantCulture) + "%";
+            int lo = picks[0];
+            int hi = picks[1];
+            foreach (var kind in kinds)
+            {
+                var groups = kind.Value.Groups;
+                groups.Sort((a, b) => a.Health.CompareTo(b.Health));
+                int count = 0;
+                groups.ForEach(g => count += g.Count);
+                int seen = 0;
+                float tough = 0f;
+                foreach (var g in groups)
+                {
+                    seen += g.Count;
+                    if (seen * 2 >= count)
+                    {
+                        tough = g.Health;
+                        break;
+                    }
+                }
+
+                float D(Gun g) => Duel(g, tough, kind.Value.Speed, kind.Value.Interval, 30);
+                float g1 = D(gun[lo]);
+                float g3 = D(gun[hi]);
+                float b1 = D(before[lo]);
+                float b3 = D(before[hi]);
+                float a1 = D(after[lo]);
+                float a3 = D(after[hi]);
+                string Packed(Gun g) => "x" + (Duel(g, tough, kind.Value.Speed, 0.05f, 240) / (g.Damage / g.Interval)).ToString("0.00", CultureInfo.InvariantCulture);
+                packed.AppendLine($"| {name} | {kind.Key} | {tough.ToString("0", CultureInfo.InvariantCulture)} | {Packed(gun[0])} / {Packed(gun[1])} / {Packed(gun[2])} | {Packed(before[0])} -> {Packed(after[0])} | {Packed(before[1])} -> {Packed(after[1])} | {Packed(before[2])} -> {Packed(after[2])} |");
+                float hg1 = Hold(gun[lo], kind.Value.Speed, kind.Value.Interval);
+                float hg3 = Hold(gun[hi], kind.Value.Speed, kind.Value.Interval);
+                float hb1 = Hold(before[lo], kind.Value.Speed, kind.Value.Interval);
+                float hb3 = Hold(before[hi], kind.Value.Speed, kind.Value.Interval);
+                float ha1 = Hold(after[lo], kind.Value.Speed, kind.Value.Interval);
+                float ha3 = Hold(after[hi], kind.Value.Speed, kind.Value.Interval);
+                string X(float held) => "x" + (held / tough).ToString("0.0", CultureInfo.InvariantCulture);
+                holds.AppendLine($"| {name} | {kind.Key} ({kind.Value.Interval.ToString("0.##", CultureInfo.InvariantCulture)} s) | {X(hg1)} | {X(hg3)} | {X(hb1)} -> {X(ha1)} | {X(hb3)} -> {X(ha3)} | {Coin(hb1, before[lo], hg1, gun[lo])} -> {Coin(ha1, after[lo], hg1, gun[lo])} | {Coin(hb3, before[hi], hg3, gun[hi])} -> {Coin(ha3, after[hi], hg3, gun[hi])} |");
+                species.AppendLine($"| {name} | {kind.Key} | {(count * 100f / bodies).ToString("0", CultureInfo.InvariantCulture)}% | {tough.ToString("0", CultureInfo.InvariantCulture)} | {Math.Ceiling(tough / after[lo].Damage)} / {Math.Ceiling(tough / after[hi].Damage)} | {Share(b1, before[lo])} -> {Share(a1, after[lo])} | {Share(b3, before[hi])} -> {Share(a3, after[hi])} | {Share(g1, gun[lo])} / {Share(g3, gun[hi])} | {Coin(b1, before[lo], g1, gun[lo])} -> {Coin(a1, after[lo], g1, gun[lo])} | {Coin(b3, before[hi], g3, gun[hi])} -> {Coin(a3, after[hi], g3, gun[hi])} |");
+            }
+
+            sb.AppendLine($"| {name} | {median.ToString("0", CultureInfo.InvariantCulture)} | {Share(useful["gun" + lo], gun[lo])} | {Share(useful["gun" + hi], gun[hi])} | {Share(useful["before" + lo], before[lo])} -> {Share(useful["after" + lo], after[lo])} | {Share(useful["before" + hi], before[hi])} -> {Share(useful["after" + hi], after[hi])} | {Coin(useful["before" + lo], before[lo], useful["gun" + lo], gun[lo])} -> {Coin(useful["after" + lo], after[lo], useful["gun" + lo], gun[lo])} | {Coin(useful["before" + hi], before[hi], useful["gun" + hi], gun[hi])} -> {Coin(useful["after" + hi], after[hi], useful["gun" + hi], gun[hi])} | {Pair(useful["before" + lo], useful["gun" + lo])} -> {Pair(useful["after" + lo], useful["gun" + lo])} | {Pair(useful["before" + hi], useful["gun" + hi])} -> {Pair(useful["after" + hi], useful["gun" + hi])} |");
+        }
+
+        sb.Append(species);
+        sb.Append(packed);
+        sb.Append(holds);
+        sb.AppendLine();
+        sb.AppendLine($"Data: Gun Turret L1 {gun[0].Damage}/{gun[0].Interval}s ({gun[0].Cost} coins), L3 {gun[gun.Count - 1].Damage}/{gun[gun.Count - 1].Interval}s ({gun[gun.Count - 1].Cost}); Laser L1 {after[0].Damage}/{after[0].Interval}s ({after[0].Cost}), L3 {after[after.Count - 1].Damage}/{after[after.Count - 1].Interval}s ({after[after.Count - 1].Cost}), sweep {laserAsset.BeamSweepSeconds}s.");
+        File.WriteAllText(ShareOutPath, sb.ToString());
+        return sb.ToString();
+    }
+
     private static void AddLevels(List<Gun> guns, string name, string path, bool beam, float lockSeconds, float swing, bool sticky)
     {
         var def = AssetDatabase.LoadAssetAtPath<Game.Towers.TowerDefinition>(path);
@@ -197,6 +389,7 @@ public static class LaserDuel
 
         var shots = new List<Shot>();
         float cooldown = 0f;
+        float spare = 0f;
         Creature beamTarget = null;
         bool beamFiring = false;
         float useful = 0f;
@@ -275,10 +468,11 @@ public static class LaserDuel
             {
                 if (!beamTarget.Alive && beamFiring)
                 {
-                    cooldown = Math.Min(cooldown, gun.Swing);
+                    cooldown = Math.Min(cooldown, gun.Conserve ? Math.Max(gun.Swing, cooldown - spare) : gun.Swing);
                     swingNow = true;
                 }
 
+                spare = 0f;
                 beamTarget = null;
             }
 
@@ -310,6 +504,7 @@ public static class LaserDuel
                     }
                 }
 
+                spare = gun.Beam ? gun.Interval * (1f - Math.Min(1f, Math.Max(0f, target.Hp / gun.Damage))) : 0f;
                 shots.Add(new Shot { X = 0f, Z = TowerSide, Target = target, Damage = gun.Damage });
                 beamFiring = true;
                 cooldown += gun.Interval;

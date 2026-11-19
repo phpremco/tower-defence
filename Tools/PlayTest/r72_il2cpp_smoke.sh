@@ -24,7 +24,7 @@ if [ -z "$skip_build" ]; then
   for d in Assets Packages ProjectSettings Tools; do
     robocopy "$PROJECT\\$d" "$ROOT\\w$n\\$d" /MIR /MT:16 /R:1 /W:1 /NFL /NDL /NJH /NJS /NP /NS /NC > /dev/null || [ $? -le 7 ]
   done
-  sed -i "s/^  productName: Tower defense\$/  productName: Tower defense worker w$n/" "$dir/ProjectSettings/ProjectSettings.asset"
+  sed -i "s/^  productName: Tower defense.*\$/  productName: Tower defense worker w$n/" "$dir/ProjectSettings/ProjectSettings.asset"
   sed -i "s/^  m_DisableAudio: 0\$/  m_DisableAudio: 1/" "$dir/ProjectSettings/AudioManager.asset"
   rm -f "$dir"/Assets/InitTestScene*.unity*
   started=$(date +%s)

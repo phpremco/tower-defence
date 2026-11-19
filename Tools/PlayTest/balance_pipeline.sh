@@ -16,7 +16,10 @@
 # as before. Tools/PlayTest/probe_arg.txt (untracked, optional) narrows the PlayMode stages: levels=, difficulties=, seeds=,
 # cells=node:difficulty[:seed], step=. The workers read the same file. The apply stage refuses a fit below the calibration bar;
 # apply-force applies it anyway (the curator's call).
-# The save rule: a PlayMode run may create Saves/progress.json; the script restores the state it found.
+# The save rule (round 85): the script NEVER restores, copies or writes Saves/progress.json. Remco plays in the open editor
+# while batches run, so his save changes legitimately; the script only warns at its end when the MD5 moved. The one
+# exception is opt-in: TD_RESTORE_SAVE=1 together with --serial (a PlayMode stage in the open editor writes the save
+# itself), and only when nobody is playing.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
@@ -24,13 +27,21 @@ SERIAL=0
 if [ "${1:-}" = "--serial" ]; then SERIAL=1; shift; fi
 
 SAVE="$LOCALAPPDATA/../LocalLow/DefaultCompany/Tower defense/Saves/progress.json"
-SAVE_BACKUP="$(mktemp)"
-HAD_SAVE=0
-if [ -f "$SAVE" ]; then HAD_SAVE=1; cp "$SAVE" "$SAVE_BACKUP"; fi
-restore_save() {
-  if [ "$HAD_SAVE" = 1 ]; then cp "$SAVE_BACKUP" "$SAVE"; else rm -f "$SAVE"; fi
+SAVE_MD5=""; [ -f "$SAVE" ] && SAVE_MD5=$(md5sum "$SAVE" | cut -d' ' -f1)
+RESTORE=0; if [ "$SERIAL" = 1 ] && [ "${TD_RESTORE_SAVE:-0}" = 1 ]; then RESTORE=1; fi
+SAVE_BACKUP=""; HAD_SAVE=0
+if [ "$RESTORE" = 1 ]; then SAVE_BACKUP="$(mktemp)"; if [ -f "$SAVE" ]; then HAD_SAVE=1; cp "$SAVE" "$SAVE_BACKUP"; fi; fi
+check_save() {
+  local now=""; [ -f "$SAVE" ] && now=$(md5sum "$SAVE" | cut -d' ' -f1)
+  [ "$now" = "$SAVE_MD5" ] && return 0
+  if [ "$RESTORE" = 1 ]; then
+    echo "WARNING: the save changed ($SAVE_MD5 -> $now); restoring it (TD_RESTORE_SAVE=1 with --serial)." >&2
+    if [ "$HAD_SAVE" = 1 ]; then cp "$SAVE_BACKUP" "$SAVE"; else rm -f "$SAVE"; fi
+  else
+    echo "WARNING: the save changed ($SAVE_MD5 -> $now); left as it is (never restored)." >&2
+  fi
 }
-trap restore_save EXIT
+trap check_save EXIT
 
 stopped() {
   unity command editor_status 2>&1 | grep -q '"playMode":"stopped"'

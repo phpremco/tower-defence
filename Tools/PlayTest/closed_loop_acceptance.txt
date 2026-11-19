@@ -1,29 +1,29 @@
-Closed-loop acceptance of Tools/PlayTest/pressure_r84_final_records.txt (data a0336c45; the project's data is a0336c45)
+Closed-loop acceptance of Tools/PlayTest/pressure_r85_final5_easy_records.txt, Tools/PlayTest/pressure_r85_final5_medium_records.txt, Tools/PlayTest/pressure_r85_final5_records.txt (data 64969a3f; the project's data is 64969a3f)
 | Cell | Sensible | Skilled | Target | Verdict |
 | --- | --- | --- | --- | --- |
-| Level_C1_01 Easy | `3 3 3 3 3` over x1.32 | `3 3 3 2 3` over x1.32 | both hold the ladder | accepted |
-| Level_C1_01 Medium | `3 3 3 2 0` x1.18 | `3 3 2 1 0` x1.06 | sensible x1.18, better rung x1.06 at least | accepted |
-| Level_C1_01 Hard | `3 2 1 0 0` x0.95 | `3 3 3 1 0` x1.06 | sensible x0.95, better rung x1.06 at least | accepted |
-| Level_C1_01 Psycho | `1 0 0 0 0` under x0.75 | `3 2 1 1 0` x0.95 | better rung x1.06 | accepted |
-| Level_C1_02 Easy | `3 3 3 3 3` over x1.32 | `3 3 3 3 3` over x1.32 | both hold the ladder | accepted |
-| Level_C1_02 Medium | `3 3 3 1 0` x1.06 | `3 3 1 0 0` x0.95 | sensible x1.18, better rung x1.06 at least | accepted |
-| Level_C1_02 Hard | `3 3 1 0 0` x0.95 | `3 3 2 0 0` x1.06 | sensible x0.95, better rung x1.06 at least | accepted |
-| Level_C1_02 Psycho | `0 0 0 0 0` under x0.75 | `3 3 2 0 0` x1.06 | better rung x1.06 | accepted |
-| Level_C1_03 Easy | `3 3 3 3 3` over x1.32 | `3 3 3 3 3` over x1.32 | both hold the ladder | accepted |
-| Level_C1_03 Medium | `3 3 3 3 0` x1.18 | `1 1 2 0 0` under x0.75 | sensible x1.18, better rung x1.06 at least | accepted |
-| Level_C1_03 Hard | `3 3 1 0 0` x0.95 | `2 3 2 1 0` x1.06 | sensible x0.95, better rung x1.06 at least | accepted |
-| Level_C1_03 Psycho | `0 0 0 0 0` under x0.75 | `3 3 3 1 1` x1.06 | better rung x1.06 | accepted |
-| Level_C1_04 Easy | `3 3 3 3 3` over x1.32 | `3 3 3 3 3` over x1.32 | both hold the ladder | accepted |
-| Level_C1_04 Medium | `3 3 2 3 1` x1.18 | `3 3 1 1 0` x0.95 | sensible x1.18, better rung x1.06 at least | accepted |
-| Level_C1_04 Hard | `3 2 1 0 0` x0.95 | `0 0 0 0 0` under x0.75 | sensible x0.95, better rung x1.06 at least | accepted |
-| Level_C1_04 Psycho | `3 3 2 0 0` x1.06 | `3 3 2 1 0` x1.06 | better rung x1.06 | accepted |
-| Level_C1_05 Easy | `3 3 3 3 3` over x1.32 | `3 3 3 3 3` over x1.32 | both hold the ladder | accepted |
-| Level_C1_05 Medium | `3 3 3 2 0` x1.18 | `3 3 3 0 0` x1.06 | sensible x1.18, better rung x1.06 at least | accepted |
-| Level_C1_05 Hard | `3 2 1 1 1` x0.95 | `3 3 2 2 0` x1.18 | sensible x0.95, better rung x1.06 at least | accepted |
-| Level_C1_05 Psycho | `0 0 0 0 0` under x0.75 | `3 3 2 2 0` x1.18 | better rung x1.06 | accepted |
-| Level_C1_06 Easy | `3 3 3 3 3` over x1.32 | `3 3 3 3 3` over x1.32 | both hold the ladder | accepted |
-| Level_C1_06 Medium | `3 3 3 2 1` x1.18 | `3 3 1 0 1` x0.95 | sensible x1.18, better rung x1.06 at least | accepted |
-| Level_C1_06 Hard | `3 3 2 0 0` x1.06 | `3 3 1 0 0` x0.95 | sensible x0.95, better rung x1.06 at least | accepted |
-| Level_C1_06 Psycho | `2 0 0 0 0` x0.85 | `3 3 3 1 0` x1.06 | better rung x1.06 | accepted |
+| Level_C1_01 Easy | `3 3 3 3 3` over x1.86 | `3 3 3 3 3` over x1.86 | weaker rung x1.55 at least | accepted |
+| Level_C1_01 Medium | `3 3 3 2 0 0` x1.32 | `3 3 2 1 0 0` x1.18 | sensible x1.32, better rung x1.06 at least | accepted |
+| Level_C1_01 Hard | `3 3 3 0 0` x1.06 | `3 3 2 0 0` x1.06 | sensible x0.95, better rung x1.06 at least | accepted |
+| Level_C1_01 Psycho | `2 1 0 0 0` x0.85 | `3 3 1 0 0` x0.95 | better rung x1.06 | accepted |
+| Level_C1_02 Easy | `3 3 3 3 3` over x1.86 | `3 3 3 0 0` x1.48 | weaker rung x1.55 at least | accepted |
+| Level_C1_02 Medium | `3 3 3 3 1 0` x1.32 | `3 2 0 0 0 0` x1.06 | sensible x1.32, better rung x1.06 at least | accepted |
+| Level_C1_02 Hard | `3 3 2 0 0` x1.06 | `0 0 0 0 0` under x0.75 | sensible x0.95, better rung x1.06 at least | accepted |
+| Level_C1_02 Psycho | `0 0 0 0 0` under x0.75 | `3 3 3 3 0` x1.18 | better rung x1.06 | accepted |
+| Level_C1_03 Easy | `3 3 3 3 2` over x1.86 | `3 3 3 1 0` x1.48 | weaker rung x1.55 at least | accepted |
+| Level_C1_03 Medium | `3 3 3 2 0 0` x1.32 | `2 1 0 0 0 0` x0.95 | sensible x1.32, better rung x1.06 at least | accepted |
+| Level_C1_03 Hard | `3 3 0 0 0` x0.95 | `2 2 2 2 0` x1.18 | sensible x0.95, better rung x1.06 at least | accepted |
+| Level_C1_03 Psycho | `0 0 0 0 0` under x0.75 | `3 3 3 2 0` x1.18 | better rung x1.06 | accepted |
+| Level_C1_04 Easy | `3 3 3 3 3` over x1.86 | `3 3 3 3 3` over x1.86 | weaker rung x1.55 at least | accepted |
+| Level_C1_04 Medium | `3 3 3 3 1 0` x1.32 | `1 0 0 0 0 0` under x0.85 | sensible x1.32, better rung x1.06 at least | accepted |
+| Level_C1_04 Hard | `3 2 2 1 0` x1.06 | `2 0 0 0 0` x0.85 | sensible x0.95, better rung x1.06 at least | accepted |
+| Level_C1_04 Psycho | `3 3 3 1 0` x1.06 | `3 3 2 1 0` x1.06 | better rung x1.06 | accepted |
+| Level_C1_05 Easy | `3 3 3 1 0` x1.48 | `3 3 3 0 0` x1.48 | weaker rung x1.55 at least | accepted |
+| Level_C1_05 Medium | `3 3 3 2 0 0` x1.32 | `3 2 0 0 0 0` x1.06 | sensible x1.32, better rung x1.06 at least | accepted |
+| Level_C1_05 Hard | `3 0 0 0 0` x0.85 | `3 3 3 2 0` x1.18 | sensible x0.95, better rung x1.06 at least | accepted |
+| Level_C1_05 Psycho | `0 0 0 0 0` under x0.75 | `3 3 2 0 0` x1.06 | better rung x1.06 | accepted |
+| Level_C1_06 Easy | `3 3 3 3 3` over x1.86 | `3 3 3 3 2` over x1.86 | weaker rung x1.55 at least | accepted |
+| Level_C1_06 Medium | `3 3 3 2 0 0` x1.32 | `3 1 0 0 0 0` x0.95 | sensible x1.32, better rung x1.06 at least | accepted |
+| Level_C1_06 Hard | `3 2 3 0 0` x1.06 | `3 2 0 0 0` x0.95 | sensible x0.95, better rung x1.06 at least | accepted |
+| Level_C1_06 Psycho | `0 0 0 0 0` under x0.75 | `3 3 2 1 0` x1.06 | better rung x1.06 | accepted |
 
 All 24 cells accepted.

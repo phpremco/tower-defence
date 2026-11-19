@@ -32,6 +32,8 @@ for d in "${DIFFS[@]}"; do
   "$UNITY" -batchmode -job-worker-count "$JOB_WORKERS" -timestamps -projectPath "$ROOT\\w$i" -runTests -testPlatform PlayMode -testFilter "$TEST" \
     -testResults "$ROOT\\w$i\\Logs\\results.xml" -logFile "$ROOT\\w$i\\Logs\\unity.log" > /dev/null 2>&1 &
 done
+# Round 85: the workers run at BelowNormal priority (Remco uses the PC meanwhile).
+bash Tools/PlayTest/lower_priority.sh 120 &
 wait
 ended=$(date +%s)
 echo "== finale workers done in $(( (ended - started) / 60 )) min $(( (ended - started) % 60 )) s ($(date +%H:%M:%S))"

@@ -17,11 +17,15 @@ namespace Game.Tests
     /// reference rung, read from the latest pressure measurement, lies within one step of the ladder of its target:
     /// the same targets and the same reading as Tools/PlayTest/closed_loop.py, which sets the cell's scalar.
     ///
-    ///   Easy    both rungs win every seed at the data; the weaker rung holds the whole ladder (target x1.4)
-    ///   Medium  the sensible rung breaks even at x1.18; the better of the two rungs at x1.06 at least
+    ///   Easy    both rungs win every seed at the data; the weaker rung breaks even at x1.55 at least (within a step)
+    ///   Medium  the sensible rung breaks even at x1.32; the better of the two rungs at x1.06 at least
     ///   Hard    the sensible rung breaks even at x0.95; the better of the two rungs at x1.06 at least
     ///   Psycho  the better of the two rungs breaks even at x1.06
     ///   and on every level Hard breaks the sensible rung earlier than Medium does.
+    ///
+    /// Round 85 (Remco after playing level 1: Easy and Medium a tad too hard, Hard right): Easy x1.4 -> x1.55, Medium
+    /// x1.18 -> x1.32, a step of the ladder each. Easy and Medium are measured on ladders that reach those
+    /// (Tools/PlayTest/r85_measure.sh); Easy is judged on its break-even now, where it used to pass by holding x1.25.
     ///
     /// The measurement is named in Tools/PlayTest/closed_loop_records.txt (one records file per line). It must be of
     /// the data as it stands: with another data stamp the test is inconclusive (measure first; Docs/COMMANDS.md,
@@ -41,7 +45,7 @@ namespace Game.Tests
         private const int Psycho = 3;
 
         /// <summary>The reference rung's target per difficulty (closed_loop.py, TARGETS).</summary>
-        private static readonly float[] Target = { 1.4f, 1.18f, 0.95f, 1.06f };
+        private static readonly float[] Target = { 1.55f, 1.32f, 0.95f, 1.06f };
 
         /// <summary>What the better of the two rungs must reach at least on Medium and Hard.</summary>
         private const float SkilledGuard = 1.06f;
@@ -192,7 +196,7 @@ namespace Game.Tests
                     }
 
                     Reading weaker = sensible.Value < skilled.Value ? sensible : skilled;
-                    return weaker.End == End.OverTheLadder ? null : "the weaker rung does not hold the whole ladder";
+                    return AtLeast(weaker, Target[Easy], "the weaker rung");
                 case Medium:
                 case Hard:
                     return Near(sensible, Target[difficulty], "the sensible rung") ?? AtLeast(better, SkilledGuard, "the better rung");
@@ -226,9 +230,9 @@ namespace Game.Tests
             switch (difficulty)
             {
                 case Easy:
-                    return "both hold the ladder";
+                    return "weaker rung x1.55 at least";
                 case Medium:
-                    return "sensible x1.18, better rung x1.06 at least";
+                    return "sensible x1.32, better rung x1.06 at least";
                 case Hard:
                     return "sensible x0.95, better rung x1.06 at least";
                 default:

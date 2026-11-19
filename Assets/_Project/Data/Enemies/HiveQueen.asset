@@ -16,9 +16,9 @@ MonoBehaviour:
   _layer: 1
   _flies: 0
   _maxHealth: 3200
-  _armor: 0
+  _armor: 800
   _speed: 0.55
-  _reward: 638
+  _reward: 814
   _baseDamage: 20
   _element: 0
   _attackStyle: 0

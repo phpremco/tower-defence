@@ -369,7 +369,7 @@ namespace Game.Editor
             Layer = (int)c.Layer,
             Flies = c.Flies,
             Health = c.Health,
-            Armor = c.Armor,
+            Armor = ArmourOf(c),
             Speed = c.Speed,
             BaseDamage = c.BaseDamage,
             AttackDamage = c.AttackDamage,
@@ -377,6 +377,9 @@ namespace Game.Editor
             BlockadeDamage = c.BlockadeDamage,
             IsBoss = c.Boss,
         };
+
+        // Every boss walks in armour (BalanceRules.BossArmourShare, round 85): its own pool, or the rule's share of its body.
+        private static float ArmourOf(Creature c) => c.Boss ? BalanceSheet.Rules.BossArmourFor(c.Health, c.Armor) : c.Armor;
 
         private static EnemyDefinition CreateEnemy(Creature c)
         {
@@ -387,7 +390,7 @@ namespace Game.Editor
             so.FindProperty("_layer").intValue = (int)c.Layer;
             so.FindProperty("_flies").boolValue = c.Flies;
             so.FindProperty("_maxHealth").floatValue = c.Health;
-            so.FindProperty("_armor").floatValue = c.Armor;
+            so.FindProperty("_armor").floatValue = ArmourOf(c);
             so.FindProperty("_speed").floatValue = c.Speed;
             // Kill money follows threat, so a new or retuned creature never needs a hand-set reward.
             so.FindProperty("_reward").intValue = Threat.Reward(StatsOf(c), BalanceSheet.Rules);

@@ -1,0 +1,156 @@
+Measured with: bot 3:375f514b; data a0336c45; game code 67469f63
+
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 31 of 36 curves monotone = 86.1%  ->  FAIL
+  mono-Cannon   12 of 12  curves (100%); 0 of 60 steps drop by more than the tolerance
+  mono-Laser     9 of 12  curves (75%); 3 of 60 steps drop by more than the tolerance
+  mono-PulseRifle  10 of 12  curves (83%); 2 of 60 steps drop by more than the tolerance
+  the same check on other scores (all rungs): P 31 of 36; A 31 of 36; R+D (furthest creature) 28 of 36; D 36 of 36; won/lost 36 of 36
+  curves that are not monotone (P per multiple, the drops marked):
+    Landing Site Easy     mono-Laser   seed 2: 0.32:1.23L 0.4:1.45L 0.5:1.45L 0.64:1.42L! 0.8:1.43L 1:1.50L  (worst drop -0.023)
+    Landing Site Easy     mono-Laser   seed 3: 0.32:1.30L 0.4:1.45L 0.5:1.45L 0.64:1.45L 0.8:1.43L! 1:1.43L  (worst drop -0.029)
+    Landing Site Medium   mono-Laser   seed 3: 0.32:1.33L 0.4:1.35L 0.5:1.37L 0.64:1.45L 0.8:1.42L! 1:1.51L  (worst drop -0.030)
+    Landing Site Medium   mono-PulseRifle seed 3: 0.32:0.12 0.4:0.14 0.5:0.15 0.64:1.21L 0.8:1.26L 1:1.21L!  (worst drop -0.043)
+    Landing Site Hard     mono-PulseRifle seed 3: 0.32:0.14 0.4:0.16 0.5:1.19L 0.64:1.23L 0.8:1.30L 1:1.27L!  (worst drop -0.030)
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 0 of 0 cells within the limit  ->  FAIL
+  cell                  
+  Landing Site Easy
+  Landing Site Medium
+  Landing Site Hard
+  Landing Site Psycho
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  mono-Cannon                       mono-Laser                        mono-PulseRifle                   
+  Landing Site Easy     0.120 (0.120-0.120) 3/3           1.456 (1.425-1.499) 0/3           1.174 (1.169-1.195) 0/3
+  Landing Site Medium   0.125 (0.125-0.126) 3/3           1.510 (1.503-1.541) 0/3           1.267 (1.213-1.313) 0/3
+  Landing Site Hard     0.126 (0.126-0.131) 3/3           1.262 (1.251-1.269) 0/3           1.273 (1.269-1.274) 0/3
+  Landing Site Psycho   0.137 (0.137-0.139) 3/3           1.286 (1.284-1.314) 0/3           1.384 (1.369-1.389) 0/3
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  mono-Cannon
+    Landing Site Easy     x0.32 0.11 (0.11-0.11) 3/3 | x0.4 0.11 (0.11-0.11) 3/3 | x0.5 0.11 (0.11-0.11) 3/3 | x0.64 0.11 (0.11-0.11) 3/3 | x0.8 0.12 (0.12-0.12) 3/3 | x1 0.12 (0.12-0.12) 3/3
+    Landing Site Medium   x0.32 0.11 (0.10-0.11) 3/3 | x0.4 0.11 (0.10-0.12) 3/3 | x0.5 0.12 (0.12-0.12) 3/3 | x0.64 0.12 (0.12-0.12) 3/3 | x0.8 0.12 (0.12-0.12) 3/3 | x1 0.13 (0.13-0.13) 3/3
+    Landing Site Hard     x0.32 0.11 (0.10-0.11) 3/3 | x0.4 0.11 (0.11-0.12) 3/3 | x0.5 0.11 (0.11-0.12) 3/3 | x0.64 0.12 (0.12-0.12) 3/3 | x0.8 0.12 (0.12-0.12) 3/3 | x1 0.13 (0.13-0.13) 3/3
+    Landing Site Psycho   x0.32 0.10 (0.10-0.10) 3/3 | x0.4 0.10 (0.10-0.11) 3/3 | x0.5 0.12 (0.11-0.12) 3/3 | x0.64 0.12 (0.12-0.12) 3/3 | x0.8 0.13 (0.13-0.13) 3/3 | x1 0.14 (0.14-0.14) 3/3
+  mono-Laser
+    Landing Site Easy     x0.32 1.29 (1.23-1.30) 0/3 | x0.4 1.45 (1.45-1.45) 0/3 | x0.5 1.45 (1.45-1.45) 0/3 | x0.64 1.45 (1.42-1.45) 0/3 | x0.8 1.43 (1.43-1.46) 0/3 | x1 1.46 (1.43-1.50) 0/3
+    Landing Site Medium   x0.32 1.43 (1.33-1.44) 0/3 | x0.4 1.43 (1.35-1.43) 0/3 | x0.5 1.42 (1.37-1.42) 0/3 | x0.64 1.41 (1.41-1.45) 0/3 | x0.8 1.49 (1.42-1.54) 0/3 | x1 1.51 (1.50-1.54) 0/3
+    Landing Site Hard     x0.32 0.12 (0.11-0.14) 3/3 | x0.4 0.15 (0.14-0.15) 3/3 | x0.5 1.20 (1.17-1.20) 0/3 | x0.64 1.22 (1.20-1.22) 0/3 | x0.8 1.25 (1.25-1.25) 0/3 | x1 1.26 (1.25-1.27) 0/3
+    Landing Site Psycho   x0.32 0.15 (0.15-0.17) 3/3 | x0.4 1.18 (1.18-1.19) 0/3 | x0.5 1.20 (1.20-1.21) 0/3 | x0.64 1.23 (1.22-1.23) 0/3 | x0.8 1.26 (1.26-1.28) 0/3 | x1 1.29 (1.28-1.31) 0/3
+  mono-PulseRifle
+    Landing Site Easy     x0.32 0.10 (0.10-0.10) 3/3 | x0.4 0.10 (0.10-0.11) 3/3 | x0.5 0.11 (0.11-0.11) 3/3 | x0.64 0.12 (0.12-0.12) 3/3 | x0.8 0.12 (0.12-0.13) 3/3 | x1 1.17 (1.17-1.20) 0/3
+    Landing Site Medium   x0.32 0.12 (0.12-0.12) 3/3 | x0.4 0.13 (0.12-0.14) 3/3 | x0.5 0.15 (0.15-0.16) 3/3 | x0.64 1.20 (1.19-1.21) 0/3 | x0.8 1.25 (1.25-1.26) 0/3 | x1 1.27 (1.21-1.31) 0/3
+    Landing Site Hard     x0.32 0.14 (0.14-0.15) 3/3 | x0.4 0.16 (0.15-0.16) 3/3 | x0.5 1.18 (0.20-1.19) 1/3 | x0.64 1.22 (1.22-1.23) 0/3 | x0.8 1.29 (1.24-1.30) 0/3 | x1 1.27 (1.27-1.27) 0/3
+    Landing Site Psycho   x0.32 0.18 (0.16-0.19) 3/3 | x0.4 0.21 (0.19-0.24) 3/3 | x0.5 1.23 (1.23-1.27) 0/3 | x0.64 1.26 (1.24-1.28) 0/3 | x0.8 1.34 (1.29-1.34) 0/3 | x1 1.38 (1.37-1.39) 0/3
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  mono-Cannon Landing Site Easy     A 0.120 (0.120-0.120)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  mono-Cannon Landing Site Medium   A 0.125 (0.125-0.126)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  mono-Cannon Landing Site Hard     A 0.126 (0.126-0.131)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  mono-Cannon Landing Site Psycho   A 0.137 (0.137-0.139)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  mono-Laser  Landing Site Easy     A 0.456 (0.425-0.499)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  mono-Laser  Landing Site Medium   A 0.510 (0.503-0.541)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  mono-Laser  Landing Site Hard     A 0.262 (0.251-0.269)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  mono-Laser  Landing Site Psycho   A 0.286 (0.284-0.314)  D 1.00 (1.00-1.00)  leaked 0.021 (0.021-0.021)
+  mono-PulseRifleLanding Site Easy     A 0.174 (0.169-0.195)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  mono-PulseRifleLanding Site Medium   A 0.267 (0.213-0.313)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.023)
+  mono-PulseRifleLanding Site Hard     A 0.273 (0.269-0.274)  D 1.00 (1.00-1.00)  leaked 0.016 (0.016-0.036)
+  mono-PulseRifleLanding Site Psycho   A 0.384 (0.369-0.389)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<0.32' / '>1' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  mono-Cannon
+    Landing Site Easy     median >1     pooled >1     per seed: >1 >1 >1                             spread -
+    Landing Site Medium   median >1     pooled >1     per seed: >1 >1 >1                             spread -
+    Landing Site Hard     median >1     pooled >1     per seed: >1 >1 >1                             spread -
+    Landing Site Psycho   median >1     pooled >1     per seed: >1 >1 >1                             spread -
+  mono-Laser
+    Landing Site Easy     median <0.32  pooled <0.32  per seed: <0.32 <0.32 <0.32                    spread -
+    Landing Site Medium   median <0.32  pooled <0.32  per seed: <0.32 <0.32 <0.32                    spread -
+    Landing Site Hard     median 0.45   pooled 0.45   per seed: 0.45 0.45 0.45                       spread 0% (n=3)
+    Landing Site Psycho   median 0.36   pooled 0.36   per seed: 0.36 0.36 0.36                       spread 0% (n=3)
+  mono-PulseRifle
+    Landing Site Easy     median 0.89   pooled 0.89   per seed: 0.89 0.89 0.89                       spread 0% (n=3)
+    Landing Site Medium   median 0.57   pooled 0.57   per seed: 0.57 0.57 0.57                       spread 0% (n=3)
+    Landing Site Hard     median 0.45   pooled 0.45   per seed: 0.45 0.57 0.45                       spread 26% (n=3)
+    Landing Site Psycho   median 0.45   pooled 0.45   per seed: 0.45 0.45 0.45                       spread 0% (n=3)
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x0.32  x0.4   x0.5   x0.64  x0.8   x1     H50
+  mono-Cannon Landing Site Easy     3/3    3/3    3/3    3/3    3/3    3/3    >1
+  mono-Cannon Landing Site Medium   3/3    3/3    3/3    3/3    3/3    3/3    >1
+  mono-Cannon Landing Site Hard     3/3    3/3    3/3    3/3    3/3    3/3    >1
+  mono-Cannon Landing Site Psycho   3/3    3/3    3/3    3/3    3/3    3/3    >1
+  mono-Laser  Landing Site Easy     0/3    0/3    0/3    0/3    0/3    0/3    <0.32
+  mono-Laser  Landing Site Medium   0/3    0/3    0/3    0/3    0/3    0/3    <0.32
+  mono-Laser  Landing Site Hard     3/3    3/3    0/3    0/3    0/3    0/3    0.45
+  mono-Laser  Landing Site Psycho   3/3    0/3    0/3    0/3    0/3    0/3    0.36
+  mono-PulseRifleLanding Site Easy     3/3    3/3    3/3    3/3    3/3    0/3    0.89
+  mono-PulseRifleLanding Site Medium   3/3    3/3    3/3    0/3    0/3    0/3    0.57
+  mono-PulseRifleLanding Site Hard     3/3    3/3    1/3    0/3    0/3    0/3    0.47
+  mono-PulseRifleLanding Site Psycho   3/3    3/3    0/3    0/3    0/3    0/3    0.45
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  mono-Cannon Landing Site Easy       8   8   8   8   8   9  39   9   9  10  18   8
+                                    base hit: never
+  mono-Cannon Landing Site Medium     8   8   8   9   8   9  39  11  10  22  10   9
+                                    base hit: never
+  mono-Cannon Landing Site Hard       8   8   8   9   8   9  41  10  10  19  11   9
+                                    base hit: never
+  mono-Cannon Landing Site Psycho     9   9  10  10  11  11  41  10  16  19  11   9
+                                    base hit: never
+  mono-Laser  Landing Site Easy      11  11  11  11  11  64  67  68  55   7   .   .
+                                    base hit: w9 2/3, w10 2/3
+  mono-Laser  Landing Site Medium    11  11  11  11  11  86  65  57  41   .   .   .
+                                    base hit: w8 1/3, w9 3/3
+  mono-Laser  Landing Site Hard       8   8   9  10   9  11  39  42  57  17   3   .
+                                    base hit: w11 2/3, w12 1/3
+  mono-Laser  Landing Site Psycho    10  11  32  36  11  43  77  12  27  51  38   8
+                                    base hit: w12 3/3
+  mono-PulseRifleLanding Site Easy       8   8   8   9   9   9  39  10   8  22  73  11
+                                    base hit: w12 3/3
+  mono-PulseRifleLanding Site Medium     8   8   9  10   9  10  39  33  28  73  81  11
+                                    base hit: w12 3/3
+  mono-PulseRifleLanding Site Hard       9   9   9  10   9  11  62  74  38  49  38   7
+                                    base hit: w12 3/3
+  mono-PulseRifleLanding Site Psycho    10  11  12  41  64  39  66  42  49  24   5   .
+                                    base hit: w11 3/3
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  mono-Cannon Landing Site Easy     won w12/12; built 6, upgrades 3, left 15, earned 1086, repairs 0
+                                    w1 build Cannon@11,6; w3 build Cannon@12,6; w7 build Cannon@12,7; w9 build Cannon@19,14; w10 upgrade@11,6; w11 upgrade@12,6; w12 build Cannon@10,6; w12 upgrade@12,7; w12 build Cannon@13,6
+  mono-Cannon Landing Site Medium   won w12/12; built 6, upgrades 5, left 105, earned 1232, repairs 0
+                                    w1 build Cannon@11,6; w1 build Cannon@12,6; w5 build Cannon@12,7; w8 build Cannon@19,14; w9 upgrade@11,6; w10 upgrade@12,6; w11 upgrade@12,7; w11 upgrade@19,14; w12 build Cannon@10,6; w12 upgrade@10,6; w12 build Cannon@13,6
+  mono-Cannon Landing Site Hard     won w12/12; built 10, upgrades 7, left 194, earned 1709, repairs 0
+                                    w1 build Cannon@11,6; w1 build Cannon@12,6; w4 build Cannon@12,7; w6 build Cannon@19,14; w8 build Cannon@10,6; w9 upgrade@11,6; w9 build Cannon@13,6; w9 upgrade@12,6; w10 build Cannon@13,7; w10 upgrade@12,7; w11 build Cannon@20,14; w11 upgrade@19,14
+  mono-Cannon Landing Site Psycho   won w12/12; built 13, upgrades 12, left 21, earned 2515, repairs 245
+                                    w1 build Cannon@11,6; w1 build Cannon@12,6; w1 build Cannon@12,7; w1 build Cannon@19,14; w1 build Cannon@10,6; w1 upgrade@11,6; w3 upgrade@12,6; w6 upgrade@12,7; w7 build Cannon@13,6; w7 upgrade@19,14; w8 build Cannon@13,7; w9 upgrade@10,6
+  mono-Laser  Landing Site Easy     lost w10/12; built 0, upgrades 0, left 58, earned 310, repairs 222
+                                    
+  mono-Laser  Landing Site Medium   lost w9/12; built 0, upgrades 0, left 51, earned 316, repairs 259
+                                    
+  mono-Laser  Landing Site Hard     lost w11/12; built 3, upgrades 0, left 33, earned 621, repairs 240
+                                    w1 build Laser@10,6; w3 build Laser@11,6; w6 build Laser@12,7
+  mono-Laser  Landing Site Psycho   lost w12/12; built 7, upgrades 13, left 94, earned 1863, repairs 0
+                                    w1 build Laser@10,6; w1 build Laser@11,6; w1 build Laser@12,7; w1 build Laser@19,14; w1 upgrade@10,6; w2 upgrade@11,6; w4 upgrade@12,7; w5 upgrade@19,14; w6 build Laser@9,6; w6 upgrade@9,6; w7 upgrade@10,6; w8 upgrade@11,6
+  mono-PulseRifleLanding Site Easy     lost w12/12; built 9, upgrades 8, left 26, earned 1031, repairs 60
+                                    w1 build PulseRifle@11,6; w1 build PulseRifle@10,6; w1 build PulseRifle@12,6; w3 build PulseRifle@19,14; w5 upgrade@11,6; w6 upgrade@10,6; w8 upgrade@12,6; w9 upgrade@19,14; w9 build PulseRifle@12,7; w10 upgrade@12,7; w11 build PulseRifle@9,6; w11 upgrade@9,6
+  mono-PulseRifleLanding Site Medium   lost w12/12; built 11, upgrades 10, left 30, earned 1022, repairs 0
+                                    w1 build PulseRifle@11,6; w1 build PulseRifle@10,6; w1 build PulseRifle@12,6; w1 build PulseRifle@19,14; w3 upgrade@11,6; w5 upgrade@10,6; w6 upgrade@12,6; w7 upgrade@19,14; w9 build PulseRifle@12,7; w9 upgrade@12,7; w10 build PulseRifle@9,6; w11 upgrade@9,6
+  mono-PulseRifleLanding Site Hard     lost w12/12; built 9, upgrades 9, left 15, earned 769, repairs 0
+                                    w1 build PulseRifle@11,6; w1 build PulseRifle@10,6; w1 build PulseRifle@12,6; w1 build PulseRifle@19,14; w2 upgrade@11,6; w4 upgrade@10,6; w5 upgrade@12,6; w5 upgrade@19,14; w6 build PulseRifle@12,7; w7 upgrade@12,7; w9 build PulseRifle@9,6; w9 upgrade@9,6
+  mono-PulseRifleLanding Site Psycho   lost w11/12; built 14, upgrades 13, left 33, earned 1194, repairs 0
+                                    w1 build PulseRifle@11,6; w1 build PulseRifle@10,6; w1 build PulseRifle@12,6; w1 build PulseRifle@19,14; w1 build PulseRifle@12,7; w1 upgrade@11,6; w1 build PulseRifle@9,6; w1 upgrade@10,6; w1 build PulseRifle@13,6; w1 upgrade@12,6; w1 build PulseRifle@20,14; w1 upgrade@19,14
+
+Cost: 216 runs, 71 machine minutes of play (20 s a run), 0 reference runs for the typical scripts; 1 batches, 17 wall-clock minutes in all.
+  batch 1795026422: 36 units on 5 workers, 16.8 min

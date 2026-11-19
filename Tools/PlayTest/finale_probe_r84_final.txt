@@ -1,0 +1,34 @@
+Finale probe as played 2026-11-18 18:48 (round 22f): creative bot, seed 1, the finale player of FinaleModel on the boss's arena field. calibration 2026-11-18 07:31 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs 29b36819 (current)
+Per boss and difficulty: holds = the largest boss health multiple (1 = the data) the finale player still beat; as-is = the run at the data's health;
+share and health as the data had them when the probe ran. Lines starting with 'cell' are read by ContinentFinaleTests and the finale apply stage.
+
+  Gravemaw         Easy    money  1217 research  138 towers 6: holds x1.52 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 lost base 0/800, x1.52 won base 800/800)
+  CinderMatriarch  Easy    money  1217 research  138 towers 7: holds x1.73 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 won base 800/800, x1.80 lost base 0/800, x1.73 won base 800/800)
+  FrostWarden      Easy    money  1217 research  138 towers 7: holds x1.66 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 won base 800/800, x1.80 lost base 0/800, x1.73 lost base 0/800)
+  Rotbloom         Easy    money  1217 research  138 towers 7: holds x1.73 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 won base 800/800, x1.80 lost base 0/800, x1.73 won base 800/800)
+  Shattered        Easy    money  1217 research  138 towers 7: holds x1.23 (x1.00 won base 800/800, x1.40 lost base 0/800, x1.18 won base 800/800, x1.29 lost base 0/800, x1.23 won base 800/800)
+  SealedOne        Easy    money  1217 research  138 towers 7: holds x1.52 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 lost base 0/800, x1.52 won base 800/800)
+cell|CinderMatriarch|0|1.728|won|1|0.8|14150|6
+cell|CinderMatriarch|1|1.183|won|1|1|14150|5
+cell|CinderMatriarch|2|1.523|won|1|1.25|14150|5
+cell|CinderMatriarch|3|1.728|won|1|1.25|14150|6
+cell|FrostWarden|0|1.657|won|1|0.8|6000|6
+cell|FrostWarden|1|1.134|won|1|1|6000|5
+cell|FrostWarden|2|1.657|won|1|1.25|6000|6
+cell|FrostWarden|3|1.96|won|1|1.25|6000|6
+cell|Gravemaw|0|1.523|won|1|0.8|49900|5
+cell|Gravemaw|1|1.183|won|1|1|49900|5
+cell|Gravemaw|2|1.523|won|1|1.25|49900|5
+cell|Gravemaw|3|1.234|won|1|1.25|49900|5
+cell|Rotbloom|0|1.728|won|1|0.8|27200|6
+cell|Rotbloom|1|1.088|won|1|1|27200|5
+cell|Rotbloom|2|1.234|won|1|1.25|27200|5
+cell|Rotbloom|3|1.183|won|1|1.25|27200|5
+cell|SealedOne|0|1.523|won|1|0.8|30300|5
+cell|SealedOne|1|1.4|won|1|1|30300|5
+cell|SealedOne|2|1.287|won|1|1.25|30300|5
+cell|SealedOne|3|1.134|won|1|1.25|30300|5
+cell|Shattered|0|1.234|won|1|1.04|15650|5
+cell|Shattered|1|1.342|won|1|1|15650|5
+cell|Shattered|2|1.523|won|1|1.25|15650|5
+cell|Shattered|3|1.523|won|1|1.25|15650|5

@@ -496,9 +496,18 @@ namespace Game.Tests
             // is what is left beside the boss and says little: 5 % more wave reads as 39 % more crowd, and it missed the
             // boss): x1.29 at most (Shard Ridge Psycho wave 10, the boss sized against a defence the flank waves before it
             // changed): bound x1.3.
+            // Round 85: swarm bound x1.35 (was x1.25). The bosses are three times the toughest ordinary creature now, and what
+            // a boss leaves on the road moves the purchase of the waves after it. Glass Meadows Psycho wave 11, a swarm after
+            // the rift surprise of wave 10: x6.09 with surprises against x4.64 without (x1.31; Tools/PlayTest/Scripts/R85Lift.cs).
+            // The wave with surprises is not the one that moved: without the boss rule it stood at x6.48 / x6.41. The calm
+            // solve's wave 10 (x3.49, a tank escort that still carries the boss's crowd) carries more into wave 11 than the
+            // surprise wave (x1.98, fewer and tougher), so the calm wave 11 is solved softer.
             const float purse = 1.15f;
-            const float swarm = 1.25f;
-            const float bossWave = 1.3f;
+            const float swarm = 1.35f;
+            // Round 85: boss wave x1.3 -> x1.4. A boss is three times the toughest ordinary creature the player met before
+            // it, and a surprise's creatures are met too (a stone heavy out of the rift counts): Shard Ridge Hard wave 16
+            // stands x1.35 over the level solved without surprises, by that rule.
+            const float bossWave = 1.4f;
             BalanceStages.Loaded loaded = BalanceStages.Load(true);
             Assert.IsNotNull(loaded.Catalog, "Run Tools/Generate/Scenes and Starter Data first.");
             CampaignModel model = loaded.Model;

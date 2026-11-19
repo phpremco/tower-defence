@@ -1889,3 +1889,64 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
     `chr(10)`.
   - A foreground wait loop over two minutes is moved to the background and reports "completed" on its own timeout;
     wait for the batch's own notification.
+
+## Round 85: the stage, the save rule, throttled workers, ladders above x1.25 (added 2026-11-18)
+
+- **The save is never restored by any script any more.** `workers.sh` (and `workers_keepsave.sh`, now a three-line
+  wrapper that runs `workers.sh` under its old name for the chains of rounds 80b to 84), `pressure.sh` and
+  `finale_workers.sh` compare the MD5 of `Saves/progress.json` before and after a run and only **warn** when it moved:
+  the clones have their own product name and cannot reach that folder, so a change is Remco playing in the open editor.
+  `balance_pipeline.sh` warns too; it restores only on request, `TD_RESTORE_SAVE=1` together with `--serial` (a PlayMode
+  stage in the open editor writes the save itself), and only when nobody plays. Never copy, restore or write the save by
+  hand. **Old one-off screenshot and smoke scripts still restore it** (`imp*_*.sh`, `n1_*.sh`, `origin_shots.sh`,
+  `liq_shots.sh`, `vfx_shots.sh`, `round_ui_shots.sh`, `r16_*` to `r63_*` shot and cut scripts, `r37_steam.sh`,
+  `r61_air_probe.sh`): they play in the open editor and copy the save back afterwards. Do not run them while Remco may
+  play; if one is needed, take the restore out first.
+- **The stage: a private working copy for the hours Remco plays** (`Tools/PlayTest/stage.sh`). Nothing under the open
+  project's `Assets` may change while its Play Mode runs (Unity recompiles or re-imports under the running game), so a
+  round's code and data work is done in `C:\Users\remco\TowerDefenseWorkers\stage` (Assets, Packages, ProjectSettings,
+  Tools and a Library; product name "Tower defense stage", so it never sees the save):
+  - `bash Tools/PlayTest/stage.sh make` (from the project) makes or refreshes it; `start` / `stop` its headless editor;
+    `cmd <command>` is `unity command` on the stage's editor (never on the open one); `compile`; `run <File.cs> <Entry>`
+    runs a script of `Tools/PlayTest/Scripts` there; `diff` lists what the stage changed; `back` copies it into the
+    project (it refuses while the open editor's Play Mode runs; check `unity command editor_status` first anyway).
+  - Every other script is run from inside the stage as it is from the project (`cd <stage> && bash Tools/PlayTest/pressure.sh ...`):
+    the worker clones sync from the copy they are started from. The clones' product-name line is now matched as
+    `Tower defense.*`, so a clone of the stage gets its worker name too.
+  - Docs live in the project only (the stage carries no `Docs`).
+- **Throttle (Remco uses the PC while a batch runs):** at most two worker clones at a time (`PR_WORKERS=2` for
+  `pressure.sh`, `workers.sh run ... 2`, `finale_workers.sh` with two difficulties per call), never the stage editor and
+  workers at once, and every worker and stage Unity process at **BelowNormal** priority: `pressure.sh`, `workers.sh`,
+  `finale_workers.sh`, `r34b_editmode_worker.sh` and `stage.sh start` call `Tools/PlayTest/lower_priority.sh` right
+  after the launch (it re-applies for two minutes, so asset import workers are caught; `lower_priority.ps1` does the
+  work; the open editor's processes never match). Check with
+  `powershell -NoProfile -Command "Get-Process Unity | Select-Object Id,PriorityClass"`.
+- **The finale probe on two clones:** `finale_workers.sh 0 1`, copy `finale_probe.txt` aside, `finale_workers.sh 2 3`;
+  each call overwrites the report, so merge the two (the header of the first, every `cell` line of both).
+- **Ladders above x1.25 (the Easy and Medium targets of round 85):** `bash Tools/PlayTest/r85_measure.sh <name> [levels] [difficulties]`
+  plays Easy on x1 / 1.25 / 1.4 / 1.57 / 1.76, Medium on x0.9 / 1 / 1.12 / 1.25 / 1.4 / 1.57 and Hard and Psycho on the
+  standard ladder into `pressure_<name>_easy_records.txt`, `pressure_<name>_medium_records.txt` and
+  `pressure_<name>_records.txt`, and names the three in `closed_loop_records.txt` when all 24 cells were played. Give all
+  three to `closed_loop.py` (and `--write`), as one measurement.
+- **A targeted measurement after a closed-loop pass:** `bash Tools/PlayTest/r85_target.sh <name> "0:3" "1:0,2,3"`
+  (each argument "levels:difficulties" for `r85_measure.sh`; records `pressure_<name>_<i>_*`, about 3 minutes a cell on
+  five clones). Read with `closed_loop.py <the records> --mixed-data` (each part has its own data stamp only when the
+  data moved in between; cells not played read "not measured"). Run `closed_loop.py` from the project root: from
+  another folder it finds no `wave_tuning.txt` and prints every scalar as 1. The full chain (`r85_chain.sh`) overwrites
+  `closed_loop_records.txt` only when all 24 cells are played.
+- **A scalar is checked on paper first:** set the cell's line in `wave_tuning.txt`, `cell=C1_02:3` in
+  `wave_ledger_arg.txt` and `stage.sh run WaveLedgerLab.cs WaveLedgerLab.Run`: the lab solves that cell with the
+  scalar in the file without writing assets (seconds). Round 85 found a cell whose waves jump between scalars that way.
+- **Boss against the toughest ordinary creature:** `python -I Tools/PlayTest/boss_vs_regular.py [--root <project>]`
+  (every boss as spawned, body and armour, against the toughest regular creature of its level and difficulty, on the
+  bars, under light fire and under shells); `python -I Tools/PlayTest/ledger_bosses.py <label> ...` puts the boss waves
+  of ledger lab runs side by side (crowd, boss, what the wave asks with the hero against its cap).
+- **The laser against the Gun Turret per difficulty:** `stage.sh run LaserDuel.cs LaserDuel.Difficulties` (or
+  `unity command run_script --file Tools/PlayTest/Scripts/LaserDuel.cs --entry LaserDuel.Difficulties ...` in the project)
+  writes `Tools/PlayTest/laser_share.txt`: per difficulty and species the useful share of the data DPS, the kill rate in a
+  packed stream and the holding power, before and after the round 85 beam rule.
+- **Which towers the bot rungs buy:** `python -I Tools/PlayTest/tower_mix.py <records> [--multiple 1]` (each tower's
+  share of the tower levels bought per difficulty, and the share of runs that build it).
+- **Boss armour on the data without the generator:** `stage.sh run ApplyRound85.cs ApplyRound85.Run` (or the menu
+  `Tools/Generate/Balance/12 Boss armour`), then the solve stage (`ApplyRound68.cs`). Armour is in the calibration's
+  hash: re-stamp ("Round 66" pitfall above).

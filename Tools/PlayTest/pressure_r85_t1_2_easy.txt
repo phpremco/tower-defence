@@ -1,0 +1,62 @@
+Measured with: bot 3:14d0d87b; data 9d6d6465; game code ee3ba6ef
+
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 6 of 6 curves monotone = 100.0%  ->  PASS
+  skilled        3 of 3   curves (100%); 0 of 12 steps drop by more than the tolerance
+  sensible       3 of 3   curves (100%); 0 of 12 steps drop by more than the tolerance
+  the same check on other scores (all rungs): P 6 of 6; A 6 of 6; R+D (furthest creature) 6 of 6; D 6 of 6; won/lost 6 of 6
+  curves that are not monotone (P per multiple, the drops marked):
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 1 of 1 cells within the limit  ->  PASS
+  cell                  skilled                   sensible                  
+  Glass Meadows Easy    3.1% (abs 0.001, n=3)     4.7% (abs 0.002, n=3)
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  skilled                           sensible                          
+  Glass Meadows Easy    0.035 (0.035-0.036) 3/3           0.032 (0.032-0.034) 3/3
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  skilled
+    Glass Meadows Easy    x1 0.04 (0.04-0.04) 3/3 | x1.25 0.04 (0.04-0.04) 3/3 | x1.4 0.05 (0.05-0.05) 3/3 | x1.57 1.09 (1.08-1.10) 0/3 | x1.76 1.09 (1.09-1.09) 0/3
+  sensible
+    Glass Meadows Easy    x1 0.03 (0.03-0.03) 3/3 | x1.25 0.04 (0.04-0.04) 3/3 | x1.4 0.04 (0.04-0.04) 3/3 | x1.57 0.04 (0.04-0.04) 3/3 | x1.76 0.05 (0.05-0.05) 3/3
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  skilled     Glass Meadows Easy    A 0.035 (0.035-0.036)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  sensible    Glass Meadows Easy    A 0.032 (0.032-0.034)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<1' / '>1.76' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  skilled
+    Glass Meadows Easy    median 1.48   pooled 1.48   per seed: 1.48 1.48 1.48                       spread 0% (n=3)
+  sensible
+    Glass Meadows Easy    median >1.76  pooled >1.76  per seed: >1.76 >1.76 >1.76                    spread -
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x1     x1.25  x1.4   x1.57  x1.76  H50
+  skilled     Glass Meadows Easy    3/3    3/3    3/3    0/3    0/3    1.48
+  sensible    Glass Meadows Easy    3/3    3/3    3/3    3/3    3/3    >1.76
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  skilled     Glass Meadows Easy      0   1   0   3   2   4   6   2   7   7   3   6
+                                    base hit: never
+  sensible    Glass Meadows Easy      0   0   0   3   2   4   6   2   6   5   3   6
+                                    base hit: never
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  skilled     Glass Meadows Easy    won w12/12; built 7, upgrades 8, left 51, earned 1245, repairs 0
+                                    w1 build Cannon@4,13; w1 build PulseRifle@1,15; w2 build PulseRifle@1,14; w4 upgrade@1,15; w7 gate gates@2,10; w8 upgrade@1,14; w9 build PulseRifle@4,15; w9 upgrade@4,15; w10 upgrade@4,13; w11 build PulseRifle@1,13; w11 upgrade@1,13; w11 build PulseRifle@4,14
+  sensible    Glass Meadows Easy    won w12/12; built 8, upgrades 7, left 31, earned 1245, repairs 0
+                                    w1 build Cannon@4,13; w1 build PulseRifle@1,15; w2 upgrade@1,15; w4 build PulseRifle@4,15; w6 upgrade@4,15; w7 build PulseRifle@13,17; w9 build Cannon@4,14; w10 upgrade@4,13; w10 upgrade@13,17; w11 build Cannon@4,12; w12 build PulseRifle@1,13; w12 upgrade@1,13
+
+Cost: 30 runs, 9 machine minutes of play (17 s a run), 0 reference runs for the typical scripts; 1 batches, 3 wall-clock minutes in all.
+  batch 1795080141: 6 units on 5 workers, 3.0 min

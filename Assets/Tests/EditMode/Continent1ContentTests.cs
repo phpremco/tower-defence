@@ -85,6 +85,14 @@ namespace Game.Tests
             {
                 foreach (SpawnGroup group in Groups(level))
                 {
+                    // Round 85 (Remco): every boss walks in armour, the rule's share of its body (BalanceRules.BossArmourShare).
+                    // A level boss carries that and nothing more; the light-hide limit is for the ordinary creatures.
+                    if (group.Enemy.IsBoss)
+                    {
+                        Assert.LessOrEqual(group.Enemy.Armor, Game.Balance.BalanceRules.Default.BossArmourFor(group.Enemy.MaxHealth, 0f) + 0.5f, $"{level.name}: the boss {group.Enemy.name} wears more armour than the boss rule gives it");
+                        continue;
+                    }
+
                     Assert.LessOrEqual(group.Enemy.Armor, SliceArmour, $"{level.name}: {group.Enemy.name} wears heavier armour than a Cragback, which waits for level 11");
                 }
             }

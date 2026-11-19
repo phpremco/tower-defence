@@ -118,6 +118,20 @@ namespace Game.Combat
             return armourFactor <= 0f ? 1f : Mathf.Min(1f, armor / (hit * armourFactor));
         }
 
+        /// <summary>
+        /// The size of the one hit that would kill it now, for a weapon that works on armour at this share: the body plus
+        /// the armour at what it costs that weapon. Infinite while armour stands that the weapon cannot touch.
+        /// </summary>
+        public float HitToKill(float armourFactor)
+        {
+            if (Armor <= 0f)
+            {
+                return Current;
+            }
+
+            return armourFactor <= 0f ? float.PositiveInfinity : Current + Armor / armourFactor;
+        }
+
         /// <summary>A hit from a weapon that works on armour as well as it does on the body.</summary>
         public float TakeDamage(float amount) => TakeDamage(amount, 1f);
 

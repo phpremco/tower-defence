@@ -67,6 +67,12 @@ the end of `Tools/PlayTest/r67_role_matrix.txt`. Crystal Plains 1 to 6: Skitter 
 fast), Oozer and Mireleech (mob), Wisp (swarm), Cragback (mob, armoured), Skyray (mob, airborne, fast), the bats (swarm,
 airborne, fast), the bosses (tough).
 
+**Every boss is armoured (round 85).** A boss, a level's or a continent's, carries an armour pool of at least
+`BalanceRules.BossArmourShare` (0.25) of its body; one whose own data gives it more keeps that. So a boss answers to the
+same rows as every plated creature: light fire chips the pool at 0.2, shells and slugs strip it, and the Cannon is what a
+boss asks for. The rule is written into the creature data by the generator (`ProjectGenerator.ArmourOf`) and by
+`BalanceStages.ApplyBossArmour`, and the finale stage keeps it when it moves a continent boss's health.
+
 Armour and air have a **factor** (section 1). Swarm, mob, tough and fast have none: they are held by mechanics that already
 exist (a hit bigger than a creature is wasted; a blast takes at most three; a shell that is not guided misses a runner).
 The role tests measure all six the same way.
@@ -279,6 +285,14 @@ Where behaviour was decided per weapon instead of by a rule:
 
 What the matrix shows that is **not** fixed, because it is a design choice:
 
+- **The beam's free kills (mended in round 85).** A beam holds one creature and sweeps on the moment it dies. Until
+  round 85 every kill cost the beam only its sweep time (0.05 s) instead of the rest of its pulse, so a creature that
+  died in one or two pulses died up to four times as fast as the laser's damage per second says. That is worth the more
+  the lower a difficulty's health: on Easy a level 2 Laser cleared a packed Skitter stream at x3.55 its data DPS, on
+  Psycho at x1.02 (`Tools/PlayTest/laser_share.txt`). Now the pulse that kills costs the beam the share of it the
+  creature needed (`IHitBudget`, `Tower.ReleaseBeam`): it wastes nothing on a dead body and gains nothing either, and it
+  clears the stream at x0.98 to x0.99 of its data on every difficulty. Its role is unchanged: it is still the light
+  fire that wastes nothing on swarms.
 - **Gun Turret and Laser do the same job** (light fire) at nearly the same damage per coin. The Laser is the job in fewer
   cells; nothing else sets them apart.
 - **The Cannon's splash is worth little against soft bodies**: 1.3x over light fire per coin on a bunched mob at level 1,

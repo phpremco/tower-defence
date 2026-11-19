@@ -100,6 +100,11 @@ namespace Game.Balance
                 text.Append(F(alone));
             }
 
+            foreach (float over in r.BossOverRegular)
+            {
+                text.Append(F(over));
+            }
+
             foreach (float growth in r.LevelBossGrowthCap)
             {
                 text.Append(F(growth));

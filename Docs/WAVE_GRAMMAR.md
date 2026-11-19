@@ -386,8 +386,18 @@ copies another, no level mean is held, nothing is solved twice.
 6. **A level's boss** is sized first and alone: a walking boss asks `LevelBossAlone` (0.4 / 0.6 / 0.7 / 0.75) of the
    defence that stands for its whole wave, never under `LevelBossHealthFloor`; the crowd then fills the wave up to its
    target around it. Over the cap the crowd gives way first; where no crowd makes the wave fit, the boss comes down to
-   its floor. A flying boss follows its wave. So the factor is what the boss asks as stored (it used to be read against
+   its floor (round 85: the crowd goes to the lower edge of its band first, then the boss comes down). A flying boss follows its wave.
+   Both boss floors are on the boss as it walks in, so they are taken off the wave's lift (a capped troop makes every
+   creature of its wave tougher, the boss included; round 85). So the factor is what the boss asks as stored (it used to be read against
    a defence bought for the boss alone, before the surprise relief moved the wave).
+   **Round 85: a boss is never a creature like the others.** Its floor is also `BossOverRegular` (3 on every
+   difficulty) times the health bar (body plus armour, as it walks in) of the toughest ordinary creature the player has
+   met in the level before it; and every boss carries armour, at least `BossArmourShare` (0.25) of its body (written on
+   the creature data by the generator, `ApplyRound85.cs` and the finale stage). A boss that stands on that floor and is
+   over the cap on its own is the fight of its wave: the crowd goes to the lower edge of its band (not to its floor: a
+   crowd on its floor carried no plated troops, and a row of light guns won Landing Site Easy without the Cannon) and
+   the boss does not come down. Remco's reason: on Easy the boss of Landing Site had the bar of a Cragback and no
+   armour, so under light fire it was a third as tough as the "lava rocks" of the waves before it.
 7. **The flyer rules** stay as they were and solve a difficulty again when they move a raid: the Easy purse rule and
    `FlyersAfterBounties`.
 8. **Play's correction, as two plain factors on creature health** (`CampaignModel.SolveDifficulty`): the difficulty's
@@ -444,13 +454,16 @@ measured, by one procedure that is the same for every level.
 
    | Difficulty | Target | Reads on the standard ladder (x0.8 / 0.9 / 1 / 1.12 / 1.25) |
    | --- | --- | --- |
-   | Easy | the weaker of the two rungs breaks even at x1.4 | both rungs win every multiple |
-   | Medium | the sensible rung breaks even at x1.18; the skilled rung at x1.06 at least | sensible wins to x1.12 and loses x1.25 |
+   | Easy | the weaker of the two rungs breaks even at x1.55 at least (round 85; x1.4 before) | measured on x1 / 1.25 / 1.4 / 1.57 / 1.76: both rungs win to x1.4 |
+   | Medium | the sensible rung breaks even at x1.32 (round 85; x1.18 before); the skilled rung at x1.06 at least | measured on x0.9 / 1 / 1.12 / 1.25 / 1.4 / 1.57: sensible wins to x1.25 and loses x1.4 |
    | Hard | the sensible rung breaks even at x0.95; the skilled rung at x1.06 at least | sensible wins to x0.9 and loses x1; skilled wins x1 |
    | Psycho | the skilled rung breaks even at x1.06 | skilled wins x1 and loses x1.12 |
 
-   So Medium is never flat, Hard is a quarter tougher than Medium for the same player on every level, and Easy is
-   won by both rungs with room.
+   So Medium is never flat, Hard is a third tougher than Medium for the same player on every level, and Easy is
+   won by both rungs with room. Round 85 (Remco after playing level 1 on Easy, Medium and Hard: "Easy and Medium a
+   tad too hard, Hard feels right; not much less, but a bit"): the Easy and Medium targets moved one ladder step up,
+   Hard and Psycho stayed. The standard ladder does not reach them: `Tools/PlayTest/r85_measure.sh` plays Easy and
+   Medium on their own ladders (Docs/COMMANDS.md, "Round 85").
 6. Solve again and measure on the standard ladder (`pressure.sh "<node>" "0,1,2,3"`, 120 runs). A cell whose reference
    rung reads its target is done; else `closed_loop.py` once more (the scalar is a plain factor, so one pass lands
    within a ladder step unless the bot takes another build). A cell that two passes read on opposite sides of its

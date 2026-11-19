@@ -65,7 +65,7 @@ sync_worker() {
   if [ ! -d "$(cygpath -u "$dir")/Library" ]; then
     robocopy "$PROJECT\\Library" "$dir\\Library" /MIR /MT:16 /R:1 /W:1 /NFL /NDL /NJH /NJS /NP /NS /NC > /dev/null || [ $? -le 7 ]
   fi
-  sed -i "s/^  productName: Tower defense\$/  productName: Tower defense worker w$i/" "$(cygpath -u "$dir")/ProjectSettings/ProjectSettings.asset"
+  sed -i "s/^  productName: Tower defense.*\$/  productName: Tower defense worker w$i/" "$(cygpath -u "$dir")/ProjectSettings/ProjectSettings.asset"
   sed -i 's/^  m_DisableAudio: 0$/  m_DisableAudio: 1/' "$(cygpath -u "$dir")/ProjectSettings/AudioManager.asset"
   rm -f "$(cygpath -u "$dir")"/Assets/InitTestScene*.unity*
 }

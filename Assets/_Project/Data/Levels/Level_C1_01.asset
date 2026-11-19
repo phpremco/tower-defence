@@ -219,10 +219,10 @@ MonoBehaviour:
   _enemyHealthMultiplier: 1
   _expectedUpgradeBonus: 0
   _balanceTargetScale:
-  - 0.963
-  - 1.003
-  - 1.165
-  - 1.198
+  - 0.86
+  - 0.901
+  - 1.197
+  - 0.87
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 0}

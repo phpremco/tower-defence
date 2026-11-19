@@ -1,0 +1,85 @@
+Measured with: bot 3:9fc04470; data 66f9d292; game code 696f065a
+
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 11 of 12 curves monotone = 91.7%  ->  FAIL
+  strategy1      2 of 3   curves (67%); 1 of 12 steps drop by more than the tolerance
+  strategy2      3 of 3   curves (100%); 0 of 12 steps drop by more than the tolerance
+  strategy3      3 of 3   curves (100%); 0 of 12 steps drop by more than the tolerance
+  strategy4      3 of 3   curves (100%); 0 of 12 steps drop by more than the tolerance
+  the same check on other scores (all rungs): P 11 of 12; A 11 of 12; R+D (furthest creature) 11 of 12; D 11 of 12; won/lost 11 of 12
+  curves that are not monotone (P per multiple, the drops marked):
+    Landing Site Easy     strategy1    seed 1: 1:0.14 1.25:0.19 1.4:0.53 1.57:1.26L 1.76:1.03!  (worst drop -0.225)
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 0 of 0 cells within the limit  ->  FAIL
+  cell                  
+  Landing Site Easy
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  strategy1                         strategy2                         strategy3                         strategy4                         
+  Landing Site Easy     0.145 (0.137-0.153) 3/3           0.111 (0.111-0.111) 3/3           0.116 (0.116-0.117) 3/3           0.120 (0.109-0.121) 3/3
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  strategy1
+    Landing Site Easy     x1 0.14 (0.14-0.15) 3/3 | x1.25 0.19 (0.18-0.19) 3/3 | x1.4 0.20 (0.19-0.53) 3/3 | x1.57 1.19 (0.35-1.26) 2/3 | x1.76 1.03 (0.69-1.26) 2/3
+  strategy2
+    Landing Site Easy     x1 0.11 (0.11-0.11) 3/3 | x1.25 0.12 (0.12-0.12) 3/3 | x1.4 0.12 (0.12-0.12) 3/3 | x1.57 0.12 (0.12-0.12) 3/3 | x1.76 0.12 (0.12-0.12) 3/3
+  strategy3
+    Landing Site Easy     x1 0.12 (0.12-0.12) 3/3 | x1.25 0.12 (0.12-0.12) 3/3 | x1.4 0.12 (0.12-0.12) 3/3 | x1.57 0.12 (0.12-0.12) 3/3 | x1.76 0.12 (0.12-0.12) 3/3
+  strategy4
+    Landing Site Easy     x1 0.12 (0.11-0.12) 3/3 | x1.25 1.21 (0.17-1.21) 1/3 | x1.4 1.22 (0.19-1.22) 1/3 | x1.57 1.24 (1.20-1.27) 0/3 | x1.76 1.26 (1.25-1.27) 0/3
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  strategy1   Landing Site Easy     A 0.145 (0.137-0.153)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy2   Landing Site Easy     A 0.111 (0.111-0.111)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy3   Landing Site Easy     A 0.116 (0.116-0.117)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy4   Landing Site Easy     A 0.120 (0.109-0.121)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<1' / '>1.76' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  strategy1
+    Landing Site Easy     median 1.49   pooled 1.49   per seed: 1.45 >1.76 1.49                      spread 3% (n=2)
+  strategy2
+    Landing Site Easy     median >1.76  pooled >1.76  per seed: >1.76 >1.76 >1.76                    spread -
+  strategy3
+    Landing Site Easy     median >1.76  pooled >1.76  per seed: >1.76 >1.76 >1.76                    spread -
+  strategy4
+    Landing Site Easy     median 1.12   pooled 1.12   per seed: 1.12 1.48 1.12                       spread 33% (n=3)
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x1     x1.25  x1.4   x1.57  x1.76  H50
+  strategy1   Landing Site Easy     3/3    3/3    3/3    2/3    2/3    >1.76
+  strategy2   Landing Site Easy     3/3    3/3    3/3    3/3    3/3    >1.76
+  strategy3   Landing Site Easy     3/3    3/3    3/3    3/3    3/3    >1.76
+  strategy4   Landing Site Easy     3/3    1/3    1/3    0/3    0/3    1.18
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  strategy1   Landing Site Easy       6   6   9   9   7   8  22  11   7  15  63  11
+                                    base hit: never
+  strategy2   Landing Site Easy       6   6   7   7   7   7  38  10   8  10  18   9
+                                    base hit: never
+  strategy3   Landing Site Easy       8   8   9   8   7   7  38   9   5  10  18   9
+                                    base hit: never
+  strategy4   Landing Site Easy       6   6   9   9   7   8  31  10   7  10  29  11
+                                    base hit: never
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  strategy1   Landing Site Easy     won w12/12; built 8, upgrades 3, left 71, earned 1141, repairs 153
+                                    w1 build Cannon@31,14; w1 build PulseRifle@9,3; w3 upgrade@9,3; w5 build PulseRifle@9,6; w8 build PulseRifle@10,6; w8 upgrade@10,6; w10 build Cannon@21,18; w11 upgrade@9,6; w11 build PulseRifle@11,2; w12 build Cannon@12,2; w12 build Cannon@12,7
+  strategy2   Landing Site Easy     won w12/12; built 7, upgrades 4, left 45, earned 1136, repairs 0
+                                    w1 build Cannon@11,2; w1 build PulseRifle@9,3; w3 upgrade@9,3; w7 build Cannon@21,18; w9 build Cannon@11,6; w10 build Cannon@12,7; w11 build PulseRifle@5,14; w11 upgrade@9,3; w12 build Cannon@12,2; w12 upgrade@11,6; w12 upgrade@12,7
+  strategy3   Landing Site Easy     won w12/12; built 6, upgrades 7, left 40, earned 1136, repairs 0
+                                    w1 build Cannon@11,2; w1 build PulseRifle@5,14; w3 build PulseRifle@9,3; w5 upgrade@9,3; w8 upgrade@9,3; w9 upgrade@11,2; w11 build Cannon@21,18; w11 upgrade@5,14; w11 build PulseRifle@9,6; w12 upgrade@9,6; w12 upgrade@9,6; w12 upgrade@11,2
+  strategy4   Landing Site Easy     won w12/12; built 7, upgrades 8, left 14, earned 1141, repairs 60
+                                    w1 build Cannon@5,14; w1 build PulseRifle@9,3; w3 upgrade@9,3; w5 build PulseRifle@11,2; w8 upgrade@9,3; w9 upgrade@11,2; w9 upgrade@11,2; w11 build Cannon@21,18; w12 build PulseRifle@9,6; w12 upgrade@9,6; w12 upgrade@9,6; w12 build PulseRifle@10,6
+
+Cost: 60 runs, 15 machine minutes of play (15 s a run), 0 reference runs for the typical scripts; 1 batches, 4 wall-clock minutes in all.
+  batch 1795044893: 12 units on 5 workers, 4.3 min
