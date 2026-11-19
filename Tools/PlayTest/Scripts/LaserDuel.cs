@@ -19,7 +19,8 @@ public static class LaserDuel
 {
     private const string ArgPath = "Tools/PlayTest/duel_arg.txt";
     private const string OutPath = "Tools/PlayTest/laser_duel.txt";
-    private const float Dt = 1f / 60f;
+    // The frame length of the sim: sixty frames a second, or what Frames() sets (the probe plays 0.2 s steps).
+    private static float Dt = 1f / 60f;
     private const float TowerSide = 1.8f;
     private const float LaneHalfWidth = 0.6f;
     private const float StartX = -14f;
@@ -43,6 +44,9 @@ public static class LaserDuel
 
         /// <summary>Round 85: the pulse that kills costs the share of it the creature needed (Tower.ReleaseBeam); false is the beam of rounds 23 to 84.</summary>
         public bool Conserve = true;
+
+        /// <summary>Round 86: the killing pulse is paid as it leaves and the beam lets go at once (Tower.Update, BeamBudget); false is round 85, settled a frame later.</summary>
+        public bool AtFire = true;
     }
 
     private sealed class Creature
@@ -349,6 +353,59 @@ public static class LaserDuel
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Round 86: the beam at sixty frames a second and at the probe's 0.2 s steps, with the kill settled a frame later
+    /// (round 85) and as the pulse leaves (round 86). Per Skitter toughness of the four difficulties and per Laser
+    /// level: the kill rate in a packed stream as a multiple of the data DPS. Writes Tools/PlayTest/laser_frames.txt.
+    /// </summary>
+    public static string Frames()
+    {
+        Overrides.Clear();
+        var laserAsset = AssetDatabase.LoadAssetAtPath<Game.Towers.TowerDefinition>("Assets/_Project/Data/Towers/Laser.asset");
+        var now = new List<Gun>();
+        AddLevels(now, "Laser", "Assets/_Project/Data/Towers/Laser.asset", true, laserAsset.BeamLockSeconds, laserAsset.BeamSweepSeconds, true);
+        var was = new List<Gun>();
+        AddLevels(was, "Laser", "Assets/_Project/Data/Towers/Laser.asset", true, laserAsset.BeamLockSeconds, laserAsset.BeamSweepSeconds, true);
+        was.ForEach(g => g.AtFire = false);
+        var gun = new List<Gun>();
+        AddLevels(gun, "Gun", "Assets/_Project/Data/Towers/PulseRifle.asset", false, 0f, 0f, false);
+        const float skitterSpeed = 1.5f;
+        (string Name, float Health)[] rows = { ("Easy", 12f), ("Medium and Hard", 22f), ("Psycho", 51f), ("Psycho Prowler", 280f) };
+        float[] steps = { 1f / 60f, 0.05f, 0.2f };
+        var sb = new StringBuilder();
+        sb.AppendLine($"The beam and the frame length {DateTime.Now:yyyy-MM-dd HH:mm}: kill rate in a packed stream (a body every 0.05 s) as a multiple of the data DPS.");
+        sb.AppendLine("Each cell: 60 frames a second / 0.05 s frames / 0.2 s frames (the probe). r85 = the kill settled a frame later, r86 = as the pulse leaves.");
+        sb.AppendLine("| Body | Health | Laser L1 r85 | Laser L1 r86 | Laser L2 r85 | Laser L2 r86 | Laser L3 r85 | Laser L3 r86 | Gun L3 |");
+        sb.AppendLine("| --- | --- | --- | --- | --- | --- | --- | --- | --- |");
+        float keep = Dt;
+        try
+        {
+            foreach ((string name, float health) in rows)
+            {
+                string Cell(Gun g)
+                {
+                    var parts = new List<string>();
+                    foreach (float step in steps)
+                    {
+                        Dt = step;
+                        parts.Add("x" + (Duel(g, health, skitterSpeed, 0.05f, 240) / (g.Damage / g.Interval)).ToString("0.00", CultureInfo.InvariantCulture));
+                    }
+
+                    return string.Join(" / ", parts);
+                }
+
+                sb.AppendLine($"| {name} | {health.ToString("0", CultureInfo.InvariantCulture)} | {Cell(was[0])} | {Cell(now[0])} | {Cell(was[1])} | {Cell(now[1])} | {Cell(was[2])} | {Cell(now[2])} | {Cell(gun[gun.Count - 1])} |");
+            }
+        }
+        finally
+        {
+            Dt = keep;
+        }
+
+        File.WriteAllText("Tools/PlayTest/laser_frames.txt", sb.ToString());
+        return sb.ToString();
+    }
+
     private static void AddLevels(List<Gun> guns, string name, string path, bool beam, float lockSeconds, float swing, bool sticky)
     {
         var def = AssetDatabase.LoadAssetAtPath<Game.Towers.TowerDefinition>(path);
@@ -388,6 +445,7 @@ public static class LaserDuel
         }
 
         var shots = new List<Shot>();
+        var doomed = new List<Creature>();
         float cooldown = 0f;
         float spare = 0f;
         Creature beamTarget = null;
@@ -466,7 +524,7 @@ public static class LaserDuel
             bool swingNow = false;
             if (gun.Beam && gun.Sticky && beamTarget != null && !(beamTarget.Alive && InRange(beamTarget, rangeSqr)))
             {
-                if (!beamTarget.Alive && beamFiring)
+                if (!beamTarget.Alive && beamFiring && !(gun.AtFire && gun.Conserve))
                 {
                     cooldown = Math.Min(cooldown, gun.Conserve ? Math.Max(gun.Swing, cooldown - spare) : gun.Swing);
                     swingNow = true;
@@ -482,9 +540,11 @@ public static class LaserDuel
                 continue;
             }
 
+            doomed.Clear();
+            float underWay = 0f;
             for (int n = 0; cooldown <= 0f && n < 4; n++)
             {
-                Creature target = gun.Beam && gun.Sticky && beamTarget != null ? beamTarget : FindBest(creatures, rangeSqr);
+                Creature target = gun.Beam && gun.Sticky && beamTarget != null ? beamTarget : FindBest(creatures, rangeSqr, doomed);
                 if (target == null)
                 {
                     beamTarget = null;
@@ -496,12 +556,34 @@ public static class LaserDuel
                 {
                     bool chained = gun.Sticky && (swingNow || beamFiring);
                     beamTarget = target;
+                    underWay = 0f;
                     if (!chained)
                     {
                         beamFiring = false;
                         cooldown = gun.Lock;
                         break;
                     }
+                }
+
+                if (gun.Beam && gun.Sticky && gun.Conserve && gun.AtFire)
+                {
+                    // Round 86 (Game.Towers.BeamBudget): paid as the pulse leaves, on what the creature needs less the pulses under way.
+                    float needed = Game.Towers.BeamBudget.Needed(target.Hp, underWay);
+                    shots.Add(new Shot { X = 0f, Z = TowerSide, Target = target, Damage = gun.Damage });
+                    beamFiring = true;
+                    cooldown += Game.Towers.BeamBudget.Seconds(gun.Interval, needed, gun.Damage, gun.Swing);
+                    if (Game.Towers.BeamBudget.Kills(needed, gun.Damage))
+                    {
+                        doomed.Add(target);
+                        beamTarget = null;
+                        underWay = 0f;
+                    }
+                    else
+                    {
+                        underWay += gun.Damage;
+                    }
+
+                    continue;
                 }
 
                 spare = gun.Beam ? gun.Interval * (1f - Math.Min(1f, Math.Max(0f, target.Hp / gun.Damage))) : 0f;
@@ -546,12 +628,12 @@ public static class LaserDuel
         return c.X * c.X + dz * dz <= rangeSqr;
     }
 
-    private static Creature FindBest(List<Creature> creatures, float rangeSqr)
+    private static Creature FindBest(List<Creature> creatures, float rangeSqr, List<Creature> except = null)
     {
         Creature best = null;
         foreach (Creature c in creatures)
         {
-            if (c.Alive && c.Entered && InRange(c, rangeSqr) && (best == null || c.X > best.X))
+            if (c.Alive && c.Entered && InRange(c, rangeSqr) && (best == null || c.X > best.X) && (except == null || !except.Contains(c)))
             {
                 best = c;
             }

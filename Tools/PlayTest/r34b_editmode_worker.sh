@@ -19,6 +19,9 @@ sed -i 's/^  productName: Tower defense.*$/  productName: Tower defense worker w
 # Audio stays on in this clone (round 67): an EditMode run plays nothing, and the audio tests build clips, which a project
 # with audio disabled cannot (the PlayMode workers are silenced in workers.sh).
 if [ "$#" -gt 0 ]; then printf '%s\n' "$@" > "$dir/Tools/PlayTest/probe_arg.txt"; else rm -f "$dir/Tools/PlayTest/probe_arg.txt"; fi
+# Round 86: TD_DROP names a file to leave out of the clone (the calibration re-stamp fits without plan_records.txt; the
+# project's own copy stays where it is, so no batch that syncs meanwhile sees another bot stamp).
+if [ -n "${TD_DROP:-}" ]; then rm -f "$dir/$TD_DROP"; fi
 rm -f "$dir/Logs/results.xml"
 started=$(date +%s)
 # Round 85: at BelowNormal priority (Remco uses the PC meanwhile).

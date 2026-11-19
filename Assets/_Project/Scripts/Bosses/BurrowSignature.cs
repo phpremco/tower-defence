@@ -73,7 +73,7 @@ namespace Game.Bosses
         private bool Alive => _brain.Alive;
         private Vector3 Position => _brain.transform.position;
 
-        public bool WantsOffStructure => _burrows.IsDue(Enemy.Health.Fraction);
+        public bool WantsOffStructure => _burrows.IsDue(Enemy.Health.BarFraction);
 
         public void Begin()
         {
@@ -84,7 +84,7 @@ namespace Game.Bosses
 
         public IEnumerator Entrance() => RigEntrance();
 
-        public IEnumerator NextAct() => _burrows.TryCross(Enemy.Health.Fraction) ? Burrow(true) : null;
+        public IEnumerator NextAct() => _burrows.TryCross(Enemy.Health.BarFraction) ? Burrow(true) : null;
 
         public IEnumerator AtStructure(IStructure structure) => null;
 
@@ -510,7 +510,7 @@ namespace Game.Bosses
         // Below its last threshold it rages: faster, and its crack lines send creatures up.
         private void CheckRage()
         {
-            if (_enraged || !_burrows.Done || Enemy.Health.Fraction > _burrows.Last)
+            if (_enraged || !_burrows.Done || Enemy.Health.BarFraction > _burrows.Last)
             {
                 return;
             }

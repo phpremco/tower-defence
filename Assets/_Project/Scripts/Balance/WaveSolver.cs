@@ -147,7 +147,7 @@ namespace Game.Balance
         /// alone), <paramref name="withHero"/> the same player with the hero, whom no wave may ask more than the
         /// difficulty's hero cap; <paramref name="levelTarget"/> is the pressure a plain wave asks of the lens on average.
         /// <paramref name="stored"/> is the factor the caller stores the multipliers with (play's correction of the paper):
-        /// the floors of a raid and of a level's boss are floors on the health as stored. <paramref name="calm"/> is
+        /// the floor of a raid is a floor on the health as stored. <paramref name="calm"/> is
         /// <see cref="Solution.WalkIn"/> of the same difficulty solved without surprises, or null: what a wave that
         /// carries a surprise counts as for the waves after it.
         /// </summary>
@@ -159,8 +159,8 @@ namespace Game.Balance
             float[] shares = Shares(script, enemies, d, secondRoad, lens);
             var recent = new List<float>();
             var ground = new List<float>();
-            // The health bar (body plus armour, at the multiplier it walked in with) of the toughest ordinary creature so far.
-            float toughest = 0f;
+            // The toughest ordinary creatures met so far, as they walked in: what a boss of the level is held against.
+            var yardstick = new BossYardstick(lens);
             var purse = new KillPurse(level, difficulty, lens);
             var held = new Ledger.AirHoldings();
             float cap = lens.HeroCapFor(d);
@@ -188,19 +188,9 @@ namespace Game.Balance
                 float Pressure(BalanceRules rules, float health, float bossScale) =>
                     Ledger.EvaluateWave(level, Wave(health, bossScale), difficulty, money, rules, standing, null, carried).Pressure;
 
-                // The boss on its own against the defence the player stands for the whole wave.
-                float Alone(float bossHealth)
-                {
-                    WaveSpec whole = Wave(1f, bossHealth);
-                    var only = new WaveSpec { StartDelay = whole.StartDelay, HealthMultiplier = whole.HealthMultiplier, BossHealthScale = whole.BossHealthScale };
-                    only.Groups.AddRange(whole.Groups.FindAll(g => g.Enemy != null && g.Enemy.IsBoss));
-                    return Ledger.EvaluateWave(level, only, difficulty, money, withHero, standing, null, 0f, whole).Pressure;
-                }
-
                 BossSpec boss = WaveComposer.BossOn(script, d, number);
                 bool raid = WaveComposer.KindOf(script, d, number) == WaveComposer.Kind.Air && boss == null;
                 bool levelBoss = boss != null && enemies.TryGetValue(boss.Enemy, out EnemyStats bossEnemy) && bossEnemy.IsBoss && !bossEnemy.IsContinentBoss;
-                bool walks = levelBoss && !enemies[boss.Enemy].Flies;
                 float target = levelTarget * shares[i];
 
                 // The same creature does not change much from one wave to the next: a ground wave stays inside a band of the
@@ -221,83 +211,72 @@ namespace Game.Balance
                     high = Math.Max(low, Math.Min(high, Median(ground) * MostOverMedian / lift));
                 }
 
-                // A level's walking boss is sized first, alone: it asks LevelBossAlone of the defence that stands for its wave,
-                // never under its floor. The crowd then fills the wave up to its target around the boss as sized.
-                // Round 85: both floors are on the boss as it walks in, so they are taken off the wave's lift (a capped troop
-                // makes every creature of its wave tougher, the boss included); the stored waves are read that way.
-                float floor = levelBoss ? lens.LevelBossHealthFloorFor(d) / (stored * lift) : 0f;
-                // A boss is never a creature like the others: its bar is a multiple of the toughest ordinary creature the
-                // player has met in this level (round 85). Both carry the same factors as stored, so the ratio is read here.
-                if (levelBoss && toughest > 0f && enemies[boss.Enemy].EffectiveHealth > 0f)
+                // A level's boss is sized by one rule and before its crowd (round 86): it costs the player's guns
+                // BossOverRegular times what the toughest ordinary creature met so far cost them, under shells and under
+                // light fire alike (BossYardstick), and never walks in under BossBookShare of its book health. Nothing else
+                // sizes it: no share of the defence, no cap, no floor on the health as stored, so a cell's scalar moves the
+                // boss exactly as it moves every other creature. The multiple is on the boss as it walks in, so it is taken
+                // off the wave's lift (a capped troop makes every creature of its wave tougher, the boss included). A boss
+                // with nothing before it is held against the toughest creature of its own wave, at that wave's multiplier.
+                float bossWalksIn = 0f;
+                float bossOverCrowd = 0f;
+                if (levelBoss && lens.BossOverRegularFor(d) > 0f)
                 {
-                    floor = Math.Max(floor, lens.BossOverRegularFor(d) * toughest / (enemies[boss.Enemy].EffectiveHealth * lift));
-                }
-                float bossHealth = 0f;
-                if (walks && lens.LevelBossAloneFor(d) > 0f)
-                {
-                    bossHealth = Meet(Alone, lens.LevelBossAloneFor(d), floor, Math.Max(floor, MaxHealth));
+                    EnemyStats stats = enemies[boss.Enemy];
+                    if (yardstick.HasMet(stats.Flies))
+                    {
+                        bossWalksIn = Math.Max(lens.BossBookShare, yardstick.Multiple(stats, lens.BossOverRegularFor(d)));
+                    }
+                    else
+                    {
+                        var own = new BossYardstick(lens);
+                        own.Meet(timing, 1f);
+                        bossWalksIn = lens.BossBookShare;
+                        bossOverCrowd = own.HasMet(stats.Flies) ? own.Multiple(stats, lens.BossOverRegularFor(d)) / lift : 0f;
+                    }
                 }
 
-                float BossScale(float health) => !levelBoss ? 1f : (walks && bossHealth > 0f ? bossHealth : Math.Max(floor, health)) / health;
+                // The scale of the boss over its wave's multiplier: the fixed size it walks in with, or the multiple of its
+                // own crowd where that is more.
+                float BossScale(float health) => !levelBoss || bossWalksIn <= 0f ? 1f : Math.Max(bossWalksIn / (lift * health), bossOverCrowd);
 
+                // A plain wave that drops under its band (a thin purse) still keeps a share of the median of the ground waves
+                // before it, the mirror of the cap over the median.
                 float least = raid ? low : bottom;
-                // The mirror of the cap over the median: a wave that drops under its band (a thin purse) still keeps this share of
-                // the median of the ground waves before it. The crowd of a boss wave may give way further, to its boss.
                 if (!raid && boss == null && ground.Count >= MedianFrom)
                 {
                     least = Math.Min(low, Math.Max(least, Median(ground) * LeastOfMedian / lift));
                 }
-                float crowd = Reach(health => Pressure(lens, health, BossScale(health)), target, least, low, high);
-                // No wave asks more of the player with the hero than the difficulty's cap (a boss wave: than a boss wave's cap).
-                // The crowd gives way: inside its band, and under it when its own health is what still asks too much. A
-                // level's boss is the fight of its wave and keeps its health while a softer crowd makes the wave fit; where
-                // none does, the boss comes down, never under its floor, with the crowd on its floor if the wave then fits
-                // and on its band if not even that does (a paper crowd would buy nothing).
-                float most = boss != null ? Math.Min(cap, lens.LevelBossGrowthCapFor(d)) : cap;
-                float WithHero(float health) => Pressure(withHero, health, BossScale(health));
-                if (WithHero(crowd) > most)
-                {
-                    crowd = Meet(WithHero, most, Math.Min(low, crowd), crowd);
-                    if (least < crowd && WithHero(crowd) > most)
-                    {
-                        if (WithHero(least) < most)
-                        {
-                            crowd = Meet(WithHero, most, least, crowd);
-                        }
-                        else if (walks && bossHealth > floor)
-                        {
-                            float sized = bossHealth;
-                            bossHealth = floor;
-                            float kept = WithHero(least) < most ? least : crowd;
-                            bossHealth = Meet(health => Pressure(withHero, kept, health / kept), most, floor, sized);
-                            crowd = kept;
-                        }
-                        else if (boss == null && ground.Count >= MedianFrom)
-                        {
-                            // Round 85: a plain wave that what an earlier wave left on the road holds over the cap (the
-                            // wave after a boss on its multiple) gives way to its share of the median, which is no paper
-                            // crowd. Kept on the band's edge it was a cliff: Glass Meadows Psycho wave 10 stood x1.58 with
-                            // the cell's scalar at 0.96 and x2.65 at 0.94 (the cap met by a hair or missed by one), 1.7
-                            // times tougher for a softer cell, and over its band on every scalar under 0.96.
-                            crowd = least;
-                        }
-                    }
-                }
 
-                // Round 85: a boss wave still over its cap is the boss's fight. The crowd gives way to the lower edge of its
-                // band, not further: a crowd on its floor carried no plated troops worth the name, and a row of light guns
-                // then won Landing Site Easy without the Cannon (the grace gate). Then a walking boss that stands above its own
-                // floor comes down towards it, never under it. A boss on its floor (the multiple of the toughest ordinary
-                // creature) over the cap is so by rule; how tough the cell is as played is the closed loop's to set.
-                if (levelBoss && WithHero(crowd) > most)
+                float WithHero(float health) => Pressure(withHero, health, BossScale(health));
+                float crowd;
+                if (levelBoss)
                 {
-                    crowd = Math.Min(crowd, Math.Max(least, low));
-                    if (walks && bossHealth > floor && WithHero(crowd) > most)
+                    // The boss is the fight of its wave, and the rule above is all that sizes it. Its crowd comes on the
+                    // lower edge of its band: the creatures of the waves before it, a little softer (round 86). Until then
+                    // the crowd was filled up to a paper target around the boss and gave way under a paper cap, and it
+                    // jumped between a floor and the edge of the band when that cap was met or missed by a hair (Glass
+                    // Meadows Psycho wave 5: x0.41, x1.75 and x0.55 on three neighbouring scalars); on the stored waves
+                    // of round 85 the cap had put nearly every boss wave's crowd on this edge already. How tough the cell
+                    // is as played is the closed loop to set.
+                    crowd = low;
+                }
+                else
+                {
+                    crowd = Reach(health => Pressure(lens, health, BossScale(health)), target, least, low, high);
+                    // No wave asks more of the player with the hero than the cap of the difficulty. The creatures of the
+                    // wave give way: inside the band, and under it when their own health is what still asks too much. A
+                    // plain wave that what an earlier wave left on the road holds over the cap (the wave after a boss)
+                    // gives way to its share of the median, which is no paper crowd; kept on the edge of the band it was
+                    // a cliff (round 85: Glass Meadows Psycho wave 10 stood x1.58 with the scalar of the cell at 0.96 and
+                    // x2.65 at 0.94).
+                    if (WithHero(crowd) > cap)
                     {
-                        float sized = bossHealth;
-                        float kept = crowd;
-                        bossHealth = floor;
-                        bossHealth = Meet(health => Pressure(withHero, kept, health / kept), most, floor, sized);
+                        crowd = Meet(WithHero, cap, Math.Min(low, crowd), crowd);
+                        if (least < crowd && WithHero(crowd) > cap)
+                        {
+                            crowd = WithHero(least) < cap ? Meet(WithHero, cap, least, crowd) : boss == null && ground.Count >= MedianFrom ? least : crowd;
+                        }
                     }
                 }
 
@@ -311,21 +290,19 @@ namespace Game.Balance
                 held = next;
                 purse.Add(solved, line);
                 solution.WalkIn[i] = solved.HealthMultiplier;
-                // What the waves after this one are held against (the band, the median): its creatures as they walk in. A
-                // wave that carries a surprise stands there as the same wave of the level without surprises (round 84): its
-                // creatures are fewer and tougher, and a band or a median they lift would let the waves after it follow (a
-                // late swarm lives on the upper edge of its band: Crysium Vein Psycho wave 16 stood x1.59 above the same
-                // level solved without surprises). So a surprise takes from its own wave and moves no other, by construction.
+                // What the waves after this one are held against (the band, the median, the yardstick of a boss): its
+                // creatures as they walk in. A wave that carries a surprise stands there as the same wave of the level
+                // without surprises (round 84): its creatures are fewer and tougher, and a band, a median or a boss they lift
+                // would let the waves after it follow (a late swarm lives on the upper edge of its band: Crysium Vein Psycho
+                // wave 16 stood x1.59 above the same level solved without surprises). So a surprise takes from its own wave
+                // and moves no other. Its creatures do count for the yardstick, as kinds the player has met, at that calm
+                // multiplier (round 86; at their own they made every boss after a surprise bigger).
                 float reference = calm != null && solved.Surprise != SurpriseKind.None ? calm[i] : solved.HealthMultiplier;
-                // The toughest ordinary creature met so far (a boss's floor, round 85), as it walked in. A surprise's creatures
-                // count too: the player has met them, and a boss weaker than the stone heavy that came out of the rift before
-                // it is what the rule is there to prevent.
-                foreach (GroupSpec group in solved.Groups)
+                // A raid stays off the yardstick: it is another kind of wave with a multiplier of its own (free of the band),
+                // and under light fire its flyers cost five times their bar.
+                if (!raid)
                 {
-                    if (group.Enemy != null && !group.Enemy.IsBoss)
-                    {
-                        toughest = Math.Max(toughest, group.Enemy.EffectiveHealth * solved.HealthMultiplier);
-                    }
+                    yardstick.Meet(solved, reference);
                 }
 
                 // The median is read on every ground wave, a boss wave's crowd included, as the gate on the stored waves reads it.

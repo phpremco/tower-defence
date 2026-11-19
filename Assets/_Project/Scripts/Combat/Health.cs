@@ -30,13 +30,19 @@ namespace Game.Combat
 
         public float Current { get; private set; }
 
-        public float ArmorMax { get; }
+        public float ArmorMax { get; private set; }
 
         public float Armor { get; private set; }
 
         public bool IsDead => Current <= 0f;
 
         public float Fraction => Current / Max;
+
+        /// <summary>
+        /// Share of the whole bar still on, body and armour together, from 0 to 1: what the player sees shrink. A boss reads
+        /// its phases on this (round 86): on the body alone a boss in armour kept its first phase until every plate was gone.
+        /// </summary>
+        public float BarFraction => (Current + Armor) / (Max + ArmorMax);
 
         /// <summary>Share of the armour still on, from 0 to 1; zero for creatures that never had any.</summary>
         public float ArmorFraction => ArmorMax > 0f ? Armor / ArmorMax : 0f;
@@ -77,6 +83,56 @@ namespace Game.Combat
             Max = max;
             Current = max;
             Changed?.Invoke(Current);
+        }
+
+        /// <summary>
+        /// Gives the owner a new body and a new armour pool, both full (a boss's shard that takes its share of the body and
+        /// of the armour the giant had left).
+        /// </summary>
+        public void Refill(float max, float armor)
+        {
+            if (max <= 0f || IsDead)
+            {
+                return;
+            }
+
+            ArmorMax = Mathf.Max(0f, armor);
+            Armor = ArmorMax;
+            ArmorChanged?.Invoke(Armor);
+            Refill(max);
+        }
+
+        /// <summary>
+        /// Brings both pools down to these values where they are above them, never up (a giant whose pools follow those of
+        /// its shards). Unlike a hit it takes from each pool directly: the armour does not stand in front of the body here.
+        /// </summary>
+        public void LowerTo(float current, float armor)
+        {
+            if (IsDead)
+            {
+                return;
+            }
+
+            if (armor < Armor)
+            {
+                bool had = Armor > 0f;
+                Armor = Mathf.Max(0f, armor);
+                ArmorChanged?.Invoke(Armor);
+                if (had && Armor <= 0f)
+                {
+                    ArmorBroken?.Invoke();
+                }
+            }
+
+            if (current < Current)
+            {
+                Current = Mathf.Max(0f, current);
+                Changed?.Invoke(Current);
+                if (IsDead)
+                {
+                    Died?.Invoke();
+                }
+            }
         }
 
         /// <summary>Restores health, never above the maximum.</summary>

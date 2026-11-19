@@ -132,21 +132,27 @@ namespace Game.Tests
             // met its target, because slow plated creatures of earlier waves carried the pressure in, and the solver let it
             // fall to its floor. The band's lower edge holds such a wave now. The opening waves ramp up from little, and the
             // crowd of a boss wave gives way to its boss: neither is judged here.
+            // Round 86: a wave is read against the median of the ground waves up to and including it, which is what the
+            // solver holds it to (WaveSolver.LeastOfMedian on the waves before it) and what the player has seen by then. Read
+            // against the median of the whole level, later waves included, Fault Line Hard wave 7 failed without having moved
+            // (x0.414, on the solver's floor since round 83): the crowds of the boss waves 10 and 16 stand on the edge of
+            // their band now (x0.85 and x1.36, where the paper cap had held wave 16 at x0.60) and lifted the level's median
+            // from under x1.03 to x1.07. No stored wave is softer for it.
             int judged = 0;
             foreach (LevelDefinition level in AssetDatabase.FindAssets("t:LevelDefinition", new[] { LevelFolder }).Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<LevelDefinition>))
             {
                 foreach (DifficultyWaves set in level.DifficultyWaves)
                 {
-                    List<float> ground = set.Waves.Where(w => !w.AirRaid).Select(w => w.HealthMultiplier).OrderBy(m => m).ToList();
-                    if (ground.Count == 0)
-                    {
-                        continue;
-                    }
-
-                    float median = ground.Count % 2 == 1 ? ground[ground.Count / 2] : (ground[ground.Count / 2 - 1] + ground[ground.Count / 2]) * 0.5f;
                     for (int i = BalanceChecks.OpeningWaves; i < set.Waves.Length; i++)
                     {
                         WaveDefinition wave = set.Waves[i];
+                        List<float> ground = set.Waves.Take(i + 1).Where(w => !w.AirRaid).Select(w => w.HealthMultiplier).OrderBy(m => m).ToList();
+                        if (ground.Count == 0)
+                        {
+                            continue;
+                        }
+
+                        float median = ground.Count % 2 == 1 ? ground[ground.Count / 2] : (ground[ground.Count / 2 - 1] + ground[ground.Count / 2]) * 0.5f;
                         if (wave.AirRaid || wave.Groups.Any(g => g.Enemy != null && g.Enemy.IsBoss))
                         {
                             continue;

@@ -44,6 +44,9 @@ namespace Game.Balance
         /// </summary>
         public float Utilisation = 0.27f;
 
+        /// <summary>What a gun lands on a boss in its reach: <see cref="BossUtilisation"/>, or the stream's utilisation where that is not set.</summary>
+        public float BossFire => BossUtilisation > 0f ? BossUtilisation : Utilisation;
+
         /// <summary>Most creatures one splash hit can catch, however dense the stream, for a splash gun without its own cap (TowerStats.SplashTargets).</summary>
         public float MaxSplashTargets = 2.4f;
 
@@ -179,6 +182,23 @@ namespace Game.Balance
         public float HumanUtilisation = 0.34f;
 
         /// <summary>
+        /// Share of its data rate a gun lands on a boss while the boss is in its reach; zero: <see cref="Utilisation"/>,
+        /// as for the stream (the bots' own lens and the calibration fit, which were fitted that way). See
+        /// <see cref="HumanBossUtilisation"/>.
+        /// </summary>
+        public float BossUtilisation;
+
+        /// <summary>
+        /// <see cref="BossUtilisation"/> of the human lenses (round 86): one. The utilisation of a stream is what a gun
+        /// loses to the gaps in it; a boss is one slow body that every gun in reach fires at without a gap, and the
+        /// ledger already counts only the seconds the boss is in a gun's reach. Charged at the stream's 0.34 the boss of
+        /// Landing Site Easy asked 1.45 on its own of the seven guns a reference player really stood at x1.76 of the data
+        /// (and the whole wave 2.56), in a run that lost no base health; at one it asks 0.42 (Tools/PlayTest/boss_paper_*.txt).
+        /// The paper stays on the careful side: the crowd of that wave still reads 1.11 on its own.
+        /// </summary>
+        public float HumanBossUtilisation = 1f;
+
+        /// <summary>
         /// Most firepower over need, towers alone, a competent player may have on the plain Easy waves of a level. 2.1 until
         /// 2026-11-04; with the human curve Easy sits at 1.4x at a continent's first level.
         /// </summary>
@@ -201,6 +221,7 @@ namespace Game.Balance
         {
             BalanceRules human = Copy();
             human.Utilisation = HumanUtilisation;
+            human.BossUtilisation = HumanBossUtilisation;
             human.HeroShare = 0f;
             return human;
         }
@@ -210,6 +231,7 @@ namespace Game.Balance
         {
             BalanceRules human = Copy();
             human.Utilisation = HumanUtilisation;
+            human.BossUtilisation = HumanBossUtilisation;
             return human;
         }
 
@@ -247,7 +269,7 @@ namespace Game.Balance
         // Round 83b: the geometric means of the first continent's 24 scalars after three passes of the closed loop
         // (0.98 / 1.31 / 1 / 0.87 was the first guess, the level of round 82).
         // Round 84: 0.981 / 1.365 / 1.051 / 0.936 times the means of the pass after the composition levers became rules.
-        public float[] DifficultyScale = { 0.982f, 1.369f, 0.913f, 0.918f };
+        public float[] DifficultyScale = { 0.839f, 1.073f, 0.745f, 0.699f };
 
         public float DifficultyScaleFor(int difficulty) => DifficultyScale.Length == 0 ? 1f : DifficultyScale[System.Math.Min(difficulty, DifficultyScale.Length - 1)];
 
@@ -347,37 +369,6 @@ namespace Game.Balance
         public float RaidHealthFloorFor(int difficulty) => RaidHealthFloor.Length == 0 ? 0f : RaidHealthFloor[System.Math.Min(difficulty, RaidHealthFloor.Length - 1)];
 
         /// <summary>
-        /// The least a level's boss is scaled to, as a multiple of its book health before the difficulty's own health factor,
-        /// Easy to Psycho (round 64, Remco: "on Hard it died before the first gate with one Cannon and one Gun Turret"). A boss
-        /// wave had one health multiplier for the boss and its crowd, and the solver and the cap sized it by the crowd: on a
-        /// crowded finale the boss came out at a third of its book health (Shard Ridge Hard: 349 hit points at wave 16, less
-        /// than on Medium; Fault Line Hard: 217). The boss now has a scale of its own on top of the wave's multiplier
-        /// (<see cref="WaveSpec.BossHealthScale"/>), never under this floor. Continent bosses are not touched; they have their
-        /// own health share and the finale probe.
-        /// </summary>
-        public float[] LevelBossHealthFloor = { 0.5f, 0.75f, 0.9f, 0.9f };
-
-        public float LevelBossHealthFloorFor(int difficulty) => LevelBossHealthFloor.Length == 0 ? 0f : LevelBossHealthFloor[System.Math.Min(difficulty, LevelBossHealthFloor.Length - 1)];
-
-        /// <summary>
-        /// What a level's walking boss asks on its own of a competent player with the hero, Easy to Psycho: the ledger's
-        /// pressure of the boss alone against the defence that player stands for the boss's whole wave, where one is
-        /// "everything that defence can deal in the boss's walk and its stand at the gate". The boss is sized to ask exactly
-        /// this (<see cref="WaveSolver.Solve"/>), never under <see cref="LevelBossHealthFloor"/>, so it grows with the
-        /// firepower the player has by then; the crowd of its wave fills what the boss leaves. A flying boss follows its
-        /// wave instead (its pressure is the sky's, and the sky guns bought for it stay out of the purse).
-        /// </summary>
-        /// <remarks>
-        /// Rounds 64 to 82 read the boss against a defence bought for the boss alone (the best single-target guns), where
-        /// 0.2 / 0.33 / 0.4 / 0.45 gave the bosses of round 82. Read against the defence that really stands for the wave
-        /// (round 83) the same bosses ask about 0.35 / 0.55 / 0.65 / 0.7; the values are a step above those (Remco: the
-        /// Medium bosses feel weak).
-        /// </remarks>
-        public float[] LevelBossAlone = { 0.4f, 0.6f, 0.7f, 0.75f };
-
-        public float LevelBossAloneFor(int difficulty) => LevelBossAlone.Length == 0 ? 0f : LevelBossAlone[System.Math.Min(difficulty, LevelBossAlone.Length - 1)];
-
-        /// <summary>
         /// Every boss walks in armour (Remco, round 85: "they have no armour; that should be standard"): the armour pool of
         /// a boss, a level's or a continent's, is at least this share of its body. A boss whose own data gives it more
         /// keeps that. So light fire only chips every boss and the anti-armour guns are what a boss asks for, by the same
@@ -390,26 +381,49 @@ namespace Game.Balance
         public float BossArmourFor(float body, float armour) => System.Math.Max(armour, (float)System.Math.Round(body * BossArmourShare));
 
         /// <summary>
-        /// A boss is never a creature like the others (Remco, round 85: "on Easy the boss felt like nonsense, the lava
-        /// rocks seem stronger"): a level's boss has at least this many times the health bar (body plus armour, as
-        /// spawned) of the toughest ordinary creature that has walked in before it on that difficulty, Easy to Psycho.
-        /// It is a floor beside <see cref="LevelBossHealthFloor"/>: where the wave would then ask more than its cap the
-        /// crowd gives way, never the boss (<see cref="WaveSolver.Solve"/>). Zero: no such floor.
+        /// What a point of light fire (bullets, beams, arcs) is worth on armour: the armour column of those rows in the
+        /// combat rule table (Docs/COMBAT_RULES.md, section 1; the test Round86Tests holds it to the rules asset). The
+        /// boss rule reads a creature's cost under light fire with it (<see cref="BossYardstick"/>).
         /// </summary>
+        public float LightFireOnArmour = 0.2f;
+
+        /// <summary>
+        /// The share of a point of light fire that lands on a creature only the sky can be aimed at: the air column of the
+        /// bullet and beam rows of the same table (shells land in full up there). The boss rule prices a flyer under light
+        /// fire with it, a flying boss and the flyers it is held against alike.
+        /// </summary>
+        public float LightFireInTheAir = 0.2f;
+
+        /// <summary>
+        /// A level's boss never walks in under this share of its book health and armour, in the solver's own measure
+        /// (before play's correction, so a cell's scalar moves it like every creature). It holds the early bosses: wave 5
+        /// of Landing Site on Psycho comes after Skitters and Prowlers only, and three times the toughest of those is a
+        /// boss of 72 hit points, 0.08 of its Codex entry. Round 86; until then a floor on the health as stored
+        /// (LevelBossHealthFloor, 0.5 to 0.9), which did not move with the scalar. A quarter over the book, because play's
+        /// correction runs under one (0.6 to 1.1 over the first six levels): the early bosses then spawn near their Codex
+        /// entry, as round 64 asked of the Hard ones (Round64Tests: a Hard boss spawns with its book health at least).
+        /// </summary>
+        public float BossBookShare = 1.25f;
+
+        /// <summary>
+        /// A boss is never a creature like the others (Remco, round 85: "on Easy the boss felt like nonsense, the lava
+        /// rocks seem stronger"), and this is the one rule that sizes a level's boss (round 86): it costs the player's
+        /// guns this many times what the toughest ordinary creature met in the level before it cost them, Easy to
+        /// Psycho, under shells (the health bar, body plus armour) and under light fire (armour at
+        /// <see cref="LightFireOnArmour"/>) both (<see cref="BossYardstick"/>, <see cref="WaveSolver.Solve"/>). A boss
+        /// with nothing before it is held against the toughest creature of its own wave. Where the wave then asks more
+        /// than its cap the crowd gives way inside its band, never the boss. Zero: the boss follows its wave.
+        /// </summary>
+        /// <remarks>
+        /// Round 85 had it as a floor on the bar beside two older rules, a share of the defence the boss asks alone
+        /// (LevelBossAlone) with a cap of its own (LevelBossGrowthCap) and a floor on the health as stored
+        /// (LevelBossHealthFloor). On the stored waves all 24 last bosses stood on the multiple, so the first two decided
+        /// nothing; the third bound only the early bosses of Psycho and, being read on the stored health, did not move with
+        /// a cell's scalar while every creature around it did. All three went in round 86.
+        /// </remarks>
         public float[] BossOverRegular = { 3f, 3f, 3f, 3f };
 
         public float BossOverRegularFor(int difficulty) => BossOverRegular == null || BossOverRegular.Length == 0 ? 0f : BossOverRegular[System.Math.Min(difficulty, BossOverRegular.Length - 1)];
-
-        /// <summary>
-        /// The most a boss wave may ask of a competent player with the hero, Easy to Psycho (round 64). A boss wave must
-        /// really be held (<see cref="BossWaveCap"/>): on Easy and Medium a wave that is just held. On Hard it may go a
-        /// little over, as the replays carried it. On Psycho the player has nothing to spare (grown to 1.35 and again to
-        /// 1.15, Shard Ridge's last boss beat the searched plans). Over it the crowd of the wave gives way first, then the
-        /// boss comes down to its floor.
-        /// </summary>
-        public float[] LevelBossGrowthCap = { 1f, 1f, 1.15f, 1f };
-
-        public float LevelBossGrowthCapFor(int difficulty) => LevelBossGrowthCap.Length == 0 ? BossWaveCap : LevelBossGrowthCap[System.Math.Min(difficulty, LevelBossGrowthCap.Length - 1)];
 
         /// <summary>
         /// The share of a wave's budget its crowd keeps when a boss leads the wave (the composer's constant until round 65),

@@ -318,32 +318,12 @@ namespace Game.Balance
         // its own target), times what the probe says the model misreads: the difficulty's factor (one number for every level,
         // BalanceRules.DifficultyScale) and the cell's own scalar (the script's target scale, found by the closed loop). Both
         // act on every creature alike, a boss included, exactly as the probe's health multiple does, so the measured
-        // break-even of a cell turns into its scalar without a model in between. Only the floors of a raid and of a level's
-        // boss are held on the health as stored.
+        // break-even of a cell turns into its scalar without a model in between. Only the floor of a raid is held on the
+        // health as stored.
         private float[] SolveDifficulty(int levelIndex, WaveScriptSpec script, int d, out float[] bossScales)
         {
             float scale = Rules.DifficultyScaleFor(d) * script.TargetScaleFor(d);
-            int secondRoad = Facts[levelIndex].SecondRoad;
-            WaveSolver.Solution Solved(float[] calm) =>
-                WaveSolver.Solve(script, Enemies, InputFor(levelIndex, d), Difficulties[d], secondRoad, Rules.HumanTowersOnly(), Rules.HumanWithHero(), ModelTarget(levelIndex, d), scale, calm);
-
-            // A difficulty that carries surprises is solved without them first: a surprise wave's creatures are fewer and
-            // tougher, and the waves after it are held against the wave it would have been (WaveSolver.Solve, calm).
-            float[] reference = null;
-            if (Rules.Grammar.Surprises && CarriesSurprises(script, d, secondRoad))
-            {
-                Rules.Grammar.Surprises = false;
-                try
-                {
-                    reference = Solved(null).WalkIn;
-                }
-                finally
-                {
-                    Rules.Grammar.Surprises = true;
-                }
-            }
-
-            WaveSolver.Solution solution = Solved(reference);
+            WaveSolver.Solution solution = Solved(levelIndex, script, d, CalmOf(levelIndex, script, d));
             var own = new float[solution.Healths.Length];
             for (int i = 0; i < own.Length; i++)
             {
@@ -352,6 +332,50 @@ namespace Game.Balance
 
             bossScales = solution.BossScales;
             return own;
+        }
+
+        private WaveSolver.Solution Solved(int levelIndex, WaveScriptSpec script, int d, float[] calm) =>
+            WaveSolver.Solve(script, Enemies, InputFor(levelIndex, d), Difficulties[d], Facts[levelIndex].SecondRoad, Rules.HumanTowersOnly(), Rules.HumanWithHero(), ModelTarget(levelIndex, d), Rules.DifficultyScaleFor(d) * script.TargetScaleFor(d), calm);
+
+        // A difficulty that carries surprises is solved without them first: a surprise wave's creatures are fewer and
+        // tougher, and the waves after it are held against the wave it would have been (WaveSolver.Solve, calm). Null for a
+        // difficulty without surprises.
+        private float[] CalmOf(int levelIndex, WaveScriptSpec script, int d)
+        {
+            if (!Rules.Grammar.Surprises || !CarriesSurprises(script, d, Facts[levelIndex].SecondRoad))
+            {
+                return null;
+            }
+
+            Rules.Grammar.Surprises = false;
+            try
+            {
+                return Solved(levelIndex, script, d, null).WalkIn;
+            }
+            finally
+            {
+                Rules.Grammar.Surprises = true;
+            }
+        }
+
+        /// <summary>
+        /// Per wave of a difficulty the multiplier it counts as for the waves after it, on the health as stored: what its
+        /// creatures walk in with, and for a wave that carries a surprise the same wave of the level solved without
+        /// surprises (<see cref="WaveSolver.Solve"/>). The band, the median and the yardstick of a boss
+        /// (<see cref="BossYardstick"/>) read it; a test that holds a stored boss to its rule reads it here.
+        /// </summary>
+        public float[] CountsAs(int levelIndex, WaveScriptSpec script, int d, IReadOnlyList<WaveSpec> stored)
+        {
+            float scale = Rules.DifficultyScaleFor(d) * script.TargetScaleFor(d);
+            float[] calm = CalmOf(levelIndex, script, d);
+            var counts = new float[stored.Count];
+            for (int i = 0; i < counts.Length; i++)
+            {
+                bool surprise = WaveGrammar.SurpriseOn(script, Enemies, d, i + 1, Facts[levelIndex].SecondRoad, Rules) != SurpriseKind.None;
+                counts[i] = calm != null && surprise && i < calm.Length ? calm[i] * scale : stored[i].HealthMultiplier;
+            }
+
+            return counts;
         }
 
         private bool CarriesSurprises(WaveScriptSpec script, int d, int secondRoad)

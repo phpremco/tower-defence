@@ -1,7 +1,7 @@
 {
     "Level": "Level_C1_01",
     "Difficulty": 0,
-    "Name": "Level_C1_01_0_strategy4",
+    "Name": "Level_C1_01_0_strategy2",
     "Family": "searched",
     "Spots": [
         {
@@ -30,23 +30,23 @@
         {
             "Tower": "Cannon",
             "X": [
-                5,
+                11,
+                11,
+                12,
+                12,
                 31,
                 12,
-                12,
-                11,
-                12,
-                11,
+                5,
                 13
             ],
             "Y": [
-                14,
-                14,
+                2,
+                6,
                 7,
                 2,
+                14,
                 6,
-                6,
-                2,
+                14,
                 2
             ]
         }
@@ -61,6 +61,11 @@
             "Threat": "boss",
             "Tower": "Cannon",
             "Weight": 1.3594191074371338
+        },
+        {
+            "Threat": "swarm",
+            "Tower": "Cannon",
+            "Weight": 2.370370864868164
         }
     ],
     "UpgradeBias": 1.0800000429153442,

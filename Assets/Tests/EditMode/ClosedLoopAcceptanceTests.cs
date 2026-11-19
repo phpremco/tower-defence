@@ -17,7 +17,10 @@ namespace Game.Tests
     /// reference rung, read from the latest pressure measurement, lies within one step of the ladder of its target:
     /// the same targets and the same reading as Tools/PlayTest/closed_loop.py, which sets the cell's scalar.
     ///
-    ///   Easy    both rungs win every seed at the data; the weaker rung breaks even at x1.55 at least (within a step)
+    ///   Easy    both rungs win every seed at the data; the weaker rung breaks even at x1.55 at least. The Easy ladder
+    ///           (x1 / 1.25 / 1.4 / 1.57 / 1.76) cannot read x1.55: its readings are x1.32, x1.48, x1.66 and "over". The
+    ///           gate takes x1.48 or more, that is: the weaker rung holds x1.4 on two seeds of three at least (round 86
+    ///           says so in words; three Easy cells of round 85 passed at x1.48 under a text that promised x1.55)
     ///   Medium  the sensible rung breaks even at x1.32; the better of the two rungs at x1.06 at least
     ///   Hard    the sensible rung breaks even at x0.95; the better of the two rungs at x1.06 at least
     ///   Psycho  the better of the two rungs breaks even at x1.06
@@ -230,7 +233,7 @@ namespace Game.Tests
             switch (difficulty)
             {
                 case Easy:
-                    return "weaker rung x1.55 at least";
+                    return "weaker rung x1.55 at least (the ladder reads x1.48 or x1.66 there: holds x1.4)";
                 case Medium:
                     return "sensible x1.32, better rung x1.06 at least";
                 case Hard:

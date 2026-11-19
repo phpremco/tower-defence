@@ -214,7 +214,8 @@ namespace Game.Tests
 
                             bosses++;
                             float multiple = stored[i].HealthMultiplier * stored[i].BossHealthScale;
-                            Assert.GreaterOrEqual(multiple, rules.LevelBossHealthFloorFor(d) - 0.002f, $"{key} difficulty {d} wave {i + 1}: {group.Enemy.name} is scaled to {multiple:0.000} of its book health");
+                            // Round 86: the floor on the stored health (LevelBossHealthFloor) went with the one boss rule, which
+                            // Round86Tests.EveryLevelBoss_StandsOnItsMultiple holds on every stored boss; Remco's Hard floor stays.
                             if (d == Hard)
                             {
                                 float health = group.Enemy.MaxHealth * multiple * loaded.Catalog.Difficulties[d].HealthMultiplier * node.Level.EnemyHealthScale;

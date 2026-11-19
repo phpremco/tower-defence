@@ -295,7 +295,7 @@ namespace Game.Balance
         /// The health of the wave's bosses on top of <see cref="HealthMultiplier"/> (round 64). One multiplier for the whole
         /// wave made a boss as feeble as the crowd it walked in with: where the cap trimmed a crowded boss wave to a third, the
         /// boss came out at a third of its book health and fell to two guns. The calibration gives a level's boss a floor and
-        /// sizes it against the player's firepower (<see cref="BalanceRules.LevelBossHealthFloor"/>, <see cref="BalanceRules.LevelBossAlone"/>).
+        /// sizes it against the player's firepower (<see cref="BalanceRules.BossOverRegular"/>).
         /// </summary>
         public float BossHealthScale = 1f;
 

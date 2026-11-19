@@ -1,13 +1,13 @@
 Waves without a surprise, with the level's surprises over without them (above 5 %):
-  C1_02 Psycho wave 11 (swarm): x6.275 against x5.092 = x1.23
-  C1_02 Psycho wave 12 (boss wave): x0.44 against x0.44 = x1.11
-  C1_03 Easy wave 10 (swarm): x2.296 against x2.042 = x1.12
-  C1_03 Psycho wave 10 (boss wave): x0.405 against x0.405 = x1.29
-  C1_06 Medium wave 18 (boss wave): x1.032 against x0.741 = x1.14
-  C1_06 Psycho wave 10 (plain): x1.657 against x1.524 = x1.09
+  C1_02 Hard wave 11 (swarm): x3.422 against x3.207 = x1.07
+  C1_02 Psycho wave 11 (swarm): x4.571 against x4.328 = x1.06
+  C1_03 Easy wave 10 (swarm): x2.196 against x1.953 = x1.12
+  C1_06 Psycho wave 10 (plain): x1.064 against x1.012 = x1.05
+  C1_06 Psycho wave 11 (raid): x2.617 against x2.41 = x1.09
+  C1_06 Psycho wave 12 (boss wave): x1.033 against x1.033 = x1.07
 
 The most per kind:
-  C1_06 Psycho wave 10 (plain): x1.657 against x1.524 = x1.09
-  C1_02 Psycho wave 11 (swarm): x6.275 against x5.092 = x1.23
-  C1_03 Psycho wave 10 (boss wave): x0.405 against x0.405 = x1.29
-  C1_04 Hard wave 15 (raid): x1.572 against x1.528 = x1.03
+  C1_06 Psycho wave 10 (plain): x1.064 against x1.012 = x1.05
+  C1_03 Easy wave 10 (swarm): x2.196 against x1.953 = x1.12
+  C1_06 Psycho wave 12 (boss wave): x1.033 against x1.033 = x1.07
+  C1_06 Psycho wave 11 (raid): x2.617 against x2.41 = x1.09

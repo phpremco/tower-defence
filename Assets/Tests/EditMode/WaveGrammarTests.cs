@@ -496,18 +496,16 @@ namespace Game.Tests
             // is what is left beside the boss and says little: 5 % more wave reads as 39 % more crowd, and it missed the
             // boss): x1.29 at most (Shard Ridge Psycho wave 10, the boss sized against a defence the flank waves before it
             // changed): bound x1.3.
-            // Round 85: swarm bound x1.35 (was x1.25). The bosses are three times the toughest ordinary creature now, and what
-            // a boss leaves on the road moves the purchase of the waves after it. Glass Meadows Psycho wave 11, a swarm after
-            // the rift surprise of wave 10: x6.09 with surprises against x4.64 without (x1.31; Tools/PlayTest/Scripts/R85Lift.cs).
-            // The wave with surprises is not the one that moved: without the boss rule it stood at x6.48 / x6.41. The calm
-            // solve's wave 10 (x3.49, a tank escort that still carries the boss's crowd) carries more into wave 11 than the
-            // surprise wave (x1.98, fewer and tougher), so the calm wave 11 is solved softer.
+            // Round 85 widened the swarm bound to x1.35 and the boss wave's to x1.4: a boss was sized on the toughest creature
+            // met, and a surprise's creatures counted there at their own, higher multiplier (Shard Ridge Hard wave 16 stood
+            // x1.35 over the level without surprises), while a boss wave's crowd was filled up to a paper target around it.
+            // Round 86 took both channels out (the yardstick of a boss reads a surprise wave as the calm wave it would have
+            // been, a boss wave's crowd comes on the edge of its band) and the bounds are round 84's again. Measured
+            // (SurpriseLiftLab.cs, 2026-11-19): a plain wave x1.05 at most, a raid x1.09, a swarm x1.12 (Shard Ridge Easy
+            // wave 10), a boss wave x1.07 in health (Crysium Vein Psycho wave 12).
             const float purse = 1.15f;
-            const float swarm = 1.35f;
-            // Round 85: boss wave x1.3 -> x1.4. A boss is three times the toughest ordinary creature the player met before
-            // it, and a surprise's creatures are met too (a stone heavy out of the rift counts): Shard Ridge Hard wave 16
-            // stands x1.35 over the level solved without surprises, by that rule.
-            const float bossWave = 1.4f;
+            const float swarm = 1.25f;
+            const float bossWave = 1.3f;
             BalanceStages.Loaded loaded = BalanceStages.Load(true);
             Assert.IsNotNull(loaded.Catalog, "Run Tools/Generate/Scenes and Starter Data first.");
             CampaignModel model = loaded.Model;

@@ -991,7 +991,7 @@ namespace Game.Bosses
                 return false;
             }
 
-            int phase = _boss.PhaseAt(_enemy.Health.Fraction);
+            int phase = _boss.PhaseAt(_enemy.Health.BarFraction);
             Vector3 position = transform.position;
             foreach (TerrainKind kind in PoolKindsOf(dive.Pools))
             {
@@ -1045,7 +1045,7 @@ namespace Game.Bosses
             }
 
             _field.Refresh();
-            int phase = _boss.PhaseAt(_enemy.Health.Fraction);
+            int phase = _boss.PhaseAt(_enemy.Health.BarFraction);
             Vector3 position = transform.position;
             float now = BossGeometry.FlatDistance(position, goal);
             float reachUnder = dive.SwimSpeed * ShortcutSpeedUp * _dives.MaxSeconds;

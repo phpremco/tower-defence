@@ -90,24 +90,10 @@ namespace Game.Balance
 
             BalanceRules r = model.Rules;
             text.Append(F(r.Utilisation)).Append(F(r.HumanUtilisation)).Append(F(r.MaxSplashTargets)).Append(F(r.HeroShare)).Append(F(r.GateWindowShare)).Append(F(r.MaxGateHoldSeconds)).Append(F(r.CarriedShare)).Append(F(r.FrontEfficiency)).Append(F(r.TrunkReference)).Append(r.AttackersPerGate).Append(F(r.BossWaveCap)).Append(r.ShockwaveCrowd).Append(F(r.ArmorThreatShare));
-            foreach (float floor in r.LevelBossHealthFloor)
-            {
-                text.Append(F(floor));
-            }
-
-            foreach (float alone in r.LevelBossAlone)
-            {
-                text.Append(F(alone));
-            }
-
+            text.Append(F(r.LightFireOnArmour)).Append(F(r.LightFireInTheAir)).Append(F(r.BossBookShare)).Append(F(r.HumanBossUtilisation));
             foreach (float over in r.BossOverRegular)
             {
                 text.Append(F(over));
-            }
-
-            foreach (float growth in r.LevelBossGrowthCap)
-            {
-                text.Append(F(growth));
             }
 
             text.Append(F(r.BossWaveShare));

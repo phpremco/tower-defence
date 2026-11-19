@@ -1950,3 +1950,51 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
 - **Boss armour on the data without the generator:** `stage.sh run ApplyRound85.cs ApplyRound85.Run` (or the menu
   `Tools/Generate/Balance/12 Boss armour`), then the solve stage (`ApplyRound68.cs`). Armour is in the calibration's
   hash: re-stamp ("Round 66" pitfall above).
+
+## Round 86: the one boss rule, the boss on paper, the beam and the frame, the picks batch (added 2026-11-19)
+
+- **The design** is in Docs/WAVE_GRAMMAR.md ("The solver", item 6) and Docs/COMBAT_RULES.md (section 2). In code:
+  `BossYardstick` (the toughest ordinary creatures met, under shells and under light fire), `WaveSolver.Solve` (the boss
+  by the rule, its crowd on the lower edge of its band), `BalanceRules.BossOverRegular`, `LightFireOnArmour`,
+  `LightFireInTheAir`, `BossBookShare`, `HumanBossUtilisation`, `CampaignModel.CountsAs` (what a wave counts as for the
+  waves after it), `Health.BarFraction` / `Refill(max, armour)` / `LowerTo`, `Game.Towers.BeamBudget`. Gone:
+  `LevelBossAlone`, `LevelBossGrowthCap`, `LevelBossHealthFloor`.
+- **Every stored boss against the rule:** the test `Round86Tests.EveryLevelBoss_StandsOnItsMultiple` writes
+  `Tools/PlayTest/boss_rule.txt` (per boss: times the toughest creature before it under both rows, as the solver
+  counts a surprise wave and as the creatures really walked in). `python -I Tools/PlayTest/boss_vs_regular.py --root .`
+  still gives the table against the toughest creature of the whole level.
+- **Why the paper and the game disagree on a boss wave:** `stage.sh run BossPaperLab.cs BossPaperLab.Run` with
+  `Tools/PlayTest/boss_paper_arg.txt` (`cell=C1_01:0`, `wave=12`, `multiple=1.76`, one `stand=Cannon:0` line per gun that
+  stood in a recorded run, tower id and level index, `label=`) writes `Tools/PlayTest/boss_paper_<label>.txt`: the
+  ledger's terms for that wave and defence (crowd against stream capacity, boss against single-target capacity, per gun
+  the seconds the boss is in reach and what the ledger lets it deal in them, and the same at the gun's full data rate).
+- **The beam at other frame lengths:** `stage.sh run LaserDuel.cs LaserDuel.Frames` writes
+  `Tools/PlayTest/laser_frames.txt` (round 85's and round 86's beam at sixty frames a second, 0.05 s and the probe's
+  0.2 s). `stage.sh run LaserRole.cs LaserRole.Run` writes `Tools/PlayTest/laser_role.txt` (what each difficulty sends
+  on the ground, body against armour, and what the Gun Turret, the Laser and the Cannon land on that mix per coin).
+- **Re-stamping the calibration without moving a file in the project:** `TD_DROP=Tools/PlayTest/plan_records.txt bash Tools/PlayTest/r34b_editmode_worker.sh 6 CalibrationFitTests`
+  (the clone fits without the plan records; the project's copy, which is in the bot stamp, stays where it is), then copy
+  the clone's `calibration.txt` and `calibration_waves.txt`, `ApplyCalibration.Keep`, `r66_stale.cs` ("Round 66"). Every
+  rule in `InputHash` asks for it, `DifficultyScale` and `BossBookShare` included; the fit ends "Skipped" (under its
+  bar) and that is expected, only the stamp is taken.
+- **The skilled picks, a bot batch of its own:** `bash Tools/PlayTest/r86_picks.sh <name>` (in the background, about
+  two hours on six clones; data must stand still): keeps every present pick aside (`Plans_old_<name>`), searches every
+  level anew on six clones, adds the old pick to each cell's candidates as its next strategy number and plays every
+  candidate on four multiples per difficulty. Then
+  `python -I Tools/PlayTest/skilled_picks.py Tools/PlayTest/skilled_picks_<name>_easy_records.txt Tools/PlayTest/skilled_picks_<name>_medium_records.txt Tools/PlayTest/skilled_picks_<name>_records.txt --write`.
+  A new pick file is a new bot: the next measurement is the first of that bot.
+- **A fold into `DifficultyScale`, start to end** (round 86 did it after the second measurement): the new factor is the
+  old one times the geometric mean of the difficulty's six scalars, the scalars are divided by the mean and clamped to
+  0.7 to 1.4 (`Round83Tests.ACellsScalar_LiesNearOne`), recompile, re-stamp (above), solve, `r84_lab.sh` must print
+  no moved wave.
+- **Pitfalls met this round:**
+  - `pressure.sh` syncs the clones at the start of every batch, and `r85_measure.sh` is three batches: a change in the
+    stage between two of them gives the three records files different data stamps (`closed_loop.py --mixed-data` reads
+    them, the acceptance test does not). Freeze the stage for a final measurement.
+  - A Perl substitution with `|` as its delimiter turns `\|\|` in the pattern into an alternation that matches the
+    empty string at the top of the file. Use braces.
+  - The ledger's purchase reads a gun's single-target capacity even on a wave without a boss (`Gain`, while the ground
+    is open), so a change of that number moved plain waves (Quartz Flats Easy wave 6: x2.91 -> x1.22). The boss rate
+    (`BossFire`) therefore applies only to a load that has a boss.
+  - `LevelDefinition` assets of the arenas share the campaign's waves: a test that names `Arena_Ruins` is reading
+    Fault Line.

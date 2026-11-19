@@ -73,6 +73,19 @@ same rows as every plated creature: light fire chips the pool at 0.2, shells and
 boss asks for. The rule is written into the creature data by the generator (`ProjectGenerator.ArmourOf`) and by
 `BalanceStages.ApplyBossArmour`, and the finale stage keeps it when it moves a continent boss's health.
 
+**A level's boss is sized on this table (round 86).** It costs the player's guns three times
+(`BalanceRules.BossOverRegular`) what the toughest ordinary creature met before it cost them, under the explosive row
+(armour point for point, the bar) and under the light-fire rows (armour at 0.2, a flyer at 0.2 on top) both; the
+solver's `BossYardstick` reads the two columns from `BalanceRules.LightFireOnArmour` and `LightFireInTheAir`, which a
+test holds to this table. On the bar alone (round 85) a boss of three Cragback bars was 1.4 Cragbacks to a Gun Turret
+or a Laser, because the Cragback is three quarters armour and a boss a fifth. Details: Docs/WAVE_GRAMMAR.md, "The
+solver", item 6.
+
+**A boss reads its phases on its whole bar** (`Health.BarFraction`, body and armour together; round 86). On the body
+alone (`Health.Fraction`) a boss in armour kept its first phase until every plate was gone, a fifth of the fight under
+shells and half of it under light fire. The Shattered's shards take their share of the body and of the armour the
+giant has left, and the giant that pulls back together has the survivors' body and armour.
+
 Armour and air have a **factor** (section 1). Swarm, mob, tough and fast have none: they are held by mechanics that already
 exist (a hit bigger than a creature is wasted; a blast takes at most three; a shell that is not guided misses a runner).
 The role tests measure all six the same way.
@@ -292,7 +305,11 @@ What the matrix shows that is **not** fixed, because it is a design choice:
   Psycho at x1.02 (`Tools/PlayTest/laser_share.txt`). Now the pulse that kills costs the beam the share of it the
   creature needed (`IHitBudget`, `Tower.ReleaseBeam`): it wastes nothing on a dead body and gains nothing either, and it
   clears the stream at x0.98 to x0.99 of its data on every difficulty. Its role is unchanged: it is still the light
-  fire that wastes nothing on swarms.
+  fire that wastes nothing on swarms. Round 86: the price of the killing pulse is settled as the pulse leaves
+  (`Game.Towers.BeamBudget`, `Tower.Update`), not a frame later. Settled later it depended on the frame length: at
+  the balance probe's 0.2 s steps a level 3 Laser cleared Easy Skitters at x0.49 of its data (x0.77 on Medium and
+  Hard, x0.92 on Psycho) where sixty frames a second gave x0.98; now x0.97 to x0.99 at every frame length
+  (`Tools/PlayTest/laser_frames.txt`).
 - **Gun Turret and Laser do the same job** (light fire) at nearly the same damage per coin. The Laser is the job in fewer
   cells; nothing else sets them apart.
 - **The Cannon's splash is worth little against soft bodies**: 1.3x over light fire per coin on a bunched mob at level 1,

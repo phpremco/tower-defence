@@ -26,7 +26,10 @@ namespace Game.Tests
         private const int FirstAirLevel = 2;
 
         // The most armour a slice creature may wear: the Cragback's (round 64: most of an armoured troop's toughness is armour,
-        // so the measure is the pool itself, not its share). The tougher armoured species wait for level 11 (Docs/STORY.md).
+        // so the measure is the pool itself, not its share). The tougher armoured ordinary species wait for level 11
+        // (Docs/STORY.md). A boss is another matter since round 85: every boss walks in armour from level 1 on, a share of
+        // its body (BalanceRules.BossArmourShare), and its pool grows with the boss rule (a multiple of the toughest ordinary
+        // creature before it), so the slice does teach armour, through its bosses and the Cragback.
         private static readonly float SliceArmour = Game.Editor.BalanceSheet.ArmourOf(Game.Editor.ProjectGenerator.CragbackToughness);
         private const float FastTeaserShare = 2.5f;
 
@@ -93,7 +96,7 @@ namespace Game.Tests
                         continue;
                     }
 
-                    Assert.LessOrEqual(group.Enemy.Armor, SliceArmour, $"{level.name}: {group.Enemy.name} wears heavier armour than a Cragback, which waits for level 11");
+                    Assert.LessOrEqual(group.Enemy.Armor, SliceArmour, $"{level.name}: {group.Enemy.name} is an ordinary creature that wears heavier armour than a Cragback; in the slice only a boss does (the tougher armoured species wait for level 11)");
                 }
             }
         }

@@ -138,7 +138,7 @@ namespace Game.Bosses
 
         public IEnumerator NextAct()
         {
-            int phase = Boss.PhaseAt(Enemy.Health.Fraction);
+            int phase = Boss.PhaseAt(Enemy.Health.BarFraction);
             if (phase != _phase)
             {
                 return Adapt(phase);
@@ -438,7 +438,7 @@ namespace Game.Bosses
             while (_brain.Alive && home.IsAlive)
             {
                 float dt = Time.deltaTime;
-                int phase = Boss.PhaseAt(Enemy.Health.Fraction);
+                int phase = Boss.PhaseAt(Enemy.Health.BarFraction);
                 if (phase != _phase && learning < 0)
                 {
                     // On the base it adapts without leaving it: its Adapt pulse over the roof, then back to its loop.

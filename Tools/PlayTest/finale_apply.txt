@@ -1,12 +1,12 @@
-Finale apply 2026-11-18 20:24 from Tools/PlayTest/finale_probe.txt (24 cells); hold share 0.85.
-  Gravemaw         health 46150 -> 46400 (probe: holds x1.18 on Medium)
-  CinderMatriarch  health 12050 -> 12100 (probe: holds x1.18 on Medium)
-  FrostWarden      health 5800 -> 5600 (probe: holds x1.13 on Medium)
-  Rotbloom         health 17950 -> 14000 (probe: holds x0.92 on Medium)
-  Shattered        health 15100 -> 15200 (probe: holds x1.18 on Medium)
-  SealedOne        health 29200 -> 31950 (probe: holds x1.29 on Medium)
-  Easy    boss health share 0.80 -> 1.05 (derived 1.060), reported only (Medium is the reference, Easy stays forgiving)
+Finale apply 2026-11-19 18:19 from Tools/PlayTest/finale_probe.txt (24 cells); hold share 0.85.
+  Gravemaw         health 46400 -> 21000 (probe: holds x0.53 on Medium)
+  CinderMatriarch  health 12100 -> 14400 (probe: holds x1.40 on Medium)
+  FrostWarden      health 5600 -> 6150 (probe: holds x1.29 on Medium)
+  Rotbloom         health 14000 -> 12950 (probe: holds x1.09 on Medium)
+  Shattered        health 15200 -> 17350 (probe: holds x1.34 on Medium)
+  SealedOne        health 29200 -> 33300 (probe: holds x1.34 on Medium)
+  Easy    boss health share 0.80 -> 1.15 (derived 1.146), reported only (Medium is the reference, Easy stays forgiving)
   Medium  boss health share 1.00 -> 1.00 (derived 1.000), reported only (Medium is the reference, Easy stays forgiving)
-  Hard    boss health share 1.25 -> 1.25 (derived 1.429), the designer's share 1.25 stands (the probe would write 1.15)
-  Psycho  boss health share 1.25 -> 1.25 (derived 1.489), the designer's share 1.25 stands (the probe would write 1.15)
+  Hard    boss health share 1.25 -> 1.25 (derived 1.635), the designer's share 1.25 stands (the probe would write 1.00)
+  Psycho  boss health share 1.25 -> 1.25 (derived 1.674), the designer's share 1.25 stands (the probe would write 1.00)
   the calibration's inputs changed: run measure, fit and apply before the next solve.

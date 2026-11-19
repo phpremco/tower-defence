@@ -1,0 +1,29 @@
+Boss paper lab: C1_01 difficulty 0 wave 12 at x1.76
+
+[towers alone] utilisation 0.34, hero share 0
+  ledger's own purchase: 0:0x1 0:2x1 1:0x3 with 532 coins -> pressure 5.11
+  stream health 4496 (carried 0), boss health 1784 (body 1427, armour 357)
+  span 28.1 s, gate seconds 7.9, window 36.0; boss speed 0.55, boss fight 206.5 s, boss window (gate hold share) 12.0 s
+  stream reach 1.00, boss reach 1.00
+  per gun (typical spot): cost | data dps | boss in reach s | ledger Single | Single at full data dps in reach (armour share kept) | Stream
+    PulseRifle L1: 50 | 14.3 | 25.0 (pass 7.2 cells, gate True) | 59 | 199 | 51
+    PulseRifle L2 x2: 40 | 30.0 | 25.0 (pass 7.2 cells, gate True) | 124 | 417 | 107
+    PulseRifle L3 x1: 65 | 60.0 | 25.0 (pass 7.2 cells, gate True) | 249 | 834 | 215
+    Cannon L1 x2: 100 | 15.6 | 25.0 (pass 7.2 cells, gate True) | 112 | 391 | 552
+    Cannon L2 x2: 95 | 35.6 | 25.0 (pass 7.2 cells, gate True) | 255 | 890 | 1255
+    Cannon L3: 155 | 73.9 | 25.0 (pass 7.2 cells, gate True) | 530 | 1850 | 2204
+  the standing defence (7 guns), towers only: crowd 1.11 + boss 1.45; the boss at full data dps in reach 0.42; the ledger's pressure with this lens (hero as the lens has him) 2.56
+
+[with the hero] utilisation 0.34, hero share 0.35
+  ledger's own purchase: 0:2x1 1:0x4 with 562 coins -> pressure 3.85
+  stream health 4496 (carried 0), boss health 1784 (body 1427, armour 357)
+  span 28.1 s, gate seconds 7.9, window 36.0; boss speed 0.55, boss fight 206.5 s, boss window (gate hold share) 12.0 s
+  stream reach 1.00, boss reach 1.00
+  per gun (typical spot): cost | data dps | boss in reach s | ledger Single | Single at full data dps in reach (armour share kept) | Stream
+    PulseRifle L1: 50 | 14.3 | 25.0 (pass 7.2 cells, gate True) | 59 | 199 | 51
+    PulseRifle L2 x2: 40 | 30.0 | 25.0 (pass 7.2 cells, gate True) | 124 | 417 | 107
+    PulseRifle L3 x1: 65 | 60.0 | 25.0 (pass 7.2 cells, gate True) | 249 | 834 | 215
+    Cannon L1 x2: 100 | 15.6 | 25.0 (pass 7.2 cells, gate True) | 112 | 391 | 552
+    Cannon L2 x2: 95 | 35.6 | 25.0 (pass 7.2 cells, gate True) | 255 | 890 | 1255
+    Cannon L3: 155 | 73.9 | 25.0 (pass 7.2 cells, gate True) | 530 | 1850 | 2204
+  the standing defence (7 guns), towers only: crowd 1.11 + boss 1.45; the boss at full data dps in reach 0.42; the ledger's pressure with this lens (hero as the lens has him) 2.36

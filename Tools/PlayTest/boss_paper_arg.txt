@@ -1,0 +1,11 @@
+cell=C1_01:0
+wave=12
+multiple=1.76
+stand=Cannon:0
+stand=Cannon:0
+stand=Cannon:1
+stand=Cannon:1
+stand=PulseRifle:2
+stand=PulseRifle:1
+stand=PulseRifle:1
+label=ls_easy_176

@@ -14464,3 +14464,279 @@ play does.
    (most on Glass Meadows and Landing Site Psycho). Recommendation: play Glass Meadows on Hard; if the waves before
    the boss feel like a walk and the boss like a wall, lower `BossOverRegular` on Hard and Psycho (3 -> 2.5) rather
    than the armour, and the plain waves come back up by themselves in the next loop.
+
+## Round 86: one boss rule under shells and light fire, the critic's seven findings, the picks refreshed (2026-11-19)
+
+Not committed. One agent on HEAD b2807e44 (round 85), all work in the stage (`C:\Users\remco\TowerDefenseWorkers\stage`)
+and copied back with `stage.sh back` at the end. Remco's save `progress.json` had MD5 d5b04a5d2834425dc4bb6c8c33b4d036 at
+the start and at the end; nothing read or wrote it. A read-only critic had reviewed round 85; its seven findings are
+below, each verified before it was changed.
+
+### The critic's findings
+
+1. **The ledger test excused too much** (fixed). `BalanceLedgerTests.BossesOnTheirMultiple` called a wave "by rule" when
+   its boss was at or *under* three times the toughest creature, and then excused the whole wave, crowd included, from the
+   band, the jump, the cap and the budget of held waves. Verified in the code. Now: the rule itself is asserted on every
+   stored boss (`Round86Tests.EveryLevelBoss_StandsOnItsMultiple`: three times on the row that asks most and no bigger,
+   or its book floor; report `Tools/PlayTest/boss_rule.txt`); a boss wave over the boss band is excused only when its
+   crowd without the boss fits that band (26 waves named, their crowds ask 0.17 to 0.94 of it); a boss wave over the
+   hero cap only with its crowd on the lower edge of its band and under a hard ceiling of 2.6 times the cap (32 of the 42
+   boss waves are over the cap, at 1.04 to 2.50 times it, median 1.61; Glass Meadows Hard wave 9 the most).
+   **The paper against the game** (`BossPaperLab.cs`): Landing Site Easy wave 12 with the seven guns the skilled rung
+   really stood at x1.76 of the data, a run that lost no base health, read 2.56 on paper: the crowd 1.11 and the boss
+   1.45. The cause is not the armour (the ledger prices it: a Gun Turret lands 0.56 of its damage on that boss). The
+   ledger charged a gun's fire on a boss at the utilisation of a stream (0.34), which is what a gun loses to the gaps
+   in a stream; a boss is one slow body and only its seconds in a gun's reach are counted anyway. At a utilisation of one
+   the same boss reads 0.42. So `BalanceRules.HumanBossUtilisation` = 1 on the lenses of the solver and the tests (the
+   bots' own lens and the calibration fit keep the old reading; a plain wave's purchase does not move). The paper is
+   still on the careful side: the crowd of that wave alone reads 1.11 in a run that was won without a scratch, and
+   about half of all lost runs fall in a boss wave, as in round 85 (Easy 73 %, Medium 64 %, Hard 52 %, Psycho 37 % in
+   the first measurement; round 85: 71 / 55 / 46 / 35 %).
+2. **A boss was not "bizarre" under light fire, and armour delayed its phases** (fixed). Verified: the multiple was on
+   the bar, the Cragback is 73 % armour and a boss 20 %, so under a Gun Turret or a Laser a boss of three bars was 1.4
+   Cragbacks. Now one rule (`BossYardstick`): a boss costs the player's guns three times what the toughest ordinary
+   creature met before it cost them, under shells (the bar) **and** under light fire (armour at 0.2, a flyer at 0.2 on
+   top), whichever asks more. With a quarter of its body in armour that is 3 Cragbacks under light fire and 6.5 under
+   shells (table below). **Phases** are read on the whole bar (`Health.BarFraction`) in `BossAbilities` and in every
+   continent boss's signature (Burrow, GateBreaker, Hunt, Overgrowth, Recognition, Split, the brain). **The Shattered's
+   shards** take their share of the body and of the armour the giant has left (`Health.Refill(max, armour)`), the giant
+   follows both pools while it is split (`Health.LowerTo`; a hit would have taken the bodies' loss out of its armour)
+   and pulls back together with the survivors' body and armour.
+3. **The crowd cliff of a boss wave, and dead code** (fixed, further than asked). Verified (`Math.Min(crowd,
+   Math.Max(least, low))` was a no-op, the `kept` ternary dead). The crowd of a level boss's wave now simply comes on
+   the lower edge of its band: no paper target, no paper cap, so nothing to jump between. With the boss rule the cap
+   had put nearly every boss wave's crowd there already; the exceptions were the early Psycho bosses and four last
+   waves, whose crowds stood under the band and are tougher now (Landing Site Psycho wave 5: x1.19 -> x1.97 at round
+   85's scalar). WAVE_GRAMMAR item 6 is rewritten to the code.
+4. **Surprises moved the boss wave** (fixed as asked; one consequence to decide, question 2). The yardstick reads a
+   surprise wave as the calm wave it would have been, and the bounds of `ASurprise_MakesNoOtherWaveTougher` are round
+   84's again (x1.15 / x1.25 / x1.3). Measured after it: a plain wave x1.05 at most, a raid x1.09, a swarm x1.12, a boss
+   wave x1.07 (round 85 needed x1.35 / x1.4).
+5. **Dead and conflicting boss rules** (fixed; one floor kept, with evidence). `LevelBossAlone`, `LevelBossGrowthCap` and
+   `LevelBossHealthFloor` are gone; nothing is read on the stored health any more, so a cell's scalar moves a boss like
+   every creature (`Round86Tests.ACellsScalar_MovesNoWaveOfTheSolve_OnMediumHardAndPsycho`: the solve is identical at a
+   stored factor of 0.7 and 1.4). **Disagreed with "no floor at all":** the early bosses do have creatures before
+   them, Skitters and Prowlers, and three times those is a boss of 72 hit points on Landing Site Psycho wave 5 (0.08 of
+   its Codex entry; four cells came out at 0.08 to 0.13). So a boss never walks in under `BossBookShare` 1.25 of its
+   book health **in the solver's own measure** (it moves with the scalar). 1.25 because play's correction runs under
+   one, and round 64's test (a Hard boss spawns with its book health at least, Remco's "it died before the first
+   gate") failed at 1 (Fault Line Hard wave 10: 832 of 900).
+6. **The laser's budget depended on the frame** (fixed). Verified by reading and by simulation
+   (`LaserDuel.Frames`, `laser_frames.txt`): the kill was settled a frame after the pulse left, so a second pulse owed in
+   the same frame went into a body that was as good as dead, at a stale price. At the probe's 0.2 s steps a level 3
+   Laser cleared Easy Skitters at x0.49 of its data (Medium and Hard x0.77, Psycho x0.92) where sixty frames a second
+   gave x0.98. Now the pulse that kills is paid as it leaves (`Game.Towers.BeamBudget`: the share the creature still
+   needs after the pulses under way, at least the sweep time) and the beam lets go at once
+   (`TargetRegistry.FindBest` passes over the creatures this frame's pulses are about to kill): x0.97 to x0.99 at every
+   frame length. EditMode tests for `Health.HitToKill`, the budget and its independence of the frame length.
+7. **Minor** (fixed). A raid's creatures are not on the yardstick and a walking boss is held against walkers only; the
+   text of `Continent1ContentTests` says that the slice teaches armour through its bosses; the Easy gate says in words
+   what it takes (the Easy ladder cannot read x1.55: its readings are x1.48 and x1.66, and x1.48, "holds x1.4", is
+   accepted) in the test, `closed_loop` docs and WAVE_GRAMMAR.
+
+### The laser on Psycho ("weak on Psycho"), in numbers
+
+`Tools/PlayTest/laser_role.txt` (what each difficulty sends on the ground in levels 1 to 6, and what a tower lands on
+that mix per coin) and `laser_frames.txt`:
+
+| Difficulty | Of the bar sent, armour | Light fire lands of its data | Laser L1 per 100 coins on the mix | L3 | Laser over Gun Turret per coin, L1 / L3 | Cannon over Laser per coin (one target), L1 / L3 | Laser L3 in a packed Skitter stream, x its data (r85 at the probe's frames -> r86) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Easy | 24 % | 51 % | 15.8 | 21.6 | x1.08 / x1.09 | x0.99 / x0.98 | x0.49 -> x0.97 |
+| Medium | 26 % | 49 % | 15.1 | 20.7 | x1.08 / x1.09 | x1.03 / x1.01 | x0.77 -> x0.97 |
+| Hard | 29 % | 46 % | 14.1 | 19.3 | x1.08 / x1.09 | x1.10 / x1.09 | x0.77 -> x0.97 |
+| Psycho | 27 % | 48 % | 14.5 | 19.8 | x1.08 / x1.09 | x1.06 / x1.05 | x0.92 -> x0.97 |
+
+Reading: on Psycho the Laser does exactly what it does everywhere. It lands x0.97 to x0.99 of its data on a body of
+any size, is 8 to 9 % better per coin than the Gun Turret on every difficulty (in a third of the cells), and against
+the mix a difficulty sends it is worth 14.5 (L1) and 19.8 (L3) damage per second per 100 coins on Psycho against 15.8
+and 21.6 on Easy: 8 % less, because Psycho's ground health is a little more armour. It is not under its role (light
+fire). What Remco felt was the free kills: before round 85 a Laser was worth up to x3.55 its data on Easy bodies and
+x1.02 on Psycho bodies, so it was three times the tower on Easy that it was on Psycho. That gap is gone, from the top.
+No Psycho fix was made: there is none to make by rule. If the Laser should be a tool of its own on the higher
+difficulties (it is the Gun Turret's job in fewer cells), the lever is one cell of the combat table (question 4).
+
+### The closed loop
+
+- **M1, one seed** on the new rules at round 85's scalars (`pressure_r86_m1_*`): the bosses are 2.2 times round 85's
+  bar, yet 10 of 24 cells still read their target; the loop's first factors written with a step of x1.25.
+- **M2, three seeds** (`pressure_r86_m2_*`): cells that read on opposite sides of their target in M1 and M2 bisected;
+  the means folded into `DifficultyScale` (0.982 / 1.369 / 0.913 / 0.918 -> **0.839 / 1.073 / 0.745 / 0.699**), the
+  scalars divided by them; Quartz Flats Medium on the bound 0.7 and Fault Line Psycho on 1.4.
+- **The bot batch** (`r86_picks.sh`, `skilled_picks_r86_*`, its own stamp bot=3:474754ec on data f8acb89c): every level
+  searched anew on six clones, the old pick kept as one more candidate, 110 candidates played on four multiples per
+  difficulty (about 1400 runs, two hours). 24 picks written; the old pick is still the pick in 4 cells. Four Psycho scalars set
+  from the candidates' own rows.
+- **M3** (`pressure_r86_m3_*`, the new bot): 22 cells within a step; Fault Line Hard and Quartz Flats Psycho two steps
+  off, and the Hard cells and two Medium cells that read a step soft were nudged half a step.
+- **Finale probe** before the last measurement (a boss's health is data): with the phases on the whole bar Gravemaw
+  lost Easy and Medium at the data (it held x0.53 on Medium) and the Sealed One lost Psycho. The finale stage re-sized
+  all six on Medium (below); its step for the Sealed One lost Hard and Psycho, as in round 85, and it was set by hand
+  under its Psycho holding point.
+- **M4** (`pressure_r86_final_*`): Glass Meadows Hard (the nudge overshot, back to its M3 scalar) and Quartz Flats
+  Psycho (bisected) off; a targeted measurement of the two (`pressure_r86_t1_*`) read both on target.
+- **Final** (`pressure_r86_final2_*`, 756 runs on six clones, 68 minutes, named in `closed_loop_records.txt`): the other
+  22 cells read exactly as in M4 (the probe is deterministic and their waves did not move).
+
+Seeds won per multiple (Easy x1 / 1.25 / 1.4 / 1.57 / 1.76; Medium x0.9 / 1 / 1.12 / 1.25 / 1.4 / 1.57; Hard and Psycho
+x0.8 / 0.9 / 1 / 1.12 / 1.25):
+
+| Cell | Scalar (x factor = health as stored; r85) | Sensible | Skilled | Reads (target) |
+| --- | --- | --- | --- | --- |
+| Landing Site Easy | 0.964 (x0.809; r85 x0.845) | `3 3 3 2 1` x1.66 | `3 3 3 3 2` over x1.86 | weaker rung x1.66 (weaker rung x1.55 at least) |
+| Landing Site Medium | 1.032 (x1.107; r85 x1.233) | `3 3 3 3 1 0` x1.32 | `3 3 3 3 1 0` x1.32 | sensible x1.32 (sensible x1.32) |
+| Landing Site Hard | 1.244 (x0.927; r85 x1.093) | `3 3 1 0 0` x0.95 | `2 0 0 0 0` x0.95 (under the sensible rung: that one is read) | sensible x0.95 (sensible x0.95; better x1.06 at least) |
+| Landing Site Psycho | 0.819 (x0.572; r85 x0.799) | - | `3 3 3 0 0` x1.06 | skilled x1.06 (better rung x1.06) |
+| Glass Meadows Easy | 0.907 (x0.761; r85 x0.795) | `3 3 3 3 3` over x1.86 | `3 3 3 3 3` over x1.86 | weaker rung over x1.86 (weaker rung x1.55 at least) |
+| Glass Meadows Medium | 1.032 (x1.107; r85 x1.168) | `3 3 3 2 2 0` x1.48 | `3 3 3 1 0 0` x1.48 (under the sensible rung: that one is read) | sensible x1.48 (sensible x1.32) |
+| Glass Meadows Hard | 0.951 (x0.708; r85 x0.886) | `3 3 2 0 0` x1.06 | `3 3 1 0 0` x1.06 (under the sensible rung: that one is read) | sensible x1.06 (sensible x0.95; better x1.06 at least) |
+| Glass Meadows Psycho | 1.043 (x0.729; r85 x0.863) | - | `3 3 1 0 0` x0.95 | skilled x0.95 (better rung x1.06) |
+| Shard Ridge Easy | 1.032 (x0.866; r85 x0.904) | `3 3 3 3 3` over x1.86 | `3 3 3 3 0` x1.66 | weaker rung x1.66 (weaker rung x1.55 at least) |
+| Shard Ridge Medium | 1.154 (x1.238; r85 x1.233) | `3 2 3 2 0 0` x1.32 | `1 1 0 0 0 0` x1.32 (under the sensible rung: that one is read) | sensible x1.32 (sensible x1.32) |
+| Shard Ridge Hard | 0.928 (x0.691; r85 x0.729) | `3 3 1 0 0` x0.95 | `3 2 0 1 0` x0.95 | sensible x0.95 (sensible x0.95; better x1.06 at least) |
+| Shard Ridge Psycho | 1.032 (x0.721; r85 x0.904) | - | `3 2 0 0 0` x0.95 | skilled x0.95 (better rung x1.06) |
+| Fault Line Easy | 1.259 (x1.056; r85 x1.056) | `3 3 3 3 3` over x1.86 | `3 3 3 3 3` over x1.86 | weaker rung over x1.86 (weaker rung x1.55 at least) |
+| Fault Line Medium | 1.217 (x1.306; r85 x1.232) | `3 3 3 2 1 0` x1.32 | `2 2 1 1 0 0` x1.32 (under the sensible rung: that one is read) | sensible x1.32 (sensible x1.32) |
+| Fault Line Hard | 1.346 (x1.003; r85 x1.004) | `3 2 2 1 0` x1.06 | `3 2 2 0 0` x1.06 | sensible x1.06 (sensible x0.95; better x1.06 at least) |
+| Fault Line Psycho | 1.4 (x0.979; r85 x0.821) | - | `2 2 3 1 0` x1.06 | skilled x1.06 (better rung x1.06) |
+| Quartz Flats Easy | 0.782 (x0.656; r85 x0.904) | `3 3 2 0 3` x1.48 | `3 3 3 3 3` over x1.86 | weaker rung x1.48 (weaker rung x1.55 at least) |
+| Quartz Flats Medium | 0.742 (x0.796; r85 x0.975) | `3 3 2 3 0 0` x1.32 | `3 2 0 1 0 0` x1.32 (under the sensible rung: that one is read) | sensible x1.32 (sensible x1.32) |
+| Quartz Flats Hard | 0.766 (x0.571; r85 x0.639) | `3 3 0 0 0` x0.95 | `3 3 3 3 2` over x1.32 | sensible x0.95 (sensible x0.95; better x1.06 at least) |
+| Quartz Flats Psycho | 1.11 (x0.776; r85 x0.821) | - | `3 3 3 1 0` x1.06 | skilled x1.06 (better rung x1.06) |
+| Crysium Vein Easy | 1.128 (x0.946; r85 x0.946) | `3 3 3 3 3` over x1.86 | `3 3 3 3 2` over x1.86 | weaker rung over x1.86 (weaker rung x1.55 at least) |
+| Crysium Vein Medium | 1.087 (x1.166; r85 x1.299) | `3 3 3 3 1 0` x1.32 | `3 3 3 1 0 0` x1.32 (under the sensible rung: that one is read) | sensible x1.32 (sensible x1.32) |
+| Crysium Vein Hard | 1.179 (x0.878; r85 x1.034) | `3 3 1 0 0` x0.95 | `3 3 0 0 0` x0.95 | sensible x0.95 (sensible x0.95; better x1.06 at least) |
+| Crysium Vein Psycho | 1.084 (x0.758; r85 x0.679) | - | `3 3 3 0 0` x1.06 | skilled x1.06 (better rung x1.06) |
+
+Reading: **24 of 24 accepted** (`ClosedLoopAcceptanceTests`, `closed_loop_acceptance.txt`); 18 cells read their target,
+6 are a step off (Glass Meadows Medium x1.48, soft; Glass Meadows and Fault Line Hard x1.06, soft; Quartz Flats Easy
+x1.48 against the guard x1.55; Glass Meadows and Shard Ridge Psycho x0.95, tough). Round 85 had 13 and 11. **Hard** now
+reads x0.95 on four levels (round 85: x1.06 on four), which is the target Remco called right. The health as stored is
+lower than round 85's in most cells (Psycho most: Landing Site x0.57 for x0.80): the bosses carry more of a level, so
+the creatures around them carry less; whether that shape is wanted is question 1. Quartz Flats Medium (0.742) and Hard
+(0.766) stay the softest cells; Fault Line Psycho sits on the bound 1.4. The skilled rung's refreshed pick still breaks
+before the sensible rung on seven Medium and Hard cells (Landing Site and Glass Meadows Hard, Glass Meadows, Shard
+Ridge, Fault Line, Quartz Flats and Crysium Vein Medium): no searched strategy carries further there (Shard Ridge
+Medium: the best of four candidates wins one seed at the data), so that is the search's reach, not a stale file; the
+"better rung" guard reads the sensible rung in those cells.
+
+### Bosses against the toughest ordinary creature (`boss_vs_regular_r85.md`, `boss_vs_regular_r86.md`, `boss_rule.txt`)
+
+The last boss of every cell as spawned, against the toughest ordinary creature of its level and difficulty (always a
+Cragback): its bar and armour, and how many of that creature it is on the bars, under light fire (armour at 0.2) and
+under shells. Each round against its own creature.
+
+| Level | Difficulty | Boss (wave) | Toughest regular, r86 (its bar) | r85: bar (armour), x bars / x light fire / x shells | r86: bar (armour), x bars / x light fire / x shells |
+| --- | --- | --- | --- | --- | --- |
+| Landing Site | Easy | BroodMother (12) | Cragback (10) 324 | 1014 (203), x3.0 / x1.4 / x3.0 | 2109 (422), x6.5 / x3.0 / x6.5 |
+| Landing Site | Medium | BroodMother (12) | Cragback (10) 474 | 1583 (317), x3.0 / x1.4 / x3.0 | 3070 (614), x6.5 / x3.0 / x6.5 |
+| Landing Site | Hard | BroodMother (12) | Cragback (10) 436 | 1354 (271), x3.0 / x1.4 / x3.0 | 2614 (523), x6.0 / x2.8 / x6.0 |
+| Landing Site | Psycho | BroodMother (12) | Cragback (7) 778 | 2907 (581), x3.0 / x1.4 / x3.0 | 5766 (1153), x7.4 / x3.4 / x7.4 |
+| Glass Meadows | Easy | BroodMother (12) | Cragback (9) 387 | 1212 (242), x3.0 / x1.4 / x3.0 | 2519 (504), x6.5 / x3.0 / x6.5 |
+| Glass Meadows | Medium | BroodMother (12) | Cragback (9) 632 | 2001 (400), x3.0 / x1.4 / x3.0 | 4117 (823), x6.5 / x3.0 / x6.5 |
+| Glass Meadows | Hard | BroodMother (12) | Cragback (7) 533 | 1999 (400), x3.0 / x1.4 / x3.0 | 3470 (694), x6.5 / x3.0 / x6.5 |
+| Glass Meadows | Psycho | BroodMother (12) | Cragback (6) 990 | 3516 (703), x3.0 / x1.4 / x3.0 | 6449 (1290), x6.5 / x3.0 / x6.5 |
+| Shard Ridge | Easy | BroodMother (16) | Cragback (9) 359 | 1125 (225), x3.0 / x1.4 / x3.0 | 2340 (468), x6.5 / x3.0 / x6.5 |
+| Shard Ridge | Medium | BroodMother (16) | Cragback (8) 708 | 2116 (423), x3.0 / x1.4 / x3.0 | 4615 (923), x6.5 / x3.0 / x6.5 |
+| Shard Ridge | Hard | BroodMother (16) | Cragback (9) 516 | 1632 (326), x3.0 / x1.4 / x3.0 | 3362 (672), x6.5 / x3.0 / x6.5 |
+| Shard Ridge | Psycho | BroodMother (16) | Cragback (4) 1065 | 4005 (801), x3.0 / x1.4 / x3.0 | 7959 (1592), x7.5 / x3.4 / x7.5 |
+| Fault Line | Easy | StormMatriarch (flies) (16) | Cragback (14) 364 | 1091 (218), x3.0 / x1.4 / x3.0 | 1053 (211), x2.9 / x1.3 / x2.9 |
+| Fault Line | Medium | StormMatriarch (flies) (16) | Cragback (14) 637 | 1802 (360), x3.0 / x1.4 / x3.0 | 1871 (374), x2.9 / x1.4 / x2.9 |
+| Fault Line | Hard | StormMatriarch (flies) (16) | Cragback (14) 485 | 1457 (291), x3.0 / x1.4 / x3.0 | 1469 (294), x3.0 / x1.4 / x3.0 |
+| Fault Line | Psycho | StormMatriarch (flies) (16) | Cragback (14) 796 | 1964 (393), x3.0 / x1.4 / x3.0 | 2150 (430), x2.7 / x1.2 / x2.7 |
+| Quartz Flats | Easy | CoreWisp (17) | Cragback (16) 418 | 1730 (346), x3.0 / x1.4 / x3.0 | 2726 (545), x6.5 / x3.0 / x6.5 |
+| Quartz Flats | Medium | CoreWisp (17) | Cragback (14) 636 | 2335 (467), x3.0 / x1.4 / x3.0 | 4269 (854), x6.7 / x3.1 / x6.7 |
+| Quartz Flats | Hard | CoreWisp (17) | Cragback (14) 521 | 1750 (350), x3.0 / x1.4 / x3.0 | 3392 (678), x6.5 / x3.0 / x6.5 |
+| Quartz Flats | Psycho | CoreWisp (17) | Cragback (14) 1432 | 4546 (909), x3.0 / x1.4 / x3.0 | 9332 (1866), x6.5 / x3.0 / x6.5 |
+| Crysium Vein | Easy | PackAlpha (18) | Cragback (9) 401 | 1203 (241), x3.0 / x1.4 / x3.0 | 2614 (523), x6.5 / x3.0 / x6.5 |
+| Crysium Vein | Medium | PackAlpha (18) | Cragback (7) 539 | 1800 (360), x3.0 / x1.4 / x3.0 | 3510 (702), x6.5 / x3.0 / x6.5 |
+| Crysium Vein | Hard | PackAlpha (18) | Cragback (9) 702 | 2481 (496), x3.0 / x1.4 / x3.0 | 3621 (724), x5.2 / x2.4 / x5.2 |
+| Crysium Vein | Psycho | PackAlpha (18) | Cragback (9) 1227 | 3300 (660), x3.0 / x1.4 / x3.0 | 3893 (779), x3.2 / x1.5 / x3.2 |
+
+Where a last boss is not on x3.0 under light fire: Fault Line's Storm Matriarch flies, and for a flying boss the shells
+decide (x2.7 to x3.0 of a Cragback's bar; under a Gun Turret it already costs five times more than its bar says);
+Landing Site Psycho and Shard Ridge Psycho (x3.4) and the other entries off x3.0 are read against a Cragback that
+walked in a surprise wave, which the rule counts at the calm wave's multiplier. That cuts both ways. Against the
+creatures as they really walked in (`boss_rule.txt`), 37 of the 42 level bosses are 2.8 times or more the toughest
+creature before them under the row that asks most, but **Crysium Vein Psycho's two late bosses are 1.5 times** and
+Crysium Vein Hard's 2.4: the rift surprise of wave 9 sends few, very tough Cragbacks (question 2).
+
+**Hard's last bosses**, bar as spawned, round 84 -> 85 -> 86: Landing Site 1455 -> 1354 -> 2614; Glass Meadows 1680 ->
+1999 -> 3470; Shard Ridge 1195 -> 1632 -> 3362; Fault Line (flies) 1156 -> 1457 -> 1469; Quartz Flats 2293 -> 1750 ->
+3392; Crysium Vein 2997 -> 2481 -> 3621. Under light fire they cost 2.2 to 5.1 times round 84's on the walking five
+(round 84's bosses had no armour).
+
+**The early bosses** (book floor, `BossBookShare` 1.25 in the solver's measure): Psycho wave 5 of Landing Site 1671 ->
+1329, Glass Meadows 1669 -> 1694, Fault Line 1114 -> 1515, Quartz Flats 1670 -> 1798; Fault Line Hard wave 10 1165 ->
+1622. They are 7 to 36 times the toughest creature before them.
+
+**Continent bosses** (finale stage on Medium, then the probe again; armour a quarter of the body): Gravemaw 46400 ->
+**21000**, Cinder Matriarch 12100 -> 14400, Frost Warden 5600 -> 6150, Rotbloom 14000 -> 12950, the Shattered 15200 ->
+17350, the Sealed One 29200 -> 26800 (by hand: the stage's 33300 lost Hard and Psycho; at 29200 Psycho held x0.92).
+Gravemaw halved because its burrows are read on the whole bar now and come that much earlier in the fight. Final probe
+(`finale_probe_r86_3.txt`): **24 of 24 won at the data**; Medium holding points x1.18 for four bosses, x1.23 Gravemaw,
+x1.40 the Sealed One; the tightest cell is the Sealed One on Psycho (x1.0).
+
+### Gates
+
+- **Closed-loop acceptance**: 24 of 24 accepted on `pressure_r86_final2_*` (data stamp a75de009, the data as it stands).
+- **Finale probe**: 24 of 24 won at the data.
+- **EditMode, whole suite on w6 on the final data**: 1202 tests, 1150 passed, **0 failed**, 52 skipped, 11 min 14 s (`Tools/PlayTest/r86_suite_final.xml`).
+- **Grace gate** (`grace_windows.txt`, measured on the final data, 72 units, 22 min): holds, no BREAK; 94 rows: 52 in
+  time, 0 early, 36 late inside their allowances, 6 not judged (53 / 35 in round 85). One allowance widened (below).
+- **Open editor** after `stage.sh back` (Play Mode stopped): recompiled, 0 errors, no new warnings; the calibration reads current there.
+
+### Tests changed, and why
+
+- `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand`: stricter (finding 1). The crowd of a boss wave is judged
+  without its boss against the band of a boss wave (the plain band is no measure for it: a boss wave's crowd comes in
+  clusters on top of what the waves before left on the road, and four Glass Meadows crowds read 1.0 to 1.5 times the
+  plain band while being x0.7 of the waves before them); the ceiling 2.6 stands a notch over the measured 2.50.
+- `Round86Tests` (new, 10 tests): the boss rule pure and on every stored boss, the light-fire numbers against the
+  combat table, the scalar as a plain factor, `Health.BarFraction` / `HitToKill` / the shard pools, the beam's budget.
+- `WaveGrammarTests.ASurprise_MakesNoOtherWaveTougher`: bounds back to x1.25 and x1.3 (finding 4).
+- `Round64Tests.EveryLevelBoss_KeepsItsFloor...`: the assertion on `LevelBossHealthFloor` went with the rule; Remco's
+  absolute Hard floor in the same test stays and passes.
+- `Round83Tests.NoStoredGroundWave_IsPaper`: a wave is read against the median of the ground waves up to and including
+  it (what the solver holds it to), not of the whole level. Fault Line Hard wave 7 failed without having moved (x0.414,
+  on the solver's floor since round 83): the crowds of boss waves 10 and 16 stand on their band's edge now (wave 16:
+  x0.60 -> x1.36) and lifted the level's median from under x1.03 to x1.07. No stored wave is softer for it.
+- `GraceWindows.Allowances`: Glass Meadows Hard, armour, 1 -> 2 waves. The Gun Turret row falls in wave 11 instead of
+  wave 10 (still 0 of 3 seeds): the cell's creatures are softer around a bigger boss (health as stored x0.71, was x0.89).
+- `ClosedLoopAcceptanceTests`, `Continent1ContentTests`: texts only (finding 7).
+
+### Known and open
+
+- **Phases on the whole bar moved every continent boss's fight** (Gravemaw most). They were re-sized by the finale
+  stage, but nobody has watched them since: the order of phases is the same, their moments are earlier.
+- **The skilled rung is no better player than the sensible rung on Medium and Hard** in seven cells, after a fresh
+  search. The picks are no longer stale; the plan search itself is what a bot round would have to improve.
+- **Quartz Flats** has the lowest scalars on three difficulties (0.74 to 0.78) and a non-monotone Easy row for the
+  sensible rung (`3 3 2 0 3`): its long road and late swarms put the Cragback of wave 14 to 16 at a high multiplier and
+  the boss on three times that (9332 on Psycho). A map or script look, not a bigger scalar.
+- The laser in the bots' hands: the probe plays 0.2 s steps and undervalued the Laser until this round, so the rungs
+  that build it (Psycho mostly, a tenth of the tower levels) play a little stronger now; it is inside the measurement.
+- `C:\Users\remco\TowerDefenseWorkers\overlay_r84code`, `r84_waves`, `r85_aside` can go once this is committed. In the
+  project, `Tools/PlayTest/Plans_old_r86` holds round 85's picks as they were, `wave_tuning_r85.txt` and
+  `skilled_picks_r85.txt` the files they replace.
+
+### Questions for Remco
+
+1. **Is the boss now big enough, or too big under the Cannon?** A level's last boss is 3 Cragbacks to a Gun Turret or a
+   Laser (was 1.4) and 6.5 to a Cannon (was 3), because a boss is a fifth armour and the Cragback three quarters.
+   Recommendation: play level 1 on Easy and Hard. If the boss is right for light guns but a wall for the Cannon player,
+   raise `BossArmourShare` (0.25 -> 1.0 gives 3 under light fire and 3.9 under shells) rather than lower the multiple;
+   that needs the continent bosses staged again, so say so before the next round.
+2. **A boss after a surprise.** The rule counts a surprise wave as the calm wave it would have been, so that a surprise
+   moves no other wave (the critic's point, and the tests are tight again). The price: on Crysium Vein Psycho the
+   Cragbacks of the rift surprise in wave 9 walk in at twice the calm multiplier, and the bosses after them are 1.5 of
+   those Cragbacks under light fire. Recommendation: keep the rule and soften that surprise instead (a written surprise
+   for Crysium Vein Hard and Psycho wave 9 with more, lighter creatures), which is a level edit of a few lines.
+3. **Early bosses** (Psycho wave 5 on four levels, Fault Line Hard wave 10) stand on their Codex health times 1.25, not
+   on the multiple: three times a Skitter is no boss. Recommendation: keep.
+4. **The Laser.** It is the Gun Turret's job at 8 % more per coin in a third of the cells, on every difficulty the
+   same since the free kills went. If it should feel like a tool of its own on Hard and Psycho, one cell of the combat
+   table does it for every level: beams on armour 0.2 -> 0.35 ("a beam heats plates"), which makes the Laser the light
+   gun that copes with armour and leaves the Cannon its blast. Recommendation: play first; it moves every level's
+   balance and wants a round of its own.
+5. **Hard reads its target again** (x0.95 on four levels, x1.06 on two) with bosses twice the bar of the ones you
+   played. Recommendation: play Glass Meadows or Landing Site on Hard once before more levels are generated on this rule.

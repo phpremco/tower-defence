@@ -350,7 +350,7 @@ namespace Game.Bosses
         // ---------------------------------------------------------------- the brood
 
         private bool BroodDue() =>
-            Hunt.Egg != null && _clutches < Hunt.Clutches && Boss.PhaseAt(Enemy.Health.Fraction) >= Hunt.BroodPhase
+            Hunt.Egg != null && _clutches < Hunt.Clutches && Boss.PhaseAt(Enemy.Health.BarFraction) >= Hunt.BroodPhase
             && _sinceClutch >= _clutchWait && Field.Spawner != null;
 
         // To the bank of the nearest pool, tail over the liquid, and the eggs drop from her sac one by one.

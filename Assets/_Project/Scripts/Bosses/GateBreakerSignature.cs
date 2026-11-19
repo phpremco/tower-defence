@@ -119,7 +119,7 @@ namespace Game.Bosses
 
         public IEnumerator NextAct()
         {
-            if (!_exposed && Boss.PhaseAt(Enemy.Health.Fraction) >= Power.ExposedPhase)
+            if (!_exposed && Boss.PhaseAt(Enemy.Health.BarFraction) >= Power.ExposedPhase)
             {
                 return BreakArmour();
             }

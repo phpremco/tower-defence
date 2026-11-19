@@ -205,7 +205,7 @@ namespace Game.Bosses
 
         public IEnumerator NextAct()
         {
-            if (!_split && Boss.PhaseAt(Enemy.Health.Fraction) >= Power.SplitPhase && Power.Shards.Length > 0 && Field.Spawner != null)
+            if (!_split && Boss.PhaseAt(Enemy.Health.BarFraction) >= Power.SplitPhase && Power.Shards.Length > 0 && Field.Spawner != null)
             {
                 return Split();
             }
@@ -228,7 +228,7 @@ namespace Game.Bosses
             }
 
             float splitAt = Boss.Phases.Length > Power.SplitPhase ? Boss.Phases[Power.SplitPhase].StartsAt : 0f;
-            float health = Enemy.Health.Fraction;
+            float health = Enemy.Health.BarFraction;
             if (health <= splitAt + Power.WarnShare && !Enemy.IsConcealed)
             {
                 Vector3 chest = Position + Vector3.up * (WarnLift * _brain.Scale);
@@ -281,7 +281,7 @@ namespace Game.Bosses
             {
                 StepShards(Time.deltaTime);
                 Shard lead = Leader();
-                if (lead == null || Enemy.Health.Fraction <= rejoinAt)
+                if (lead == null || Enemy.Health.BarFraction <= rejoinAt)
                 {
                     break;
                 }
@@ -298,7 +298,10 @@ namespace Game.Bosses
 
         private void SpawnShards(Vector3 at)
         {
+            // Each shard takes its share of the body and of the armour the giant has left (round 86): a boss walks in armour
+            // and reads its phases on the whole bar, so it may break up with plates still on, and they break up with it.
             float each = ShardSplit.ShardHealth(Enemy.Health.Current, Power.Shards.Length);
+            float eachArmour = ShardSplit.ShardHealth(Enemy.Health.Armor, Power.Shards.Length);
             Vector3 forward = Enemy.Heading;
             Vector3 right = Vector3.Cross(Vector3.up, forward);
             float scale = _brain.Scale;
@@ -317,7 +320,7 @@ namespace Game.Bosses
                     continue;
                 }
 
-                shard.Health.Refill(each);
+                shard.Health.Refill(each, eachArmour);
                 shard.SetDirected(true);
                 shard.Place(spec.Enemy.Flies ? point : _brain.OnGround(point), forward);
                 var view = shard.GetComponent<EnemyView>();
@@ -340,6 +343,7 @@ namespace Game.Bosses
         private void StepShards(float deltaTime)
         {
             float together = 0f;
+            float plates = 0f;
             foreach (Shard shard in _shards)
             {
                 if (shard.Dead || shard.Gone || !shard.Enemy.IsAlive)
@@ -348,6 +352,7 @@ namespace Game.Bosses
                 }
 
                 together += shard.Enemy.Health.Current;
+                plates += shard.Enemy.Health.Armor;
                 if (shard.SpawnLeft > 0f)
                 {
                     shard.SpawnLeft -= deltaTime;
@@ -359,11 +364,8 @@ namespace Game.Bosses
                 }
             }
 
-            float lost = Enemy.Health.Current - together;
-            if (lost > 0f)
-            {
-                Enemy.Health.TakeDamage(lost);
-            }
+            // Pool by pool: a hit would take what the bodies lost out of the giant's armour first.
+            Enemy.Health.LowerTo(together, plates);
         }
 
         // The living shard nearest the base: the giant forms where it stands.
@@ -494,9 +496,11 @@ namespace Game.Bosses
             yield return _brain.Wait((clip.Exists ? clip.Moment : 0f) - Power.FlyBackSeconds);
             // What the survivors still have as they melt into it (they were shot on the way in too).
             float survivorsHealth = 0f;
+            float survivorsArmour = 0f;
             foreach (Shard shard in survivors)
             {
                 survivorsHealth += shard.Enemy.IsAlive ? shard.Enemy.Health.Current : 0f;
+                survivorsArmour += shard.Enemy.IsAlive ? shard.Enemy.Health.Armor : 0f;
             }
 
             foreach (Shard shard in survivors)
@@ -512,15 +516,13 @@ namespace Game.Bosses
                 dead += shard.Dead ? 1 : 0;
             }
 
-            float health = ShardSplit.RejoinHealth(survivorsHealth, dead, Power.DeadShardPenalty);
-            float lost = Enemy.Health.Current - health;
-            if (lost > 0f)
-            {
-                Enemy.Health.TakeDamage(lost);
-            }
+            // The body and the armour come back as the survivors carried them, each less the share of every dead shard.
+            Enemy.Health.LowerTo(
+                ShardSplit.RejoinHealth(survivorsHealth, dead, Power.DeadShardPenalty),
+                ShardSplit.RejoinHealth(survivorsArmour, dead, Power.DeadShardPenalty));
 
             _brain.Record.Rejoined = true;
-            _brain.Record.RejoinedShare = Enemy.Health.Fraction;
+            _brain.Record.RejoinedShare = Enemy.Health.BarFraction;
             _brain.Impact(spot, SplitBurstRadius, Crystal, false);
             WearRejoinedLook();
             yield return _brain.Wait(clip.Seconds - clip.Moment);

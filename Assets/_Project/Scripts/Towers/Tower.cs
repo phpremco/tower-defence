@@ -26,7 +26,10 @@ namespace Game.Towers
         private float _cooldown;
         private ITargetable _beamTarget;
         private bool _beamLive;
-        private float _beamSpareSeconds;
+        // The creatures this frame's pulses are about to kill (a pulse lands a frame after it leaves): passed over when the
+        // beam looks for its next creature in the same frame.
+        private readonly ITargetable[] _beamDoomed = new ITargetable[Cadence.MaxPerFrame];
+        private int _beamDoomedCount;
         private float _supportRange;
         private float _supportRate;
         private float _supportTimer;
@@ -463,9 +466,11 @@ namespace Game.Towers
             }
 
             // A long frame (high game speed, low frame rate) may owe more than one shot; see Cadence.
+            _beamDoomedCount = 0;
+            float underWay = 0f;
             for (int shots = 0; Cadence.Due(_cooldown, shots); shots++)
             {
-                ITargetable target = _beamTarget ?? FindTarget(level);
+                ITargetable target = _beamTarget ?? FindTarget();
                 if (target == null)
                 {
                     _beamTarget = null;
@@ -479,6 +484,7 @@ namespace Game.Towers
                 if (_definition.IsBeam && !ReferenceEquals(target, _beamTarget))
                 {
                     _beamTarget = target;
+                    underWay = 0f;
                     if (!_beamLive)
                     {
                         _cooldown = _definition.BeamLockSeconds;
@@ -488,51 +494,50 @@ namespace Game.Towers
                 }
 
                 float interval = level.FireInterval / (_modifiers.TowerFireRateMultiplier * (1f + _supportRate) * Mathf.Max(0.05f, Power) * _overgrowthRate);
-                _beamSpareSeconds = _definition.IsBeam ? interval * (1f - PulseShareNeeded(level, target)) : 0f;
+                if (!_definition.IsBeam)
+                {
+                    Shoot(level, target);
+                    _cooldown = Cadence.Rearm(_cooldown, interval);
+                    continue;
+                }
+
+                // The pulse that kills is paid for as it leaves, by the share of it the creature still needs (BeamBudget), and
+                // the beam lets go at once: the next pulse this frame owes goes to the next creature, not into a body that
+                // is as good as dead. A pulse is a frame under way, so what this frame already sent is taken off first.
+                float damage = level.Damage * _modifiers.TowerDamageMultiplier * Power;
+                float needed = target is IHitBudget budget ? BeamBudget.Needed(budget.HitToKill(_definition.Profile), underWay) : float.PositiveInfinity;
                 Shoot(level, target);
-                _beamLive = _definition.IsBeam;
-                _cooldown = Cadence.Rearm(_cooldown, interval);
+                _beamLive = true;
+                _cooldown = Cadence.Rearm(_cooldown, BeamBudget.Seconds(interval, needed, damage, _definition.BeamSweepSeconds));
+                if (BeamBudget.Kills(needed, damage))
+                {
+                    _beamDoomed[_beamDoomedCount++] = target;
+                    _beamTarget = null;
+                    underWay = 0f;
+                }
+                else
+                {
+                    underWay += damage;
+                }
             }
 
             _cooldown = Cadence.Idle(_cooldown);
         }
 
-        private ITargetable FindTarget(TowerLevel level) => _registry.FindBest(transform.position, Range, _definition.Targets);
+        // The creature furthest along in reach; a beam passes over the ones its pulses of this frame are about to kill.
+        private ITargetable FindTarget() => _registry.FindBest(transform.position, Range, _definition.Targets, _beamDoomed, _beamDoomedCount);
 
-        // The share of a pulse the creature still needs to die (one when the pulse does not kill it, or when the target
-        // cannot say).
-        private float PulseShareNeeded(TowerLevel level, ITargetable target)
-        {
-            float damage = level.Damage * _modifiers.TowerDamageMultiplier * Power;
-            return damage > 0f && target is IHitBudget budget ? Mathf.Clamp01(budget.HitToKill(_definition.Profile) / damage) : 1f;
-        }
-
-        // A beam holds its creature until it dies or walks out of reach. A kill frees it at once and the beam sweeps on to
-        // the next creature: it wastes nothing on a body that is already dead, which is what makes it the swarm gun. It
-        // gains nothing either (round 85): the pulse that killed is paid for by the share of it the creature needed, so a
-        // beam deals its damage per second on small bodies and on big ones alike. Until round 85 every kill cost the sweep
-        // time alone, so creatures that died in one pulse died four times as fast as the beam's data says (twenty a
-        // second), and the beam was worth the more the lower a difficulty's health: far too much on Easy and Medium.
+        // A beam holds its creature until it dies or walks out of reach, then it is free for the next one. A kill by its own
+        // pulse is settled when the pulse is fired (Update, BeamBudget): it wastes nothing on a body that is already dead,
+        // which is what makes it the swarm gun, and gains nothing either. Until round 85 every kill cost the sweep time
+        // alone, so creatures that died in one pulse died four times as fast as the beam's data says (twenty a second),
+        // and the beam was worth the more the lower a difficulty's health: far too much on Easy and Medium.
         private void ReleaseBeam()
         {
-            if (_beamTarget == null)
+            if (_beamTarget != null && (!_beamTarget.IsAlive || FlatDistanceSqr(transform.position, _beamTarget.Position) > Range * Range))
             {
-                return;
+                _beamTarget = null;
             }
-
-            bool killed = !_beamTarget.IsAlive;
-            if (!killed && FlatDistanceSqr(transform.position, _beamTarget.Position) <= Range * Range)
-            {
-                return;
-            }
-
-            if (killed && _beamLive && _definition.BeamSweepSeconds > 0f)
-            {
-                _cooldown = Mathf.Min(_cooldown, Mathf.Max(_definition.BeamSweepSeconds, _cooldown - _beamSpareSeconds));
-            }
-
-            _beamSpareSeconds = 0f;
-            _beamTarget = null;
         }
 
         private static float FlatDistanceSqr(Vector3 a, Vector3 b)

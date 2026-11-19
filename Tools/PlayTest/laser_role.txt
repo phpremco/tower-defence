@@ -1,0 +1,30 @@
+The Laser beside the Gun Turret and the Cannon, per difficulty 2026-11-19 20:27; ground creatures of the stored waves of levels 1 to 6 as spawned, level bosses included.
+
+What a difficulty sends on the ground (all six levels together):
+| Difficulty | Bar sent (body + armour) | Of it armour | Plated creatures, share of the bodies | Light fire must deal (armour at 0.2) | Light fire lands of its data |
+| --- | --- | --- | --- | --- | --- |
+| Easy | 100788 | 24 % | 3 % | 196663 | 51 % |
+| Medium | 171026 | 26 % | 4 % | 345680 | 49 % |
+| Hard | 205940 | 29 % | 5 % | 448030 | 46 % |
+| Psycho | 474329 | 27 % | 5 % | 988612 | 48 % |
+
+Damage per second per 100 coins (the whole price of the tower at that level): on a soft body, on armour, and what of it is worth something on the difficulty's mix above. The Cannon is counted on one creature; its blast catches up to three in a pack.
+| Tower | Coins | Data DPS | Per 100 coins, soft | Per 100 coins, on armour | Easy mix | Medium mix | Hard mix | Psycho mix |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Gun Turret L1 | 50 | 14.3 | 28.6 | 5.7 | 14.6 | 14.1 | 13.1 | 13.7 |
+| Gun Turret L2 | 90 | 30.0 | 33.3 | 6.7 | 17.1 | 16.5 | 15.3 | 16.0 |
+| Gun Turret L3 | 155 | 60.0 | 38.7 | 7.7 | 19.8 | 19.2 | 17.8 | 18.6 |
+| Laser L1 | 130 | 40.0 | 30.8 | 6.2 | 15.8 | 15.2 | 14.1 | 14.8 |
+| Laser L2 | 185 | 66.7 | 36.0 | 7.2 | 18.5 | 17.8 | 16.6 | 17.3 |
+| Laser L3 | 285 | 120.0 | 42.1 | 8.4 | 21.6 | 20.8 | 19.4 | 20.2 |
+| Cannon L1 | 100 | 15.6 | 15.6 | 15.6 | 15.6 | 15.6 | 15.6 | 15.6 |
+| Cannon L2 | 195 | 35.6 | 18.2 | 18.2 | 18.2 | 18.2 | 18.2 | 18.2 |
+| Cannon L3 | 350 | 73.9 | 21.1 | 21.1 | 21.1 | 21.1 | 21.1 | 21.1 |
+
+The Laser over the Gun Turret and under the Cannon, per coin on the mix:
+| Difficulty | Laser L1 / Gun L1 | Laser L3 / Gun L3 | Cannon L1 / Laser L1 | Cannon L3 / Laser L3 |
+| --- | --- | --- | --- | --- |
+| Easy | x1.08 | x1.09 | x0.99 | x0.98 |
+| Medium | x1.08 | x1.09 | x1.03 | x1.01 |
+| Hard | x1.08 | x1.09 | x1.10 | x1.09 |
+| Psycho | x1.08 | x1.09 | x1.06 | x1.05 |

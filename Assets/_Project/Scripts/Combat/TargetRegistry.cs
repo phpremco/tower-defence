@@ -40,7 +40,13 @@ namespace Game.Combat
         public bool IsConcealed(ITargetable target) => _concealed.Contains(target);
 
         /// <summary>Returns the target in range that is furthest along its path, or null.</summary>
-        public ITargetable FindBest(Vector3 origin, float range, TargetLayers mask)
+        public ITargetable FindBest(Vector3 origin, float range, TargetLayers mask) => FindBest(origin, range, mask, null, 0);
+
+        /// <summary>
+        /// As <see cref="FindBest(Vector3, float, TargetLayers)"/>, passing over the first <paramref name="exceptCount"/> entries of
+        /// <paramref name="except"/>: creatures the caller has already dealt with this frame (a beam's pulse is on its way to them).
+        /// </summary>
+        public ITargetable FindBest(Vector3 origin, float range, TargetLayers mask, ITargetable[] except, int exceptCount)
         {
             ITargetable best = null;
             float bestProgress = float.NegativeInfinity;
@@ -54,7 +60,7 @@ namespace Game.Combat
                     continue;
                 }
 
-                if (FlatDistanceSqr(origin, candidate.Position) > rangeSqr || candidate.PathProgress <= bestProgress)
+                if (FlatDistanceSqr(origin, candidate.Position) > rangeSqr || candidate.PathProgress <= bestProgress || Excepted(candidate, except, exceptCount))
                 {
                     continue;
                 }
@@ -64,6 +70,19 @@ namespace Game.Combat
             }
 
             return best;
+        }
+
+        private static bool Excepted(ITargetable candidate, ITargetable[] except, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if (ReferenceEquals(except[i], candidate))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>Fills results with every live target within radius. The caller owns and reuses the list.</summary>

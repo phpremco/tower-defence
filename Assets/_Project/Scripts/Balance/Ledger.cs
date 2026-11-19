@@ -406,9 +406,13 @@ namespace Game.Balance
             // calibrated in-play efficiency scales everything it deals.
             float groundHit = damage * tower.GroundFactor;
             float airHit = damage * tower.AirFactor;
-            float field = dps * (efficiency >= 0f ? efficiency : tower.Efficiency) * rules.Utilisation;
+            float landed = dps * (efficiency >= 0f ? efficiency : tower.Efficiency);
+            float field = landed * rules.Utilisation;
             float stream = field * tower.GroundFactor * load.StreamArmour.Share(tower.ArmourFactor);
-            float single = field * tower.GroundFactor * load.BossArmour.Share(tower.ArmourFactor);
+            // A boss is one slow body: a gun in its reach loses nothing to gaps in a stream (BalanceRules.BossUtilisation).
+            // Without a boss the number is read by the purchase alone (Gain, while the ground is still open) and stays what
+            // it was, so the defence bought for a plain wave does not move with the rule.
+            float single = landed * (load.BossHealth > 0f ? rules.BossFire : rules.Utilisation) * tower.GroundFactor * load.BossArmour.Share(tower.ArmourFactor);
             float sky = field * tower.AirFactor * load.AirArmour.Share(tower.ArmourFactor);
             float cap = SplashCap(tower, rules);
             float pass = cover.GroundPass / Math.Max(0.01f, load.GroundSpeed);

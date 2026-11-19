@@ -125,7 +125,7 @@ namespace Game.Bosses
 
         public IEnumerator NextAct()
         {
-            if (!_uprooted && Boss.PhaseAt(Enemy.Health.Fraction) >= Power.UprootPhase)
+            if (!_uprooted && Boss.PhaseAt(Enemy.Health.BarFraction) >= Power.UprootPhase)
             {
                 return Uproot();
             }

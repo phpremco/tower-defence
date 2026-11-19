@@ -336,7 +336,7 @@ namespace Game.Enemies
         private void TrySplit(int index)
         {
             BossAbilityDefinition ability = _abilities[index];
-            float fraction = _enemy.Health.Fraction;
+            float fraction = _enemy.Health.BarFraction;
             while (_splitAt[index] > 0f && fraction <= _splitAt[index])
             {
                 _splitAt[index] -= ability.TriggerFraction;

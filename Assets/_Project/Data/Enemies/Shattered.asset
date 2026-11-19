@@ -15,8 +15,8 @@ MonoBehaviour:
   _displayName: data.enemy.Shattered.displayName
   _layer: 1
   _flies: 0
-  _maxHealth: 15200
-  _armor: 3800
+  _maxHealth: 17350
+  _armor: 4338
   _speed: 0.5
   _reward: 3068
   _baseDamage: 25

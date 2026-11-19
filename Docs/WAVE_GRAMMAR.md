@@ -381,23 +381,51 @@ copies another, no level mean is held, nothing is solved twice.
    channel, not the median. What is left is what the purse moves (`SurpriseLiftLab.cs`): a plain wave x1.09 at most, a
    raid x1.03, a swarm x1.23 (Glass Meadows Psycho wave 11), a boss wave x1.29 in health (Shard Ridge Psycho wave 10).
    Test `WaveGrammarTests.ASurprise_MakesNoOtherWaveTougher`, swarms included since this round.
-5. **The hero cap.** No wave asks more of that player with the hero (`HumanWithHero`) than `HeroCap`; a boss wave no
-   more than `LevelBossGrowthCap`. The wave's own health gives way, by the same band rule.
-6. **A level's boss** is sized first and alone: a walking boss asks `LevelBossAlone` (0.4 / 0.6 / 0.7 / 0.75) of the
-   defence that stands for its whole wave, never under `LevelBossHealthFloor`; the crowd then fills the wave up to its
-   target around it. Over the cap the crowd gives way first; where no crowd makes the wave fit, the boss comes down to
-   its floor (round 85: the crowd goes to the lower edge of its band first, then the boss comes down). A flying boss follows its wave.
-   Both boss floors are on the boss as it walks in, so they are taken off the wave's lift (a capped troop makes every
-   creature of its wave tougher, the boss included; round 85). So the factor is what the boss asks as stored (it used to be read against
-   a defence bought for the boss alone, before the surprise relief moved the wave).
-   **Round 85: a boss is never a creature like the others.** Its floor is also `BossOverRegular` (3 on every
-   difficulty) times the health bar (body plus armour, as it walks in) of the toughest ordinary creature the player has
-   met in the level before it; and every boss carries armour, at least `BossArmourShare` (0.25) of its body (written on
-   the creature data by the generator, `ApplyRound85.cs` and the finale stage). A boss that stands on that floor and is
-   over the cap on its own is the fight of its wave: the crowd goes to the lower edge of its band (not to its floor: a
-   crowd on its floor carried no plated troops, and a row of light guns won Landing Site Easy without the Cannon) and
-   the boss does not come down. Remco's reason: on Easy the boss of Landing Site had the bar of a Cragback and no
-   armour, so under light fire it was a third as tough as the "lava rocks" of the waves before it.
+   Round 85 opened a third channel (the boss rule read a surprise wave's creatures at their own multiplier) and widened
+   the test's bounds for it; round 86 closed it (item 6) and the bounds are x1.15 / x1.25 / x1.3 again. Measured after
+   it: a plain wave x1.05, a raid x1.09, a swarm x1.12 (Shard Ridge Easy wave 10), a boss wave x1.07.
+5. **The hero cap.** No plain wave or raid asks more of that player with the hero (`HumanWithHero`) than `HeroCap`. The
+   wave's own health gives way, by the same band rule. A boss wave is not sized by the paper at all (next item).
+6. **A level's boss, one rule (round 86).** `WaveSolver.Solve`, `BossYardstick`:
+   - **The boss costs the player's guns `BossOverRegular` (3 on every difficulty) times what the toughest ordinary
+     creature met in the level before it cost them, under shells and under light fire both.** Under shells a creature
+     costs its bar (body plus armour; armour point for point). Under light fire (Gun Turret, Laser) a point of armour
+     costs five (`BalanceRules.LightFireOnArmour` 0.2, the armour column of the combat table), and whatever flies costs
+     five times as much again (`LightFireInTheAir` 0.2, the air column). The boss walks in at the least multiple of its
+     book health and armour that meets both rows; the two rows may name different creatures. A walking boss is held
+     against the walkers (a raid has a multiplier of its own); a flying boss against everything met, and for it the
+     shells decide, because light fire already pays five times for a boss in the air.
+   - **Never under its book health** (`BossBookShare` 1, in the solver's own measure): an early boss that comes after
+     swarm creatures only would be three Skitters otherwise (wave 5 of Landing Site on Psycho: 0.08 of its Codex entry).
+   - **A boss with nothing before it** is held against the toughest creature of its own wave.
+   - **A surprise wave counts as the calm wave it would have been** for the yardstick too (as for the band and the
+     median, item 4): its creatures are met as kinds, at the calm multiplier. So a surprise moves no boss.
+   - **Its crowd comes on the lower edge of its band**: the creatures of the waves before it, a little softer (x0.7 of
+     the toughest of the three ground waves before). No paper target, no paper cap, so no cliff: until round 86 the
+     crowd was filled up to a target around the boss and gave way under a cap, and it jumped between a floor and the
+     edge of the band when the cap was met or missed by a hair (Glass Meadows Psycho wave 5: x0.41, x1.75 and x0.55 on
+     three neighbouring scalars).
+   - **Every boss walks in armour** (round 85): at least `BossArmourShare` (0.25) of its body, on the creature data
+     (the generator, `ApplyRound85.cs`, the finale stage).
+   - Nothing of it is read on the health as stored, so a cell's scalar moves a boss exactly as it moves every other
+     creature (test `Round86Tests.ACellsScalar_MovesNoWaveOfTheSolve_OnMediumHardAndPsycho`).
+
+   Gone in round 86: `LevelBossAlone` (the share of the defence a boss asks alone) and `LevelBossGrowthCap` (a boss
+   wave's own cap), which decided nothing once every last boss stood on the multiple, and `LevelBossHealthFloor` (a
+   floor on the stored health), which bound only the early Psycho bosses and did not move with the scalar. Remco's
+   reason for the rule (round 85): on Easy the boss of Landing Site had the bar of a Cragback and no armour, so under
+   light fire it was a third as tough as the "lava rocks" of the waves before it. Round 85 held the boss on the bar
+   alone; the Cragback is three quarters armour and a boss a fifth, so under a Gun Turret or a Laser a boss of three
+   bars was still only 1.4 Cragbacks. Tests: `Round86Tests.EveryLevelBoss_StandsOnItsMultiple` (the rule on every
+   stored boss, report `Tools/PlayTest/boss_rule.txt`), `ABoss_CostsItsMultiple_UnderShellsAndUnderLightFire`.
+
+   **How the paper reads a boss** (`BalanceRules.HumanBossUtilisation` 1, round 86): the ledger charged a gun's fire
+   on a boss at the utilisation of a stream (0.34), which is what a gun loses to the gaps in a stream; a boss is one
+   slow body and the ledger already counts only the seconds it is in a gun's reach. With the seven guns a reference
+   player really stood on Landing Site Easy at x1.76 of the data, in a run that lost no base health, the boss alone
+   read 1.45 and the wave 2.56; at one it reads 0.42 (`BossPaperLab.cs`). The lenses of the solver and the tests use
+   it; the bots' own lens and the calibration fit do not (they were fitted the old way). A boss wave may still read
+   over the hero cap on paper; `BalanceLedgerTests` reports those and holds them under a ceiling.
 7. **The flyer rules** stay as they were and solve a difficulty again when they move a raid: the Easy purse rule and
    `FlyersAfterBounties`.
 8. **Play's correction, as two plain factors on creature health** (`CampaignModel.SolveDifficulty`): the difficulty's
@@ -454,7 +482,7 @@ measured, by one procedure that is the same for every level.
 
    | Difficulty | Target | Reads on the standard ladder (x0.8 / 0.9 / 1 / 1.12 / 1.25) |
    | --- | --- | --- |
-   | Easy | the weaker of the two rungs breaks even at x1.55 at least (round 85; x1.4 before) | measured on x1 / 1.25 / 1.4 / 1.57 / 1.76: both rungs win to x1.4 |
+   | Easy | the weaker of the two rungs breaks even at x1.55 at least (round 85; x1.4 before). The ladder cannot read x1.55: its readings are x1.32, x1.48, x1.66 and "over x1.86", so the gate accepts x1.48 or more, which is "holds x1.4" (round 86 says so; the loop still aims at x1.55) | measured on x1 / 1.25 / 1.4 / 1.57 / 1.76: both rungs win to x1.4 |
    | Medium | the sensible rung breaks even at x1.32 (round 85; x1.18 before); the skilled rung at x1.06 at least | measured on x0.9 / 1 / 1.12 / 1.25 / 1.4 / 1.57: sensible wins to x1.25 and loses x1.4 |
    | Hard | the sensible rung breaks even at x0.95; the skilled rung at x1.06 at least | sensible wins to x0.9 and loses x1; skilled wins x1 |
    | Psycho | the skilled rung breaks even at x1.06 | skilled wins x1 and loses x1.12 |

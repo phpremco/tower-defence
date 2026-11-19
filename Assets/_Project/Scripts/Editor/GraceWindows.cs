@@ -128,7 +128,11 @@ namespace Game.Editor
             // Round 84: growth is the rule of the difficulty (1.4; the cell had its own 1.2) and the row is one wave late, as on
             // Landing Site Medium (two measurements, rounds 83b and 84); the allowance was 2.
             new Allowance("Level_C1_02", 1, EnemyTraits.Armoured, 1, EdgeOfGrowth + "; round 77: " + SofterBites),
-            new Allowance("Level_C1_02", 2, EnemyTraits.Armoured, 1, EdgeOfGrowth),
+            // Round 86: 1 -> 2. The boss of wave 9 is sized by the boss rule under light fire too (6.5 Cragback bars; 3 in
+            // round 85), the closed loop holds the cell on its target with softer creatures around it (health as stored x0.71,
+            // was x0.89), and the Gun Turret row now outlasts the tank escort of wave 10 and falls in the swarm of wave 11:
+            // two waves after its window, still 0 of 3 seeds won (grace measurement on the final data).
+            new Allowance("Level_C1_02", 2, EnemyTraits.Armoured, 2, EdgeOfGrowth + "; round 86: the cell is softer around a bigger boss"),
             new Allowance("Level_C1_02", 3, EnemyTraits.Armoured, 3, EdgeOfGrowth),
             new Allowance("Level_C1_03", 0, EnemyTraits.Armoured, 1, LateCragbacks),
             new Allowance("Level_C1_03", 1, EnemyTraits.Armoured, 1, LateCragbacks + "; round 77: " + SofterBites),
