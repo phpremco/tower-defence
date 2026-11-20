@@ -15138,3 +15138,148 @@ at 10900 and loses it at 11850, and the stage walked it back up). Nobody has wat
    Crysium Vein Easy then need softening, not Landing Site toughening.
 6. **Laser price.** Under the price rule it could cost up to 170 / 325 / 710; it costs 130 / 185 / 285. After your
    laser-heavy try: does it feel cheap for what it does to swarms?
+
+## Round 88a: Remco's playtest of 2026-11-20, the bugs and the quality of life (2026-11-20)
+
+Not committed. One agent on HEAD d06badcc (round 87). All code and data work was done in the stage
+(`C:\Users\remco\TowerDefenseWorkers\stage`, its editor started with a graphics device for the stills) and copied back
+with `stage.sh back`; the tests ran on clone w6. Remco's save `progress.json` had MD5 c713b83e2aba398d76d35983107d1eb1 at
+the start and at the end; nothing read or wrote it (the stage and the clones have their own product names). No wave,
+boss, economy or tower number changed; the one balance number touched is the Chrono Field's lifetime (item 8). A balance
+round (88b) follows: see "For round 88b" below.
+
+### What Remco reported, the cause, the change
+
+1. **The boss was hard to see on Landing Site** (his picture: the Brood Mother under tower fire on the road). Cause:
+   a level boss had nothing a creature of its kind does not have, only more of it: the Brood Mother is a Skitter three
+   times the size in the same orange as the spawn mound beside the road, the Core Wisp is white on a pale road, the Pack
+   Alpha and the Storm Matriarch are dark red on dark ground; hit sparks and fire cover the body. Change: every level boss
+   (a boss without a `BossDefinition`; the six continent bosses keep their own staging) wears a mark on the ground,
+   `BossAuraView` (view only, added by `EnemyView.AddBossAura`): a dark disc under the body, a white-hot ring just outside
+   it with a red glow, a red ripple that runs out every 1.8 s, and two chevrons ahead of the ring that point the way it
+   walks (they turn with it at corners). It lies on the ground under the creature and above the road, so no hit effect
+   covers it; under a flyer it lies where the flyer will pass. It hides with a hidden or concealed body and leaves with a
+   pooled boss. Radius from `EnemyDefinition.BodyHalfWidth` (else from the model's meshes), 0.8 to 1.6 cells. Stills of all
+   level bosses on all six levels, before and after: `Logs/r88a/before_sheet1.png`, `before_sheet2.png`,
+   `after_sheet1.png`, `after_sheet2.png`; zoomed: `Logs/r88a/zoom_a0.png` (left), in the field: `a0_brood_fire.png`.
+   The constants of the mark (sizes, colours, tempo) are in `BossAuraView`, like the boss light's in `EnemyView`.
+2. **A tower could be built on a nest's opening.** Cause: `BuildGrid` blocked only the nest's own cell; the living
+   opening is 2.8 cells across (measured: `r88_spawn_probe.cs`), so four to six build cells lay under its slabs (and two to
+   four under every air gate's pod). Change: `SpawnClearance` (one rule: a cell is kept free when a tower on it would
+   stand on or in a spawn point, main or surprise: its middle within the prop's radius plus half a tower's foot):
+   a nest keeps its cell and its eight neighbours, a route gate and an air pod the cell under them and the ones a tower
+   would overlap from. `BuildGrid` reads it, so placement, the build pads, the pad highlight, the radar's field, the
+   balance model's build spots and the bots all follow; decoration keeps off the opening by the same radius
+   (`StructureClearance`). `LevelValidator.CheckSpawnClearance` holds it on every level (no build cell and no mining node
+   on a spawn point) and `Round88aTests` checks every level asset, the art's size against the radius, and the validator's
+   refusal. 65 former build cells on the six levels (107 with the arenas) are closed; every level still passes its
+   defence-zone check; no recorded plan of the bots used one of them (`Tools/PlayTest/r88_clearance.txt`). In play:
+   `(16,1)`, `(18,2)`, `(9,7)` on Landing Site are refused.
+3. **The repair spray did not come from the middle of the drone.** Cause: the cone followed the emitter bone, which the
+   Work clip swings up to 0.2 m round the hull's axis (measured 0.06 to 0.2 m off: `r88_drone_beam.cs`), and it was laid
+   in `Update` before the rig was posed, a frame behind. Change (`DroneView`): the repair cone leaves the middle of the
+   hull's underside in the model's own frame (halfway down to the emitter's rest height) and is laid in `LateUpdate`,
+   after the drone has moved and the rig is posed; it turns, tilts and bobs with the hull. The harvester's drill beam
+   keeps its drill tip. Measured after: 0.00 m off the axis in every pose. Stills: `Logs/r88a/drone_before.png`,
+   `drone_after2.png`.
+4. **Air defence did not shoot the "energy ball".** That is the Wisp (and the Core Wisp): a ball of energy that walks the
+   road, on both layers in its data (`_layer` Ground and Air), and the game's own texts say "ground and air guns both
+   reach it". Cause: `TargetLayersExtensions.CanHit` made an exception since the Flak was built: an air-only gun passed
+   over anything that also walks the ground. Change: the exception is gone; a gun reaches whatever shares a layer with
+   it. The Flak Turret (the only air-only tower) now aims at Wisps and Core Wisps and its burst splashes them; it still
+   never touches a plain walker. Tests: `Round88aTests` (rule, data, registry), `ProximityFuseTests` updated. In play: two
+   Flak Turrets killed three Wisps and left the Skitters beside them at full health (`r88_wisp_probe.cs`). Docs:
+   GAME_DESIGN (Flak row), COMBAT_RULES (roles table).
+5. **The shockwave's sound came just after the wave.** Cause: Spencer's power pulse swells for 0.19 s before it hits and
+   was started on the button, while the wave leaves 0.1 s after it; with the sound device's buffer delay (0.085 s here)
+   the blow was heard about 0.18 s after the wave. The bosses' pulses had the same fault, larger: their recording swells
+   for 0.35 to 0.52 s and started when the ring did. Change, at the source: the generator measures per sound set where
+   the blow lies (`SoundSet._impact`, `SoundImpact.Seconds`: the first 10 ms window at 70 % of the loudest), and
+   `SfxPlayer.PlayOnImpact` starts a sound so its blow lands on the moment on screen: ahead of it when there is lead, or
+   part-way into the swell when there is not (`SoundImpact.Plan`, with the device's buffer delay). Spencer's pulse now
+   starts 0.175 s into its recording (measured in play: `r88_pulse_probe.cs`), so its blow is heard with the wave. A
+   boss's pulse is on a timer, so `CreatureChorus.AnnouncePulse` starts its sound 0.35 to 0.52 s (plus the delay) before
+   the pulse; in play the Core Wisp's started with 0.42 s to go and no second copy at the pulse. 621 sound sets carry
+   their measured blow (`ApplyRound88.Run`); only the pulses use it so far.
+6. **The laser's sound over a long game.** It was already a hum, not a sound per pulse (round 2026-11-02), but four
+   voices of the same loop played in step at full level each (four Lasers were four times one, and a Laser at 15 pulses a
+   second holds its hum for whole waves). Change: `BeamHum` (pure, in Core, tested), read by `SfxPlayer`: the voices
+   share the power of one beam (each at 1/sqrt(n)), a tower that keeps firing settles after 0.6 s over 2.5 s to 55 % of
+   its opening level and opens at full level again only after a silence, every voice is tuned 3.5 % apart and drifts
+   1.2 %, and each starts elsewhere in the loop. Four voices at most, as before; the same approved recording
+   (`laser_beam_loop.wav`). **Not listened to** (the stage has no ears): the numbers are tested, the feel is Remco's.
+7. **A ping for surprises.** `SurpriseWatch` (pure, tested): the first creature out of a surprise spawn point (surprise
+   path or nest) or out of a nest that joins behind the defence gate pings, after that point was quiet for 6 s; a stream
+   pings once, the next group again. `EnemySpawner` raises `LevelContext.SurpriseSpotted`; on it the radar ripples amber
+   rings at the place for 5 s (`RadarView`), the HUD shows an amber ring with "SURPRISE" at the spawn point when it is in
+   view and an arrow at the screen edge towards it when it is not (`SurprisePingView`, up to three at once, clear of the
+   HUD panels; it yields to Voss's own rear-rift marker), and the colony's radar ping sounds
+   (`SfxLibrary.RadarPings` = the approved `colony_radar_ping.wav`, at most once a second). Nothing to point at or
+   press: pad, keyboard and mouse see the same. Stills: `Logs/r88a/a0_ping_hud.png` (in view, with the radar),
+   `a0_ping_edge.png` (edge arrows).
+8. **The Chrono Field** ("Cryo Field" in the report; id `SlowField`). Before: 45 coins, speed share 0.45, radius 1.6,
+   **20 s**. After: 45 coins, 0.45, 1.6, **60 s** (`PathObjects/SlowField.asset`, generator constant
+   `ProjectGenerator.ChronoFieldSeconds`). The rule: a field lasts a whole wave, which is what the plan model has always
+   assumed (`PlanEvaluator.FieldWaveShare` 1): the longest ground wave of the six levels keeps coming for 55 s
+   (`Tools/PlayTest/r88_wave_spans.txt`; median 16 s) and a slowed walker needs a few seconds to cross. Value per coin
+   over its own life against the cheapest gun (Gun Turret, 50 coins, range 4): a gun fires on a creature over 8 cells of
+   road; the field adds (1/0.45 - 1) x 3.2 / 8 = 0.49 of a gun to every gun that reaches it. At a two-gun defence that is
+   0.98 guns for 45 coins = x1.09 a Gun Turret per coin while it lasts, at three guns x1.63, and nothing after. At 20 s it
+   gave a third of that over the same wave (x0.36 and x0.54): never worth its price. It stays a tool for the last waves
+   and the boss. Price, strength and radius are unchanged, so the model's inputs are too. `Round88aFeelTests` holds both
+   halves of the rule on the data.
+
+### Tests
+
+- **EditMode, whole suite on w6 (final code, `Tools/PlayTest/r88a_suite.xml`):** 1239 tests, 1185 passed, **2 failed**,
+  1 inconclusive, 51 skipped. Round 87 ended on 1223 / 1170 / 2 / 1 / 50. The two reds and the inconclusive are round
+  87's own (the grace gate `CombatRulesTests.NoRowWithoutTheCounter_OutlastsItsWindow_AsPlayed`, the swing test of
+  `Round87Tests`, the acceptance); the one new skip is the plan search on the stale stamp (see "For round 88b").
+  16 new tests (`Round88aTests` 7, `Round88aFeelTests` 9), all green. Three older tests follow the new rules: `ProximityFuseTests` (the flak reaches the Wisp),
+  `Continent1ContentTests.ChronoField_IsTunedForWideRoads` (60 s), `LevelTests` (its "first open cell" skips spawn points).
+- **In play (stage, graphics on):** every still session ended with 0 errors and 0 warnings in the console.
+- **The open editor** after the copy-back: recompiled, 0 errors, the data loaded (field 60 s, radar ping, `(16,1)` on
+  Landing Site not buildable, validator clean).
+- Compile: 0 errors. One warning that was there before the round: `BalanceProbeTests.cs(644)` uses the obsolete
+  `FindFirstObjectByType` (the probe is the balance pipeline's; left alone).
+
+### For round 88b (balance)
+
+- **The calibration reads STALE** (`inputs bea2482b`, data now `b88728c7`): the model's build spots are in its input
+  hash and 65 of them closed (item 2). `PlanSearchTests.Search_WritesPlansForEveryCell` therefore skips itself (it
+  passed in round 87). Not re-stamped here: whether the measurements still stand is a balance call. No recorded plan
+  used a closed cell, so the picks themselves are intact.
+- **The Flak now hits Wisps** (item 4). The balance model counts the Wisp as a walker and gives an air-only gun nothing
+  against it, so the paper is a shade conservative on levels with Wisps (Glass Meadows, Shard Ridge, Fault Line, Crysium
+  Vein, Quartz Flats send Core Wisps or Wisps).
+- **The Chrono Field lasts three times as long** (item 8): bots that lay one get the wave the model already credits.
+
+### Files
+
+- New: `Scripts/Levels/SpawnClearance.cs`, `SurpriseWatch.cs`; `Scripts/Core/SoundImpact.cs`, `BeamHum.cs`;
+  `Scripts/Enemies/BossAuraView.cs`; `Scripts/UI/SurprisePingView.cs`; `Tests/EditMode/Round88aTests.cs`,
+  `Round88aFeelTests.cs`; `Tools/PlayTest/r88_shots.sh`, `r88_boss_shots.sh`, `r88_shot.cs`, `r88_focus.cs`,
+  `r88_spawn_probe.cs`, `r88_drone_beam.cs`, `r88_buy_repair.cs`, `r88_ping_probe.cs`, `r88_marker_probe.cs`,
+  `r88_pulse_probe.cs`, `r88_wisp_probe.cs`, `r88_force_tower.cs`, `r88_light_probe.cs`, `r88_clearance.txt`,
+  `r88_wave_spans.txt`, `Scripts/ApplyRound88.cs`, `Scripts/Round88Lab.cs`.
+- Changed code: `BuildGrid`, `StructureClearance`, `LevelValidator`, `EnemySpawner`, `LevelContext` (Levels);
+  `TargetLayersExtensions`, `SoundSet`, `SfxLibrary` (Core); `SfxPlayer`, `CreatureChorus`, `LoopVoice`, `SoundFamily`
+  (Boot); `DroneView`; `EnemyView`; `RadarView`, `HudView` (UI); `ProjectGenerator.Audio.cs`, `ProjectGenerator.World.cs`
+  (Editor); `Tools/PlayTest/stage.sh` (`TD_STAGE_GRAPHICS=1`).
+- Changed data: `PathObjects/SlowField.asset` (lifetime), `Audio/SfxLibrary.asset` (radar ping, `_impact`), every
+  `Audio/Voices/Voice_*.asset` and `Audio/DialogueSounds.asset` (`_impact` beside each gain), `en.ui_level.txt`
+  (`hud.surprise_marker`, `sound_set.radar_ping`).
+- Docs: GAME_DESIGN (Flak row), COMBAT_RULES (Flak role), AUDIO (beam choir, the blow on its picture, radar ping),
+  LEVEL_GUIDE (spawn clearance), COMMANDS ("Round 88a").
+
+### Questions for Remco
+
+1. **The boss mark.** A ring with chevrons under every level boss. Is this the look you want, or too much of a game
+   marker on the ground? The alternative is a lighter one (ring only, no ripple). The continent bosses have none: say so
+   if they should.
+2. **The laser hum and the shockwave** need your ears: is the hum calm enough in a long wave with three or four Lasers,
+   and does Spencer's pulse now land with the wave?
+3. **Chrono Field 60 s at 45 coins.** By the rule it is a last-waves tool. If you want it as an everyday tool instead,
+   the price has to come down, not the time up (that is a balance call for round 88b).
+4. **Ping wording.** The marker says "SURPRISE". It also pings for a nest that opens behind the gate every time (Voss
+   warns only once per save).

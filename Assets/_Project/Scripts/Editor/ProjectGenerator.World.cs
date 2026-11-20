@@ -308,9 +308,16 @@ namespace Game.Editor
             }
         }
 
+        // Round 88a (Remco: "it lasts very briefly and costs 45 while a tower costs 50"): a field lasts a whole wave, as the
+        // plan model has always counted it (PlanEvaluator.FieldWaveShare): the longest ground wave of the first continent keeps
+        // coming for 55 s (Tools/PlayTest/r88_wave_spans.txt) and a slowed walker needs a few seconds more to cross it. Over that
+        // minute a field in reach of two Gun Turrets gives what 1.09 times its coins in Gun Turrets give, and nothing after:
+        // a tool for the last waves and the boss (Round88aTests holds both halves of the rule on the data).
+        public const float ChronoFieldSeconds = 60f;
+
         private static void GeneratePathObjects(GeneratorContext context)
         {
-            context.SlowField = CreatePathObject("SlowField", "Chrono Field", PathObjectKind.SlowField, PathObjectPlacement.Road, TargetLayers.Ground, 45, 1.6f, 0.5f, 0f, 0.45f, 0f, 20f, new Color(0.45f, 0.75f, 1f), PathObjectEffect.Slow, "A Crysium field laid across the road. Time runs slow inside it: everything that walks through moves at less than half speed, for as long as the field lasts. The answer to fast runners.");
+            context.SlowField = CreatePathObject("SlowField", "Chrono Field", PathObjectKind.SlowField, PathObjectPlacement.Road, TargetLayers.Ground, 45, 1.6f, 0.5f, 0f, 0.45f, 0f, ChronoFieldSeconds, new Color(0.45f, 0.75f, 1f), PathObjectEffect.Slow, "A Crysium field laid across the road. Time runs slow inside it: everything that walks through moves at less than half speed, for as long as the field lasts. The answer to fast runners.");
             // Amber like the model's armed ring (curator decision 2026-11-04: our colours follow the models).
             context.Mine = CreatePathObject("Mine", "Land Mine", PathObjectKind.Mine, PathObjectPlacement.Road, TargetLayers.Ground, 35, 1.4f, 0.6f, 140f, 1f, 0f, 0f, new Color(1f, 0.72f, 0.25f), PathObjectEffect.Trap, "Buried in the road. Goes off once, under the first enemy that steps on it, and hurts everything close by.");
             context.LavaBall = CreatePathObject("LavaBall", "Lava ball", PathObjectKind.Roller, PathObjectPlacement.Road, TargetLayers.Ground, 70, 0.9f, 0.5f, 55f, 1f, 2.2f, 0f, new Color(1f, 0.45f, 0.1f), PathObjectEffect.Roll, "Dropped on the road, it rolls on towards the base and burns every walker it touches along the way.");

@@ -1,0 +1,12 @@
+Round 88a: spawn clearance per level (cells kept free under nests, route gates and air pods)
+Arena_Bog: 1 nests, 3 paths, kept free 19 cells, of which 7 were build cells (may include base or gate ground); validator errors 0
+Arena_Ice: 2 nests, 3 paths, kept free 28 cells, of which 11 were build cells (may include base or gate ground); validator errors 0
+Arena_Lava: 1 nests, 4 paths, kept free 23 cells, of which 6 were build cells (may include base or gate ground); validator errors 0
+Arena_Ruins: 3 nests, 4 paths, kept free 42 cells, of which 18 were build cells (may include base or gate ground); validator errors 0
+Level_C1_01: 2 nests, 3 paths, kept free 28 cells, of which 14 were build cells (may include base or gate ground); validator errors 0
+Level_C1_02: 1 nests, 3 paths, kept free 19 cells, of which 7 were build cells (may include base or gate ground); validator errors 0
+Level_C1_03: 1 nests, 4 paths, kept free 24 cells, of which 9 were build cells (may include base or gate ground); validator errors 0
+Level_C1_04: 3 nests, 4 paths, kept free 42 cells, of which 18 were build cells (may include base or gate ground); validator errors 0
+Level_C1_05: 2 nests, 3 paths, kept free 28 cells, of which 11 were build cells (may include base or gate ground); validator errors 0
+Level_C1_06: 1 nests, 4 paths, kept free 23 cells, of which 6 were build cells (may include base or gate ground); validator errors 0
+total former build cells kept free: 107; validator errors: 0; plan spots on kept cells: 0

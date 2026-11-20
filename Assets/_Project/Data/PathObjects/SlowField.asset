@@ -25,7 +25,7 @@ MonoBehaviour:
   _slowFactor: 0.45
   _burns: 0
   _speed: 0
-  _lifetime: 20
+  _lifetime: 60
   _color: {r: 0.45, g: 0.75, b: 1, a: 1}
   _look: 7
   _art: {fileID: 11400000, guid: 2c6c54557849f254b9ff0849b69e67ed, type: 2}

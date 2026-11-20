@@ -201,6 +201,10 @@ namespace Game.Enemies
         private const float BossLightHeight = 0.9f;
         private const float BossLightIntensity = 2.6f;
         private const float BossLightRange = 7f;
+        // The ring of a level boss's mark lies this share of half its body out, within these bounds (world units).
+        private const float BossAuraBodyShare = 0.9f;
+        private const float BossAuraMinRadius = 0.8f;
+        private const float BossAuraMaxRadius = 1.6f;
         private const float HoverPoolRadius = 0.5f;
         private const float HoverPoolBrightness = 0.7f;
         private const float PlateDebrisSize = 0.3f;
@@ -263,6 +267,7 @@ namespace Game.Enemies
         private Transform _barPlate;
         private float _barY;
         private Transform _shadow;
+        private BossAuraView _aura;
         private bool _built;
         private Vector3 _lastPosition;
         private float _gait;
@@ -456,6 +461,11 @@ namespace Game.Enemies
             if (_shadow != null)
             {
                 _shadow.gameObject.SetActive(!hidden);
+            }
+
+            if (_aura != null)
+            {
+                _aura.Hidden = hidden;
             }
 
             if (hidden)
@@ -802,6 +812,7 @@ namespace Game.Enemies
             if (definition.IsBoss)
             {
                 AddBossPresence(body, definition, new[] { materials[EnemyModelFactory.Eyes], materials[EnemyModelFactory.Glow], materials[EnemyModelFactory.Accent] });
+                AddBossAura(definition, _creatureScale);
             }
 
             _flashMaterials = new Material[materials.Length];
@@ -880,6 +891,7 @@ namespace Game.Enemies
             if (definition.IsBoss)
             {
                 AddBossPresence(body, definition, _shellMaterials);
+                AddBossAura(definition, ModelHalfWidth());
             }
 
             BuildEffects(definition, art.Embers);
@@ -935,6 +947,33 @@ namespace Game.Enemies
                     _bolts[i] = _attachments.Track(EnemyBoltView.Create(transform.parent, definition.AccentColor));
                 }
             }
+        }
+
+        // A level boss wears a mark on the ground that no palette and no hit effect hides (BossAuraView, round 88a). A
+        // continent boss is staged by its own arena and mechanic and keeps its own look.
+        private void AddBossAura(EnemyDefinition definition, float bodyHalf)
+        {
+            if (definition.Boss != null)
+            {
+                return;
+            }
+
+            float half = definition.BodyHalfWidth > 0f ? definition.BodyHalfWidth : bodyHalf;
+            _aura = gameObject.AddComponent<BossAuraView>();
+            _aura.Initialize(_enemy, Mathf.Clamp(half * BossAuraBodyShare, BossAuraMinRadius, BossAuraMaxRadius));
+        }
+
+        // Half the modelled body across on the ground, from its meshes as built (the widest of its two ground axes).
+        private float ModelHalfWidth()
+        {
+            float half = 0f;
+            foreach (Renderer renderer in _model.Renderers)
+            {
+                Vector3 extents = renderer.bounds.extents;
+                half = Mathf.Max(half, Mathf.Max(extents.x, extents.z));
+            }
+
+            return half;
         }
 
         // A boss burns brighter than its kin: its eyes and seams breathe, and a light in its colour spills over the ground.

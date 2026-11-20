@@ -45,6 +45,12 @@ namespace Game.Boot
             public float Progress;
             public float SinceStep;
             public bool Hooked;
+
+            /// <summary>The boss's powers, for the pulse sound that starts ahead of the pulse; null for everything else.</summary>
+            public BossAbilities Abilities;
+
+            /// <summary>True from the early start of the pulse sound until that pulse fires.</summary>
+            public bool PulseStarted;
         }
 
         // One voice asset's families and loops, shared by every creature of that species.
@@ -182,10 +188,11 @@ namespace Game.Boot
 
             tracker.Progress = enemy.PathProgress;
             tracker.SinceStep = 0f;
+            tracker.PulseStarted = false;
             if (!tracker.Hooked)
             {
                 tracker.Hooked = true;
-                Hook(enemy);
+                Hook(enemy, tracker);
             }
 
             if (enemy.Definition.IsBoss)
@@ -195,7 +202,7 @@ namespace Game.Boot
         }
 
         // One subscription per instance for its whole life; the definition never changes under a pooled enemy.
-        private void Hook(Enemy enemy)
+        private void Hook(Enemy enemy, Tracker tracker)
         {
             enemy.Attacked += _ => OnAttacked(enemy);
             enemy.Slowed += OnSlowed;
@@ -210,7 +217,19 @@ namespace Game.Boot
                 return;
             }
 
-            abilities.Pulsed += (centre, radius, color) => _player.Play(VoicingFor(enemy).Pulse, PowerVolume, SfxKind.Priority);
+            // Round 88a: a pulse sound swells before it hits, so it starts ahead of the pulse (AnnouncePulse) and its blow
+            // lands with the ring. A pulse that came unannounced (the boss's very first frame) starts at its blow instead.
+            tracker.Abilities = abilities;
+            abilities.Pulsed += (centre, radius, color) =>
+            {
+                if (tracker.PulseStarted)
+                {
+                    tracker.PulseStarted = false;
+                    return;
+                }
+
+                _player.PlayOnImpact(VoicingFor(enemy).Pulse, PowerVolume, SfxKind.Priority, 0f);
+            };
             abilities.Rallied += (centre, color) => _player.Play(VoicingFor(enemy).Rally, GrowlVolume, SfxKind.Priority);
             abilities.Regrown += color => _player.Play(VoicingFor(enemy).Regrow, RegrowVolume, SfxKind.Priority);
             abilities.MinionsReleased += (centre, color) => _player.Play(VoicingFor(enemy).Spawn, SpawnVolume, SfxKind.Priority);
@@ -227,6 +246,26 @@ namespace Game.Boot
                 _player.Play(voicing.VolleyLaunch, VolleyVolume, SfxKind.Priority);
                 _player.Schedule(voicing.VolleyImpact, VolleyVolume, SfxKind.Priority, VolleyFlightSeconds);
             };
+        }
+
+        // The boss's pulse is on a timer, so its sound can start as far ahead as its swell is long (in real seconds; the
+        // timer runs in game time).
+        private void AnnouncePulse(Enemy enemy, Tracker tracker)
+        {
+            if (tracker.Abilities == null || tracker.PulseStarted || Time.timeScale <= 0f)
+            {
+                return;
+            }
+
+            SoundFamily pulse = VoicingFor(enemy).Pulse;
+            float lead = _player.LeadOf(pulse);
+            if (pulse.Impact <= 0f || tracker.Abilities.SecondsUntil(BossAbilityKind.Pulse) / Time.timeScale > lead)
+            {
+                return;
+            }
+
+            tracker.PulseStarted = true;
+            _player.Play(pulse, PowerVolume, SfxKind.Priority);
         }
 
         private void OnAttacked(Enemy enemy)
@@ -302,6 +341,7 @@ namespace Game.Boot
                     continue;
                 }
 
+                AnnouncePulse(enemy, tracker);
                 float moved = enemy.PathProgress - tracker.Progress;
                 tracker.Progress = enemy.PathProgress;
                 if (moved <= 0f)

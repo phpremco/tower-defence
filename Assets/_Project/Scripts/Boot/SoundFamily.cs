@@ -40,6 +40,9 @@ namespace Game.Boot
         /// <summary>Playback speed of the set; the generated fallback always plays as made.</summary>
         public float Pitch => _set != null && !_set.IsEmpty ? _set.Pitch : 1f;
 
+        /// <summary>Seconds into the set's recordings at which their blow lands; a generated fallback hits at once.</summary>
+        public float Impact => _set != null && !_set.IsEmpty ? _set.Impact : 0f;
+
         public AudioClip Next()
         {
             AudioClip clip = _set?.Pick(ref _cursor);

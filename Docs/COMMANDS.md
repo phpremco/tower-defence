@@ -2055,3 +2055,38 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
     Easy and Psycho readings with them. Run `r86_picks.sh` before the last tuning passes, not after.
   - A clone that ends in a minute with "Scripts have compiler errors" and no `error CS` line lost its ILPP pipe: play
     that part again (`r87_finale_cycle.sh` does so for the finale probe).
+
+## Round 88a: stills in the stage, spawn clearance, sound blows, the labs (added 2026-11-20)
+
+- **Stills without touching the open editor or the save.** The stage's editor can run with a graphics device:
+  `bash Tools/PlayTest/stage.sh stop`, then `TD_STAGE_GRAPHICS=1 bash Tools/PlayTest/stage.sh start` (batch mode, no
+  `-nographics`). From inside the stage: `OUT=<dir> bash Tools/PlayTest/r88_shots.sh <prefix> <node> <difficulty> <action> ...`
+  (the actions of `r65_shots.sh` except `view:`; it plays Boot in the stage, never copies or restores a save, and refuses
+  to run anywhere but the stage). Stills are written by `r88_shot.cs`: `r65_shot.cs` with an sRGB target, so the picture
+  is as bright as the Game view (the HDR target of `r65_shot.cs` writes linear values: its stills are too dark).
+  A batch editor has no Game view, so there is no `view:` action; the HUD is drawn through the tilt-shift pass and
+  looks softer than in the game ("Mind the stills' blur", round 78).
+- **Every level boss on its own level:** `OUT=<dir> bash Tools/PlayTest/r88_boss_shots.sh <prefix> [steps]` (from the stage;
+  spawns each boss of the six levels, lets it walk, puts the play camera on it at the play zoom, `r88_focus.cs`).
+  `python -I` with PIL makes contact sheets of the crops.
+- **Probes for stills (eval files, stage or project):** `r88_spawn_probe.cs` (drawn size of every spawn prop and the build
+  cells under it), `r88_drone_beam.cs` (`r88_drone_arg.txt`: `hurt` damages every tower, `probe` prints the drone, its
+  body, its tool socket and where the beam starts, `zoom`), `r88_buy_repair.cs` (launches the repair drone from its asset,
+  whatever the save offers), `r88_ping_probe.cs` (watched spawn points, markers on the HUD and the radar),
+  `r88_light_probe.cs` (quality level, ambient, lights, volumes).
+- **Labs on the assets (no Play Mode):** `stage.sh run Round88Lab.cs Round88Lab.Clearance` (per level the cells the spawn
+  points keep free, how many were build cells, the validator, recorded plan spots on them: `r88_clearance.txt`),
+  `Round88Lab.WaveSpans` (seconds a wave's ground creatures keep coming, per level and difficulty: `r88_wave_spans.txt`;
+  the Chrono Field's lifetime follows the longest), `Round88Lab.DroneSockets` (each drone model's sockets against its body).
+- **Data of the round without the full generator:** `stage.sh run ApplyRound88.cs ApplyRound88.Run` fills
+  `SfxLibrary._radarPings` and measures the blow of every filled sound set (`SoundSet._impact`; the library, every creature
+  voice, the hero's abilities). Run it again after new recordings; the generator's own `FillSet` writes the same.
+- **Pitfalls met this round:**
+  - A bash heredoc in the Bash tool turns a doubled backslash into one (a newline escape becomes a real newline) and chokes
+    on apostrophes in C# comments: write C# files and Python edit specs with the Write tool.
+  - `stage.sh compile` prints the `error CS` lines of the whole log, old ones included: the first line
+    (`recompile_status ... completed`, with or without "n errors") is the verdict.
+  - `stage.sh make` mirrors the project over the stage (`/MIR`): files that exist only in the stage are deleted. The
+    leftovers of round 87 (`*_r87_final2*`) were copied to `TowerDefenseWorkers/r87_stage_leftover` first.
+  - Unscaled time barely moves while frames are stepped in one eval call: a marker that lasts five real seconds is still
+    up after 200 stepped frames.

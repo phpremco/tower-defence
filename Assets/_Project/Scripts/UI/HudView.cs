@@ -131,6 +131,7 @@ namespace Game.UI
             keepOut.Add(radar.Panel);
             gameObject.AddComponent<BossMarkerView>().Initialize(context, worldLabels, camera, keepOut);
             gameObject.AddComponent<RearNestMarkerView>().Initialize(context, worldLabels, camera, keepOut);
+            gameObject.AddComponent<SurprisePingView>().Initialize(context, worldLabels, camera, keepOut);
             var bossBar = gameObject.AddComponent<BossHealthView>();
             bossBar.Initialize(context, safe);
             keepOut.Add(bossBar.Panel);

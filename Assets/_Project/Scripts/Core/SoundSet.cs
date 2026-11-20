@@ -22,6 +22,9 @@ namespace Game.Core
         /// <summary>Playback speed of every variant: one plays the file as recorded; a stand-in borrowed from another creature or gun is pitched to sound its own.</summary>
         [SerializeField] [Range(MinPitch, MaxPitch)] private float _pitch = 1f;
 
+        /// <summary>Seconds into the recordings at which their blow lands, measured by the generator (<see cref="SoundImpact"/>); zero for a sound that hits at once.</summary>
+        [SerializeField] [Min(0f)] private float _impact;
+
         public int Count => _clips.Length;
 
         public bool IsEmpty => _clips.Length == 0;
@@ -29,6 +32,7 @@ namespace Game.Core
         public float Gain => _gain;
 
         public float Pitch => _pitch;
+        public float Impact => _impact;
 
         public AudioClip this[int index] => _clips[index];
 

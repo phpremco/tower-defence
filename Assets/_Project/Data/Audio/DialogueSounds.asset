@@ -17,6 +17,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 39ff8be523a12af46a62344132f3f952, type: 3}
     _gain: 1.0672592
     _pitch: 1
+    _impact: 0.04
   _openerVolume: 0.5
   _blipEveryLetters: 2
   _blipVolume: 0.3
@@ -30,3 +31,4 @@ MonoBehaviour:
     - {fileID: 8300000, guid: fb6b199e99c5eb84f992d0e0269bfa45, type: 3}
     _gain: 1
     _pitch: 1
+    _impact: 0

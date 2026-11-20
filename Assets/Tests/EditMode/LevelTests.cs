@@ -138,11 +138,12 @@ namespace Game.Tests
             Assert.IsTrue(grid.CanBuild(free));
         }
 
-        // A cell the level data leaves open: off the road, no rock, no liquid, no mining node.
+        // A cell the level data leaves open: off the road, no rock, no liquid, no mining node, not under a spawn point (round 88a).
         private static Vector2Int FirstBuildable(BuildGrid grid, LevelDefinition level)
         {
             var closed = new HashSet<Vector2Int>(level.BlockedCells);
             closed.UnionWith(level.MineCells);
+            SpawnClearance.Collect(level, closed);
             for (int x = 0; x < level.GridSize.x; x++)
             {
                 for (int y = 0; y < level.GridSize.y; y++)

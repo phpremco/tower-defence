@@ -57,6 +57,10 @@ namespace Game.Core
         [SerializeField] private SoundSet _heroDeaths = new SoundSet();
         [SerializeField] private SoundSet _heroFalls = new SoundSet();
 
+        [Header("HUD")]
+        [Tooltip("The radar's ping when a surprise comes out of a spawn point (round 88a).")]
+        [SerializeField] private SoundSet _radarPings = new SoundSet();
+
         [Header("Drones (loops are quiet by design)")]
         [SerializeField] private SoundSet _droneFanLoops = new SoundSet();
         [SerializeField] private SoundSet _droneRepairLoops = new SoundSet();
@@ -131,6 +135,7 @@ namespace Game.Core
         public SoundSet HeroSteps => _heroSteps;
         public SoundSet HeroDeaths => _heroDeaths;
         public SoundSet HeroFalls => _heroFalls;
+        public SoundSet RadarPings => _radarPings;
         public SoundSet DroneFanLoops => _droneFanLoops;
         public SoundSet DroneRepairLoops => _droneRepairLoops;
         public SoundSet DroneHarvestLoops => _droneHarvestLoops;
@@ -173,7 +178,7 @@ namespace Game.Core
             (Loc.Get("sound_set.drone_laser"), _droneLasers), (Loc.Get("sound_set.enemy_death"), _enemyDeaths), (Loc.Get("sound_set.heavy_steps"), _heavySteps), (Loc.Get("sound_set.wings"), _wingLoops),
             (Loc.Get("sound_set.large_wings"), _largeWingLoops), (Loc.Get("sound_set.water"), _waterLoops), (Loc.Get("sound_set.lava"), _lavaLoops), (Loc.Get("sound_set.rift"), _riftLoops), (Loc.Get("sound_set.steam"), _steamLoops),
             (Loc.Get("sound_set.leaves"), _leavesLoops), (Loc.Get("sound_set.icy_wind"), _icyWindLoops), (Loc.Get("sound_set.boss_laser"), _bossLaserLoops), (Loc.Get("sound_set.beam_loop"), _beamLoops), (Loc.Get("sound_set.boss_alarm"), _bossAlarms), (Loc.Get("sound_set.wave_drums"), _waveDrums),
-            (Loc.Get("sound_set.menu_music"), _menuMusic), (Loc.Get("sound_set.game_music"), _gameMusic), (Loc.Get("sound_set.boss_music"), _bossMusic),
+            (Loc.Get("sound_set.radar_ping"), _radarPings), (Loc.Get("sound_set.menu_music"), _menuMusic), (Loc.Get("sound_set.game_music"), _gameMusic), (Loc.Get("sound_set.boss_music"), _bossMusic),
         };
     }
 }

@@ -19,6 +19,12 @@ namespace Game.Drones
         private const float BeamThickness = 0.05f;
         private const float BeamEmission = 3f;
         private const float BeamFlicker = 0.4f;
+        // The repair cone starts this share of the way from the middle of the hull down to the emitter that hangs under it:
+        // seen from the tilted play camera a point right under the hull reads as its middle, the emitter's own height as the
+        // front rotor.
+        private const float HullEmitterShare = 0.5f;
+        // A beam shorter than this has no direction to lie along.
+        private const float MinBeamLength = 0.01f;
         // The painted cone opens to ConeMouth at length 1; the light spot on the work point is this wide.
         private const float ConeMouth = 0.7f;
         private const float ConeSpot = 0.3f;
@@ -64,6 +70,12 @@ namespace Game.Drones
         private float _rotorAngle;
         private Transform _beam;
         private bool _coneBeam;
+
+        // Round 88a (Remco: "the spray does not come from the middle of the drone"): the repair cone leaves the middle of the
+        // underside of the hull, in the frame of the model, at the height its emitter hangs at rest. The Work clip swings the
+        // emitter a hand's width round that point; a cone that followed the bone left from beside the hull.
+        private bool _beamFromHull;
+        private Vector3 _hullEmitter;
         private Transform _pool;
         private Transform[] _flashes;
 
@@ -132,6 +144,11 @@ namespace Game.Drones
         {
             _art = DroneArtRig.Create(transform, definition.Art);
             _model = _art.Holder;
+            if (definition.Kind == DroneKind.Repair && _art.Tool != null)
+            {
+                _beamFromHull = true;
+                _hullEmitter = Vector3.up * (_model.InverseTransformPoint(_art.Tool.position).y * HullEmitterShare);
+            }
             _flashes = PaintMuzzles(definition, color, _art.Muzzles, Vector3.up) ? new Transform[0] : new Transform[_art.Muzzles.Length];
             for (int i = 0; i < _flashes.Length; i++)
             {
@@ -338,8 +355,19 @@ namespace Game.Drones
             _art?.Animate(working, _drone.Pace > MovingPace, dt);
         }
 
-        // The clips turn the rotors slowly; at speed they spin far faster, set after the clips have posed the rig.
-        private void LateUpdate() => _art?.SpinRotors(_rotorAngle);
+        // The clips turn the rotors slowly; at speed they spin far faster, set after the clips have posed the rig. The beam
+        // is laid here too: after the drone has moved this frame (its own Update) and the rig is posed, so it never trails
+        // a frame behind a drone under way.
+        private void LateUpdate()
+        {
+            if (_drone == null)
+            {
+                return;
+            }
+
+            _art?.SpinRotors(_rotorAngle);
+            PlaceBeam();
+        }
 
         // Turn towards the heading, lean into the turn and dip the nose with speed, like a real quadcopter.
         private void Attitude(float dt)
@@ -444,15 +472,29 @@ namespace Game.Drones
                 _rig.Drill.Rotate(0f, 0f, DrillSpeed * Time.deltaTime, Space.Self);
             }
 
-            bool fighting = _drone.IsAlive && _drone.Activity == DroneActivity.Fighting;
-            if (!working)
+            return working || (_drone.IsAlive && _drone.Activity == DroneActivity.Fighting);
+        }
+
+        /// <summary>Where the work beam leaves the drone right now: the middle of the underside of a repair drone, the drill tip of a harvester.</summary>
+        public Vector3 BeamOrigin => _beamFromHull ? _model.TransformPoint(_hullEmitter) : _art != null && _art.Tool != null ? _art.Tool.position : transform.position;
+
+        // From the drone to its work point, with the pool of light and the dust on the work point.
+        private void PlaceBeam()
+        {
+            if (!_drone.IsAlive || !_drone.WorkPoint.HasValue)
             {
-                return fighting;
+                return;
             }
 
-            Vector3 from = _art != null && _art.Tool != null ? _art.Tool.position : transform.position;
+            bool repairing = _drone.Activity == DroneActivity.Repairing;
+            Vector3 from = BeamOrigin;
             Vector3 to = _drone.WorkPoint.Value;
             Vector3 delta = to - from;
+            if (delta.sqrMagnitude < MinBeamLength * MinBeamLength)
+            {
+                return;
+            }
+
             float thickness = BeamThickness * (repairing ? 1f + BeamFlicker * (Random.value - 0.5f) : 1f);
             _beam.rotation = Quaternion.LookRotation(delta);
             if (_coneBeam)
@@ -471,8 +513,6 @@ namespace Game.Drones
             {
                 _dust.transform.position = to;
             }
-
-            return true;
         }
 
         // The imported drone has one exhaust: its trail streams only at a real pace.

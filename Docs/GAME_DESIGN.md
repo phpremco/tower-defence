@@ -73,7 +73,7 @@ Acht standaardtorens. Je begint met het pulsgeweer; de andere wapens krijg je al
 | Kanon | Langzaam, veel schade, splash | Land | Grunts, groepen | Vliegers (kan ze niet raken) |
 | Laser Turret | Continue straal | Land | Rijen vijanden | Pantser |
 | Cryo | Vertraagt vijanden | Land en lucht | Alles, als ondersteuning | Bazen (deels immuun) |
-| Flak Turret (was Raket; id `Rocket`) | Snelle granaten met nabijheidsontsteker, splash in de lucht | Alleen lucht (geen Wisps op de weg) | Dichte luchtzwermen | Grondvijanden (kan ze niet raken) |
+| Flak Turret (was Raket; id `Rocket`) | Snelle granaten met nabijheidsontsteker, splash in de lucht | Alleen lucht, plus de Wisp (energiebol op de weg, doel van land en lucht; ronde 88a) | Dichte luchtzwermen | Gewone grondvijanden (kan ze niet raken) |
 | Tesla | Bliksem springt over meerdere vijanden | Land | Zwermen, groepen | Brutes |
 | Railgun | Enorm veel schade op één doel | Land en lucht | Bazen, brutes | Zwermen |
 | Support | Meer bereik of vuursnelheid voor torens in de buurt | Geen | Versterkt anderen | Doet zelf geen schade |

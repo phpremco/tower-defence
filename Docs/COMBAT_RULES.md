@@ -137,7 +137,7 @@ The role tests measure all six the same way.
 | **Gun Turret** | Light fire | The all-rounder, cheap: soft bodies big and small, a fifth in the air. Its turret swings to each new target, so a fast swarm outruns it. Only chips armour. |
 | **Laser** | Light fire | The swarm gun: a fast beam of small pulses that is on the next creature at once. Weak on armour (a tenth) and on one big target; cannot aim up. Half again the damage on energy bodies. |
 | **Cannon** | Splash, anti-armour | Blast: breaks bunched groups and strips armour. Cannot aim up, and its shell lands where a runner was. |
-| **Flak Turret** | Anti-air | The one gun that lands in full on flyers. Cannot hit the ground. |
+| **Flak Turret** | Anti-air | The one gun that lands in full on flyers. Cannot hit the ground, except the Wisp and the Core Wisp: a ball of energy on the road is a target of the ground and of the air (round 88a; `TargetLayersExtensions.CanHit`: a gun reaches whatever shares a layer with it). |
 | **Tesla** | Splash | Chain lightning: jumps through a bunched group at short range. A fifth on armour; cannot aim up. |
 | **Railgun** | Anti-armour | Slug: made for armour and bosses, from far away. Slow: wasted on swarms, and half in the air. |
 | **Cryo** | Control | Slows what passes, so every other gun has longer. Its own damage is a token. |

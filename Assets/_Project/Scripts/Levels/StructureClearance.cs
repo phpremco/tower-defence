@@ -15,7 +15,6 @@ namespace Game.Levels
         private const float GateOverhang = 0.3f;
         private const float EntranceRadiusCells = 0.9f;
         private const float MineRadiusCells = 0.6f;
-        private const float NestRadiusCells = 0.9f;
 
         private readonly List<Zone> _zones = new List<Zone>();
 
@@ -70,7 +69,7 @@ namespace Game.Levels
 
             foreach (ElementNest nest in level.Nests)
             {
-                _zones.Add(new Zone($"Nest {nest.Cell}", grid.CellToWorld(nest.Cell), NestRadiusCells * cell + margin, true));
+                _zones.Add(new Zone($"Nest {nest.Cell}", grid.CellToWorld(nest.Cell), SpawnClearance.NestRadiusCells * cell + margin, true));
             }
 
             // Found against the zones above only, so the rig never blocks itself; from here on every decor builder keeps

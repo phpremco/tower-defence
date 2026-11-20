@@ -1,0 +1,26 @@
+Round 88a: seconds from the first to the last ground spawn of a wave (per level and difficulty: least, median, most)
+Level_C1_01 Easy: 12 ground waves, 4 / 24 / 42 s
+Level_C1_01 Medium: 12 ground waves, 4 / 19 / 38 s
+Level_C1_01 Hard: 12 ground waves, 3 / 19 / 34 s
+Level_C1_01 Psycho: 12 ground waves, 3 / 14 / 31 s
+Level_C1_02 Easy: 12 ground waves, 14 / 32 / 51 s
+Level_C1_02 Medium: 12 ground waves, 12 / 22 / 47 s
+Level_C1_02 Hard: 12 ground waves, 5 / 16 / 44 s
+Level_C1_02 Psycho: 12 ground waves, 4 / 14 / 41 s
+Level_C1_03 Easy: 16 ground waves, 7 / 20 / 54 s
+Level_C1_03 Medium: 16 ground waves, 6 / 18 / 49 s
+Level_C1_03 Hard: 16 ground waves, 5 / 13 / 25 s
+Level_C1_03 Psycho: 16 ground waves, 4 / 13 / 23 s
+Level_C1_04 Easy: 16 ground waves, 7 / 17 / 27 s
+Level_C1_04 Medium: 16 ground waves, 6 / 15 / 47 s
+Level_C1_04 Hard: 16 ground waves, 5 / 8 / 44 s
+Level_C1_04 Psycho: 16 ground waves, 4 / 8 / 41 s
+Level_C1_05 Easy: 17 ground waves, 7 / 23 / 55 s
+Level_C1_05 Medium: 17 ground waves, 6 / 20 / 48 s
+Level_C1_05 Hard: 17 ground waves, 5 / 17 / 46 s
+Level_C1_05 Psycho: 17 ground waves, 4 / 14 / 43 s
+Level_C1_06 Easy: 18 ground waves, 6 / 18 / 40 s
+Level_C1_06 Medium: 18 ground waves, 5 / 16 / 49 s
+Level_C1_06 Hard: 18 ground waves, 4 / 15 / 46 s
+Level_C1_06 Psycho: 18 ground waves, 3 / 14 / 43 s
+all 364 ground waves: least 3 s, quartile 8 s, median 16 s, upper quartile 22 s, most 55 s

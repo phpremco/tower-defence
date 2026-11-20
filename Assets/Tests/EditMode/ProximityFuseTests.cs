@@ -61,7 +61,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void AirOnlyWeapons_NeverHitTheGround_OrAWispWalkingTheRoad()
+        public void AirOnlyWeapons_NeverHitTheGround_ButReachAWispWalkingTheRoad()
         {
             var registry = new TargetRegistry();
             var flyer = new FakeTarget { Layer = TargetLayers.Air, Position = Vector3.zero };
@@ -73,12 +73,14 @@ namespace Game.Tests
             var found = new List<ITargetable>();
 
             registry.FindInRadius(Vector3.zero, 1.1f, TargetLayers.Air, found);
-            CollectionAssert.AreEquivalent(new[] { flyer }, found, "the flak burst splashes the air layer only");
+            // Round 88a: the Wisp is on both layers, so the flak reaches it (it passed it over until then).
+            CollectionAssert.AreEquivalent(new[] { flyer, wisp }, found, "the flak burst splashes what is on the air layer, the wisp included, never a plain walker");
 
             registry.FindInRadius(Vector3.zero, 1.1f, TargetLayers.Ground | TargetLayers.Air, found);
             Assert.AreEqual(3, found.Count, "a gun that hits both still hits the wisp");
 
-            Assert.AreSame(flyer, registry.FindBest(Vector3.zero, 5f, TargetLayers.Air));
+            Assert.AreNotSame(walker, registry.FindBest(Vector3.zero, 5f, TargetLayers.Air));
+            Assert.IsNotNull(registry.FindBest(Vector3.zero, 5f, TargetLayers.Air));
         }
     }
 }

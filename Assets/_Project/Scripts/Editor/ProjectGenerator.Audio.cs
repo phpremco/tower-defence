@@ -71,6 +71,8 @@ namespace Game.Editor
             ("_heroSteps", ApprovedFolder + "/Hero", "hero_run_step"),
             ("_heroDeaths", ApprovedFolder + "/Hero", "hero_death"),
             ("_heroFalls", ApprovedFolder + "/Hero", "hero_fall"),
+            // Round 88a: the colony's radar ping (recorded for the opening cutscene) is the HUD radar's ping for a surprise.
+            ("_radarPings", ApprovedFolder + "/Intro/Colony", "colony_radar_ping"),
             ("_droneFanLoops", ApprovedFolder + "/Drones", "drone_fan_loop"),
             ("_droneRepairLoops", ApprovedFolder + "/Drones", "drone_repair_loop"),
             ("_droneHarvestLoops", ApprovedFolder + "/Drones", "drone_harvest_loop"),
@@ -386,7 +388,120 @@ namespace Game.Editor
             SetReferences(set.FindPropertyRelative("_clips"), clips.ToArray());
             set.FindPropertyRelative("_pitch").floatValue = pitch;
             set.FindPropertyRelative("_gain").floatValue = MeasureGain(clips);
+            set.FindPropertyRelative("_impact").floatValue = MeasureImpact(clips);
         }
+
+        // Where the blow of the set's recordings lies (SoundImpact): the earliest of its variants, so no variant is ever
+        // started later than its own swell needs.
+        private static float MeasureImpact(IEnumerable<AudioClip> clips)
+        {
+            float impact = float.MaxValue;
+            foreach (AudioClip clip in clips)
+            {
+                if (clip == null)
+                {
+                    continue;
+                }
+
+                var data = new float[clip.samples * clip.channels];
+                if (clip.GetData(data, 0))
+                {
+                    impact = Mathf.Min(impact, SoundImpact.Seconds(data, clip.channels, clip.frequency));
+                }
+            }
+
+            return impact < float.MaxValue ? impact : 0f;
+        }
+
+        /// <summary>
+        /// Round 88a without the full generator: fills the library sets named (by their field, as in LibraryClips) from their
+        /// folders, with gain, pitch and blow, exactly as the generator's own run does. Safe to run again.
+        /// </summary>
+        public static string ApplyLibrarySets(params string[] fields)
+        {
+            var library = AssetDatabase.LoadAssetAtPath<SfxLibrary>(SfxLibraryPath);
+            if (library == null)
+            {
+                return "no sound library at " + SfxLibraryPath;
+            }
+
+            var so = new SerializedObject(library);
+            var report = new System.Text.StringBuilder();
+            foreach ((string Field, string Folder, string Name) entry in LibraryClips)
+            {
+                if (System.Array.IndexOf(fields, entry.Field) < 0)
+                {
+                    continue;
+                }
+
+                List<AudioClip> clips = FindClips(string.IsNullOrEmpty(entry.Folder) ? AudioRoot : $"{AudioRoot}/{entry.Folder}", entry.Name);
+                FillSet(so.FindProperty(entry.Field), clips, LibraryPitches.TryGetValue(entry.Field, out float pitch) ? pitch : 1f);
+                report.Append(entry.Field).Append(": ").Append(clips.Count).Append(" clips, gain ").Append(so.FindProperty(entry.Field).FindPropertyRelative("_gain").floatValue.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)).Append("; ");
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(library);
+            AssetDatabase.SaveAssets();
+            return report.ToString();
+        }
+
+        /// <summary>
+        /// Round 88a without the full generator: measures the blow of every sound set that is already filled (the shared
+        /// library, every creature voice, the hero's abilities) and writes it beside the set's gain. The generator's own
+        /// FillSet writes the same. Safe to run again.
+        /// </summary>
+        public static string ApplySoundImpacts()
+        {
+            int sets = 0;
+            int swelling = 0;
+            var report = new System.Text.StringBuilder();
+            foreach (string guid in AssetDatabase.FindAssets("t:ScriptableObject", new[] { DataRoot + "/Audio", DataRoot + "/Hero" }))
+            {
+                Object asset = AssetDatabase.LoadAssetAtPath<Object>(AssetDatabase.GUIDToAssetPath(guid));
+                if (asset == null)
+                {
+                    continue;
+                }
+
+                var serialized = new SerializedObject(asset);
+                SerializedProperty property = serialized.GetIterator();
+                while (property.NextVisible(true))
+                {
+                    SerializedProperty clips = property.propertyType == SerializedPropertyType.Generic ? property.FindPropertyRelative("_clips") : null;
+                    SerializedProperty impact = clips != null ? property.FindPropertyRelative("_impact") : null;
+                    if (impact == null || property.FindPropertyRelative("_gain") == null)
+                    {
+                        continue;
+                    }
+
+                    var list = new List<AudioClip>();
+                    for (int i = 0; i < clips.arraySize; i++)
+                    {
+                        list.Add(clips.GetArrayElementAtIndex(i).objectReferenceValue as AudioClip);
+                    }
+
+                    float measured = MeasureImpact(list);
+                    impact.floatValue = measured;
+                    sets++;
+                    if (measured >= SoundImpactReportSeconds)
+                    {
+                        swelling++;
+                        report.Append(asset.name).Append('.').Append(property.propertyPath).Append(' ').Append(measured.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)).Append(" s; ");
+                    }
+                }
+
+                if (serialized.ApplyModifiedPropertiesWithoutUndo())
+                {
+                    EditorUtility.SetDirty(asset);
+                }
+            }
+
+            AssetDatabase.SaveAssets();
+            return $"{sets} sound sets measured, {swelling} swell for {SoundImpactReportSeconds:0.00} s or more before their blow: {report}";
+        }
+
+        // A blow this far into a recording is worth naming in the report of ApplySoundImpacts.
+        private const float SoundImpactReportSeconds = 0.1f;
 
         // One gain for the whole set, from the average loudness of its variants, so they keep their relative weight.
         private static float MeasureGain(List<AudioClip> clips)

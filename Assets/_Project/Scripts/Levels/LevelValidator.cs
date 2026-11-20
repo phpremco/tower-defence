@@ -62,6 +62,7 @@ namespace Game.Levels
             CheckBossEntrance(level, grid, errors);
             CheckNests(level, grid, errors);
             CheckSpawnProps(level, errors);
+            CheckSpawnClearance(level, grid, errors);
             CheckDefenceZones(level, grid, errors);
             return errors.Count == 0;
         }
@@ -709,6 +710,32 @@ namespace Game.Levels
         {
             float along = view.y < 0f ? point.y / -view.y : 0f;
             return new Vector2(point.x + view.x * along, point.z + view.z * along);
+        }
+
+        // Round 88a (Remco built a tower on a nest's opening): nothing the player builds or the level places stands on or
+        // in a spawn point, main or surprise. No cell under a nest's slabs, a route gate's mound or an air gate's pod is a
+        // build cell, and no mining node lies there (a harvest drone would hover in the opening).
+        private static void CheckSpawnClearance(LevelDefinition level, GridMap grid, List<string> errors)
+        {
+            var build = new BuildGrid(level);
+            var mines = new HashSet<Vector2Int>(level.MineCells);
+            var cells = new List<Vector2Int>();
+            foreach (SpawnClearance.Prop prop in SpawnClearance.Props(level))
+            {
+                cells.Clear();
+                SpawnClearance.Collect(prop, grid, cells);
+                foreach (Vector2Int cell in cells)
+                {
+                    if (build.CanBuild(cell))
+                    {
+                        errors.Add($"Cell {cell} is a build cell on the {prop.Name}: a tower there would stand in the spawn point.");
+                    }
+                    else if (mines.Contains(cell))
+                    {
+                        errors.Add($"The mining node at {cell} lies on the {prop.Name}.");
+                    }
+                }
+            }
         }
 
         // A nest lies on the grid, off the road, in terrain that suits its element: water, lava and sand nests in

@@ -50,7 +50,9 @@ case "${1:-}" in
     echo "stage made at $STAGE" ;;
   start)
     grep -q '^  productName: Tower defense stage' "$stage_u/ProjectSettings/ProjectSettings.asset" || { echo "the stage has no product name of its own" >&2; exit 1; }
-    "$UNITY" -batchmode -nographics -job-worker-count 2 -projectPath "$STAGE" -logFile "$STAGE"'\Logs\stage_editor.log' > /dev/null 2>&1 &
+    # TD_STAGE_GRAPHICS=1 (round 88a): with a graphics device, so off-screen stills render in the stage (r88_shots.sh).
+    nographics="-nographics"; [ "${TD_STAGE_GRAPHICS:-0}" = 1 ] && nographics=""
+    "$UNITY" -batchmode $nographics -job-worker-count 2 -projectPath "$STAGE" -logFile "$STAGE"'\Logs\stage_editor.log' > /dev/null 2>&1 &
     (sleep 5; bash "$stage_u/Tools/PlayTest/lower_priority.sh" 120) > /dev/null 2>&1 &
     echo "stage editor starting (pid $!), BelowNormal priority; wait for: bash Tools/PlayTest/stage.sh cmd editor_status" ;;
   stop)

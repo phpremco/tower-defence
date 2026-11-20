@@ -14,7 +14,8 @@ namespace Game.UI
     /// The HUD radar (Remco 2026-11-05), dressed like the perimeter scan of the opening cutscene: the round scope picture
     /// with its turning sweep, and inside it the level drawn small (field, road, base, gates and towers as their own
     /// symbols), enemies as red contacts that flare as the sweep passes (fliers as hollow rings, bosses big and
-    /// pulsing), the spawn origins only once one has opened, and the rectangle the camera shows. The map turns with the
+    /// pulsing), the spawn origins only once one has opened, a surprise as amber rings that ripple out from where it
+    /// came up (round 88a), and the rectangle the camera shows. The map turns with the
     /// camera's yaw, so up on the radar is up on the screen. A click on it sends the camera there. Contacts are pooled and
     /// refreshed a few times a second; nothing is allocated per frame.
     /// </summary>
@@ -42,6 +43,12 @@ namespace Game.UI
         private const float OriginIconSize = 16f;
         private const float FrameThickness = 1.5f;
         private const int StartPool = 48;
+        // Round 88a: a surprise ripples for a few seconds, each ring growing from the small to the large size as it fades.
+        private const int SurprisePings = 3;
+        private const float SurpriseSeconds = 5f;
+        private const float SurpriseRingSeconds = 0.9f;
+        private const float SurpriseRingFrom = 12f;
+        private const float SurpriseRingTo = 54f;
 
         private static readonly Color SweepColour = new Color(0.4f, 1f, 0.85f, 0.6f);
         private static readonly Color GroundColour = new Color(1f, 0.2f, 0.12f);
@@ -53,6 +60,7 @@ namespace Game.UI
         private static readonly Color BaseColour = new Color(0.55f, 0.95f, 1f, 1f);
         private static readonly Color OriginColour = new Color(1f, 0.4f, 0.2f, 1f);
         private static readonly Color ViewColour = new Color(0.75f, 1f, 0.95f, 0.85f);
+        private static readonly Color SurpriseColour = new Color(1f, 0.82f, 0.2f, 1f);
         private static readonly Color FieldPixel = new Color(0.1f, 0.3f, 0.27f, 0.55f);
         private static readonly Color RockPixel = new Color(0.04f, 0.12f, 0.11f, 0.6f);
         private static readonly Color RoadPixel = new Color(0.3f, 0.85f, 0.72f, 0.75f);
@@ -80,6 +88,9 @@ namespace Game.UI
         private int _contactsUsed;
         private int _structuresUsed;
         private Blip _base;
+        private readonly Blip[] _surprises = new Blip[SurprisePings];
+        private readonly float[] _surpriseSince = new float[SurprisePings];
+        private int _nextSurprise;
 
         private sealed class Blip
         {
@@ -92,6 +103,21 @@ namespace Game.UI
 
         /// <summary>The radar's panel, for the HUD keep-out.</summary>
         public RectTransform Panel => _root;
+
+        /// <summary>How many surprise pings ripple on the map right now (for probes and tests).</summary>
+        public int SurprisesShowing
+        {
+            get
+            {
+                int showing = 0;
+                for (int i = 0; i < SurprisePings; i++)
+                {
+                    showing += _surprises[i] != null && Time.unscaledTime - _surpriseSince[i] < SurpriseSeconds ? 1 : 0;
+                }
+
+                return showing;
+            }
+        }
 
         /// <summary>Builds the radar panel in the top-right corner of the safe area, the view living on the panel itself (it takes the clicks).</summary>
         public static RadarView Create(LevelContext context, RectTransform safe, Camera camera, Vector2 topRightOffset)
@@ -123,12 +149,15 @@ namespace Game.UI
             BuildScope();
             BuildMap(level);
             BuildSweep();
+            BuildSurprises();
+            _context.SurpriseSpotted.Subscribe(OnSurpriseSpotted);
             _controls.Changed += ApplyOptions;
             ApplyOptions();
         }
 
         private void OnDestroy()
         {
+            _context?.SurpriseSpotted.Unsubscribe(OnSurpriseSpotted);
             if (_controls != null)
             {
                 _controls.Changed -= ApplyOptions;
@@ -174,6 +203,57 @@ namespace Game.UI
             }
 
             Ping();
+            PingSurprises();
+        }
+
+        // ---------------------------------------------------------------- surprises
+
+        // Drawn over the contacts, so a ping is never hidden under the creatures it announces.
+        private void BuildSurprises()
+        {
+            for (int i = 0; i < SurprisePings; i++)
+            {
+                _surprises[i] = NewBlip(_symbols, IconFactory.Get(IconType.Ring), SurpriseColour, SurpriseRingFrom);
+                _surprises[i].Rect.gameObject.SetActive(false);
+                _surpriseSince[i] = float.NegativeInfinity;
+            }
+        }
+
+        private void OnSurpriseSpotted(Vector3 position)
+        {
+            Blip blip = _surprises[_nextSurprise];
+            _surpriseSince[_nextSurprise] = Time.unscaledTime;
+            _nextSurprise = (_nextSurprise + 1) % SurprisePings;
+            blip.Rect.anchoredPosition = RadarMath.WorldToRadar(position, _fieldSize, _radius * MapFill);
+            blip.Rect.SetAsLastSibling();
+            blip.Rect.gameObject.SetActive(true);
+        }
+
+        private void PingSurprises()
+        {
+            float now = Time.unscaledTime;
+            for (int i = 0; i < SurprisePings; i++)
+            {
+                Blip blip = _surprises[i];
+                if (!blip.Rect.gameObject.activeSelf)
+                {
+                    continue;
+                }
+
+                float age = now - _surpriseSince[i];
+                if (age >= SurpriseSeconds)
+                {
+                    blip.Rect.gameObject.SetActive(false);
+                    continue;
+                }
+
+                float phase = Mathf.Repeat(age / SurpriseRingSeconds, 1f);
+                float size = Mathf.Lerp(SurpriseRingFrom, SurpriseRingTo, phase);
+                blip.Rect.sizeDelta = new Vector2(size, size);
+                Color colour = SurpriseColour;
+                colour.a = 1f - phase * phase;
+                blip.Image.color = colour;
+            }
         }
 
         // ---------------------------------------------------------------- building

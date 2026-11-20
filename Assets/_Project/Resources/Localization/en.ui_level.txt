@@ -17,6 +17,7 @@ hud.card_name_price = {0}\n{1}
 hud.damage_tag = {0:0} DMG
 hud.gate_rebuild = Rebuild  {0}
 hud.rear_nest_marker = BEHIND THE GATE
+hud.surprise_marker = SURPRISE
 
 # Tower menu (UI/TowerMenuView.cs)
 tower_menu.upgrade = Upgrade\n{0}
@@ -149,6 +150,7 @@ sound_set.hero_pulse = Hero pulse
 sound_set.hero_step = Hero step
 sound_set.hero_death = Hero death
 sound_set.hero_fall = Hero fall
+sound_set.radar_ping = Radar ping
 sound_set.drone_fan = Drone fan
 sound_set.drone_repair = Drone repair
 sound_set.drone_harvest = Drone harvest

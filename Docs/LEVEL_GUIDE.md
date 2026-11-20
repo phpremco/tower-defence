@@ -67,6 +67,10 @@ Rules for building a level that plays fairly. A level is data (`LevelDefinition`
 ## Checklist before a level ships
 
 1. `LevelValidator` passes (roads reach the base, build spots valid, every referenced asset present).
+   Since round 88a it also holds the spawn clearance: no cell on a nest's opening (the nest's cell and its eight
+   neighbours), a route gate's mound or an air gate's pod is a build cell, and no mining node lies there
+   (`SpawnClearance`, read by `BuildGrid`; a level generator need not block these cells itself, but it must not put a
+   mining node on them and must leave enough build cells round each gate once they are gone).
 2. Boss entrance follows the rule above.
 3. Ledger inside its bands on all four difficulties.
 4. Play the level once on Medium from the menu: towers survive a boss wave, the money after it allows a rebuild.

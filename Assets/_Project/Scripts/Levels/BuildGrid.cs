@@ -5,7 +5,8 @@ namespace Game.Levels
 {
     /// <summary>
     /// Which cells can hold a tower: any cell of the grid except the road, the blocked cells the level lists, the slope
-    /// round raised ground, the ground under the base model and under the gate that rises at the boss entrance, and not a cell that already has a tower. The road stays free for path objects.
+    /// round raised ground, the ground under the base model, under the gate that rises at the boss entrance and under the
+    /// spawn points (<see cref="SpawnClearance"/>), and not a cell that already has a tower. The road stays free for path objects.
     /// </summary>
     public sealed class BuildGrid
     {
@@ -31,6 +32,9 @@ namespace Game.Levels
             {
                 _blocked.Add(nest.Cell);
             }
+
+            // Round 88a: no tower on or in a spawn point's opening, mound or pod (the nest's slabs reach past its own cell).
+            SpawnClearance.Collect(level, _blocked);
 
             // Round 55: where the ruin gate will rise at the boss entrance, so no tower stands through it.
             if (level.BossEntrance.Footprint != null)

@@ -79,6 +79,11 @@ namespace Game.Boot
         private const float SaberHitDelay = 0.12f;
         private const float SaberHumVolume = 0.05f;
         private const float HeroPulseVolume = 2.5f;
+        // Round 88a: the radar's ping when a surprise comes out; two spawn points opening together ping once.
+        private const float RadarPingVolume = 0.8f;
+        private const float RadarPingMinInterval = 1f;
+        // Below this the game stands still (paused or held): a lead in game time is not turned into real time by dividing by it.
+        private const float MinTimeScale = 0.05f;
         private const float RepairAbilityVolume = 0.9f;
         private const float HeroStepVolume = 0.12f;
         private const float HeroStepSpacing = 0.55f;
@@ -101,6 +106,8 @@ namespace Game.Boot
         private const float OraAlertVolume = 0.8f;
         private const float RollersForFullLoop = 2f;
         private const int ScheduleCapacity = 32;
+        // A recording started part-way in always keeps at least this much of itself.
+        private const float MinTailSeconds = 0.05f;
         private static readonly int[] Budgets = { 3, 2, 2, 2, 4, 3, VoiceCount };
 
         private struct Pending
@@ -110,6 +117,10 @@ namespace Game.Boot
             public float Volume;
             public SfxKind Kind;
         }
+
+        // What the sound device plays behind the game (its buffers), read once: a sound timed to a moment on screen starts
+        // this much earlier.
+        private float _outputLatency;
 
         private AudioSource[] _voices;
         private AudioLowPassFilter[] _filters;
@@ -157,6 +168,8 @@ namespace Game.Boot
         private SoundFamily _saberSwing;
         private SoundFamily _saberHit;
         private SoundFamily _heroPulse;
+        private SoundFamily _radarPing;
+        private float _lastRadarPing = float.NegativeInfinity;
         private SoundFamily _heroStep;
         private SoundFamily _heroDeath;
         private SoundFamily _heroFall;
@@ -169,8 +182,8 @@ namespace Game.Boot
         private SoundFamily _acid;
         private LoopVoice _saberHum;
         private readonly LoopVoice[] _beamVoices = new LoopVoice[BeamVoiceCount];
-        private readonly Vector3[] _beamOrigins = new Vector3[BeamVoiceCount];
-        private readonly float[] _beamLastTick = new float[BeamVoiceCount];
+        private readonly BeamHum _beamHum = new BeamHum(BeamVoiceCount, BeamHoldSeconds, BeamSameTowerDistance);
+        private float _beamPitch = 1f;
         private LoopVoice _droneFan;
         private LoopVoice _droneRepair;
         private LoopVoice _droneHarvest;
@@ -210,6 +223,8 @@ namespace Game.Boot
             _voiceEnds = new float[VoiceCount];
             _voiceVolumes = new float[VoiceCount];
             _voiceStarts = new float[VoiceCount];
+            AudioSettings.GetDSPBufferSize(out int bufferLength, out int bufferCount);
+            _outputLatency = AudioSettings.outputSampleRate > 0 ? (float)bufferLength * bufferCount / AudioSettings.outputSampleRate : 0f;
             // A filter works on everything on its object, so every voice gets an object of its own.
             for (int i = 0; i < VoiceCount; i++)
             {
@@ -256,6 +271,7 @@ namespace Game.Boot
             context.BossBloomed.Subscribe(OnBossBloomed);
             context.BossSplit.Subscribe(OnBossSplit);
             context.BossAdapted.Subscribe(OnBossAdapted);
+            context.SurpriseSpotted.Subscribe(OnSurpriseSpotted);
             if (context.Hero != null)
             {
                 context.Hero.Struck += OnStruck;
@@ -279,7 +295,11 @@ namespace Game.Boot
             for (int i = 0; i < BeamVoiceCount; i++)
             {
                 _beamVoices[i] = library != null && !library.BeamLoops.IsEmpty ? LoopVoice.Create(gameObject, library.BeamLoops) : LoopVoice.Create(gameObject, ProceduralSfx.BossLaserHum(), BeamFallbackGain);
+                // Equal recordings started together stack into one hard tone: every voice starts elsewhere in the loop.
+                _beamVoices[i]?.StartAt(_beamHum.Phase(i));
             }
+
+            _beamPitch = library != null && !library.BeamLoops.IsEmpty ? library.BeamLoops.Pitch : 1f;
             _rail = new SoundFamily(library?.RailShots, ProceduralSfx.RailShot);
             _cannonExplosion = new SoundFamily(library?.CannonExplosions, ProceduralSfx.Explosion);
             _rocketExplosion = new SoundFamily(library?.RocketExplosions, ProceduralSfx.Explosion);
@@ -299,6 +319,7 @@ namespace Game.Boot
             _saberSwing = new SoundFamily(library?.SaberSwings, ProceduralSfx.HeroStrike);
             _saberHit = new SoundFamily(library?.SaberHits);
             _heroPulse = new SoundFamily(library?.HeroPulses, ProceduralSfx.Shockwave);
+            _radarPing = new SoundFamily(library?.RadarPings, ProceduralSfx.OraAlert);
             _heroStep = new SoundFamily(library?.HeroSteps);
             _heroDeath = new SoundFamily(library?.HeroDeaths, ProceduralSfx.HeroDown);
             _heroFall = new SoundFamily(library?.HeroFalls);
@@ -357,6 +378,7 @@ namespace Game.Boot
             _context.BossBloomed.Unsubscribe(OnBossBloomed);
             _context.BossSplit.Unsubscribe(OnBossSplit);
             _context.BossAdapted.Unsubscribe(OnBossAdapted);
+            _context.SurpriseSpotted.Unsubscribe(OnSurpriseSpotted);
             if (_context.Hero != null)
             {
                 _context.Hero.Struck -= OnStruck;
@@ -441,6 +463,35 @@ namespace Game.Boot
 
             _pending.Add(new Pending { At = Time.unscaledTime + delay, Family = family, Volume = volume, Kind = kind });
         }
+
+        /// <summary>
+        /// Plays a sound so that its blow (<see cref="SoundSet.Impact"/>: a power sound swells first) is heard
+        /// <paramref name="lead"/> real seconds from now, when the wave it belongs to leaves on screen (round 88a). With
+        /// lead to spare the start waits; with too little the recording starts part-way into its swell.
+        /// </summary>
+        public void PlayOnImpact(SoundFamily family, float volume, SfxKind kind, float lead)
+        {
+            if (!family.HasSound)
+            {
+                return;
+            }
+
+            SoundImpact.Plan(family.Impact, family.Pitch, lead, _outputLatency, out float delay, out float skip);
+            if (delay > 0f)
+            {
+                Schedule(family, volume, kind, delay);
+                return;
+            }
+
+            AudioClip clip = family.Next();
+            if (clip != null)
+            {
+                Play(clip, volume * family.Gain, kind, family.Pitch, skip);
+            }
+        }
+
+        /// <summary>Real seconds before a moment on screen at which that set's sound has to start for its blow to land on it.</summary>
+        public float LeadOf(SoundFamily family) => family.Impact / Mathf.Max(0.01f, family.Pitch) + _outputLatency;
 
         private void RunPending(float now)
         {
@@ -769,13 +820,16 @@ namespace Game.Boot
         // An ability with its own recording plays that; otherwise the kind picks the stand-in.
         private void OnAbilityUsed(int slot, HeroAbilityDefinition ability, Vector3 position)
         {
-            if (!ability.Sound.IsEmpty)
+            if (ability.Kind == HeroAbilityKind.Shockwave)
+            {
+                // The wave leaves when the fist lands, a moment after the ability is used (HeroAbilityView plays it with the
+                // same lead, in game time): the sound's blow is timed to that moment instead of to the button.
+                SoundFamily pulse = ability.Sound.IsEmpty ? _heroPulse : AbilitySound(ability);
+                PlayOnImpact(pulse, HeroPulseVolume, SfxKind.Priority, HeroArtView.AbilityLeadSeconds / Mathf.Max(MinTimeScale, Time.timeScale));
+            }
+            else if (!ability.Sound.IsEmpty)
             {
                 Play(AbilitySound(ability), HeroPulseVolume, SfxKind.Priority);
-            }
-            else if (ability.Kind == HeroAbilityKind.Shockwave)
-            {
-                Play(_heroPulse, HeroPulseVolume, SfxKind.Priority);
             }
             else
             {
@@ -794,37 +848,13 @@ namespace Game.Boot
             return family;
         }
 
-        // A beam tick keeps the voice of the tower it came from alive, or claims a free voice for a tower that just
-        // opened fire. With every voice busy the tick goes unheard; four beams already sound like a wall of them.
-        private void TouchBeam(Vector3 origin)
-        {
-            float now = Time.unscaledTime;
-            int free = -1;
-            for (int i = 0; i < BeamVoiceCount; i++)
-            {
-                bool live = now - _beamLastTick[i] < BeamHoldSeconds;
-                if (live && (origin - _beamOrigins[i]).sqrMagnitude < BeamSameTowerDistance * BeamSameTowerDistance)
-                {
-                    _beamLastTick[i] = now;
-                    return;
-                }
-
-                if (!live && free < 0)
-                {
-                    free = i;
-                }
-            }
-
-            if (free >= 0)
-            {
-                _beamOrigins[free] = origin;
-                _beamLastTick[free] = now;
-            }
-        }
+        // A beam pulse keeps the voice of the tower it came from alive, or claims a free voice for a tower that just
+        // opened fire (BeamHum holds the rules of the choir). Nothing sounds per pulse.
+        private void TouchBeam(Vector3 origin) => _beamHum.Touch(origin, Time.unscaledTime);
 
         private void UpdateBeams(float dt, float filler)
         {
-            float now = Time.unscaledTime;
+            _beamHum.Step(Time.unscaledTime);
             for (int i = 0; i < BeamVoiceCount; i++)
             {
                 LoopVoice voice = _beamVoices[i];
@@ -833,7 +863,8 @@ namespace Game.Boot
                     continue;
                 }
 
-                voice.Target = now - _beamLastTick[i] < BeamHoldSeconds ? BeamVolume : 0f;
+                voice.Target = BeamVolume * _beamHum.Level(i);
+                voice.Pitch = _beamPitch * _beamHum.Pitch(i);
                 voice.Tick(dt, filler);
             }
         }
@@ -950,6 +981,18 @@ namespace Game.Boot
 
         private void OnBossAdapted(string line) => Play(ProceduralSfx.OraAlert(), OraAlertVolume, SfxKind.Priority);
 
+        private void OnSurpriseSpotted(Vector3 at)
+        {
+            float now = Time.unscaledTime;
+            if (now - _lastRadarPing < RadarPingMinInterval)
+            {
+                return;
+            }
+
+            _lastRadarPing = now;
+            Play(_radarPing, RadarPingVolume, SfxKind.Priority);
+        }
+
         private void OnBossLaser(bool on) => _bossLasers = Mathf.Max(0, _bossLasers + (on ? 1 : -1));
 
         // Drones announce only when one is bought; losing one to a flyer stays quiet here.
@@ -986,7 +1029,8 @@ namespace Game.Boot
 
         // Takes a free voice, or the oldest voice of the same kind when that kind has used up its budget, so a
         // crowd of towers can never drown out the base taking a hit. Priority sounds also duck the filler for a moment.
-        private int Play(AudioClip clip, float volume, SfxKind kind, float pitch = 1f)
+        // skip starts the recording that many seconds in (PlayOnImpact); a one-shot cannot seek, so that voice plays its clip.
+        private int Play(AudioClip clip, float volume, SfxKind kind, float pitch = 1f, float skip = 0f)
         {
             float now = Time.unscaledTime;
             int index = PickVoice(kind, now);
@@ -996,12 +1040,23 @@ namespace Game.Boot
             voice.volume = volume * _mix.EffectsGain;
             // PlayOneShot leaves the clip slot empty; keeping the clip there lets probes read what each voice last played.
             voice.clip = clip;
-            voice.PlayOneShot(clip, 1f);
+            skip = Mathf.Clamp(skip, 0f, Mathf.Max(0f, clip.length - MinTailSeconds));
+            if (skip > 0f)
+            {
+                voice.loop = false;
+                voice.time = skip;
+                voice.Play();
+            }
+            else
+            {
+                voice.PlayOneShot(clip, 1f);
+            }
+
             _voiceKinds[index] = kind;
             _voiceVolumes[index] = volume;
             _voiceStarts[index] = now;
             // A death is a moment, not a mood: a long recorded clip is cut so a swarm dying never leaves a sound behind.
-            float length = kind == SfxKind.Kill ? Mathf.Min(clip.length, KillMaxSeconds) : clip.length;
+            float length = kind == SfxKind.Kill ? Mathf.Min(clip.length, KillMaxSeconds) : clip.length - skip;
             _voiceEnds[index] = now + length / voice.pitch;
             if (kind == SfxKind.Priority)
             {

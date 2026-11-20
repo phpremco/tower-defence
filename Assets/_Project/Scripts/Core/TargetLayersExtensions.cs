@@ -4,18 +4,11 @@ namespace Game.Core
     public static class TargetLayersExtensions
     {
         /// <summary>
-        /// True when a weapon aimed at <paramref name="mask"/> can hit a target on <paramref name="layer"/>. A weapon that
-        /// only aims at the air (flak) cannot hit a creature that also walks the ground, such as a Wisp on the
-        /// road: it is in the air layer for guns that hit both, but it does not fly.
+        /// True when a weapon aimed at <paramref name="mask"/> can hit a target on <paramref name="layer"/>: they share a
+        /// layer. A creature on both layers (the Wisp, a ball of energy that walks the road) is a target of every gun,
+        /// the air-only flak included (round 88a, Remco: "it was supposed to be both land and air"; until then an
+        /// air-only gun passed it over because it does not fly).
         /// </summary>
-        public static bool CanHit(this TargetLayers mask, TargetLayers layer)
-        {
-            if ((layer & mask) == 0)
-            {
-                return false;
-            }
-
-            return mask != TargetLayers.Air || (layer & TargetLayers.Ground) == 0;
-        }
+        public static bool CanHit(this TargetLayers mask, TargetLayers layer) => (layer & mask) != 0;
     }
 }

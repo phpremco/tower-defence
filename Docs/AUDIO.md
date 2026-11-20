@@ -25,7 +25,19 @@ alive without turning into noise: a crowd of thirty ants is one skittering bed, 
 - **Voice budgets.** Shots 3, kills 2, hits 2, spawns 2, creature filler 4, crew (hero, drones) 3. When a budget is
   full the oldest voice of that kind is replaced. The ear cannot separate more anyway.
 - **Bundle, do not stack.** The same shot within 60 ms (heavy) or 220 ms (rapid) nudges the playing voice louder
-  instead of starting another. The laser tower zaps once per shot (the approved `laser.wav`), bundled the same way.
+  instead of starting another.
+- **Beams hum as a choir (round 88a).** A beam tower makes no sound per pulse (a Laser fires 9 to 15 a second): each
+  firing tower holds one of four voices of `laser_beam_loop.wav` (`Game.Core.BeamHum`, pure and tested; `SfxPlayer` sets
+  the loops). The voices share the power of one beam (each at 1/sqrt(n) of its level, so four Lasers are as loud as one),
+  a tower that keeps firing settles after 0.6 s over 2.5 s to 55 percent of its opening level and only opens at full
+  level again after a silence, and the voices are tuned 3.5 percent apart, drift 1.2 percent over 3.7 s and start at
+  different points of the loop, so equal recordings never stack into one hard tone. A fifth tower stays silent.
+- **A blow lands on its picture (round 88a).** A power sound swells before it hits. The generator measures per sound
+  set where the blow lies (`SoundSet._impact`, the first 10 ms window at 70 percent of the loudest; `SoundImpact`), and
+  a sound tied to a moment on screen is started that much (plus the device's buffer delay) ahead of it, or part-way into
+  its swell when the moment is too near (`SfxPlayer.PlayOnImpact`). Spencer's shockwave (0.19 s of swell, the wave
+  leaves 0.1 s after the button) starts 0.09 s plus the buffer delay into the recording; a boss's pulse is on a timer, so
+  its sound starts 0.35 to 0.52 s ahead (`CreatureChorus.AnnouncePulse`) and its blow lands with the ring.
 - **Crowds share a bed.** One movement loop per species. One creature plays it at half level; four fill it; more
   never get louder (square-root curve). Footsteps are rationed: at most one step of a species every 110 ms.
 - **Distance.** Zoomed out, filler drops to 60 percent and loses everything above 2.6 kHz; priority sounds do not.
@@ -41,7 +53,7 @@ All values are multipliers on the loudness-normalised clip (0 dB = the measured 
 | --- | --- | --- |
 | Gate or base explosion, boss death, hero death | 1.0 (0 dB) | priority |
 | Boss pulse and fission | 1.2 to 1.8 (+2 to +5 dB) | priority; the recordings are dense and measure hot, so they need headroom above 0 dB |
-| Tower break, hero pulse, base alert, howl | 0.7 to 0.8 (-2 to -3 dB) | priority |
+| Tower break, hero pulse, base alert, howl, radar ping | 0.7 to 0.8 (-2 to -3 dB) | priority |
 | Mine or barrel, upgrade, scrap, net, build | 0.5 to 0.7 (-3 to -6 dB) | priority |
 | Rocket or shell explosion, cash | 0.4 to 0.5 (-6 to -8 dB) | hit or crew |
 | Hero blaster, saber swing and hit | 0.3 to 0.35 (-9 to -10 dB) | crew |
@@ -83,6 +95,7 @@ visible pool. They are background, never the loudest thing in a level.
 | Upgrade, scrap, cash | `TowerUpgraded`, `TowerScrapped`, `TowerSold` |
 | Ambience layers | wind by theme (forest, blizzard); one loop per pool of water, bog or lava cells, sized and panned by the pool |
 | Music | `SfxLibrary` menu/game/boss sets from `Approved/Music/*_loop.wav`; `MusicPlayer` crossfades game and boss, `MenuMusic` plays the menu loop; music keeps its mastered level (no measured gain) |
+| Radar ping (round 88a) | `LevelContext.SurpriseSpotted` (the first creature out of a surprise spawn point or a nest behind the gate after 6 s of silence there, `SurpriseWatch`): `SfxLibrary.RadarPings` = `Approved/Intro/Colony/colony_radar_ping.wav`, level 0.8, priority, at most once a second |
 | Boss approach | `LevelContext.ComingBoss` voice growls from the gate every 3 s until the boss shows; pools keep their generated churn; no growl means no heartbeat |
 | Boss pulse, fission, brood | `_pulse` and `_spawn` of the boss voice (`enemy_power_pulse`, species screech for brood); generated bursts are fallbacks only |
 

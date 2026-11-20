@@ -187,7 +187,8 @@ namespace Game.Tests
             PathObjectDefinition chrono = Load<PathObjectDefinition>("PathObjects/SlowField");
             Assert.AreEqual(0.45f, chrono.SlowFactor, 0.001f);
             Assert.AreEqual(1.6f, chrono.Radius, 0.001f);
-            Assert.AreEqual(20f, chrono.Lifetime, 0.001f);
+            // Round 88a: a field lasts a whole wave (Round88aFeelTests holds the rule); it was 20 s.
+            Assert.AreEqual(60f, chrono.Lifetime, 0.001f);
             Assert.AreEqual(45, chrono.Cost);
             Assert.AreEqual(TargetLayers.Ground, chrono.Targets);
             Assert.AreEqual(PathObjectLook.Chrono, chrono.Look);

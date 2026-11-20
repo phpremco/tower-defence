@@ -276,6 +276,9 @@ namespace Game.Levels
         /// <summary>Raised with the place of a rift behind the defence gate when Voss warns about it (the HUD points at it).</summary>
         public GameEvent<Vector3> RearNestWarned { get; } = new GameEvent<Vector3>();
 
+        /// <summary>Raised where a surprise comes out: the first creature out of a surprise spawn point or a nest behind the gate after a silence (the radar and the HUD ping it, <see cref="SurpriseWatch"/>).</summary>
+        public GameEvent<Vector3> SurpriseSpotted { get; } = new GameEvent<Vector3>();
+
         /// <summary>Raised with the gate a boss is heading for to freeze it (the haze and the crack of the ice).</summary>
         public GameEvent<Vector3> BossGateWarned { get; } = new GameEvent<Vector3>();
 

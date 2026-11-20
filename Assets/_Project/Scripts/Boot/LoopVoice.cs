@@ -69,6 +69,15 @@ namespace Game.Boot
             set => _source.pitch = Mathf.Max(0.1f, value);
         }
 
+        /// <summary>Moves the loop to a share of its length (0 to 1), so equal loops started together do not run in step.</summary>
+        public void StartAt(float share)
+        {
+            if (_source.clip != null)
+            {
+                _source.timeSamples = Mathf.Clamp(Mathf.RoundToInt(Mathf.Repeat(share, 1f) * _source.clip.samples), 0, Mathf.Max(0, _source.clip.samples - 1));
+            }
+        }
+
         public void Tick(float unscaledDeltaTime, float mixGain)
         {
             _source.volume = Mathf.MoveTowards(_source.volume, _target * _gain * mixGain, unscaledDeltaTime / FadeSeconds);

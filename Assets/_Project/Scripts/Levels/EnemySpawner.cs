@@ -53,7 +53,8 @@ namespace Game.Levels
         private readonly LiquidPools _liquids;
         private readonly Vector3[] _gates;
         private readonly List<Enemy> _living = new List<Enemy>(128);
-        private readonly List<ElementNest> _nestBuffer = new List<ElementNest>(8);
+        private readonly List<int> _nestBuffer = new List<int>(8);
+        private readonly SurpriseWatch _surprises;
         private HeroTarget _heroTarget;
         private readonly Dictionary<EnemyDefinition, ObjectPool<Enemy>> _pools = new Dictionary<EnemyDefinition, ObjectPool<Enemy>>();
 
@@ -87,6 +88,7 @@ namespace Game.Levels
 
             _kerb = road.HalfWidthCells * context.Level.CellSize - KerbMargin;
             _maxLateral = StrayCells(road.Width) * context.Level.CellSize;
+            _surprises = SurpriseWatch.For(context.Level);
         }
 
         public int Alive { get; private set; }
@@ -163,6 +165,10 @@ namespace Game.Levels
 
             Launch(definition, route, FlightHeight(definition), EnemyOrigin.Gate, 0f);
             _context.GateSpawned.Raise(pathIndex);
+            if (_surprises.PathSpawned(pathIndex, Time.time))
+            {
+                _context.SurpriseSpotted.Raise(_paths[pathIndex][0]);
+            }
         }
 
         // A continent boss that answers the colony's drill comes up under the rig beside the field and makes for the road;
@@ -218,19 +224,14 @@ namespace Game.Levels
         private void SpawnFromNest(EnemyDefinition definition, int index)
         {
             ElementNest[] nests = _context.Level.Nests;
-            ElementNest chosen;
-            if (index >= 0 && index < nests.Length)
-            {
-                chosen = nests[index];
-            }
-            else
+            if (index < 0 || index >= nests.Length)
             {
                 _nestBuffer.Clear();
-                foreach (ElementNest nest in nests)
+                for (int i = 0; i < nests.Length; i++)
                 {
-                    if (nest.Element == definition.Element)
+                    if (nests[i].Element == definition.Element)
                     {
-                        _nestBuffer.Add(nest);
+                        _nestBuffer.Add(i);
                     }
                 }
 
@@ -240,9 +241,10 @@ namespace Game.Levels
                     return;
                 }
 
-                chosen = _nestBuffer[_random.Next(_nestBuffer.Count)];
+                index = _nestBuffer[_random.Next(_nestBuffer.Count)];
             }
 
+            ElementNest chosen = nests[index];
             Vector3 start = _context.Level.Grid.CellToWorld(chosen.Cell);
             Vector3[] route = OffRoadRoute.Build(_context.Level, start, out float progress);
             if (definition.Flies)
@@ -251,6 +253,10 @@ namespace Game.Levels
             }
 
             Launch(definition, route, FlightHeight(definition), NestOrigin(chosen.Element), progress);
+            if (_surprises.NestSpawned(index, Time.time))
+            {
+                _context.SurpriseSpotted.Raise(start);
+            }
         }
 
         /// <summary>How a creature leaves a nest of its element: a stone nest sits in a rift, so it claws out of the crack.</summary>
