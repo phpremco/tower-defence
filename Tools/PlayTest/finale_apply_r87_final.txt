@@ -1,0 +1,12 @@
+Finale apply 2026-11-20 10:53 from Tools/PlayTest/finale_probe.txt (24 cells); hold share 0.85.
+  Gravemaw         health 24250 -> 22300 (probe: holds x1.18 on Medium)
+  CinderMatriarch  health 10900 -> 11900 (probe: holds x1.29 on Medium)
+  FrostWarden      health 4400 -> 4400 (probe: holds x1.18 on Medium)
+  Rotbloom         health 5950 -> 6250 (probe: holds x1.23 on Medium)
+  Shattered        health 9050 -> 8700 (probe: holds x1.13 on Medium)
+  SealedOne        health 18650 -> 18650 (probe: holds x1.23 on Medium)
+  Easy    boss health share 0.80 -> 1.10 (derived 1.091), reported only (Medium is the reference, Easy stays forgiving)
+  Medium  boss health share 1.00 -> 1.00 (derived 1.000), reported only (Medium is the reference, Easy stays forgiving)
+  Hard    boss health share 1.25 -> 1.25 (derived 1.427), the designer's share 1.25 stands (the probe would write 1.20)
+  Psycho  boss health share 1.25 -> 1.25 (derived 1.562), the designer's share 1.25 stands (the probe would write 1.20)
+  the calibration's inputs changed: run measure, fit and apply before the next solve.

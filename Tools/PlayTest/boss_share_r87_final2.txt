@@ -1,0 +1,34 @@
+| Cell | Lost runs | In a boss wave | In the last wave | The other losses (wave: runs; P = peak wave) |
+| --- | --- | --- | --- | --- |
+| Landing Site Easy | 13 | 13 (100%) | 13 (100%) | - |
+| Landing Site Medium | 27 | 27 (100%) | 27 (100%) | - |
+| Landing Site Hard | 32 | 17 (53%) | 17 (53%) | 11: 15 |
+| Landing Site Psycho | 38 | 15 (39%) | 15 (39%) | 9: 4, 10P: 2, 11: 17 |
+| Glass Meadows Easy | 39 | 39 (100%) | 39 (100%) | - |
+| Glass Meadows Medium | 18 | 18 (100%) | 18 (100%) | - |
+| Glass Meadows Hard | 25 | 18 (72%) | 18 (72%) | 10: 7 |
+| Glass Meadows Psycho | 32 | 10 (31%) | 8 (25%) | 10: 19, 11: 3 |
+| Shard Ridge Easy | 25 | 9 (36%) | 9 (36%) | 14: 2, 15: 14 |
+| Shard Ridge Medium | 36 | 12 (33%) | 12 (33%) | 11: 4, 12: 12, 13P: 6, 14: 1, 15: 1 |
+| Shard Ridge Hard | 38 | 8 (21%) | 8 (21%) | 13P: 16, 15: 14 |
+| Shard Ridge Psycho | 50 | 2 (4%) | 2 (4%) | 11: 2, 12: 3, 13P: 40, 15: 3 |
+| Fault Line Easy | 29 | 17 (59%) | 17 (59%) | 12: 2, 13: 9, 14: 1 |
+| Fault Line Medium | 30 | 7 (23%) | 7 (23%) | 13: 4, 14P: 19 |
+| Fault Line Hard | 22 | 18 (82%) | 18 (82%) | 13: 2, 14P: 2 |
+| Fault Line Psycho | 57 | 9 (16%) | 5 (9%) | 11: 6, 12: 10, 13P: 32 |
+| Quartz Flats Easy | 18 | 14 (78%) | 14 (78%) | 16: 4 |
+| Quartz Flats Medium | 17 | 10 (59%) | 10 (59%) | 13: 1, 14: 1, 15: 2, 16: 3 |
+| Quartz Flats Hard | 22 | 1 (5%) | 1 (5%) | 14P: 14, 15: 7 |
+| Quartz Flats Psycho | 46 | 5 (11%) | 1 (2%) | 12: 2, 14P: 35, 15: 3, 16: 1 |
+| Crysium Vein Easy | 37 | 30 (81%) | 30 (81%) | 13: 2, 14P: 1, 17: 4 |
+| Crysium Vein Medium | 24 | 3 (12%) | 3 (12%) | 12P: 1, 13: 3, 14: 2, 15: 10, 16: 5 |
+| Crysium Vein Hard | 23 | 3 (13%) | 3 (13%) | 16: 17, 17: 3 |
+| Crysium Vein Psycho | 48 | 34 (71%) | 1 (2%) | 11: 12, 15: 1, 16P: 1 |
+
+Per level, every difficulty and rung together (gate: at most 40 % of the lost runs in a boss wave):
+  Landing Site: 110 lost, 72 in a boss wave (65%) OVER; 2 in a peak wave (2%)
+  Glass Meadows: 114 lost, 85 in a boss wave (75%) OVER; 0 in a peak wave (0%)
+  Shard Ridge: 149 lost, 31 in a boss wave (21%) ok; 62 in a peak wave (42%)
+  Fault Line: 138 lost, 51 in a boss wave (37%) ok; 53 in a peak wave (38%)
+  Quartz Flats: 103 lost, 30 in a boss wave (29%) ok; 49 in a peak wave (48%)
+  Crysium Vein: 132 lost, 70 in a boss wave (53%) OVER; 3 in a peak wave (2%)

@@ -1,16 +1,16 @@
 
 Boss health share per difficulty (boss alone / cap; share needed for Medium's ratio, linear)
-Gravemaw         Easy 6.43 (share 0.80, needs 1.11) [probe allows 1.08] Medium 8.94 (share 1.00, needs 1.00) Hard 5.72 (share 1.25, needs 1.95) [designer 1.25, probe would ask 1.24] Psycho 4.90 (share 1.25, needs 2.28) [designer 1.25, probe would ask 1.24]
-CinderMatriarch  Easy 2.83 (share 0.80, needs 1.10) [probe allows 1.08] Medium 3.91 (share 1.00, needs 1.00) Hard 2.31 (share 1.25, needs 2.12) [designer 1.25, probe would ask 1.24] Psycho 1.92 (share 1.25, needs 2.54) [designer 1.25, probe would ask 1.24]
-FrostWarden      Easy 1.61 (share 0.80, needs 0.98) [probe allows 1.08] Medium 1.98 (share 1.00, needs 1.00) Hard 1.28 (share 1.25, needs 1.94) [designer 1.25, probe would ask 1.24] Psycho 1.02 (share 1.25, needs 2.43) [designer 1.25, probe would ask 1.24]
-Rotbloom         Easy 2.53 (share 0.80, needs 1.10) [probe allows 1.08] Medium 3.49 (share 1.00, needs 1.00) Hard 2.20 (share 1.25, needs 1.98) [designer 1.25, probe would ask 1.24] Psycho 1.86 (share 1.25, needs 2.34) [designer 1.25, probe would ask 1.24]
-Shattered        Easy 5.08 (share 0.80, needs 0.81) [probe allows 1.08] Medium 5.16 (share 1.00, needs 1.00) Hard 3.06 (share 1.25, needs 2.11) [designer 1.25, probe would ask 1.24] Psycho 2.49 (share 1.25, needs 2.59) [designer 1.25, probe would ask 1.24]
-SealedOne        Easy 4.77 (share 0.80, needs 1.06) [probe allows 1.08] Medium 6.32 (share 1.00, needs 1.00) Hard 3.89 (share 1.25, needs 2.03) [designer 1.25, probe would ask 1.24] Psycho 3.26 (share 1.25, needs 2.42) [designer 1.25, probe would ask 1.24]
+Gravemaw         Easy 1.60 (share 0.80, needs 0.94) [probe allows 1.13] Medium 1.89 (share 1.00, needs 1.00) Hard 1.25 (share 1.25, needs 1.88) [designer 1.25, probe would ask 1.05] Psycho 1.09 (share 1.25, needs 2.17) [designer 1.25, probe would ask 1.05]
+CinderMatriarch  Easy 1.15 (share 0.80, needs 1.05) [probe allows 1.13] Medium 1.50 (share 1.00, needs 1.00) Hard 0.99 (share 1.25, needs 1.90) [designer 1.25, probe would ask 1.05] Psycho 0.83 (share 1.25, needs 2.25) [designer 1.25, probe would ask 1.05]
+FrostWarden      Easy 0.63 (share 0.80, needs 1.01) [probe allows 1.13] Medium 0.80 (share 1.00, needs 1.00) Hard 0.51 (share 1.25, needs 1.97) [designer 1.25, probe would ask 1.05] Psycho 0.43 (share 1.25, needs 2.34) [designer 1.25, probe would ask 1.05]
+Rotbloom         Easy 0.68 (share 0.80, needs 1.05) [probe allows 1.13] Medium 0.90 (share 1.00, needs 1.00) Hard 0.59 (share 1.25, needs 1.91) [designer 1.25, probe would ask 1.05] Psycho 0.50 (share 1.25, needs 2.25) [designer 1.25, probe would ask 1.05]
+Shattered        Easy 2.21 (share 0.80, needs 0.84) [probe allows 1.13] Medium 2.33 (share 1.00, needs 1.00) Hard 1.51 (share 1.25, needs 1.93) [designer 1.25, probe would ask 1.05] Psycho 1.22 (share 1.25, needs 2.38) [designer 1.25, probe would ask 1.05]
+SealedOne        Easy 1.70 (share 0.80, needs 1.03) [probe allows 1.13] Medium 2.20 (share 1.00, needs 1.00) Hard 1.40 (share 1.25, needs 1.97) [designer 1.25, probe would ask 1.05] Psycho 1.22 (share 1.25, needs 2.26) [designer 1.25, probe would ask 1.05]
 
 Boss health from the finale probe (data / derived)
-Gravemaw         49900 / 50177
-CinderMatriarch  14150 / 14229
-FrostWarden      6000 / 6033
-Rotbloom         27200 / 26218
-Shattered        15650 / 15737
-SealedOne        30300 / 36057
+Gravemaw         21000 / 22027
+CinderMatriarch  14400 / 14480
+FrostWarden      6150 / 6184
+Rotbloom         12950 / 13022
+Shattered        17350 / 17446
+SealedOne        26800 / 31892

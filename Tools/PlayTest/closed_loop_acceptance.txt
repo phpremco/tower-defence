@@ -1,29 +1,45 @@
-Closed-loop acceptance of Tools/PlayTest/pressure_r86_final2_easy_records.txt, Tools/PlayTest/pressure_r86_final2_medium_records.txt, Tools/PlayTest/pressure_r86_final2_records.txt (data a75de009; the project's data is a75de009)
-| Cell | Sensible | Skilled | Target | Verdict |
-| --- | --- | --- | --- | --- |
-| Level_C1_01 Easy | `3 3 3 2 1` x1.66 | `3 3 3 3 2` over x1.86 | weaker rung x1.55 at least (the ladder reads x1.48 or x1.66 there: holds x1.4) | accepted |
-| Level_C1_01 Medium | `3 3 3 3 1 0` x1.32 | `3 3 3 3 1 0` x1.32 | sensible x1.32, better rung x1.06 at least | accepted |
-| Level_C1_01 Hard | `3 3 1 0 0` x0.95 | `2 0 0 0 0` x0.85 | sensible x0.95, better rung x1.06 at least | accepted |
-| Level_C1_01 Psycho | `3 1 0 0 0` x0.85 | `3 3 3 0 0` x1.06 | better rung x1.06 | accepted |
-| Level_C1_02 Easy | `3 3 3 3 3` over x1.86 | `3 3 3 3 3` over x1.86 | weaker rung x1.55 at least (the ladder reads x1.48 or x1.66 there: holds x1.4) | accepted |
-| Level_C1_02 Medium | `3 3 3 2 2 0` x1.48 | `3 3 3 1 0 0` x1.18 | sensible x1.32, better rung x1.06 at least | accepted |
-| Level_C1_02 Hard | `3 3 2 0 0` x1.06 | `3 3 1 0 0` x0.95 | sensible x0.95, better rung x1.06 at least | accepted |
-| Level_C1_02 Psycho | `1 0 0 0 0` under x0.75 | `3 3 1 0 0` x0.95 | better rung x1.06 | accepted |
-| Level_C1_03 Easy | `3 3 3 3 3` over x1.86 | `3 3 3 3 0` x1.66 | weaker rung x1.55 at least (the ladder reads x1.48 or x1.66 there: holds x1.4) | accepted |
-| Level_C1_03 Medium | `3 2 3 2 0 0` x1.32 | `1 1 0 0 0 0` under x0.85 | sensible x1.32, better rung x1.06 at least | accepted |
-| Level_C1_03 Hard | `3 3 1 0 0` x0.95 | `3 2 0 1 0` x0.95 | sensible x0.95, better rung x1.06 at least | accepted |
-| Level_C1_03 Psycho | `0 0 0 0 0` under x0.75 | `3 2 0 0 0` x0.95 | better rung x1.06 | accepted |
-| Level_C1_04 Easy | `3 3 3 3 3` over x1.86 | `3 3 3 3 3` over x1.86 | weaker rung x1.55 at least (the ladder reads x1.48 or x1.66 there: holds x1.4) | accepted |
-| Level_C1_04 Medium | `3 3 3 2 1 0` x1.32 | `2 2 1 1 0 0` x1.06 | sensible x1.32, better rung x1.06 at least | accepted |
-| Level_C1_04 Hard | `3 2 2 1 0` x1.06 | `3 2 2 0 0` x1.06 | sensible x0.95, better rung x1.06 at least | accepted |
-| Level_C1_04 Psycho | `3 2 0 0 0` x0.95 | `2 2 3 1 0` x1.06 | better rung x1.06 | accepted |
-| Level_C1_05 Easy | `3 3 2 0 3` x1.48 | `3 3 3 3 3` over x1.86 | weaker rung x1.55 at least (the ladder reads x1.48 or x1.66 there: holds x1.4) | accepted |
-| Level_C1_05 Medium | `3 3 2 3 0 0` x1.32 | `3 2 0 1 0 0` x1.06 | sensible x1.32, better rung x1.06 at least | accepted |
-| Level_C1_05 Hard | `3 3 0 0 0` x0.95 | `3 3 3 3 2` over x1.32 | sensible x0.95, better rung x1.06 at least | accepted |
-| Level_C1_05 Psycho | `0 0 0 0 0` under x0.75 | `3 3 3 1 0` x1.06 | better rung x1.06 | accepted |
-| Level_C1_06 Easy | `3 3 3 3 3` over x1.86 | `3 3 3 3 2` over x1.86 | weaker rung x1.55 at least (the ladder reads x1.48 or x1.66 there: holds x1.4) | accepted |
-| Level_C1_06 Medium | `3 3 3 3 1 0` x1.32 | `3 3 3 1 0 0` x1.18 | sensible x1.32, better rung x1.06 at least | accepted |
-| Level_C1_06 Hard | `3 3 1 0 0` x0.95 | `3 3 0 0 0` x0.95 | sensible x0.95, better rung x1.06 at least | accepted |
-| Level_C1_06 Psycho | `0 0 0 0 0` under x0.75 | `3 3 3 0 0` x1.06 | better rung x1.06 | accepted |
+Closed-loop acceptance of Tools/PlayTest/pressure_r87_final2_easy_records.txt, Tools/PlayTest/pressure_r87_final2_medium_records.txt, Tools/PlayTest/pressure_r87_final2_records.txt (data 7e43e381; the project's data is 7e43e381; thresholds Tools/PlayTest/closed_loop_thresholds.txt)
+| Cell | Sensible | Skilled | Laser | Cannon | Target | Verdict |
+| --- | --- | --- | --- | --- | --- | --- |
+| Level_C1_01 Easy | `3 3 3 3 2 0` x2.09 | `3 3 3 3 3 0` x2.09 | `3 3 3 3 2 0` x2.09 | `3 3 3 3 3 1` x2.09 | weaker rung x1.66 | the weaker rung breaks even at x2.09, more than a step from x1.66 |
+| Level_C1_01 Medium | `3 3 3 0 0 0` x1.18 | `3 3 3 1 0 0` x1.18 | `3 3 3 0 0 0` x1.18 | `3 3 3 3 3 2` over x1.66 | sensible x1.32, best better rung x1.06 at least | the laser and the cannon archetype are more than a ladder step apart |
+| Level_C1_01 Hard | `3 2 0 0 0` x0.95 | `3 3 3 0 0` x1.06 | `0 0 0 0 0` under x0.75 | `3 3 3 3 2` over x1.32 | sensible x0.95, best better rung x1.06 at least | the laser and the cannon archetype are more than a ladder step apart |
+| Level_C1_01 Psycho | `0 0 0 0 0` under x0.75 | `3 3 1 0 0` x0.95 | `0 0 0 0 0` under x0.75 | `3 3 3 3 3` over x1.32 | skilled x1.06 | the laser and the cannon archetype are more than a ladder step apart |
+| Level_C1_02 Easy | `3 2 0 0 0 0` x1.48 | `2 0 0 0 0 0` x1.32 | `3 2 3 0 0 0` x1.66 | `3 3 3 3 3 3` over x2.34 | weaker rung x1.66 | the weaker rung breaks even at x1.32, more than a step from x1.66 |
+| Level_C1_02 Medium | `3 3 3 2 0 0` x1.32 | `3 3 3 3 2 1` x1.48 | `3 3 3 2 0 0` x1.32 | `3 3 3 3 3 2` over x1.66 | sensible x1.32, best better rung x1.06 at least | the laser and the cannon archetype are more than a ladder step apart |
+| Level_C1_02 Hard | `3 3 3 0 0` x1.06 | `3 2 0 0 0` x0.95 | `3 3 0 0 0` x0.95 | `3 3 3 3 3` over x1.32 | sensible x0.95, best better rung x1.06 at least | the laser and the cannon archetype are more than a ladder step apart |
+| Level_C1_02 Psycho | `0 0 0 0 0` under x0.75 | `3 3 3 3 2` over x1.32 | `1 0 0 0 0` under x0.75 | `3 3 3 3 1` x1.18 | skilled x1.06 | the skilled rung holds the whole ladder (target x1.06) |
+| Level_C1_03 Easy | `3 3 3 3 0 0` x1.86 | `3 3 3 3 0 0` x1.86 | `3 2 3 2 1 0` x1.86 | `3 3 3 2 0 1` x1.86 | weaker rung x1.66 | accepted |
+| Level_C1_03 Medium | `3 3 3 3 1 0` x1.32 | `3 2 1 3 0 0` x1.06 | `3 2 2 1 0 0` x1.18 | `3 2 1 0 0 0` x1.06 | sensible x1.32, best better rung x1.06 at least | accepted |
+| Level_C1_03 Hard | `3 3 0 0 0` x0.95 | `3 2 0 0 0` x0.95 | `2 1 0 1 0` x0.85 | `3 2 1 1 0` x0.95 | sensible x0.95, best better rung x1.06 at least | the best of the better rungs breaks even at x0.95, under its guard x1.06 |
+| Level_C1_03 Psycho | `0 0 0 0 0` under x0.75 | `3 3 3 1 0` x1.06 | `0 0 0 0 0` under x0.75 | `0 0 0 0 0` under x0.75 | skilled x1.06 | accepted |
+| Level_C1_04 Easy | `3 2 3 2 2 1` x2.09 | `3 3 3 0 0 0` x1.66 | `3 3 2 1 1 1` x1.66 | `2 3 3 1 0 1` x1.66 | weaker rung x1.66 | accepted |
+| Level_C1_04 Medium | `3 3 3 1 1 0` x1.18 | `3 2 1 0 0 0` x1.06 | `3 3 3 2 2 0` x1.48 | `3 3 3 2 1 0` x1.32 | sensible x1.32, best better rung x1.06 at least | accepted |
+| Level_C1_04 Hard | `3 3 3 1 0` x1.06 | `3 3 2 0 0` x1.06 | `3 2 3 2 0` x1.18 | `3 2 3 1 1` x1.06 | sensible x0.95, best better rung x1.06 at least | accepted |
+| Level_C1_04 Psycho | `0 0 0 0 0` under x0.75 | `0 0 0 0 0` under x0.75 | `1 0 0 0 0` under x0.75 | `2 0 0 0 0` x0.85 | skilled x1.06 | the skilled rung loses the whole ladder (target x1.06) |
+| Level_C1_05 Easy | `3 3 2 3 1 2` x1.86 | `3 3 3 2 0 0` x1.86 | `3 3 3 3 1 1` x1.86 | `3 3 3 3 3 0` x2.09 | weaker rung x1.66 | accepted |
+| Level_C1_05 Medium | `3 3 3 3 0 0` x1.32 | `3 3 3 2 0 0` x1.32 | `3 3 3 3 2 0` x1.48 | `3 3 3 3 3 3` over x1.66 | sensible x1.32, best better rung x1.06 at least | accepted |
+| Level_C1_05 Hard | `2 1 0 0 1` x0.85 | `3 3 2 3 1` x1.18 | `3 3 1 1 0` x0.95 | `3 3 3 3 2` over x1.32 | sensible x0.95, best better rung x1.06 at least | the laser and the cannon archetype are more than a ladder step apart |
+| Level_C1_05 Psycho | `1 0 0 0 0` under x0.75 | `3 3 3 1 0` x1.06 | `0 0 0 0 0` under x0.75 | `1 1 1 0 0` under x0.75 | skilled x1.06 | accepted |
+| Level_C1_06 Easy | `3 3 1 0 1 0` x1.48 | `3 1 0 0 0 0` x1.32 | `3 3 3 2 0 0` x1.86 | `3 3 3 1 2 0` x1.66 | weaker rung x1.66 | the weaker rung breaks even at x1.32, more than a step from x1.66 |
+| Level_C1_06 Medium | `3 3 3 3 0 0` x1.32 | `3 3 3 0 0 0` x1.18 | `3 3 3 3 0 0` x1.32 | `3 3 3 3 3 0` x1.48 | sensible x1.32, best better rung x1.06 at least | accepted |
+| Level_C1_06 Hard | `3 3 2 0 0` x1.06 | `3 2 2 0 0` x1.06 | `3 3 0 1 0` x0.95 | `3 3 3 3 3` over x1.32 | sensible x0.95, best better rung x1.06 at least | the laser and the cannon archetype are more than a ladder step apart |
+| Level_C1_06 Psycho | `0 0 0 0 0` under x0.75 | `3 3 3 3 0` x1.18 | `0 0 0 0 0` under x0.75 | `0 0 0 0 0` under x0.75 | skilled x1.06 | accepted |
 
-All 24 cells accepted.
+16 findings:
+  Level_C1_01 Easy: the weaker rung breaks even at x2.09, more than a step from x1.66 (sensible `3 3 3 3 2 0` x2.09, skilled `3 3 3 3 3 0` x2.09, laser `3 3 3 3 2 0` x2.09, cannon `3 3 3 3 3 1` x2.09)
+  Level_C1_01 Medium: the laser and the cannon archetype are more than a ladder step apart (sensible `3 3 3 0 0 0` x1.18, skilled `3 3 3 1 0 0` x1.18, laser `3 3 3 0 0 0` x1.18, cannon `3 3 3 3 3 2` over x1.66)
+  Level_C1_01 Hard: the laser and the cannon archetype are more than a ladder step apart (sensible `3 2 0 0 0` x0.95, skilled `3 3 3 0 0` x1.06, laser `0 0 0 0 0` under x0.75, cannon `3 3 3 3 2` over x1.32)
+  Level_C1_01 Psycho: the laser and the cannon archetype are more than a ladder step apart (sensible `0 0 0 0 0` under x0.75, skilled `3 3 1 0 0` x0.95, laser `0 0 0 0 0` under x0.75, cannon `3 3 3 3 3` over x1.32)
+  Level_C1_01: 72 of 110 lost runs fell in a boss wave (65 %; at most 40 %)
+  Level_C1_02 Easy: the weaker rung breaks even at x1.32, more than a step from x1.66 (sensible `3 2 0 0 0 0` x1.48, skilled `2 0 0 0 0 0` x1.32, laser `3 2 3 0 0 0` x1.66, cannon `3 3 3 3 3 3` over x2.34)
+  Level_C1_02 Medium: the laser and the cannon archetype are more than a ladder step apart (sensible `3 3 3 2 0 0` x1.32, skilled `3 3 3 3 2 1` x1.48, laser `3 3 3 2 0 0` x1.32, cannon `3 3 3 3 3 2` over x1.66)
+  Level_C1_02 Hard: the laser and the cannon archetype are more than a ladder step apart (sensible `3 3 3 0 0` x1.06, skilled `3 2 0 0 0` x0.95, laser `3 3 0 0 0` x0.95, cannon `3 3 3 3 3` over x1.32)
+  Level_C1_02 Psycho: the skilled rung holds the whole ladder (target x1.06) (sensible `0 0 0 0 0` under x0.75, skilled `3 3 3 3 2` over x1.32, laser `1 0 0 0 0` under x0.75, cannon `3 3 3 3 1` x1.18)
+  Level_C1_02: 85 of 114 lost runs fell in a boss wave (75 %; at most 40 %)
+  Level_C1_03 Hard: the best of the better rungs breaks even at x0.95, under its guard x1.06 (sensible `3 3 0 0 0` x0.95, skilled `3 2 0 0 0` x0.95, laser `2 1 0 1 0` x0.85, cannon `3 2 1 1 0` x0.95)
+  Level_C1_04 Psycho: the skilled rung loses the whole ladder (target x1.06) (sensible `0 0 0 0 0` under x0.75, skilled `0 0 0 0 0` under x0.75, laser `1 0 0 0 0` under x0.75, cannon `2 0 0 0 0` x0.85)
+  Level_C1_05 Hard: the laser and the cannon archetype are more than a ladder step apart (sensible `2 1 0 0 1` x0.85, skilled `3 3 2 3 1` x1.18, laser `3 3 1 1 0` x0.95, cannon `3 3 3 3 2` over x1.32)
+  Level_C1_06 Easy: the weaker rung breaks even at x1.32, more than a step from x1.66 (sensible `3 3 1 0 1 0` x1.48, skilled `3 1 0 0 0 0` x1.32, laser `3 3 3 2 0 0` x1.86, cannon `3 3 3 1 2 0` x1.66)
+  Level_C1_06 Hard: the laser and the cannon archetype are more than a ladder step apart (sensible `3 3 2 0 0` x1.06, skilled `3 2 2 0 0` x1.06, laser `3 3 0 1 0` x0.95, cannon `3 3 3 3 3` over x1.32)
+  Level_C1_06: 70 of 132 lost runs fell in a boss wave (53 %; at most 40 %)

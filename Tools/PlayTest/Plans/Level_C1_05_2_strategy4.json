@@ -76,20 +76,20 @@
         {
             "Tower": "Rocket",
             "X": [
-                33,
+                34,
                 34,
                 33,
                 35,
                 32,
-                34
+                33
             ],
             "Y": [
+                3,
                 4,
-                4,
                 3,
                 3,
                 3,
-                3
+                4
             ]
         }
     ],
@@ -115,7 +115,7 @@
             "Weight": 2.1716465950012207
         }
     ],
-    "UpgradeBias": 1.6200000047683716,
+    "UpgradeBias": 1.4199999570846558,
     "TowersBeforeUpgrades": 3,
     "MineCoverBelow": 1.0,
     "MineOnBoss": false,

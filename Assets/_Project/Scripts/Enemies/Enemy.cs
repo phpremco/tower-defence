@@ -10,7 +10,7 @@ namespace Game.Enemies
     /// flyers may stop to strike the gates they pass, trail layers drop a patch every so often, and anything can be
     /// slowed or hurried for a while. Has no knowledge of how it looks.
     /// </summary>
-    public sealed class Enemy : MonoBehaviour, ITargetable, ISourcedTarget, IHitBudget
+    public sealed class Enemy : MonoBehaviour, ITargetable, ISourcedTarget, IHitBudget, IFamilyMember
     {
         private const float ArrivalDistance = 0.02f;
         private const float MinSpeedFactor = 0.1f;
@@ -212,6 +212,9 @@ namespace Game.Enemies
             Initialized?.Invoke(this);
         }
 
+        /// <summary>What it is made of, as the combat rules' family table reads it (<see cref="IFamilyMember"/>).</summary>
+        public CreatureFamily Family => _definition != null ? _definition.Family : CreatureFamily.None;
+
         // Anything without a source (a mine, the hero, a pulse) counts as a blast: it still reaches a hidden boss in part.
         public void TakeDamage(float amount) => TakeDamageFrom(amount, null, true);
 
@@ -221,7 +224,7 @@ namespace Game.Enemies
         /// </summary>
         public float HitToKill(DamageProfile profile)
         {
-            float share = profile.Against(Layer) * _damageScale;
+            float share = profile.Against(Layer, Family) * _damageScale;
             if (Health == null || !_active || _warded || IsConcealed || share <= 0f)
             {
                 return float.PositiveInfinity;

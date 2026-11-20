@@ -273,11 +273,11 @@ namespace Game.Editor
         /// <summary>Every creature in the data with the traits its numbers give it, as a Markdown table.</summary>
         public static string Bestiary(CombatRules rules)
         {
-            var text = new StringBuilder("| Creature | Body | Armour | Speed | Traits |\n| --- | --- | --- | --- | --- |\n");
+            var text = new StringBuilder("| Creature | Body | Armour | Speed | Traits | Family |\n| --- | --- | --- | --- | --- | --- |\n");
             foreach (string guid in AssetDatabase.FindAssets("t:EnemyDefinition", new[] { "Assets/_Project/Data/Enemies" }))
             {
                 var enemy = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(AssetDatabase.GUIDToAssetPath(guid));
-                text.Append(Invariant($"| {enemy.DisplayName}{(enemy.IsBoss ? " (boss)" : string.Empty)} | {enemy.MaxHealth:0} | {enemy.Armor:0} | {enemy.AverageSpeed:0.0#} | {RoleMatrix.TraitsOf(rules, enemy)} |\n"));
+                text.Append(Invariant($"| {enemy.DisplayName}{(enemy.IsBoss ? " (boss)" : string.Empty)} | {enemy.MaxHealth:0} | {enemy.Armor:0} | {enemy.AverageSpeed:0.0#} | {RoleMatrix.TraitsOf(rules, enemy)} | {(enemy.Family == CreatureFamily.None ? "-" : enemy.Family.ToString())} |\n"));
             }
 
             return text.ToString();

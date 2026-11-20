@@ -1,0 +1,139 @@
+Level_C1_01 0
+  * strategy3: `3 3 3 3` breaks even over x1.86; at the data won 3 of 3, base 3.00, stars 9
+    strategy5: `3 3 3 3` breaks even over x1.86; at the data won 3 of 3, base 3.00, stars 9
+    strategy1: `3 3 3 2` breaks even over x1.86; at the data won 3 of 3, base 3.00, stars 9
+    strategy2: `3 3 3 2` breaks even over x1.86; at the data won 3 of 3, base 3.00, stars 9
+    strategy4: `2 0 0 0` breaks even x1.18; at the data won 2 of 3, base 1.17, stars 3
+Level_C1_01 1
+  * strategy1: `3 3 1 0` breaks even x1.18; at the data won 3 of 3, base 3.00, stars 9
+    strategy3: `3 2 0 0` breaks even x1.18; at the data won 3 of 3, base 3.00, stars 9
+    strategy4: `3 2 0 0` breaks even x1.18; at the data won 3 of 3, base 3.00, stars 9
+    strategy2: `2 0 0 0` breaks even x1.06; at the data won 2 of 3, base 2.00, stars 6
+Level_C1_01 2
+  * strategy2: `3 2 0 0` breaks even x1.06; at the data won 2 of 3, base 2.00, stars 6
+    strategy1: `3 2 0 0` breaks even x1.06; at the data won 2 of 3, base 1.59, stars 5
+Level_C1_01 3
+  * strategy1: `3 3 0 0` breaks even x1.06; at the data won 3 of 3, base 3.00, stars 9
+    strategy4: `3 3 0 0` breaks even x1.06; at the data won 3 of 3, base 3.00, stars 9
+    strategy5: `3 3 0 0` breaks even x1.06; at the data won 3 of 3, base 3.00, stars 9
+    strategy3: `3 3 0 0` breaks even x1.06; at the data won 3 of 3, base 2.87, stars 8
+    strategy6: `3 1 0 0` breaks even x0.95; at the data won 1 of 3, base 1.00, stars 3
+    strategy2: `3 0 0 0` breaks even x0.95; at the data won 0 of 3, base 0.00, stars 0
+Level_C1_02 0
+  * strategy6: `3 1 0 0` breaks even x1.18; at the data won 3 of 3, base 3.00, stars 9
+    strategy1: `3 0 0 0` breaks even x1.18; at the data won 3 of 3, base 3.00, stars 9
+    strategy4: `3 0 0 0` breaks even x1.18; at the data won 3 of 3, base 3.00, stars 9
+    strategy3: `2 0 0 0` breaks even x1.18; at the data won 2 of 3, base 2.00, stars 6
+    strategy5: `2 0 0 0` breaks even x1.18; at the data won 2 of 3, base 2.00, stars 6
+    strategy2: `1 0 0 0` breaks even under x0.85; at the data won 1 of 3, base 1.00, stars 3
+Level_C1_02 1
+  * strategy1: `3 3 3 2` breaks even over x1.48; at the data won 3 of 3, base 3.00, stars 9
+    strategy3: `3 3 3 2` breaks even over x1.48; at the data won 3 of 3, base 3.00, stars 9
+    strategy4: `3 3 3 2` breaks even over x1.48; at the data won 3 of 3, base 3.00, stars 9
+    strategy2: `1 0 0 0` breaks even under x0.94; at the data won 1 of 3, base 1.00, stars 3
+Level_C1_02 2
+  * strategy4: `3 2 0 0` breaks even x1.06; at the data won 2 of 3, base 1.03, stars 4
+    strategy1: `3 1 0 0` breaks even x0.95; at the data won 1 of 3, base 1.00, stars 3
+    strategy2: `0 0 0 0` breaks even under x0.85; at the data won 0 of 3, base 0.00, stars 0
+    strategy3: `0 0 0 0` breaks even under x0.85; at the data won 0 of 3, base 0.00, stars 0
+Level_C1_02 3
+  * strategy3: `3 3 3 2` breaks even over x1.32; at the data won 3 of 3, base 3.00, stars 9
+    strategy4: `3 3 3 2` breaks even over x1.32; at the data won 3 of 3, base 3.00, stars 9
+    strategy5: `3 3 3 2` breaks even over x1.32; at the data won 3 of 3, base 3.00, stars 9
+    strategy6: `3 3 3 1` breaks even x1.18; at the data won 3 of 3, base 3.00, stars 9
+    strategy2: `3 3 2 0` breaks even x1.18; at the data won 3 of 3, base 3.00, stars 9
+    strategy1: `1 0 0 0` breaks even under x0.85; at the data won 0 of 3, base 0.00, stars 0
+Level_C1_03 0
+  * strategy1: `3 3 3 3` breaks even over x1.86; at the data won 3 of 3, base 3.00, stars 9
+    strategy2: `3 3 3 3` breaks even over x1.86; at the data won 3 of 3, base 3.00, stars 9
+    strategy3: `3 3 3 3` breaks even over x1.86; at the data won 3 of 3, base 2.99, stars 9
+    strategy4: `3 3 3 3` breaks even over x1.86; at the data won 3 of 3, base 2.99, stars 9
+    strategy6: `3 3 2 1` breaks even x1.66; at the data won 3 of 3, base 3.00, stars 9
+    strategy5: `3 3 1 0` breaks even x1.48; at the data won 3 of 3, base 3.00, stars 9
+Level_C1_03 1
+  * strategy4: `3 3 3 3` breaks even over x1.48; at the data won 3 of 3, base 3.00, stars 9
+    strategy2: `2 0 0 0` breaks even x1.06; at the data won 2 of 3, base 1.31, stars 4
+    strategy3: `1 0 1 0` breaks even under x0.94; at the data won 1 of 3, base 0.95, stars 3
+    strategy1: `1 0 0 0` breaks even under x0.94; at the data won 1 of 3, base 0.94, stars 3
+Level_C1_03 2
+  * strategy4: `3 1 1 0` breaks even x0.95; at the data won 1 of 3, base 0.73, stars 2
+    strategy1: `2 1 0 0` breaks even x0.95; at the data won 1 of 3, base 0.07, stars 1
+    strategy3: `1 1 0 0` breaks even under x0.85; at the data won 1 of 3, base 1.00, stars 3
+    strategy2: `1 0 0 0` breaks even under x0.85; at the data won 0 of 3, base 0.00, stars 0
+Level_C1_03 3
+  * strategy2: `3 3 3 2` breaks even over x1.32; at the data won 3 of 3, base 2.44, stars 6
+    strategy4: `2 2 2 0` breaks even x1.18; at the data won 2 of 3, base 1.89, stars 5
+    strategy6: `3 2 1 0` breaks even x1.06; at the data won 2 of 3, base 1.16, stars 4
+    strategy3: `2 2 1 0` breaks even x1.06; at the data won 2 of 3, base 2.00, stars 6
+    strategy1: `3 2 0 0` breaks even x1.06; at the data won 2 of 3, base 0.77, stars 2
+    strategy5: `1 1 0 0` breaks even under x0.85; at the data won 1 of 3, base 0.03, stars 1
+Level_C1_04 0
+  * strategy3: `3 3 3 3` breaks even over x1.86; at the data won 3 of 3, base 3.00, stars 9
+    strategy6: `3 3 3 3` breaks even over x1.86; at the data won 3 of 3, base 2.84, stars 8
+    strategy4: `3 3 3 2` breaks even over x1.86; at the data won 3 of 3, base 3.00, stars 9
+    strategy5: `3 3 3 2` breaks even over x1.86; at the data won 3 of 3, base 2.99, stars 9
+    strategy2: `3 3 3 2` breaks even over x1.86; at the data won 3 of 3, base 2.71, stars 7
+    strategy1: `3 3 2 0` breaks even x1.66; at the data won 3 of 3, base 1.85, stars 6
+Level_C1_04 1
+  * strategy1: `3 3 2 0` breaks even x1.32; at the data won 3 of 3, base 1.59, stars 5
+    strategy4: `3 1 1 1` breaks even x1.06; at the data won 3 of 3, base 1.61, stars 4
+    strategy3: `3 1 1 0` breaks even x1.06; at the data won 3 of 3, base 1.42, stars 5
+    strategy2: `2 1 1 0` breaks even x1.06; at the data won 2 of 3, base 0.73, stars 2
+Level_C1_04 2
+  * strategy2: `3 3 3 0` breaks even x1.18; at the data won 3 of 3, base 2.94, stars 9
+    strategy1: `3 3 2 0` breaks even x1.18; at the data won 3 of 3, base 2.92, stars 9
+    strategy3: `3 3 2 0` breaks even x1.18; at the data won 3 of 3, base 2.85, stars 8
+    strategy4: `1 0 0 0` breaks even under x0.85; at the data won 0 of 3, base 0.00, stars 0
+Level_C1_04 3
+  * strategy1: `0 0 0 0` breaks even under x0.85; at the data won 0 of 3, base 0.00, stars 0
+    strategy2: `0 0 0 0` breaks even under x0.85; at the data won 0 of 3, base 0.00, stars 0
+    strategy3: `0 0 0 0` breaks even under x0.85; at the data won 0 of 3, base 0.00, stars 0
+    strategy4: `0 0 0 0` breaks even under x0.85; at the data won 0 of 3, base 0.00, stars 0
+Level_C1_05 0
+  * strategy1: `3 3 3 3` breaks even over x1.86; at the data won 3 of 3, base 3.00, stars 9
+    strategy3: `3 3 3 3` breaks even over x1.86; at the data won 3 of 3, base 3.00, stars 9
+    strategy6: `3 3 3 3` breaks even over x1.86; at the data won 3 of 3, base 3.00, stars 9
+    strategy2: `3 3 3 1` breaks even x1.66; at the data won 3 of 3, base 3.00, stars 9
+    strategy4: `3 3 3 0` breaks even x1.66; at the data won 3 of 3, base 3.00, stars 9
+    strategy5: `3 3 3 0` breaks even x1.66; at the data won 3 of 3, base 3.00, stars 9
+Level_C1_05 1
+  * strategy1: `3 3 3 1` breaks even x1.32; at the data won 3 of 3, base 2.94, stars 9
+    strategy3: `3 3 2 1` breaks even x1.32; at the data won 3 of 3, base 2.94, stars 9
+    strategy4: `3 3 1 0` breaks even x1.18; at the data won 3 of 3, base 3.00, stars 9
+    strategy2: `3 3 1 0` breaks even x1.18; at the data won 3 of 3, base 2.94, stars 9
+Level_C1_05 2
+  * strategy1: `3 2 3 1` breaks even x1.18; at the data won 2 of 3, base 0.91, stars 2
+    strategy5: `3 3 1 0` breaks even x1.06; at the data won 3 of 3, base 1.84, stars 5
+    strategy4: `3 3 0 0` breaks even x1.06; at the data won 3 of 3, base 1.99, stars 5
+    strategy3: `3 2 1 0` breaks even x1.06; at the data won 2 of 3, base 0.50, stars 2
+    strategy2: `3 2 0 0` breaks even x1.06; at the data won 2 of 3, base 1.35, stars 4
+Level_C1_05 3
+  * strategy6: `2 3 2 1` breaks even x1.18; at the data won 3 of 3, base 1.80, stars 5
+    strategy3: `3 3 0 1` breaks even x1.06; at the data won 3 of 3, base 2.22, stars 6
+    strategy1: `3 2 1 0` breaks even x1.06; at the data won 2 of 3, base 0.71, stars 2
+    strategy2: `3 2 0 0` breaks even x1.06; at the data won 2 of 3, base 0.72, stars 3
+    strategy4: `2 0 0 0` breaks even x0.95; at the data won 0 of 3, base 0.00, stars 0
+    strategy5: `1 1 1 0` breaks even under x0.85; at the data won 1 of 3, base 0.81, stars 2
+Level_C1_06 0
+  * strategy6: `3 1 0 0` breaks even x1.18; at the data won 3 of 3, base 2.93, stars 9
+    strategy4: `3 0 0 0` breaks even x1.18; at the data won 3 of 3, base 2.56, stars 7
+    strategy2: `3 0 0 0` breaks even x1.18; at the data won 3 of 3, base 2.23, stars 6
+    strategy3: `3 0 0 0` breaks even x1.18; at the data won 3 of 3, base 2.23, stars 6
+    strategy5: `3 0 0 0` breaks even x1.18; at the data won 3 of 3, base 2.22, stars 6
+    strategy1: `2 0 0 0` breaks even x1.18; at the data won 2 of 3, base 1.47, stars 4
+Level_C1_06 1
+  * strategy4: `3 3 0 0` breaks even x1.18; at the data won 3 of 3, base 1.49, stars 5
+    strategy2: `3 2 0 0` breaks even x1.18; at the data won 3 of 3, base 1.35, stars 3
+    strategy3: `3 1 1 0` breaks even x1.06; at the data won 3 of 3, base 1.36, stars 5
+    strategy1: `3 1 0 0` breaks even x1.06; at the data won 3 of 3, base 1.39, stars 5
+Level_C1_06 2
+  * strategy4: `2 2 2 0` breaks even x1.18; at the data won 2 of 3, base 2.00, stars 6
+    strategy3: `3 3 1 2` breaks even x1.06; at the data won 3 of 3, base 3.00, stars 9
+    strategy1: `3 3 1 0` breaks even x1.06; at the data won 3 of 3, base 3.00, stars 9
+    strategy2: `3 2 1 1` breaks even x1.06; at the data won 2 of 3, base 2.00, stars 6
+Level_C1_06 3
+  * strategy1: `3 3 3 0` breaks even x1.18; at the data won 3 of 3, base 2.15, stars 7
+    strategy2: `3 3 1 0` breaks even x1.06; at the data won 3 of 3, base 2.45, stars 7
+    strategy3: `3 3 1 0` breaks even x1.06; at the data won 3 of 3, base 1.65, stars 5
+    strategy4: `3 2 0 0` breaks even x1.06; at the data won 2 of 3, base 1.09, stars 3
+wrote Tools/PlayTest/skilled_picks.txt (24 cells)

@@ -22,6 +22,7 @@ namespace Game.Tests
     /// of rounds 74 and 75: the build order of that strategy's best recorded run as a fixed script, with the rift reaction),
     /// typical (the build order the sensible bot took on seed 1 at the data, replayed as a fixed script on every seed and
     /// multiple), sensible and careless (the reactive bots of the headroom ladder), fresh (sensible on a plain save),
+    /// laser and cannon (round 87: the sensible player whose main ground gun is the Laser Turret or the Cannon),
     /// mono-TowerId, and strategyN (round 78: the cell's searched strategy number N played as the skilled rung plays one;
     /// the skilled rung's pick is refreshed from a batch of these, see <see cref="SkilledPicks"/>).
     ///
@@ -40,6 +41,9 @@ namespace Game.Tests
         private const string TypicalPolicy = "typical";
         private const string ScriptPolicy = "script";
         private const string StrategyPolicyPrefix = "strategy";
+
+        // The archetype rungs (round 87): the sensible player with a favourite ground gun, policy name to tower id.
+        private static readonly Dictionary<string, string> MainGunPolicies = new Dictionary<string, string> { { "laser", "Laser" }, { "cannon", "Cannon" } };
 
         // The typical script is the sensible bot's own build order on this seed, at the data.
         private const int TypicalSourceSeed = 1;
@@ -157,6 +161,15 @@ namespace Game.Tests
                     note = typical.Steps.Length + " steps";
                     return typical.Steps.Length > 0 ? ProbeStrategy.Scripted(typical) : null;
                 default:
+                    if (MainGunPolicies.TryGetValue(policy, out string mainGun))
+                    {
+                        // Where the favourite is not owned or not on the level's bar the archetype is the sensible player; the record says so.
+                        bool offered = System.Array.Exists(level.AvailableTowers, t => t != null && t.Id == mainGun)
+                            && BalanceProbeTests.OwnedTowers(BalancePipelineTests.Catalog(), node, difficulty).Contains(mainGun);
+                        note = offered ? "main gun " + mainGun : mainGun + " not available here: plays as sensible";
+                        return ProbeStrategy.SensibleBot(mainGun);
+                    }
+
                     if (policy.StartsWith(StrategyPolicyPrefix, System.StringComparison.Ordinal))
                     {
                         // One named candidate of the cell, played exactly as the skilled rung would play it.

@@ -22,6 +22,8 @@ namespace Game.Enemies
         [SerializeField] [Min(0)] private int _reward = 5;
         [SerializeField] [Min(1)] private int _baseDamage = 1;
         [SerializeField] private Element _element;
+        [Tooltip("What its body is made of, where the combat rules have a row for it (an energy body is overloaded by beams). None for flesh, shell and stone.")]
+        [SerializeField] private CreatureFamily _family;
 
         [Header("Attack")]
         [SerializeField] private AttackStyle _attackStyle;
@@ -97,6 +99,9 @@ namespace Game.Enemies
 
         /// <summary>The element this creature is born from, or None. Element creatures come up out of nests.</summary>
         public Element Element => _element;
+
+        /// <summary>What the body is made of, as the combat rules' family table reads it (CombatRules.FamilyFactor); None for most.</summary>
+        public CreatureFamily Family => _family;
 
         /// <summary>How the attack looks; audio and views read it, logic does not.</summary>
         public AttackStyle AttackStyle => _attackStyle;

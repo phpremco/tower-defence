@@ -1,0 +1,160 @@
+Measured with: bot 4:ef00a6e8; data 7e43e381; game code 751328ff
+
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 46 of 72 curves monotone = 63.9%  ->  FAIL
+  skilled       13 of 18  curves (72%); 5 of 90 steps drop by more than the tolerance
+  sensible      12 of 18  curves (67%); 7 of 90 steps drop by more than the tolerance
+  cannon        12 of 18  curves (67%); 8 of 90 steps drop by more than the tolerance
+  laser          9 of 18  curves (50%); 10 of 90 steps drop by more than the tolerance
+  the same check on other scores (all rungs): P 46 of 72; A 50 of 72; R+D (furthest creature) 42 of 72; D 51 of 72; won/lost 59 of 72
+  curves that are not monotone (P per multiple, the drops marked):
+    Glass Meadows Easy    laser        seed 3: 1.25:0.05 1.4:1.09L 1.57:0.06! 1.76:1.08L 1.97:1.09L 2.21:1.10L  (worst drop -1.030)
+    Shard Ridge Easy      cannon       seed 2: 1.25:0.63 1.4:0.65 1.57:0.69 1.76:0.74 1.97:1.56L 2.21:1.36!  (worst drop -0.198)
+    Shard Ridge Easy      laser        seed 1: 1.25:0.74 1.4:1.59L 1.57:0.84! 1.76:1.55L 1.97:1.59L 2.21:1.62L  (worst drop -0.745)
+    Shard Ridge Easy      skilled      seed 3: 1.25:0.56 1.4:0.58 1.57:0.63 1.76:0.70 1.97:1.59L 2.21:1.56L!  (worst drop -0.029)
+    Fault Line Easy       cannon       seed 1: 1.25:1.86L 1.4:1.39! 1.57:1.45 1.76:1.87L 1.97:1.87L 2.21:1.85L!  (worst drop -0.469)
+    Fault Line Easy       cannon       seed 2: 1.25:1.27 1.4:1.46 1.57:1.64 1.76:1.81 1.97:1.87L 2.21:1.75!  (worst drop -0.122)
+    Fault Line Easy       cannon       seed 3: 1.25:1.76 1.4:1.62! 1.57:1.74 1.76:1.87L 1.97:1.87L 2.21:1.88L  (worst drop -0.138)
+    Fault Line Easy       laser        seed 1: 1.25:1.57 1.4:1.72 1.57:1.86L 1.76:1.86L 1.97:1.68! 2.21:1.85L  (worst drop -0.180)
+    Fault Line Easy       laser        seed 2: 1.25:1.25 1.4:1.46 1.57:1.65 1.76:1.79 1.97:1.87L 2.21:1.75!  (worst drop -0.122)
+    Fault Line Easy       laser        seed 3: 1.25:1.80 1.4:1.62! 1.57:1.72 1.76:1.79L 1.97:1.87L 2.21:1.88L  (worst drop -0.175)
+    Fault Line Easy       sensible     seed 1: 1.25:1.55 1.4:1.64 1.57:1.47! 1.76:1.60 1.97:1.75 2.21:1.79L  (worst drop -0.176)
+    Fault Line Easy       sensible     seed 2: 1.25:1.32 1.4:1.44 1.57:1.57 1.76:1.72 1.97:1.51! 2.21:1.64  (worst drop -0.215)
+    Fault Line Easy       sensible     seed 3: 1.25:1.57 1.4:1.85L 1.57:1.74! 1.76:1.87L 1.97:1.86L 2.21:1.87L  (worst drop -0.113)
+    Fault Line Easy       skilled      seed 1: 1.25:1.11 1.4:1.41 1.57:1.40 1.76:1.79L 1.97:1.79L 2.21:1.76L!  (worst drop -0.039)
+    Quartz Flats Easy     cannon       seed 1: 1.25:0.15 1.4:0.17 1.57:0.15! 1.76:0.16 1.97:0.17 2.21:1.28L  (worst drop -0.023)
+    Quartz Flats Easy     laser        seed 1: 1.25:0.15 1.4:0.17 1.57:0.15! 1.76:0.17 1.97:0.20 2.21:1.23L  (worst drop -0.023)
+    Quartz Flats Easy     laser        seed 3: 1.25:0.13 1.4:0.14 1.57:0.14 1.76:0.15 1.97:1.23L 2.21:0.21!  (worst drop -1.016)
+    Quartz Flats Easy     sensible     seed 1: 1.25:0.15 1.4:0.17 1.57:1.17L 1.76:0.19! 1.97:1.19L 2.21:0.28!  (worst drop -0.972)
+    Quartz Flats Easy     sensible     seed 3: 1.25:0.13 1.4:0.14 1.57:0.14 1.76:0.26 1.97:1.19L 2.21:0.21!  (worst drop -0.980)
+    Crysium Vein Easy     cannon       seed 3: 1.25:0.86 1.4:0.86 1.57:0.68! 1.76:1.64L 1.97:0.75! 2.21:1.64L  (worst drop -0.893)
+    Crysium Vein Easy     laser        seed 2: 1.25:0.78 1.4:0.83 1.57:0.74! 1.76:1.63L 1.97:1.61L! 2.21:1.65L  (worst drop -0.094)
+    Crysium Vein Easy     laser        seed 3: 1.25:0.76 1.4:0.68! 1.57:0.67 1.76:0.70 1.97:1.64L 2.21:1.64L  (worst drop -0.080)
+    Crysium Vein Easy     sensible     seed 3: 1.25:0.76 1.4:0.80 1.57:1.63L 1.76:1.63L 1.97:0.79! 2.21:1.64L  (worst drop -0.843)
+    Crysium Vein Easy     skilled      seed 1: 1.25:0.65 1.4:0.69 1.57:1.63L 1.76:1.64L 1.97:1.59L! 2.21:1.59L  (worst drop -0.044)
+    Crysium Vein Easy     skilled      seed 2: 1.25:0.68 1.4:1.62L 1.57:1.63L 1.76:1.59L! 1.97:1.64L 2.21:1.63L  (worst drop -0.038)
+    Crysium Vein Easy     skilled      seed 3: 1.25:0.67 1.4:1.62L 1.57:1.63L 1.76:1.60L! 1.97:1.64L 2.21:1.67L  (worst drop -0.034)
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 0 of 0 cells within the limit  ->  FAIL
+  cell                  skilled                   sensible                  
+  Landing Site Easy     -                         -
+  Glass Meadows Easy    -                         -
+  Shard Ridge Easy      -                         -
+  Fault Line Easy       -                         -
+  Quartz Flats Easy     -                         -
+  Crysium Vein Easy     -                         -
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  skilled                           sensible                          cannon                            laser                             
+  Landing Site Easy     -                                 -                                 -                                 -
+  Glass Meadows Easy    -                                 -                                 -                                 -
+  Shard Ridge Easy      -                                 -                                 -                                 -
+  Fault Line Easy       -                                 -                                 -                                 -
+  Quartz Flats Easy     -                                 -                                 -                                 -
+  Crysium Vein Easy     -                                 -                                 -                                 -
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  skilled
+    Landing Site Easy     x1.25 0.12 (0.12-0.12) 3/3 | x1.4 0.12 (0.12-0.12) 3/3 | x1.57 0.12 (0.12-0.12) 3/3 | x1.76 0.12 (0.12-0.13) 3/3 | x1.97 0.13 (0.13-0.14) 3/3 | x2.21 1.30 (1.30-1.31) 0/3
+    Glass Meadows Easy    x1.25 0.04 (0.04-1.04) 2/3 | x1.4 1.05 (1.05-1.06) 0/3 | x1.57 1.07 (1.07-1.08) 0/3 | x1.76 1.09 (1.09-1.09) 0/3 | x1.97 1.09 (1.09-1.09) 0/3 | x2.21 1.10 (1.10-1.11) 0/3
+    Shard Ridge Easy      x1.25 0.62 (0.56-0.66) 3/3 | x1.4 0.67 (0.58-0.73) 3/3 | x1.57 0.80 (0.63-0.80) 3/3 | x1.76 0.82 (0.70-0.88) 3/3 | x1.97 1.59 (1.58-1.59) 0/3 | x2.21 1.58 (1.56-1.58) 0/3
+    Fault Line Easy       x1.25 1.11 (1.09-1.12) 3/3 | x1.4 1.25 (1.24-1.41) 3/3 | x1.57 1.41 (1.40-1.57) 3/3 | x1.76 1.79 (1.79-1.79) 0/3 | x1.97 1.79 (1.79-1.80) 0/3 | x2.21 1.79 (1.76-1.80) 0/3
+    Quartz Flats Easy     x1.25 0.11 (0.11-0.12) 3/3 | x1.4 0.12 (0.11-0.13) 3/3 | x1.57 0.12 (0.12-0.13) 3/3 | x1.76 0.19 (0.12-1.14) 2/3 | x1.97 1.14 (1.13-1.14) 0/3 | x2.21 1.16 (1.14-1.19) 0/3
+    Crysium Vein Easy     x1.25 0.67 (0.65-0.68) 3/3 | x1.4 1.62 (0.69-1.62) 1/3 | x1.57 1.63 (1.63-1.63) 0/3 | x1.76 1.60 (1.59-1.64) 0/3 | x1.97 1.64 (1.59-1.64) 0/3 | x2.21 1.63 (1.59-1.67) 0/3
+  sensible
+    Landing Site Easy     x1.25 0.12 (0.12-0.12) 3/3 | x1.4 0.12 (0.12-0.12) 3/3 | x1.57 0.15 (0.15-0.16) 3/3 | x1.76 0.16 (0.16-0.16) 3/3 | x1.97 0.18 (0.16-1.17) 2/3 | x2.21 1.22 (1.21-1.25) 0/3
+    Glass Meadows Easy    x1.25 0.05 (0.05-0.06) 3/3 | x1.4 0.05 (0.05-1.07) 2/3 | x1.57 1.08 (1.08-1.09) 0/3 | x1.76 1.10 (1.09-1.10) 0/3 | x1.97 1.10 (1.10-1.11) 0/3 | x2.21 1.11 (1.11-1.13) 0/3
+    Shard Ridge Easy      x1.25 0.58 (0.54-0.61) 3/3 | x1.4 0.60 (0.57-0.66) 3/3 | x1.57 0.65 (0.60-0.73) 3/3 | x1.76 0.76 (0.71-0.79) 3/3 | x1.97 1.57 (1.54-1.59) 0/3 | x2.21 1.57 (1.57-1.59) 0/3
+    Fault Line Easy       x1.25 1.55 (1.32-1.57) 3/3 | x1.4 1.64 (1.44-1.85) 2/3 | x1.57 1.57 (1.47-1.74) 3/3 | x1.76 1.72 (1.60-1.87) 2/3 | x1.97 1.75 (1.51-1.86) 2/3 | x2.21 1.79 (1.64-1.87) 1/3
+    Quartz Flats Easy     x1.25 0.13 (0.13-0.15) 3/3 | x1.4 0.14 (0.13-0.17) 3/3 | x1.57 0.14 (0.14-1.17) 2/3 | x1.76 0.25 (0.19-0.26) 3/3 | x1.97 1.19 (0.28-1.19) 1/3 | x2.21 0.28 (0.21-1.19) 2/3
+    Crysium Vein Easy     x1.25 0.76 (0.64-0.81) 3/3 | x1.4 0.80 (0.64-0.84) 3/3 | x1.57 1.63 (0.71-1.63) 1/3 | x1.76 1.63 (1.63-1.63) 0/3 | x1.97 1.61 (0.79-1.65) 1/3 | x2.21 1.65 (1.64-1.65) 0/3
+  cannon
+    Landing Site Easy     x1.25 0.12 (0.12-0.12) 3/3 | x1.4 0.12 (0.12-0.12) 3/3 | x1.57 0.13 (0.12-0.13) 3/3 | x1.76 0.13 (0.13-0.13) 3/3 | x1.97 0.13 (0.13-0.13) 3/3 | x2.21 1.19 (0.14-1.21) 1/3
+    Glass Meadows Easy    x1.25 0.05 (0.05-0.05) 3/3 | x1.4 0.06 (0.05-0.06) 3/3 | x1.57 0.06 (0.06-0.06) 3/3 | x1.76 0.06 (0.06-0.06) 3/3 | x1.97 0.06 (0.06-0.07) 3/3 | x2.21 0.07 (0.07-0.08) 3/3
+    Shard Ridge Easy      x1.25 0.63 (0.59-0.65) 3/3 | x1.4 0.65 (0.62-0.70) 3/3 | x1.57 0.69 (0.64-0.76) 3/3 | x1.76 0.74 (0.67-1.57) 2/3 | x1.97 1.56 (1.56-1.66) 0/3 | x2.21 1.58 (1.36-1.67) 1/3
+    Fault Line Easy       x1.25 1.76 (1.27-1.86) 2/3 | x1.4 1.46 (1.39-1.62) 3/3 | x1.57 1.64 (1.45-1.74) 3/3 | x1.76 1.87 (1.81-1.87) 1/3 | x1.97 1.87 (1.87-1.87) 0/3 | x2.21 1.85 (1.75-1.88) 1/3
+    Quartz Flats Easy     x1.25 0.13 (0.13-0.15) 3/3 | x1.4 0.14 (0.13-0.17) 3/3 | x1.57 0.14 (0.14-0.15) 3/3 | x1.76 0.16 (0.16-0.16) 3/3 | x1.97 0.17 (0.17-0.17) 3/3 | x2.21 1.27 (1.21-1.28) 0/3
+    Crysium Vein Easy     x1.25 0.65 (0.65-0.86) 3/3 | x1.4 0.68 (0.66-0.86) 3/3 | x1.57 0.69 (0.68-0.70) 3/3 | x1.76 1.64 (0.72-1.65) 1/3 | x1.97 0.77 (0.75-1.70) 2/3 | x2.21 1.64 (1.64-1.68) 0/3
+  laser
+    Landing Site Easy     x1.25 0.12 (0.12-0.12) 3/3 | x1.4 0.12 (0.12-0.12) 3/3 | x1.57 0.15 (0.15-0.16) 3/3 | x1.76 0.16 (0.16-0.16) 3/3 | x1.97 0.18 (0.16-1.17) 2/3 | x2.21 1.22 (1.21-1.25) 0/3
+    Glass Meadows Easy    x1.25 0.05 (0.05-0.05) 3/3 | x1.4 0.06 (0.06-1.09) 2/3 | x1.57 0.06 (0.06-0.32) 3/3 | x1.76 1.08 (1.07-1.08) 0/3 | x1.97 1.09 (1.08-1.10) 0/3 | x2.21 1.10 (1.10-1.11) 0/3
+    Shard Ridge Easy      x1.25 0.62 (0.58-0.74) 3/3 | x1.4 0.64 (0.61-1.59) 2/3 | x1.57 0.68 (0.64-0.84) 3/3 | x1.76 0.72 (0.66-1.55) 2/3 | x1.97 1.59 (1.53-1.61) 1/3 | x2.21 1.61 (1.56-1.62) 0/3
+    Fault Line Easy       x1.25 1.57 (1.25-1.80) 3/3 | x1.4 1.62 (1.46-1.72) 3/3 | x1.57 1.72 (1.65-1.86) 2/3 | x1.76 1.79 (1.79-1.86) 1/3 | x1.97 1.87 (1.68-1.87) 1/3 | x2.21 1.85 (1.75-1.88) 1/3
+    Quartz Flats Easy     x1.25 0.13 (0.13-0.15) 3/3 | x1.4 0.14 (0.13-0.17) 3/3 | x1.57 0.14 (0.14-0.15) 3/3 | x1.76 0.15 (0.15-0.17) 3/3 | x1.97 1.19 (0.20-1.23) 1/3 | x2.21 1.21 (0.21-1.23) 1/3
+    Crysium Vein Easy     x1.25 0.76 (0.64-0.78) 3/3 | x1.4 0.68 (0.65-0.83) 3/3 | x1.57 0.71 (0.67-0.74) 3/3 | x1.76 0.75 (0.70-1.63) 2/3 | x1.97 1.61 (1.60-1.64) 0/3 | x2.21 1.64 (1.59-1.65) 0/3
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<1.25' / '>2.21' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  skilled
+    Landing Site Easy     median 2.09   pooled 2.09   per seed: 2.09 2.09 2.09                       spread 0% (n=3)
+    Glass Meadows Easy    median 1.32   pooled 1.32   per seed: 1.32 1.32 <1.25                      spread 0% (n=2)
+    Shard Ridge Easy      median 1.83   pooled 1.83   per seed: 1.81 1.83 1.84                       spread 2% (n=3)
+    Fault Line Easy       median 1.45   pooled 1.50   per seed: 1.37 1.45 1.50                       spread 10% (n=3)
+    Quartz Flats Easy     median 1.85   pooled 1.85   per seed: 1.85 1.86 1.66                       spread 12% (n=3)
+    Crysium Vein Easy     median 1.32   pooled 1.32   per seed: 1.48 1.32 1.32                       spread 12% (n=3)
+  sensible
+    Landing Site Easy     median 2.09   pooled 2.09   per seed: 2.09 2.09 1.86                       spread 12% (n=3)
+    Glass Meadows Easy    median 1.48   pooled 1.48   per seed: 1.48 1.48 1.32                       spread 12% (n=3)
+    Shard Ridge Easy      median 1.84   pooled 1.84   per seed: 1.84 1.83 1.84                       spread 1% (n=3)
+    Fault Line Easy       median <1.25  pooled <1.25  per seed: <1.25 1.29 <1.25                     spread -
+    Quartz Flats Easy     median 1.85   pooled 1.85   per seed: 1.48 2.07 1.85                       spread 40% (n=3)
+    Crysium Vein Easy     median 1.46   pooled 1.46   per seed: 1.65 1.46 1.46                       spread 13% (n=3)
+  cannon
+    Landing Site Easy     median 2.09   pooled 2.09   per seed: 2.09 >2.21 2.09                      spread 0% (n=2)
+    Glass Meadows Easy    median >2.21  pooled >2.21  per seed: >2.21 >2.21 >2.21                    spread -
+    Shard Ridge Easy      median 1.84   pooled 1.84   per seed: 1.64 1.84 1.85                       spread 13% (n=3)
+    Fault Line Easy       median <1.25  pooled <1.25  per seed: <1.25 1.32 <1.25                     spread -
+    Quartz Flats Easy     median 2.08   pooled 2.08   per seed: 2.08 2.08 2.08                       spread 0% (n=3)
+    Crysium Vein Easy     median 1.66   pooled 1.66   per seed: 2.07 1.66 1.66                       spread 25% (n=3)
+  laser
+    Landing Site Easy     median 2.09   pooled 2.09   per seed: 2.09 2.09 1.86                       spread 12% (n=3)
+    Glass Meadows Easy    median 1.63   pooled 1.66   per seed: 1.66 1.63 1.32                       spread 26% (n=3)
+    Shard Ridge Easy      median 1.85   pooled 1.84   per seed: 1.31 1.85 1.85                       spread 42% (n=3)
+    Fault Line Easy       median <1.25  pooled <1.25  per seed: <1.25 1.32 <1.25                     spread -
+    Quartz Flats Easy     median 1.86   pooled 1.86   per seed: 2.08 1.86 1.86                       spread 12% (n=3)
+    Crysium Vein Easy     median 1.85   pooled 1.85   per seed: 1.85 1.65 1.85                       spread 12% (n=3)
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x1.25  x1.4   x1.57  x1.76  x1.97  x2.21  H50
+  skilled     Landing Site Easy     3/3    3/3    3/3    3/3    3/3    0/3    2.09
+  skilled     Glass Meadows Easy    2/3    0/3    0/3    0/3    0/3    0/3    1.29
+  skilled     Shard Ridge Easy      3/3    3/3    3/3    3/3    0/3    0/3    1.86
+  skilled     Fault Line Easy       3/3    3/3    3/3    0/3    0/3    0/3    1.66
+  skilled     Quartz Flats Easy     3/3    3/3    3/3    2/3    0/3    0/3    1.81
+  skilled     Crysium Vein Easy     3/3    1/3    0/3    0/3    0/3    0/3    1.36
+  sensible    Landing Site Easy     3/3    3/3    3/3    3/3    2/3    0/3    2.03
+  sensible    Glass Meadows Easy    3/3    2/3    0/3    0/3    0/3    0/3    1.44
+  sensible    Shard Ridge Easy      3/3    3/3    3/3    3/3    0/3    0/3    1.86
+  sensible    Fault Line Easy       3/3    2/3    3/3    2/3    2/3    1/3    2.09
+  sensible    Quartz Flats Easy     3/3    3/3    2/3    3/3    1/3    2/3    1.92
+  sensible    Crysium Vein Easy     3/3    3/3    1/3    0/3    1/3    0/3    1.53
+  cannon      Landing Site Easy     3/3    3/3    3/3    3/3    3/3    1/3    2.15
+  cannon      Glass Meadows Easy    3/3    3/3    3/3    3/3    3/3    3/3    >2.21
+  cannon      Shard Ridge Easy      3/3    3/3    3/3    2/3    0/3    1/3    1.81
+  cannon      Fault Line Easy       2/3    3/3    3/3    1/3    0/3    1/3    1.71
+  cannon      Quartz Flats Easy     3/3    3/3    3/3    3/3    3/3    0/3    2.09
+  cannon      Crysium Vein Easy     3/3    3/3    3/3    1/3    2/3    0/3    1.71
+  laser       Landing Site Easy     3/3    3/3    3/3    3/3    2/3    0/3    2.03
+  laser       Glass Meadows Easy    3/3    2/3    3/3    0/3    0/3    0/3    1.66
+  laser       Shard Ridge Easy      3/3    2/3    3/3    2/3    1/3    0/3    1.86
+  laser       Fault Line Easy       3/3    3/3    2/3    1/3    1/3    1/3    1.66
+  laser       Quartz Flats Easy     3/3    3/3    3/3    3/3    1/3    1/3    1.92
+  laser       Crysium Vein Easy     3/3    3/3    3/3    2/3    0/3    0/3    1.81
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+
+Cost: 432 runs, 181 machine minutes of play (25 s a run), 0 reference runs for the typical scripts; 1 batches, 38 wall-clock minutes in all.
+  batch 1795169779: 72 units on 6 workers, 37.6 min

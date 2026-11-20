@@ -72,5 +72,6 @@ MonoBehaviour:
   _projectileStyle: 0
   _beamLockSeconds: 0.35
   _beamSweepSeconds: 0
+  _retargetSeconds: 0.15
   _art: {fileID: 11400000, guid: b640de7add8cee849aef85d68fedf870, type: 2}
   _gateArt: {fileID: 0}

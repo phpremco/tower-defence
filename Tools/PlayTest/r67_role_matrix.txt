@@ -5,14 +5,14 @@ Role matrix (round 67). Seconds for 100 coins of a source to clear the reference
 | Tower | Coins | Swarm | Mob | Tough | Armoured | Airborne | Fast |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Gun Turret | 50 | **6.5** | 20.3 | **12.2** | 104.9 | 65.0 | **4.5** |
-| Cryo | 90 | 38.9 | 131.4 | 78.5 | 675.2 | 418.2 | 29.0 |
+| Cryo | 90 | 38.9 | 131.4 | 78.5 | 1302.3 | 418.2 | 29.0 |
 | Cannon | 100 | 9.6 | **14.9** | 22.3 | **17.0** | - | - |
 | Flak Turret | 120 | - | - | - | - | **9.5** | - |
-| Laser Turret | 130 | **7.9** | 19.7 | **11.5** | 97.8 | - | **4.3** |
+| Laser Turret | 130 | **6.9** | 21.2 | **12.7** | 209.2 | - | **4.7** |
 | Tesla | 140 | 11.2 | **11.0** | 15.8 | 44.1 | - | 6.0 |
 | Railgun | 220 | 58.1 | 41.5 | 22.5 | **45.3** | 50.5 | 12.2 |
 | Storm Rifle | 310 | **9.9** | **16.9** | **16.0** | 89.6 | 21.3 | **5.8** |
-| Cryo Beam | 360 | **16.4** | 40.9 | **24.0** | 203.1 | 127.2 | **8.9** |
+| Cryo Beam | 360 | **16.4** | 40.9 | **24.0** | 391.2 | 127.2 | **8.9** |
 | Artillery | 370 | 35.5 | **29.9** | 34.2 | **26.1** | **20.3** | 15.0 |
 | Base Turret | 100 | 12.1 | 34.3 | 20.2 | 172.1 | 106.9 | 7.4 |
 
@@ -23,14 +23,14 @@ Roles hold.
 | Tower | Coins | Swarm | Mob | Tough | Armoured | Airborne | Fast |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Gun Turret | 155 | **5.3** | 15.4 | **9.1** | 77.7 | 48.0 | **3.4** |
-| Laser Turret | 285 | **5.1** | 14.6 | **8.4** | 71.8 | - | **3.3** |
+| Laser Turret | 285 | **5.8** | 15.8 | **9.3** | 152.8 | - | **3.5** |
 | Flak Turret | 305 | - | - | - | - | **7.5** | - |
 | Tesla | 320 | 11.1 | **8.5** | 11.6 | 32.4 | - | 4.3 |
 | Cannon | 350 | 33.6 | **14.9** | 17.9 | **14.6** | - | - |
-| Cryo | 360 | 155.8 | 525.6 | 314.1 | 2700.9 | 1672.7 | 115.9 |
+| Cryo | 360 | 155.8 | 525.6 | 314.1 | 5209.3 | 1672.7 | 115.9 |
 | Railgun | 455 | 72.1 | 40.0 | 19.2 | **30.9** | 41.2 | 8.0 |
 | Storm Rifle | 810 | **14.0** | **17.7** | **15.6** | 87.8 | 21.4 | **6.1** |
-| Cryo Beam | 880 | **11.6** | 28.5 | **16.9** | 145.5 | 90.3 | **6.6** |
+| Cryo Beam | 880 | **11.6** | 28.5 | **16.9** | 280.2 | 90.3 | **6.6** |
 | Artillery | 910 | 44.2 | **19.7** | 23.0 | **18.6** | **16.9** | 9.8 |
 | Base Turret | 180 | 7.4 | 17.3 | 10.0 | 85.6 | 54.0 | 3.9 |
 | Blockade | 300 | 17.8 | 58.0 | 33.9 | 287.9 | - | 12.5 |
@@ -42,14 +42,14 @@ Roles hold.
 | Tower | Coins | Swarm | Mob | Tough | Armoured | Airborne | Fast |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Gun Turret | 155 | **6.8** | 22.7 | **13.5** | 116.2 | 72.0 | **5.0** |
-| Laser Turret | 285 | **6.1** | 20.9 | **12.5** | 107.1 | - | **4.6** |
+| Laser Turret | 285 | **6.7** | 23.3 | **13.8** | 229.0 | - | **5.1** |
 | Flak Turret | 305 | - | - | - | - | **10.1** | - |
 | Tesla | 320 | 9.5 | **11.6** | 17.1 | 48.1 | - | 6.4 |
 | Cannon | 350 | 16.8 | **17.9** | 26.0 | **20.2** | - | - |
-| Cryo | 360 | 213.8 | 785.4 | 470.6 | 4046.6 | 2512.5 | 172.7 |
+| Cryo | 360 | 213.8 | 785.4 | 470.6 | 7808.3 | 2512.5 | 172.7 |
 | Railgun | 455 | 36.0 | 48.0 | 25.9 | **41.8** | 55.8 | 9.6 |
 | Storm Rifle | 810 | **15.5** | **23.4** | **23.0** | 130.6 | 31.1 | **8.7** |
-| Cryo Beam | 880 | **13.6** | 42.2 | **25.3** | 217.5 | 134.9 | **9.4** |
+| Cryo Beam | 880 | **13.6** | 42.2 | **25.3** | 419.9 | 134.9 | **9.4** |
 | Artillery | 910 | 22.1 | **23.0** | 28.7 | **21.3** | **18.6** | 11.5 |
 | Base Turret | 180 | 29.6 | 100.3 | 59.9 | 511.7 | 318.0 | 22.2 |
 | Blockade | 300 | 91.8 | 333.9 | 200.0 | 1717.6 | - | 73.2 |
@@ -61,10 +61,10 @@ Roles hold.
 | Source | Coins | Swarm | Mob | Tough | Armoured | Airborne | Fast |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Gun Turret (level 1) | 50 | **19.05** | 6.86 | **11.43** | 1.33 | 2.14 | **31.17** |
-| Cryo (level 1) | 90 | 3.70 | 1.07 | 1.78 | 0.21 | 0.33 | 4.85 |
+| Cryo (level 1) | 90 | 3.70 | 1.07 | 1.78 | 0.11 | 0.33 | 4.85 |
 | Cannon (level 1) | 100 | 12.50 | **9.38** | 6.25 | **8.33** | - | - |
 | Flak Turret (level 1) | 120 | - | - | - | - | **15.15** | - |
-| Laser Turret (level 1) | 130 | **19.23** | 7.10 | **12.15** | 1.42 | - | **32.97** |
+| Laser Turret (level 1) | 130 | **23.08** | 6.65 | **11.08** | 0.67 | - | **29.67** |
 | Tesla (level 1) | 140 | 14.29 | **12.24** | 9.02 | 3.17 | - | 24.49 |
 | Railgun (level 1) | 220 | 2.07 | 2.48 | 6.20 | **2.75** | 3.10 | 12.40 |
 | Base Turret (level 3) | 180 | 18.52 | 7.41 | 13.89 | 1.61 | 2.53 | 37.04 |
@@ -82,45 +82,45 @@ No helper replaces a role.
 
 ### Creatures and their traits
 
-| Creature | Body | Armour | Speed | Traits |
-| --- | --- | --- | --- | --- |
-| Acid Empress (boss) | 1300 | 700 | 0.6 | Armoured, Tough |
-| Brood Mother (boss) | 900 | 0 | 0.55 | Tough |
-| Bulwark | 155 | 405 | 0.7 | Armoured, Tough |
-| Cinder Egg | 70 | 0 | 0.1 | Mob |
-| Cinder Matriarch (boss) | 10400 | 1800 | 0.4 | Armoured, Tough |
-| Core Wisp (boss) | 600 | 0 | 0.9 | Tough |
-| Cragback | 60 | 160 | 0.6 | Armoured, Mob |
-| Crystal Warlord (boss) | 1800 | 700 | 0.5 | Armoured, Tough |
-| Dustbat | 31 | 0 | 1.5 | Airborne, Swarm, Fast |
-| Emberbat | 31 | 0 | 1.5 | Airborne, Swarm, Fast |
-| Fire Larva | 24 | 0 | 1.3 | Swarm, Fast |
-| Frostbat | 31 | 0 | 1.5 | Airborne, Swarm, Fast |
-| Frost Warden (boss) | 6950 | 1200 | 0.5 | Armoured, Tough |
-| Gravemaw (boss) | 43250 | 1200 | 0.55 | Armoured, Tough |
-| Hive Queen (boss) | 3200 | 0 | 0.55 | Tough |
-| Mirebat | 31 | 0 | 1.5 | Airborne, Swarm, Fast |
-| Mireleech | 80 | 0 | 1.15 | Mob |
-| Mossbat | 31 | 0 | 1.5 | Airborne, Swarm, Fast |
-| Oozer | 100 | 0 | 0.75 | Mob |
-| Pack Alpha (boss) | 800 | 0 | 1.73 | Tough, Fast |
-| Prowler | 62 | 0 | 1.5 | Mob, Fast |
-| Roller | 110 | 0 | 4.13 | Mob, Fast |
-| Roller King (boss) | 1100 | 500 | 1.71 | Armoured, Tough, Fast |
-| Rotbloom (boss) | 3550 | 0 | 0.3 | Tough |
-| Rot Spore Pod | 20 | 0 | 1.0 | Airborne, Swarm |
-| Sealed One (boss) | 31050 | 3500 | 0.25 | Armoured, Tough |
-| Shalebat | 40 | 0 | 1.3 | Airborne, Swarm, Fast |
-| Shardback | 90 | 240 | 0.75 | Armoured, Tough |
-| Shard Crawler | 300 | 0 | 0.6 | Tough |
-| Shard Flyer | 300 | 0 | 0.8 | Airborne, Tough |
-| Shard Runner | 300 | 0 | 0.9 | Tough |
-| Shattered (boss) | 14100 | 2000 | 0.5 | Armoured, Tough |
-| Skitter | 11 | 0 | 1.6 | Swarm, Fast |
-| Skyray | 80 | 0 | 1.3 | Airborne, Mob, Fast |
-| Sky Sovereign (boss) | 1000 | 0 | 1.0 | Airborne, Tough |
-| Slime Monarch (boss) | 1100 | 0 | 0.45 | Tough |
-| Stinger | 80 | 210 | 0.9 | Armoured, Tough |
-| Storm Matriarch (boss) | 700 | 0 | 1.1 | Airborne, Tough |
-| Tidebat | 31 | 0 | 1.5 | Airborne, Swarm, Fast |
-| Wisp | 36 | 0 | 1.2 | Swarm |
+| Creature | Body | Armour | Speed | Traits | Family |
+| --- | --- | --- | --- | --- | --- |
+| Acid Empress (boss) | 1300 | 1300 | 0.6 | Armoured, Tough | - |
+| Brood Mother (boss) | 900 | 900 | 0.55 | Armoured, Tough | - |
+| Bulwark | 155 | 405 | 0.7 | Armoured, Tough | - |
+| Cinder Egg | 70 | 0 | 0.1 | Mob | - |
+| Cinder Matriarch (boss) | 14400 | 14400 | 0.4 | Armoured, Tough | - |
+| Core Wisp (boss) | 600 | 600 | 0.9 | Armoured, Tough | Energy |
+| Cragback | 60 | 160 | 0.6 | Armoured, Mob | - |
+| Crystal Warlord (boss) | 1800 | 1800 | 0.5 | Armoured, Tough | - |
+| Dustbat | 31 | 0 | 1.5 | Airborne, Swarm, Fast | - |
+| Emberbat | 31 | 0 | 1.5 | Airborne, Swarm, Fast | - |
+| Fire Larva | 24 | 0 | 1.3 | Swarm, Fast | - |
+| Frostbat | 31 | 0 | 1.5 | Airborne, Swarm, Fast | - |
+| Frost Warden (boss) | 6150 | 6150 | 0.5 | Armoured, Tough | - |
+| Gravemaw (boss) | 21000 | 21000 | 0.55 | Armoured, Tough | - |
+| Hive Queen (boss) | 3200 | 3200 | 0.55 | Armoured, Tough | - |
+| Mirebat | 31 | 0 | 1.5 | Airborne, Swarm, Fast | - |
+| Mireleech | 80 | 0 | 1.15 | Mob | - |
+| Mossbat | 31 | 0 | 1.5 | Airborne, Swarm, Fast | - |
+| Oozer | 100 | 0 | 0.75 | Mob | - |
+| Pack Alpha (boss) | 800 | 800 | 1.73 | Armoured, Tough, Fast | - |
+| Prowler | 62 | 0 | 1.5 | Mob, Fast | - |
+| Roller | 110 | 0 | 4.13 | Mob, Fast | - |
+| Roller King (boss) | 1100 | 1100 | 1.71 | Armoured, Tough, Fast | - |
+| Rotbloom (boss) | 12950 | 12950 | 0.3 | Armoured, Tough | - |
+| Rot Spore Pod | 20 | 0 | 1.0 | Airborne, Swarm | - |
+| Sealed One (boss) | 26800 | 26800 | 0.25 | Armoured, Tough | - |
+| Shalebat | 40 | 0 | 1.3 | Airborne, Swarm, Fast | - |
+| Shardback | 90 | 240 | 0.75 | Armoured, Tough | - |
+| Shard Crawler | 300 | 0 | 0.6 | Tough | - |
+| Shard Flyer | 300 | 0 | 0.8 | Airborne, Tough | - |
+| Shard Runner | 300 | 0 | 0.9 | Tough | - |
+| Shattered (boss) | 17350 | 17350 | 0.5 | Armoured, Tough | - |
+| Skitter | 11 | 0 | 1.6 | Swarm, Fast | - |
+| Skyray | 80 | 0 | 1.3 | Airborne, Mob, Fast | - |
+| Sky Sovereign (boss) | 1000 | 1000 | 1.0 | Armoured, Airborne, Tough | - |
+| Slime Monarch (boss) | 1100 | 1100 | 0.45 | Armoured, Tough | - |
+| Stinger | 80 | 210 | 0.9 | Armoured, Tough | - |
+| Storm Matriarch (boss) | 700 | 700 | 1.1 | Armoured, Airborne, Tough | - |
+| Tidebat | 31 | 0 | 1.5 | Airborne, Swarm, Fast | - |
+| Wisp | 36 | 0 | 1.2 | Swarm | Energy |

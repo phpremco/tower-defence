@@ -90,13 +90,23 @@ namespace Game.Balance
 
             BalanceRules r = model.Rules;
             text.Append(F(r.Utilisation)).Append(F(r.HumanUtilisation)).Append(F(r.MaxSplashTargets)).Append(F(r.HeroShare)).Append(F(r.GateWindowShare)).Append(F(r.MaxGateHoldSeconds)).Append(F(r.CarriedShare)).Append(F(r.FrontEfficiency)).Append(F(r.TrunkReference)).Append(r.AttackersPerGate).Append(F(r.BossWaveCap)).Append(r.ShockwaveCrowd).Append(F(r.ArmorThreatShare));
-            text.Append(F(r.LightFireOnArmour)).Append(F(r.LightFireInTheAir)).Append(F(r.BossBookShare)).Append(F(r.HumanBossUtilisation));
+            text.Append(F(r.HumanBossUtilisation));
             foreach (float over in r.BossOverRegular)
             {
                 text.Append(F(over));
             }
 
             text.Append(F(r.BossWaveShare));
+            // Round 87: the health formula and the boss formula (the waves follow from them at every solve).
+            text.Append(F(r.RampStart)).Append(F(r.RampEnd)).Append(F(r.RushFactor)).Append(F(r.HeavyFactor)).Append(F(r.AirFactor)).Append(F(r.AfterBossFactor)).Append(F(r.BossCrowdFactor)).Append(F(r.PeakFactor)).Append(r.LongLevelWaves).Append(F(r.LongLevelPeakPhase));
+            text.Append(F(r.BossBase)).Append(F(r.BossLevelGrowth)).Append(F(r.BossEarlyShare)).Append(F(r.FlyingBossShare));
+            foreach (float[] values in new[] { r.PeakPhases, r.BossDifficulty })
+            {
+                foreach (float value in values)
+                {
+                    text.Append(F(value));
+                }
+            }
 
             return Fnv(text.ToString());
         }

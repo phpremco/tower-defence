@@ -132,12 +132,9 @@ namespace Game.Tests
             // met its target, because slow plated creatures of earlier waves carried the pressure in, and the solver let it
             // fall to its floor. The band's lower edge holds such a wave now. The opening waves ramp up from little, and the
             // crowd of a boss wave gives way to its boss: neither is judged here.
-            // Round 86: a wave is read against the median of the ground waves up to and including it, which is what the
-            // solver holds it to (WaveSolver.LeastOfMedian on the waves before it) and what the player has seen by then. Read
-            // against the median of the whole level, later waves included, Fault Line Hard wave 7 failed without having moved
-            // (x0.414, on the solver's floor since round 83): the crowds of the boss waves 10 and 16 stand on the edge of
-            // their band now (x0.85 and x1.36, where the paper cap had held wave 16 at x0.60) and lifted the level's median
-            // from under x1.03 to x1.07. No stored wave is softer for it.
+            // Round 87: read against the median of the whole level's ground waves again. Round 86 had narrowed it to the
+            // waves up to and including the wave when Fault Line Hard wave 7 failed without having moved; a wave is the
+            // formula's now (WaveFormula) and the gate has its first meaning back.
             int judged = 0;
             foreach (LevelDefinition level in AssetDatabase.FindAssets("t:LevelDefinition", new[] { LevelFolder }).Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<LevelDefinition>))
             {
@@ -146,7 +143,7 @@ namespace Game.Tests
                     for (int i = BalanceChecks.OpeningWaves; i < set.Waves.Length; i++)
                     {
                         WaveDefinition wave = set.Waves[i];
-                        List<float> ground = set.Waves.Take(i + 1).Where(w => !w.AirRaid).Select(w => w.HealthMultiplier).OrderBy(m => m).ToList();
+                        List<float> ground = set.Waves.Where(w => !w.AirRaid).Select(w => w.HealthMultiplier).OrderBy(m => m).ToList();
                         if (ground.Count == 0)
                         {
                             continue;
@@ -168,31 +165,31 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ACellsScalar_LiesNearOne()
+        public void ALevelsScalar_LiesNearOne()
         {
-            // The scalars replace the builder scales (0.44 to 1.13, refitted every round) and the 6 % curve gate that could not
-            // see them. A scalar is found by the closed loop (Tools/PlayTest/closed_loop.py); far from one, the model
-            // misreads the level's map or script and the level wants a look, not a bigger scalar.
+            // One scalar per level since round 87 (rounds 83 to 86: one per level and difficulty). It is found by the closed
+            // loop (Tools/PlayTest/closed_loop.py); far from one, the formula misreads the level's map or script and the
+            // level wants a look, not a bigger scalar.
             BalanceRules rules = BalanceRules.Default;
-            int cells = 0;
-            foreach (KeyValuePair<(string Key, int Difficulty), float> scale in WaveTuning.Read())
+            int levels = 0;
+            foreach (KeyValuePair<string, float> scalar in WaveTuning.Read())
             {
-                Assert.GreaterOrEqual(scale.Value, rules.CellScalarLeast, $"{scale.Key.Key} difficulty {scale.Key.Difficulty}");
-                Assert.LessOrEqual(scale.Value, rules.CellScalarMost, $"{scale.Key.Key} difficulty {scale.Key.Difficulty}");
-                cells++;
+                Assert.GreaterOrEqual(scalar.Value, rules.LevelScalarLeast, scalar.Key);
+                Assert.LessOrEqual(scalar.Value, rules.LevelScalarMost, scalar.Key);
+                levels++;
             }
 
-            // Every scalar at one writes no line at all.
-            Assert.IsTrue(cells > 0 || File.Exists(WaveTuning.Path));
+            // A level without a line is at one.
+            Assert.IsTrue(levels > 0 || File.Exists(WaveTuning.Path));
         }
 
         [Test]
-        public void TheTuningFile_HoldsACellsScalar_AndNothingElse()
+        public void TheTuningFile_HoldsALevelsScalar_AndNothingElse()
         {
             // Round 84: what a wave is made of is a rule per difficulty (BalanceRules: plated and swarm weight, the growth
-            // of plated troops) or the level's own script. The builder's per-cell levers (plated, swarm, tempo, raid,
-            // bosscrowd, armourgrowth: 36 lines until round 83b) are gone, and a line of that kind is not read any more.
-            Assert.IsEmpty(WaveTuning.OtherLines(), "Tools/PlayTest/wave_tuning.txt holds 'Key difficulty scalar' lines only");
+            // of plated troops) or the level's own script. Round 87: one scalar per level; a line per level and difficulty
+            // is not read any more.
+            Assert.IsEmpty(WaveTuning.OtherLines(), "Tools/PlayTest/wave_tuning.txt holds 'Key scalar' lines only");
         }
 
         [Test]

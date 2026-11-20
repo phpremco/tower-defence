@@ -58,7 +58,7 @@ namespace Game.Editor
                 ScanOn("Cragback", "Dlg_L01_Stone"),
                 Scan("Wisp", "Dlg_Scan_Wisp",
                     Say(voss, "I scanned that glow. Pure energy, almost no mass: it dies fast, but it hits a gate hard."),
-                    Say(voss, "Stop it early. The Laser Turret fires fast enough to catch it; ground and air guns both reach it.")),
+                    Say(voss, "Stop it early. A beam overloads it: the Laser Turret does extra damage. Ground and air guns both reach it.")),
                 Scan("Skyray", "Dlg_Scan_Skyray",
                     Say(voss, "Scan done. All wing and a spiked tail, and it stays in the air the whole way."),
                     Say(voss, "Ground guns can't touch it. The Flak Turret can: build one where it crosses the gates.")),
@@ -143,7 +143,7 @@ namespace Game.Editor
         {
             ("Dlg_Scan_Skitter", "Skitters are weak alone and come in packs: the Cannon's shells thin a pack, the Gun Turret picks off loose runners."),
             ("Dlg_L01_Stone", "Cragbacks wear armour that bullets and beams barely scratch. A Cannon's heavy shells strip it."),
-            ("Dlg_Scan_Wisp", "Wisps die fast but hit a gate hard. Stop them early: the Laser Turret fires fast enough to catch them."),
+            ("Dlg_Scan_Wisp", "Wisps die fast but hit a gate hard. Stop them early: the Laser Turret's beam overloads them for extra damage."),
             ("Dlg_Scan_Skyray", "Skyrays never land, so ground guns can't touch them. Build a Flak Turret where they cross the gates."),
             ("Dlg_Scan_Shalebat", "Shalebats spit at the turrets they fly past. A Flak Turret beside the stone nests takes them first."),
             ("Dlg_Scan_Mossbat", "Mossbats are shed in flight by the big flyers. Keep a Flak Turret in reach of wherever those go."),

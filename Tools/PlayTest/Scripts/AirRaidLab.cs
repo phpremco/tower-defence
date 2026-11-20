@@ -188,7 +188,7 @@ public static class AirRaidLab
 
                 float surplus = 1f / Math.Max(0.001f, BalanceChecks.PlainMean(lens));
                 string head = string.Format(CultureInfo.InvariantCulture, "{0} {1}: flyer health {2:0} of {3:0} ({4:0.0}%), human surplus {5:0.00}x (curve {8:0.00}x), waves moved against the stored set {6}/{7}, total health x{9:0.000} of the stored set",
-                    key, names[d], airTotal, allTotal, allTotal > 0f ? 100f * airTotal / allTotal : 0f, surplus, moved, sets[d].Count, 1f / Math.Max(0.001f, model.HumanTarget(index, d)), storedTotal > 0f ? allTotal / storedTotal : 0f);
+                    key, names[d], airTotal, allTotal, allTotal > 0f ? 100f * airTotal / allTotal : 0f, surplus, moved, sets[d].Count, 1f / Math.Max(0.001f, model.ModelTarget(index, d)), storedTotal > 0f ? allTotal / storedTotal : 0f);
                 text.Append(head).Append('\n').Append(raids);
                 summary.Append(head).Append('\n');
             }

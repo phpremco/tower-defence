@@ -25,6 +25,9 @@ namespace Game.Towers
         private PlayerModifiers _modifiers;
         private float _cooldown;
         private ITargetable _beamTarget;
+
+        // The creature the last shot went to: a turret pays its retarget time when the next one goes elsewhere (Retarget).
+        private ITargetable _aimed;
         private bool _beamLive;
         // The creatures this frame's pulses are about to kill (a pulse lands a frame after it leaves): passed over when the
         // beam looks for its next creature in the same frame.
@@ -475,6 +478,7 @@ namespace Game.Towers
                 {
                     _beamTarget = null;
                     _beamLive = false;
+                    _aimed = null;
                     break;
                 }
 
@@ -496,6 +500,15 @@ namespace Game.Towers
                 float interval = level.FireInterval / (_modifiers.TowerFireRateMultiplier * (1f + _supportRate) * Mathf.Max(0.05f, Power) * _overgrowthRate);
                 if (!_definition.IsBeam)
                 {
+                    // The swing to a new creature is owed like a reload, so a long frame pays it in full and shoots on.
+                    float swing = Retarget.Seconds(_aimed != null, ReferenceEquals(target, _aimed), _definition.RetargetSeconds);
+                    _aimed = target;
+                    if (swing > 0f)
+                    {
+                        _cooldown = Cadence.Rearm(_cooldown, swing);
+                        continue;
+                    }
+
                     Shoot(level, target);
                     _cooldown = Cadence.Rearm(_cooldown, interval);
                     continue;

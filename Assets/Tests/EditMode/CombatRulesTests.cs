@@ -62,8 +62,9 @@ namespace Game.Tests
         {
             CombatRules rules = Rules();
             // 2026-11-09: light fire 0.2. 2026-11-15: the blade 0.5, the Flak 0.5 (a named exception to its blast).
+            // Round 87: a beam 0.1 (the Laser is weak on armour and on bosses; every Beam weapon reads the row).
             Assert.AreEqual(0.2f, rules.RuleOf(DamageType.Bullet).Armour, 1e-4f);
-            Assert.AreEqual(0.2f, rules.RuleOf(DamageType.Beam).Armour, 1e-4f);
+            Assert.AreEqual(0.1f, rules.RuleOf(DamageType.Beam).Armour, 1e-4f);
             Assert.AreEqual(0.5f, rules.RuleOf(DamageType.Blade).Armour, 1e-4f);
             Assert.AreEqual(1f, rules.RuleOf(DamageType.Explosive).Armour, 1e-4f);
             Assert.AreEqual(1.5f, rules.RuleOf(DamageType.Piercing).Armour, 1e-4f);

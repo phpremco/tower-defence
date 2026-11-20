@@ -94,6 +94,9 @@ namespace Game.Towers
         [Tooltip("Beam only: after a kill the beam sweeps on to the next creature this soon, instead of waiting out its pulse interval. Zero waits the full interval.")]
         [SerializeField] [Min(0f)] private float _beamSweepSeconds;
 
+        [Tooltip("Seconds a turret needs to swing to a new target: its first shot at a creature other than the one it shot last comes this much later. Zero for a tower that does not swing (a beam has its sweep, a blast its shell).")]
+        [SerializeField] [Min(0f)] private float _retargetSeconds;
+
         /// <summary>The imported model per level; when set it replaces the procedural shape.</summary>
         [SerializeField] private TowerArtDefinition _art;
         [Tooltip("A gate's imported look (pylons, beam, panels, wreck); empty keeps the procedural gate.")]
@@ -164,6 +167,9 @@ namespace Game.Towers
         public float BeamLockSeconds => _beamLockSeconds;
 
         public float BeamSweepSeconds => _beamSweepSeconds;
+
+        /// <summary>Seconds before the first shot at a new target, on top of the reload (<see cref="Retarget"/>); zero for most.</summary>
+        public float RetargetSeconds => _retargetSeconds;
 
 
         /// <summary>The imported (Blender) look, or null for the procedural shape.</summary>

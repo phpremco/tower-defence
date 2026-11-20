@@ -23,7 +23,7 @@ number of its own.
 | **Explosive** | 1 | 1 | Cannon, Artillery, Flak (see exceptions), mine, barrel, Spencer's shockwave | A blast strips armour point for point and bursts among flyers. |
 | **Piercing** | **1.5** | 0.5 | Railgun | A slug is made for armour. One slow shot is a poor way to hunt flyers. |
 | **Bullet** | 0.2 | 0.2 | Gun Turret, base turret, gate gun, Spencer's blaster, attack drone | Light fire only chips armour; a gun not made for the sky lands a fifth up there. |
-| **Beam** | 0.2 | 0.2 | Laser, Cryo, Cryo Beam | A beam is light fire: it glances off plates and spreads out on the way up. |
+| **Beam** | **0.1** | 0.2 | Laser, Cryo, Cryo Beam | A beam glances off plates, and a pulse this small barely marks them; it spreads out on the way up. |
 | **Arc** | 0.2 | 0.4 | Tesla, Storm Rifle | Lightning runs over plates instead of through them, and thins out on its way up. |
 | **Blade** | 0.5 | cannot reach | Spencer's energy sword | A blade cuts armour at half. |
 | **Burn** | 0.5 | cannot reach | Lava ball | Fire heats armour at half. |
@@ -38,6 +38,47 @@ How the two columns work in play:
   lands on, so a blast that catches a flyer and a walker hurts each at its own share.
 - Whether a weapon can aim up at all is its **targets** (ground, air or both), not its damage: the Cannon's shell would
   hurt a flyer, but a Cannon cannot aim up.
+
+### Damage type against creature family (round 87)
+
+A third factor, for what a creature is **made of**. Unlike a trait, a family does not follow from a creature's numbers:
+it is typed on the creature (`EnemyDefinition.Family`, written by the generator from `ProjectGenerator.CreatureFamilies`).
+The table (`CombatRules.Families`, generator source `ProjectGenerator.FamilyRules`) lists only the pairs that differ from
+one; every other damage type on every other family lands as its row above says.
+
+| Damage type | Family | Factor | Creatures | Why |
+| --- | --- | --- | --- | --- |
+| **Beam** | **Energy** | **1.5** | Wisp, Core Wisp | A beam feeds straight into an energy body and overloads it. |
+
+- The factor multiplies the hit **before** the air share and the armour share, on the creature that is hit
+  (`Hits.Deal`, `DamageProfile.Against(layer, family)`). Beam on an energy creature's armour is 1.5 x 0.1.
+- It is the damage type's, not a weapon's: the **Cryo and the Cryo Beam are beams too and overload energy bodies as
+  the Laser does**. That is meant. No code names a tower.
+- A beam's kill pulse is priced on what the creature really takes (`Enemy.HitToKill` includes the family), so the
+  round 86 beam rule holds on energy bodies.
+- A new pairing is one line in `ProjectGenerator.FamilyRules`; a new family is an enum value
+  (`Game.Core.CreatureFamily`) and a line per creature in `ProjectGenerator.CreatureFamilies`.
+
+### Retarget time (round 87)
+
+A turret has to swing to a new target: its first shot at a creature other than the one it shot last comes its
+**retarget time** later, on top of its reload (`TowerDefinition.RetargetSeconds`, the rule in `Game.Towers.Retarget`,
+played by `Tower.Update`). A tower that had nothing to shoot at has had the time to turn: its first shot is free.
+
+| Tower | Retarget | Why |
+| --- | --- | --- |
+| Gun Turret, Storm Rifle (its hybrid) | 0.15 s | A turret swings its barrel. |
+| Laser, Cryo Beam | 0 (a beam has its sweep, 0.033 s, inside `BeamBudget`) | A beam is on the next creature at once. |
+| Every other tower | 0 | A shell or an arc is not aimed at one creature the same way; not asked for this round. |
+
+Every creature that dies **or walks out of reach** costs the turret a swing, so the cost grows with the number of
+bodies a second, not with their health: on a body a second a level 1 Gun Turret loses about a seventh of its fire, on
+a dense swarm most of it. This is what a swarm of fast light creatures asks a Laser for. It is added to the cooldown
+like a reload, so it is the same at sixty frames a second and at the probe's 0.2 s steps for streams up to about five
+bodies a second (above that a 0.2 s step sees fewer changes of target than there were).
+
+`_beamLockSeconds` (0.35 s on every tower asset, read for beams only) is something else: the time an **idle** beam
+charges before its first pulse. A live beam never pays it.
 
 ### Named exceptions
 
@@ -67,19 +108,18 @@ the end of `Tools/PlayTest/r67_role_matrix.txt`. Crystal Plains 1 to 6: Skitter 
 fast), Oozer and Mireleech (mob), Wisp (swarm), Cragback (mob, armoured), Skyray (mob, airborne, fast), the bats (swarm,
 airborne, fast), the bosses (tough).
 
-**Every boss is armoured (round 85).** A boss, a level's or a continent's, carries an armour pool of at least
-`BalanceRules.BossArmourShare` (0.25) of its body; one whose own data gives it more keeps that. So a boss answers to the
-same rows as every plated creature: light fire chips the pool at 0.2, shells and slugs strip it, and the Cannon is what a
-boss asks for. The rule is written into the creature data by the generator (`ProjectGenerator.ArmourOf`) and by
-`BalanceStages.ApplyBossArmour`, and the finale stage keeps it when it moves a continent boss's health.
+**Family** is the one thing typed on a creature (see section 1): `Energy` for the Wisp and the Core Wisp today. The
+creature table at the end of `Tools/PlayTest/r67_role_matrix.txt` has a Family column.
 
-**A level's boss is sized on this table (round 86).** It costs the player's guns three times
-(`BalanceRules.BossOverRegular`) what the toughest ordinary creature met before it cost them, under the explosive row
-(armour point for point, the bar) and under the light-fire rows (armour at 0.2, a flyer at 0.2 on top) both; the
-solver's `BossYardstick` reads the two columns from `BalanceRules.LightFireOnArmour` and `LightFireInTheAir`, which a
-test holds to this table. On the bar alone (round 85) a boss of three Cragback bars was 1.4 Cragbacks to a Gun Turret
-or a Laser, because the Cragback is three quarters armour and a boss a fifth. Details: Docs/WAVE_GRAMMAR.md, "The
-solver", item 6.
+**Every boss is armoured (round 85).** A boss, a level's or a continent's, carries an armour pool
+(`BalanceRules.BossArmourShare` of its body). So a boss answers to the same rows as every plated creature: light fire
+only chips the pool (section 1), shells and slugs strip it, and the Cannon is what a boss asks for. The rule is written
+into the creature data by the generator (`ProjectGenerator.ArmourOf`) and by `BalanceStages.ApplyBossArmour`, and the
+finale stage keeps it when it moves a continent boss's health.
+
+**Round 87:** a level boss's size is a formula of level, difficulty and wave phase with three times the bar of the
+toughest walker met before it as a floor only, and its armour pool equals its body (`BossArmourShare` 1); see
+Docs/WAVE_GRAMMAR.md, "The solver (round 87: a formula)".
 
 **A boss reads its phases on its whole bar** (`Health.BarFraction`, body and armour together; round 86). On the body
 alone (`Health.Fraction`) a boss in armour kept its first phase until every plate was gone, a fifth of the fight under
@@ -94,8 +134,8 @@ The role tests measure all six the same way.
 
 | Tower | Role | In one line |
 | --- | --- | --- |
-| **Gun Turret** | Light fire | Cheap: streams of small creatures, runners and soft bodies. Only chips armour, and lands a fifth in the air. |
-| **Laser** | Light fire | The Gun Turret's job with nearly three times the firepower in one cell. Glances off armour; cannot aim up. |
+| **Gun Turret** | Light fire | The all-rounder, cheap: soft bodies big and small, a fifth in the air. Its turret swings to each new target, so a fast swarm outruns it. Only chips armour. |
+| **Laser** | Light fire | The swarm gun: a fast beam of small pulses that is on the next creature at once. Weak on armour (a tenth) and on one big target; cannot aim up. Half again the damage on energy bodies. |
 | **Cannon** | Splash, anti-armour | Blast: breaks bunched groups and strips armour. Cannot aim up, and its shell lands where a runner was. |
 | **Flak Turret** | Anti-air | The one gun that lands in full on flyers. Cannot hit the ground. |
 | **Tesla** | Splash | Chain lightning: jumps through a bunched group at short range. A fifth on armour; cannot aim up. |
@@ -106,6 +146,8 @@ The role tests measure all six the same way.
 | **Storm Rifle** (Gun Turret + Tesla) | Light fire, splash | Rapid arcs for swarms and small groups. A fifth on armour, under half in the air. |
 | **Cryo Beam** (Laser + Cryo) | Light fire, control | A beam that burns one big soft body and chills it. Glances off armour, a fifth in the air. |
 | Gate gun, base turret | Helper | They help. They replace no tower. |
+
+Cannon = slow, clustered, armoured. Laser = fast, spread out, light. Gun Turret = a bit of everything.
 
 A hybrid has its parents' roles. Roles are data on the tower (`TowerDefinition.Roles`, `RoleLine`).
 
@@ -118,15 +160,19 @@ and for level 3 with every permanent upgrade against late waves are in `Tools/Pl
 | Tower | Coins | Swarm | Mob | Tough | Armoured | Airborne | Fast |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Gun Turret | 50 | **6.5** | 20.3 | **12.2** | 104.9 | 65.0 | **4.5** |
-| Laser | 130 | **7.9** | 19.7 | **11.5** | 97.8 | - | **4.3** |
+| Laser | 130 | **6.9** | 21.2 | **12.7** | 209.2 | - | **4.7** |
 | Cannon | 100 | 9.6 | **14.9** | 22.3 | **17.0** | - | - |
 | Flak Turret | 120 | - | - | - | - | **9.5** | - |
 | Tesla | 140 | 11.2 | **11.0** | 15.8 | 44.1 | - | 6.0 |
 | Railgun | 220 | 58.1 | 41.5 | 22.5 | **45.3** | 50.5 | 12.2 |
-| Cryo | 90 | 38.9 | 131.4 | 78.5 | 675.2 | 418.2 | 29.0 |
+| Cryo | 90 | 38.9 | 131.4 | 78.5 | 1302.3 | 418.2 | 29.0 |
 | Storm Rifle | 310 | **9.9** | **16.9** | **16.0** | 89.6 | 21.3 | **5.8** |
-| Cryo Beam | 360 | **16.4** | 40.9 | **24.0** | 203.1 | 127.2 | **8.9** |
+| Cryo Beam | 360 | **16.4** | 40.9 | **24.0** | 391.2 | 127.2 | **8.9** |
 | Artillery | 370 | 35.5 | **29.9** | 34.2 | **26.1** | **20.3** | 15.0 |
+
+Round 87: the Gun Turret and Laser rows are those of `Tools/PlayTest/r67_role_matrix.txt` (its "Laser Turret"). The
+matrix's reference fights do not play the retarget time (they count shots), so it understates the Laser's edge on the
+Swarm and Fast columns; `Tools/PlayTest/laser_role_r87.txt` plays it.
 
 The reference groups (data, `CombatRules.Scenarios`), each played at four health scales and averaged so no role rests on
 one lucky number:
@@ -147,7 +193,7 @@ permanent upgrades against creatures six times as tough.
 What the matrix says at one glance:
 
 - **Air:** the Flak (9.5) against the best gun not made for it, the Storm Rifle (21.3): 2.2x. A Gun Turret needs 65.
-- **Armour:** the Cannon (17.0) against the best gun not made for it, the Tesla (44.1): 2.6x. Gun Turret and Laser need 100.
+- **Armour:** the Cannon (17.0) against the best gun not made for it, the Tesla (44.1): 2.6x. The Gun Turret needs 100, the Laser 209 (a beam works on armour at a tenth since round 87).
 - **The size traits are thin.** Light fire against a splash tower on a swarm: 1.5x. The Cannon against light fire on a
   bunched mob: 1.3x at level 1 and about even at level 3. These are mechanics, not factors, and the margins are what the
   mechanics give today (see "What the audit found").
@@ -171,7 +217,7 @@ tower" stand. What changed: reach no longer grows with every star (it grew 0.3 a
 | Tower | Built | Step 1 (level 2) | Step 2 (level 3) |
 | --- | --- | --- | --- |
 | Gun Turret | 5 damage, 2.9 shots/s, range 4.0 | **Faster cycling**: shots/s 2.9 > 6.0 | **Heavier rounds**: damage 5 > 10 |
-| Laser | 8, 5.0/s, 4.3 | **Focused lens**: damage 8 > 13.3 | **Overcharged emitter**: shots/s 5.0 > 9.0 |
+| Laser | 4 damage, 9 shots/s, range 4.3 | **Overcharged emitter**: shots/s 9 > 15 | **Focused lens**: damage 4 > 7.2 |
 | Cannon | 25, 0.6/s, 4.0 | **Heavier shells**: damage 25 > 56.9 | **High-explosive filler**: damage 56.9 > 118.3 |
 | Flak Turret | 14, 1.8/s, 5.5 | **Heavier bursts**: damage 14 > 27.5 | **Faster loaders**: shots/s 1.8 > 3.2 |
 | Tesla | 16, 2.0/s, 3.5 | **Higher voltage**: damage 16 > 28.9 | **Faster discharge**: shots/s 2.0 > 3.5 |
@@ -185,6 +231,10 @@ tower" stand. What changed: reach no longer grows with every star (it grew 0.3 a
 Why these: a step strengthens the tower's own job and never its off-job. The Cannon's two steps are both its shell: a
 faster Cannon would be a better swarm gun, which is not its job. The Gun Turret's first step is its rate, because rate is
 what a swarm asks.
+
+The Laser's steps swapped order in round 87: its pulse must stay under the Gun Turret's round at every level, 5 / 5 /
+10, so the rate comes first, as on the Gun Turret. Prices 130 / 55 / 100 are unchanged: the ratios between its levels
+are.
 
 A gate and the base's turret are structures, not towers: their steps are refits ("Armed gate", "Fortified gate", "Turret
 Mk II", "Turret Mk III") and change health and gun together.
@@ -242,6 +292,13 @@ fire can strip in the time the walk gives, and that is a matter of how much, not
 2. a row falls later than the window plus its cell's **allowance** (`GraceWindows.Allowances`: cell, trait, waves late at
    most, reason).
 
+**Round 87: `GraceWindows.Allowances` is empty.** The critic of round 86 read the allowances as readings written down
+after the fact (18 of them, up to seven waves on a window of three). They were deleted; an allowance comes back only
+with a written design reason, never because a row was measured late. On round 87's waves the gate therefore fails:
+94 rows, 51 in time, 2 early, 35 late (29 of them one or two waves, Quartz Flats Medium three, Shard Ridge Hard and
+Psycho four to six), 6 not judged; no row without the counter wins a level (`Tools/PlayTest/grace_windows.txt`). The
+table below is history.
+
 State after round 68: no row without the counter wins any of the 24 cells (round 67: the Gun Turret row won Landing Site
 Easy and Medium and Glass Meadows Easy, the Laser row Glass Meadows Easy). 94 rows: 56 in time, 1 early, 29 late inside
 an allowance, 8 not judged. The allowances (`GraceWindows.Allowances`, each with its reason in the code):
@@ -281,6 +338,16 @@ per coin) and cost the creative bot Hard. Options in Docs/STATUS.md, round 68.
 A new weapon: give it a damage type in `ProjectGenerator.WeaponDamageTypes`. That is all; it reads the table.
 A new creature: nothing; its traits follow from its numbers.
 
+Round 87:
+
+- A family factor: `ProjectGenerator.FamilyRules`; a creature's family: `ProjectGenerator.CreatureFamilies`; a
+  turret's retarget time: `ProjectGenerator.TurretRetargetSeconds`. Then
+  `bash Tools/PlayTest/stage.sh run ApplyRound87Laser.cs ApplyRound87Laser.Run` and
+  `bash Tools/PlayTest/stage.sh run LaserRole.cs LaserRole.Run`.
+- The specialist's price rule (`BalanceSheet.SpecialistPriceCap`, premium `BalanceSheet.SpecialistPremium`): on the
+  creatures it is bought against, a coin in a specialist buys at least the premium times what a coin in the Gun Turret
+  buys there. `Round87Tests` holds the Laser to it on a swarm that overloads it, per level and difficulty.
+
 ## 8. What the audit found (round 67)
 
 Where behaviour was decided per weapon instead of by a rule:
@@ -310,8 +377,10 @@ What the matrix shows that is **not** fixed, because it is a design choice:
   the balance probe's 0.2 s steps a level 3 Laser cleared Easy Skitters at x0.49 of its data (x0.77 on Medium and
   Hard, x0.92 on Psycho) where sixty frames a second gave x0.98; now x0.97 to x0.99 at every frame length
   (`Tools/PlayTest/laser_frames.txt`).
-- **Gun Turret and Laser do the same job** (light fire) at nearly the same damage per coin. The Laser is the job in fewer
-  cells; nothing else sets them apart.
+- **Gun Turret and Laser no longer do the same job (round 87).** Per coin on one big soft body the Laser buys a
+  little less than the Gun Turret (x0.97); on a swarm that overloads it, clearly more, because the turret pays a swing
+  for every creature and the beam does not; on armour and on a boss half, because a beam works on armour at a tenth.
+  Numbers per difficulty: `Tools/PlayTest/laser_role_r87.txt`.
 - **The Cannon's splash is worth little against soft bodies**: 1.3x over light fire per coin on a bunched mob at level 1,
   about even at level 3. Its real edge is armour (6x). So a level without armour or without bunching never asks for it,
   and a level with both (Landing Site) asks for nothing else.

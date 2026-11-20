@@ -73,8 +73,29 @@ namespace Game.Editor
         // that its creature died and never spends a second pulse on it.
         private const float BeamSpeed = 400f;
 
-        // How soon the laser's beam is on the next creature after a kill: three frames at 60 fps.
-        private const float LaserSweepSeconds = 0.05f;
+        // How soon the laser's beam is on the next creature after a kill: two frames at 60 fps. The pulse that kills never
+        // costs less than this (BeamBudget), so it stays the share of the Laser's shortest interval it was before round 87
+        // made the pulses smaller and faster (0.05 of 0.111 s, now 0.033 of 0.073 s): at 0.05 the sweep alone was two
+        // thirds of a pulse and a level 3 Laser lost a tenth of its data on small bodies.
+        private const float LaserSweepSeconds = 1f / 30f;
+
+        // Round 87 (Remco: the Laser is the answer to big, fast swarms of light creatures: a high rate of fire, a small
+        // pulse, on the next creature at once and nothing wasted on a dead one; weak on armour and on one big target).
+        // Its strength is the rules', not its numbers: a turret pays a swing for every new target (Towers.cs,
+        // TurretRetargetSeconds) and a beam does not, and a beam works on armour at a tenth (ProjectGenerator.Damage.cs).
+        // So on one big soft body it buys a little less per coin than the Gun Turret: every level's damage per second is
+        // this share of what it was (40, 66.7 and 120), which is 0.97 of the Gun Turret per coin at each level. The
+        // ratios between its levels are untouched, so the sheet prices its steps as before (130, 55, 100). The Cryo
+        // Beam, its hybrid, keeps its own numbers.
+        private const float LaserRetune = 0.9f;
+
+        // Smaller than the Gun Turret's round at every level (5, 5, 10): the Laser's pulse is 4, 4 and 7.2, at 9 and 15 a
+        // second. Its first step is the emitter (the Gun Turret's is its rate too) and its second the lens.
+        private const float LaserPulse = 4f;
+
+        /// <summary>The Laser's levels: the level it is built at and its two named steps (prices come from the sheet).</summary>
+        private static TowerLevel[] LaserLevels() =>
+            Levels(Lvl(110, LaserPulse, LightGunReach + 0.3f, LaserPulse / (8f / 0.2f * LaserRetune)), Faster("Overcharged emitter", 12f / 0.18f * LaserRetune), Harder("Focused lens", 18f / 0.15f * LaserRetune));
 
         private static void SetBeam(TowerDefinition tower, float sweepSeconds)
         {
@@ -87,13 +108,13 @@ namespace Game.Editor
         {
             var roster = new Roster { Pulse = pulse, Cannon = cannon, Rocket = rocket };
 
-            // The swarm gun: fast light pulses on the ground. The beam lands at once (hitscan speed), holds its creature and
-            // sweeps on to the next one right after a kill (2026-11-05, Docs/BALANCE.md "Laser and gun"), so small creatures
-            // die at the rate the beam can swing, not at its pulse rate; on a big creature it is a plain 40 DPS.
+            // Fast light pulses on the ground. The beam lands at once (hitscan speed), holds its creature and sweeps on to
+            // the next one right after a kill (2026-11-05, Docs/BALANCE.md "Laser and gun"); the pulse that kills costs the
+            // share of it the creature needed (BeamBudget, rounds 85 and 86), so it lands its data and no more.
             // Cyan like the model's lens (curator decision 2026-11-04: our colours follow the models; warm is for the aliens).
             roster.Laser = CreateTower("Laser", "Laser Turret", TargetLayers.Ground, BeamSpeed, 0f, new Color(0.35f, 0.9f, 1f),
-                Levels(Lvl(110, 8f, LightGunReach + 0.3f, 0.2f), Harder("Focused lens", 12f / 0.18f), Faster("Overcharged emitter", 18f / 0.15f)), 160f,
-                roleLine: "Light fire in one beam: the Gun Turret's job with nearly three times the firepower in one cell. Glances off armour; cannot aim up.", roles: new[] { TowerRole.LightFire });
+                LaserLevels(), 160f,
+                roleLine: "The swarm gun: a fast beam of small pulses that is on the next creature at once, for streams of fast light creatures. Weak on armour and on one big target; cannot aim up.", roles: new[] { TowerRole.LightFire });
             SetBeam(roster.Laser, LaserSweepSeconds);
 
             roster.Cryo = CreateTower("Cryo", "Cryo", TargetLayers.Ground | TargetLayers.Air, 12f, 0f, new Color(0.55f, 0.95f, 1f),
@@ -125,6 +146,8 @@ namespace Game.Editor
             roster.StormRifle = CreateTower("StormRifle", "Storm Rifle", TargetLayers.Ground | TargetLayers.Air, 20f, 0.8f, new Color(0.6f, 0.8f, 1f),
                 Levels(Lvl(0, 14f, 4.1f, 0.2f), Faster("Faster cycling", 20f / 0.18f, 200), Harder("Higher voltage", 28f / 0.15f, 300)), 190f,
                 roleLine: "Gun Turret and Tesla in one: rapid arcs for swarms and small groups. A fifth on armour, under half in the air.", roles: new[] { TowerRole.LightFire, TowerRole.Splash });
+            // The Gun Turret's hybrid keeps its turret, and so its swing.
+            SetRetarget(roster.StormRifle, TurretRetargetSeconds);
 
             roster.CryoBeam = CreateTower("CryoBeam", "Cryo Beam", TargetLayers.Ground | TargetLayers.Air, 40f, 0f, new Color(0.7f, 1f, 1f),
                 Levels(Lvl(0, 8f, 4.3f, 0.15f, 0f, 0.4f, 2.5f), Harder("Focused lens", 13f / 0.13f, 210), Faster("Overcharged emitter", 20f / 0.11f, 310)), 180f, slowFactor: 0.4f, slowSeconds: 2.5f,

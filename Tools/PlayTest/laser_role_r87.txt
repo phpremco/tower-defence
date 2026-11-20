@@ -1,0 +1,128 @@
+The Laser beside the Gun Turret and the Cannon 2026-11-20 02:09. Every number is bar (body + armour) taken off per second per 100 coins of the tower's whole price at that level, unless it says otherwise.
+
+Rules: Beam on armour x0.1, Bullet on armour x0.2; Beam on Energy x1.5;
+
+The towers as data:
+| Tower | Damage a shot | Shots a second | Data DPS | Coins | Data DPS per 100 coins | Retarget (s) | DPS in one cell against the Gun Turret's |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Gun Turret L1 | 5 | 2.86 | 14.3 | 50 | 28.6 | 0.15 | x1.00 |
+| Gun Turret L2 | 5 | 6 | 30.0 | 90 | 33.3 | 0.15 | x1.00 |
+| Gun Turret L3 | 10 | 6 | 60.0 | 155 | 38.7 | 0.15 | x1.00 |
+| Laser L1 | 4 | 9 | 36.0 | 130 | 27.7 | 0 | x2.52 |
+| Laser L2 | 4 | 15 | 60.0 | 185 | 32.4 | 0 | x2.00 |
+| Laser L3 | 7.2 | 15 | 108.0 | 285 | 37.9 | 0 | x1.80 |
+| Cannon L1 | 25 | 0.63 | 15.6 | 100 | 15.6 | 0 | x1.09 |
+| Cannon L2 | 56.89 | 0.63 | 35.6 | 195 | 18.2 | 0 | x1.19 |
+| Cannon L3 | 118.26 | 0.63 | 73.9 | 350 | 21.1 | 0 | x1.23 |
+
+## Easy: Skitter 13.7 health at 1.6 cells a second (mean of the stored waves)
+| Tower | Swarm, a body a second | Swarm, two a second | Swarm that overloads the Laser of that level | One big plain body | One armoured body | Boss (armour = body) | Slow pack (Oozers, more than the Cannon of that level can blast) | Energy stream (Wisps, two a second) | The difficulty's ground mix (data) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Gun Turret L1 | 22.8 | 21.0 | 18.8 | 29.9 | 5.7 | 6.0 | 26.7 | 21.5 | 13.8 |
+| Gun Turret L2 | 31.0 | 22.4 | 16.2 | 34.3 | 6.7 | 6.9 | 28.5 | 24.7 | 16.1 |
+| Gun Turret L3 | 27.3 | 21.7 | 13.6 | 39.9 | 7.8 | 8.0 | 29.1 | 28.6 | 18.7 |
+| Laser L1 | 16.7 | 22.9 | 27.5 | 26.0 | 2.7 | 2.6 | 27.6 | 41.3 | 8.2 |
+| Laser L2 | 14.0 | 18.7 | 31.4 | 30.5 | 3.2 | 3.1 | 32.3 | 46.9 | 9.6 |
+| Laser L3 | 11.4 | 15.3 | 37.3 | 35.7 | 3.7 | 3.6 | 37.6 | 40.1 | 11.3 |
+| Cannon L1 | 13.9 | 24.3 | 25.3 | 15.0 | 15.9 | 15.0 | 24.9 | 46.4 | 15.6 |
+| Cannon L2 | 7.1 | 12.5 | 13.1 | 17.4 | 18.6 | 17.4 | 49.3 | 45.9 | 18.2 |
+| Cannon L3 | 4.0 | 7.0 | 7.3 | 20.2 | 21.5 | 20.2 | 52.9 | 25.6 | 21.1 |
+| **Laser / Gun L1** | x0.73 | x1.09 | x1.46 | x0.87 | x0.47 | x0.43 | x1.04 | x1.92 | x0.60 |
+| **Laser / Gun L2** | x0.45 | x0.83 | x1.94 | x0.89 | x0.47 | x0.44 | x1.13 | x1.90 | x0.60 |
+| **Laser / Gun L3** | x0.42 | x0.70 | x2.74 | x0.90 | x0.47 | x0.45 | x1.29 | x1.40 | x0.60 |
+| **Cannon / Laser L1** | x0.83 | x1.06 | x0.92 | x0.58 | x5.88 | x5.76 | x0.90 | x1.12 | x1.90 |
+| **Cannon / Laser L2** | x0.51 | x0.67 | x0.42 | x0.57 | x5.89 | x5.71 | x1.52 | x0.98 | x1.89 |
+| **Cannon / Laser L3** | x0.35 | x0.46 | x0.20 | x0.57 | x5.83 | x5.66 | x1.41 | x0.64 | x1.88 |
+
+Ground mix: armour 27 % of the bar, energy bodies 8.1 %. The swarm that overloads the Laser at 0.2 s frames (the probe), Laser / Gun per coin: L1 x1.42 (a body every 0.30 s); L2 x1.82 (a body every 0.18 s); L3 x2.63 (a body every 0.10 s);
+
+The price rule (BalanceSheet.SpecialistPriceCap, premium x1.1) on the swarm that overloads the Laser:
+| Level | Laser takes off (bar a second) | Gun Turret takes off | Gun Turret's coins | The Laser may cost at most | It costs |
+| --- | --- | --- | --- | --- | --- |
+| L1 | 35.8 | 9.4 | 50 | 170 | 130 |
+| L2 | 58.1 | 14.6 | 90 | 325 | 185 |
+| L3 | 106.3 | 21.1 | 155 | 710 | 285 |
+
+## Medium: Skitter 24.5 health at 1.6 cells a second (mean of the stored waves)
+| Tower | Swarm, a body a second | Swarm, two a second | Swarm that overloads the Laser of that level | One big plain body | One armoured body | Boss (armour = body) | Slow pack (Oozers, more than the Cannon of that level can blast) | Energy stream (Wisps, two a second) | The difficulty's ground mix (data) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Gun Turret L1 | 24.5 | 21.2 | 21.9 | 29.9 | 5.7 | 6.0 | 27.5 | 21.5 | 13.2 |
+| Gun Turret L2 | 29.5 | 24.3 | 20.8 | 34.3 | 6.7 | 6.9 | 30.5 | 24.8 | 15.4 |
+| Gun Turret L3 | 32.3 | 24.2 | 17.8 | 39.9 | 7.8 | 8.0 | 32.4 | 28.8 | 17.9 |
+| Laser L1 | 22.2 | 27.2 | 27.2 | 26.0 | 2.7 | 2.6 | 27.7 | 41.4 | 7.7 |
+| Laser L2 | 19.5 | 27.4 | 31.1 | 30.5 | 3.2 | 3.1 | 32.4 | 48.4 | 9.1 |
+| Laser L3 | 16.3 | 21.8 | 36.6 | 35.7 | 3.7 | 3.6 | 37.8 | 55.1 | 10.6 |
+| Cannon L1 | 25.0 | 43.7 | 42.7 | 15.0 | 15.9 | 15.0 | 17.5 | 46.2 | 15.6 |
+| Cannon L2 | 12.8 | 22.4 | 23.3 | 17.4 | 18.6 | 17.4 | 32.4 | 51.2 | 18.2 |
+| Cannon L3 | 7.1 | 12.5 | 13.1 | 20.2 | 21.5 | 20.2 | 59.0 | 46.4 | 21.1 |
+| **Laser / Gun L1** | x0.91 | x1.29 | x1.24 | x0.87 | x0.47 | x0.43 | x1.01 | x1.92 | x0.59 |
+| **Laser / Gun L2** | x0.66 | x1.13 | x1.49 | x0.89 | x0.47 | x0.44 | x1.06 | x1.96 | x0.59 |
+| **Laser / Gun L3** | x0.50 | x0.90 | x2.06 | x0.90 | x0.47 | x0.45 | x1.17 | x1.92 | x0.59 |
+| **Cannon / Laser L1** | x1.12 | x1.60 | x1.57 | x0.58 | x5.88 | x5.76 | x0.63 | x1.12 | x2.02 |
+| **Cannon / Laser L2** | x0.66 | x0.82 | x0.75 | x0.57 | x5.89 | x5.71 | x1.00 | x1.06 | x2.01 |
+| **Cannon / Laser L3** | x0.44 | x0.57 | x0.36 | x0.57 | x5.83 | x5.66 | x1.56 | x0.84 | x2.00 |
+
+Ground mix: armour 29 % of the bar, energy bodies 7.8 %. The swarm that overloads the Laser at 0.2 s frames (the probe), Laser / Gun per coin: L1 x1.23 (a body every 0.55 s); L2 x1.46 (a body every 0.33 s); L3 x1.82 (a body every 0.18 s);
+
+The price rule (BalanceSheet.SpecialistPriceCap, premium x1.1) on the swarm that overloads the Laser:
+| Level | Laser takes off (bar a second) | Gun Turret takes off | Gun Turret's coins | The Laser may cost at most | It costs |
+| --- | --- | --- | --- | --- | --- |
+| L1 | 35.4 | 11.0 | 50 | 145 | 130 |
+| L2 | 57.5 | 18.7 | 90 | 250 | 185 |
+| L3 | 104.4 | 27.5 | 155 | 530 | 285 |
+
+## Hard: Skitter 18.4 health at 1.6 cells a second (mean of the stored waves)
+| Tower | Swarm, a body a second | Swarm, two a second | Swarm that overloads the Laser of that level | One big plain body | One armoured body | Boss (armour = body) | Slow pack (Oozers, more than the Cannon of that level can blast) | Energy stream (Wisps, two a second) | The difficulty's ground mix (data) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Gun Turret L1 | 23.8 | 21.1 | 20.3 | 29.9 | 5.7 | 6.0 | 27.1 | 21.5 | 12.0 |
+| Gun Turret L2 | 30.2 | 23.4 | 18.8 | 34.3 | 6.7 | 6.9 | 29.6 | 24.6 | 14.0 |
+| Gun Turret L3 | 36.8 | 29.2 | 15.6 | 39.9 | 7.8 | 8.0 | 30.8 | 28.5 | 16.2 |
+| Laser L1 | 19.6 | 27.5 | 27.6 | 26.0 | 2.7 | 2.6 | 27.7 | 41.3 | 6.9 |
+| Laser L2 | 17.0 | 23.0 | 32.2 | 30.5 | 3.2 | 3.1 | 32.4 | 47.6 | 8.1 |
+| Laser L3 | 13.8 | 17.9 | 37.4 | 35.7 | 3.7 | 3.6 | 37.7 | 48.2 | 9.4 |
+| Cannon L1 | 18.7 | 32.8 | 33.6 | 15.0 | 15.9 | 15.0 | 20.1 | 46.2 | 15.6 |
+| Cannon L2 | 9.6 | 16.8 | 17.5 | 17.4 | 18.6 | 17.4 | 40.9 | 48.1 | 18.2 |
+| Cannon L3 | 5.4 | 9.4 | 10.2 | 20.2 | 21.5 | 20.2 | 53.3 | 34.3 | 21.1 |
+| **Laser / Gun L1** | x0.82 | x1.30 | x1.36 | x0.87 | x0.47 | x0.43 | x1.02 | x1.93 | x0.57 |
+| **Laser / Gun L2** | x0.56 | x0.98 | x1.71 | x0.89 | x0.47 | x0.44 | x1.09 | x1.93 | x0.58 |
+| **Laser / Gun L3** | x0.38 | x0.61 | x2.40 | x0.90 | x0.47 | x0.45 | x1.22 | x1.69 | x0.58 |
+| **Cannon / Laser L1** | x0.96 | x1.19 | x1.22 | x0.58 | x5.88 | x5.76 | x0.73 | x1.12 | x2.27 |
+| **Cannon / Laser L2** | x0.57 | x0.73 | x0.54 | x0.57 | x5.89 | x5.71 | x1.26 | x1.01 | x2.26 |
+| **Cannon / Laser L3** | x0.39 | x0.52 | x0.27 | x0.57 | x5.83 | x5.66 | x1.41 | x0.71 | x2.24 |
+
+Ground mix: armour 35 % of the bar, energy bodies 8.7 %. The swarm that overloads the Laser at 0.2 s frames (the probe), Laser / Gun per coin: L1 x1.32 (a body every 0.41 s); L2 x1.65 (a body every 0.25 s); L3 x2.13 (a body every 0.14 s);
+
+The price rule (BalanceSheet.SpecialistPriceCap, premium x1.1) on the swarm that overloads the Laser:
+| Level | Laser takes off (bar a second) | Gun Turret takes off | Gun Turret's coins | The Laser may cost at most | It costs |
+| --- | --- | --- | --- | --- | --- |
+| L1 | 35.8 | 10.1 | 50 | 160 | 130 |
+| L2 | 59.5 | 17.0 | 90 | 285 | 185 |
+| L3 | 106.5 | 24.1 | 155 | 620 | 285 |
+
+## Psycho: Skitter 51.5 health at 1.6 cells a second (mean of the stored waves)
+| Tower | Swarm, a body a second | Swarm, two a second | Swarm that overloads the Laser of that level | One big plain body | One armoured body | Boss (armour = body) | Slow pack (Oozers, more than the Cannon of that level can blast) | Energy stream (Wisps, two a second) | The difficulty's ground mix (data) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Gun Turret L1 | 24.5 | 21.2 | 25.0 | 29.9 | 5.7 | 6.0 | 28.4 | 21.5 | 12.1 |
+| Gun Turret L2 | 28.5 | 24.4 | 26.5 | 34.3 | 6.7 | 6.9 | 31.9 | 24.7 | 14.1 |
+| Gun Turret L3 | 29.9 | 28.1 | 25.4 | 39.9 | 7.8 | 8.0 | 35.4 | 28.7 | 16.4 |
+| Laser L1 | 27.6 | 27.6 | 27.7 | 26.0 | 2.7 | 2.6 | 27.4 | 41.4 | 7.0 |
+| Laser L2 | 29.5 | 32.3 | 32.3 | 30.5 | 3.2 | 3.1 | 32.4 | 48.4 | 8.2 |
+| Laser L3 | 24.8 | 35.8 | 36.6 | 35.7 | 3.7 | 3.6 | 37.8 | 56.6 | 9.6 |
+| Cannon L1 | 26.5 | 43.6 | 24.4 | 15.0 | 15.9 | 15.0 | 16.4 | 46.9 | 15.6 |
+| Cannon L2 | 26.9 | 47.0 | 37.3 | 17.4 | 18.6 | 17.4 | 21.2 | 53.6 | 18.2 |
+| Cannon L3 | 15.0 | 26.2 | 27.3 | 20.2 | 21.5 | 20.2 | 38.0 | 59.0 | 21.1 |
+| **Laser / Gun L1** | x1.13 | x1.30 | x1.11 | x0.87 | x0.47 | x0.43 | x0.97 | x1.92 | x0.58 |
+| **Laser / Gun L2** | x1.03 | x1.33 | x1.22 | x0.89 | x0.47 | x0.44 | x1.01 | x1.96 | x0.58 |
+| **Laser / Gun L3** | x0.83 | x1.28 | x1.44 | x0.90 | x0.47 | x0.45 | x1.07 | x1.98 | x0.58 |
+| **Cannon / Laser L1** | x0.96 | x1.58 | x0.88 | x0.58 | x5.88 | x5.76 | x0.60 | x1.13 | x2.23 |
+| **Cannon / Laser L2** | x0.91 | x1.46 | x1.15 | x0.57 | x5.89 | x5.71 | x0.65 | x1.11 | x2.23 |
+| **Cannon / Laser L3** | x0.60 | x0.73 | x0.75 | x0.57 | x5.83 | x5.66 | x1.01 | x1.04 | x2.21 |
+
+Ground mix: armour 34 % of the bar, energy bodies 8.4 %. The swarm that overloads the Laser at 0.2 s frames (the probe), Laser / Gun per coin: L1 x1.10 (a body every 1.14 s); L2 x1.21 (a body every 0.69 s); L3 x1.43 (a body every 0.38 s);
+
+The price rule (BalanceSheet.SpecialistPriceCap, premium x1.1) on the swarm that overloads the Laser:
+| Level | Laser takes off (bar a second) | Gun Turret takes off | Gun Turret's coins | The Laser may cost at most | It costs |
+| --- | --- | --- | --- | --- | --- |
+| L1 | 35.9 | 12.5 | 50 | 130 | 130 |
+| L2 | 59.8 | 23.9 | 90 | 205 | 185 |
+| L3 | 104.3 | 39.4 | 155 | 370 | 285 |

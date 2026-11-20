@@ -1998,3 +1998,60 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
     (`BossFire`) therefore applies only to a load that has a boss.
   - `LevelDefinition` assets of the arenas share the campaign's waves: a test that names `Arena_Ruins` is reading
     Fault Line.
+
+## Round 87: the formula, one scalar per level, frozen gates, archetype rungs, the laser role (added 2026-11-20)
+
+- **The design** is in Docs/WAVE_GRAMMAR.md ("The solver (round 87: a formula)", "How to balance a new level (round 87)")
+  and Docs/COMBAT_RULES.md (section 1: family table, retarget time). In code: `WaveFormula` (walk-in multiplier and boss
+  bar), `WaveSolver.Solve` (applies it), `BossYardstick` (the floor: three times the bar of the toughest walker met),
+  `BalanceRules` (`RampStart`, `RampEnd`, `RushFactor`, `HeavyFactor`, `AirFactor`, `AfterBossFactor`, `BossCrowdFactor`,
+  `PeakPhases`, `LongLevelWaves`, `LongLevelPeakPhase`, `PeakFactor`, `DifficultyScale`, `BossBase`, `BossDifficulty`,
+  `BossLevelGrowth`, `BossEarlyShare`, `FlyingBossShare`, `LevelScalarLeast`, `LevelScalarMost`), `CombatRules.Families`,
+  `Game.Towers.Retarget`, `BalanceSheet.SpecialistPremium` / `SpecialistPriceCap`, `FinaleProbeReport.DerivedHealth`.
+- **`Tools/PlayTest/wave_tuning.txt` holds `KEY scalar` lines only, one per level** (`C1_01 0.875`).
+- **Solve and reports:** `stage.sh run ApplyRound68.cs ApplyRound68.Run` (the solve stage, as before), then
+  `stage.sh run Round87Lab.cs Round87Lab.Run` writes `Tools/PlayTest/r87_waves.txt` (every wave: walk-in multiplier, kind,
+  peak, boss) and `r87_bosses.txt` (every level boss: bar, body, armour, formula bar, the floor, whether it binds).
+  `boss_share.py` reads `r87_waves.txt`: run the lab after every solve.
+- **A measurement:** `PR_SEEDS=1 PR_WORKERS=6 bash Tools/PlayTest/r87_measure.sh <name>` from the stage, in the background
+  (one seed, four rungs, 24 cells: 45 minutes on six clones; three seeds: two and a quarter hours). Then
+  `python -I Tools/PlayTest/closed_loop.py <easy records> <medium records> <records> --centre` (table, gates, proposed
+  level scalars and `DifficultyScale`), `python -I Tools/PlayTest/boss_share.py <the same>` (where the lost runs fell),
+  `python -I Tools/PlayTest/archetype_table.py <the same> --rungs laser,cannon,sensible,skilled`,
+  `python -I Tools/PlayTest/tower_mix.py <records> --rungs`.
+- **The gates are frozen** in `Tools/PlayTest/closed_loop_thresholds.txt` (2026-11-20; `closed_loop.py`, `boss_share.py`
+  and `ClosedLoopAcceptanceTests` read that file and nothing else). A change is a dated design decision on a line of its
+  own, never a reaction to a reading.
+- **Rule constants and the boss floor:** a level scalar or `PeakFactor` raises the walkers and with them the floor
+  (three times the toughest walker). When the floor passes the formula on a last boss, that boss moves with the scalar
+  and `WaveFormulaTests.EveryStoredLevelBoss_GrowsWithTheDifficulty` / `TheLastBoss_GrowsWithTheLevel` can fail: check the
+  "floor binds" column of `r87_bosses.txt` after every solve (Glass Meadows Medium is the tightest).
+- **The finale stage, with retry:** `bash Tools/PlayTest/r87_finale_cycle.sh <name> [apply]` (from the stage): the probe
+  on four clones, a difficulty whose clone wrote no report is played again, the result in
+  `finale_probe_<name>.txt`; with `apply` the finale stage follows. Round 87's stage rule
+  (`FinaleProbeReport.DerivedHealth`): Medium's holding multiple times the hold share, and never more than the finale
+  player of any other difficulty still beats; a boss beaten on every difficulty whose derived health lies within 20 %
+  of the health it was probed at stays where it is (`FinaleProbeReport.SettledBand`; without it the stage walks a boss
+  back up to a health it has already lost at). Repeat probe and apply until 24 of 24 win at the data. **A change of
+  `DifficultyScale` moves the arenas' crowds: probe the finales again after the last tuning pass** (round 87: Gravemaw
+  lost Hard after Hard's factor went from 1.23 to 1.36).
+- **The laser:** `stage.sh run ApplyRound87Laser.cs ApplyRound87Laser.Run` (the rules asset: family table and Beam on
+  armour; the creature families; the Laser's levels and sweep; the turrets' retarget time; safe to run again; tower
+  numbers are in the calibration's hash, re-stamp after it). `stage.sh run LaserRole.cs LaserRole.Run` writes
+  `Tools/PlayTest/laser_role_r87.txt`. `Game.Editor.StreamDuel` plays one tower against a stream through the firing
+  rules (`Cadence`, `BeamBudget`, `Retarget`) for lab scripts and tests.
+- **The archetype rungs** (bot version 4): `laser` and `cannon` are the sensible player with a favourite ground gun
+  (`ProbeStrategy.MainGun`, `BalanceProbeTests.MainGunAct`); `PR_POLICIES="laser,cannon" bash Tools/PlayTest/r87_archetypes.sh <name>`
+  measures them alone.
+- **Pitfalls met this round:**
+  - `cd <stage> && ( ... ) & bash Tools/PlayTest/x.sh` runs `x.sh` in the folder the shell STARTED in (the `&` ends the
+    list the `cd` belongs to). A finale probe ran from the project that way and wrote its report there. Start every
+    background command with `cd <stage> || exit 1;` on a line of its own.
+  - Never run the whole EditMode suite on the stage editor: `PlanSearchTests` and `CalibrationFitTests` rewrite
+    `Tools/PlayTest/Plans` and `calibration*.txt`. Run it on a clone (`r34b_editmode_worker.sh 6 Game.Tests`).
+  - The probe's health multiple scales the bosses too (`LevelDefinition.EnemyHealthScale`); a level scalar does not.
+    Where every lost run falls in the boss wave, a scalar moves the reading less than the loop assumes.
+  - The skilled rung plays a recorded plan: after a rule change (boss armour, laser) the picks are stale and the
+    Easy and Psycho readings with them. Run `r86_picks.sh` before the last tuning passes, not after.
+  - A clone that ends in a minute with "Scripts have compiler errors" and no `error CS` line lost its ILPP pipe: play
+    that part again (`r87_finale_cycle.sh` does so for the finale probe).

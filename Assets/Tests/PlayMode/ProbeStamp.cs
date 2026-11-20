@@ -21,9 +21,11 @@ namespace Game.Tests
         /// rung is the cell's best searched strategy played adaptively with the rift reaction. Version 3 (round 78): the
         /// sensible bot also reads the HUD's next-wave preview (the same <see cref="Game.Levels.WavePreview"/>, nothing more);
         /// both rungs put or move a sky gun beside the base when flyers bite it out of reach of every sky gun; the skilled
-        /// rung's strategy is the pick of Tools/PlayTest/skilled_picks.txt, measured on the data of its day. Frozen.
+        /// rung's strategy is the pick of Tools/PlayTest/skilled_picks.txt, measured on the data of its day. Version 4 (round 87):
+        /// the archetype rungs "laser" and "cannon" are added (the sensible player with a favourite ground gun,
+        /// BalanceProbeTests.MainGunAct); the sensible and skilled rungs play exactly as in version 3.
         /// </summary>
-        public const int BotVersion = 3;
+        public const int BotVersion = 4;
 
         private const int HashLength = 8;
         private const byte CarriageReturn = 13;

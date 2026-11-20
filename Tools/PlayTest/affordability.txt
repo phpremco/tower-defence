@@ -5,45 +5,45 @@ counter takes when the bounties fall short.
 
 | Cell | Trait | First wave | Deadline | Counter | Price | Starting money | Bounties by deadline | Start share | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C1_01 Easy | Armoured | w7 | w9 | Cannon | 100 | 160 | 194 | - | payable from bounties |
-| C1_01 Medium | Armoured | w7 | w8 | Cannon | 100 | 200 | 192 | - | payable from bounties |
-| C1_01 Hard | Armoured | w7 | w8 | Cannon | 100 | 200 | 322 | - | payable from bounties |
-| C1_01 Psycho | Armoured | w7 | w7 | Cannon | 100 | 600 | 453 | - | payable from bounties |
-| C1_02 Easy | Armoured | w6 | w8 | Cannon | 100 | 176 | 167 | - | payable from bounties |
-| C1_02 Medium | Armoured | w6 | w7 | Cannon | 100 | 220 | 172 | - | payable from bounties |
-| C1_02 Hard | Armoured | w6 | w7 | Cannon | 100 | 220 | 235 | - | payable from bounties |
-| C1_02 Psycho | Armoured | w6 | w6 | Cannon | 100 | 660 | 357 | - | payable from bounties |
-| C1_03 Easy | Airborne | w12 | w14 | Rocket | 120 | 192 | 536 | - | payable from bounties |
-| C1_03 Easy | Armoured | w8 | w10 | Cannon | 100 | 192 | 247 | - | payable from bounties |
-| C1_03 Medium | Airborne | w11 | w12 | Rocket | 120 | 240 | 456 | - | payable from bounties |
-| C1_03 Medium | Armoured | w8 | w9 | Cannon | 100 | 240 | 253 | - | payable from bounties |
-| C1_03 Hard | Airborne | w11 | w12 | Rocket | 120 | 240 | 711 | - | payable from bounties |
+| C1_01 Easy | Armoured | w7 | w9 | Cannon | 100 | 160 | 191 | - | payable from bounties |
+| C1_01 Medium | Armoured | w7 | w8 | Cannon | 100 | 200 | 190 | - | payable from bounties |
+| C1_01 Hard | Armoured | w7 | w8 | Cannon | 100 | 200 | 323 | - | payable from bounties |
+| C1_01 Psycho | Armoured | w7 | w7 | Cannon | 100 | 600 | 492 | - | payable from bounties |
+| C1_02 Easy | Armoured | w6 | w8 | Cannon | 100 | 176 | 170 | - | payable from bounties |
+| C1_02 Medium | Armoured | w6 | w7 | Cannon | 100 | 220 | 168 | - | payable from bounties |
+| C1_02 Hard | Armoured | w6 | w7 | Cannon | 100 | 220 | 228 | - | payable from bounties |
+| C1_02 Psycho | Armoured | w6 | w6 | Cannon | 100 | 660 | 397 | - | payable from bounties |
+| C1_03 Easy | Airborne | w12 | w14 | Rocket | 120 | 192 | 529 | - | payable from bounties |
+| C1_03 Easy | Armoured | w8 | w10 | Cannon | 100 | 192 | 249 | - | payable from bounties |
+| C1_03 Medium | Airborne | w11 | w12 | Rocket | 120 | 240 | 457 | - | payable from bounties |
+| C1_03 Medium | Armoured | w8 | w9 | Cannon | 100 | 240 | 255 | - | payable from bounties |
+| C1_03 Hard | Airborne | w11 | w12 | Rocket | 120 | 240 | 783 | - | payable from bounties |
 | C1_03 Hard | Armoured | w4 | w5 | Cannon | 100 | 240 | 129 | - | payable from bounties |
-| C1_03 Psycho | Airborne | w11 | w11 | Rocket | 120 | 720 | 793 | - | payable from bounties |
-| C1_03 Psycho | Armoured | w4 | w4 | Cannon | 100 | 720 | 100 | - | payable from bounties |
-| C1_04 Easy | Airborne | w7 | w9 | Rocket | 120 | 208 | 182 | - | payable from bounties |
-| C1_04 Easy | Armoured | w8 | w10 | Cannon | 100 | 208 | 235 | - | payable from bounties |
+| C1_03 Psycho | Airborne | w11 | w11 | Rocket | 120 | 720 | 985 | - | payable from bounties |
+| C1_03 Psycho | Armoured | w4 | w4 | Cannon | 100 | 720 | 101 | - | payable from bounties |
+| C1_04 Easy | Airborne | w10 | w12 | Rocket | 120 | 208 | 332 | - | payable from bounties |
+| C1_04 Easy | Armoured | w7 | w9 | Cannon | 100 | 208 | 192 | - | payable from bounties |
 | C1_04 Medium | Airborne | w6 | w7 | Rocket | 120 | 260 | 125 | - | payable from bounties |
-| C1_04 Medium | Armoured | w8 | w9 | Cannon | 100 | 260 | 193 | - | payable from bounties |
+| C1_04 Medium | Armoured | w7 | w8 | Cannon | 100 | 260 | 164 | - | payable from bounties |
 | C1_04 Hard | Airborne | w3 | w4 | Rocket | 120 | 260 | 88 | 12% | WARNING: only from the starting money |
-| C1_04 Hard | Armoured | w9 | w10 | Cannon | 100 | 260 | 416 | - | payable from bounties |
+| C1_04 Hard | Armoured | w7 | w8 | Cannon | 100 | 260 | 328 | - | payable from bounties |
 | C1_04 Psycho | Airborne | w3 | w3 | Rocket | 120 | 780 | 71 | 6% | WARNING: only from the starting money |
-| C1_04 Psycho | Armoured | w10 | w10 | Cannon | 100 | 780 | 540 | - | payable from bounties |
-| C1_05 Easy | Airborne | w8 | w10 | Rocket | 120 | 224 | 267 | - | payable from bounties |
-| C1_05 Easy | Armoured | w4 | w6 | Cannon | 100 | 224 | 106 | - | payable from bounties |
+| C1_04 Psycho | Armoured | w7 | w7 | Cannon | 100 | 780 | 399 | - | payable from bounties |
+| C1_05 Easy | Airborne | w9 | w11 | Rocket | 120 | 224 | 323 | - | payable from bounties |
+| C1_05 Easy | Armoured | w4 | w6 | Cannon | 100 | 224 | 108 | - | payable from bounties |
 | C1_05 Medium | Airborne | w6 | w7 | Rocket | 120 | 280 | 146 | - | payable from bounties |
 | C1_05 Medium | Armoured | w4 | w5 | Cannon | 100 | 280 | 98 | 1% | WARNING: only from the starting money |
-| C1_05 Hard | Airborne | w4 | w5 | Rocket | 120 | 280 | 133 | - | payable from bounties |
-| C1_05 Hard | Armoured | w5 | w6 | Cannon | 100 | 280 | 191 | - | payable from bounties |
+| C1_05 Hard | Airborne | w4 | w5 | Rocket | 120 | 280 | 134 | - | payable from bounties |
+| C1_05 Hard | Armoured | w5 | w6 | Cannon | 100 | 280 | 192 | - | payable from bounties |
 | C1_05 Psycho | Airborne | w4 | w4 | Rocket | 120 | 840 | 127 | - | payable from bounties |
 | C1_05 Psycho | Armoured | w5 | w5 | Cannon | 100 | 840 | 161 | - | payable from bounties |
-| C1_06 Easy | Airborne | w7 | w9 | Rocket | 120 | 240 | 222 | - | payable from bounties |
-| C1_06 Easy | Armoured | w10 | w12 | Cannon | 100 | 240 | 385 | - | payable from bounties |
-| C1_06 Medium | Airborne | w7 | w8 | Rocket | 120 | 300 | 188 | - | payable from bounties |
-| C1_06 Medium | Armoured | w9 | w10 | Cannon | 100 | 300 | 273 | - | payable from bounties |
-| C1_06 Hard | Airborne | w7 | w8 | Rocket | 120 | 300 | 322 | - | payable from bounties |
-| C1_06 Hard | Armoured | w9 | w10 | Cannon | 100 | 300 | 480 | - | payable from bounties |
-| C1_06 Psycho | Airborne | w5 | w5 | Rocket | 120 | 900 | 176 | - | payable from bounties |
-| C1_06 Psycho | Armoured | w9 | w9 | Cannon | 100 | 900 | 596 | - | payable from bounties |
+| C1_06 Easy | Airborne | w10 | w12 | Rocket | 120 | 240 | 404 | - | payable from bounties |
+| C1_06 Easy | Armoured | w7 | w9 | Cannon | 100 | 240 | 230 | - | payable from bounties |
+| C1_06 Medium | Airborne | w8 | w9 | Rocket | 120 | 300 | 234 | - | payable from bounties |
+| C1_06 Medium | Armoured | w7 | w8 | Cannon | 100 | 300 | 207 | - | payable from bounties |
+| C1_06 Hard | Airborne | w8 | w9 | Rocket | 120 | 300 | 437 | - | payable from bounties |
+| C1_06 Hard | Armoured | w7 | w8 | Cannon | 100 | 300 | 380 | - | payable from bounties |
+| C1_06 Psycho | Airborne | w5 | w5 | Rocket | 120 | 900 | 184 | - | payable from bounties |
+| C1_06 Psycho | Armoured | w9 | w9 | Cannon | 100 | 900 | 684 | - | payable from bounties |
 
 3 warnings of 40 rows.

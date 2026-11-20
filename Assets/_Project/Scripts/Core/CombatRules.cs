@@ -6,8 +6,8 @@ namespace Game.Core
     /// <summary>
     /// The combat rules, one table for every damage source in the game (round 67, Remco: "one set of general combat rules
     /// that every damage source follows, with only explicit, named exceptions"). A weapon carries its damage type and
-    /// nothing else; what a hit is worth against armour and in the air comes from here (<see cref="ProfileOf"/>), and a
-    /// weapon that must differ is listed as an exception with its reason. A creature carries its numbers and nothing else;
+    /// nothing else; what a hit is worth against armour, in the air and on a creature family comes from here
+    /// (<see cref="ProfileOf"/>), and a weapon that must differ is listed as an exception with its reason. A creature carries its numbers and nothing else;
     /// its traits come from here as well (<see cref="TraitsOf"/>). The reference fights per trait and their margins are
     /// what the role tests enforce, and the grace windows are what the level balance checks (Docs/COMBAT_RULES.md).
     /// </summary>
@@ -18,8 +18,13 @@ namespace Game.Core
 
         public const int DifficultyCount = 4;
 
+        private static readonly int FamilyCount = Enum.GetValues(typeof(CreatureFamily)).Length;
+
         [Header("Damage type against trait")]
         [SerializeField] private DamageRule[] _damage = new DamageRule[0];
+
+        [Header("Damage type against creature family (only the pairs that differ from one)")]
+        [SerializeField] private FamilyRule[] _families = new FamilyRule[0];
 
         [Header("Named exceptions (the only place a weapon differs from its type)")]
         [SerializeField] private CombatException[] _exceptions = new CombatException[0];
@@ -60,6 +65,7 @@ namespace Game.Core
         public static int Version { get; private set; }
 
         public DamageRule[] Damage => _damage;
+        public FamilyRule[] Families => _families;
         public CombatException[] Exceptions => _exceptions;
         public RoleScenario[] Scenarios => _scenarios;
         public float SwarmHealth => _swarmHealth;
@@ -90,7 +96,29 @@ namespace Game.Core
             return new DamageRule { Type = type, Armour = 1f, Air = 1f };
         }
 
-        /// <summary>What a weapon's hits are worth: its type's row, with the weapon's own exceptions over it.</summary>
+        /// <summary>
+        /// What a hit of a damage type is multiplied by on a creature family (round 87); one for every pair the table does
+        /// not list, and for a creature of no family whatever the table says.
+        /// </summary>
+        public float FamilyFactor(DamageType type, CreatureFamily family)
+        {
+            if (family == CreatureFamily.None)
+            {
+                return 1f;
+            }
+
+            for (int i = 0; i < _families.Length; i++)
+            {
+                if (_families[i].Type == type && _families[i].Family == family)
+                {
+                    return _families[i].Factor;
+                }
+            }
+
+            return 1f;
+        }
+
+        /// <summary>What a weapon's hits are worth: its type's row and family entries, with the weapon's own exceptions over them.</summary>
         /// <param name="weapon">The weapon's asset name, as the exceptions list it.</param>
         public DamageProfile ProfileOf(DamageType type, string weapon)
         {
@@ -114,7 +142,34 @@ namespace Game.Core
                 }
             }
 
-            return new DamageProfile(armour, air);
+            return new DamageProfile(armour, air, FamilyFactors(type));
+        }
+
+        // The type's factor per family by the family's number, or null when the table has no entry for the type: read
+        // once per weapon (ProfileCache), so a hit never searches the table.
+        private float[] FamilyFactors(DamageType type)
+        {
+            float[] factors = null;
+            for (int i = 0; i < _families.Length; i++)
+            {
+                if (_families[i].Type != type || _families[i].Family == CreatureFamily.None)
+                {
+                    continue;
+                }
+
+                if (factors == null)
+                {
+                    factors = new float[FamilyCount];
+                    for (int f = 0; f < factors.Length; f++)
+                    {
+                        factors[f] = 1f;
+                    }
+                }
+
+                factors[(int)_families[i].Family] = _families[i].Factor;
+            }
+
+            return factors;
         }
 
         /// <summary>A creature's traits from its numbers: one size (swarm, mob, tough) and the modifiers that apply.</summary>
@@ -200,6 +255,14 @@ namespace Game.Core
                 if (string.IsNullOrWhiteSpace(_exceptions[i].Reason) || (_exceptions[i].Trait != EnemyTraits.Armoured && _exceptions[i].Trait != EnemyTraits.Airborne))
                 {
                     Debug.LogWarning($"CombatRules '{name}': the exception for '{_exceptions[i].Weapon}' needs a reason and the trait Armoured or Airborne.", this);
+                }
+            }
+
+            for (int i = 0; i < _families.Length; i++)
+            {
+                if (string.IsNullOrWhiteSpace(_families[i].Reason) || _families[i].Family == CreatureFamily.None)
+                {
+                    Debug.LogWarning($"CombatRules '{name}': the family entry for {_families[i].Type} on {_families[i].Family} needs a reason and a family other than None.", this);
                 }
             }
 

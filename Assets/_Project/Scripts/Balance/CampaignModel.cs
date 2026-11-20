@@ -115,13 +115,13 @@ namespace Game.Balance
         }
 
         /// <summary>
-        /// Solves a level's waves for every difficulty, each on its own (round 83), and composes them. <paramref name="healths"/>
+        /// Sizes a level's waves for every difficulty (round 87: by formula, WaveSolver.Solve) and composes them. <paramref name="healths"/>
         /// receives Medium's multipliers.
         /// </summary>
         public List<List<WaveSpec>> BuildWaves(int levelIndex, WaveScriptSpec script, out float[] healths)
         {
             LevelFacts facts = Facts[levelIndex];
-            // The script (with the cell's scalar) is the source of the target scale at generation; the asset records it for the checks.
+            // The script (with the level's scalar) is the source of the target scale at generation; the asset records it.
             Levels[levelIndex].TargetScale = script.TargetScale;
             // The flyer floors are this solve's to set (the Easy raid rule and the first-flyer rule below), never the script's.
             script.FirstAirWaveFloor = new[] { 0 };
@@ -314,81 +314,13 @@ namespace Game.Balance
             return airOnly >= 0 || madeForTheSky ? airOnly : reaches;
         }
 
-        // One difficulty as stored: the solver's waves for a competent player with the difficulty's real money (every wave to
-        // its own target), times what the probe says the model misreads: the difficulty's factor (one number for every level,
-        // BalanceRules.DifficultyScale) and the cell's own scalar (the script's target scale, found by the closed loop). Both
-        // act on every creature alike, a boss included, exactly as the probe's health multiple does, so the measured
-        // break-even of a cell turns into its scalar without a model in between. Only the floor of a raid is held on the
-        // health as stored.
+        // One difficulty as stored: the formula's multipliers (WaveFormula, through WaveSolver.Solve) with the level's own
+        // scalar from the closed loop (the script's target scale) and the boss on the bar its level and difficulty give it.
         private float[] SolveDifficulty(int levelIndex, WaveScriptSpec script, int d, out float[] bossScales)
         {
-            float scale = Rules.DifficultyScaleFor(d) * script.TargetScaleFor(d);
-            WaveSolver.Solution solution = Solved(levelIndex, script, d, CalmOf(levelIndex, script, d));
-            var own = new float[solution.Healths.Length];
-            for (int i = 0; i < own.Length; i++)
-            {
-                own[i] = (float)Math.Round(solution.Healths[i] * scale, 3);
-            }
-
+            WaveSolver.Solution solution = WaveSolver.Solve(script, Enemies, d, Facts[levelIndex].SecondRoad, Rules, script.TargetScaleFor(d), ContinentIndexOf(levelIndex), Difficulties[d].Health * Facts[levelIndex].HealthScale);
             bossScales = solution.BossScales;
-            return own;
-        }
-
-        private WaveSolver.Solution Solved(int levelIndex, WaveScriptSpec script, int d, float[] calm) =>
-            WaveSolver.Solve(script, Enemies, InputFor(levelIndex, d), Difficulties[d], Facts[levelIndex].SecondRoad, Rules.HumanTowersOnly(), Rules.HumanWithHero(), ModelTarget(levelIndex, d), Rules.DifficultyScaleFor(d) * script.TargetScaleFor(d), calm);
-
-        // A difficulty that carries surprises is solved without them first: a surprise wave's creatures are fewer and
-        // tougher, and the waves after it are held against the wave it would have been (WaveSolver.Solve, calm). Null for a
-        // difficulty without surprises.
-        private float[] CalmOf(int levelIndex, WaveScriptSpec script, int d)
-        {
-            if (!Rules.Grammar.Surprises || !CarriesSurprises(script, d, Facts[levelIndex].SecondRoad))
-            {
-                return null;
-            }
-
-            Rules.Grammar.Surprises = false;
-            try
-            {
-                return Solved(levelIndex, script, d, null).WalkIn;
-            }
-            finally
-            {
-                Rules.Grammar.Surprises = true;
-            }
-        }
-
-        /// <summary>
-        /// Per wave of a difficulty the multiplier it counts as for the waves after it, on the health as stored: what its
-        /// creatures walk in with, and for a wave that carries a surprise the same wave of the level solved without
-        /// surprises (<see cref="WaveSolver.Solve"/>). The band, the median and the yardstick of a boss
-        /// (<see cref="BossYardstick"/>) read it; a test that holds a stored boss to its rule reads it here.
-        /// </summary>
-        public float[] CountsAs(int levelIndex, WaveScriptSpec script, int d, IReadOnlyList<WaveSpec> stored)
-        {
-            float scale = Rules.DifficultyScaleFor(d) * script.TargetScaleFor(d);
-            float[] calm = CalmOf(levelIndex, script, d);
-            var counts = new float[stored.Count];
-            for (int i = 0; i < counts.Length; i++)
-            {
-                bool surprise = WaveGrammar.SurpriseOn(script, Enemies, d, i + 1, Facts[levelIndex].SecondRoad, Rules) != SurpriseKind.None;
-                counts[i] = calm != null && surprise && i < calm.Length ? calm[i] * scale : stored[i].HealthMultiplier;
-            }
-
-            return counts;
-        }
-
-        private bool CarriesSurprises(WaveScriptSpec script, int d, int secondRoad)
-        {
-            for (int number = 1; number <= script.Waves; number++)
-            {
-                if (WaveGrammar.SurpriseOn(script, Enemies, d, number, secondRoad, Rules) != SurpriseKind.None)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return solution.Healths;
         }
 
         private List<WaveSpec> ComposedWaves(WaveScriptSpec script, int d, float[] healths, int secondRoad, float[] bossScales = null)
@@ -426,11 +358,11 @@ namespace Game.Balance
             return index;
         }
 
-        /// <summary>The plain-wave pressure the solver aims a level and difficulty at for a competent player's towers alone (one over the target surplus).</summary>
+        /// <summary>
+        /// The plain-wave pressure the paper aims a level and difficulty at for a competent player's towers alone (one over
+        /// the target surplus). The finale's stand-in waves are trimmed to it (FinaleModel); no stored wave is.
+        /// </summary>
         public float ModelTarget(int levelIndex, int difficulty) => 1f / Rules.HumanSurplusAt(difficulty, ContinentIndexOf(levelIndex));
-
-        /// <summary>The same as stored: with the difficulty's factor and the cell's scalar on the creatures' health.</summary>
-        public float HumanTarget(int levelIndex, int difficulty) => ModelTarget(levelIndex, difficulty) * Rules.DifficultyScaleFor(difficulty) * Levels[levelIndex].TargetScaleFor(difficulty);
 
         /// <summary>
         /// Research and power the existing levels of one continent pay per difficulty, against what the upgrades tagged to

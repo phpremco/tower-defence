@@ -13,7 +13,7 @@ The grammar sits on the existing pipeline and replaces nothing in it:
 - **The solver** (`WaveSolver`) still only sets how tough the creatures are. The grammar never changes how many creatures
   a wave has, so the kill money of a level is what the script's budget says (test: `TheGrammar_MovesCreaturesInTime_NeverTheirNumber`).
 - **The closed loop** (`Tools/PlayTest/closed_loop.py`, round 83) sets how tough the level is as played: one scalar per
-  level and difficulty, measured, never typed.
+  level and difficulty, measured, never typed (until round 86; since round 87 one scalar per level, see "The solver").
 
 A new level therefore needs a roster, a rhythm and a map. Where the clusters, the breathers, the surprises and the finale
 fall follows from the rules below; how tough it is follows from "How to balance a new level" at the end of this file.
@@ -65,7 +65,7 @@ Notes on what is emergent and what is not:
 6. A surprise rides on the wave when the level's own schedule writes one for it, else when the surprise rule says so.
 
 The rhythm string stays the level's own (variety between levels); the ramp comes from the script's budget curve and the
-solver's target curve, as before. The old letter `M` (ambush) is gone: surprises are placed by rule, not written per level.
+solver's target curve, as before (until round 86; round 87 replaced the solve by a formula, see "The solver"). The old letter `M` (ambush) is gone: surprises are placed by rule, not written per level.
 
 ## Which roads a wave uses (round 82)
 
@@ -101,7 +101,8 @@ Known: on Shard Ridge the second road is short (46 cells against 109) and skips 
 creature on the long road arrives waves later (`KillPurse.Carried`), one on the short road in its own wave; where
 carried Cragbacks are what asks, no multiplier of the wave itself reaches its target. Until round 82 such a wave fell to
 the solver's floor (ten "paper" waves in the stored set); since round 83 it keeps the lower edge of its band ("The
-solver", below; test `Round83Tests.NoStoredGroundWave_IsPaper`).
+solver", below; test `Round83Tests.NoStoredGroundWave_IsPaper`). (The band: until round 86; round 87 replaced the
+solve by a formula, see "The solver".)
 
 ## Surprises
 
@@ -154,7 +155,8 @@ Surprises = new[]
 - **The wave is no bigger for it.** The front gives up the threat the entries cost, so the level's kill money stays what
   the script's budget says; entries that cost more than the whole wave leave no front and open at once. The solver and
   the ledger read the wave as composed (the groups carry their nest or path), so the health multiplier is sized for
-  whatever is written, and `KillPurse` books each kill where it happens.
+  whatever is written, and `KillPurse` books each kill where it happens. (The sizing on the ledger: until round 86;
+  round 87 replaced the solve by a formula, see "The solver".)
 - The count is the script's, like every count in a wave: the difficulty's count multiplier (0.9 / 1 / 1.3 / 1.65)
   applies in play. Write an entry per difficulty where the exact number matters.
 - It comes mid-wave like every surprise (halfway the front, never before twelve seconds).
@@ -234,7 +236,8 @@ First continent (the level's own roster decides the source):
 The critic of 2026-11-18 (Docs/BALANCE_CRITIC_2026-11-18.md) traced four rules to two properties of the solver itself:
 the model's player re-bought its defence for every trial multiplier (so pressure was not monotone in health), and one
 common factor held a level's mean (so lowering one wave lifted the others). Round 83 mended both properties ("The
-solver", below), and the rules went:
+solver", below), and the rules went. (The "why it is not needed" column describes the solve of rounds 83 to 86: a
+target per wave, the hero cap, a scalar per cell; round 87 replaced the solve by a formula, see "The solver".)
 
 | Rule | What it repaired | Why it is not needed |
 | --- | --- | --- |
@@ -246,7 +249,8 @@ solver", below), and the rules went:
 | The scale refit (`ScaleRefit.cs`) and the 24 builder scales | Re-expressed every scale after a rule changed what the mean was read on | A cell's scalar is a plain factor on creature health and comes from the closed loop |
 
 Kept, because they are rules about the game: the grammar, `MinSurpriseGroup`, spawn-point roles and schedules, road
-plans, `FlyersAfterBounties`, the Easy purse rule, `RaidHealthFloor`, the band and its 2.5-times-the-median gate.
+plans, `FlyersAfterBounties`, the Easy purse rule, `RaidHealthFloor`, the band and its 2.5-times-the-median gate
+(the band and the median caps: until round 86; round 87 replaced the solve by a formula, see "The solver").
 
 ## No ground wave far tougher than the waves before it (round 82)
 
@@ -261,7 +265,8 @@ x6.36), and half of that wave's health reached the gates in the lost runs:
   multiplier (`WaveComposer.Compose`, the shortfall), and the band looked at the multiplier before that lift.
 
 Since round 82 the band holds on the creatures as they walk in (the lift included). A raid stays free. Since round 83
-there is one solve per difficulty and the band has a lower edge too ("The solver", below). Gates on the stored waves:
+there is one solve per difficulty and the band has a lower edge too (until round 86; round 87 replaced the solve by a
+formula without a band, see "The solver"). Gates on the stored waves:
 `WaveGrammarTests.NoStoredGroundWave_IsFarTougherThanItsLevel` (no ground wave above 2.5 times the median of its level
 and difficulty) and `Round83Tests.NoStoredGroundWave_IsPaper` (none under 0.4 times it, the opening waves and the crowd
 of a boss wave aside).
@@ -288,7 +293,8 @@ boss; a boss's own powers no longer fall on the whole crowd at once. The wave's 
 - **Surprises**: the groups carry their source and nest, so the existing reads apply: `WaveLoad.Reach` and `RouteKill` give a
   rift behind the gate only the defence that lies behind its join cell, a flank the second road's share.
 - **Tank escort and combo**: only spacing and delays, which the ledger reads from the groups (span, density, carried health).
-- **Solver**: every difficulty is solved on its own, wave by wave, each wave to its own target ("The solver", below).
+- **Solver**: every difficulty is solved on its own, wave by wave, each wave to its own target (until round 86; round 87
+  replaced the solve by a formula that reads no purse and no defence, see "The solver").
 - **What the model does not see**: that a tank in front costs single-target guns time on the small ones behind it, and that
   a breather lets the base's guns clear besiegers. Both are measured by the pressure probe, not predicted.
 
@@ -335,7 +341,7 @@ Each was reverted; the stored waves are the first half's (data stamp `c75b37f7`)
   heavy (a Cragback) the wave has fewer creatures, and a pack species whose share falls under half a pack sends none
   (Glass Meadows Psycho wave 10: 58 creatures in round 78, 33 now; Quartz Flats Psycho wave 14: 112 -> 89). The solver
   answers with tougher creatures (wave 10: x1.19 -> x2.20, the wave's health +37 %), so a surprise wave pays a little less
-  and each body is harder. Over a level it is small (Glass Meadows Psycho: 731 -> 704 creatures). The test
+  and each body is harder (until round 86; round 87 replaced the solve by a formula, see "The solver"). Over a level it is small (Glass Meadows Psycho: 731 -> 704 creatures). The test
   `TheGrammar_MovesCreaturesInTime_NeverTheirNumber` covers the cuts, not the surprise.
 - **The step of Quartz Flats wave 13** (the raid at x1.18 in round 78, x2.46 in round 79) was the solver's two crossings:
   gone with the monotone player of round 83 (test `Round83Tests.AWavesAirPressure_NeverFalls_AsItsFlyersGrowTougher`).
@@ -348,101 +354,79 @@ Each was reverted; the stored waves are the first half's (data stamp `c75b37f7`)
   booking out again (the cell's scalar is measured with the gun standing). The other way, not built: the map (a rift that joins within a gun's reach of the first gate, as on
   Landing Site; needs a relayout and a new plan search, so a bot batch of its own).
 
-## The solver (round 83)
+## The solver (round 87: a formula)
 
-One pass per difficulty, wave by wave, in `WaveSolver.Solve` (called by `CampaignModel.BuildWaves`). No difficulty
-copies another, no level mean is held, nothing is solved twice.
+A wave's health is no longer solved against the paper ledger. `WaveSolver.Solve` applies `WaveFormula`
+(called by `CampaignModel.BuildWaves`); no purse, no defence and no other wave is read.
 
-1. **The player.** A competent player's towers alone (`BalanceRules.HumanTowersOnly`: the fitted tower efficiencies at
-   `HumanUtilisation`), with the difficulty's real money (`KillPurse`: a kill pays when the creature reaches the defence).
-2. **The purchase is decided before the wave's toughness is known** (`Ledger.PlanOf`): the player buys for the creatures
-   and numbers the preview shows, at book health, with what earlier waves left on the road. The pressure of a wave
-   therefore never falls when its creatures get tougher, and one multiplier meets a target. Tests:
-   `Round83Tests.AWavesPressure_NeverFalls_AsItsCreaturesGrowTougher` (ground, both lenses, every stored wave) and
-   `AWavesAirPressure_NeverFalls_AsItsFlyersGrowTougher` (every raid).
-3. **Every wave has its own target**: the level's target (`CampaignModel.ModelTarget`: one over `HumanSurplus` per
-   difficulty, with the ramp per level of a continent) times the wave's share of the curve (`WaveSolver.Shares`: the
-   opening ramp, the slow rise, the factor of its kind, the boss peak and the breather after it, the growth of plated
-   troops and of raids; normalised so the plain waves average one). A bisection finds the multiplier.
-4. **The band.** A ground wave stays within x0.7 to x1.3 of the toughest of the three ground waves before it, as its
-   creatures walk in. A wave drops under the band only when its own health is what asks too much (a thin purse after
-   the sky guns of a raid); where the pressure is carried in by earlier waves it keeps the lower edge instead of
-   becoming paper. Once four ground waves are solved, no ground wave is above 2.2 times their median or, when it drops
-   under its band, under 0.45 times it (the gates on the stored waves allow 2.5 and 0.4). All of it is read on the
-   creatures as they walk in (a capped swarm carries its unbought budget as health). A raid is free; its flyers keep
-   `RaidHealthFloor`.
-   **A surprise wave stands in the band and the median as the wave it would be without its surprise (round 84).** Its
-   creatures are fewer and tougher, and a late swarm lives on the upper edge of its band: Crysium Vein Psycho wave 16
-   stood x1.59 above the same level solved without surprises, because wave 9 (a rift surprise at x4.5 where the calm
-   wave is x2.3) lifted the band. A difficulty that carries surprises is therefore solved once without them first
-   (`CampaignModel.SolveDifficulty`, `WaveSolver.Solution.WalkIn`), and that solve is only a reference: what a
-   surprise wave counts as for the waves after it. Nothing is redistributed and no wave is lowered to it. Taking the
-   surprise waves out of the median alone was tried first and moved that swarm from x1.61 to x1.55: the band was the
-   channel, not the median. What is left is what the purse moves (`SurpriseLiftLab.cs`): a plain wave x1.09 at most, a
-   raid x1.03, a swarm x1.23 (Glass Meadows Psycho wave 11), a boss wave x1.29 in health (Shard Ridge Psycho wave 10).
-   Test `WaveGrammarTests.ASurprise_MakesNoOtherWaveTougher`, swarms included since this round.
-   Round 85 opened a third channel (the boss rule read a surprise wave's creatures at their own multiplier) and widened
-   the test's bounds for it; round 86 closed it (item 6) and the bounds are x1.15 / x1.25 / x1.3 again. Measured after
-   it: a plain wave x1.05, a raid x1.09, a swarm x1.12 (Shard Ridge Easy wave 10), a boss wave x1.07.
-5. **The hero cap.** No plain wave or raid asks more of that player with the hero (`HumanWithHero`) than `HeroCap`. The
-   wave's own health gives way, by the same band rule. A boss wave is not sized by the paper at all (next item).
-6. **A level's boss, one rule (round 86).** `WaveSolver.Solve`, `BossYardstick`:
-   - **The boss costs the player's guns `BossOverRegular` (3 on every difficulty) times what the toughest ordinary
-     creature met in the level before it cost them, under shells and under light fire both.** Under shells a creature
-     costs its bar (body plus armour; armour point for point). Under light fire (Gun Turret, Laser) a point of armour
-     costs five (`BalanceRules.LightFireOnArmour` 0.2, the armour column of the combat table), and whatever flies costs
-     five times as much again (`LightFireInTheAir` 0.2, the air column). The boss walks in at the least multiple of its
-     book health and armour that meets both rows; the two rows may name different creatures. A walking boss is held
-     against the walkers (a raid has a multiplier of its own); a flying boss against everything met, and for it the
-     shells decide, because light fire already pays five times for a boss in the air.
-   - **Never under its book health** (`BossBookShare` 1, in the solver's own measure): an early boss that comes after
-     swarm creatures only would be three Skitters otherwise (wave 5 of Landing Site on Psycho: 0.08 of its Codex entry).
-   - **A boss with nothing before it** is held against the toughest creature of its own wave.
-   - **A surprise wave counts as the calm wave it would have been** for the yardstick too (as for the band and the
-     median, item 4): its creatures are met as kinds, at the calm multiplier. So a surprise moves no boss.
-   - **Its crowd comes on the lower edge of its band**: the creatures of the waves before it, a little softer (x0.7 of
-     the toughest of the three ground waves before). No paper target, no paper cap, so no cliff: until round 86 the
-     crowd was filled up to a target around the boss and gave way under a cap, and it jumped between a floor and the
-     edge of the band when the cap was met or missed by a hair (Glass Meadows Psycho wave 5: x0.41, x1.75 and x0.55 on
-     three neighbouring scalars).
-   - **Every boss walks in armour** (round 85): at least `BossArmourShare` (0.25) of its body, on the creature data
-     (the generator, `ApplyRound85.cs`, the finale stage).
-   - Nothing of it is read on the health as stored, so a cell's scalar moves a boss exactly as it moves every other
-     creature (test `Round86Tests.ACellsScalar_MovesNoWaveOfTheSolve_OnMediumHardAndPsycho`).
+1. **A wave.** The multiplier its creatures walk in with (after the composer's lift for a capped troop, as before):
 
-   Gone in round 86: `LevelBossAlone` (the share of the defence a boss asks alone) and `LevelBossGrowthCap` (a boss
-   wave's own cap), which decided nothing once every last boss stood on the multiple, and `LevelBossHealthFloor` (a
-   floor on the stored health), which bound only the early Psycho bosses and did not move with the scalar. Remco's
-   reason for the rule (round 85): on Easy the boss of Landing Site had the bar of a Cragback and no armour, so under
-   light fire it was a third as tough as the "lava rocks" of the waves before it. Round 85 held the boss on the bar
-   alone; the Cragback is three quarters armour and a boss a fifth, so under a Gun Turret or a Laser a boss of three
-   bars was still only 1.4 Cragbacks. Tests: `Round86Tests.EveryLevelBoss_StandsOnItsMultiple` (the rule on every
-   stored boss, report `Tools/PlayTest/boss_rule.txt`), `ABoss_CostsItsMultiple_UnderShellsAndUnderLightFire`.
+       walkIn = DifficultyScale[d] x LevelScalar[L] x Ramp(phase) x KindFactor x Peak
 
-   **How the paper reads a boss** (`BalanceRules.HumanBossUtilisation` 1, round 86): the ledger charged a gun's fire
-   on a boss at the utilisation of a stream (0.34), which is what a gun loses to the gaps in a stream; a boss is one
-   slow body and the ledger already counts only the seconds it is in a gun's reach. With the seven guns a reference
-   player really stood on Landing Site Easy at x1.76 of the data, in a run that lost no base health, the boss alone
-   read 1.45 and the wave 2.56; at one it reads 0.42 (`BossPaperLab.cs`). The lenses of the solver and the tests use
-   it; the bots' own lens and the calibration fit do not (they were fitted the old way). A boss wave may still read
-   over the hero cap on paper; `BalanceLedgerTests` reports those and holds them under a ceiling.
-7. **The flyer rules** stay as they were and solve a difficulty again when they move a raid: the Easy purse rule and
-   `FlyersAfterBounties`.
-8. **Play's correction, as two plain factors on creature health** (`CampaignModel.SolveDifficulty`): the difficulty's
-   factor (`BalanceRules.DifficultyScale`, one number per difficulty for every level) and the cell's scalar
-   (`Tools/PlayTest/wave_tuning.txt`, `KEY D scale`). They act on every creature alike, a boss included, exactly as the
-   probe's health multiple does.
+   - `DifficultyScale` (1.5 / 1.7 / 1.36 / 2.08): the multiplier of a level's middle wave per difficulty.
+   - `LevelScalar`: one number per level in `Tools/PlayTest/wave_tuning.txt` (`C1_01 0.875`), set by the closed loop,
+     held to 0.7 .. 1.4 (`LevelScalarLeast`, `LevelScalarMost`).
+   - `Ramp`: geometric in the wave's phase `(n-1)/(N-1)` from `RampStart` 0.75 to `RampEnd` 1.34. Fitted on the
+     plain ground waves round 86 stored (`Tools/PlayTest/r87_fit.py` on `r87_dump_r86.txt`, 244 waves of 24 cells):
+     geometric in phase leaves an rms residual of x1.373, geometric in wave number x1.382; a slope per difficulty
+     x1.343 (not kept: three more numbers for 3 %). The residual is large because round 86's waves jumped from
+     wave to wave (band, caps, purse); the fit only sets where the first measurement starts.
+   - `KindFactor`: rush 1.1, heavy 1.15, raid 0.9 (`RushFactor`, `HeavyFactor`, `AirFactor`), times
+     `AfterBossFactor` 0.8 on the wave after a boss, times `BossCrowdFactor` 0.55 on the crowd of a boss wave.
+   - `Peak`: `PeakFactor` 1.35 on two peak waves per level and difficulty, three on a level of `LongLevelWaves` (16)
+     waves or more. `PeakPhases` 0.4 and 0.7 (`LongLevelPeakPhase` 0.55). Every peak first lands on the wave
+     nearest its phase that is a ground wave without a boss and not the breather after one, no two side by side;
+     then a peak moves to a neighbour that carries a surprise or is a heavy wave when that keeps it clear of the
+     other peaks (`WaveFormula.Peaks`, `WaveSolver.PeaksOf`). In two steps so that a surprise can draw a peak onto
+     its own wave and never pushes one onto another wave. Remco: waves before the boss must be able to hurt.
+   - A raid keeps `RaidHealthFloor`; the flyer rules (the Easy purse rule, `FlyersAfterBounties`) are unchanged and
+     still read the ledger's purse to decide WHEN flyers come. Nothing else reads the ledger for sizing.
+   - A surprise wave gets the formula like any wave and makes no other wave tougher (it can draw a peak onto
+     itself, which leaves the neighbour that would have carried it an ordinary wave;
+     `WaveGrammarTests.ASurprise_MakesNoOtherWaveTougher`).
+2. **A level's boss.** Its bar as spawned (body plus armour):
 
-The solve stage takes two to three seconds for the six levels (it took 27).
+       bossBar = BossBase x BossDifficulty[d] x (1 + BossLevelGrowth x L) x (BossEarlyShare + (1 - BossEarlyShare) x phase) x (flies ? FlyingBossShare : 1)
 
-Why a wave's multiplier is what it is: `WaveLedgerLab.cs` (Docs/COMMANDS.md, "Round 83") prints per wave its own target
-(`aim`), the pressure with and without the hero, the purse, the purchase and the boss's health multiplier.
+   `BossBase` 2050, `BossDifficulty` 0.7 / 1 / 1.15 / 1.8 (never falling), `BossLevelGrowth` 0.12 per level of the
+   continent, `BossEarlyShare` 0.3, `FlyingBossShare` 0.6. It does not move with the level scalar or
+   `DifficultyScale`. **Floor only:** never under `BossOverRegular` (3) times the bar (body plus armour) of the
+   toughest ordinary walker met before it (`BossYardstick`; flyers are not met, a surprise wave creatures count as
+   they walk in). On the round 87 data the floor binds on 4 of 42 bosses: three earlier Psycho bosses and the last
+   boss of Fault Line Medium (by one per cent). Tougher walkers (a higher level scalar, `PeakFactor`, `DifficultyScale`)
+   lift the floor; once it passes the formula on a last boss, that boss moves with the scalar and the two monotone
+   tests can fail, so the floor is what limits how small the boss can be made against the waves around it. `BossArmourShare` is 1: armour pool equal to the body (`ApplyRound85.cs`).
+   Gone: the light-fire row of the yardstick (`LightFireOnArmour`, `LightFireInTheAir`), the book floor
+   (`BossBookShare`), the calm reading of a surprise wave, the separate rule for a flying boss, the boss held
+   against its own wave.
+3. **Play's correction** is the level's scalar and nothing else. `closed_loop.py` sets it from the geometric mean
+   of the level's four cells; what the difficulties still disagree on goes to `DifficultyScale` (`--centre`).
+
+Gone with the solve: the target curve (`TargetPressure`, `OpeningShare`, `OpeningWaves`, `EarlyTargetShare`,
+`LateTargetShare`, `BossFactor`), the band and the median caps (`MaxRise`, `MaxDrop`, `MostOverMedian`,
+`LeastOfMedian`, `MinHealth`, `MaxHealth`), the hero cap on a wave, the bisection, the calm reference solve
+(`CampaignModel.CountsAs`, `CalmOf`), `ArmourAim` and the raid's air growth in the target, the paper band checks
+(`BalanceChecks.Check`, `CheckHumanTarget`, `MaxPressure`, `DifficultyPressure`, `BandMargin`, `BossAllowance`,
+`MaxCliff`, `MinLateEasyPressure`, `HumanTargetTolerance`), the builder stages that moved a scale per cell
+(`BalanceStages.Build`, `BuildFromVerdicts`). The ledger stays as the paper model of the plan search, the finale
+model and the reports (`balance_ledger.txt`).
+
+Reports: `stage.sh run Round87Lab.cs Round87Lab.Run` writes `Tools/PlayTest/r87_waves.txt` (every wave's walk-in
+multiplier with kind, peak, boss, raid, surprise) and `r87_bosses.txt` (every level boss: bar, body, armour, the
+formula bar, times the toughest walker before it under both rows, whether the floor binds).
+
+Tests: `WaveFormulaTests` (the formula, the ramp, the peaks, the boss formula and its floor, every stored wave on
+the formula, two or three peaks per cell, every stored boss on formula or floor, bosses growing with difficulty and
+with the level, the scalar moving no boss on its formula), `Round83Tests.NoStoredGroundWave_IsPaper` (against the
+median of the whole level again), `ALevelsScalar_LiesNearOne`, `TheTuningFile_HoldsALevelsScalar_AndNothingElse`.
 
 ## What a wave is made of: rules per difficulty, no lever per cell (round 84)
 
 Until round 83b `Tools/PlayTest/wave_tuning.txt` held 36 composition levers written by the old builder for single
 cells. They are rules in `BalanceRules` now, or gone; the file holds a cell's scalar and nothing else (test
-`Round83Tests.TheTuningFile_HoldsACellsScalar_AndNothingElse`). A new level gets all of it without a line written.
+`Round83Tests.TheTuningFile_HoldsACellsScalar_AndNothingElse`; until round 86: since round 87 it holds one scalar per
+level, test `TheTuningFile_HoldsALevelsScalar_AndNothingElse`, see "The solver"). A new level gets all of it without a
+line written.
 
 | Lever (cells that had it) | Now | Paper evidence (`r84_lab.sh`, `ledger_compare.py`; ground health of the level against round 83b) |
 | --- | --- | --- |
@@ -458,55 +442,59 @@ Medium (no plated lever), Fault Line Hard and Psycho, Quartz Flats Hard and Psyc
 (the Hard and Psycho weights), Shard Ridge Hard and Psycho (the crowd, Psycho's swarm weight 1.25 -> 1.5), Landing
 Site Hard and Psycho and Glass Meadows Hard and Psycho (tempo, raid). Eleven cells have the same bodies in every wave (every Easy cell, four Medium cells, Landing Site Hard); over all 24 the bodies move by -7 to +22 % (Shard Ridge Psycho) and the paper health by -5 to +16 % (Crysium Vein Hard).
 
-## How to balance a new level (round 83)
+## How to balance a new level (round 87)
 
 The model shapes a level; it does not know how tough it is as played to better than a quarter. So the last step is
 measured, by one procedure that is the same for every level.
 
 1. Write the level's script (roster, rhythm, raids, bosses, teasers; its own surprises and road plan where wanted) and
-   make its map. No scale, no lever: the cell starts at scalar one, on top of the difficulty's factor, and what its
+   make its map. No scale, no lever: the level starts at scalar one, on top of the difficulty's factor, and what its
    waves are made of per difficulty (plated and swarm weight, the growth of plated troops) is `BalanceRules`
-   ("What a wave is made of", above). `wave_tuning.txt` takes the cell's scalar from step 5 and nothing else.
+   ("What a wave is made of", above). `wave_tuning.txt` takes the level's scalar from step 5 and nothing else.
 2. Solve: `unity command run_script --file Tools/PlayTest/Scripts/ApplyRound68.cs --entry ApplyRound68.Run --timeout_ms 900000 --timeout 960`.
 3. Search the skilled rung's strategies for the level (`PlanSearchTests` with `levels=<node>`, two minutes a level),
    play every candidate on the standard ladder and pick per cell the one that breaks even highest
    (`skilled_picks.py`, round 83b: the loop reads the rung's break-even, so the pick is ranked on it and not on the
    base kept at the data). A fresh search is not always better than the strategy a cell had: keep the old pick as one
    more candidate. This is a bot batch: never together with a data change.
-4. Measure on the wide ladder:
-   `PR_RECORDS=Tools/PlayTest/<name>_records.txt PR_MULTIPLES="0.4,0.5,0.64,0.8,1,1.25,1.6,2" bash Tools/PlayTest/pressure.sh "<node>" "0,1,2,3"`
-   (192 runs a level, about a quarter of an hour).
-5. `python Tools/PlayTest/closed_loop.py <records> --levels <node> --write`: per difficulty the break-even of the
-   reference rung (the geometric middle of the last multiple two of three seeds hold and the first they lose) over its
-   target gives the new scalar. Targets:
+4. Measure: `bash Tools/PlayTest/r87_measure.sh <name> "<node>"` (the rungs skilled, sensible, laser and cannon; Easy
+   on x1.25 / 1.4 / 1.57 / 1.76 / 1.97 / 2.21, Medium on x0.9 .. x1.57, Hard and Psycho on the standard ladder).
+5. `python -I Tools/PlayTest/closed_loop.py <the three records files> --levels <node> [--centre] [--write]`: per cell
+   the break-even of the reference rung (the geometric middle of the last multiple two of three seeds hold and the
+   first they lose) is read against its target, and the new level scalar is the old one times the geometric mean, over
+   the level's four cells, of measured over target. Targets and gates are frozen in
+   `Tools/PlayTest/closed_loop_thresholds.txt` (2026-11-20):
 
-   | Difficulty | Target | Reads on the standard ladder (x0.8 / 0.9 / 1 / 1.12 / 1.25) |
+   | Difficulty | Target | Measured on |
    | --- | --- | --- |
-   | Easy | the weaker of the two rungs breaks even at x1.55 at least (round 85; x1.4 before). The ladder cannot read x1.55: its readings are x1.32, x1.48, x1.66 and "over x1.86", so the gate accepts x1.48 or more, which is "holds x1.4" (round 86 says so; the loop still aims at x1.55) | measured on x1 / 1.25 / 1.4 / 1.57 / 1.76: both rungs win to x1.4 |
-   | Medium | the sensible rung breaks even at x1.32 (round 85; x1.18 before); the skilled rung at x1.06 at least | measured on x0.9 / 1 / 1.12 / 1.25 / 1.4 / 1.57: sensible wins to x1.25 and loses x1.4 |
-   | Hard | the sensible rung breaks even at x0.95; the skilled rung at x1.06 at least | sensible wins to x0.9 and loses x1; skilled wins x1 |
-   | Psycho | the skilled rung breaks even at x1.06 | skilled wins x1 and loses x1.12 |
+   | Easy | the weaker rung breaks even at x1.66 (x1.55 in round 85); read on both sides like the others, no "over the ladder" | x1.25 / 1.4 / 1.57 / 1.76 / 1.97 / 2.21 |
+   | Medium | the sensible rung breaks even at x1.32; the best of skilled / laser / cannon itself reads x1.06 | x0.9 .. x1.57 |
+   | Hard | the sensible rung breaks even at x0.95; the best of skilled / laser / cannon itself reads x1.06 | the standard ladder (x0.8 / 0.9 / 1 / 1.12 / 1.25) |
+   | Psycho | the skilled rung breaks even at x1.06 | the standard ladder |
+
+   A cell is accepted within one ladder step of its target on both sides. The other gates: laser and cannon within
+   one step of each other, and at most 40 % of a level's lost runs in a boss wave (aim 35 %).
 
    So Medium is never flat, Hard is a third tougher than Medium for the same player on every level, and Easy is
    won by both rungs with room. Round 85 (Remco after playing level 1 on Easy, Medium and Hard: "Easy and Medium a
    tad too hard, Hard feels right; not much less, but a bit"): the Easy and Medium targets moved one ladder step up,
-   Hard and Psycho stayed. The standard ladder does not reach them: `Tools/PlayTest/r85_measure.sh` plays Easy and
-   Medium on their own ladders (Docs/COMMANDS.md, "Round 85").
-6. Solve again and measure on the standard ladder (`pressure.sh "<node>" "0,1,2,3"`, 120 runs). A cell whose reference
-   rung reads its target is done; else `closed_loop.py` once more (the scalar is a plain factor, so one pass lands
-   within a ladder step unless the bot takes another build). A cell that two passes read on opposite sides of its
-   target is bisected (round 84): the geometric middle of the two scales, not the loop's factor a third time. A
-   scalar the loop asks outside 0.7 to 1.4 stays on the bound and the cell is reported (Quartz Flats Hard, 0.7).
-7. Gates: `ClosedLoopAcceptanceTests` (round 83b: every cell's reference rung breaks even within one ladder step of
-   its target in the measurement named in `Tools/PlayTest/closed_loop_records.txt`, Easy is won on every seed at the
-   data and holds the ladder, Hard breaks the sensible rung earlier than Medium on every level; a measurement of
-   other data than the project's is inconclusive, never a pass), `Round83Tests.ACellsScalar_LiesNearOne` (0.7 to 1.4:
-   outside it the model misreads the level, look at the map or the script), the two median gates,
-   `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand` (the paper band and the hero cap on the solver's own
-   waves, the stored ones with both factors taken off), the grace report, the finale probe when the level is a
-   continent's last.
-8. When a continent is done: `closed_loop.py <records> --centre` gives the geometric mean of each difficulty's scalars;
-   fold it into `BalanceRules.DifficultyScale` and divide the scalars by it, so the next level starts closer.
+   Hard and Psycho stayed. The standard ladder does not reach them, which is why `r87_measure.sh` plays Easy and
+   Medium on their own ladders.
+6. Solve again and measure again (step 4). A level whose cells read their targets is done; else `closed_loop.py` once
+   more (the level scalar is a plain factor, so one pass lands within a ladder step unless the bot takes another
+   build). A level that two passes read on opposite sides of its targets is bisected (round 84): the geometric middle
+   of the two level scalars, not the loop's factor a third time. A level scalar the loop asks outside 0.7 to 1.4
+   (`LevelScalarLeast`, `LevelScalarMost`) stays on the bound and the level is reported.
+7. Gates: `ClosedLoopAcceptanceTests` (reads the same thresholds file: every cell's reference rung breaks even within
+   one ladder step of its target on both sides in the measurement named in `Tools/PlayTest/closed_loop_records.txt`,
+   the best of skilled / laser / cannon on Medium and Hard, laser against cannon, the share of lost runs in a boss
+   wave; a measurement of other data than the project's is inconclusive, never a pass),
+   `python -I Tools/PlayTest/boss_share.py <records>` (shows where the lost runs fall: boss waves, last wave, peak
+   waves), `ALevelsScalar_LiesNearOne` (0.7 to 1.4: outside it the model misreads the level, look at the map or the
+   script), `WaveFormulaTests`, `Round83Tests.NoStoredGroundWave_IsPaper`, the grace report, the finale probe when the
+   level is a continent's last.
+8. When a continent is done: `closed_loop.py <records> --centre` prints `DifficultyScale` times the difficulty's mean
+   residual; fold it into `BalanceRules.DifficultyScale`. The level scalars need no division.
 
 What the procedure does not do: it does not choose which wave is the hard one (the script and the solver do), and it
 does not judge fun. A level that reads its targets and plays badly is a script or map question.

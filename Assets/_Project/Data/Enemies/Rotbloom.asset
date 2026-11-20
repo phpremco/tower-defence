@@ -15,12 +15,13 @@ MonoBehaviour:
   _displayName: data.enemy.Rotbloom.displayName
   _layer: 1
   _flies: 0
-  _maxHealth: 12950
-  _armor: 3238
+  _maxHealth: 5950
+  _armor: 5950
   _speed: 0.3
   _reward: 770
   _baseDamage: 25
   _element: 0
+  _family: 0
   _attackStyle: 4
   _attackDamage: 0
   _blockadeDamage: 110

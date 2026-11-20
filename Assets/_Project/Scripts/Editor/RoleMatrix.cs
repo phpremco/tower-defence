@@ -220,7 +220,7 @@ namespace Game.Editor
         /// </summary>
         public static float ClearSeconds(Source source, RoleScenario scenario, EnemyDefinition enemy, float healthScale, Boost boost)
         {
-            if (source.SingleUse || (source.Targets & enemy.Layer) == 0 || source.Damage * source.Profile.Against(enemy.Layer) <= 0f)
+            if (source.SingleUse || (source.Targets & enemy.Layer) == 0 || source.Damage * source.Profile.Against(enemy.Layer, enemy.Family) <= 0f)
             {
                 return float.PositiveInfinity;
             }
@@ -286,7 +286,7 @@ namespace Game.Editor
             {
                 total += group[i].Max + group[i].ArmorMax;
                 bool reached = source.RollSpeed > 0f || i * scenario.Spacing <= source.SplashRadius;
-                taken += reached ? group[i].TakeDamage(perCreature * source.Profile.Against(enemy.Layer), source.Profile.Armour) : 0f;
+                taken += reached ? group[i].TakeDamage(perCreature * source.Profile.Against(enemy.Layer, enemy.Family), source.Profile.Armour) : 0f;
             }
 
             return total > 0f ? taken / total * per : 0f;
@@ -317,7 +317,7 @@ namespace Game.Editor
         }
 
         private static void Hit(Health health, float damage, DamageProfile profile, EnemyDefinition enemy) =>
-            health.TakeDamage(damage * profile.Against(enemy.Layer), profile.Armour);
+            health.TakeDamage(damage * profile.Against(enemy.Layer, enemy.Family), profile.Armour);
 
         // Hurts the living creatures within the radius of the burst point, nearest first, up to the cap (zero: all of them).
         private static void Blast(Health[] group, float spacing, float centre, float radius, int cap, float damage, DamageProfile profile, EnemyDefinition enemy)

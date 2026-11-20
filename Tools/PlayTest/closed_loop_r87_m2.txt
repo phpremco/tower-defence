@@ -1,0 +1,65 @@
+| Cell | Reference rung: seeds won per multiple, break-even (target) | Off, ladder steps | Verdict | Better rungs | Laser against cannon |
+| --- | --- | --- | --- | --- | --- |
+| Landing Site Easy | sensible `1 1 1 1 1 0` x2.09 (x1.66) | +1.9 | more than a step off |  | laser `1 1 1 1 1 0` x2.09, cannon `1 1 1 1 1 1` over x2.34: 1.0 steps |
+| Landing Site Medium | sensible `1 1 1 0 0 0` x1.18 (x1.32) | -0.9 | accepted | best cannon `1 1 1 1 1 0` x1.48 | laser `1 1 1 0 0 0` x1.18, cannon `1 1 1 1 1 0` x1.48: 1.9 steps APART |
+| Landing Site Hard | sensible `1 1 0 0 0` x0.95 (x0.95) | -0.0 | accepted | best cannon `1 1 1 1 1` over x1.32 | laser `0 0 0 0 0` under x0.75, cannon `1 1 1 1 1` over x1.32: 4.8 steps APART |
+| Landing Site Psycho | skilled `1 1 1 0 0` x1.06 (x1.06) | -0.0 | accepted |  | laser `0 0 0 0 0` under x0.75, cannon `1 1 1 1 1` over x1.32: 4.8 steps APART |
+| Glass Meadows Easy | skilled `1 0 0 0 0 0` x1.32 (x1.66) | -1.9 | more than a step off |  | laser `1 1 1 0 0 0` x1.66, cannon `1 1 1 1 1 1` over x2.34: 2.9 steps APART |
+| Glass Meadows Medium | sensible `1 1 1 0 0 0` x1.18 (x1.32) | -0.9 | accepted | best cannon `1 1 1 1 1 0` x1.48 | laser `1 1 1 0 0 0` x1.18, cannon `1 1 1 1 1 0` x1.48: 1.9 steps APART |
+| Glass Meadows Hard | sensible `1 1 1 1 0` x1.18 (x0.95) | +1.9 | more than a step off | best cannon `1 1 1 1 1` over x1.32 | laser `1 1 1 0 0` x1.06, cannon `1 1 1 1 1` over x1.32: 1.9 steps APART |
+| Glass Meadows Psycho | skilled `1 1 1 1 1` over x1.32 (x1.06) | +1.9 (bound) | holds its whole ladder: no reading |  | laser `0 0 0 0 0` under x0.75, cannon `1 1 1 1 0` x1.18: 3.8 steps APART |
+| Shard Ridge Easy | skilled `1 1 1 0 0 0` x1.66 (x1.66) | +0.0 | accepted |  | laser `1 1 1 1 0 0` x1.86, cannon `1 1 1 1 0 0` x1.86: 0.0 steps |
+| Shard Ridge Medium | sensible `1 1 1 1 0 1` x1.32 (x1.32) | +0.0 | accepted | best skilled `1 1 1 1 1 1` over x1.66 | laser `1 1 1 0 0 0` x1.18, cannon `1 1 1 1 0 0` x1.32: 0.9 steps |
+| Shard Ridge Hard | sensible `1 1 1 0 0` x1.06 (x0.95) | +0.9 | accepted | best skilled `1 1 1 1 0` x1.18 | laser `1 1 0 0 0` x0.95, cannon `1 1 1 1 0` x1.18: 1.9 steps APART |
+| Shard Ridge Psycho | skilled `1 1 1 0 0` x1.06 (x1.06) | -0.0 | accepted |  | laser `0 0 0 0 0` under x0.75, cannon `0 0 0 0 0` under x0.75: 0.0 steps |
+| Fault Line Easy | skilled `1 1 1 0 0 0` x1.66 (x1.66) | +0.0 | accepted |  | laser `1 1 1 0 0 0` x1.66, cannon `0 0 1 0 0 0` under x1.18: 2.9 steps APART |
+| Fault Line Medium | sensible `1 1 1 1 1 1` over x1.66 (x1.32) | +2.0 (bound) | holds its whole ladder: no reading | best laser `1 1 1 1 1 1` over x1.66 | laser `1 1 1 1 1 1` over x1.66, cannon `1 1 1 1 1 0` x1.48: 1.0 steps |
+| Fault Line Hard | sensible `1 1 0 1 1` x0.95 (x0.95) | -0.0 | accepted | best laser `1 1 1 1 1` over x1.32 | laser `1 1 1 1 1` over x1.32, cannon `1 1 0 1 0` x0.95: 2.8 steps APART |
+| Fault Line Psycho | skilled `0 0 0 0 0` under x0.75 (x1.06) | -2.9 (bound) | loses its whole ladder: no reading |  | laser `0 0 0 0 0` under x0.75, cannon `1 0 0 0 0` x0.85: 1.0 steps |
+| Quartz Flats Easy | sensible `1 1 1 0 1 0` x1.66 (x1.66) | +0.0 | accepted |  | laser `1 1 1 1 1 1` over x2.34, cannon `1 1 1 1 1 1` over x2.34: 0.0 steps |
+| Quartz Flats Medium | sensible `1 1 1 1 1 0` x1.48 (x1.32) | +1.0 | accepted | best cannon `1 1 1 1 1 1` over x1.66 | laser `1 1 1 1 1 0` x1.48, cannon `1 1 1 1 1 1` over x1.66: 1.0 steps |
+| Quartz Flats Hard | sensible `1 1 1 0 0` x1.06 (x0.95) | +0.9 | accepted | best skilled `1 1 1 1 1` over x1.32 | laser `1 1 1 1 0` x1.18, cannon `1 1 1 1 1` over x1.32: 0.9 steps |
+| Quartz Flats Psycho | skilled `1 1 1 0 0` x1.06 (x1.06) | -0.0 | accepted |  | laser `0 0 0 0 0` under x0.75, cannon `0 1 0 0 0` under x0.75: 0.0 steps |
+| Crysium Vein Easy | skilled `1 1 0 0 0 0` x1.48 (x1.66) | -1.0 | accepted |  | laser `1 1 1 1 0 0` x1.86, cannon `1 1 1 1 1 1` over x2.34: 1.9 steps APART |
+| Crysium Vein Medium | sensible `1 1 1 1 1 0` x1.48 (x1.32) | +1.0 | accepted | best cannon `1 1 1 1 1 1` over x1.66 | laser `1 1 1 1 0 0` x1.32, cannon `1 1 1 1 1 1` over x1.66: 1.9 steps APART |
+| Crysium Vein Hard | sensible `1 1 1 0 0` x1.06 (x0.95) | +0.9 | accepted | best cannon `1 1 1 1 1` over x1.32 | laser `1 1 1 0 0` x1.06, cannon `1 1 1 1 1` over x1.32: 1.9 steps APART |
+| Crysium Vein Psycho | skilled `1 1 1 0 0` x1.06 (x1.06) | -0.0 | accepted |  | laser `0 0 0 0 0` under x0.75, cannon `0 0 0 0 0` under x0.75: 0.0 steps |
+
+| Level | Scalar | Cells measured/target (Easy Medium Hard Psycho) | Factor | New scalar |
+| --- | --- | --- | --- | --- |
+| Landing Site | 0.85 | 1.26 0.90 1.00 1.00 | x1.030 | 0.875 |
+| Glass Meadows | 1.05 | 0.80 0.90 1.25 1.25 | x1.026 | 1.077 |
+| Shard Ridge | 0.8 | 1.00 1.00 1.11 1.00 | x1.028 | 0.822 |
+| Fault Line | 0.85 | 1.00 1.26 1.00 0.71 | x0.973 | 0.827 |
+| Quartz Flats | 0.88 | 1.00 1.12 1.11 1.00 | x1.058 | 0.931 |
+| Crysium Vein | 0.88 | 0.89 1.12 1.11 1.00 | x1.028 | 0.904 |
+
+Gates (frozen 2026-11-20, Tools/PlayTest/closed_loop_thresholds.txt): 22 findings
+  Landing Site Easy: the sensible rung `1 1 1 1 1 0` x2.09, target x1.66: more than a step off
+  Landing Site Medium: the archetypes are 1.9 ladder steps apart (laser `1 1 1 0 0 0` x1.18, cannon `1 1 1 1 1 0` x1.48: 1.9 steps)
+  Landing Site Hard: the archetypes are 4.8 ladder steps apart (laser `0 0 0 0 0` under x0.75, cannon `1 1 1 1 1` over x1.32: 4.8 steps)
+  Landing Site Psycho: the archetypes are 4.8 ladder steps apart (laser `0 0 0 0 0` under x0.75, cannon `1 1 1 1 1` over x1.32: 4.8 steps)
+  Glass Meadows Easy: the skilled rung `1 0 0 0 0 0` x1.32, target x1.66: more than a step off
+  Glass Meadows Easy: the archetypes are 2.9 ladder steps apart (laser `1 1 1 0 0 0` x1.66, cannon `1 1 1 1 1 1` over x2.34: 2.9 steps)
+  Glass Meadows Medium: the archetypes are 1.9 ladder steps apart (laser `1 1 1 0 0 0` x1.18, cannon `1 1 1 1 1 0` x1.48: 1.9 steps)
+  Glass Meadows Hard: the sensible rung `1 1 1 1 0` x1.18, target x0.95: more than a step off
+  Glass Meadows Hard: the archetypes are 1.9 ladder steps apart (laser `1 1 1 0 0` x1.06, cannon `1 1 1 1 1` over x1.32: 1.9 steps)
+  Glass Meadows Psycho: the skilled rung `1 1 1 1 1` over x1.32, target x1.06: holds its whole ladder: no reading
+  Glass Meadows Psycho: the archetypes are 3.8 ladder steps apart (laser `0 0 0 0 0` under x0.75, cannon `1 1 1 1 0` x1.18: 3.8 steps)
+  Shard Ridge Hard: the archetypes are 1.9 ladder steps apart (laser `1 1 0 0 0` x0.95, cannon `1 1 1 1 0` x1.18: 1.9 steps)
+  Fault Line Easy: the archetypes are 2.9 ladder steps apart (laser `1 1 1 0 0 0` x1.66, cannon `0 0 1 0 0 0` under x1.18: 2.9 steps)
+  Fault Line Medium: the sensible rung `1 1 1 1 1 1` over x1.66, target x1.32: holds its whole ladder: no reading
+  Fault Line Hard: the archetypes are 2.8 ladder steps apart (laser `1 1 1 1 1` over x1.32, cannon `1 1 0 1 0` x0.95: 2.8 steps)
+  Fault Line Psycho: the skilled rung `0 0 0 0 0` under x0.75, target x1.06: loses its whole ladder: no reading
+  Crysium Vein Easy: the archetypes are 1.9 ladder steps apart (laser `1 1 1 1 0 0` x1.86, cannon `1 1 1 1 1 1` over x2.34: 1.9 steps)
+  Crysium Vein Medium: the archetypes are 1.9 ladder steps apart (laser `1 1 1 1 0 0` x1.32, cannon `1 1 1 1 1 1` over x1.66: 1.9 steps)
+  Crysium Vein Hard: the archetypes are 1.9 ladder steps apart (laser `1 1 1 0 0` x1.06, cannon `1 1 1 1 1` over x1.32: 1.9 steps)
+  Landing Site: 24 of 33 lost runs fell in a boss wave (73%, at most 40%, aim 35%)
+  Glass Meadows: 28 of 36 lost runs fell in a boss wave (78%, at most 40%, aim 35%)
+  Crysium Vein: 26 of 38 lost runs fell in a boss wave (68%, at most 40%, aim 35%)
+
+Per difficulty: the mean residual of its cells once the level's factor is taken off, and BalanceRules.DifficultyScale with it:
+  Easy: x0.960 (-0.3 steps) over 6 levels; DifficultyScale 1.5 -> 1.440
+  Medium: x1.018 (+0.2 steps) over 6 levels; DifficultyScale 1.7 -> 1.731
+  Hard: x1.069 (+0.6 steps) over 6 levels; DifficultyScale 1.23 -> 1.315
+  Psycho: x0.957 (-0.4 steps) over 6 levels; DifficultyScale 2.05 -> 1.961

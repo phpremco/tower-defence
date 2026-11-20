@@ -224,37 +224,6 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Solver_LandsMediumWavesNearTheirTarget()
-        {
-            var enemies = new Dictionary<string, EnemyStats> { ["Walker"] = Walker("Walker", 30f), ["Brute"] = Walker("Brute", 120f, 0.8f) };
-            var script = new WaveScriptSpec
-            {
-                Key = "Test",
-                Waves = 12,
-                Budget = 6f,
-                FinalBudget = 80f,
-                Troops = new[] { new TroopSpec { Enemy = "Walker", Weight = 2f, Interval = 0.8f }, new TroopSpec { Enemy = "Brute", FirstWave = 4, Weight = 1f, Interval = 2f } },
-            };
-            LevelInput level = Level(Rifle());
-            float[] healths = WaveSolver.Solve(script, enemies, level, Medium, -1, Rules, Rules, Rules.TargetPressure).Healths;
-            float[] shares = WaveSolver.Shares(script, enemies, 1, -1, Rules);
-
-            var waves = new List<WaveSpec>();
-            for (int i = 0; i < script.Waves; i++)
-            {
-                WaveSpec wave = WaveComposer.Compose(script, enemies, 1, i + 1, healths[i], -1, Rules);
-                wave.StartDelay = i == 0 ? Rules.FirstWaveDelay : Rules.WaveDelay;
-                waves.Add(wave);
-            }
-
-            List<WaveLine> lines = Ledger.Evaluate(level, waves, Medium, Rules);
-            for (int i = Rules.OpeningWaves; i < lines.Count; i++)
-            {
-                Assert.AreEqual(Rules.TargetPressure * shares[i], lines[i].Pressure, 0.15f, $"wave {i + 1}");
-            }
-        }
-
-        [Test]
         public void ThinnerIncome_LeavesLessMoney_AndMorePressure()
         {
             EnemyStats walker = Walker("Walker", 40f);
@@ -304,14 +273,8 @@ namespace Game.Tests
         }
 
         [Test]
-        public void HumanTargetAndRamp_FlagALevelOffTheCurve_AndADip()
+        public void Ramp_FlagsADip()
         {
-            float[] onCurve = { 1f / Rules.HumanSurplusAt(0, 2), 1f / Rules.HumanSurplusAt(1, 2), 1f / Rules.HumanSurplusAt(2, 2), 1f / Rules.HumanSurplusAt(3, 2) };
-            Assert.IsEmpty(BalanceChecks.CheckHumanTarget("OnCurve", 2, onCurve, Rules));
-            float[] easyOff = (float[])onCurve.Clone();
-            easyOff[0] *= 0.8f;
-            Assert.IsNotEmpty(BalanceChecks.CheckHumanTarget("EasyOff", 2, easyOff, Rules), "Easy 25% too generous");
-
             var names = new[] { "L1", "L2", "L3" };
             Assert.IsEmpty(BalanceChecks.CheckRamp(names, new List<float[]> { new[] { 1.4f, 1.15f }, new[] { 1.38f, 1.14f }, new[] { 1.38f, 1.15f } }, Rules), "flat within the tolerance");
             List<string> dip = BalanceChecks.CheckRamp(names, new List<float[]> { new[] { 1.4f, 1.15f }, new[] { 1.38f, 1.13f }, new[] { 1.5f, 1.12f } }, Rules);
@@ -336,62 +299,6 @@ namespace Game.Tests
             Assert.IsNotEmpty(BalanceChecks.CheckBeatable("Thin", "Medium", 1, Lines(1.05f, 1.1f), Rules), "plain waves need more than the player has");
             Assert.IsNotEmpty(BalanceChecks.CheckBeatable("BigBoss", "Medium", 1, Lines(0.8f, 1.5f), Rules), "the boss is not killable");
             Assert.IsEmpty(BalanceChecks.CheckBeatable("Psycho", "Psycho", 3, Lines(1.15f, 1.3f), Rules), "Psycho may ask more");
-        }
-
-        [Test]
-        public void BuildWaves_CalibratesEveryDifficultyToTheHumanCurve_AndCapsItsBosses()
-        {
-            var enemies = new Dictionary<string, EnemyStats>
-            {
-                ["Walker"] = Walker("Walker", 30f),
-                ["Brute"] = Walker("Brute", 120f, 0.8f),
-                ["Boss"] = new EnemyStats { Id = "Boss", Health = 900f, Speed = 0.6f, Reward = 40, IsBoss = true, AttackInterval = 1f, BlockadeDamage = 20f },
-            };
-            var script = new WaveScriptSpec
-            {
-                Key = "Test",
-                Waves = 12,
-                Budget = 6f,
-                FinalBudget = 80f,
-                Troops = new[] { new TroopSpec { Enemy = "Walker", Weight = 2f, Interval = 0.8f }, new TroopSpec { Enemy = "Brute", FirstWave = 4, Weight = 1f, Interval = 2f } },
-                Bosses = new[] { new BossSpec { Wave = 12, Enemy = "Boss" } },
-            };
-            LevelInput level = Level(Rifle());
-            // The solver alone: no difficulty factor on top (BalanceRules.DifficultyScale is play's correction of the paper).
-            BalanceRules solverOnly = Rules.Copy();
-            solverOnly.DifficultyScale = new[] { 1f };
-            var model = new CampaignModel { Rules = solverOnly, Hero = level.Hero };
-            model.Levels.Add(new CampaignLevel { Key = "Test", TowerIds = new List<string> { "Rifle" } });
-            model.Facts.Add(new LevelFacts { Key = "Test", StartingMoney = level.StartingMoney, Shape = level.Shape, GateHealth = level.GateHealth });
-            model.Towers["Rifle"] = Rifle();
-            model.StartingTowers.Add("Rifle");
-            foreach (KeyValuePair<string, EnemyStats> enemy in enemies)
-            {
-                model.Enemies[enemy.Key] = enemy.Value;
-            }
-
-            for (int d = 0; d < 4; d++)
-            {
-                model.Difficulties.Add(new DifficultyStats { Id = "D" + d, Index = d, Health = 0.7f + 0.3f * d, Count = 0.9f + 0.2f * d });
-            }
-
-            List<List<WaveSpec>> sets = model.BuildWaves(0, script, out _);
-            for (int d = 0; d < 4; d++)
-            {
-                LevelInput input = model.InputFor(0, d);
-                float mean = BalanceChecks.PlainMean(Ledger.Evaluate(input, sets[d], model.Difficulties[d], Rules.HumanTowersOnly()));
-                Assert.AreEqual(Rules.HumanSurplusAt(d, 0), 1f / mean, Rules.HumanSurplusAt(d, 0) * Rules.HumanTargetTolerance, $"difficulty {d} on the curve");
-                foreach (WaveLine line in Ledger.Evaluate(input, sets[d], model.Difficulties[d], Rules.HumanWithHero()))
-                {
-                    // A level's boss never comes under its floor, whatever the cap (BalanceRules.LevelBossHealthFloor).
-                    if (line.Boss)
-                    {
-                        continue;
-                    }
-
-                    Assert.LessOrEqual(line.Pressure, Rules.HeroCapFor(d) * (1f + Rules.BeatableTolerance), $"difficulty {d} wave {line.Wave} under the cap");
-                }
-            }
         }
     }
 }

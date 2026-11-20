@@ -222,6 +222,17 @@ namespace Game.Editor
             so.FindProperty("_maxHealth").floatValue = health;
             so.FindProperty("_damagedPowerFloor").floatValue = DamagedPowerFloor;
             so.FindProperty("_repairCostPerHealth").floatValue = RepairCostPerHealth;
+            WriteLevels(so, id, levels, true);
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return tower;
+        }
+
+        /// <param name="names">
+        /// False leaves the step names as the asset has them: a targeted step runs without the "Localisation" step after
+        /// it, so the keys that stand in the asset must stay (the English text is the table's).
+        /// </param>
+        private static void WriteLevels(SerializedObject so, string id, TowerLevel[] levels, bool names)
+        {
             SerializedProperty array = so.FindProperty("_levels");
             array.arraySize = levels.Length;
             // The balance sheet prices the guns it lists (build price from its table, upgrade steps from the upgrade margin rule);
@@ -244,12 +255,13 @@ namespace Game.Editor
                 element.FindPropertyRelative("SlowFactor").floatValue = levels[i].SlowFactor;
                 element.FindPropertyRelative("SlowSeconds").floatValue = levels[i].SlowSeconds;
                 element.FindPropertyRelative("SupportScale").floatValue = levels[i].SupportScale;
-                element.FindPropertyRelative("StepName").stringValue = levels[i].StepName ?? string.Empty;
+                if (names)
+                {
+                    element.FindPropertyRelative("StepName").stringValue = levels[i].StepName ?? string.Empty;
+                }
+
                 element.FindPropertyRelative("Step").enumValueIndex = (int)levels[i].Step;
             }
-
-            so.ApplyModifiedPropertiesWithoutUndo();
-            return tower;
         }
 
         private static DifficultyProfile CreateDifficulty(BalanceSheet.Difficulty sheet)

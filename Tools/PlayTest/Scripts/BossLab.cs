@@ -179,7 +179,7 @@ public static class BossLab
 
                 float surplus = 1f / Math.Max(0.001f, BalanceChecks.PlainMean(lens));
                 text.Append(string.Format(CultureInfo.InvariantCulture, "{0} {1}: human surplus {2:0.00}x (curve {3:0.00}x), waves moved against the stored set {4}/{5}, total health {6:0} (x{7:0.000} of the stored set)\n",
-                    key, names[d], surplus, 1f / Math.Max(0.001f, model.HumanTarget(index, d)), moved, sets[d].Count, total, storedTotal > 0f ? total / storedTotal : 0f));
+                    key, names[d], surplus, 1f / Math.Max(0.001f, model.ModelTarget(index, d)), moved, sets[d].Count, total, storedTotal > 0f ? total / storedTotal : 0f));
                 text.Append(bosses);
             }
         }

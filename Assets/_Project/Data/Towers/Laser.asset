@@ -16,9 +16,9 @@ MonoBehaviour:
   _targets: 1
   _levels:
   - Cost: 130
-    Damage: 8
+    Damage: 4
     Range: 4.3
-    FireInterval: 0.2
+    FireInterval: 0.11111111
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
@@ -26,25 +26,25 @@ MonoBehaviour:
     StepName: 
     Step: 0
   - Cost: 55
-    Damage: 13.333333
+    Damage: 4
     Range: 4.3
-    FireInterval: 0.2
+    FireInterval: 0.06666667
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
     StepName: data.tower.Laser.levels.1.stepName
-    Step: 1
+    Step: 2
   - Cost: 100
-    Damage: 13.333333
+    Damage: 7.2
     Range: 4.3
-    FireInterval: 0.11111111
+    FireInterval: 0.06666667
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
     StepName: data.tower.Laser.levels.2.stepName
-    Step: 2
+    Step: 1
   _projectileSpeed: 400
   _splashRadius: 0
   _splashTargets: 0
@@ -71,6 +71,7 @@ MonoBehaviour:
   _shape: 2
   _projectileStyle: 3
   _beamLockSeconds: 0.35
-  _beamSweepSeconds: 0.05
+  _beamSweepSeconds: 0.033333335
+  _retargetSeconds: 0
   _art: {fileID: 11400000, guid: 043a5f0a78644994b8224ba627356b8e, type: 2}
   _gateArt: {fileID: 0}

@@ -32,7 +32,7 @@ namespace Game.Editor
                     scripts.Add(spec.Waves);
                 }
 
-                // The builder's tuning (round 22) rides on the scripts, so every reader sees the same tuned curve.
+                // The level's scalar from the closed loop rides on the scripts, so every reader sees the same waves.
                 WaveTuning.Apply(scripts);
                 return scripts.ToArray();
             }

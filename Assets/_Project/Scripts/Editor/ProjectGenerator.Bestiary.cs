@@ -192,7 +192,7 @@ namespace Game.Editor
             });
             b.Wisp = CreateEnemy(new Creature
             {
-                Id = "Wisp", Description = "Ball of energy walking the road. Low health, high damage, stopped by gates, hit by ground and air guns alike.", Layer = TargetLayers.Ground | TargetLayers.Air, Health = 36f, Speed = 1.2f, BaseDamage = 4,
+                Id = "Wisp", Description = "Ball of energy walking the road. Low health, high damage, stopped by gates, hit by ground and air guns alike; a beam overloads it for extra damage.", Layer = TargetLayers.Ground | TargetLayers.Air, Health = 36f, Speed = 1.2f, BaseDamage = 4,
                 Attack = AttackStyle.Slam, BlockadeDamage = 14f, AttackRange = 2.5f, AttackInterval = 1.2f,
                 Color = new Color(0.7f, 0.85f, 1f), Eyes = Color.white, Accent = new Color(0.75f, 0.9f, 1f), Blood = WispLight,
                 Scale = 0.5f, Shape = EnemyShape.Wisp, Death = DeathStyle.Burst,
@@ -326,7 +326,7 @@ namespace Game.Editor
             });
             b.CoreWisp = CreateEnemy(new Creature
             {
-                Id = "CoreWisp", Description = "A core of raw energy: pulses of damage, and it splits into wisps as it dies.", Layer = TargetLayers.Ground | TargetLayers.Air, Health = 600f, Speed = 0.9f, BaseDamage = 10, Boss = true,
+                Id = "CoreWisp", Description = "A core of raw energy: pulses of damage, and it splits into wisps as it dies. Beams overload it for extra damage.", Layer = TargetLayers.Ground | TargetLayers.Air, Health = 600f, Speed = 0.9f, BaseDamage = 10, Boss = true,
                 Attack = AttackStyle.Slam, BlockadeDamage = 40f, AttackRange = 2.5f, AttackInterval = 1.2f,
                 Color = new Color(0.8f, 0.75f, 1f), Eyes = Color.white, Accent = new Color(0.85f, 0.8f, 1f), Blood = new Color(0.85f, 0.8f, 1f),
                 Scale = 1.3f, Shape = EnemyShape.CoreWisp, Death = DeathStyle.Burst, Abilities = new[] { corePulse, fission },
@@ -396,6 +396,7 @@ namespace Game.Editor
             so.FindProperty("_reward").intValue = Threat.Reward(StatsOf(c), BalanceSheet.Rules);
             so.FindProperty("_baseDamage").intValue = c.BaseDamage;
             so.FindProperty("_element").enumValueIndex = (int)c.Element;
+            so.FindProperty("_family").enumValueIndex = (int)FamilyOf(c.Id);
             so.FindProperty("_attackStyle").enumValueIndex = (int)c.Attack;
             so.FindProperty("_attackDamage").floatValue = c.AttackDamage;
             so.FindProperty("_blockadeDamage").floatValue = c.BlockadeDamage;

@@ -15,12 +15,13 @@ MonoBehaviour:
   _displayName: data.enemy.FrostWarden.displayName
   _layer: 1
   _flies: 0
-  _maxHealth: 6150
-  _armor: 1538
+  _maxHealth: 4400
+  _armor: 4400
   _speed: 0.5
   _reward: 1778
   _baseDamage: 25
   _element: 0
+  _family: 0
   _attackStyle: 4
   _attackDamage: 0
   _blockadeDamage: 110

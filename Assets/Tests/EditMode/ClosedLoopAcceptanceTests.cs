@@ -12,27 +12,23 @@ using UnityEditor;
 namespace Game.Tests
 {
     /// <summary>
-    /// The acceptance of a cell as played (round 83b; it replaces BalanceAcceptanceTests, which judged recorded plans by
-    /// the rules of round 22 and was red on 17 of 24 cells). A cell is accepted when the break-even of its difficulty's
-    /// reference rung, read from the latest pressure measurement, lies within one step of the ladder of its target:
-    /// the same targets and the same reading as Tools/PlayTest/closed_loop.py, which sets the cell's scalar.
+    /// The acceptance of the campaign as played (round 83b; the gates of round 87). The thresholds are frozen in
+    /// Tools/PlayTest/closed_loop_thresholds.txt (2026-11-20, before any measurement of round 87), the one place
+    /// Tools/PlayTest/closed_loop.py reads them from too; this test holds no number of its own.
     ///
-    ///   Easy    both rungs win every seed at the data; the weaker rung breaks even at x1.55 at least. The Easy ladder
-    ///           (x1 / 1.25 / 1.4 / 1.57 / 1.76) cannot read x1.55: its readings are x1.32, x1.48, x1.66 and "over". The
-    ///           gate takes x1.48 or more, that is: the weaker rung holds x1.4 on two seeds of three at least (round 86
-    ///           says so in words; three Easy cells of round 85 passed at x1.48 under a text that promised x1.55)
-    ///   Medium  the sensible rung breaks even at x1.32; the better of the two rungs at x1.06 at least
-    ///   Hard    the sensible rung breaks even at x0.95; the better of the two rungs at x1.06 at least
-    ///   Psycho  the better of the two rungs breaks even at x1.06
-    ///   and on every level Hard breaks the sensible rung earlier than Medium does.
-    ///
-    /// Round 85 (Remco after playing level 1: Easy and Medium a tad too hard, Hard right): Easy x1.4 -> x1.55, Medium
-    /// x1.18 -> x1.32, a step of the ladder each. Easy and Medium are measured on ladders that reach those
-    /// (Tools/PlayTest/r85_measure.sh); Easy is judged on its break-even now, where it used to pass by holding x1.25.
+    ///   Every cell: its reference rung (Easy the weaker of sensible and skilled, Medium and Hard the sensible rung,
+    ///   Psycho the skilled rung) breaks even within one ladder step of its target, on both sides, by a real reading:
+    ///   a rung that holds or loses its whole ladder is a finding. Easy has an upper bound like every difficulty
+    ///   (round 86 accepted "over x1.86"; the Easy ladder now reaches x2.21, Tools/PlayTest/r87_measure.sh).
+    ///   Medium and Hard: the best of the better rungs (skilled, laser, cannon) itself reads the guard (round 86
+    ///   accepted the sensible rung in the skilled rung's place, with both a step under).
+    ///   Every cell: the laser and the cannon archetype read within one ladder step of each other.
+    ///   Every level: Hard breaks the sensible rung earlier than Medium does, and of its lost runs no more than the
+    ///   gate's share fall in a boss wave (the critic: levels 1 and 2 were a safe corridor with a boss wall).
     ///
     /// The measurement is named in Tools/PlayTest/closed_loop_records.txt (one records file per line). It must be of
-    /// the data as it stands: with another data stamp the test is inconclusive (measure first; Docs/COMMANDS.md,
-    /// "Round 83b"), never passed. Writes Tools/PlayTest/closed_loop_acceptance.txt.
+    /// the data as it stands: with another data stamp the test is inconclusive (measure first), never passed. Writes
+    /// Tools/PlayTest/closed_loop_acceptance.txt.
     /// </summary>
     public sealed class ClosedLoopAcceptanceTests
     {
@@ -47,17 +43,40 @@ namespace Game.Tests
         private const int Hard = 2;
         private const int Psycho = 3;
 
-        /// <summary>The reference rung's target per difficulty (closed_loop.py, TARGETS).</summary>
-        private static readonly float[] Target = { 1.55f, 1.32f, 0.95f, 1.06f };
-
-        /// <summary>What the better of the two rungs must reach at least on Medium and Hard.</summary>
-        private const float SkilledGuard = 1.06f;
+        private const string ThresholdsPath = "Tools/PlayTest/closed_loop_thresholds.txt";
+        private const string Laser = "laser";
+        private const string Cannon = "cannon";
 
         /// <summary>Seeds of three that hold a multiple.</summary>
         private const int SeedsHeld = 2;
 
-        /// <summary>One step of the ladder (x0.8 / 0.9 / 1 / 1.12 / 1.25: the widest is 1.125) with the rounding of the targets.</summary>
-        private const float LadderStep = 1.125f * 1.02f;
+        /// <summary>The frozen thresholds, by their names in the file.</summary>
+        private sealed class Thresholds
+        {
+            private readonly Dictionary<string, float> _values = new Dictionary<string, float>();
+
+            public Thresholds(string path)
+            {
+                foreach (string line in File.ReadAllLines(path))
+                {
+                    string[] parts = line.Split(' ');
+                    if (parts.Length == 2 && !line.StartsWith("#") && float.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float value))
+                    {
+                        _values[parts[0]] = value;
+                    }
+                }
+            }
+
+            public float this[string name] => _values[name];
+
+            public float Target(int difficulty) => _values[difficulty == Easy ? "target_easy" : difficulty == Medium ? "target_medium" : difficulty == Hard ? "target_hard" : "target_psycho"];
+
+            /// <summary>The widest ratio of two readings that are this many ladder steps apart, with the rounding of the readings.</summary>
+            public float Steps(string count) => (float)Math.Pow(_values["ladder_step"], _values[count]) * _values["rounding"];
+        }
+
+        /// <summary>The field of a run's record that holds the wave it reached: the wave a lost run fell in.</summary>
+        private const int LostWaveField = 7;
 
         private const byte CarriageReturn = 13;
         private const int HashLength = 8;
@@ -75,15 +94,13 @@ namespace Game.Tests
             public readonly End End;
             public readonly string Row;
             public readonly bool Played;
-            public readonly bool WinsAllAtTheData;
 
-            public Reading(float value, End end, string row, bool winsAllAtTheData)
+            public Reading(float value, End end, string row)
             {
                 Value = value;
                 End = end;
                 Row = row;
                 Played = true;
-                WinsAllAtTheData = winsAllAtTheData;
             }
 
             public string Text => !Played ? "not played" : $"`{Row}` {(End == End.UnderTheLadder ? "under " : End == End.OverTheLadder ? "over " : string.Empty)}x{Value.ToString("0.00", CultureInfo.InvariantCulture)}";
@@ -132,8 +149,10 @@ namespace Game.Tests
             string measured = new List<string>(stamps)[0];
             string now = DataStamp();
 
-            var report = new StringBuilder($"Closed-loop acceptance of {string.Join(", ", files)} (data {measured}; the project's data is {now})\n");
-            report.Append("| Cell | Sensible | Skilled | Target | Verdict |\n| --- | --- | --- | --- | --- |\n");
+            Assert.IsTrue(File.Exists(ThresholdsPath), $"{ThresholdsPath} is missing: the frozen thresholds of the closed loop");
+            var frozen = new Thresholds(ThresholdsPath);
+            var report = new StringBuilder($"Closed-loop acceptance of {string.Join(", ", files)} (data {measured}; the project's data is {now}; thresholds {ThresholdsPath})\n");
+            report.Append("| Cell | Sensible | Skilled | Laser | Cannon | Target | Verdict |\n| --- | --- | --- | --- | --- | --- | --- |\n");
             var failures = new List<string>();
             int cells = 0;
             foreach (MapNode node in catalog.Nodes)
@@ -151,12 +170,14 @@ namespace Game.Tests
                     Reading skilled = Read(wins, played, level, d, Skilled);
                     sensibleOf[d] = sensible;
                     string name = $"{level} {catalog.Difficulties[d].name}";
-                    string verdict = Judge(d, sensible, skilled);
+                    Reading laser = Read(wins, played, level, d, Laser);
+                    Reading cannon = Read(wins, played, level, d, Cannon);
+                    string verdict = Judge(frozen, d, sensible, skilled, laser, cannon);
                     cells++;
-                    report.Append($"| {name} | {sensible.Text} | {skilled.Text} | {TargetText(d)} | {verdict ?? "accepted"} |\n");
+                    report.Append($"| {name} | {sensible.Text} | {skilled.Text} | {laser.Text} | {cannon.Text} | {TargetText(frozen, d)} | {verdict ?? "accepted"} |\n");
                     if (verdict != null)
                     {
-                        failures.Add($"{name}: {verdict} (sensible {sensible.Text}, skilled {skilled.Text})");
+                        failures.Add($"{name}: {verdict} (sensible {sensible.Text}, skilled {skilled.Text}, laser {laser.Text}, cannon {cannon.Text})");
                     }
                 }
 
@@ -164,6 +185,12 @@ namespace Game.Tests
                 if (sensibleOf.Length > Hard && sensibleOf[Medium].Played && sensibleOf[Hard].Played && sensibleOf[Hard].Value >= sensibleOf[Medium].Value)
                 {
                     failures.Add($"{level}: Hard is not above Medium for the sensible rung (Hard {sensibleOf[Hard].Text}, Medium {sensibleOf[Medium].Text})");
+                }
+
+                string wall = BossWall(frozen, node.Level, catalog, files);
+                if (wall != null)
+                {
+                    failures.Add(wall);
                 }
             }
 
@@ -179,67 +206,131 @@ namespace Game.Tests
         }
 
         // Null when the cell is accepted, else what is off.
-        private static string Judge(int difficulty, Reading sensible, Reading skilled)
+        private static string Judge(Thresholds frozen, int difficulty, Reading sensible, Reading skilled, Reading laser, Reading cannon)
         {
-            if (!sensible.Played || !skilled.Played)
+            if (!sensible.Played || !skilled.Played || !laser.Played || !cannon.Played)
             {
-                return "not measured on both rungs";
+                return "not measured on all four rungs";
             }
 
-            // The skilled rung stands for the better reference player: where its picked strategy breaks before the sensible
-            // rung does, the pick is stale and the sensible rung is read in its place (closed_loop.py). Not on Easy, where
-            // the weaker rung is the measure.
-            Reading better = sensible.Value > skilled.Value ? sensible : skilled;
+            float target = frozen.Target(difficulty);
+            string reference;
             switch (difficulty)
             {
                 case Easy:
-                    if (!sensible.WinsAllAtTheData || !skilled.WinsAllAtTheData)
-                    {
-                        return "a seed is lost at the data";
-                    }
-
-                    Reading weaker = sensible.Value < skilled.Value ? sensible : skilled;
-                    return AtLeast(weaker, Target[Easy], "the weaker rung");
+                    reference = Near(frozen, sensible.Value < skilled.Value ? sensible : skilled, target, "the weaker rung");
+                    break;
                 case Medium:
                 case Hard:
-                    return Near(sensible, Target[difficulty], "the sensible rung") ?? AtLeast(better, SkilledGuard, "the better rung");
+                    Reading best = skilled;
+                    foreach (Reading other in new[] { laser, cannon })
+                    {
+                        best = other.Value > best.Value ? other : best;
+                    }
+
+                    reference = Near(frozen, sensible, target, "the sensible rung") ?? AtLeast(frozen, best, "the best of the better rungs");
+                    break;
                 default:
-                    return Near(better, Target[Psycho], "the better rung");
+                    reference = Near(frozen, skilled, target, "the skilled rung");
+                    break;
             }
+
+            return reference ?? Together(frozen, laser, cannon);
         }
 
-        // A binding target is met from both sides, and by a measured break-even: a rung that holds the whole ladder or
-        // loses all of it is at least a step off and nobody knows how far.
-        private static string Near(Reading reading, float target, string who)
+        // A target is met from both sides, and by a measured break-even: a rung that holds the whole ladder or loses all
+        // of it is at least a step off and nobody knows how far.
+        private static string Near(Thresholds frozen, Reading reading, float target, string who)
         {
             if (reading.End != End.Measured)
             {
                 return $"{who} {(reading.End == End.OverTheLadder ? "holds the whole ladder" : "loses the whole ladder")} (target x{target.ToString("0.00", CultureInfo.InvariantCulture)})";
             }
 
+            float step = frozen.Steps("accept_within_steps");
             float off = reading.Value / target;
-            return off > LadderStep || off < 1f / LadderStep
+            return off > step || off < 1f / step
                 ? $"{who} breaks even at x{reading.Value.ToString("0.00", CultureInfo.InvariantCulture)}, more than a step from x{target.ToString("0.00", CultureInfo.InvariantCulture)}"
                 : null;
         }
 
-        private static string AtLeast(Reading reading, float guard, string who) =>
-            reading.End == End.OverTheLadder || reading.Value >= guard / LadderStep
-                ? null
-                : $"{who} breaks even at x{reading.Value.ToString("0.00", CultureInfo.InvariantCulture)}, more than a step under its guard x{guard.ToString("0.00", CultureInfo.InvariantCulture)}";
-
-        private static string TargetText(int difficulty)
+        // The guard is read as it is written: no step of slack under it, only the rounding of the reading.
+        private static string AtLeast(Thresholds frozen, Reading reading, string who)
         {
+            float guard = frozen["better_rung_least"];
+            return reading.End == End.OverTheLadder || reading.Value >= guard / frozen["rounding"]
+                ? null
+                : $"{who} breaks even at x{reading.Value.ToString("0.00", CultureInfo.InvariantCulture)}, under its guard x{guard.ToString("0.00", CultureInfo.InvariantCulture)}";
+        }
+
+        // The two archetypes play the same cell about as well: a level that only one favourite gun wins is a level
+        // with one answer.
+        private static string Together(Thresholds frozen, Reading laser, Reading cannon)
+        {
+            float step = frozen.Steps("archetype_spread_steps");
+            float ratio = laser.Value / cannon.Value;
+            return ratio > step || ratio < 1f / step ? "the laser and the cannon archetype are more than a ladder step apart" : null;
+        }
+
+        // Of the lost runs of a level (every difficulty, rung and multiple of the measurement) the share that fell in a
+        // wave with a boss in it; null when it is inside the gate.
+        private static string BossWall(Thresholds frozen, LevelDefinition level, CampaignCatalog catalog, List<string> files)
+        {
+            int lost = 0;
+            int inBossWave = 0;
+            foreach (string file in files)
+            {
+                foreach (string line in File.ReadAllLines(file))
+                {
+                    string[] f = line.Split('|');
+                    if (f.Length <= LostWaveField || f[0] != "prun" || f[1] != level.name || f[6] != "lost")
+                    {
+                        continue;
+                    }
+
+                    int difficulty = int.Parse(f[2], CultureInfo.InvariantCulture);
+                    int wave = int.Parse(f[LostWaveField], CultureInfo.InvariantCulture);
+                    WaveDefinition[] waves = level.GetWaves(catalog.Difficulties[difficulty]);
+                    lost++;
+                    if (wave >= 1 && wave <= waves.Length && HasBoss(waves[wave - 1]))
+                    {
+                        inBossWave++;
+                    }
+                }
+            }
+
+            float most = frozen["boss_wave_share_most"];
+            return lost > 0 && inBossWave > lost * most
+                ? $"{level.name}: {inBossWave} of {lost} lost runs fell in a boss wave ({(inBossWave / (float)lost).ToString("P0", CultureInfo.InvariantCulture)}; at most {most.ToString("P0", CultureInfo.InvariantCulture)})"
+                : null;
+        }
+
+        private static bool HasBoss(WaveDefinition wave)
+        {
+            foreach (SpawnGroup group in wave.Groups)
+            {
+                if (group.Enemy != null && group.Enemy.IsBoss)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static string TargetText(Thresholds frozen, int difficulty)
+        {
+            string target = frozen.Target(difficulty).ToString("0.00", CultureInfo.InvariantCulture);
+            string guard = frozen["better_rung_least"].ToString("0.00", CultureInfo.InvariantCulture);
             switch (difficulty)
             {
                 case Easy:
-                    return "weaker rung x1.55 at least (the ladder reads x1.48 or x1.66 there: holds x1.4)";
+                    return $"weaker rung x{target}";
                 case Medium:
-                    return "sensible x1.32, better rung x1.06 at least";
                 case Hard:
-                    return "sensible x0.95, better rung x1.06 at least";
+                    return $"sensible x{target}, best better rung x{guard} at least";
                 default:
-                    return "better rung x1.06";
+                    return $"skilled x{target}";
             }
         }
 
@@ -263,14 +354,9 @@ namespace Game.Tests
 
             multiples.Sort();
             var row = new StringBuilder();
-            bool allAtTheData = false;
             foreach (float multiple in multiples)
             {
                 row.Append(row.Length > 0 ? " " : string.Empty).Append(wins[(level, difficulty, rung, multiple)]);
-                if (Math.Abs(multiple - 1f) < 1e-4f)
-                {
-                    allAtTheData = wins[(level, difficulty, rung, multiple)] == played[(level, difficulty, rung, multiple)];
-                }
             }
 
             float held = -1f;
@@ -283,12 +369,12 @@ namespace Game.Tests
                 }
 
                 return held < 0f
-                    ? new Reading(multiple / (float)Math.Sqrt(multiples[1] / multiples[0]), End.UnderTheLadder, row.ToString(), allAtTheData)
-                    : new Reading((float)Math.Sqrt(held * multiple), End.Measured, row.ToString(), allAtTheData);
+                    ? new Reading(multiple / (float)Math.Sqrt(multiples[1] / multiples[0]), End.UnderTheLadder, row.ToString())
+                    : new Reading((float)Math.Sqrt(held * multiple), End.Measured, row.ToString());
             }
 
             float step = multiples[multiples.Count - 1] / multiples[multiples.Count - 2];
-            return new Reading(held * (float)Math.Sqrt(step), End.OverTheLadder, row.ToString(), allAtTheData);
+            return new Reading(held * (float)Math.Sqrt(step), End.OverTheLadder, row.ToString());
         }
 
         // The data stamp of the probe records (ProbeStamp in the PlayMode tests): the names and bytes of every asset under

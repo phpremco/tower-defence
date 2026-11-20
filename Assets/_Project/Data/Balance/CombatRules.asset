@@ -22,9 +22,9 @@ MonoBehaviour:
     Air: 0.2
     Reason: 'Light fire only chips armour, and a gun not made for the sky lands a fifth up there: enough to finish a straggler, never an air defence.'
   - Type: 2
-    Armour: 0.2
+    Armour: 0.1
     Air: 0.2
-    Reason: 'A beam is light fire: it glances off plates, and it spreads out over the distance to a flyer.'
+    Reason: A beam glances off plates, and a pulse this small barely marks them; it spreads out over the distance to a flyer.
   - Type: 3
     Armour: 0.5
     Air: 0
@@ -45,6 +45,11 @@ MonoBehaviour:
     Armour: 1.5
     Air: 0.5
     Reason: 'A slug is made for armour: it works on plates better than on the body. One slow shot is a poor way to hunt flyers.'
+  _families:
+  - Type: 2
+    Family: 1
+    Factor: 1.5
+    Reason: A beam feeds straight into an energy body and overloads it.
   _exceptions:
   - Weapon: Rocket
     Trait: 1

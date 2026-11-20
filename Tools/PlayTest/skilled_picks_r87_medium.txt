@@ -1,0 +1,270 @@
+Measured with: bot 4:2f1c721c; data 7c44d895; game code c62834cd
+
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 56 of 72 curves monotone = 77.8%  ->  FAIL
+  strategy1     14 of 18  curves (78%); 4 of 54 steps drop by more than the tolerance
+  strategy2     15 of 18  curves (83%); 3 of 54 steps drop by more than the tolerance
+  strategy3     11 of 18  curves (61%); 7 of 54 steps drop by more than the tolerance
+  strategy4     16 of 18  curves (89%); 2 of 54 steps drop by more than the tolerance
+  the same check on other scores (all rungs): P 56 of 72; A 56 of 72; R+D (furthest creature) 51 of 72; D 67 of 72; won/lost 70 of 72
+  curves that are not monotone (P per multiple, the drops marked):
+    Landing Site Medium   strategy2    seed 3: 1:0.18 1.12:1.24L 1.25:1.29L 1.4:1.21L!  (worst drop -0.079)
+    Landing Site Medium   strategy3    seed 1: 1:0.19 1.12:0.19 1.25:1.27L 1.4:1.22L!  (worst drop -0.054)
+    Landing Site Medium   strategy3    seed 2: 1:0.20 1.12:0.19 1.25:1.28L 1.4:1.24L!  (worst drop -0.038)
+    Shard Ridge Medium    strategy1    seed 2: 1:1.55L 1.12:1.58L 1.25:1.52L! 1.4:1.59L  (worst drop -0.060)
+    Shard Ridge Medium    strategy1    seed 3: 1:0.61 1.12:1.59L 1.25:1.52L! 1.4:1.63L  (worst drop -0.066)
+    Shard Ridge Medium    strategy2    seed 2: 1:1.55L 1.12:1.58L 1.25:1.52L! 1.4:1.59L  (worst drop -0.060)
+    Shard Ridge Medium    strategy2    seed 3: 1:0.60 1.12:1.59L 1.25:1.52L! 1.4:1.63L  (worst drop -0.066)
+    Shard Ridge Medium    strategy3    seed 2: 1:0.61 1.12:1.59L 1.25:1.51L! 1.4:1.55L  (worst drop -0.081)
+    Shard Ridge Medium    strategy3    seed 3: 1:1.54L 1.12:1.54L 1.25:1.22! 1.4:1.60L  (worst drop -0.326)
+    Shard Ridge Medium    strategy4    seed 2: 1:0.61 1.12:0.65 1.25:1.31 1.4:0.95!  (worst drop -0.357)
+    Shard Ridge Medium    strategy4    seed 3: 1:0.53 1.12:0.59 1.25:0.96 1.4:0.84!  (worst drop -0.117)
+    Fault Line Medium     strategy1    seed 2: 1:1.55 1.12:1.70 1.25:1.84L 1.4:1.82L!  (worst drop -0.021)
+    Fault Line Medium     strategy3    seed 2: 1:1.62 1.12:1.84L 1.25:1.81L! 1.4:1.86L  (worst drop -0.022)
+    Quartz Flats Medium   strategy3    seed 3: 1:0.21 1.12:0.24 1.25:0.38 1.4:0.31!  (worst drop -0.069)
+    Crysium Vein Medium   strategy1    seed 1: 1:1.34 1.12:1.64L 1.25:1.61L! 1.4:1.68L  (worst drop -0.032)
+    Crysium Vein Medium   strategy3    seed 2: 1:1.08 1.12:1.65L 1.25:1.43! 1.4:1.72L  (worst drop -0.213)
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 0 of 0 cells within the limit  ->  FAIL
+  cell                  
+  Landing Site Medium
+  Glass Meadows Medium
+  Shard Ridge Medium
+  Fault Line Medium
+  Quartz Flats Medium
+  Crysium Vein Medium
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  strategy1                         strategy2                         strategy3                         strategy4                         
+  Landing Site Medium   0.128 (0.128-0.138) 3/3           0.182 (0.181-1.217) 2/3           0.188 (0.187-0.198) 3/3           0.134 (0.132-0.160) 3/3
+  Glass Meadows Medium  0.044 (0.042-0.046) 3/3           1.084 (0.083-1.098) 1/3           0.044 (0.042-0.046) 3/3           0.044 (0.042-0.046) 3/3
+  Shard Ridge Medium    1.530 (0.606-1.555) 1/3           1.537 (0.605-1.555) 2/3           1.541 (0.608-1.543) 1/3           0.608 (0.528-0.636) 3/3
+  Fault Line Medium     1.229 (1.157-1.546) 3/3           1.623 (1.341-1.811) 2/3           1.589 (1.125-1.619) 3/3           1.450 (1.137-1.542) 3/3
+  Quartz Flats Medium   0.171 (0.169-0.191) 3/3           0.175 (0.157-0.202) 3/3           0.173 (0.155-0.207) 3/3           0.183 (0.163-0.207) 3/3
+  Crysium Vein Medium   1.082 (1.065-1.343) 3/3           1.145 (1.141-1.231) 3/3           1.083 (1.069-1.359) 3/3           1.114 (1.059-1.211) 3/3
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  strategy1
+    Landing Site Medium   x1 0.13 (0.13-0.14) 3/3 | x1.12 0.17 (0.13-0.18) 3/3 | x1.25 1.17 (0.18-1.20) 1/3 | x1.4 1.20 (1.18-1.21) 0/3
+    Glass Meadows Medium  x1 0.04 (0.04-0.05) 3/3 | x1.12 0.05 (0.05-0.05) 3/3 | x1.25 0.05 (0.05-0.06) 3/3 | x1.4 0.08 (0.06-1.08) 2/3
+    Shard Ridge Medium    x1 1.53 (0.61-1.55) 1/3 | x1.12 1.58 (1.58-1.59) 0/3 | x1.25 1.52 (1.52-1.58) 0/3 | x1.4 1.59 (1.56-1.63) 0/3
+    Fault Line Medium     x1 1.23 (1.16-1.55) 3/3 | x1.12 1.53 (1.35-1.70) 3/3 | x1.25 1.84 (1.77-1.85) 2/3 | x1.4 1.85 (1.82-1.86) 0/3
+    Quartz Flats Medium   x1 0.17 (0.17-0.19) 3/3 | x1.12 0.34 (0.30-0.37) 3/3 | x1.25 0.37 (0.32-0.68) 3/3 | x1.4 1.33 (0.75-1.38) 1/3
+    Crysium Vein Medium   x1 1.08 (1.07-1.34) 3/3 | x1.12 1.64 (1.23-1.64) 1/3 | x1.25 1.68 (1.61-1.69) 0/3 | x1.4 1.72 (1.68-1.75) 0/3
+  strategy2
+    Landing Site Medium   x1 0.18 (0.18-1.22) 2/3 | x1.12 1.23 (1.22-1.24) 0/3 | x1.25 1.30 (1.29-1.32) 0/3 | x1.4 1.31 (1.21-1.32) 0/3
+    Glass Meadows Medium  x1 1.08 (0.08-1.10) 1/3 | x1.12 1.11 (1.11-1.11) 0/3 | x1.25 1.11 (1.11-1.12) 0/3 | x1.4 1.13 (1.12-1.13) 0/3
+    Shard Ridge Medium    x1 1.54 (0.60-1.55) 2/3 | x1.12 1.58 (1.58-1.59) 0/3 | x1.25 1.52 (1.52-1.58) 0/3 | x1.4 1.59 (1.58-1.63) 0/3
+    Fault Line Medium     x1 1.62 (1.34-1.81) 2/3 | x1.12 1.79 (1.51-1.81) 1/3 | x1.25 1.83 (1.82-1.83) 1/3 | x1.4 1.87 (1.83-1.87) 0/3
+    Quartz Flats Medium   x1 0.18 (0.16-0.20) 3/3 | x1.12 0.23 (0.17-0.35) 3/3 | x1.25 1.24 (0.73-1.28) 1/3 | x1.4 1.30 (1.29-1.32) 0/3
+    Crysium Vein Medium   x1 1.14 (1.14-1.23) 3/3 | x1.12 1.36 (1.31-1.60) 2/3 | x1.25 1.69 (1.64-1.73) 0/3 | x1.4 1.69 (1.68-1.72) 0/3
+  strategy3
+    Landing Site Medium   x1 0.19 (0.19-0.20) 3/3 | x1.12 0.19 (0.19-1.24) 2/3 | x1.25 1.27 (1.27-1.28) 0/3 | x1.4 1.24 (1.22-1.27) 0/3
+    Glass Meadows Medium  x1 0.04 (0.04-0.05) 3/3 | x1.12 0.05 (0.05-0.05) 3/3 | x1.25 0.05 (0.05-0.06) 3/3 | x1.4 0.08 (0.06-1.08) 2/3
+    Shard Ridge Medium    x1 1.54 (0.61-1.54) 1/3 | x1.12 1.55 (1.54-1.59) 0/3 | x1.25 1.51 (1.22-1.58) 1/3 | x1.4 1.59 (1.55-1.60) 0/3
+    Fault Line Medium     x1 1.59 (1.13-1.62) 3/3 | x1.12 1.80 (1.39-1.84) 1/3 | x1.25 1.80 (1.57-1.81) 1/3 | x1.4 1.81 (1.80-1.86) 0/3
+    Quartz Flats Medium   x1 0.17 (0.15-0.21) 3/3 | x1.12 0.20 (0.19-0.24) 3/3 | x1.25 0.38 (0.33-1.27) 2/3 | x1.4 1.31 (0.31-1.32) 1/3
+    Crysium Vein Medium   x1 1.08 (1.07-1.36) 3/3 | x1.12 1.63 (1.38-1.65) 1/3 | x1.25 1.65 (1.43-1.69) 1/3 | x1.4 1.68 (1.68-1.72) 0/3
+  strategy4
+    Landing Site Medium   x1 0.13 (0.13-0.16) 3/3 | x1.12 0.59 (0.19-1.21) 2/3 | x1.25 1.19 (1.19-1.19) 0/3 | x1.4 1.19 (1.19-1.20) 0/3
+    Glass Meadows Medium  x1 0.04 (0.04-0.05) 3/3 | x1.12 0.05 (0.05-0.05) 3/3 | x1.25 0.05 (0.05-0.06) 3/3 | x1.4 0.08 (0.06-1.08) 2/3
+    Shard Ridge Medium    x1 0.61 (0.53-0.64) 3/3 | x1.12 0.65 (0.59-0.78) 3/3 | x1.25 0.96 (0.85-1.31) 3/3 | x1.4 0.95 (0.84-1.01) 3/3
+    Fault Line Medium     x1 1.45 (1.14-1.54) 3/3 | x1.12 1.79 (1.29-1.84) 1/3 | x1.25 1.78 (1.45-1.84) 1/3 | x1.4 1.85 (1.67-1.85) 1/3
+    Quartz Flats Medium   x1 0.18 (0.16-0.21) 3/3 | x1.12 0.34 (0.24-0.34) 3/3 | x1.25 1.26 (0.42-1.26) 1/3 | x1.4 1.35 (1.35-1.36) 0/3
+    Crysium Vein Medium   x1 1.11 (1.06-1.21) 3/3 | x1.12 1.31 (1.24-1.53) 3/3 | x1.25 1.69 (1.64-1.73) 0/3 | x1.4 1.69 (1.68-1.72) 0/3
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  strategy1   Landing Site Medium   A 0.128 (0.128-0.138)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy1   Glass Meadows Medium  A 0.044 (0.042-0.046)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy1   Shard Ridge Medium    A 0.549 (0.530-0.555)  D 1.00 (0.06-1.00)  leaked 0.016 (0.000-0.021)
+  strategy1   Fault Line Medium     A 0.838 (0.837-0.850)  D 0.39 (0.32-0.70)  leaked 0.166 (0.160-0.200)
+  strategy1   Quartz Flats Medium   A 0.148 (0.145-0.150)  D 0.03 (0.02-0.04)  leaked 0.005 (0.000-0.007)
+  strategy1   Crysium Vein Medium   A 0.624 (0.623-0.628)  D 0.46 (0.44-0.71)  leaked 0.069 (0.068-0.073)
+  strategy2   Landing Site Medium   A 0.182 (0.181-0.217)  D 0.00 (0.00-1.00)  leaked 0.000 (0.000-0.000)
+  strategy2   Glass Meadows Medium  A 0.084 (0.083-0.098)  D 1.00 (0.00-1.00)  leaked 0.000 (0.000-0.000)
+  strategy2   Shard Ridge Medium    A 0.548 (0.537-0.555)  D 1.00 (0.06-1.00)  leaked 0.016 (0.000-0.021)
+  strategy2   Fault Line Medium     A 0.840 (0.811-0.850)  D 0.77 (0.50-1.00)  leaked 0.165 (0.027-0.188)
+  strategy2   Quartz Flats Medium   A 0.160 (0.157-0.161)  D 0.02 (0.00-0.04)  leaked 0.000 (0.000-0.004)
+  strategy2   Crysium Vein Medium   A 0.625 (0.622-0.626)  D 0.52 (0.52-0.61)  leaked 0.072 (0.072-0.073)
+  strategy3   Landing Site Medium   A 0.188 (0.187-0.198)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy3   Glass Meadows Medium  A 0.044 (0.042-0.046)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy3   Shard Ridge Medium    A 0.543 (0.541-0.562)  D 1.00 (0.05-1.00)  leaked 0.021 (0.000-0.021)
+  strategy3   Fault Line Medium     A 0.845 (0.836-0.845)  D 0.74 (0.29-0.77)  leaked 0.196 (0.160-0.207)
+  strategy3   Quartz Flats Medium   A 0.158 (0.155-0.161)  D 0.02 (0.00-0.05)  leaked 0.000 (0.000-0.004)
+  strategy3   Crysium Vein Medium   A 0.625 (0.624-0.626)  D 0.46 (0.44-0.74)  leaked 0.069 (0.068-0.073)
+  strategy4   Landing Site Medium   A 0.134 (0.132-0.160)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy4   Glass Meadows Medium  A 0.044 (0.042-0.046)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy4   Shard Ridge Medium    A 0.533 (0.528-0.536)  D 0.07 (0.00-0.10)  leaked 0.000 (0.000-0.010)
+  strategy4   Fault Line Medium     A 0.838 (0.838-0.839)  D 0.61 (0.30-0.70)  leaked 0.184 (0.160-0.207)
+  strategy4   Quartz Flats Medium   A 0.163 (0.162-0.166)  D 0.02 (0.00-0.04)  leaked 0.000 (0.000-0.000)
+  strategy4   Crysium Vein Medium   A 0.625 (0.622-0.625)  D 0.49 (0.44-0.59)  leaked 0.072 (0.068-0.073)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<1' / '>1.4' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  strategy1
+    Landing Site Medium   median 1.18   pooled 1.18   per seed: 1.18 1.18 1.32                       spread 12% (n=3)
+    Glass Meadows Medium  median >1.4   pooled >1.4   per seed: 1.32 >1.4 >1.4                       spread -
+    Shard Ridge Medium    median <1     pooled <1     per seed: <1 <1 1.05                           spread -
+    Fault Line Medium     median 1.06   pooled 1.04   per seed: 1.06 <1 1.12                         spread 6% (n=2)
+    Quartz Flats Medium   median 1.31   pooled 1.31   per seed: 1.31 1.27 >1.4                       spread 3% (n=2)
+    Crysium Vein Medium   median 1.01   pooled 1.01   per seed: <1 1.04 1.01                         spread 2% (n=2)
+  strategy2
+    Landing Site Medium   median 1.06   pooled 1.06   per seed: 1.06 <1 1.06                         spread 0% (n=2)
+    Glass Meadows Medium  median <1     pooled <1     per seed: <1 <1 1.06                           spread -
+    Shard Ridge Medium    median <1     pooled <1     per seed: <1 <1 1.05                           spread -
+    Fault Line Medium     median <1     pooled <1     per seed: <1 <1 <1                             spread -
+    Quartz Flats Medium   median 1.18   pooled 1.18   per seed: 1.25 1.17 1.18                       spread 7% (n=3)
+    Crysium Vein Medium   median <1     pooled <1     per seed: <1 <1 <1                             spread -
+  strategy3
+    Landing Site Medium   median 1.18   pooled 1.18   per seed: 1.18 1.18 1.06                       spread 12% (n=3)
+    Glass Meadows Medium  median >1.4   pooled >1.4   per seed: 1.32 >1.4 >1.4                       spread -
+    Shard Ridge Medium    median <1     pooled <1     per seed: <1 1.06 <1                           spread -
+    Fault Line Medium     median <1     pooled <1     per seed: 1.10 <1 <1                           spread -
+    Quartz Flats Medium   median 1.31   pooled 1.31   per seed: 1.31 1.18 >1.4                       spread 11% (n=2)
+    Crysium Vein Medium   median 1.01   pooled 1.01   per seed: <1 1.01 1.01                         spread 0% (n=2)
+  strategy4
+    Landing Site Medium   median 1.14   pooled 1.14   per seed: 1.06 1.14 1.18                       spread 12% (n=3)
+    Glass Meadows Medium  median >1.4   pooled >1.4   per seed: 1.32 >1.4 >1.4                       spread -
+    Shard Ridge Medium    median >1.4   pooled >1.4   per seed: >1.4 1.20 >1.4                       spread -
+    Fault Line Medium     median <1     pooled <1     per seed: 1.16 <1 <1                           spread -
+    Quartz Flats Medium   median 1.17   pooled 1.17   per seed: 1.17 1.17 1.30                       spread 11% (n=3)
+    Crysium Vein Medium   median 1.01   pooled 1.01   per seed: <1 1.01 1.03                         spread 2% (n=2)
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x1     x1.12  x1.25  x1.4   H50
+  strategy1   Landing Site Medium   3/3    3/3    1/3    0/3    1.22
+  strategy1   Glass Meadows Medium  3/3    3/3    3/3    2/3    >1.4
+  strategy1   Shard Ridge Medium    1/3    0/3    0/3    0/3    <1
+  strategy1   Fault Line Medium     3/3    3/3    2/3    0/3    1.29
+  strategy1   Quartz Flats Medium   3/3    3/3    3/3    1/3    1.36
+  strategy1   Crysium Vein Medium   3/3    1/3    0/3    0/3    1.09
+  strategy2   Landing Site Medium   2/3    0/3    0/3    0/3    1.03
+  strategy2   Glass Meadows Medium  1/3    0/3    0/3    0/3    <1
+  strategy2   Shard Ridge Medium    2/3    0/3    0/3    0/3    1.03
+  strategy2   Fault Line Medium     2/3    1/3    1/3    0/3    1.06
+  strategy2   Quartz Flats Medium   3/3    3/3    1/3    0/3    1.22
+  strategy2   Crysium Vein Medium   3/3    2/3    0/3    0/3    1.15
+  strategy3   Landing Site Medium   3/3    2/3    0/3    0/3    1.15
+  strategy3   Glass Meadows Medium  3/3    3/3    3/3    2/3    >1.4
+  strategy3   Shard Ridge Medium    1/3    0/3    1/3    0/3    <1
+  strategy3   Fault Line Medium     3/3    1/3    1/3    0/3    1.09
+  strategy3   Quartz Flats Medium   3/3    3/3    2/3    1/3    1.32
+  strategy3   Crysium Vein Medium   3/3    1/3    1/3    0/3    1.09
+  strategy4   Landing Site Medium   3/3    2/3    0/3    0/3    1.15
+  strategy4   Glass Meadows Medium  3/3    3/3    3/3    2/3    >1.4
+  strategy4   Shard Ridge Medium    3/3    3/3    3/3    3/3    >1.4
+  strategy4   Fault Line Medium     3/3    1/3    1/3    1/3    1.09
+  strategy4   Quartz Flats Medium   3/3    3/3    1/3    0/3    1.22
+  strategy4   Crysium Vein Medium   3/3    3/3    0/3    0/3    1.18
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  strategy1   Landing Site Medium     9   8   8   9   8   9  39  11   9  22  11  10
+                                    base hit: never
+  strategy1   Glass Meadows Medium    1   3   1   4   3   4   4   3   6  16   3   6
+                                    base hit: never
+  strategy1   Shard Ridge Medium     57  38  45  56  42  41  51  54  45  46  67  68  66  55  71  59
+                                    base hit: w13 2/3, w14 1/3, w16 2/3
+  strategy1   Fault Line Medium      82  80  78  81  82  82  89  86  83  83  91  81  80  84  89  93
+                                    base hit: w13 1/3, w16 3/3
+  strategy1   Quartz Flats Medium     6   5   7   9  10  37   9   8  10  34   7  27   9  10  34  19  12
+                                    base hit: w11 1/3, w16 3/3
+  strategy1   Crysium Vein Medium    76  40  50  77  55  43  67  81  63  47  80  64  50  74  79  51  60  69
+                                    base hit: w9 1/3, w12 3/3, w13 3/3, w14 3/3, w15 3/3, w16 3/3, w18 3/3
+  strategy2   Landing Site Medium     8   8   8   9   8   9  39  11  10  22  74  11
+                                    base hit: w12 1/3
+  strategy2   Glass Meadows Medium    1   3   1   5   2   3   6   2   7  33  30  14
+                                    base hit: w12 2/3
+  strategy2   Shard Ridge Medium     57  38  45  56  42  41  51  54  45  47  67  68  65  53  71  66
+                                    base hit: w13 2/3, w14 1/3, w16 2/3
+  strategy2   Fault Line Medium      88  74  82  88  81  83  87  89  80  77  91  89  81  84  92  94
+                                    base hit: w13 3/3, w14 2/3, w15 1/3, w16 2/3
+  strategy2   Quartz Flats Medium     6   5   7   8  10  37   9   8  10  35   8  37   9  10  34  26  11
+                                    base hit: w11 1/3, w16 2/3
+  strategy2   Crysium Vein Medium    76  40  50  77  56  43  66  80  63  46  80  63  48  74  79  51  59  69
+                                    base hit: w9 1/3, w12 3/3, w13 3/3, w14 3/3, w15 3/3, w16 3/3, w18 3/3
+  strategy3   Landing Site Medium    10  10  10  10   9   9  39  11  11  23  71  11
+                                    base hit: never
+  strategy3   Glass Meadows Medium    1   3   1   4   3   4   4   3   6  16   3   6
+                                    base hit: never
+  strategy3   Shard Ridge Medium     57  38  46  55  44  40  51  56  46  46  68  68  66  57  71  63
+                                    base hit: w13 2/3, w16 3/3
+  strategy3   Fault Line Medium      88  72  79  88  81  82  87  90  82  78  91  86  81  83  92  93
+                                    base hit: w13 3/3, w16 3/3
+  strategy3   Quartz Flats Medium     6   5   8   8  10  36   9   8  10  35   8  36   9  10  33  25  11
+                                    base hit: w11 1/3, w16 2/3
+  strategy3   Crysium Vein Medium    76  40  50  77  56  43  66  81  63  46  81  63  48  74  79  51  59  69
+                                    base hit: w9 1/3, w12 3/3, w13 3/3, w14 3/3, w15 3/3, w16 3/3, w18 3/3
+  strategy4   Landing Site Medium     9   9   9  10   9   9  39  11  10  22  12  12
+                                    base hit: never
+  strategy4   Glass Meadows Medium    1   3   1   4   3   4   4   3   6  16   3   6
+                                    base hit: never
+  strategy4   Shard Ridge Medium     59  36  47  59  45  42  52  55  45  42  68  68  58  49  69  61
+                                    base hit: w13 2/3, w16 2/3
+  strategy4   Fault Line Medium      80  80  77  80  81  83  88  84  83  81  90  87  79  84  91  94
+                                    base hit: w13 3/3, w16 3/3
+  strategy4   Quartz Flats Medium     8   8   8   9  10  38  10   9  10  35   8  38   9  10  33  27  11
+                                    base hit: w11 1/3, w16 2/3
+  strategy4   Crysium Vein Medium    76  40  50  77  56  43  66  80  63  46  80  63  48  74  79  51  58  69
+                                    base hit: w9 1/3, w12 3/3, w13 3/3, w14 3/3, w15 3/3, w16 3/3, w18 3/3
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  strategy1   Landing Site Medium   won w12/12; built 13, upgrades 7, left 66, earned 1412, repairs 0
+                                    w1 build Cannon@11,6; w1 build Cannon@11,2; w4 build PulseRifle@12,7; w5 upgrade@12,7; w8 upgrade@11,6; w9 build Cannon@21,18; w10 build PulseRifle@9,6; w10 upgrade@9,6; w11 build PulseRifle@10,6; w11 upgrade@10,6; w11 build PulseRifle@9,3; w12 upgrade@9,3
+  strategy1   Glass Meadows Medium  won w12/12; built 7, upgrades 9, left 145, earned 1473, repairs 0
+                                    w1 build Cannon@4,15; w1 build Cannon@1,15; w2 build PulseRifle@1,14; w4 upgrade@1,14; w6 upgrade@4,15; w8 upgrade@1,15; w9 build Cannon@16,20; w9 build PulseRifle@1,13; w10 upgrade@1,13; w11 upgrade@1,13; w11 build PulseRifle@4,13; w11 upgrade@4,13
+  strategy1   Shard Ridge Medium    lost w16/16; built 12, upgrades 9, left 6, earned 1328, repairs 81
+                                    w1 build Cannon@12,11; w1 build PulseRifle@12,10; w1 upgrade@12,10; w3 upgrade@12,10; w5 build PulseRifle@13,11; w9 build Rocket@32,10; w10 build Rocket@33,10; w12 upgrade@13,11; w12 build PulseRifle@11,11; w13 upgrade@11,11; w13 sell@32,10; w13 build Rocket@37,7
+  strategy1   Fault Line Medium     won w16/16; built 10, upgrades 4, left 30, earned 1485, repairs 33
+                                    w1 build Cannon@34,10; w1 build Rocket@34,9; w3 build PulseRifle@32,6; w9 build Cannon@29,5; w11 build Rocket@33,9; w13 upgrade@32,6; w13 build PulseRifle@29,6; w13 upgrade@29,6; w13 build PulseRifle@28,6; w13 upgrade@28,6; w14 build PulseRifle@30,9; w16 build Rocket@34,6
+  strategy1   Quartz Flats Medium   won w17/17; built 9, upgrades 14, left 57, earned 1829, repairs 60
+                                    w1 build Cannon@6,11; w1 build Rocket@34,3; w1 build PulseRifle@3,15; w7 drone HarvestDrone@0,0; w7 build PulseRifle@7,13; w8 upgrade@3,15; w8 upgrade@7,13; w9 build PulseRifle@3,16; w9 upgrade@3,16; w11 build Cannon@30,5; w11 build PulseRifle@7,11; w11 drone RepairDrone@0,0
+  strategy1   Crysium Vein Medium   won w18/18; built 13, upgrades 14, left 37, earned 2014, repairs 44
+                                    w1 build Cannon@12,10; w1 build Rocket@36,10; w1 build PulseRifle@13,10; w7 drone HarvestDrone@0,0; w8 upgrade@13,10; w9 build PulseRifle@12,11; w11 gate gates@17,8; w11 upgrade@12,11; w12 build PulseRifle@13,11; w12 upgrade@13,11; w13 build PulseRifle@14,11; w13 upgrade@14,11
+  strategy2   Landing Site Medium   won w12/12; built 11, upgrades 9, left 21, earned 1417, repairs 60
+                                    w1 build Cannon@11,2; w1 build PulseRifle@9,3; w1 build PulseRifle@9,6; w3 upgrade@9,6; w6 build Cannon@21,18; w9 build PulseRifle@10,6; w9 upgrade@10,6; w9 upgrade@9,3; w9 build PulseRifle@11,6; w11 upgrade@11,6; w11 build PulseRifle@12,7; w11 upgrade@12,7
+  strategy2   Glass Meadows Medium  lost w12/12; built 11, upgrades 8, left 26, earned 1116, repairs 0
+                                    w1 build Cannon@1,14; w1 build Cannon@1,15; w2 build PulseRifle@4,15; w4 upgrade@4,15; w5 build PulseRifle@4,13; w6 upgrade@4,13; w8 upgrade@4,13; w9 build Cannon@16,20; w9 build PulseRifle@1,13; w10 build PulseRifle@4,14; w11 upgrade@4,14; w11 upgrade@1,13
+  strategy2   Shard Ridge Medium    won w16/16; built 12, upgrades 11, left 8, earned 1698, repairs 81
+                                    w1 build Cannon@12,11; w1 build PulseRifle@12,10; w1 upgrade@12,10; w3 upgrade@12,10; w5 build PulseRifle@13,11; w9 build Rocket@32,10; w10 build Rocket@33,10; w12 upgrade@13,11; w12 build PulseRifle@11,11; w13 upgrade@11,11; w13 sell@32,10; w13 build Rocket@37,7
+  strategy2   Fault Line Medium     won w16/16; built 10, upgrades 8, left 93, earned 1494, repairs 59
+                                    w1 build Cannon@29,6; w1 build Rocket@34,9; w3 build PulseRifle@36,6; w7 build PulseRifle@29,5; w9 upgrade@29,5; w9 upgrade@36,6; w11 build PulseRifle@28,6; w13 upgrade@28,6; w13 build PulseRifle@30,9; w13 upgrade@30,9; w13 upgrade@29,5; w13 build PulseRifle@32,5
+  strategy2   Quartz Flats Medium   won w17/17; built 15, upgrades 8, left 63, earned 1889, repairs 96
+                                    w1 build Cannon@3,11; w1 build Rocket@34,3; w1 build PulseRifle@3,16; w7 drone HarvestDrone@0,0; w7 build PulseRifle@7,11; w8 upgrade@7,11; w8 upgrade@3,16; w9 build PulseRifle@7,13; w9 upgrade@7,13; w11 build Cannon@30,5; w11 build PulseRifle@7,10; w11 upgrade@3,11
+  strategy2   Crysium Vein Medium   won w18/18; built 15, upgrades 14, left 31, earned 2014, repairs 46
+                                    w1 build Cannon@13,10; w1 build Rocket@36,10; w1 build PulseRifle@12,10; w7 drone HarvestDrone@0,0; w8 upgrade@12,10; w9 build PulseRifle@12,11; w9 upgrade@12,11; w11 upgrade@12,10; w11 build PulseRifle@13,11; w12 upgrade@13,11; w12 build PulseRifle@14,7; w13 upgrade@14,7
+  strategy3   Landing Site Medium   won w12/12; built 8, upgrades 10, left 66, earned 1412, repairs 60
+                                    w1 build Cannon@31,14; w1 build Cannon@12,7; w4 build PulseRifle@9,3; w5 upgrade@9,3; w8 upgrade@12,7; w9 build Cannon@21,18; w10 build PulseRifle@9,6; w11 upgrade@9,6; w11 build PulseRifle@10,6; w11 upgrade@10,6; w12 build PulseRifle@11,2; w12 upgrade@11,2
+  strategy3   Glass Meadows Medium  won w12/12; built 7, upgrades 9, left 145, earned 1473, repairs 0
+                                    w1 build Cannon@1,15; w1 build Cannon@4,15; w2 build PulseRifle@1,14; w4 upgrade@1,14; w6 upgrade@4,15; w8 upgrade@1,15; w9 build Cannon@16,20; w9 build PulseRifle@1,13; w10 upgrade@1,13; w11 upgrade@1,13; w11 build PulseRifle@4,13; w11 upgrade@4,13
+  strategy3   Shard Ridge Medium    lost w16/16; built 12, upgrades 9, left 37, earned 1360, repairs 81
+                                    w1 build Cannon@12,11; w1 build PulseRifle@13,10; w1 upgrade@13,10; w3 upgrade@13,10; w5 build PulseRifle@11,11; w9 build Rocket@32,10; w10 build Rocket@33,10; w12 upgrade@11,11; w12 build PulseRifle@12,10; w13 upgrade@12,10; w13 sell@32,10; w13 build Rocket@37,7
+  strategy3   Fault Line Medium     won w16/16; built 7, upgrades 9, left 38, earned 1485, repairs 0
+                                    w1 build Cannon@29,6; w1 build Rocket@34,9; w3 build PulseRifle@32,6; w9 upgrade@29,6; w10 upgrade@32,6; w12 upgrade@32,6; w13 build PulseRifle@29,5; w13 upgrade@29,5; w13 upgrade@29,5; w14 build Rocket@33,9; w16 drone RepairDrone@0,0; w16 upgrade@34,9
+  strategy3   Quartz Flats Medium   won w17/17; built 10, upgrades 14, left 67, earned 1889, repairs 132
+                                    w1 build Cannon@3,11; w1 build Rocket@34,4; w1 build PulseRifle@3,15; w7 drone HarvestDrone@0,0; w7 build PulseRifle@7,11; w8 upgrade@7,11; w8 upgrade@3,15; w9 build PulseRifle@7,10; w9 upgrade@7,10; w11 build Cannon@30,5; w11 build PulseRifle@7,13; w11 upgrade@3,11
+  strategy3   Crysium Vein Medium   won w18/18; built 15, upgrades 15, left 44, earned 2014, repairs 68
+                                    w1 build Cannon@13,10; w1 build Rocket@36,10; w1 build PulseRifle@12,10; w7 drone HarvestDrone@0,0; w8 upgrade@12,10; w9 build PulseRifle@14,7; w9 upgrade@14,7; w11 upgrade@14,7; w11 build PulseRifle@12,11; w12 upgrade@12,11; w12 build PulseRifle@13,11; w13 upgrade@13,11
+  strategy4   Landing Site Medium   won w12/12; built 11, upgrades 8, left 62, earned 1412, repairs 84
+                                    w1 build Cannon@12,7; w1 build Cannon@12,6; w4 build PulseRifle@5,14; w5 build PulseRifle@9,3; w8 upgrade@12,6; w9 build Cannon@21,18; w10 upgrade@9,3; w10 upgrade@5,14; w11 build PulseRifle@10,6; w11 upgrade@10,6; w11 build PulseRifle@11,2; w12 build PulseRifle@11,6
+  strategy4   Glass Meadows Medium  won w12/12; built 7, upgrades 9, left 145, earned 1473, repairs 0
+                                    w1 build Cannon@4,15; w1 build Cannon@1,15; w2 build PulseRifle@1,14; w4 upgrade@1,14; w6 upgrade@4,15; w8 upgrade@1,15; w9 build Cannon@16,20; w9 build PulseRifle@1,13; w10 upgrade@1,13; w11 upgrade@1,13; w11 build PulseRifle@4,13; w11 upgrade@4,13
+  strategy4   Shard Ridge Medium    won w16/16; built 14, upgrades 9, left 359, earned 1713, repairs 0
+                                    w1 build Cannon@12,10; w1 build PulseRifle@12,11; w1 build PulseRifle@13,10; w6 drone HarvestDrone@0,0; w7 upgrade@13,10; w8 build Cannon@13,11; w10 build Rocket@32,10; w10 build Rocket@33,10; w12 upgrade@12,11; w12 build PulseRifle@14,11; w13 upgrade@14,11; w13 sell@32,10
+  strategy4   Fault Line Medium     won w16/16; built 7, upgrades 9, left 38, earned 1485, repairs 0
+                                    w1 build Cannon@34,10; w1 build Rocket@34,9; w3 build PulseRifle@29,6; w9 upgrade@34,10; w10 upgrade@29,6; w12 upgrade@29,6; w13 build PulseRifle@29,5; w13 upgrade@29,5; w13 upgrade@29,5; w14 build Rocket@33,9; w16 drone RepairDrone@0,0; w16 upgrade@34,9
+  strategy4   Quartz Flats Medium   won w17/17; built 13, upgrades 7, left 236, earned 1889, repairs 93
+                                    w1 build Cannon@6,11; w1 build Rocket@34,3; w1 build PulseRifle@7,11; w7 drone HarvestDrone@0,0; w8 upgrade@7,11; w8 build PulseRifle@7,13; w8 upgrade@7,13; w9 build PulseRifle@3,15; w11 build Cannon@30,5; w11 upgrade@3,15; w11 build PulseRifle@3,16; w13 build Cannon@3,11
+  strategy4   Crysium Vein Medium   won w18/18; built 15, upgrades 14, left 21, earned 2014, repairs 46
+                                    w1 build Cannon@13,10; w1 build Rocket@36,10; w1 build PulseRifle@12,10; w7 drone HarvestDrone@0,0; w8 upgrade@12,10; w9 build PulseRifle@12,11; w9 upgrade@12,11; w11 upgrade@12,10; w11 build PulseRifle@13,11; w12 upgrade@13,11; w12 build PulseRifle@14,7; w13 upgrade@14,7
+
+Cost: 288 runs, 120 machine minutes of play (25 s a run), 0 reference runs for the typical scripts; 1 batches, 24 wall-clock minutes in all.
+  batch 1795150769: 108 units on 6 workers, 24.4 min

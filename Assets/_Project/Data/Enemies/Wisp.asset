@@ -21,6 +21,7 @@ MonoBehaviour:
   _reward: 3
   _baseDamage: 4
   _element: 0
+  _family: 1
   _attackStyle: 4
   _attackDamage: 0
   _blockadeDamage: 14

@@ -2650,12 +2650,95 @@ namespace Game.Tests
                 return;
             }
 
-            if (OpenForRoster(context, spots, towers, owned, run))
+            if (OpenForRoster(context, spots, towers, owned, run) || MainGunAct(context, spots, towers, owned, run))
             {
                 return;
             }
 
             AffordableAct(context, spots, towers, owned, run, skyGuns: false, keep: run.HeldBack);
+        }
+
+        // The archetypes of the sensible rung (bot version 4, round 87; ProbeStrategy.MainGun): a player with a favourite
+        // ground gun. Everything above is the sensible player's (emergencies, counters, the roster's opening); only the coins
+        // that player spends on "the dearest step it can afford" go to the favourite instead: another one and an upgrade on
+        // one in turn, as the counters grow, and the purse waits for the step that is due (the coins held back for a sky gun
+        // stay untouched). The look goes back to the affordable buyer (false) when the favourite is not owned or not offered
+        // on this level (the run is then the sensible run), when nothing of it is left to buy, and for a player without any
+        // ground gun who cannot pay the favourite yet: that one opens with what the purse allows, as a human would.
+        private static bool MainGunAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run)
+        {
+            TowerDefinition gun = OwnedTower(context, owned, run.Strategy.MainGun);
+            if (gun == null)
+            {
+                return false;
+            }
+
+            Tower upgrade = null;
+            int standing = 0;
+            int raised = 0;
+            bool groundGun = false;
+            foreach (Tower tower in towers)
+            {
+                if (!tower.IsAlive)
+                {
+                    continue;
+                }
+
+                groundGun |= (tower.Definition.Targets & TargetLayers.Ground) != 0;
+                if (tower.Definition != gun)
+                {
+                    continue;
+                }
+
+                standing++;
+                raised += tower.LevelIndex;
+                if (tower.CanUpgrade && (upgrade == null || tower.NextUpgradeCost < upgrade.NextUpgradeCost))
+                {
+                    upgrade = tower;
+                }
+            }
+
+            // Another gun first (coverage), then an upgrade, in turn; whichever is possible when the other is not.
+            bool build = FreeSpot(context, spots.RankingFor(gun), towers, out _) && (upgrade == null || raised >= standing - 1);
+            if (!build && upgrade == null)
+            {
+                return false;
+            }
+
+            if (!context.Wallet.CanAfford((build ? gun.BuildCost : upgrade.NextUpgradeCost) + run.HeldBack))
+            {
+                return groundGun;
+            }
+
+            if (!build)
+            {
+                Buy(context, upgrade, run);
+            }
+            else if (TryBuy(context, spots, towers, owned, t => t == gun, run))
+            {
+                run.Purchases++;
+            }
+
+            return true;
+        }
+
+        // The owned tower of the level's bar with this id; null without an id or when the player does not own it here.
+        private static TowerDefinition OwnedTower(LevelContext context, List<string> owned, string id)
+        {
+            if (string.IsNullOrEmpty(id) || !owned.Contains(id))
+            {
+                return null;
+            }
+
+            foreach (TowerDefinition tower in context.AllTowers)
+            {
+                if (tower.Id == id && !tower.IsSupport)
+                {
+                    return tower;
+                }
+            }
+
+            return null;
         }
 
         // What the Codex's roster asks of the purse before any creature of a trait is met: a counter that also shoots walkers

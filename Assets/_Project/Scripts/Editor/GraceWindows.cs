@@ -99,53 +99,16 @@ namespace Game.Editor
             public string Reason { get; }
         }
 
-        private const string RaidEndsIt = "on Hard and Psycho the plated pack walks in from wave 3 (Remco, round 34b) and the troops stay few until the raids: growth strong enough to end a row by the window left no searched plan winning (round 68, growth 1.5: best plan 0/3; growth 1.2 moved no row and cost the creative bot Hard and Psycho), so the row falls to the first raid instead";
-        private const string LateCragbacks = "the Cragbacks walk in from wave 8 on Easy and Medium (round 68, was wave 4: five waves late); the row falls to the first raid, one wave after the window";
-        private const string EdgeOfGrowth = "growth is at the measured edge of what a mixed plan still wins; the rush and boss waves inside the window carry no plated troops, so the row lasts to the next plated wave";
-        private const string OneRaidLate = "the row falls to the raid one wave after the window closes; a bigger raid there costs the mixed plan its margin (Quartz Flats and Fault Line are the cells the creative bot already loses seeds on)";
-
-        // Round 77 (Remco): creatures bite every structure softer on Easy and Medium (DifficultyProfile.StructureDamageFactor), so a
-        // row without the counter keeps its guns and its base a wave or two longer. Measured on base and gates alone the rows were
-        // as late, so the towers are not the cause. Every such row still loses all three seeds.
-        private const string SofterBites = "the structure damage factor (round 77) softens every bite on Easy and Medium: the row keeps its base a wave or two longer than the window, and still loses every seed";
-        private const string SofterBitesLaterRaids = "the structure damage factor (round 77) softens every bite, and the first-flyer rule moved the raids that used to end the row (first raid wave 6, was 3 and 4); the row still loses every seed";
-
-        // Round 79 (the wave grammar): the rows fall at the waves they fell at in round 78; what moved is the window or the wave
-        // that used to end the row inside it. Every such row still loses all three seeds.
-        private const string EarlierPlated = "round 79: the level's first Cragback walks in one or two waves earlier (a single one in the plain wave 7, where the ambush wave of round 78 brought none), so the window opens earlier while the row falls at the wave it fell at before; it still loses every seed";
-
         /// <summary>
-        /// The cells that do not meet the window yet, each with the most waves its rows may be late and the reason. A row later
-        /// than its allowance fails the gate (<c>CombatRulesTests</c>), and so does a row without the counter that wins a level:
-        /// that has no allowance anywhere. Measured in round 68; shorten an allowance when a cell is tuned further.
+        /// The cells that may miss the window, each with the most waves its rows may be late and the design reason: why
+        /// the rules want that row to last longer there. "It was measured late" is no reason (the critic of round 86:
+        /// 19 allowances, up to seven waves on a window of three, each written after a measurement). Round 87 deleted
+        /// all 19: every one of them was sized on waves that the health formula has replaced, and none had a reason
+        /// that was not a reading. A row later than its window fails the gate (<c>CombatRulesTests</c>) until the rules
+        /// or the level change, or an allowance is written here with its design reason; a row without the counter that
+        /// wins a level has no allowance anywhere.
         /// </summary>
-        public static readonly Allowance[] Allowances =
-        {
-            new Allowance("Level_C1_01", 1, EnemyTraits.Armoured, 1, EdgeOfGrowth),
-            new Allowance("Level_C1_01", 2, EnemyTraits.Armoured, 2, EdgeOfGrowth),
-            new Allowance("Level_C1_01", 3, EnemyTraits.Armoured, 3, EdgeOfGrowth),
-            new Allowance("Level_C1_02", 0, EnemyTraits.Armoured, 1, EdgeOfGrowth),
-            // Round 84: growth is the rule of the difficulty (1.4; the cell had its own 1.2) and the row is one wave late, as on
-            // Landing Site Medium (two measurements, rounds 83b and 84); the allowance was 2.
-            new Allowance("Level_C1_02", 1, EnemyTraits.Armoured, 1, EdgeOfGrowth + "; round 77: " + SofterBites),
-            // Round 86: 1 -> 2. The boss of wave 9 is sized by the boss rule under light fire too (6.5 Cragback bars; 3 in
-            // round 85), the closed loop holds the cell on its target with softer creatures around it (health as stored x0.71,
-            // was x0.89), and the Gun Turret row now outlasts the tank escort of wave 10 and falls in the swarm of wave 11:
-            // two waves after its window, still 0 of 3 seeds won (grace measurement on the final data).
-            new Allowance("Level_C1_02", 2, EnemyTraits.Armoured, 2, EdgeOfGrowth + "; round 86: the cell is softer around a bigger boss"),
-            new Allowance("Level_C1_02", 3, EnemyTraits.Armoured, 3, EdgeOfGrowth),
-            new Allowance("Level_C1_03", 0, EnemyTraits.Armoured, 1, LateCragbacks),
-            new Allowance("Level_C1_03", 1, EnemyTraits.Armoured, 1, LateCragbacks + "; round 77: " + SofterBites),
-            new Allowance("Level_C1_03", 2, EnemyTraits.Armoured, 6, RaidEndsIt),
-            new Allowance("Level_C1_03", 3, EnemyTraits.Armoured, 7, RaidEndsIt),
-            new Allowance("Level_C1_04", 0, EnemyTraits.Armoured, 2, SofterBites + "; " + EarlierPlated),
-            new Allowance("Level_C1_04", 1, EnemyTraits.Airborne, 1, SofterBitesLaterRaids),
-            new Allowance("Level_C1_05", 0, EnemyTraits.Armoured, 2, "growth 1.5 here left no searched plan winning (round 68: best plan 0/3); the row falls to the raid of wave 8 and the waves after it"),
-            new Allowance("Level_C1_05", 1, EnemyTraits.Armoured, 3, SofterBitesLaterRaids),
-            new Allowance("Level_C1_05", 1, EnemyTraits.Airborne, 1, OneRaidLate),
-            new Allowance("Level_C1_05", 3, EnemyTraits.Airborne, 1, OneRaidLate),
-            new Allowance("Level_C1_06", 1, EnemyTraits.Armoured, 1, EarlierPlated),
-        };
+        public static readonly Allowance[] Allowances = { };
 
         /// <summary>The allowance of a cell and trait, or null.</summary>
         public static Allowance? AllowanceFor(string level, int difficulty, EnemyTraits trait)

@@ -81,14 +81,12 @@ namespace BalanceLab
                         report.Append("  ").Append(line).Append('\n');
                     }
 
-                    failures.AddRange(BalanceChecks.Check(model.Levels[l].Key, model.Difficulties[d].Id, d, lines, model.Rules));
                     plainMeans.Add(BalanceChecks.PlainMean(Ledger.Evaluate(input, sets[d], model.Difficulties[d], human)));
                     failures.AddRange(BalanceChecks.CheckBeatable(model.Levels[l].Key, model.Difficulties[d].Id, d, Ledger.Evaluate(input, sets[d], model.Difficulties[d], withHero), model.Rules));
                 }
 
                 report.Append(BalanceChecks.DescribeHuman(model.Levels[l].Key, plainMeans)).Append('\n');
                 failures.AddRange(BalanceChecks.CheckHuman(model.Levels[l].Key, plainMeans, model.Rules));
-                failures.AddRange(BalanceChecks.CheckHumanTarget(model.Levels[l].Key, model.ContinentIndexOf(l), plainMeans, model.Rules, model.Levels[l]));
                 int continent = model.Levels[l].Continent;
                 if (!rampLevels.ContainsKey(continent))
                 {

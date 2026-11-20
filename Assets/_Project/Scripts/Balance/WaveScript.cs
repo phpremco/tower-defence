@@ -129,8 +129,9 @@ namespace Game.Balance
         public int FlyingTroopFloorFor(int difficulty) => FlyingTroopFloor == null || FlyingTroopFloor.Length == 0 ? 0 : FlyingTroopFloor[difficulty < FlyingTroopFloor.Length ? difficulty : FlyingTroopFloor.Length - 1];
 
         /// <summary>
-        /// The builder bot's lever (round 22, WaveTuning): a scale on the human target pressure per difficulty (Easy to Psycho; a
-        /// shorter array repeats its last entry). 1 is the curve; the builder moves a failing cell by small steps, at most twice.
+        /// The level's own scalar from the closed loop (WaveTuning, Tools/PlayTest/wave_tuning.txt): one factor on the health of
+        /// every ordinary creature of the level, the same on every difficulty since round 87 (one entry; the array is the
+        /// form the level asset stores).
         /// </summary>
         public float[] TargetScale = { 1f };
 

@@ -137,7 +137,9 @@ namespace Game.Tests
             Assert.GreaterOrEqual(laser / cannon, MinCannonEdge, $"Laser {laser:0} coin-seconds against the Cannon's {cannon:0}");
             Assert.GreaterOrEqual(gun / cannon, MinCannonEdge, $"Gun Turret {gun:0} coin-seconds against the Cannon's {cannon:0}");
             // Light fire still contributes: it kills a Cragback alone, and once shells have stripped the armour it lands in full.
-            Assert.Less(Seconds(Load<TowerDefinition>("Towers/Laser"), crag.MaxHealth, crag.Armor), 30f);
+            // Round 87: a beam works on armour at a tenth (the Laser is weak on armour by its role), so alone it needs
+            // most of a minute where it needed twenty seconds.
+            Assert.Less(Seconds(Load<TowerDefinition>("Towers/Laser"), crag.MaxHealth, crag.Armor), 60f);
             Assert.AreEqual(Seconds(Load<TowerDefinition>("Towers/Laser"), crag.MaxHealth, 0f), Seconds(Load<TowerDefinition>("Towers/Laser"), crag.MaxHealth, 0.0001f), 0.21f);
         }
 
@@ -214,11 +216,13 @@ namespace Game.Tests
 
                             bosses++;
                             float multiple = stored[i].HealthMultiplier * stored[i].BossHealthScale;
-                            // Round 86: the floor on the stored health (LevelBossHealthFloor) went with the one boss rule, which
-                            // Round86Tests.EveryLevelBoss_StandsOnItsMultiple holds on every stored boss; Remco's Hard floor stays.
+                            // Remco's Hard floor stays (round 64: the boss he shot down before the first gate). Round 87: it is
+                            // read on the bar, body plus armour. When the floor was written a boss had no armour and its bar was
+                            // its body; a boss now carries an armour pool as large as its body (BalanceRules.BossArmourShare 1),
+                            // and the bar is what Remco sees over the boss and has to shoot through.
                             if (d == Hard)
                             {
-                                float health = group.Enemy.MaxHealth * multiple * loaded.Catalog.Difficulties[d].HealthMultiplier * node.Level.EnemyHealthScale;
+                                float health = (group.Enemy.MaxHealth + group.Enemy.Armor) * multiple * loaded.Catalog.Difficulties[d].HealthMultiplier * node.Level.EnemyHealthScale;
                                 Assert.GreaterOrEqual(health, MinHardBossHealth * group.Enemy.MaxHealth / 900f, $"{key} Hard wave {i + 1}: {group.Enemy.name} spawns with {health:0} hit points");
                             }
                         }
@@ -242,7 +246,8 @@ namespace Game.Tests
                 {
                     if (group.Enemy != null && group.Enemy.IsBoss)
                     {
-                        found.Add(group.Enemy.MaxHealth * wave.HealthMultiplier * wave.BossHealthScale * hard.HealthMultiplier * level.EnemyHealthScale);
+                        // The bar, body plus armour (round 87: an armour pool as large as the body; the bosses of round 64 had none).
+                        found.Add((group.Enemy.MaxHealth + group.Enemy.Armor) * wave.HealthMultiplier * wave.BossHealthScale * hard.HealthMultiplier * level.EnemyHealthScale);
                     }
                 }
             }

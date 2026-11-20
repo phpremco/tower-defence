@@ -9,8 +9,8 @@ namespace Game.Editor
     /// <summary>
     /// Generator part for the combat rules (round 67; the armour rule of round 64 is its first column). One table for
     /// every damage source: a weapon is listed once with what its damage is made of, the rules asset
-    /// (<see cref="CombatRules"/>) says what each damage type is worth against armour and in the air, and the few weapons
-    /// that differ from their type are named exceptions with a reason. No weapon carries a hand-typed factor, so a new
+    /// (<see cref="CombatRules"/>) says what each damage type is worth against armour, in the air and on a creature
+    /// family (round 87), and the few weapons that differ from their type are named exceptions with a reason. No weapon carries a hand-typed factor, so a new
     /// weapon cannot forget one (the attack drone's shots ignored armour until round 64; the base turret, the hero's
     /// blaster and the attack drone hit flyers in full until round 67 while the Gun Turret, the same bullets, did not).
     /// </summary>
@@ -51,13 +51,41 @@ namespace Game.Editor
         {
             Rule(DamageType.Explosive, 1f, 1f, "A blast strips armour point for point and bursts among flyers. (A shell still cannot be aimed up: that is the Cannon's targets, not its damage.)"),
             Rule(DamageType.Bullet, 0.2f, 0.2f, "Light fire only chips armour, and a gun not made for the sky lands a fifth up there: enough to finish a straggler, never an air defence."),
-            Rule(DamageType.Beam, 0.2f, 0.2f, "A beam is light fire: it glances off plates, and it spreads out over the distance to a flyer."),
+            // Round 87 (Remco: the Laser is "weak against armour and against single big targets/bosses"): a tenth, half the bullet's share.
+            Rule(DamageType.Beam, 0.1f, 0.2f, "A beam glances off plates, and a pulse this small barely marks them; it spreads out over the distance to a flyer."),
             Rule(DamageType.Blade, 0.5f, 0f, "A blade cuts armour at half. It never reaches the sky."),
             Rule(DamageType.Arc, 0.2f, 0.4f, "Lightning runs over plates instead of through them, like the other light fire, and thins out on its way up."),
             Rule(DamageType.Burn, 0.5f, 0f, "Fire heats armour at half. It burns on the ground."),
             Rule(DamageType.Ram, 0.5f, 0f, "A ram dents armour at half. It drives on the ground."),
             Rule(DamageType.Piercing, 1.5f, 0.5f, "A slug is made for armour: it works on plates better than on the body. One slow shot is a poor way to hunt flyers."),
         };
+
+        // The family table (round 87, Remco: "a bonus against certain enemies, e.g. energy enemies"): what a damage type is
+        // worth on what a creature is made of. Only the pairs that differ from one are listed; the factor multiplies the
+        // hit before the armour and air shares, for every weapon of the type (the Cryo and the Cryo Beam are beams too, and
+        // that is meant: the rule is the beam's, not the Laser's). A new pairing is a line here and nothing else.
+        private static readonly FamilyRule[] FamilyRules =
+        {
+            new FamilyRule
+            {
+                Type = DamageType.Beam, Family = CreatureFamily.Energy, Factor = 1.5f,
+                Reason = "A beam feeds straight into an energy body and overloads it.",
+            },
+        };
+
+        /// <summary>
+        /// The creatures that are made of something the family table has a row for, by asset name; every other creature is
+        /// <see cref="CreatureFamily.None"/>. Listed only where a creature's own description says so: the Wisp is a ball of
+        /// energy and the Core Wisp a core of it.
+        /// </summary>
+        public static readonly IReadOnlyDictionary<string, CreatureFamily> CreatureFamilies = new Dictionary<string, CreatureFamily>
+        {
+            { "Wisp", CreatureFamily.Energy },
+            { "CoreWisp", CreatureFamily.Energy },
+        };
+
+        private static CreatureFamily FamilyOf(string creature) =>
+            CreatureFamilies.TryGetValue(creature, out CreatureFamily family) ? family : CreatureFamily.None;
 
         // The named exceptions: the only weapons that differ from their damage type, each with its reason.
         private static readonly CombatException[] CombatExceptions =
@@ -123,6 +151,17 @@ namespace Game.Editor
                 row.FindPropertyRelative("Reason").stringValue = DamageRules[i].Reason;
             }
 
+            SerializedProperty families = so.FindProperty("_families");
+            families.arraySize = FamilyRules.Length;
+            for (int i = 0; i < FamilyRules.Length; i++)
+            {
+                SerializedProperty row = families.GetArrayElementAtIndex(i);
+                row.FindPropertyRelative("Type").enumValueIndex = (int)FamilyRules[i].Type;
+                row.FindPropertyRelative("Family").enumValueIndex = (int)FamilyRules[i].Family;
+                row.FindPropertyRelative("Factor").floatValue = FamilyRules[i].Factor;
+                row.FindPropertyRelative("Reason").stringValue = FamilyRules[i].Reason;
+            }
+
             SerializedProperty exceptions = so.FindProperty("_exceptions");
             exceptions.arraySize = CombatExceptions.Length;
             for (int i = 0; i < CombatExceptions.Length; i++)
@@ -175,6 +214,33 @@ namespace Game.Editor
             {
                 array.GetArrayElementAtIndex(i).intValue = values[i];
             }
+        }
+
+        /// <summary>
+        /// Writes every creature's family from <see cref="CreatureFamilies"/> and nothing else: the targeted step, safe to
+        /// run again. Returns the creatures that have one.
+        /// </summary>
+        public static string ApplyCreatureFamilies()
+        {
+            var report = new StringBuilder("Families:");
+            foreach (string guid in AssetDatabase.FindAssets("t:EnemyDefinition", new[] { $"{DataRoot}/Enemies" }))
+            {
+                var enemy = AssetDatabase.LoadAssetAtPath<Game.Enemies.EnemyDefinition>(AssetDatabase.GUIDToAssetPath(guid));
+                CreatureFamily family = FamilyOf(enemy.name);
+                var so = new SerializedObject(enemy);
+                so.FindProperty("_family").enumValueIndex = (int)family;
+                if (so.ApplyModifiedPropertiesWithoutUndo())
+                {
+                    EditorUtility.SetDirty(enemy);
+                }
+
+                if (family != CreatureFamily.None)
+                {
+                    report.Append($" {enemy.name} {family};");
+                }
+            }
+
+            return report.Append('\n').ToString();
         }
 
         /// <summary>Writes a weapon's damage type and hands it the rule table; an asset outside the list is a blast.</summary>

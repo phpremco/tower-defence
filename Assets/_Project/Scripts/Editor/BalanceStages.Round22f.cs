@@ -50,9 +50,14 @@ namespace Game.Editor
 
                 // Round 29: the probe scales a boss's escorts with its health multiple, so a huge hold says as much about the escorts
                 // as about the body; the health moves at most a step per apply and the next probe judges again.
-                float stepped = Math.Min(derived, boss.MaxHealth * MaxHealthStep);
+                // Round 87: a boss the finale player beat on every difficulty, and whose derived health lies within the probe's
+                // own spread of the health it was probed at, stays at that health. Without the band the stage walks a boss up
+                // to a health it has already lost at (the Cinder Matriarch on Hard: 10900 held, 11850 lost) and never settles.
+                FinaleProbeCell probed = FinaleProbeReport.Find(cells, finale.Boss, FinaleProbeReport.Medium);
+                bool settled = FinaleProbeReport.BeatenEverywhere(cells, finale.Boss) && Math.Abs(derived / probed.HealthNow - 1f) <= FinaleProbeReport.SettledBand;
+                float stepped = settled ? probed.HealthNow : Math.Min(derived, boss.MaxHealth * MaxHealthStep);
                 int health = Math.Max(HealthRounding, (int)Math.Round(stepped / HealthRounding) * HealthRounding);
-                text.Append(Invariant($"  {finale.Boss,-16} health {boss.MaxHealth:0} -> {health} (probe: holds x{FinaleProbeReport.Find(cells, finale.Boss, FinaleProbeReport.Medium).Holds:0.00} on Medium)\n"));
+                text.Append(Invariant($"  {finale.Boss,-16} health {boss.MaxHealth:0} -> {health} (probe: holds x{probed.Holds:0.00} on Medium{(settled ? ", beaten on every difficulty: stays" : string.Empty)})\n"));
                 if (Math.Abs(health - boss.MaxHealth) >= 1f)
                 {
                     var serialized = new SerializedObject(boss);

@@ -1,7 +1,8 @@
 # Round 85: which towers the bot rungs build, per difficulty: each tower's share of the tower levels bought (a build is
 # one level, every upgrade one more, the upgrade counted for the tower standing on its cell) and the share of runs that
 # build it at all. Reads the 'build:<Tower>:x:y:wave' and 'upgrade::x:y:wave' actions of every prun line.
-# Usage: python -I Tools/PlayTest/tower_mix.py <records> [<records> ...] [--multiple 1]
+# Usage: python -I Tools/PlayTest/tower_mix.py <records> [<records> ...] [--multiple 1] [--rungs laser,cannon]
+# --rungs: only these rungs (default sensible,skilled, read as one); round 87: one call per archetype rung.
 import sys
 from collections import Counter, defaultdict
 
@@ -10,6 +11,11 @@ mult = None
 if "--multiple" in sys.argv:
     mult = sys.argv[sys.argv.index("--multiple") + 1]
     args = [a for a in args if a != mult]
+rungs = ("sensible", "skilled")
+if "--rungs" in sys.argv:
+    chosen = sys.argv[sys.argv.index("--rungs") + 1]
+    args = [a for a in args if a != chosen]
+    rungs = tuple(chosen.split(","))
 DIFFS = ["Easy", "Medium", "Hard", "Psycho"]
 builds = defaultdict(Counter)
 runs = Counter()
@@ -17,7 +23,7 @@ users = defaultdict(Counter)
 for path in args:
     for line in open(path, encoding="utf-8"):
         f = line.rstrip("\n").split("|")
-        if f[0] != "prun" or len(f) < 24 or not f[3] in ("sensible", "skilled"):
+        if f[0] != "prun" or len(f) < 24 or not f[3] in rungs:
             continue
         if mult is not None and f[5] != mult:
             continue

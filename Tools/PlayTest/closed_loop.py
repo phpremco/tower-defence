@@ -1,61 +1,68 @@
-"""The closed loop of the balance (round 83): one scalar per cell from a pressure measurement.
+"""The closed loop of the balance (round 87): one scalar per LEVEL from a pressure measurement.
 
-The solver shapes a level (which wave is how tough against the others). How tough a cell is as played is measured:
-the probe plays the cell at a ladder of health multiples, and the break-even of the difficulty's reference rung (the
-highest multiple at which two of three seeds still win) says how far the cell is from its target. A cell's scalar
-(Tools/PlayTest/wave_tuning.txt, "KEY D scale") is a factor on the health of every creature of the cell, exactly as
-the probe's multiple is, so
+A wave's health is a formula (difficulty x level scalar x ramp x kind x peak; Docs/WAVE_GRAMMAR.md, "The solver"). How
+tough a level is as played is measured: the probe plays each of its four cells at a ladder of health multiples, and the
+break-even of the cell's reference rung (the geometric middle of the last multiple two of three seeds hold and the
+first they lose) says how far the cell is from its target. The level's scalar (Tools/PlayTest/wave_tuning.txt,
+"KEY scalar") is a factor on the health of every ordinary creature of the level, as the probe's multiple is, so
 
-    new scalar = old scalar x measured break-even / target break-even
+    new scalar = old scalar x the geometric mean over the level's four cells of (measured break-even / target)
 
-needs no model and is the same procedure for every level. Targets per difficulty (TARGETS below; a rung's break-even
-is the geometric middle of its last held and first lost multiple):
+Rounds 83 to 86 kept a scalar per cell; the critic of round 86 read those 24 numbers as the level's effect plus noise.
+What the four cells of a level still disagree on after the level's factor is the difficulty's (--centre proposes
+BalanceRules.DifficultyScale from the mean residual per difficulty) or a question about the level.
 
-    Easy    the weaker rung breaks even at x1.55 (wins x1.4, loses x1.76)
-    Medium  the sensible rung breaks even at x1.32 (wins x1.25, loses x1.4); the skilled rung at x1.06 at least
-    Hard    the sensible rung breaks even at x0.95 (wins x0.9, loses x1); the skilled rung at x1.06 at least
-    Psycho  the skilled rung breaks even at x1.06 (wins x1, loses x1.12)
+THE THRESHOLDS ARE FROZEN in Tools/PlayTest/closed_loop_thresholds.txt (2026-11-20, before any measurement of round
+87; ClosedLoopAcceptanceTests reads the same file). They are loaded below as named constants: targets Easy weaker
+rung x1.66, Medium sensible x1.32, Hard sensible x0.95, Psycho skilled x1.06; a cell is accepted when its reference
+rung reads within one ladder step of its target on both sides (Easy too); on Medium and Hard the best of the better
+rungs (skilled, laser, cannon) must itself read x1.06; the laser and the cannon archetype read within one ladder step
+of each other; of a level's lost runs at most 40 % fall in a boss wave.
 
-Round 85 (Remco after playing level 1: Easy and Medium a tad too hard, Hard right): Easy x1.4 -> x1.55 and Medium
-x1.18 -> x1.32, one step of the ladder each. The standard ladder (x0.8 to x1.25) does not reach those, so Easy is
-measured on x1 / 1.25 / 1.4 / 1.57 / 1.76 and Medium on x0.9 / 1 / 1.12 / 1.25 / 1.4 / 1.57 (Tools/PlayTest/r85_measure.sh
-plays the three ladders into three records files; give all three to this script).
+    python -I Tools/PlayTest/closed_loop.py <records> [<records> ...]     the table, the gates and the proposed scalars
+    ... --write          also writes Tools/PlayTest/wave_tuning.txt (then the solve stage, then measure again)
+    ... --centre         also proposes BalanceRules.DifficultyScale (the factor in use x the difficulty's mean residual)
+    ... --levels 0,1     only these campaign nodes        --step 1.6   the most one pass moves a scalar
+    ... --mixed-data     records of more than one data state are read as one measurement
 
-A cell takes the tightest of its difficulty's conditions. The skilled rung stands for the better of the two reference
-players: where its picked strategy breaks before the sensible rung does, the pick is stale and the sensible rung's
-break-even is read in its place (and the picks want a refresh, as a bot batch of their own). Usage:
-
-    python Tools/PlayTest/closed_loop.py <records> [<records> ...]            the table and the proposed scalars
-    python Tools/PlayTest/closed_loop.py <records> --write                    also writes the scale lines of wave_tuning.txt
-    python Tools/PlayTest/closed_loop.py <records> --centre                   also prints the per-difficulty factors (the
-                                                                             geometric mean of a difficulty's scalars) for
-                                                                             BalanceRules.DifficultyScale, and the scalars over them
-    --levels 0,1,2   only these campaign nodes (a new level: its own node)    --step 1.4   the most one pass moves a scalar
-
-Several records files are read as one measurement (the same data stamp is required unless --mixed-data).
-After --write: the solve stage (Docs/COMMANDS.md, "Round 83"), then measure again; a cell is done when its reference
-rung reads its target on the standard ladder.
+Ladders: Tools/PlayTest/r87_measure.sh plays Easy on x1.25 to x2.21, Medium on x0.9 to x1.57, Hard and Psycho on the
+standard ladder, with the rungs skilled, sensible, laser and cannon. Run from the folder the measurement ran in.
 """
 import math
+import os
 import re
 import sys
 from collections import defaultdict
 
+# python -I leaves the script's folder off the path.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import boss_share  # noqa: E402
+
 TUNING = "Tools/PlayTest/wave_tuning.txt"
+RULES = "Assets/_Project/Scripts/Balance/BalanceRules.cs"
 DIFFS = ["Easy", "Medium", "Hard", "Psycho"]
 LEVELS = {"Level_C1_01": "Landing Site", "Level_C1_02": "Glass Meadows", "Level_C1_03": "Shard Ridge", "Level_C1_04": "Fault Line",
           "Level_C1_05": "Quartz Flats", "Level_C1_06": "Crysium Vein"}
-# Per difficulty: (rung, target break-even, binding). A binding condition is met from both sides; a guard only softens.
-TARGETS = {
-    0: [("sensible", 1.55, False), ("skilled", 1.55, False)],
-    1: [("sensible", 1.32, True), ("skilled", 1.06, False)],
-    2: [("sensible", 0.95, True), ("skilled", 1.06, False)],
-    3: [("skilled", 1.06, True)],
-}
-# Easy has no binding rung: the weaker of the two sets the cell.
-WEAKEST = {0}
+
+# ---- Frozen 2026-11-20 (closed_loop_thresholds.txt is the one place they are written) ---------------------------------
+FROZEN = boss_share.thresholds()
+TARGET = [FROZEN["target_easy"], FROZEN["target_medium"], FROZEN["target_hard"], FROZEN["target_psycho"]]
+ACCEPT_WITHIN_STEPS = FROZEN["accept_within_steps"]
+LADDER_STEP = FROZEN["ladder_step"]
+ROUNDING = FROZEN["rounding"]
+BETTER_RUNG_LEAST = FROZEN["better_rung_least"]
+ARCHETYPE_SPREAD_STEPS = FROZEN["archetype_spread_steps"]
+BOSS_WAVE_SHARE_MOST = FROZEN["boss_wave_share_most"]
+BOSS_WAVE_SHARE_TARGET = FROZEN["boss_wave_share_target"]
+SCALAR_LEAST, SCALAR_MOST = FROZEN["scalar_least"], FROZEN["scalar_most"]
+# -----------------------------------------------------------------------------------------------------------------------
+
+EASY, MEDIUM, HARD, PSYCHO = range(4)
+# The reference rung per difficulty; on Easy the weaker of the two.
+REFERENCE = {EASY: ("sensible", "skilled"), MEDIUM: ("sensible",), HARD: ("sensible",), PSYCHO: ("skilled",)}
+BETTER_RUNGS = ("skilled", "laser", "cannon")
+ARCHETYPES = ("laser", "cannon")
 SEEDS_HELD = 2
-SCALAR_LEAST, SCALAR_MOST = 0.7, 1.4
 
 
 def option(name, default):
@@ -90,7 +97,7 @@ def break_even(wins, played, level, d, rung):
     row = " ".join(str(wins[(level, d, rung, m)]) for m in multiples)
     held = None
     for m in multiples:
-        # Two of three seeds hold a multiple; a coarse pass on one seed (round 85, PR_SEEDS=1) holds it with that seed.
+        # Two of three seeds hold a multiple; a coarse pass on one seed (PR_SEEDS=1) holds it with that seed.
         if wins[(level, d, rung, m)] >= min(SEEDS_HELD, played[(level, d, rung, m)]):
             held = m
         else:
@@ -101,87 +108,146 @@ def break_even(wins, played, level, d, rung):
     return held * math.sqrt(step), row, "high"
 
 
-def read_scales():
-    scales = {}
+def steps(ratio):
+    """A ratio of two break-evens in ladder steps."""
+    return math.log(ratio) / math.log(LADDER_STEP)
+
+
+def text(reading):
+    value, row, end = reading
+    if value is None:
+        return "not played"
+    return f"`{row}` {'under ' if end == 'low' else 'over ' if end == 'high' else ''}x{value:.2f}"
+
+
+def reference(wins, played, level, d):
+    """The reference rung's reading of a cell: (rung, value, row, open end); on Easy the weaker of the two rungs."""
+    readings = [(rung,) + break_even(wins, played, level, d, rung) for rung in REFERENCE[d]]
+    readings = [r for r in readings if r[1] is not None]
+    return min(readings, key=lambda r: r[1]) if readings else None
+
+
+def read_scalars():
+    scalars = {}
     try:
         for line in open(TUNING, encoding="utf-8"):
             parts = line.split()
-            if len(parts) == 3:
-                scales[(parts[0], int(parts[1]))] = float(parts[2])
+            if len(parts) == 2:
+                scalars[parts[0]] = float(parts[1])
     except FileNotFoundError:
         pass
-    return scales
+    return scalars
 
 
-def write_scales(scales):
-    try:
-        kept = [line.rstrip("\n") for line in open(TUNING, encoding="utf-8") if len(line.split()) != 3 and line.strip()]
-    except FileNotFoundError:
-        kept = []
-    lines = kept + [f"{key} {d} {value:g}" for (key, d), value in scales.items() if abs(value - 1.0) > 1e-6]
-    open(TUNING, "w", encoding="utf-8", newline="\n").write("\n".join(sorted(lines)) + "\n")
+def write_scalars(scalars):
+    lines = [f"{key} {value:g}" for key, value in sorted(scalars.items()) if abs(value - 1.0) > 1e-6]
+    open(TUNING, "w", encoding="utf-8", newline="\n").write("\n".join(lines) + "\n")
+
+
+def difficulty_scale():
+    match = re.search(r"float\[\] DifficultyScale = \{([^}]*)\}", open(RULES, encoding="utf-8").read())
+    return [float(v.strip().rstrip("f")) for v in match.group(1).split(",")] if match else [1.0] * len(DIFFS)
 
 
 def main():
-    paths = [a for i, a in enumerate(sys.argv[1:], 1) if not a.startswith("--") and sys.argv[i - 1] not in ("--levels", "--step")]
+    flags = ("--levels", "--step")
+    paths = [a for i, a in enumerate(sys.argv[1:], 1) if not a.startswith("--") and sys.argv[i - 1] not in flags]
     if not paths:
         sys.exit(__doc__)
     wins, played = load(paths)
     most_step = float(option("--step", "1.6"))
     nodes = option("--levels", "")
     levels = sorted(LEVELS) if not nodes else [sorted(LEVELS)[int(n)] for n in nodes.split(",")]
-    scales = read_scales()
-    proposed = dict(scales)
-    print("| Cell | Scalar | Rung: seeds won per multiple, break-even (target) | Factor | New scalar |")
-    print("| --- | --- | --- | --- | --- |")
+    scalars = read_scalars()
+    proposed = dict(scalars)
+    within = LADDER_STEP ** ACCEPT_WITHIN_STEPS * ROUNDING
+    findings = []
+    factors = {}
+    print("| Cell | Reference rung: seeds won per multiple, break-even (target) | Off, ladder steps | Verdict | Better rungs | Laser against cannon |")
+    print("| --- | --- | --- | --- | --- | --- |")
     for level in levels:
         key = level.replace("Level_", "")
         for d in range(len(DIFFS)):
-            old = scales.get((key, d), 1.0)
-            parts = []
-            factors = []
-            for rung, target, binding in TARGETS[d]:
-                value, row, end = break_even(wins, played, level, d, rung)
-                if value is None:
-                    continue
-                # The skilled rung stands for the better reference player. Where its picked strategy breaks before the
-                # sensible rung does, the pick is stale (refresh the picks, a bot batch), not the cell hard.
-                # Not on Easy: there the weaker rung is the measure, whichever it is.
-                other = break_even(wins, played, level, d, "sensible") if rung == "skilled" and d not in WEAKEST else (None, "", "")
-                if other[0] is not None and other[0] > value:
-                    row += " stale pick, sensible `" + other[1] + "`"
-                    value, end = other[0], other[2]
-                factor = value / target
-                # An open end is a bound: "holds the top of the ladder" under the target says nothing against the cell,
-                # "loses the bottom" above the target nothing for it.
-                if (end == "high" and factor < 1.0) or (end == "low" and factor > 1.0):
-                    factor, end = 1.0, ""
-                mark = "under " if end == "low" else "over " if end == "high" else ""
-                parts.append(f"{rung} `{row}` {mark}x{value:.2f} ({'' if binding else 'at least ' if d else 'weaker rung '}x{target:g})")
-                # A guard that is met asks nothing; an open end is a bound, not a value: it still moves the cell that way.
-                if binding or d in WEAKEST or factor < 1.0:
-                    factors.append((factor, binding or d in WEAKEST, end))
-            if not factors:
-                print(f"| {LEVELS[level]} {DIFFS[d]} | {old:g} | not measured | | |")
+            name = f"{LEVELS[level]} {DIFFS[d]}"
+            ref = reference(wins, played, level, d)
+            if ref is None:
+                print(f"| {name} | not measured | | | | |")
                 continue
-            factor, _, end = min(factors)
-            factor = max(1.0 / most_step, min(most_step, factor))
-            new = round(old * factor, 3)
-            proposed[(key, d)] = new
-            note = " (open end: measure again)" if end else ""
-            print(f"| {LEVELS[level]} {DIFFS[d]} | {old:g} | {'; '.join(parts)} | x{factor:.3f} | {new:g}{note} |")
+            rung, value, row, end = ref
+            ratio = value / TARGET[d]
+            # An open end is a bound, not a reading: it moves the level only when the bound is already past the target.
+            usable = not ((end == "high" and ratio < 1.0) or (end == "low" and ratio > 1.0))
+            factors[(key, d)] = ratio if usable else 1.0
+            verdict = "accepted"
+            if end:
+                verdict = f"{'holds' if end == 'high' else 'loses'} its whole ladder: no reading"
+            elif ratio > within or ratio < 1.0 / within:
+                verdict = "more than a step off"
+            if verdict != "accepted":
+                findings.append(f"{name}: the {rung} rung {text((value, row, end))}, target x{TARGET[d]:g}: {verdict}")
+            better_text = ""
+            if d in (MEDIUM, HARD):
+                better = [(r,) + break_even(wins, played, level, d, r) for r in BETTER_RUNGS]
+                better = [b for b in better if b[1] is not None]
+                best = max(better, key=lambda b: b[1]) if better else None
+                better_text = "not played" if best is None else f"best {best[0]} {text(best[1:])}"
+                if best is None or (best[3] != "high" and best[1] < BETTER_RUNG_LEAST / ROUNDING):
+                    findings.append(f"{name}: no better rung reads x{BETTER_RUNG_LEAST:g} ({better_text})")
+                    better_text += " UNDER"
+            laser, cannon = (break_even(wins, played, level, d, a) for a in ARCHETYPES)
+            spread_text = "not played"
+            if laser[0] is None or cannon[0] is None:
+                findings.append(f"{name}: the laser and cannon archetypes were not both played")
+            if laser[0] is not None and cannon[0] is not None:
+                spread = abs(steps(laser[0] / cannon[0]))
+                spread_text = f"laser {text(laser)}, cannon {text(cannon)}: {spread:.1f} steps"
+                if laser[0] / cannon[0] > LADDER_STEP ** ARCHETYPE_SPREAD_STEPS * ROUNDING or cannon[0] / laser[0] > LADDER_STEP ** ARCHETYPE_SPREAD_STEPS * ROUNDING:
+                    findings.append(f"{name}: the archetypes are {spread:.1f} ladder steps apart ({spread_text})")
+                    spread_text += " APART"
+            print(f"| {name} | {rung} {text((value, row, end))} (x{TARGET[d]:g}) | {steps(ratio):+.1f}{' (bound)' if end else ''} | {verdict} | {better_text} | {spread_text} |")
+
+    print("\n| Level | Scalar | Cells measured/target (Easy Medium Hard Psycho) | Factor | New scalar |")
+    print("| --- | --- | --- | --- | --- |")
+    level_factor = {}
+    for level in levels:
+        key = level.replace("Level_", "")
+        cells = [factors[(key, d)] for d in range(len(DIFFS)) if (key, d) in factors]
+        if not cells:
+            continue
+        old = scalars.get(key, 1.0)
+        mean = math.exp(sum(math.log(v) for v in cells) / len(cells))
+        factor = max(1.0 / most_step, min(most_step, mean))
+        new = round(max(SCALAR_LEAST, min(SCALAR_MOST, old * factor)), 3)
+        level_factor[key] = mean
+        proposed[key] = new
+        note = " (on its bound: look at the level)" if not SCALAR_LEAST < old * factor < SCALAR_MOST else ""
+        row = " ".join(f"{factors[(key, d)]:.2f}" if (key, d) in factors else "-" for d in range(len(DIFFS)))
+        print(f"| {LEVELS[level]} | {old:g} | {row} | x{factor:.3f} | {new:g}{note} |")
+
+    try:
+        lost = boss_share.lost_runs(paths)
+        for key, (runs, boss) in sorted(boss_share.shares(lost, boss_share.marks()).items()):
+            if boss > runs * BOSS_WAVE_SHARE_MOST:
+                findings.append(f"{LEVELS.get('Level_' + key, key)}: {boss} of {runs} lost runs fell in a boss wave ({boss / runs:.0%}, at most {BOSS_WAVE_SHARE_MOST:.0%}, aim {BOSS_WAVE_SHARE_TARGET:.0%})")
+    except FileNotFoundError:
+        findings.append(f"the boss-wave share was not read: {boss_share.WAVES} is missing (stage.sh run Round87Lab.cs Round87Lab.Run)")
+
+    print(f"\nGates (frozen 2026-11-20, {boss_share.THRESHOLDS}): " + ("all met" if not findings else f"{len(findings)} findings"))
+    for finding in findings:
+        print("  " + finding)
 
     if "--centre" in sys.argv:
-        print("\nPer difficulty: the geometric mean of the scalars (for BalanceRules.DifficultyScale, times the factor in use) and the scalars over it:")
+        in_use = difficulty_scale()
+        print("\nPer difficulty: the mean residual of its cells once the level's factor is taken off, and BalanceRules.DifficultyScale with it:")
         for d in range(len(DIFFS)):
-            values = [proposed.get((l.replace("Level_", ""), d), 1.0) for l in sorted(LEVELS)]
-            mean = math.exp(sum(math.log(v) for v in values) / len(values))
-            rest = " ".join(f"{v / mean:.3f}" for v in values)
-            out = [f"{v / mean:.2f}" for v in values if not SCALAR_LEAST <= v / mean <= SCALAR_MOST]
-            print(f"  {DIFFS[d]}: x{mean:.3f}; cells {rest}{'; outside ' + str(SCALAR_LEAST) + '-' + str(SCALAR_MOST) + ': ' + ' '.join(out) if out else ''}")
+            residuals = [factors[(k, dd)] / level_factor[k] for (k, dd) in factors if dd == d and k in level_factor]
+            if not residuals:
+                continue
+            mean = math.exp(sum(math.log(v) for v in residuals) / len(residuals))
+            print(f"  {DIFFS[d]}: x{mean:.3f} ({steps(mean):+.1f} steps) over {len(residuals)} levels; DifficultyScale {in_use[min(d, len(in_use) - 1)]:g} -> {in_use[min(d, len(in_use) - 1)] * mean:.3f}")
 
     if "--write" in sys.argv:
-        write_scales(proposed)
+        write_scalars(proposed)
         print(f"\nwritten {TUNING}; now the solve stage, then measure again")
 
 

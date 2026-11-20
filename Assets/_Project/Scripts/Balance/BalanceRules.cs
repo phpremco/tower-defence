@@ -1,7 +1,7 @@
 namespace Game.Balance
 {
     /// <summary>
-    /// Every knob of the balance model in one place. The generator passes one instance to the solver and the ledger,
+    /// Every knob of the balance model in one place. The generator passes one instance to the wave formula and the ledger,
     /// the tests and the BalanceLab tool use the same one, so a retune is a change of one number here and a
     /// regeneration. Docs/BALANCE.md explains each knob and the order to turn them in.
     /// </summary>
@@ -99,58 +99,46 @@ namespace Game.Balance
         public int MinesOpenFromWave = 3;
         public float MineDepletionShare = 0.6f;
 
-        // ---- The target curve the wave solver aims at (Medium; other difficulties follow their profiles) -------------
+        // ---- The health formula (round 87): how tough the creatures of a wave are ----------------------------------
 
         /// <summary>
-        /// Pressure the solver aims plain Medium waves at, mid-level (bot calibration, hero included). One means the bot just
-        /// holds. 0.6 until 2026-11-04; raised to 0.8 with the human target curve (<see cref="HumanSurplus"/>), so the solver's
-        /// shape already sits near the level the calibration trims the waves to (Medium trims 0.97 to 1.15 on Crystal Plains).
+        /// The rise of creature health over a level, geometric in the wave's phase (first wave 0, last wave 1): the first
+        /// wave walks in at <see cref="RampStart"/> times the level's middle, the last at <see cref="RampEnd"/>
+        /// (<see cref="WaveFormula.Ramp"/>). Fitted in round 87 on the plain ground waves round 86 stored for the first six
+        /// levels (Tools/PlayTest/r87_fit.py: 0.747 and 1.339, one slope for every difficulty; a slope per difficulty took
+        /// the residual from x1.37 to x1.34 only). The two multiply to one, so <see cref="DifficultyScale"/> is the
+        /// multiplier of a level's middle wave.
         /// </summary>
-        public float TargetPressure = 0.8f;
+        public float RampStart = 0.75f;
+        public float RampEnd = 1.34f;
 
-        /// <summary>The opening waves ramp up from this share of the target, over this many waves.</summary>
-        public float OpeningShare = 0.45f;
-        public int OpeningWaves = 4;
-
-        /// <summary>The target rises within a level, so the late waves do not get easier as the purse snowballs.</summary>
-        public float EarlyTargetShare = 0.85f;
-        public float LateTargetShare = 1.2f;
-
-        /// <summary>Target factors per wave kind, so the rhythm survives the solver.</summary>
+        /// <summary>Health factors per wave kind (a rush, a heavy wave, an air raid), so the rhythm of a level is felt.</summary>
         public float RushFactor = 1.1f;
         public float HeavyFactor = 1.15f;
         public float AirFactor = 0.9f;
-        public float BossFactor = 1.4f;
 
         /// <summary>The wave after a boss is a breather.</summary>
         public float AfterBossFactor = 0.8f;
+
+        /// <summary>The crowd that walks in with a level's boss is this much softer than its place in the level says: the boss is the fight.</summary>
+        public float BossCrowdFactor = 0.55f;
+
+        /// <summary>
+        /// Mid-level peaks (round 87, Remco: "a bit of panic" before the boss, not eleven safe waves and one pass or
+        /// fail): the phases of a level at which a ground wave walks in <see cref="PeakFactor"/> times tougher. A level of
+        /// <see cref="LongLevelWaves"/> waves or more gets one more at <see cref="LongLevelPeakPhase"/>. Which wave a peak
+        /// lands on is <see cref="WaveFormula.Peaks"/>.
+        /// </summary>
+        public float[] PeakPhases = { 0.4f, 0.7f };
+        public int LongLevelWaves = 16;
+        public float LongLevelPeakPhase = 0.55f;
+        public float PeakFactor = 1.35f;
 
         /// <summary>Seconds before the first wave and between waves, as the generator writes them: the model's purse runs on the same clock.</summary>
         public float FirstWaveDelay = 10f;
         public float WaveDelay = 8f;
 
-        /// <summary>The solver may change the budget from one wave to the next by at most this factor either way.</summary>
-        public float MaxBudgetStep = 1.45f;
-
-        /// <summary>Smallest budget of any wave, in threat points, so the first wave is never empty.</summary>
-        public float MinBudget = 4f;
-
-        /// <summary>
-        /// Pressure of each difficulty as a share of Medium (Easy to Psycho). Used only for the waves a difficulty adds
-        /// (extra air raids, extra bosses); everything else follows the difficulty profile, and the profiles are tuned so
-        /// their waves land near these shares. { 0.7, 1, 1.5, 2.1 } until 2026-11-04; the human curve (Easy 1.4x, Medium 1.15x,
-        /// Hard 0.95x, Psycho 0.8x) puts the bot-lens shares near 0.8 / 1 / 1.35 / 1.7.
-        /// </summary>
-        public float[] DifficultyPressure = { 0.8f, 1f, 1.35f, 1.7f };
-
-        // ---- Checks the solver does not optimise -------------------------------------------------------------------
-
-        /// <summary>
-        /// A plain wave may reach the difficulty's share of the highest Medium target (late heavy waves) times this margin;
-        /// bosses get the allowance on top.
-        /// </summary>
-        public float BandMargin = 1.4f;
-        public float BossAllowance = 1.6f;
+        // ---- Checks on the paper ---------------------------------------------------------------------------------------
 
         /// <summary>
         /// Most of a boss fight's firepower a continent boss's mechanic may take away (Docs/BOSSES.md: no wipe-outs, an effect
@@ -158,16 +146,6 @@ namespace Game.Balance
         /// fails a boss whose mechanic would.
         /// </summary>
         public float MaxBossMechanicShare = 0.35f;
-
-        /// <summary>Most pressure a plain wave may reach on a difficulty (Easy to Psycho).</summary>
-        public float MaxPressure(int difficulty) =>
-            DifficultyPressure[System.Math.Min(difficulty, DifficultyPressure.Length - 1)] * TargetPressure * LateTargetShare * HeavyFactor * BandMargin;
-
-        /// <summary>No wave may be more than this many times the heaviest of the few plain waves before it.</summary>
-        public float MaxCliff = 2.6f;
-
-        /// <summary>Late Easy waves must still ask something on average.</summary>
-        public float MinLateEasyPressure = 0.15f;
 
         // ---- The human lens: a competent player instead of the bot ----------------------------------------------------
 
@@ -242,7 +220,8 @@ namespace Game.Balance
         /// Psycho. Easy 1.4 (the hero matters on boss and late waves), Medium 1.15 (placement and hero), Hard 0.95 (the hero
         /// and good play, or some permanent upgrades), Psycho 0.8 (the progression model already counts the continent's
         /// end-game upgrades for Psycho, <see cref="Progression"/>). Each level's waves are trimmed to this curve
-        /// (<see cref="CampaignModel.BuildWaves"/>) after the solver has shaped them.
+        /// by this curve only on paper now (the finale's stand-in waves, <see cref="CampaignModel.ModelTarget"/>); since
+        /// round 87 a wave's health is <see cref="WaveFormula"/>'s.
         /// </summary>
         public float[] HumanSurplus = { 1.4f, 1.15f, 0.95f, 0.8f };
 
@@ -259,29 +238,22 @@ namespace Game.Balance
             HumanSurplus[System.Math.Min(difficulty, HumanSurplus.Length - 1)] / (1f + System.Math.Min(HumanRampMax, HumanRampPerLevel * System.Math.Max(0, continentIndex)));
 
         /// <summary>
-        /// What the probe says the model misreads per difficulty, Easy to Psycho (round 83): a factor on the health of every
-        /// creature of that difficulty, on every level alike, on top of what the solver gives. The solver shapes a level
-        /// (which wave is how tough against the others); how tough the level is as played is measured, and the part of that
-        /// correction every level shares lives here, so a new level starts from it. A cell's own scalar (the script's
-        /// target scale, found by the closed loop of Docs/WAVE_GRAMMAR.md, "How to balance a new level") comes on top and
-        /// should stay near one (<see cref="CellScalarLeast"/> to <see cref="CellScalarMost"/>).
+        /// The health multiplier of a level's middle wave per difficulty, Easy to Psycho, on every level alike (round 87;
+        /// until then a correction on a solved wave). The level's own scalar (Tools/PlayTest/wave_tuning.txt, found by the
+        /// closed loop of Docs/WAVE_GRAMMAR.md, "How to balance a new level") comes on top and should stay near one
+        /// (<see cref="LevelScalarLeast"/> to <see cref="LevelScalarMost"/>).
         /// </summary>
-        // Round 83b: the geometric means of the first continent's 24 scalars after three passes of the closed loop
-        // (0.98 / 1.31 / 1 / 0.87 was the first guess, the level of round 82).
-        // Round 84: 0.981 / 1.365 / 1.051 / 0.936 times the means of the pass after the composition levers became rules.
-        public float[] DifficultyScale = { 0.839f, 1.073f, 0.745f, 0.699f };
+        // Round 87: the fit of the formula on round 86's stored waves (Tools/PlayTest/r87_fit.py: 1.499 / 1.853 / 1.229 / 2.381).
+        public float[] DifficultyScale = { 1.5f, 1.7f, 1.36f, 2.08f };
 
         public float DifficultyScaleFor(int difficulty) => DifficultyScale.Length == 0 ? 1f : DifficultyScale[System.Math.Min(difficulty, DifficultyScale.Length - 1)];
 
         /// <summary>
-        /// The range a cell's own scalar may lie in. Outside it the model misreads the level's map or script by more than the
-        /// closed loop should paper over: look at the level, not at the scalar.
+        /// The range a level's own scalar may lie in. Outside it the formula misreads the level's map or script by more than
+        /// the closed loop should paper over: look at the level, not at the scalar.
         /// </summary>
-        public float CellScalarLeast = 0.7f;
-        public float CellScalarMost = 1.4f;
-
-        /// <summary>Most the stored human surplus of a level may stray from its target curve, as a share of the target.</summary>
-        public float HumanTargetTolerance = 0.06f;
+        public float LevelScalarLeast = 0.7f;
+        public float LevelScalarMost = 1.4f;
 
         /// <summary>From one level of a continent to the next the human surplus may rise by at most this share (the ramp is monotone).</summary>
         public float RampTolerance = 0.03f;
@@ -296,8 +268,8 @@ namespace Game.Balance
         /// Most a single wave (bosses included) may ask of a competent player with the hero (<see cref="HumanWithHero"/>), Easy
         /// to Psycho. Pressure one is "just holds"; above it a few creatures reach the gate and the base, whose health, the
         /// hero's abilities, base turrets, drones and path objects (none in the model) carry the rest. Easy bosses fall to the
-        /// defence outright; on Psycho a boss asks for everything the player has. The calibration softens a wave above it on
-        /// its own (<see cref="CampaignModel.BuildWaves"/>), so a boss keeps high health but stays killable.
+        /// defence outright; on Psycho a boss asks for everything the player has. The plan search and the finale model judge
+        /// a plan against it; no stored wave is sized by it since round 87 (<see cref="WaveFormula"/>).
         /// </summary>
         public float[] HeroCap = { 1f, 1.15f, 1.25f, 1.35f };
 
@@ -357,12 +329,10 @@ namespace Game.Balance
         public bool SkyGunForFlyers = true;
 
         /// <summary>
-        /// The least a raid's health multiplier may be per difficulty, Easy first (round 61; zero: no floor). The solver sizes a
-        /// wave by paper pressure, and the paper rates a sky gun against a packed raid at about a third of what it does in play
-        /// (flyers hang over a gate while they lash it), so on the low pressure Easy asks a raid came out as four flyers of 8
-        /// health that any gun shot down. With the floor a flyer in a raid is about as tough as its Codex entry says, which is
-        /// what makes the sky gun worth its price. Held inside the trim to the human curve (the other waves make room for it, so
-        /// the level as a whole stays on the curve); the hero cap still softens a raid nobody could hold.
+        /// The least a raid's health multiplier may be per difficulty, Easy first (round 61; zero: no floor): a flyer in a
+        /// raid is about as tough as its Codex entry says, which is what makes the sky gun worth its price. Rounds 61 to 86
+        /// needed it against a solve on paper pressure (a first Easy raid came out as four flyers of 8 health); under the
+        /// formula of round 87 it only holds a raid up where a level's scalar is low (<see cref="WaveSolver.Solve"/>).
         /// </summary>
         public float[] RaidHealthFloor = { 0.6f, 0f, 0f, 0f };
 
@@ -373,54 +343,39 @@ namespace Game.Balance
         /// a boss, a level's or a continent's, is at least this share of its body. A boss whose own data gives it more
         /// keeps that. So light fire only chips every boss and the anti-armour guns are what a boss asks for, by the same
         /// table as every other plated creature (Docs/COMBAT_RULES.md, section 1). The generator and the finale stage
-        /// write it (<see cref="BossArmourFor"/>); the solver and the finale probe size the boss with it on.
+        /// write it (<see cref="BossArmourFor"/>). Round 87: an armour pool as large as the body (0.25 until then), so
+        /// that stripping a boss's plates is a job the player sees a Cannon do.
         /// </summary>
-        public float BossArmourShare = 0.25f;
+        public float BossArmourShare = 1f;
 
         /// <summary>The armour pool a boss of this body carries: its own, or the rule's share of its body when that is more.</summary>
         public float BossArmourFor(float body, float armour) => System.Math.Max(armour, (float)System.Math.Round(body * BossArmourShare));
 
         /// <summary>
-        /// What a point of light fire (bullets, beams, arcs) is worth on armour: the armour column of those rows in the
-        /// combat rule table (Docs/COMBAT_RULES.md, section 1; the test Round86Tests holds it to the rules asset). The
-        /// boss rule reads a creature's cost under light fire with it (<see cref="BossYardstick"/>).
+        /// A level's boss, one formula (round 87, <see cref="WaveFormula.BossBar"/>): its bar as spawned (body plus
+        /// armour) is <see cref="BossBase"/> on Medium at a continent's first level for a boss in the last wave, times
+        /// <see cref="BossDifficulty"/> (Easy to Psycho, never falling), times one plus <see cref="BossLevelGrowth"/> per
+        /// level of the continent, times <see cref="BossEarlyShare"/> for a boss in the first wave rising to one in the
+        /// last, times <see cref="FlyingBossShare"/> for a boss that flies (few guns reach it). It does not move with the
+        /// level's scalar or <see cref="DifficultyScale"/>: a boss grows with the level and the difficulty and with
+        /// nothing else, and the closed loop cannot trade crowd for boss. Rounds 85 and 86 sized it from the creatures
+        /// around it, which made Hard bosses smaller than Medium ones on five of six levels.
         /// </summary>
-        public float LightFireOnArmour = 0.2f;
+        public float BossBase = 2050f;
+        public float[] BossDifficulty = { 0.7f, 1f, 1.15f, 1.8f };
+        public float BossLevelGrowth = 0.12f;
+        public float BossEarlyShare = 0.3f;
+        public float FlyingBossShare = 0.6f;
+
+        public float BossDifficultyFor(int difficulty) => At(BossDifficulty, difficulty);
 
         /// <summary>
-        /// The share of a point of light fire that lands on a creature only the sky can be aimed at: the air column of the
-        /// bullet and beam rows of the same table (shells land in full up there). The boss rule prices a flyer under light
-        /// fire with it, a flying boss and the flyers it is held against alike.
+        /// The floor under that formula (Remco, round 85: "on Easy the boss felt like nonsense, the lava rocks seem
+        /// stronger"): the bar of a level's boss (body plus armour, the health bar the player sees) is never under this
+        /// many times the bar of the toughest ordinary walker met in the level before it, Easy to Psycho
+        /// (<see cref="BossYardstick"/>). The constants above are chosen so that the formula sizes the bosses and the
+        /// floor only catches a level whose walkers run away. Zero: no floor.
         /// </summary>
-        public float LightFireInTheAir = 0.2f;
-
-        /// <summary>
-        /// A level's boss never walks in under this share of its book health and armour, in the solver's own measure
-        /// (before play's correction, so a cell's scalar moves it like every creature). It holds the early bosses: wave 5
-        /// of Landing Site on Psycho comes after Skitters and Prowlers only, and three times the toughest of those is a
-        /// boss of 72 hit points, 0.08 of its Codex entry. Round 86; until then a floor on the health as stored
-        /// (LevelBossHealthFloor, 0.5 to 0.9), which did not move with the scalar. A quarter over the book, because play's
-        /// correction runs under one (0.6 to 1.1 over the first six levels): the early bosses then spawn near their Codex
-        /// entry, as round 64 asked of the Hard ones (Round64Tests: a Hard boss spawns with its book health at least).
-        /// </summary>
-        public float BossBookShare = 1.25f;
-
-        /// <summary>
-        /// A boss is never a creature like the others (Remco, round 85: "on Easy the boss felt like nonsense, the lava
-        /// rocks seem stronger"), and this is the one rule that sizes a level's boss (round 86): it costs the player's
-        /// guns this many times what the toughest ordinary creature met in the level before it cost them, Easy to
-        /// Psycho, under shells (the health bar, body plus armour) and under light fire (armour at
-        /// <see cref="LightFireOnArmour"/>) both (<see cref="BossYardstick"/>, <see cref="WaveSolver.Solve"/>). A boss
-        /// with nothing before it is held against the toughest creature of its own wave. Where the wave then asks more
-        /// than its cap the crowd gives way inside its band, never the boss. Zero: the boss follows its wave.
-        /// </summary>
-        /// <remarks>
-        /// Round 85 had it as a floor on the bar beside two older rules, a share of the defence the boss asks alone
-        /// (LevelBossAlone) with a cap of its own (LevelBossGrowthCap) and a floor on the health as stored
-        /// (LevelBossHealthFloor). On the stored waves all 24 last bosses stood on the multiple, so the first two decided
-        /// nothing; the third bound only the early bosses of Psycho and, being read on the stored health, did not move with
-        /// a cell's scalar while every creature around it did. All three went in round 86.
-        /// </remarks>
         public float[] BossOverRegular = { 3f, 3f, 3f, 3f };
 
         public float BossOverRegularFor(int difficulty) => BossOverRegular == null || BossOverRegular.Length == 0 ? 0f : BossOverRegular[System.Math.Min(difficulty, BossOverRegular.Length - 1)];
@@ -428,8 +383,8 @@ namespace Game.Balance
         /// <summary>
         /// The share of a wave's budget its crowd keeps when a boss leads the wave (the composer's constant until round 65),
         /// on every level and difficulty. Rounds 65 to 83 let a cell thin it further (the lever "bosscrowd", Shard Ridge
-        /// Hard and Psycho at 0.35, so the crowd left the boss room under the cap). Since round 83 the solver gives the
-        /// crowd's health way to the boss by rule, so the lever went in round 84.
+        /// Hard and Psycho at 0.35, so the crowd left the boss room under the cap); the lever went in round 84. How tough
+        /// that crowd is, is <see cref="BossCrowdFactor"/>.
         /// </summary>
         public float BossWaveShare = 0.6f;
 

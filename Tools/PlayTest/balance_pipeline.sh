@@ -100,7 +100,6 @@ for stage in "$@"; do
     search)     echo "== search: plans per cell (stage A)"; editmode_test PlanSearchTests; cat Tools/PlayTest/plans_summary.txt ;;
     replay)     echo "== replay: searched plans (stage B)"; playmode_stage replay Replay_SearchedPlans_EveryCell ;;
     acceptance) echo "== closed-loop acceptance (round 83b: the measurement named in Tools/PlayTest/closed_loop_records.txt)"; editmode_test ClosedLoopAcceptanceTests; cat Tools/PlayTest/closed_loop_acceptance.txt ;;
-    build)      echo "== build: lever from the stage-B verdicts, then solve (round 22d)"; run_script Tools/PlayTest/Scripts/BuildFromVerdicts.cs BuildFromVerdicts.Run 900000 960; cat Tools/PlayTest/builder.txt ;;
     grace)      echo "== grace: rows without the counter tower after a trait appears (round 67)"; run_script Tools/PlayTest/Scripts/GraceReport.cs GraceReport.Run 120000 180; cat Tools/PlayTest/grace_windows.txt ;;
     roles)      echo "== roles: the role matrix from the data (round 67)"; run_script Tools/PlayTest/Scripts/RoleMatrixReport.cs RoleMatrixReport.Run 120000 180 ;;
     readme)     echo "== readme: the plans that won in stage B"; run_script Tools/PlayTest/Scripts/ReadmePlans.cs ReadmePlans.Run 300000 360 ;;

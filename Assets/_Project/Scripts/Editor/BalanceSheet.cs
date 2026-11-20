@@ -226,6 +226,31 @@ namespace Game.Editor
         /// <summary>Upgrade steps are rounded down to this many coins.</summary>
         private const int PriceStep = 5;
 
+        /// <summary>
+        /// Round 87, the specialist's price rule: on the creatures a specialist is bought against, a coin spent on it buys
+        /// at least this many times what a coin spent on the all-rounder (the Gun Turret) buys there. Under it the
+        /// specialist is a trap, because the all-rounder is also good at everything else. 1.1 is what the Laser's prices
+        /// (130, 185, 285) hold on every difficulty's Skitter at every level; the tightest is level 1 on Psycho, where a
+        /// Skitter takes nine rounds and the turret's swing is a small part of the kill (Tools/PlayTest/laser_role_r87.txt).
+        /// </summary>
+        public const float SpecialistPremium = 1.1f;
+
+        /// <summary>
+        /// The most a specialist may cost at a level, all its coins to there: its value on its own target mix (the bar it
+        /// takes off per second, measured through the firing rules, Game.Editor.StreamDuel) over the premium times what
+        /// the all-rounder's coins buy on that same mix, rounded down to the price step.
+        /// </summary>
+        public static int SpecialistPriceCap(float specialistValue, float allRounderValue, int allRounderCoins)
+        {
+            if (allRounderValue <= 0f || allRounderCoins <= 0)
+            {
+                return 0;
+            }
+
+            float perCoin = allRounderValue / allRounderCoins;
+            return (int)System.Math.Floor(specialistValue / (SpecialistPremium * perCoin) / PriceStep) * PriceStep;
+        }
+
         // ---- Drone prices (round 22d) --------------------------------------------------------------------------------------
 
         /// <summary>

@@ -1,0 +1,27 @@
+# The thresholds of the closed loop and of its acceptance (Tools/PlayTest/closed_loop.py and ClosedLoopAcceptanceTests
+# read this file and nothing else). FROZEN 2026-11-20, before any measurement of round 87: a change here is a design
+# decision with its date and reason on a line of its own, never a reaction to a reading.
+#
+# The reference rung's break-even per difficulty (the geometric middle of the last multiple two of three seeds hold
+# and the first they lose). Easy: the weaker of the sensible and the skilled rung. Medium, Hard: the sensible rung.
+# Psycho: the skilled rung.
+target_easy 1.66
+target_medium 1.32
+target_hard 0.95
+target_psycho 1.06
+# A cell is accepted when its reference rung reads within this many ladder steps of its target, on both sides, Easy
+# included; a rung that holds or loses its whole ladder is not a reading.
+accept_within_steps 1
+# One step of a ladder (x0.8 / 0.9 / 1 / 1.12 / 1.25 ...: the widest ratio), and the rounding of the readings.
+ladder_step 1.125
+rounding 1.02
+# Medium and Hard: the best of the better rungs (skilled, laser, cannon) must itself read this at least.
+better_rung_least 1.06
+# The laser and the cannon archetype read within this many ladder steps of each other in every cell.
+archetype_spread_steps 1
+# Of a level's lost runs, the share lost in a boss wave: the gate, and what the rules aim at.
+boss_wave_share_most 0.40
+boss_wave_share_target 0.35
+# A level's scalar stays in this range (BalanceRules.LevelScalarLeast / LevelScalarMost).
+scalar_least 0.7
+scalar_most 1.4

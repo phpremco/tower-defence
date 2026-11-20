@@ -1,0 +1,471 @@
+Measured with: bot 4:4b1901e7; data 58009b76; game code 5f1652c8
+
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 35 of 48 curves monotone = 72.9%  ->  FAIL
+  skilled        9 of 12  curves (75%); 3 of 48 steps drop by more than the tolerance
+  sensible       7 of 12  curves (58%); 7 of 48 steps drop by more than the tolerance
+  cannon        11 of 12  curves (92%); 1 of 48 steps drop by more than the tolerance
+  laser          8 of 12  curves (67%); 5 of 48 steps drop by more than the tolerance
+  the same check on other scores (all rungs): P 35 of 48; A 36 of 48; R+D (furthest creature) 27 of 48; D 46 of 48; won/lost 46 of 48
+  curves that are not monotone (P per multiple, the drops marked):
+    Landing Site Psycho   laser        seed 1: 0.8:1.27L 0.9:1.28L 1:1.32L 1.12:1.29L! 1.25:1.37L  (worst drop -0.024)
+    Landing Site Psycho   sensible     seed 1: 0.8:1.31L 0.9:1.29L! 1:1.34L 1.12:1.31L! 1.25:1.39L  (worst drop -0.028)
+    Landing Site Psycho   skilled      seed 1: 0.8:1.31L 0.9:1.27L! 1:1.32L 1.12:1.33L 1.25:1.33L  (worst drop -0.035)
+    Fault Line Hard       laser        seed 1: 0.8:1.83L 0.9:1.83L 1:1.74! 1.12:1.85L 1.25:1.84L  (worst drop -0.092)
+    Fault Line Hard       sensible     seed 1: 0.8:1.08 0.9:1.84L 1:1.64! 1.12:1.30! 1.25:1.84L  (worst drop -0.334)
+    Fault Line Psycho     cannon       seed 1: 0.8:1.85L 0.9:1.85L 1:1.86L 1.12:1.80L! 1.25:1.84L  (worst drop -0.053)
+    Fault Line Psycho     laser        seed 1: 0.8:1.79L 0.9:1.78L 1:1.76L! 1.12:1.81L 1.25:1.76L!  (worst drop -0.049)
+    Fault Line Psycho     sensible     seed 1: 0.8:1.77L 0.9:1.79L 1:1.79L 1.12:1.82L 1.25:1.77L!  (worst drop -0.050)
+    Fault Line Psycho     skilled      seed 1: 0.8:1.82L 0.9:1.83L 1:1.83L 1.12:1.79L! 1.25:1.84L  (worst drop -0.040)
+    Quartz Flats Hard     sensible     seed 1: 0.8:1.14 0.9:1.40L 1:1.42L 1.12:1.41L 1.25:1.36L!  (worst drop -0.053)
+    Quartz Flats Psycho   laser        seed 1: 0.8:1.43L 0.9:1.44L 1:1.53L 1.12:1.57L 1.25:1.54L!  (worst drop -0.025)
+    Crysium Vein Psycho   sensible     seed 1: 0.8:1.73L 0.9:1.69L! 1:1.74L 1.12:1.74L 1.25:1.78L  (worst drop -0.044)
+    Crysium Vein Psycho   skilled      seed 1: 0.8:1.73L 0.9:1.75L 1:1.73L 1.12:1.83L 1.25:1.73L!  (worst drop -0.100)
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 0 of 0 cells within the limit  ->  FAIL
+  cell                  skilled                   sensible                  
+  Landing Site Hard     -                         -
+  Landing Site Psycho   -                         -
+  Glass Meadows Hard    -                         -
+  Glass Meadows Psycho  -                         -
+  Shard Ridge Hard      -                         -
+  Shard Ridge Psycho    -                         -
+  Fault Line Hard       -                         -
+  Fault Line Psycho     -                         -
+  Quartz Flats Hard     -                         -
+  Quartz Flats Psycho   -                         -
+  Crysium Vein Hard     -                         -
+  Crysium Vein Psycho   -                         -
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  skilled                           sensible                          cannon                            laser                             
+  Landing Site Hard     1.238 (1.238-1.238) 0/1           0.218 (0.218-0.218) 1/1           0.195 (0.195-0.195) 1/1           1.271 (1.271-1.271) 0/1
+  Landing Site Psycho   1.316 (1.316-1.316) 0/1           1.335 (1.335-1.335) 0/1           0.125 (0.125-0.125) 1/1           1.318 (1.318-1.318) 0/1
+  Glass Meadows Hard    1.157 (1.157-1.157) 0/1           1.144 (1.144-1.144) 0/1           0.055 (0.055-0.055) 1/1           1.167 (1.167-1.167) 0/1
+  Glass Meadows Psycho  1.119 (1.119-1.119) 0/1           1.430 (1.430-1.430) 0/1           0.069 (0.069-0.069) 1/1           1.348 (1.348-1.348) 0/1
+  Shard Ridge Hard      1.542 (1.542-1.542) 0/1           1.576 (1.576-1.576) 0/1           1.607 (1.607-1.607) 0/1           1.591 (1.591-1.591) 0/1
+  Shard Ridge Psycho    1.589 (1.589-1.589) 0/1           1.618 (1.618-1.618) 0/1           1.575 (1.575-1.575) 0/1           1.628 (1.628-1.628) 0/1
+  Fault Line Hard       1.777 (1.777-1.777) 0/1           1.636 (1.636-1.636) 1/1           1.850 (1.850-1.850) 0/1           1.741 (1.741-1.741) 1/1
+  Fault Line Psycho     1.827 (1.827-1.827) 0/1           1.792 (1.792-1.792) 0/1           1.855 (1.855-1.855) 0/1           1.758 (1.758-1.758) 0/1
+  Quartz Flats Hard     1.007 (1.007-1.007) 1/1           1.416 (1.416-1.416) 0/1           0.986 (0.986-0.986) 1/1           1.363 (1.363-1.363) 0/1
+  Quartz Flats Psycho   1.487 (1.487-1.487) 0/1           1.513 (1.513-1.513) 0/1           1.387 (1.387-1.387) 0/1           1.532 (1.532-1.532) 0/1
+  Crysium Vein Hard     1.650 (1.650-1.650) 0/1           1.645 (1.645-1.645) 0/1           0.826 (0.826-0.826) 1/1           1.631 (1.631-1.631) 0/1
+  Crysium Vein Psycho   1.734 (1.734-1.734) 0/1           1.739 (1.739-1.739) 0/1           1.724 (1.724-1.724) 0/1           1.731 (1.731-1.731) 0/1
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  skilled
+    Landing Site Hard     x0.8 0.21 (0.21-0.21) 1/1 | x0.9 0.61 (0.61-0.61) 1/1 | x1 1.24 (1.24-1.24) 0/1 | x1.12 1.27 (1.27-1.27) 0/1 | x1.25 1.28 (1.28-1.28) 0/1
+    Landing Site Psycho   x0.8 1.31 (1.31-1.31) 0/1 | x0.9 1.27 (1.27-1.27) 0/1 | x1 1.32 (1.32-1.32) 0/1 | x1.12 1.33 (1.33-1.33) 0/1 | x1.25 1.33 (1.33-1.33) 0/1
+    Glass Meadows Hard    x0.8 0.07 (0.07-0.07) 1/1 | x0.9 1.12 (1.12-1.12) 0/1 | x1 1.16 (1.16-1.16) 0/1 | x1.12 1.15 (1.15-1.15) 0/1 | x1.25 1.15 (1.15-1.15) 0/1
+    Glass Meadows Psycho  x0.8 0.04 (0.04-0.04) 1/1 | x0.9 1.07 (1.07-1.07) 0/1 | x1 1.12 (1.12-1.12) 0/1 | x1.12 1.12 (1.12-1.12) 0/1 | x1.25 1.14 (1.14-1.14) 0/1
+    Shard Ridge Hard      x0.8 1.34 (1.34-1.34) 1/1 | x0.9 1.53 (1.53-1.53) 0/1 | x1 1.54 (1.54-1.54) 0/1 | x1.12 1.57 (1.57-1.57) 0/1 | x1.25 1.58 (1.58-1.58) 0/1
+    Shard Ridge Psycho    x0.8 1.49 (1.49-1.49) 0/1 | x0.9 1.59 (1.59-1.59) 0/1 | x1 1.59 (1.59-1.59) 0/1 | x1.12 1.64 (1.64-1.64) 0/1 | x1.25 1.64 (1.64-1.64) 0/1
+    Fault Line Hard       x0.8 1.77 (1.77-1.77) 0/1 | x0.9 1.78 (1.78-1.78) 0/1 | x1 1.78 (1.78-1.78) 0/1 | x1.12 1.78 (1.78-1.78) 0/1 | x1.25 1.85 (1.85-1.85) 0/1
+    Fault Line Psycho     x0.8 1.82 (1.82-1.82) 0/1 | x0.9 1.83 (1.83-1.83) 0/1 | x1 1.83 (1.83-1.83) 0/1 | x1.12 1.79 (1.79-1.79) 0/1 | x1.25 1.84 (1.84-1.84) 0/1
+    Quartz Flats Hard     x0.8 0.72 (0.72-0.72) 1/1 | x0.9 0.88 (0.88-0.88) 1/1 | x1 1.01 (1.01-1.01) 1/1 | x1.12 1.39 (1.39-1.39) 0/1 | x1.25 1.41 (1.41-1.41) 0/1
+    Quartz Flats Psycho   x0.8 1.27 (1.27-1.27) 0/1 | x0.9 1.37 (1.37-1.37) 0/1 | x1 1.49 (1.49-1.49) 0/1 | x1.12 1.50 (1.50-1.50) 0/1 | x1.25 1.51 (1.51-1.51) 0/1
+    Crysium Vein Hard     x0.8 1.65 (1.65-1.65) 0/1 | x0.9 1.65 (1.65-1.65) 0/1 | x1 1.65 (1.65-1.65) 0/1 | x1.12 1.65 (1.65-1.65) 0/1 | x1.25 1.64 (1.64-1.64) 0/1
+    Crysium Vein Psycho   x0.8 1.73 (1.73-1.73) 0/1 | x0.9 1.75 (1.75-1.75) 0/1 | x1 1.73 (1.73-1.73) 0/1 | x1.12 1.83 (1.83-1.83) 0/1 | x1.25 1.73 (1.73-1.73) 0/1
+  sensible
+    Landing Site Hard     x0.8 0.19 (0.19-0.19) 1/1 | x0.9 0.19 (0.19-0.19) 1/1 | x1 0.22 (0.22-0.22) 1/1 | x1.12 0.23 (0.23-0.23) 1/1 | x1.25 1.24 (1.24-1.24) 0/1
+    Landing Site Psycho   x0.8 1.31 (1.31-1.31) 0/1 | x0.9 1.29 (1.29-1.29) 0/1 | x1 1.34 (1.34-1.34) 0/1 | x1.12 1.31 (1.31-1.31) 0/1 | x1.25 1.39 (1.39-1.39) 0/1
+    Glass Meadows Hard    x0.8 0.05 (0.05-0.05) 1/1 | x0.9 0.06 (0.06-0.06) 1/1 | x1 1.14 (1.14-1.14) 0/1 | x1.12 1.13 (1.13-1.13) 0/1 | x1.25 1.15 (1.15-1.15) 0/1
+    Glass Meadows Psycho  x0.8 1.36 (1.36-1.36) 0/1 | x0.9 1.35 (1.35-1.35) 0/1 | x1 1.43 (1.43-1.43) 0/1 | x1.12 1.43 (1.43-1.43) 0/1 | x1.25 1.43 (1.43-1.43) 0/1
+    Shard Ridge Hard      x0.8 1.29 (1.29-1.29) 1/1 | x0.9 1.53 (1.53-1.53) 0/1 | x1 1.58 (1.58-1.58) 0/1 | x1.12 1.58 (1.58-1.58) 0/1 | x1.25 1.58 (1.58-1.58) 0/1
+    Shard Ridge Psycho    x0.8 1.56 (1.56-1.56) 0/1 | x0.9 1.62 (1.62-1.62) 0/1 | x1 1.62 (1.62-1.62) 0/1 | x1.12 1.62 (1.62-1.62) 0/1 | x1.25 1.62 (1.62-1.62) 0/1
+    Fault Line Hard       x0.8 1.08 (1.08-1.08) 1/1 | x0.9 1.84 (1.84-1.84) 0/1 | x1 1.64 (1.64-1.64) 1/1 | x1.12 1.30 (1.30-1.30) 1/1 | x1.25 1.84 (1.84-1.84) 0/1
+    Fault Line Psycho     x0.8 1.77 (1.77-1.77) 0/1 | x0.9 1.79 (1.79-1.79) 0/1 | x1 1.79 (1.79-1.79) 0/1 | x1.12 1.82 (1.82-1.82) 0/1 | x1.25 1.77 (1.77-1.77) 0/1
+    Quartz Flats Hard     x0.8 1.14 (1.14-1.14) 1/1 | x0.9 1.40 (1.40-1.40) 0/1 | x1 1.42 (1.42-1.42) 0/1 | x1.12 1.41 (1.41-1.41) 0/1 | x1.25 1.36 (1.36-1.36) 0/1
+    Quartz Flats Psycho   x0.8 1.40 (1.40-1.40) 0/1 | x0.9 1.40 (1.40-1.40) 0/1 | x1 1.51 (1.51-1.51) 0/1 | x1.12 1.52 (1.52-1.52) 0/1 | x1.25 1.57 (1.57-1.57) 0/1
+    Crysium Vein Hard     x0.8 1.64 (1.64-1.64) 0/1 | x0.9 1.65 (1.65-1.65) 0/1 | x1 1.65 (1.65-1.65) 0/1 | x1.12 1.65 (1.65-1.65) 0/1 | x1.25 1.65 (1.65-1.65) 0/1
+    Crysium Vein Psycho   x0.8 1.73 (1.73-1.73) 0/1 | x0.9 1.69 (1.69-1.69) 0/1 | x1 1.74 (1.74-1.74) 0/1 | x1.12 1.74 (1.74-1.74) 0/1 | x1.25 1.78 (1.78-1.78) 0/1
+  cannon
+    Landing Site Hard     x0.8 0.13 (0.13-0.13) 1/1 | x0.9 0.13 (0.13-0.13) 1/1 | x1 0.19 (0.19-0.19) 1/1 | x1.12 0.20 (0.20-0.20) 1/1 | x1.25 0.20 (0.20-0.20) 1/1
+    Landing Site Psycho   x0.8 0.12 (0.12-0.12) 1/1 | x0.9 0.12 (0.12-0.12) 1/1 | x1 0.12 (0.12-0.12) 1/1 | x1.12 0.17 (0.17-0.17) 1/1 | x1.25 0.18 (0.18-0.18) 1/1
+    Glass Meadows Hard    x0.8 0.05 (0.05-0.05) 1/1 | x0.9 0.05 (0.05-0.05) 1/1 | x1 0.05 (0.05-0.05) 1/1 | x1.12 0.06 (0.06-0.06) 1/1 | x1.25 1.10 (1.10-1.10) 0/1
+    Glass Meadows Psycho  x0.8 0.05 (0.05-0.05) 1/1 | x0.9 0.06 (0.06-0.06) 1/1 | x1 0.07 (0.07-0.07) 1/1 | x1.12 1.12 (1.12-1.12) 0/1 | x1.25 1.14 (1.14-1.14) 0/1
+    Shard Ridge Hard      x0.8 1.56 (1.56-1.56) 1/1 | x0.9 1.57 (1.57-1.57) 0/1 | x1 1.61 (1.61-1.61) 0/1 | x1.12 1.60 (1.60-1.60) 0/1 | x1.25 1.61 (1.61-1.61) 0/1
+    Shard Ridge Psycho    x0.8 1.55 (1.55-1.55) 0/1 | x0.9 1.57 (1.57-1.57) 0/1 | x1 1.57 (1.57-1.57) 0/1 | x1.12 1.58 (1.58-1.58) 0/1 | x1.25 1.58 (1.58-1.58) 0/1
+    Fault Line Hard       x0.8 1.84 (1.84-1.84) 0/1 | x0.9 1.84 (1.84-1.84) 0/1 | x1 1.85 (1.85-1.85) 0/1 | x1.12 1.86 (1.86-1.86) 0/1 | x1.25 1.86 (1.86-1.86) 0/1
+    Fault Line Psycho     x0.8 1.85 (1.85-1.85) 0/1 | x0.9 1.85 (1.85-1.85) 0/1 | x1 1.86 (1.86-1.86) 0/1 | x1.12 1.80 (1.80-1.80) 0/1 | x1.25 1.84 (1.84-1.84) 0/1
+    Quartz Flats Hard     x0.8 0.77 (0.77-0.77) 1/1 | x0.9 0.83 (0.83-0.83) 1/1 | x1 0.99 (0.99-0.99) 1/1 | x1.12 1.20 (1.20-1.20) 1/1 | x1.25 1.37 (1.37-1.37) 0/1
+    Quartz Flats Psycho   x0.8 1.39 (1.39-1.39) 0/1 | x0.9 1.39 (1.39-1.39) 0/1 | x1 1.39 (1.39-1.39) 0/1 | x1.12 1.39 (1.39-1.39) 0/1 | x1.25 1.39 (1.39-1.39) 0/1
+    Crysium Vein Hard     x0.8 0.70 (0.70-0.70) 1/1 | x0.9 0.73 (0.73-0.73) 1/1 | x1 0.83 (0.83-0.83) 1/1 | x1.12 0.98 (0.98-0.98) 1/1 | x1.25 1.66 (1.66-1.66) 0/1
+    Crysium Vein Psycho   x0.8 1.72 (1.72-1.72) 0/1 | x0.9 1.72 (1.72-1.72) 0/1 | x1 1.72 (1.72-1.72) 0/1 | x1.12 1.73 (1.73-1.73) 0/1 | x1.25 1.72 (1.72-1.72) 0/1
+  laser
+    Landing Site Hard     x0.8 1.27 (1.27-1.27) 0/1 | x0.9 1.27 (1.27-1.27) 0/1 | x1 1.27 (1.27-1.27) 0/1 | x1.12 1.27 (1.27-1.27) 0/1 | x1.25 1.27 (1.27-1.27) 0/1
+    Landing Site Psycho   x0.8 1.27 (1.27-1.27) 0/1 | x0.9 1.28 (1.28-1.28) 0/1 | x1 1.32 (1.32-1.32) 0/1 | x1.12 1.29 (1.29-1.29) 0/1 | x1.25 1.37 (1.37-1.37) 0/1
+    Glass Meadows Hard    x0.8 0.05 (0.05-0.05) 1/1 | x0.9 0.78 (0.78-0.78) 1/1 | x1 1.17 (1.17-1.17) 0/1 | x1.12 1.25 (1.25-1.25) 0/1 | x1.25 1.26 (1.26-1.26) 0/1
+    Glass Meadows Psycho  x0.8 1.36 (1.36-1.36) 0/1 | x0.9 1.34 (1.34-1.34) 0/1 | x1 1.35 (1.35-1.35) 0/1 | x1.12 1.43 (1.43-1.43) 0/1 | x1.25 1.43 (1.43-1.43) 0/1
+    Shard Ridge Hard      x0.8 1.59 (1.59-1.59) 0/1 | x0.9 1.59 (1.59-1.59) 0/1 | x1 1.59 (1.59-1.59) 0/1 | x1.12 1.59 (1.59-1.59) 0/1 | x1.25 1.59 (1.59-1.59) 0/1
+    Shard Ridge Psycho    x0.8 1.57 (1.57-1.57) 0/1 | x0.9 1.61 (1.61-1.61) 0/1 | x1 1.63 (1.63-1.63) 0/1 | x1.12 1.62 (1.62-1.62) 0/1 | x1.25 1.63 (1.63-1.63) 0/1
+    Fault Line Hard       x0.8 1.83 (1.83-1.83) 0/1 | x0.9 1.83 (1.83-1.83) 0/1 | x1 1.74 (1.74-1.74) 1/1 | x1.12 1.85 (1.85-1.85) 0/1 | x1.25 1.84 (1.84-1.84) 0/1
+    Fault Line Psycho     x0.8 1.79 (1.79-1.79) 0/1 | x0.9 1.78 (1.78-1.78) 0/1 | x1 1.76 (1.76-1.76) 0/1 | x1.12 1.81 (1.81-1.81) 0/1 | x1.25 1.76 (1.76-1.76) 0/1
+    Quartz Flats Hard     x0.8 0.86 (0.86-0.86) 1/1 | x0.9 1.36 (1.36-1.36) 0/1 | x1 1.36 (1.36-1.36) 0/1 | x1.12 1.37 (1.37-1.37) 0/1 | x1.25 1.39 (1.39-1.39) 0/1
+    Quartz Flats Psycho   x0.8 1.43 (1.43-1.43) 0/1 | x0.9 1.44 (1.44-1.44) 0/1 | x1 1.53 (1.53-1.53) 0/1 | x1.12 1.57 (1.57-1.57) 0/1 | x1.25 1.54 (1.54-1.54) 0/1
+    Crysium Vein Hard     x0.8 1.13 (1.13-1.13) 1/1 | x0.9 1.63 (1.63-1.63) 0/1 | x1 1.63 (1.63-1.63) 0/1 | x1.12 1.63 (1.63-1.63) 0/1 | x1.25 1.64 (1.64-1.64) 0/1
+    Crysium Vein Psycho   x0.8 1.67 (1.67-1.67) 0/1 | x0.9 1.72 (1.72-1.72) 0/1 | x1 1.73 (1.73-1.73) 0/1 | x1.12 1.79 (1.79-1.79) 0/1 | x1.25 1.79 (1.79-1.79) 0/1
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  skilled     Landing Site Hard     A 0.238 (0.238-0.238)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  skilled     Landing Site Psycho   A 0.316 (0.316-0.316)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  skilled     Glass Meadows Hard    A 0.157 (0.157-0.157)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  skilled     Glass Meadows Psycho  A 0.119 (0.119-0.119)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  skilled     Shard Ridge Hard      A 0.542 (0.542-0.542)  D 1.00 (1.00-1.00)  leaked 0.038 (0.038-0.038)
+  skilled     Shard Ridge Psycho    A 0.589 (0.589-0.589)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  skilled     Fault Line Hard       A 0.777 (0.777-0.777)  D 1.00 (1.00-1.00)  leaked 0.047 (0.047-0.047)
+  skilled     Fault Line Psycho     A 0.827 (0.827-0.827)  D 1.00 (1.00-1.00)  leaked 0.024 (0.024-0.024)
+  skilled     Quartz Flats Hard     A 0.317 (0.317-0.317)  D 0.69 (0.69-0.69)  leaked 0.074 (0.074-0.074)
+  skilled     Quartz Flats Psycho   A 0.487 (0.487-0.487)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  skilled     Crysium Vein Hard     A 0.650 (0.650-0.650)  D 1.00 (1.00-1.00)  leaked 0.024 (0.024-0.024)
+  skilled     Crysium Vein Psycho   A 0.734 (0.734-0.734)  D 1.00 (1.00-1.00)  leaked 0.149 (0.149-0.149)
+  sensible    Landing Site Hard     A 0.218 (0.218-0.218)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  sensible    Landing Site Psycho   A 0.335 (0.335-0.335)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  sensible    Glass Meadows Hard    A 0.144 (0.144-0.144)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  sensible    Glass Meadows Psycho  A 0.430 (0.430-0.430)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  sensible    Shard Ridge Hard      A 0.576 (0.576-0.576)  D 1.00 (1.00-1.00)  leaked 0.050 (0.050-0.050)
+  sensible    Shard Ridge Psycho    A 0.618 (0.618-0.618)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  sensible    Fault Line Hard       A 0.843 (0.843-0.843)  D 0.79 (0.79-0.79)  leaked 0.130 (0.130-0.130)
+  sensible    Fault Line Psycho     A 0.792 (0.792-0.792)  D 1.00 (1.00-1.00)  leaked 0.065 (0.065-0.065)
+  sensible    Quartz Flats Hard     A 0.416 (0.416-0.416)  D 1.00 (1.00-1.00)  leaked 0.114 (0.114-0.114)
+  sensible    Quartz Flats Psycho   A 0.513 (0.513-0.513)  D 1.00 (1.00-1.00)  leaked 0.025 (0.025-0.025)
+  sensible    Crysium Vein Hard     A 0.645 (0.645-0.645)  D 1.00 (1.00-1.00)  leaked 0.027 (0.027-0.027)
+  sensible    Crysium Vein Psycho   A 0.739 (0.739-0.739)  D 1.00 (1.00-1.00)  leaked 0.169 (0.169-0.169)
+  cannon      Landing Site Hard     A 0.195 (0.195-0.195)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  cannon      Landing Site Psycho   A 0.125 (0.125-0.125)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  cannon      Glass Meadows Hard    A 0.055 (0.055-0.055)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  cannon      Glass Meadows Psycho  A 0.069 (0.069-0.069)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  cannon      Shard Ridge Hard      A 0.607 (0.607-0.607)  D 1.00 (1.00-1.00)  leaked 0.049 (0.049-0.049)
+  cannon      Shard Ridge Psycho    A 0.575 (0.575-0.575)  D 1.00 (1.00-1.00)  leaked 0.044 (0.044-0.044)
+  cannon      Fault Line Hard       A 0.850 (0.850-0.850)  D 1.00 (1.00-1.00)  leaked 0.131 (0.131-0.131)
+  cannon      Fault Line Psycho     A 0.855 (0.855-0.855)  D 1.00 (1.00-1.00)  leaked 0.027 (0.027-0.027)
+  cannon      Quartz Flats Hard     A 0.273 (0.273-0.273)  D 0.71 (0.71-0.71)  leaked 0.080 (0.080-0.080)
+  cannon      Quartz Flats Psycho   A 0.387 (0.387-0.387)  D 1.00 (1.00-1.00)  leaked 0.116 (0.116-0.116)
+  cannon      Crysium Vein Hard     A 0.616 (0.616-0.616)  D 0.21 (0.21-0.21)  leaked 0.020 (0.020-0.020)
+  cannon      Crysium Vein Psycho   A 0.724 (0.724-0.724)  D 1.00 (1.00-1.00)  leaked 0.152 (0.152-0.152)
+  laser       Landing Site Hard     A 0.271 (0.271-0.271)  D 1.00 (1.00-1.00)  leaked 0.013 (0.013-0.013)
+  laser       Landing Site Psycho   A 0.318 (0.318-0.318)  D 1.00 (1.00-1.00)  leaked 0.010 (0.010-0.010)
+  laser       Glass Meadows Hard    A 0.167 (0.167-0.167)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  laser       Glass Meadows Psycho  A 0.348 (0.348-0.348)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  laser       Shard Ridge Hard      A 0.591 (0.591-0.591)  D 1.00 (1.00-1.00)  leaked 0.044 (0.044-0.044)
+  laser       Shard Ridge Psycho    A 0.628 (0.628-0.628)  D 1.00 (1.00-1.00)  leaked 0.000 (0.000-0.000)
+  laser       Fault Line Hard       A 0.844 (0.844-0.844)  D 0.90 (0.90-0.90)  leaked 0.127 (0.127-0.127)
+  laser       Fault Line Psycho     A 0.758 (0.758-0.758)  D 1.00 (1.00-1.00)  leaked 0.025 (0.025-0.025)
+  laser       Quartz Flats Hard     A 0.363 (0.363-0.363)  D 1.00 (1.00-1.00)  leaked 0.123 (0.123-0.123)
+  laser       Quartz Flats Psycho   A 0.532 (0.532-0.532)  D 1.00 (1.00-1.00)  leaked 0.022 (0.022-0.022)
+  laser       Crysium Vein Hard     A 0.631 (0.631-0.631)  D 1.00 (1.00-1.00)  leaked 0.030 (0.030-0.030)
+  laser       Crysium Vein Psycho   A 0.731 (0.731-0.731)  D 1.00 (1.00-1.00)  leaked 0.180 (0.180-0.180)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<0.8' / '>1.25' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  skilled
+    Landing Site Hard     median 0.92   pooled 0.92   per seed: 0.92                                 spread -
+    Landing Site Psycho   median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Glass Meadows Hard    median 0.85   pooled 0.85   per seed: 0.85                                 spread -
+    Glass Meadows Psycho  median 0.85   pooled 0.85   per seed: 0.85                                 spread -
+    Shard Ridge Hard      median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Shard Ridge Psycho    median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Fault Line Hard       median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Fault Line Psycho     median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Quartz Flats Hard     median 0.85   pooled 0.85   per seed: 0.85                                 spread -
+    Quartz Flats Psycho   median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Crysium Vein Hard     median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Crysium Vein Psycho   median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+  sensible
+    Landing Site Hard     median 1.18   pooled 1.18   per seed: 1.18                                 spread -
+    Landing Site Psycho   median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Glass Meadows Hard    median 0.95   pooled 0.95   per seed: 0.95                                 spread -
+    Glass Meadows Psycho  median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Shard Ridge Hard      median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Shard Ridge Psycho    median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Fault Line Hard       median 0.83   pooled 0.83   per seed: 0.83                                 spread -
+    Fault Line Psycho     median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Quartz Flats Hard     median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Quartz Flats Psycho   median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Crysium Vein Hard     median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Crysium Vein Psycho   median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+  cannon
+    Landing Site Hard     median >1.25  pooled >1.25  per seed: >1.25                                spread -
+    Landing Site Psycho   median >1.25  pooled >1.25  per seed: >1.25                                spread -
+    Glass Meadows Hard    median 1.18   pooled 1.18   per seed: 1.18                                 spread -
+    Glass Meadows Psycho  median 1.06   pooled 1.06   per seed: 1.06                                 spread -
+    Shard Ridge Hard      median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Shard Ridge Psycho    median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Fault Line Hard       median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Fault Line Psycho     median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Quartz Flats Hard     median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Quartz Flats Psycho   median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Crysium Vein Hard     median 1.15   pooled 1.15   per seed: 1.15                                 spread -
+    Crysium Vein Psycho   median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+  laser
+    Landing Site Hard     median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Landing Site Psycho   median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Glass Meadows Hard    median 0.87   pooled 0.87   per seed: 0.87                                 spread -
+    Glass Meadows Psycho  median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Shard Ridge Hard      median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Shard Ridge Psycho    median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Fault Line Hard       median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Fault Line Psycho     median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Quartz Flats Hard     median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Quartz Flats Psycho   median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Crysium Vein Hard     median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+    Crysium Vein Psycho   median <0.8   pooled <0.8   per seed: <0.8                                 spread -
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x0.8   x0.9   x1     x1.12  x1.25  H50
+  skilled     Landing Site Hard     1/1    1/1    0/1    0/1    0/1    0.95
+  skilled     Landing Site Psycho   0/1    0/1    0/1    0/1    0/1    <0.8
+  skilled     Glass Meadows Hard    1/1    0/1    0/1    0/1    0/1    0.85
+  skilled     Glass Meadows Psycho  1/1    0/1    0/1    0/1    0/1    0.85
+  skilled     Shard Ridge Hard      1/1    0/1    0/1    0/1    0/1    0.85
+  skilled     Shard Ridge Psycho    0/1    0/1    0/1    0/1    0/1    <0.8
+  skilled     Fault Line Hard       0/1    0/1    0/1    0/1    0/1    <0.8
+  skilled     Fault Line Psycho     0/1    0/1    0/1    0/1    0/1    <0.8
+  skilled     Quartz Flats Hard     1/1    1/1    1/1    0/1    0/1    1.06
+  skilled     Quartz Flats Psycho   0/1    0/1    0/1    0/1    0/1    <0.8
+  skilled     Crysium Vein Hard     0/1    0/1    0/1    0/1    0/1    <0.8
+  skilled     Crysium Vein Psycho   0/1    0/1    0/1    0/1    0/1    <0.8
+  sensible    Landing Site Hard     1/1    1/1    1/1    1/1    0/1    1.18
+  sensible    Landing Site Psycho   0/1    0/1    0/1    0/1    0/1    <0.8
+  sensible    Glass Meadows Hard    1/1    1/1    0/1    0/1    0/1    0.95
+  sensible    Glass Meadows Psycho  0/1    0/1    0/1    0/1    0/1    <0.8
+  sensible    Shard Ridge Hard      1/1    0/1    0/1    0/1    0/1    0.85
+  sensible    Shard Ridge Psycho    0/1    0/1    0/1    0/1    0/1    <0.8
+  sensible    Fault Line Hard       1/1    0/1    1/1    1/1    0/1    0.85
+  sensible    Fault Line Psycho     0/1    0/1    0/1    0/1    0/1    <0.8
+  sensible    Quartz Flats Hard     1/1    0/1    0/1    0/1    0/1    0.85
+  sensible    Quartz Flats Psycho   0/1    0/1    0/1    0/1    0/1    <0.8
+  sensible    Crysium Vein Hard     0/1    0/1    0/1    0/1    0/1    <0.8
+  sensible    Crysium Vein Psycho   0/1    0/1    0/1    0/1    0/1    <0.8
+  cannon      Landing Site Hard     1/1    1/1    1/1    1/1    1/1    >1.25
+  cannon      Landing Site Psycho   1/1    1/1    1/1    1/1    1/1    >1.25
+  cannon      Glass Meadows Hard    1/1    1/1    1/1    1/1    0/1    1.18
+  cannon      Glass Meadows Psycho  1/1    1/1    1/1    0/1    0/1    1.06
+  cannon      Shard Ridge Hard      1/1    0/1    0/1    0/1    0/1    0.85
+  cannon      Shard Ridge Psycho    0/1    0/1    0/1    0/1    0/1    <0.8
+  cannon      Fault Line Hard       0/1    0/1    0/1    0/1    0/1    <0.8
+  cannon      Fault Line Psycho     0/1    0/1    0/1    0/1    0/1    <0.8
+  cannon      Quartz Flats Hard     1/1    1/1    1/1    1/1    0/1    1.18
+  cannon      Quartz Flats Psycho   0/1    0/1    0/1    0/1    0/1    <0.8
+  cannon      Crysium Vein Hard     1/1    1/1    1/1    1/1    0/1    1.18
+  cannon      Crysium Vein Psycho   0/1    0/1    0/1    0/1    0/1    <0.8
+  laser       Landing Site Hard     0/1    0/1    0/1    0/1    0/1    <0.8
+  laser       Landing Site Psycho   0/1    0/1    0/1    0/1    0/1    <0.8
+  laser       Glass Meadows Hard    1/1    1/1    0/1    0/1    0/1    0.95
+  laser       Glass Meadows Psycho  0/1    0/1    0/1    0/1    0/1    <0.8
+  laser       Shard Ridge Hard      0/1    0/1    0/1    0/1    0/1    <0.8
+  laser       Shard Ridge Psycho    0/1    0/1    0/1    0/1    0/1    <0.8
+  laser       Fault Line Hard       0/1    0/1    1/1    0/1    0/1    <0.8
+  laser       Fault Line Psycho     0/1    0/1    0/1    0/1    0/1    <0.8
+  laser       Quartz Flats Hard     1/1    0/1    0/1    0/1    0/1    0.85
+  laser       Quartz Flats Psycho   0/1    0/1    0/1    0/1    0/1    <0.8
+  laser       Crysium Vein Hard     1/1    0/1    0/1    0/1    0/1    0.85
+  laser       Crysium Vein Psycho   0/1    0/1    0/1    0/1    0/1    <0.8
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  skilled     Landing Site Hard       9   9   9   9   8   8  41  74  20  28  55  16
+                                    base hit: w12 1/1
+  skilled     Landing Site Psycho     8   8   8  10  71  10  42  41  43  28  11   .
+                                    base hit: w11 1/1
+  skilled     Glass Meadows Hard      4   1   1   2   3   4   7   2  46  80  18  21
+                                    base hit: w12 1/1
+  skilled     Glass Meadows Psycho    1   1   1   4   5   7   6   3  32  45  36   2
+                                    base hit: w12 1/1
+  skilled     Shard Ridge Hard       58  47  38  42  43  62  49  54  46  79  72  69  51  71  75  10
+                                    base hit: w12 1/1, w13 1/1, w15 1/1, w16 1/1
+  skilled     Shard Ridge Psycho     55  46  50  59  37  65  53  46  47  45  36   3   .   .   .   .
+                                    base hit: w11 1/1, w12 1/1
+  skilled     Fault Line Hard        88  80  78  80  80  89  81  79  85  78  85  78  81  70  12   .
+                                    base hit: w10 1/1, w12 1/1, w13 1/1, w14 1/1, w15 1/1
+  skilled     Fault Line Psycho      89  81  80  82  93  81  69  80  80  37  52   .   .   .   .   .
+                                    base hit: w11 1/1
+  skilled     Quartz Flats Hard       8   7   9  49  10  45  10  32  11  46  67  57  47  50  25  36  31
+                                    base hit: w14 1/1, w15 1/1
+  skilled     Quartz Flats Psycho     6   5   7  39  19  38  30  30  11  35   8   .   .   .   .   .   .
+                                    base hit: w11 1/1
+  skilled     Crysium Vein Hard      76  65  39  50  54  75  47  63  53  60  76  84  55  78  72  25   .   .
+                                    base hit: w12 1/1, w16 1/1
+  skilled     Crysium Vein Psycho    74  63  51  52  63  62  89  70  72  61  51  12   .   .   .   .   .   .
+                                    base hit: w9 1/1, w11 1/1, w12 1/1
+  sensible    Landing Site Hard       8   8   8   9   8   9  41  65  26  28  39  13
+                                    base hit: never
+  sensible    Landing Site Psycho     8   8   9  10  73  11  43  52  45  28  16   .
+                                    base hit: w11 1/1
+  sensible    Glass Meadows Hard      4   4   2   3   3   5   8   3  48  66  18   8
+                                    base hit: w12 1/1
+  sensible    Glass Meadows Psycho    1   2   1   6  44  52  63  35  12   .   .   .
+                                    base hit: w9 1/1
+  sensible    Shard Ridge Hard       65  49  41  44  45  58  44  46  43  55  61  60  10   .   .   .
+                                    base hit: w12 1/1, w13 1/1
+  sensible    Shard Ridge Psycho     45  40  38  64  41  63  48  42  45  41  23   .   .   .   .   .
+                                    base hit: w11 1/1
+  sensible    Fault Line Hard        91  81  79  82  86  82  81  77  80  91  91  88  78  83  88  90
+                                    base hit: w16 1/1
+  sensible    Fault Line Psycho      76  67  79  77  87  74  78  84  86  60  78  71  51   .   .   .
+                                    base hit: w4 1/1, w5 1/1, w6 1/1, w11 1/1, w13 1/1
+  sensible    Quartz Flats Hard       9   8   9  49  10  47   9  34  11  44  57  49  48  24   .   .   .
+                                    base hit: w14 1/1
+  sensible    Quartz Flats Psycho     8   8   9  50  21  44  40  35  19  33   4   .   .   .   .   .   .
+                                    base hit: w6 1/1, w7 1/1, w9 1/1, w10 1/1, w11 1/1
+  sensible    Crysium Vein Hard      76  66  39  50  53  71  47  65  53  61  74  83  55  79  65  23   .   .
+                                    base hit: w9 1/1, w15 1/1, w16 1/1
+  sensible    Crysium Vein Psycho    68  41  44  46  64  59  87  69  68  51  34   .   .   .   .   .   .   .
+                                    base hit: w6 1/1, w7 1/1, w9 1/1, w11 1/1
+  cannon      Landing Site Hard       8   8   8   9   9   9  41  63  24  27  15  12
+                                    base hit: never
+  cannon      Landing Site Psycho     9   8   9   8  11  10  32  12  13  16  11  10
+                                    base hit: never
+  cannon      Glass Meadows Hard      4   4   3   5   6   4   6   4   7  12   5   6
+                                    base hit: never
+  cannon      Glass Meadows Psycho    4   3   2   6   6   7   7   2   7  25   8   6
+                                    base hit: never
+  cannon      Shard Ridge Hard       66  53  41  44  48  67  49  59  49  58  62  60  14   .   .   .
+                                    base hit: w12 1/1, w13 1/1
+  cannon      Shard Ridge Psycho     55  48  47  60  37  66  53  43  50  44  64  50   3   .   .   .
+                                    base hit: w12 1/1, w13 1/1
+  cannon      Fault Line Hard        91  82  81  83  86  85  82  78  82  91  91  90  80  83  87  90
+                                    base hit: w13 1/1, w16 1/1
+  cannon      Fault Line Psycho      91  81  91  84  90  84  83  84  85  63  77  80  75   .   .   .
+                                    base hit: w4 1/1, w5 1/1, w13 1/1
+  cannon      Quartz Flats Hard       9   9   9  49   9  45   9  33  10  46  59  41  46  26  13  39  12
+                                    base hit: w14 1/1, w15 1/1, w17 1/1
+  cannon      Quartz Flats Psycho     8   8   9  51  10  39   9  34  11  40  49  32  49   8   .   .   .
+                                    base hit: w6 1/1, w9 1/1, w11 1/1, w14 1/1
+  cannon      Crysium Vein Hard      76  67  40  52  56  75  47  67  52  60  78  71  54  70  63  56  63  61
+                                    base hit: w9 1/1, w15 1/1, w18 1/1
+  cannon      Crysium Vein Psycho    75  63  49  51  62  61  90  70  72  55  47   8   .   .   .   .   .   .
+                                    base hit: w6 1/1, w7 1/1, w9 1/1, w11 1/1, w12 1/1
+  laser       Landing Site Hard       9   9   8   9   8   8  44  46  48  21  15   .
+                                    base hit: w11 1/1
+  laser       Landing Site Psycho     8   9   9  10  79  11  58  74  35  45  34  11
+                                    base hit: w12 1/1
+  laser       Glass Meadows Hard      4   2   1   4   4   6  12  15  24  19   9   .
+                                    base hit: w11 1/1
+  laser       Glass Meadows Psycho    1   2   1   6  47  52  65  23  15   4   .   .
+                                    base hit: w9 1/1, w10 1/1
+  laser       Shard Ridge Hard       66  53  41  44  48  58  48  55  46  55  62  60  10   .   .   .
+                                    base hit: w12 1/1, w13 1/1
+  laser       Shard Ridge Psycho     50  42  41  66  38  62  48  54  48  40  16   .   .   .   .   .
+                                    base hit: w11 1/1
+  laser       Fault Line Hard        91  82  81  83  85  84  81  77  79  91  91  87  78  81  89  90
+                                    base hit: w16 1/1
+  laser       Fault Line Psycho      76  66  77  75  89  67  69  83  84  47  67  13   .   .   .   .
+                                    base hit: w4 1/1, w5 1/1, w11 1/1, w12 1/1
+  laser       Quartz Flats Hard       9   9  10  48  10  46   9  36  10  47  59  41  46  25  13   .   .
+                                    base hit: w9 1/1, w14 1/1, w15 1/1
+  laser       Quartz Flats Psycho     9   8   9  50  48  44  26  40  45  52  62  12   .   .   .   .   .
+                                    base hit: w6 1/1, w9 1/1, w11 1/1, w12 1/1
+  laser       Crysium Vein Hard      70  64  42  49  51  66  46  69  53  59  73  82  54  74  66  15   .   .
+                                    base hit: w9 1/1, w12 1/1, w15 1/1, w16 1/1
+  laser       Crysium Vein Psycho    59  41  43  46  66  56  86  69  67  50  32   .   .   .   .   .   .   .
+                                    base hit: w6 1/1, w7 1/1, w9 1/1, w11 1/1
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  skilled     Landing Site Hard     lost w12/12; built 16, upgrades 17, left 34, earned 2168, repairs 120
+                                    w1 build Cannon@11,2; w1 build Cannon@12,7; w3 build PulseRifle@9,3; w4 upgrade@9,3; w5 upgrade@9,3; w7 build Cannon@21,18; w8 build PulseRifle@10,6; w8 upgrade@10,6; w9 build PulseRifle@9,6; w9 upgrade@9,6; w9 build PulseRifle@5,14; w10 upgrade@5,14
+  skilled     Landing Site Psycho   lost w11/12; built 11, upgrades 11, left 9, earned 1272, repairs 60
+                                    w1 build Cannon@11,6; w1 build PulseRifle@10,6; w1 build PulseRifle@9,6; w1 upgrade@10,6; w1 upgrade@10,6; w1 build Cannon@12,2; w1 upgrade@9,6; w1 upgrade@9,6; w1 build PulseRifle@9,3; w1 upgrade@9,3; w3 upgrade@9,3; w5 upgrade@11,6
+  skilled     Glass Meadows Hard    lost w12/12; built 13, upgrades 11, left 17, earned 1554, repairs 230
+                                    w1 build Cannon@1,15; w1 build Cannon@1,14; w2 build PulseRifle@4,15; w4 build PulseRifle@1,13; w6 upgrade@4,15; w6 upgrade@1,13; w7 build Cannon@4,13; w8 build PulseRifle@4,14; w8 upgrade@4,14; w8 build PulseRifle@7,6; w9 build Cannon@16,20; w9 upgrade@7,6
+  skilled     Glass Meadows Psycho  lost w12/12; built 14, upgrades 16, left 45, earned 2055, repairs 104
+                                    w1 build Cannon@1,15; w1 build Cannon@4,15; w1 build Cannon@1,13; w1 build Cannon@1,14; w1 upgrade@4,15; w1 upgrade@1,15; w1 build PulseRifle@4,13; w1 upgrade@4,13; w3 upgrade@4,13; w6 build PulseRifle@4,14; w6 upgrade@4,14; w6 drone RepairDrone@0,0
+  skilled     Shard Ridge Hard      lost w16/16; built 11, upgrades 7, left 11, earned 1081, repairs 238
+                                    w1 build Cannon@12,10; w1 build Cannon@12,11; w2 build PulseRifle@11,11; w7 drone HarvestDrone@0,0; w8 build Rocket@33,10; w9 upgrade@11,11; w9 build PulseRifle@13,11; w10 upgrade@13,11; w10 build PulseRifle@14,11; w10 upgrade@14,11; w12 upgrade@12,10; w12 build PulseRifle@21,11
+  skilled     Shard Ridge Psycho    lost w12/16; built 12, upgrades 4, left 381, earned 1567, repairs 60
+                                    w1 build Cannon@12,10; w1 build Cannon@12,11; w1 build Cannon@13,10; w1 build Cannon@13,11; w1 build Cannon@11,10; w1 build Cannon@11,11; w1 build Cannon@33,11; w4 drone RepairDrone@0,0; w5 build PulseRifle@14,11; w6 upgrade@14,11; w8 sell@12,10; w8 build Rocket@32,10
+  skilled     Fault Line Hard       lost w15/16; built 9, upgrades 8, left 51, earned 1132, repairs 163
+                                    w1 build Cannon@29,6; w1 build Rocket@34,9; w3 build PulseRifle@29,5; w6 gate gates@33,8; w6 upgrade@29,5; w9 upgrade@29,5; w9 build PulseRifle@32,6; w10 upgrade@32,6; w10 build PulseRifle@32,5; w11 upgrade@32,5; w13 build PulseRifle@28,6; w13 upgrade@28,6
+  skilled     Fault Line Psycho     lost w11/16; built 11, upgrades 6, left 19, earned 1172, repairs 157
+                                    w1 build Cannon@32,6; w1 build Rocket@33,9; w1 build Cannon@29,6; w1 drone HarvestDrone@0,0; w1 build Cannon@30,9; w1 build Rocket@32,9; w1 build PulseRifle@29,5; w1 sell@32,6; w1 build Rocket@34,9; w4 upgrade@29,5; w4 build PulseRifle@28,6; w4 upgrade@28,6
+  skilled     Quartz Flats Hard     won w17/17; built 15, upgrades 18, left 272, earned 2861, repairs 269
+                                    w1 build Cannon@3,11; w1 build Rocket@34,3; w1 build PulseRifle@7,13; w5 drone HarvestDrone@0,0; w6 upgrade@7,13; w7 upgrade@34,3; w7 upgrade@7,13; w8 build PulseRifle@3,15; w9 build Cannon@30,5; w10 build Rocket@34,4; w11 build Rocket@33,3; w13 upgrade@3,15
+  skilled     Quartz Flats Psycho   lost w11/17; built 12, upgrades 10, left 73, earned 1904, repairs 141
+                                    w1 build Cannon@3,15; w1 build Rocket@34,4; w1 build Cannon@3,11; w1 drone HarvestDrone@0,0; w1 build Cannon@7,11; w1 build Rocket@33,4; w1 build Cannon@3,16; w1 build PulseRifle@34,0; w1 upgrade@34,0; w3 upgrade@34,4; w4 build PulseRifle@7,13; w4 upgrade@7,13
+  skilled     Crysium Vein Hard     lost w16/18; built 13, upgrades 8, left 8, earned 1556, repairs 0
+                                    w1 build Cannon@12,10; w1 build Cannon@13,10; w1 build Cannon@14,7; w5 drone HarvestDrone@0,0; w7 build Rocket@36,10; w9 build Rocket@36,11; w9 mine Mine@5,15; w9 mine Mine@5,15; w10 mine Mine@36,15; w10 mine Mine@36,22; w10 field SlowField@41,9; w11 build PulseRifle@12,11
+  skilled     Crysium Vein Psycho   lost w12/18; built 13, upgrades 5, left 38, earned 1456, repairs 201
+                                    w1 build Cannon@14,7; w1 build Rocket@36,10; w1 build Cannon@12,10; w1 drone HarvestDrone@0,0; w1 build Cannon@13,10; w1 build Rocket@36,7; w1 build Cannon@13,11; w1 sell@14,7; w1 build Rocket@34,10; w3 build PulseRifle@12,11; w3 upgrade@12,11; w4 field SlowField@41,9
+  sensible    Landing Site Hard     won w12/12; built 17, upgrades 13, left 18, earned 2149, repairs 180
+                                    w1 build Cannon@11,6; w1 build Cannon@12,6; w3 build PulseRifle@10,6; w4 upgrade@10,6; w5 build PulseRifle@19,14; w6 upgrade@19,14; w6 build PulseRifle@12,7; w8 build Cannon@21,18; w9 upgrade@12,7; w10 upgrade@11,6; w11 upgrade@12,6; w11 build PulseRifle@9,6
+  sensible    Landing Site Psycho   lost w11/12; built 9, upgrades 4, left 49, earned 1236, repairs 180
+                                    w1 build Cannon@11,6; w1 build Laser@10,6; w1 build Laser@12,7; w1 build Laser@19,14; w1 build Cannon@12,6; w2 upgrade@10,6; w3 build PulseRifle@9,6; w4 upgrade@9,6; w6 build PulseRifle@13,6; w6 upgrade@13,6; w9 build Cannon@21,18; w10 upgrade@11,6
+  sensible    Glass Meadows Hard    lost w12/12; built 10, upgrades 8, left 10, earned 1216, repairs 120
+                                    w1 build Cannon@4,13; w1 build Cannon@4,14; w2 build PulseRifle@1,15; w3 upgrade@1,15; w5 build PulseRifle@4,15; w5 upgrade@4,15; w6 build PulseRifle@13,17; w7 build PulseRifle@4,12; w8 upgrade@4,13; w8 upgrade@13,17; w9 build Cannon@1,13; w9 upgrade@4,12
+  sensible    Glass Meadows Psycho  lost w9/12; built 8, upgrades 2, left 47, earned 1026, repairs 60
+                                    w1 build Cannon@4,13; w1 build Laser@1,14; w1 build Laser@4,14; w1 build Laser@1,15; w1 build Laser@13,16; w1 build PulseRifle@4,15; w2 upgrade@4,15; w4 build PulseRifle@13,17; w8 build Cannon@4,12; w8 upgrade@4,13
+  sensible    Shard Ridge Hard      lost w13/16; built 9, upgrades 5, left 35, earned 818, repairs 0
+                                    w1 build Cannon@13,10; w3 build PulseRifle@12,10; w4 upgrade@12,10; w5 build PulseRifle@13,11; w7 upgrade@13,11; w7 build PulseRifle@31,10; w8 build Cannon@32,12; w10 build Rocket@34,10; w10 build PulseRifle@14,10; w10 build PulseRifle@14,11; w11 upgrade@31,10; w11 upgrade@14,10
+  sensible    Shard Ridge Psycho    lost w11/16; built 10, upgrades 5, left 38, earned 1219, repairs 0
+                                    w1 build Cannon@13,10; w1 build Laser@12,10; w1 build Laser@13,11; w1 build Laser@30,10; w1 build Cannon@32,12; w3 build PulseRifle@31,10; w4 upgrade@31,10; w5 build PulseRifle@14,10; w6 upgrade@14,10; w8 upgrade@12,10; w8 build PulseRifle@14,11; w9 upgrade@13,10
+  sensible    Fault Line Hard       won w16/16; built 18, upgrades 12, left 50, earned 2416, repairs 421
+                                    w1 build Cannon@32,5; w2 build Rocket@34,9; w3 build PulseRifle@32,6; w6 build Rocket@33,9; w7 upgrade@32,6; w8 build PulseRifle@29,5; w10 build Cannon@33,6; w10 upgrade@32,5; w13 upgrade@34,9; w13 upgrade@29,5; w13 build PulseRifle@30,9; w13 upgrade@30,9
+  sensible    Fault Line Psycho     lost w13/16; built 12, upgrades 2, left 72, earned 1601, repairs 409
+                                    w1 build Cannon@32,5; w1 build Laser@29,6; w1 build Laser@29,5; w1 build Laser@31,10; w1 build Laser@32,6; w2 build Rocket@34,9; w3 build PulseRifle@30,9; w5 build Rocket@33,9; w7 build Cannon@33,6; w8 upgrade@34,9; w10 upgrade@32,5; w11 build PulseRifle@37,9
+  sensible    Quartz Flats Hard     lost w14/17; built 13, upgrades 8, left 94, earned 1424, repairs 71
+                                    w1 build Cannon@7,11; w1 build PulseRifle@7,10; w2 upgrade@7,10; w3 build Rocket@34,4; w3 build PulseRifle@8,10; w5 upgrade@8,10; w5 upgrade@7,10; w7 build Rocket@35,4; w9 build Cannon@8,7; w10 build PulseRifle@6,11; w10 upgrade@6,11; w11 build Cannon@30,5
+  sensible    Quartz Flats Psycho   lost w11/17; built 10, upgrades 6, left 27, earned 1729, repairs 240
+                                    w1 build Cannon@7,11; w1 build Laser@6,12; w1 build Laser@8,11; w1 build Laser@14,15; w1 build Laser@6,11; w1 build Cannon@7,10; w2 upgrade@6,12; w3 build Rocket@34,4; w3 build PulseRifle@8,10; w4 upgrade@8,10; w8 build Rocket@35,4; w9 upgrade@7,11
+  sensible    Crysium Vein Hard     lost w16/18; built 14, upgrades 11, left 76, earned 1543, repairs 116
+                                    w1 build Cannon@13,10; w1 build PulseRifle@14,10; w3 upgrade@14,10; w4 build PulseRifle@14,11; w5 build PulseRifle@32,10; w5 upgrade@14,11; w6 upgrade@32,10; w7 build Rocket@36,10; w7 build PulseRifle@14,7; w7 upgrade@14,7; w8 build PulseRifle@15,10; w9 build Cannon@15,11
+  sensible    Crysium Vein Psycho   lost w11/18; built 15, upgrades 1, left 25, earned 1433, repairs 33
+                                    w1 build Cannon@13,10; w1 build Laser@13,11; w1 build Laser@14,7; w1 build Laser@32,11; w1 build Laser@14,11; w1 build Laser@15,11; w3 build PulseRifle@14,10; w3 upgrade@14,10; w4 build Rocket@36,10; w4 build PulseRifle@32,10; w5 build PulseRifle@15,10; w7 build Rocket@37,11
+  cannon      Landing Site Hard     won w12/12; built 12, upgrades 10, left 2, earned 2139, repairs 180
+                                    w1 build Cannon@11,6; w1 build Cannon@12,6; w4 upgrade@11,6; w6 build Cannon@12,7; w8 build Cannon@21,18; w9 upgrade@12,6; w10 upgrade@12,7; w11 build Cannon@19,14; w11 upgrade@21,18; w11 build Cannon@10,6; w12 upgrade@19,14; w12 build Cannon@13,6
+  cannon      Landing Site Psycho   won w12/12; built 13, upgrades 12, left 453, earned 3046, repairs 397
+                                    w1 build Cannon@11,6; w1 build Cannon@12,6; w1 upgrade@11,6; w1 build Cannon@12,7; w1 upgrade@12,6; w1 build Cannon@19,14; w3 upgrade@12,7; w6 build Cannon@10,6; w7 upgrade@19,14; w7 build Cannon@13,6; w7 upgrade@10,6; w8 build Cannon@13,7
+  cannon      Glass Meadows Hard    won w12/12; built 12, upgrades 10, left 50, earned 2122, repairs 112
+                                    w1 build Cannon@4,13; w1 build Cannon@4,14; w4 upgrade@4,13; w6 build Cannon@4,15; w7 upgrade@4,14; w8 build Cannon@13,17; w9 upgrade@4,15; w9 build Cannon@1,15; w10 upgrade@13,17; w10 build Cannon@4,12; w10 upgrade@1,15; w10 build Cannon@1,13
+  cannon      Glass Meadows Psycho  won w12/12; built 14, upgrades 13, left 416, earned 3170, repairs 340
+                                    w1 build Cannon@4,13; w1 build Cannon@4,14; w1 upgrade@4,13; w1 build Cannon@4,15; w1 upgrade@4,14; w1 build Cannon@13,17; w1 upgrade@4,15; w5 build Cannon@1,15; w6 upgrade@13,17; w6 build Cannon@4,12; w6 upgrade@1,15; w6 build Cannon@1,13
+  cannon      Shard Ridge Hard      lost w13/16; built 6, upgrades 2, left 10, earned 843, repairs 63
+                                    w1 build Cannon@13,10; w5 build Cannon@13,11; w7 upgrade@13,10; w8 build Cannon@12,10; w10 build Rocket@34,10; w10 upgrade@13,11; w12 build Cannon@32,12; w13 build Rocket@35,10
+  cannon      Shard Ridge Psycho    lost w13/16; built 10, upgrades 7, left 97, earned 1633, repairs 0
+                                    w1 build Cannon@13,10; w1 build Cannon@13,11; w1 upgrade@13,10; w1 build Cannon@12,10; w1 upgrade@13,11; w1 build Cannon@32,12; w4 upgrade@12,10; w7 build Cannon@14,10; w8 upgrade@32,12; w10 build Rocket@34,10; w10 build Cannon@14,11; w10 upgrade@14,10
+  cannon      Fault Line Hard       lost w16/16; built 11, upgrades 7, left 43, earned 1994, repairs 314
+                                    w1 build Cannon@32,5; w2 build Rocket@34,9; w5 build Rocket@33,9; w7 build Cannon@32,6; w9 upgrade@32,5; w10 build Cannon@33,6; w12 upgrade@32,6; w13 upgrade@34,9; w13 build Cannon@30,9; w13 upgrade@33,6; w14 build Cannon@31,9; w14 upgrade@30,9
+  cannon      Fault Line Psycho     lost w13/16; built 10, upgrades 6, left 14, earned 1677, repairs 218
+                                    w1 build Cannon@32,5; w1 build Cannon@32,6; w1 upgrade@32,5; w1 build Cannon@33,6; w1 upgrade@32,6; w1 build Cannon@30,9; w2 build Rocket@34,9; w4 build Rocket@33,9; w6 upgrade@34,9; w9 build Rocket@35,9; w11 upgrade@33,6; w11 build Rocket@33,9
+  cannon      Quartz Flats Hard     won w17/17; built 15, upgrades 12, left 79, earned 2861, repairs 370
+                                    w1 build Cannon@7,11; w2 build Cannon@7,10; w3 build Rocket@34,4; w5 upgrade@7,11; w7 build Rocket@35,4; w9 build Cannon@8,10; w9 upgrade@7,10; w10 build Cannon@30,5; w11 upgrade@8,10; w12 upgrade@34,4; w13 build Cannon@8,7; w13 upgrade@30,5
+  cannon      Quartz Flats Psycho   lost w14/17; built 14, upgrades 10, left 84, earned 2311, repairs 60
+                                    w1 build Cannon@7,11; w1 build Cannon@7,10; w1 upgrade@7,11; w1 build Cannon@8,10; w1 upgrade@7,10; w1 build Cannon@8,7; w1 upgrade@8,10; w2 build Cannon@6,11; w3 build Rocket@34,4; w5 upgrade@8,7; w7 build Rocket@35,4; w7 build Cannon@7,8
+  cannon      Crysium Vein Hard     won w18/18; built 17, upgrades 14, left 82, earned 2939, repairs 60
+                                    w1 build Cannon@13,10; w3 build Cannon@14,10; w5 upgrade@13,10; w7 build Rocket@36,10; w7 build Cannon@14,7; w8 upgrade@14,10; w9 build Rocket@37,11; w10 build Cannon@32,10; w12 upgrade@36,10; w12 upgrade@14,7; w13 build Cannon@14,11; w13 upgrade@32,10
+  cannon      Crysium Vein Psycho   lost w12/18; built 9, upgrades 5, left 58, earned 1459, repairs 228
+                                    w1 build Cannon@13,10; w1 build Cannon@14,10; w1 upgrade@13,10; w1 build Cannon@14,7; w1 upgrade@14,10; w1 build Cannon@32,10; w1 upgrade@14,7; w2 build Cannon@14,11; w4 build Rocket@36,10; w5 upgrade@32,10; w6 build Rocket@37,11; w8 upgrade@36,10
+  laser       Landing Site Hard     lost w11/12; built 6, upgrades 2, left 6, earned 879, repairs 180
+                                    w1 build Cannon@11,6; w2 build Laser@10,6; w5 build Laser@12,7; w6 upgrade@10,6; w8 build Cannon@21,18; w10 upgrade@11,6; w11 build PulseRifle@33,15; w11 build Cannon@12,6
+  laser       Landing Site Psycho   lost w12/12; built 9, upgrades 6, left 8, earned 1344, repairs 0
+                                    w1 build Cannon@11,6; w1 build Laser@10,6; w1 build Laser@12,7; w1 upgrade@10,6; w1 build Laser@19,14; w1 upgrade@12,7; w4 build Laser@9,6; w6 build Cannon@12,6; w7 upgrade@19,14; w9 build Cannon@21,18; w10 build Laser@13,7; w10 upgrade@9,6
+  laser       Glass Meadows Hard    lost w11/12; built 6, upgrades 2, left 57, earned 927, repairs 180
+                                    w1 build Cannon@4,13; w1 build Laser@1,14; w5 build Laser@4,14; w8 build Cannon@4,15; w8 upgrade@4,13; w8 upgrade@1,14; w9 build Cannon@13,17; w11 build PulseRifle@35,16
+  laser       Glass Meadows Psycho  lost w10/12; built 7, upgrades 4, left 50, earned 1042, repairs 0
+                                    w1 build Cannon@4,13; w1 build Laser@1,14; w1 build Laser@4,14; w1 upgrade@1,14; w1 build Laser@1,15; w1 upgrade@4,14; w3 build Laser@13,16; w5 build Cannon@4,15; w8 upgrade@4,13; w8 upgrade@1,15; w9 build PulseRifle@35,16
+  laser       Shard Ridge Hard      lost w13/16; built 7, upgrades 1, left 15, earned 808, repairs 0
+                                    w1 build Cannon@13,10; w5 build Laser@12,10; w8 build Cannon@13,11; w10 build Rocket@34,10; w10 build Laser@30,10; w10 upgrade@12,10; w12 build Laser@11,10; w13 build Rocket@37,10
+  laser       Shard Ridge Psycho    lost w11/16; built 8, upgrades 4, left 65, earned 1170, repairs 0
+                                    w1 build Cannon@13,10; w1 build Laser@12,10; w1 build Laser@13,11; w1 upgrade@12,10; w1 build Laser@30,10; w1 upgrade@13,11; w5 build Laser@11,10; w6 build Cannon@32,12; w9 upgrade@30,10; w9 upgrade@13,10; w10 build Rocket@34,10; w11 build PulseRifle@37,10
+  laser       Fault Line Hard       won w16/16; built 14, upgrades 8, left 29, earned 2421, repairs 442
+                                    w1 build Cannon@32,5; w2 build Rocket@34,9; w5 build Rocket@33,9; w8 build Laser@29,6; w9 build Cannon@32,6; w11 upgrade@32,5; w13 upgrade@34,9; w13 build Laser@29,6; w13 build Laser@29,5; w13 upgrade@29,6; w14 build Laser@31,10; w14 upgrade@29,5
+  laser       Fault Line Psycho     lost w12/16; built 10, upgrades 4, left 18, earned 1217, repairs 121
+                                    w1 build Cannon@32,5; w1 build Laser@29,6; w1 build Laser@29,5; w1 upgrade@29,6; w1 build Laser@31,10; w1 upgrade@29,5; w2 build Rocket@34,9; w4 build Rocket@33,9; w5 upgrade@34,9; w7 build Cannon@32,6; w9 upgrade@32,5; w11 build Cannon@33,6
+  laser       Quartz Flats Hard     lost w15/17; built 10, upgrades 3, left 69, earned 1459, repairs 156
+                                    w1 build Cannon@7,11; w3 build Rocket@34,4; w3 build Laser@6,12; w6 build Laser@8,11; w8 build Cannon@7,10; w9 build Rocket@35,4; w9 upgrade@6,12; w10 build Cannon@30,5; w11 upgrade@7,11; w12 upgrade@34,4; w13 build Laser@8,11; w14 build Laser@14,15
+  laser       Quartz Flats Psycho   lost w12/17; built 9, upgrades 5, left 13, earned 1539, repairs 300
+                                    w1 build Cannon@7,11; w1 build Laser@6,12; w1 build Laser@8,11; w1 upgrade@6,12; w1 build Laser@14,15; w1 upgrade@8,11; w1 build Laser@6,11; w2 upgrade@14,15; w3 build Rocket@34,4; w6 build Rocket@35,4; w9 build Cannon@7,10; w11 upgrade@7,11
+  laser       Crysium Vein Hard     lost w16/18; built 10, upgrades 5, left 61, earned 1509, repairs 88
+                                    w1 build Cannon@13,10; w3 build Laser@13,11; w6 build Laser@14,7; w7 build Rocket@36,10; w7 upgrade@13,11; w9 build Cannon@14,10; w9 build Rocket@37,11; w12 build Laser@32,11; w12 upgrade@14,7; w12 upgrade@36,10; w13 build Laser@14,11; w13 upgrade@32,11
+  laser       Crysium Vein Psycho   lost w11/18; built 12, upgrades 3, left 7, earned 1434, repairs 42
+                                    w1 build Cannon@13,10; w1 build Laser@13,11; w1 build Laser@14,7; w1 upgrade@13,11; w1 build Laser@32,11; w1 upgrade@14,7; w1 build Laser@14,11; w2 upgrade@32,11; w4 build Rocket@36,10; w5 build Laser@15,11; w6 build Rocket@37,11; w9 build Cannon@14,10
+
+Cost: 240 runs, 83 machine minutes of play (21 s a run), 0 reference runs for the typical scripts; 1 batches, 17 wall-clock minutes in all.
+  batch 1795144067: 48 units on 6 workers, 16.9 min

@@ -134,13 +134,57 @@ namespace Game.Balance
         }
 
         /// <summary>
+        /// Round 87: how far the derived health of a boss may lie from the health it was probed at while the finale stage
+        /// leaves it alone, when the finale player beat it on every difficulty. The one-seed probe's holding multiples differ
+        /// by up to 15 % between runs on identical data (ContinentFinaleTests holds the data to the same band).
+        /// </summary>
+        public const float SettledBand = 0.2f;
+
+        /// <summary>Whether the finale player beat the boss at the data on every difficulty that was probed.</summary>
+        public static bool BeatenEverywhere(IReadOnlyList<FinaleProbeCell> cells, string boss)
+        {
+            bool any = false;
+            foreach (FinaleProbeCell cell in cells)
+            {
+                if (cell.Boss != boss)
+                {
+                    continue;
+                }
+
+                any = true;
+                if (cell.Holds < 1f)
+                {
+                    return false;
+                }
+            }
+
+            return any;
+        }
+
+        /// <summary>
         /// The health the data should carry for a boss: its health when probed times Medium's holding multiple, with the hold share
-        /// of margin for a competent human (the finale bot is the reference, not the ceiling). -1 without a Medium cell.
+        /// of margin for a competent human (the finale bot is the reference, not the ceiling). Round 87: and never more than the
+        /// finale player of every other difficulty still beats (its own holding multiple, without margin), so the stage itself
+        /// brings a boss down that Medium carries and Hard or Psycho loses; no health is set by hand. -1 without a Medium cell.
         /// </summary>
         public static float DerivedHealth(IReadOnlyList<FinaleProbeCell> cells, string boss, BalanceRules rules)
         {
             FinaleProbeCell medium = Find(cells, boss, Medium);
-            return medium == null ? -1f : medium.HealthNow * medium.Holds * rules.FinaleHoldShare;
+            if (medium == null)
+            {
+                return -1f;
+            }
+
+            float holds = medium.Holds * rules.FinaleHoldShare;
+            foreach (FinaleProbeCell cell in cells)
+            {
+                if (cell.Boss == boss && cell.Difficulty != Medium && cell.Holds > 0f)
+                {
+                    holds = Math.Min(holds, cell.Holds);
+                }
+            }
+
+            return medium.HealthNow * holds;
         }
 
         /// <summary>

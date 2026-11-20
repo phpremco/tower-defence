@@ -15,12 +15,13 @@ MonoBehaviour:
   _displayName: data.enemy.CinderMatriarch.displayName
   _layer: 1
   _flies: 0
-  _maxHealth: 14400
-  _armor: 3600
+  _maxHealth: 10900
+  _armor: 10900
   _speed: 0.4
   _reward: 2407
   _baseDamage: 25
   _element: 0
+  _family: 0
   _attackStyle: 4
   _attackDamage: 0
   _blockadeDamage: 110

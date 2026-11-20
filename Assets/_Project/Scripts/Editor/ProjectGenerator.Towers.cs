@@ -30,6 +30,19 @@ namespace Game.Editor
         // so both reach as far as the Cannon; the ledger now counts what they really deal (TowerDefinition.LedgerEfficiency).
         internal const float LightGunReach = 4f;
 
+        // Round 87 (Remco: a Gun Turret "can't keep up with many fast small creatures"): a turret swings to each new
+        // target, and its first shot there comes this much later (Game.Towers.Retarget). On a loose Skitter stream (one a
+        // second) a level 1 Gun Turret loses about a seventh of its fire to it; the denser the swarm, the more, because
+        // every creature that dies or walks out of reach costs a swing. A beam does not swing: that is the Laser's role.
+        internal const float TurretRetargetSeconds = 0.15f;
+
+        internal static void SetRetarget(TowerDefinition tower, float seconds)
+        {
+            var so = new UnityEditor.SerializedObject(tower);
+            so.FindProperty("_retargetSeconds").floatValue = seconds;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         // Round 21a2, the swarm role in play: the probes measured the Gun Turret below the Cannon per coin even against loose
         // ants (9.2 against 11.4 DPS per 100 coins): the Cannon reloads slower now. A longer-reaching, faster gun (4.0, 0.30 s)
         // only made the ledger, which already rates it far above its in-play share, solve harsher waves (the greedy probe lost
@@ -45,7 +58,8 @@ namespace Game.Editor
             // creatures at most, so a flood of small ones is the light guns' work at every level).
             context.Pulse = CreateTower("PulseRifle", "Gun Turret", TargetLayers.Ground | TargetLayers.Air, BulletSpeed, 0f, new Color(0.3f, 0.7f, 1f),
                 Levels(Lvl(50, 5f, LightGunReach, 0.35f), Faster("Faster cycling", 9f / 0.3f), Harder("Heavier rounds", 15f / 0.25f)), 150f,
-                roleLine: "Light fire, cheap: streams of small creatures, runners and soft bodies. Only chips armour, and lands a fifth in the air.", roles: new[] { TowerRole.LightFire });
+                roleLine: "The all-rounder, cheap: soft bodies big and small, and a fifth in the air. Its turret has to swing to each new target, so a fast swarm outruns it. Only chips armour.", roles: new[] { TowerRole.LightFire });
+            SetRetarget(context.Pulse, TurretRetargetSeconds);
             context.Cannon = CreateTower("Cannon", "Cannon", TargetLayers.Ground, CannonShellSpeed, CannonSplash, new Color(1f, 0.8f, 0.3f),
                 Levels(Lvl(100, 25f, 4f, 1.6f), Harder("Heavier shells", 48f / 1.35f), Harder("High-explosive filler", 85f / 1.15f)), 220f, homing: false, splashTargets: CannonSplashTargets,
                 roleLine: "Blast: breaks bunched groups and strips armour. Cannot aim up, and its shell lands where a runner was.", roles: new[] { TowerRole.Splash, TowerRole.AntiArmour });

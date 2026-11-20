@@ -111,6 +111,16 @@ namespace Game.Tests
         /// </summary>
         public static ProbeStrategy SensibleBot() => new ProbeStrategy("sensible", roleSpots: true, style: PlayStyle.Sensible);
 
+        /// <summary>
+        /// An archetype of the sensible player (bot version 4, round 87): every rule of <see cref="SensibleBot()"/>, but the coins
+        /// the sensible player spends as the affordable buyer go to one ground gun of its liking (BalanceProbeTests.MainGunAct).
+        /// Same name as the sensible player, so the same seeded draws: where the gun is not owned the run is the sensible run.
+        /// </summary>
+        public static ProbeStrategy SensibleBot(string mainGunId) => new ProbeStrategy("sensible", roleSpots: true, style: PlayStyle.Sensible) { MainGun = mainGunId };
+
+        /// <summary>The tower id of the ground gun a sensible archetype builds its defence from; null for the sensible player itself.</summary>
+        public string MainGun { get; private set; }
+
         /// <summary>Replays a plan; placed exactly where the plan says.</summary>
         public static ProbeStrategy Scripted(PlanSpec plan) => new ProbeStrategy("plan " + plan.Name, style: PlayStyle.Scripted, plan: plan);
 

@@ -1,0 +1,71 @@
+| Cell | laser: seeds won, break-even | cannon: seeds won, break-even | sensible: seeds won, break-even | skilled: seeds won, break-even | More than one step apart |
+| --- | --- | --- | --- | --- | --- |
+| Landing Site Easy | `3 3 3 3 2 0` x2.09 (= sensible) | `3 3 3 3 3 1` x2.09 | `3 3 3 3 2 0` x2.09 | `3 3 3 3 3 0` x2.09 |  |
+| Landing Site Medium | `3 3 3 0 0 0` x1.18 (= sensible) | `3 3 3 3 3 2` >x1.66 | `3 3 3 0 0 0` x1.18 | `3 3 3 1 0 0` x1.18 | **laser x1.18 < cannon x1.66; sensible x1.18 < cannon x1.66; skilled x1.18 < cannon x1.66** |
+| Landing Site Hard | `0 0 0 0 0` <x0.75 | `3 3 3 3 2` >x1.32 | `3 2 0 0 0` x0.95 | `3 3 3 0 0` x1.06 | **laser x0.75 < cannon x1.32; laser x0.75 < sensible x0.95; laser x0.75 < skilled x1.06; sensible x0.95 < cannon x1.32; skilled x1.06 < cannon x1.32** |
+| Landing Site Psycho | `0 0 0 0 0` <x0.75 | `3 3 3 3 3` >x1.32 | `0 0 0 0 0` <x0.75 | `3 3 1 0 0` x0.95 | **laser x0.75 < cannon x1.32; laser x0.75 < skilled x0.95; sensible x0.75 < cannon x1.32; skilled x0.95 < cannon x1.32; sensible x0.75 < skilled x0.95** |
+| Glass Meadows Easy | `3 2 3 0 0 0` x1.66 | `3 3 3 3 3 3` >x2.34 | `3 2 0 0 0 0` x1.48 | `2 0 0 0 0 0` x1.32 | **laser x1.66 < cannon x2.34; skilled x1.32 < laser x1.66; sensible x1.48 < cannon x2.34; skilled x1.32 < cannon x2.34** |
+| Glass Meadows Medium | `3 3 3 2 0 0` x1.32 | `3 3 3 3 3 2` >x1.66 | `3 3 3 2 0 0` x1.32 | `3 3 3 3 2 1` x1.48 | **laser x1.32 < cannon x1.66; sensible x1.32 < cannon x1.66** |
+| Glass Meadows Hard | `3 3 0 0 0` x0.95 | `3 3 3 3 3` >x1.32 | `3 3 3 0 0` x1.06 | `3 2 0 0 0` x0.95 | **laser x0.95 < cannon x1.32; sensible x1.06 < cannon x1.32; skilled x0.95 < cannon x1.32** |
+| Glass Meadows Psycho | `1 0 0 0 0` <x0.75 | `3 3 3 3 1` x1.18 | `0 0 0 0 0` <x0.75 | `3 3 3 3 2` >x1.32 | **laser x0.75 < cannon x1.18; laser x0.75 < skilled x1.32; sensible x0.75 < cannon x1.18; sensible x0.75 < skilled x1.32** |
+| Shard Ridge Easy | `3 2 3 2 1 0` x1.86 | `3 3 3 2 0 1` x1.86 | `3 3 3 3 0 0` x1.86 | `3 3 3 3 0 0` x1.86 |  |
+| Shard Ridge Medium | `3 2 2 1 0 0` x1.18 | `3 2 1 0 0 0` x1.06 | `3 3 3 3 1 0` x1.32 | `3 2 1 3 0 0` x1.06 | **cannon x1.06 < sensible x1.32; skilled x1.06 < sensible x1.32** |
+| Shard Ridge Hard | `2 1 0 1 0` x0.85 | `3 2 1 1 0` x0.95 | `3 3 0 0 0` x0.95 | `3 2 0 0 0` x0.95 |  |
+| Shard Ridge Psycho | `0 0 0 0 0` <x0.75 | `0 0 0 0 0` <x0.75 | `0 0 0 0 0` <x0.75 | `3 3 3 1 0` x1.06 | **laser x0.75 < skilled x1.06; cannon x0.75 < skilled x1.06; sensible x0.75 < skilled x1.06** |
+| Fault Line Easy | `3 3 2 1 1 1` x1.66 | `2 3 3 1 0 1` x1.66 | `3 2 3 2 2 1` x2.09 | `3 3 3 0 0 0` x1.66 | **laser x1.66 < sensible x2.09; cannon x1.66 < sensible x2.09; skilled x1.66 < sensible x2.09** |
+| Fault Line Medium | `3 3 3 2 2 0` x1.48 | `3 3 3 2 1 0` x1.32 | `3 3 3 1 1 0` x1.18 | `3 2 1 0 0 0` x1.06 | **sensible x1.18 < laser x1.48; skilled x1.06 < laser x1.48; skilled x1.06 < cannon x1.32** |
+| Fault Line Hard | `3 2 3 2 0` x1.18 | `3 2 3 1 1` x1.06 | `3 3 3 1 0` x1.06 | `3 3 2 0 0` x1.06 |  |
+| Fault Line Psycho | `1 0 0 0 0` <x0.75 | `2 0 0 0 0` x0.85 | `0 0 0 0 0` <x0.75 | `0 0 0 0 0` <x0.75 |  |
+| Quartz Flats Easy | `3 3 3 3 1 1` x1.86 | `3 3 3 3 3 0` x2.09 | `3 3 2 3 1 2` x1.86 | `3 3 3 2 0 0` x1.86 |  |
+| Quartz Flats Medium | `3 3 3 3 2 0` x1.48 | `3 3 3 3 3 3` >x1.66 | `3 3 3 3 0 0` x1.32 | `3 3 3 2 0 0` x1.32 | **sensible x1.32 < cannon x1.66; skilled x1.32 < cannon x1.66** |
+| Quartz Flats Hard | `3 3 1 1 0` x0.95 | `3 3 3 3 2` >x1.32 | `2 1 0 0 1` x0.85 | `3 3 2 3 1` x1.18 | **laser x0.95 < cannon x1.32; laser x0.95 < skilled x1.18; sensible x0.85 < cannon x1.32; sensible x0.85 < skilled x1.18** |
+| Quartz Flats Psycho | `0 0 0 0 0` <x0.75 | `1 1 1 0 0` <x0.75 | `1 0 0 0 0` <x0.75 | `3 3 3 1 0` x1.06 | **laser x0.75 < skilled x1.06; cannon x0.75 < skilled x1.06; sensible x0.75 < skilled x1.06** |
+| Crysium Vein Easy | `3 3 3 2 0 0` x1.86 | `3 3 3 1 2 0` x1.66 | `3 3 1 0 1 0` x1.48 | `3 1 0 0 0 0` x1.32 | **sensible x1.48 < laser x1.86; skilled x1.32 < laser x1.86; skilled x1.32 < cannon x1.66** |
+| Crysium Vein Medium | `3 3 3 3 0 0` x1.32 | `3 3 3 3 3 0` x1.48 | `3 3 3 3 0 0` x1.32 | `3 3 3 0 0 0` x1.18 | **skilled x1.18 < cannon x1.48** |
+| Crysium Vein Hard | `3 3 0 1 0` x0.95 | `3 3 3 3 3` >x1.32 | `3 3 2 0 0` x1.06 | `3 2 2 0 0` x1.06 | **laser x0.95 < cannon x1.32; sensible x1.06 < cannon x1.32; skilled x1.06 < cannon x1.32** |
+| Crysium Vein Psycho | `0 0 0 0 0` <x0.75 | `0 0 0 0 0` <x0.75 | `0 0 0 0 0` <x0.75 | `3 3 3 3 0` x1.18 | **laser x0.75 < skilled x1.18; cannon x0.75 < skilled x1.18; sensible x0.75 < skilled x1.18** |
+
+Cells with two of laser, cannon, sensible, skilled more than one ladder step apart: 18
+  Landing Site Medium: laser x1.18 < cannon x1.66; sensible x1.18 < cannon x1.66; skilled x1.18 < cannon x1.66
+  Landing Site Hard: laser x0.75 < cannon x1.32; laser x0.75 < sensible x0.95; laser x0.75 < skilled x1.06; sensible x0.95 < cannon x1.32; skilled x1.06 < cannon x1.32
+  Landing Site Psycho: laser x0.75 < cannon x1.32; laser x0.75 < skilled x0.95; sensible x0.75 < cannon x1.32; skilled x0.95 < cannon x1.32; sensible x0.75 < skilled x0.95
+  Glass Meadows Easy: laser x1.66 < cannon x2.34; skilled x1.32 < laser x1.66; sensible x1.48 < cannon x2.34; skilled x1.32 < cannon x2.34
+  Glass Meadows Medium: laser x1.32 < cannon x1.66; sensible x1.32 < cannon x1.66
+  Glass Meadows Hard: laser x0.95 < cannon x1.32; sensible x1.06 < cannon x1.32; skilled x0.95 < cannon x1.32
+  Glass Meadows Psycho: laser x0.75 < cannon x1.18; laser x0.75 < skilled x1.32; sensible x0.75 < cannon x1.18; sensible x0.75 < skilled x1.32
+  Shard Ridge Medium: cannon x1.06 < sensible x1.32; skilled x1.06 < sensible x1.32
+  Shard Ridge Psycho: laser x0.75 < skilled x1.06; cannon x0.75 < skilled x1.06; sensible x0.75 < skilled x1.06
+  Fault Line Easy: laser x1.66 < sensible x2.09; cannon x1.66 < sensible x2.09; skilled x1.66 < sensible x2.09
+  Fault Line Medium: sensible x1.18 < laser x1.48; skilled x1.06 < laser x1.48; skilled x1.06 < cannon x1.32
+  Quartz Flats Medium: sensible x1.32 < cannon x1.66; skilled x1.32 < cannon x1.66
+  Quartz Flats Hard: laser x0.95 < cannon x1.32; laser x0.95 < skilled x1.18; sensible x0.85 < cannon x1.32; sensible x0.85 < skilled x1.18
+  Quartz Flats Psycho: laser x0.75 < skilled x1.06; cannon x0.75 < skilled x1.06; sensible x0.75 < skilled x1.06
+  Crysium Vein Easy: sensible x1.48 < laser x1.86; skilled x1.32 < laser x1.86; skilled x1.32 < cannon x1.66
+  Crysium Vein Medium: skilled x1.18 < cannon x1.48
+  Crysium Vein Hard: laser x0.95 < cannon x1.32; sensible x1.06 < cannon x1.32; skilled x1.06 < cannon x1.32
+  Crysium Vein Psycho: laser x0.75 < skilled x1.18; cannon x0.75 < skilled x1.18; sensible x0.75 < skilled x1.18
+
+Rungs that do not hold the lowest multiple of a cell: 17
+  Landing Site Hard laser (lowest multiple x0.8)
+  Landing Site Psycho laser (lowest multiple x0.8)
+  Landing Site Psycho sensible (lowest multiple x0.8)
+  Glass Meadows Psycho laser (lowest multiple x0.8)
+  Glass Meadows Psycho sensible (lowest multiple x0.8)
+  Shard Ridge Psycho laser (lowest multiple x0.8)
+  Shard Ridge Psycho cannon (lowest multiple x0.8)
+  Shard Ridge Psycho sensible (lowest multiple x0.8)
+  Fault Line Psycho laser (lowest multiple x0.8)
+  Fault Line Psycho sensible (lowest multiple x0.8)
+  Fault Line Psycho skilled (lowest multiple x0.8)
+  Quartz Flats Psycho laser (lowest multiple x0.8)
+  Quartz Flats Psycho cannon (lowest multiple x0.8)
+  Quartz Flats Psycho sensible (lowest multiple x0.8)
+  Crysium Vein Psycho laser (lowest multiple x0.8)
+  Crysium Vein Psycho cannon (lowest multiple x0.8)
+  Crysium Vein Psycho sensible (lowest multiple x0.8)
+
+Measured with (bot; data; game code):
+  laser: bot 4:ef00a6e8; data 7e43e381; game 751328ff
+  cannon: bot 4:ef00a6e8; data 7e43e381; game 751328ff
+  sensible: bot 4:ef00a6e8; data 7e43e381; game 751328ff
+  skilled: bot 4:ef00a6e8; data 7e43e381; game 751328ff

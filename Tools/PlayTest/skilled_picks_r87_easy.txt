@@ -1,0 +1,352 @@
+Measured with: bot 4:2f1c721c; data 7c44d895; game code c62834cd
+
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 101 of 105 curves monotone = 96.2%  ->  PASS
+  strategy1     16 of 18  curves (89%); 2 of 54 steps drop by more than the tolerance
+  strategy2     18 of 18  curves (100%); 0 of 54 steps drop by more than the tolerance
+  strategy3     18 of 18  curves (100%); 0 of 54 steps drop by more than the tolerance
+  strategy4     18 of 18  curves (100%); 0 of 54 steps drop by more than the tolerance
+  strategy5     18 of 18  curves (100%); 0 of 54 steps drop by more than the tolerance
+  strategy6     13 of 15  curves (87%); 2 of 45 steps drop by more than the tolerance
+  the same check on other scores (all rungs): P 101 of 105; A 97 of 105; R+D (furthest creature) 100 of 105; D 105 of 105; won/lost 105 of 105
+  curves that are not monotone (P per multiple, the drops marked):
+    Fault Line Easy       strategy1    seed 1: 1:1.18 1.4:1.57 1.57:1.84L 1.76:1.78L!  (worst drop -0.052)
+    Crysium Vein Easy     strategy1    seed 2: 1:1.63L 1.4:1.72L 1.57:1.72L 1.76:1.70L!  (worst drop -0.024)
+    Crysium Vein Easy     strategy6    seed 2: 1:0.64 1.4:1.62L 1.57:1.63L 1.76:1.59L!  (worst drop -0.038)
+    Crysium Vein Easy     strategy6    seed 3: 1:0.63 1.4:1.62L 1.57:1.63L 1.76:1.60L!  (worst drop -0.034)
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 0 of 0 cells within the limit  ->  FAIL
+  cell                  
+  Landing Site Easy
+  Glass Meadows Easy
+  Shard Ridge Easy
+  Fault Line Easy
+  Quartz Flats Easy
+  Crysium Vein Easy
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  strategy1                         strategy2                         strategy3                         strategy4                         strategy5                         strategy6                         
+  Landing Site Easy     0.123 (0.122-0.123) 3/3           0.122 (0.122-0.123) 3/3           0.119 (0.119-0.119) 3/3           0.798 (0.606-1.280) 2/3           0.119 (0.119-0.119) 3/3           -
+  Glass Meadows Easy    0.078 (0.049-0.079) 3/3           1.050 (0.080-1.072) 1/3           0.076 (0.040-1.045) 2/3           0.079 (0.043-0.079) 3/3           0.079 (0.077-1.050) 2/3           0.029 (0.029-0.029) 3/3
+  Shard Ridge Easy      0.527 (0.523-0.537) 3/3           0.528 (0.524-0.537) 3/3           0.523 (0.523-0.527) 3/3           0.523 (0.523-0.525) 3/3           0.516 (0.514-0.517) 3/3           0.510 (0.510-0.514) 3/3
+  Fault Line Easy       1.182 (1.180-1.234) 3/3           0.963 (0.857-0.975) 3/3           0.939 (0.881-0.952) 3/3           0.907 (0.846-0.942) 3/3           0.841 (0.840-0.844) 3/3           1.074 (0.940-1.080) 3/3
+  Quartz Flats Easy     0.110 (0.110-0.110) 3/3           0.108 (0.108-0.109) 3/3           0.118 (0.118-0.118) 3/3           0.112 (0.110-0.112) 3/3           0.114 (0.112-0.114) 3/3           0.111 (0.109-0.111) 3/3
+  Crysium Vein Easy     0.894 (0.872-1.630) 2/3           0.887 (0.850-0.887) 3/3           0.886 (0.850-0.887) 3/3           0.771 (0.711-0.811) 3/3           0.882 (0.858-0.890) 3/3           0.629 (0.608-0.641) 3/3
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  strategy1
+    Landing Site Easy     x1 0.12 (0.12-0.12) 3/3 | x1.4 0.13 (0.12-0.13) 3/3 | x1.57 0.13 (0.13-0.13) 3/3 | x1.76 0.13 (0.13-1.17) 2/3
+    Glass Meadows Easy    x1 0.08 (0.05-0.08) 3/3 | x1.4 1.10 (1.09-1.10) 0/3 | x1.57 1.09 (1.09-1.11) 0/3 | x1.76 1.10 (1.09-1.12) 0/3
+    Shard Ridge Easy      x1 0.53 (0.52-0.54) 3/3 | x1.4 0.64 (0.56-0.68) 3/3 | x1.57 0.68 (0.58-0.74) 3/3 | x1.76 0.81 (0.63-0.82) 3/3
+    Fault Line Easy       x1 1.18 (1.18-1.23) 3/3 | x1.4 1.53 (1.47-1.57) 3/3 | x1.57 1.66 (1.63-1.84) 2/3 | x1.76 1.77 (1.76-1.78) 0/3
+    Quartz Flats Easy     x1 0.11 (0.11-0.11) 3/3 | x1.4 0.12 (0.11-0.13) 3/3 | x1.57 0.12 (0.12-0.13) 3/3 | x1.76 0.12 (0.12-0.19) 3/3
+    Crysium Vein Easy     x1 0.89 (0.87-1.63) 2/3 | x1.4 1.72 (1.72-1.73) 0/3 | x1.57 1.72 (1.72-1.73) 0/3 | x1.76 1.72 (1.70-1.73) 0/3
+  strategy2
+    Landing Site Easy     x1 0.12 (0.12-0.12) 3/3 | x1.4 0.12 (0.12-0.13) 3/3 | x1.57 0.13 (0.13-0.13) 3/3 | x1.76 0.13 (0.13-1.17) 2/3
+    Glass Meadows Easy    x1 1.05 (0.08-1.07) 1/3 | x1.4 1.09 (1.09-1.10) 0/3 | x1.57 1.09 (1.09-1.11) 0/3 | x1.76 1.10 (1.10-1.12) 0/3
+    Shard Ridge Easy      x1 0.53 (0.52-0.54) 3/3 | x1.4 0.64 (0.56-0.68) 3/3 | x1.57 0.68 (0.59-0.74) 3/3 | x1.76 0.81 (0.63-0.82) 3/3
+    Fault Line Easy       x1 0.96 (0.86-0.98) 3/3 | x1.4 1.21 (1.15-1.23) 3/3 | x1.57 1.33 (1.29-1.70) 3/3 | x1.76 1.50 (1.38-1.85) 2/3
+    Quartz Flats Easy     x1 0.11 (0.11-0.11) 3/3 | x1.4 0.12 (0.12-0.12) 3/3 | x1.57 0.13 (0.13-0.15) 3/3 | x1.76 1.16 (0.18-1.16) 1/3
+    Crysium Vein Easy     x1 0.89 (0.85-0.89) 3/3 | x1.4 1.66 (1.65-1.66) 0/3 | x1.57 1.73 (1.68-1.73) 0/3 | x1.76 1.73 (1.73-1.73) 0/3
+  strategy3
+    Landing Site Easy     x1 0.12 (0.12-0.12) 3/3 | x1.4 0.12 (0.12-0.12) 3/3 | x1.57 0.12 (0.12-0.12) 3/3 | x1.76 0.12 (0.12-0.13) 3/3
+    Glass Meadows Easy    x1 0.08 (0.04-1.05) 2/3 | x1.4 1.09 (1.09-1.11) 0/3 | x1.57 1.09 (1.09-1.11) 0/3 | x1.76 1.10 (1.10-1.12) 0/3
+    Shard Ridge Easy      x1 0.52 (0.52-0.53) 3/3 | x1.4 0.60 (0.54-0.67) 3/3 | x1.57 0.67 (0.59-0.75) 3/3 | x1.76 0.80 (0.67-0.83) 3/3
+    Fault Line Easy       x1 0.94 (0.88-0.95) 3/3 | x1.4 1.22 (1.20-1.37) 3/3 | x1.57 1.38 (1.33-1.64) 3/3 | x1.76 1.72 (1.69-1.79) 3/3
+    Quartz Flats Easy     x1 0.12 (0.12-0.12) 3/3 | x1.4 0.12 (0.12-0.12) 3/3 | x1.57 0.14 (0.14-0.16) 3/3 | x1.76 0.14 (0.14-0.17) 3/3
+    Crysium Vein Easy     x1 0.89 (0.85-0.89) 3/3 | x1.4 1.65 (1.60-1.66) 0/3 | x1.57 1.73 (1.68-1.73) 0/3 | x1.76 1.73 (1.73-1.73) 0/3
+  strategy4
+    Landing Site Easy     x1 0.80 (0.61-1.28) 2/3 | x1.4 1.32 (1.32-1.33) 0/3 | x1.57 1.34 (1.34-1.36) 0/3 | x1.76 1.37 (1.36-1.38) 0/3
+    Glass Meadows Easy    x1 0.08 (0.04-0.08) 3/3 | x1.4 1.09 (1.09-1.10) 0/3 | x1.57 1.10 (1.09-1.11) 0/3 | x1.76 1.10 (1.10-1.12) 0/3
+    Shard Ridge Easy      x1 0.52 (0.52-0.53) 3/3 | x1.4 0.60 (0.55-0.67) 3/3 | x1.57 0.66 (0.59-0.75) 3/3 | x1.76 0.80 (0.67-0.83) 3/3
+    Fault Line Easy       x1 0.91 (0.85-0.94) 3/3 | x1.4 1.23 (1.12-1.33) 3/3 | x1.57 1.38 (1.25-1.57) 3/3 | x1.76 1.50 (1.42-1.83) 2/3
+    Quartz Flats Easy     x1 0.11 (0.11-0.11) 3/3 | x1.4 0.12 (0.12-0.13) 3/3 | x1.57 0.12 (0.12-0.16) 3/3 | x1.76 1.14 (1.13-1.15) 0/3
+    Crysium Vein Easy     x1 0.77 (0.71-0.81) 3/3 | x1.4 1.67 (1.61-1.67) 0/3 | x1.57 1.73 (1.68-1.73) 0/3 | x1.76 1.73 (1.73-1.73) 0/3
+  strategy5
+    Landing Site Easy     x1 0.12 (0.12-0.12) 3/3 | x1.4 0.12 (0.12-0.12) 3/3 | x1.57 0.12 (0.12-0.12) 3/3 | x1.76 0.13 (0.12-0.13) 3/3
+    Glass Meadows Easy    x1 0.08 (0.08-1.05) 2/3 | x1.4 1.09 (1.09-1.10) 0/3 | x1.57 1.09 (1.09-1.11) 0/3 | x1.76 1.10 (1.09-1.12) 0/3
+    Shard Ridge Easy      x1 0.52 (0.51-0.52) 3/3 | x1.4 0.58 (0.55-0.58) 3/3 | x1.57 1.51 (0.60-1.55) 1/3 | x1.76 1.53 (1.52-1.53) 0/3
+    Fault Line Easy       x1 0.84 (0.84-0.84) 3/3 | x1.4 0.97 (0.95-1.02) 3/3 | x1.57 1.05 (1.05-1.09) 3/3 | x1.76 1.78 (1.59-1.85) 2/3
+    Quartz Flats Easy     x1 0.11 (0.11-0.11) 3/3 | x1.4 0.12 (0.12-0.12) 3/3 | x1.57 0.13 (0.13-0.16) 3/3 | x1.76 1.16 (1.14-1.17) 0/3
+    Crysium Vein Easy     x1 0.88 (0.86-0.89) 3/3 | x1.4 1.65 (1.65-1.72) 0/3 | x1.57 1.72 (1.72-1.73) 0/3 | x1.76 1.72 (1.72-1.72) 0/3
+  strategy6
+    Glass Meadows Easy    x1 0.03 (0.03-0.03) 3/3 | x1.4 1.05 (0.05-1.08) 1/3 | x1.57 1.08 (1.08-1.08) 0/3 | x1.76 1.09 (1.09-1.09) 0/3
+    Shard Ridge Easy      x1 0.51 (0.51-0.51) 3/3 | x1.4 0.54 (0.52-0.54) 3/3 | x1.57 0.67 (0.56-1.51) 2/3 | x1.76 1.51 (0.78-1.60) 1/3
+    Fault Line Easy       x1 1.07 (0.94-1.08) 3/3 | x1.4 1.36 (1.13-1.40) 3/3 | x1.57 1.37 (1.26-1.66) 3/3 | x1.76 1.81 (1.47-1.83) 3/3
+    Quartz Flats Easy     x1 0.11 (0.11-0.11) 3/3 | x1.4 0.12 (0.11-0.13) 3/3 | x1.57 0.12 (0.12-0.13) 3/3 | x1.76 0.12 (0.12-0.19) 3/3
+    Crysium Vein Easy     x1 0.63 (0.61-0.64) 3/3 | x1.4 1.62 (0.69-1.62) 1/3 | x1.57 1.63 (1.63-1.63) 0/3 | x1.76 1.60 (1.59-1.64) 0/3
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  strategy1   Landing Site Easy     A 0.123 (0.122-0.123)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy1   Glass Meadows Easy    A 0.078 (0.049-0.079)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy1   Shard Ridge Easy      A 0.522 (0.522-0.523)  D 0.01 (0.00-0.02)  leaked 0.000 (0.000-0.005)
+  strategy1   Fault Line Easy       A 0.816 (0.809-0.817)  D 0.37 (0.37-0.42)  leaked 0.153 (0.139-0.153)
+  strategy1   Quartz Flats Easy     A 0.110 (0.110-0.110)  D 0.00 (0.00-0.00)  leaked 0.005 (0.005-0.005)
+  strategy1   Crysium Vein Easy     A 0.620 (0.616-0.630)  D 0.28 (0.25-1.00)  leaked 0.036 (0.032-0.039)
+  strategy2   Landing Site Easy     A 0.122 (0.122-0.123)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy2   Glass Meadows Easy    A 0.072 (0.050-0.080)  D 1.00 (0.00-1.00)  leaked 0.000 (0.000-0.000)
+  strategy2   Shard Ridge Easy      A 0.523 (0.522-0.524)  D 0.01 (0.00-0.02)  leaked 0.000 (0.000-0.005)
+  strategy2   Fault Line Easy       A 0.833 (0.832-0.838)  D 0.13 (0.02-0.14)  leaked 0.140 (0.132-0.145)
+  strategy2   Quartz Flats Easy     A 0.108 (0.108-0.109)  D 0.00 (0.00-0.00)  leaked 0.005 (0.005-0.005)
+  strategy2   Crysium Vein Easy     A 0.619 (0.619-0.620)  D 0.27 (0.23-0.27)  leaked 0.039 (0.036-0.046)
+  strategy3   Landing Site Easy     A 0.119 (0.119-0.119)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy3   Glass Meadows Easy    A 0.045 (0.040-0.076)  D 0.00 (0.00-1.00)  leaked 0.000 (0.000-0.000)
+  strategy3   Shard Ridge Easy      A 0.523 (0.521-0.523)  D 0.00 (0.00-0.01)  leaked 0.000 (0.000-0.000)
+  strategy3   Fault Line Easy       A 0.829 (0.828-0.829)  D 0.11 (0.05-0.12)  leaked 0.140 (0.135-0.145)
+  strategy3   Quartz Flats Easy     A 0.118 (0.118-0.118)  D 0.00 (0.00-0.00)  leaked 0.005 (0.005-0.005)
+  strategy3   Crysium Vein Easy     A 0.619 (0.619-0.620)  D 0.27 (0.23-0.27)  leaked 0.039 (0.036-0.046)
+  strategy4   Landing Site Easy     A 0.286 (0.280-0.287)  D 0.51 (0.32-1.00)  leaked 0.000 (0.000-0.000)
+  strategy4   Glass Meadows Easy    A 0.079 (0.043-0.079)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy4   Shard Ridge Easy      A 0.523 (0.520-0.523)  D 0.00 (0.00-0.01)  leaked 0.000 (0.000-0.000)
+  strategy4   Fault Line Easy       A 0.809 (0.808-0.817)  D 0.10 (0.04-0.12)  leaked 0.141 (0.131-0.145)
+  strategy4   Quartz Flats Easy     A 0.112 (0.110-0.112)  D 0.00 (0.00-0.00)  leaked 0.005 (0.005-0.005)
+  strategy4   Crysium Vein Easy     A 0.618 (0.617-0.621)  D 0.15 (0.09-0.19)  leaked 0.032 (0.025-0.035)
+  strategy5   Landing Site Easy     A 0.119 (0.119-0.119)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy5   Glass Meadows Easy    A 0.077 (0.050-0.079)  D 0.00 (0.00-1.00)  leaked 0.000 (0.000-0.000)
+  strategy5   Shard Ridge Easy      A 0.516 (0.514-0.517)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy5   Fault Line Easy       A 0.837 (0.834-0.840)  D 0.01 (0.00-0.01)  leaked 0.136 (0.136-0.149)
+  strategy5   Quartz Flats Easy     A 0.114 (0.112-0.114)  D 0.00 (0.00-0.00)  leaked 0.005 (0.005-0.005)
+  strategy5   Crysium Vein Easy     A 0.617 (0.614-0.617)  D 0.27 (0.24-0.27)  leaked 0.039 (0.036-0.046)
+  strategy6   Glass Meadows Easy    A 0.029 (0.029-0.029)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy6   Shard Ridge Easy      A 0.510 (0.510-0.514)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  strategy6   Fault Line Easy       A 0.809 (0.808-0.814)  D 0.27 (0.13-0.27)  leaked 0.145 (0.136-0.149)
+  strategy6   Quartz Flats Easy     A 0.111 (0.109-0.111)  D 0.00 (0.00-0.00)  leaked 0.005 (0.005-0.005)
+  strategy6   Crysium Vein Easy     A 0.603 (0.600-0.603)  D 0.03 (0.01-0.04)  leaked 0.025 (0.022-0.029)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<1' / '>1.76' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  strategy1
+    Landing Site Easy     median >1.76  pooled >1.76  per seed: 1.66 >1.76 >1.76                     spread -
+    Glass Meadows Easy    median 1.18   pooled 1.18   per seed: 1.18 1.18 1.18                       spread 0% (n=3)
+    Shard Ridge Easy      median >1.76  pooled >1.76  per seed: >1.76 >1.76 >1.76                    spread -
+    Fault Line Easy       median 1.13   pooled 1.14   per seed: 1.13 1.14 1.13                       spread 1% (n=3)
+    Quartz Flats Easy     median >1.76  pooled >1.76  per seed: >1.76 >1.76 >1.76                    spread -
+    Crysium Vein Easy     median 1.11   pooled 1.11   per seed: 1.12 <1 1.11                         spread 1% (n=2)
+  strategy2
+    Landing Site Easy     median >1.76  pooled >1.76  per seed: 1.66 >1.76 >1.76                     spread -
+    Glass Meadows Easy    median <1     pooled <1     per seed: 1.18 <1 <1                           spread -
+    Shard Ridge Easy      median >1.76  pooled >1.76  per seed: >1.76 >1.76 >1.76                    spread -
+    Fault Line Easy       median 1.59   pooled 1.59   per seed: 1.44 1.59 1.69                       spread 17% (n=3)
+    Quartz Flats Easy     median 1.66   pooled 1.66   per seed: >1.76 1.66 1.66                      spread 0% (n=2)
+    Crysium Vein Easy     median 1.11   pooled 1.11   per seed: 1.12 1.11 1.11                       spread 1% (n=3)
+  strategy3
+    Landing Site Easy     median >1.76  pooled >1.76  per seed: >1.76 >1.76 >1.76                    spread -
+    Glass Meadows Easy    median 1.18   pooled 1.18   per seed: 1.18 <1 1.18                         spread 0% (n=2)
+    Shard Ridge Easy      median >1.76  pooled >1.76  per seed: >1.76 >1.76 >1.76                    spread -
+    Fault Line Easy       median 1.53   pooled 1.53   per seed: 1.36 1.58 1.53                       spread 16% (n=3)
+    Quartz Flats Easy     median >1.76  pooled >1.76  per seed: >1.76 >1.76 >1.76                    spread -
+    Crysium Vein Easy     median 1.11   pooled 1.11   per seed: 1.12 1.11 1.11                       spread 1% (n=3)
+  strategy4
+    Landing Site Easy     median <1     pooled <1     per seed: <1 <1 1.09                           spread -
+    Glass Meadows Easy    median 1.18   pooled 1.18   per seed: 1.18 1.18 1.18                       spread 0% (n=3)
+    Shard Ridge Easy      median >1.76  pooled >1.76  per seed: >1.76 >1.76 >1.76                    spread -
+    Fault Line Easy       median 1.51   pooled 1.51   per seed: 1.39 1.66 1.51                       spread 19% (n=3)
+    Quartz Flats Easy     median 1.66   pooled 1.66   per seed: 1.66 1.66 1.66                       spread 0% (n=3)
+    Crysium Vein Easy     median 1.15   pooled 1.15   per seed: 1.16 1.15 1.14                       spread 2% (n=3)
+  strategy5
+    Landing Site Easy     median >1.76  pooled >1.76  per seed: >1.76 >1.76 >1.76                    spread -
+    Glass Meadows Easy    median 1.18   pooled 1.18   per seed: 1.18 <1 1.18                         spread 0% (n=2)
+    Shard Ridge Easy      median 1.48   pooled 1.48   per seed: 1.48 1.66 1.48                       spread 12% (n=3)
+    Fault Line Easy       median 1.65   pooled 1.65   per seed: 1.63 1.65 1.67                       spread 2% (n=3)
+    Quartz Flats Easy     median 1.66   pooled 1.66   per seed: 1.66 1.66 1.66                       spread 0% (n=3)
+    Crysium Vein Easy     median 1.11   pooled 1.11   per seed: 1.12 1.11 1.11                       spread 1% (n=3)
+  strategy6
+    Glass Meadows Easy    median 1.18   pooled 1.18   per seed: 1.18 1.48 1.18                       spread 25% (n=3)
+    Shard Ridge Easy      median 1.66   pooled 1.65   per seed: 1.66 >1.76 1.48                      spread 12% (n=2)
+    Fault Line Easy       median 1.33   pooled 1.33   per seed: 1.33 1.60 1.29                       spread 23% (n=3)
+    Quartz Flats Easy     median >1.76  pooled >1.76  per seed: >1.76 >1.76 >1.76                    spread -
+    Crysium Vein Easy     median 1.18   pooled 1.18   per seed: 1.48 1.17 1.18                       spread 26% (n=3)
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x1     x1.4   x1.57  x1.76  H50
+  strategy1   Landing Site Easy     3/3    3/3    3/3    2/3    >1.76
+  strategy1   Glass Meadows Easy    3/3    0/3    0/3    0/3    1.18
+  strategy1   Shard Ridge Easy      3/3    3/3    3/3    3/3    >1.76
+  strategy1   Fault Line Easy       3/3    3/3    2/3    0/3    1.62
+  strategy1   Quartz Flats Easy     3/3    3/3    3/3    3/3    >1.76
+  strategy1   Crysium Vein Easy     2/3    0/3    0/3    0/3    1.09
+  strategy2   Landing Site Easy     3/3    3/3    3/3    2/3    >1.76
+  strategy2   Glass Meadows Easy    1/3    0/3    0/3    0/3    <1
+  strategy2   Shard Ridge Easy      3/3    3/3    3/3    3/3    >1.76
+  strategy2   Fault Line Easy       3/3    3/3    3/3    2/3    >1.76
+  strategy2   Quartz Flats Easy     3/3    3/3    3/3    1/3    1.71
+  strategy2   Crysium Vein Easy     3/3    0/3    0/3    0/3    1.18
+  strategy3   Landing Site Easy     3/3    3/3    3/3    3/3    >1.76
+  strategy3   Glass Meadows Easy    2/3    0/3    0/3    0/3    1.09
+  strategy3   Shard Ridge Easy      3/3    3/3    3/3    3/3    >1.76
+  strategy3   Fault Line Easy       3/3    3/3    3/3    3/3    >1.76
+  strategy3   Quartz Flats Easy     3/3    3/3    3/3    3/3    >1.76
+  strategy3   Crysium Vein Easy     3/3    0/3    0/3    0/3    1.18
+  strategy4   Landing Site Easy     2/3    0/3    0/3    0/3    1.09
+  strategy4   Glass Meadows Easy    3/3    0/3    0/3    0/3    1.18
+  strategy4   Shard Ridge Easy      3/3    3/3    3/3    3/3    >1.76
+  strategy4   Fault Line Easy       3/3    3/3    3/3    2/3    >1.76
+  strategy4   Quartz Flats Easy     3/3    3/3    3/3    0/3    1.66
+  strategy4   Crysium Vein Easy     3/3    0/3    0/3    0/3    1.18
+  strategy5   Landing Site Easy     3/3    3/3    3/3    3/3    >1.76
+  strategy5   Glass Meadows Easy    2/3    0/3    0/3    0/3    1.09
+  strategy5   Shard Ridge Easy      3/3    3/3    1/3    0/3    1.53
+  strategy5   Fault Line Easy       3/3    3/3    3/3    2/3    >1.76
+  strategy5   Quartz Flats Easy     3/3    3/3    3/3    0/3    1.66
+  strategy5   Crysium Vein Easy     3/3    0/3    0/3    0/3    1.18
+  strategy6   Glass Meadows Easy    3/3    1/3    0/3    0/3    1.29
+  strategy6   Shard Ridge Easy      3/3    3/3    2/3    1/3    1.66
+  strategy6   Fault Line Easy       3/3    3/3    3/3    3/3    >1.76
+  strategy6   Quartz Flats Easy     3/3    3/3    3/3    3/3    >1.76
+  strategy6   Crysium Vein Easy     3/3    1/3    0/3    0/3    1.29
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  strategy1   Landing Site Easy       8   8   9   8   8   9  39  10   9  10  19  10
+                                    base hit: never
+  strategy1   Glass Meadows Easy      2   2   2   3   3   5   4   2   6   9  13  45
+                                    base hit: never
+  strategy1   Shard Ridge Easy       58  38  57  48  38  56  53  42  58  49  54  68  43  47  66  63
+                                    base hit: w13 2/3
+  strategy1   Fault Line Easy        88  65  88  76  74  85  77  73  87  82  80  88  76  79  89  96
+                                    base hit: w16 3/3
+  strategy1   Quartz Flats Easy       8   8   8   8  10   8   8   8  27   8   7   9  38  13   5   6   8
+                                    base hit: never
+  strategy1   Crysium Vein Easy      74  41  76  59  41  74  45  43  77  75  44  77  62  60  74  64  57  69
+                                    base hit: w11 1/3, w14 3/3, w17 3/3, w18 1/3
+  strategy2   Landing Site Easy       8   8  10   9   7   9  39  10   8  10  19   9
+                                    base hit: never
+  strategy2   Glass Meadows Easy      2   2   2   3   3   5   5   3   6  10  12  22
+                                    base hit: w12 2/3
+  strategy2   Shard Ridge Easy       58  38  57  48  38  56  53  42  58  49  54  68  43  47  66  63
+                                    base hit: w13 2/3
+  strategy2   Fault Line Easy        88  71  88  80  75  89  80  76  90  82  80  90  76  82  90  96
+                                    base hit: w16 3/3
+  strategy2   Quartz Flats Easy       8   8   8   8   9   8   8   7  28   9   7   9  38  12   4   6   7
+                                    base hit: never
+  strategy2   Crysium Vein Easy      76  39  77  61  40  75  46  43  77  74  43  78  62  61  74  64  57  70
+                                    base hit: w11 1/3, w14 3/3, w17 3/3
+  strategy3   Landing Site Easy       8   7   8   8   7   9  39  10   9  10  18   9
+                                    base hit: never
+  strategy3   Glass Meadows Easy      2   2   2   3   3   5   4   2   6   8   7   6
+                                    base hit: w12 1/3
+  strategy3   Shard Ridge Easy       58  38  57  48  38  56  53  42  58  49  54  67  43  47  66  63
+                                    base hit: w13 1/3
+  strategy3   Fault Line Easy        89  69  89  78  71  90  79  75  91  81  81  90  78  81  90  93
+                                    base hit: w16 3/3
+  strategy3   Quartz Flats Easy       8   8   9   8  10   8  10   8  29   9   8  10  39  15   7   7   8
+                                    base hit: never
+  strategy3   Crysium Vein Easy      76  39  77  61  40  75  46  43  77  74  43  78  62  62  74  64  57  70
+                                    base hit: w11 1/3, w14 3/3, w17 3/3
+  strategy4   Landing Site Easy       9   9   9  10   8  10  39  11  33  63  72  68
+                                    base hit: w12 3/3
+  strategy4   Glass Meadows Easy      2   2   2   3   3   5   4   2   6   9  11  45
+                                    base hit: never
+  strategy4   Shard Ridge Easy       58  38  57  48  38  56  53  42  58  49  54  67  43  47  67  63
+                                    base hit: w13 1/3
+  strategy4   Fault Line Easy        88  65  88  76  74  85  77  73  87  79  77  89  74  81  90  93
+                                    base hit: w16 3/3
+  strategy4   Quartz Flats Easy       8   8   8   8  10   8   9   8  28   9   7   9  36  13   6   6   8
+                                    base hit: never
+  strategy4   Crysium Vein Easy      76  39  77  61  40  75  46  43  77  75  43  78  61  60  74  63  57  69
+                                    base hit: w14 3/3, w17 3/3
+  strategy5   Landing Site Easy       8   7   8   8   7   9  39  10   9  10  18   9
+                                    base hit: never
+  strategy5   Glass Meadows Easy      2   2   2   3   3   5   4   2   6   9  13  43
+                                    base hit: w12 1/3
+  strategy5   Shard Ridge Easy       58  38  56  48  35  53  52  39  59  48  54  65  43  47  66  63
+                                    base hit: never
+  strategy5   Fault Line Easy        88  71  88  80  75  89  80  76  90  83  80  90  78  82  90  96
+                                    base hit: w16 2/3
+  strategy5   Quartz Flats Easy       8   8   8   8  10   8   9   8  28   9   7  10  38  12   6   6   8
+                                    base hit: never
+  strategy5   Crysium Vein Easy      74  39  77  59  40  74  46  43  76  74  43  78  62  61  74  64  57  69
+                                    base hit: w11 1/3, w14 3/3, w17 3/3
+  strategy6   Glass Meadows Easy      0   1   0   2   1   4   4   1   5   8   1   6
+                                    base hit: never
+  strategy6   Shard Ridge Easy       58  38  56  48  36  54  50  38  56  47  53  65  43  47  64  64
+                                    base hit: never
+  strategy6   Fault Line Easy        90  67  89  77  71  86  77  72  91  80  80  87  73  77  90  95
+                                    base hit: w16 3/3
+  strategy6   Quartz Flats Easy       8   8   8   8  10   8   8   7  27   8   7   9  38  15   6   6   8
+                                    base hit: never
+  strategy6   Crysium Vein Easy      73  40  76  60  36  73  45  39  75  72  39  77  58  60  74  60  57  69
+                                    base hit: w17 3/3
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  strategy1   Landing Site Easy     won w12/12; built 8, upgrades 4, left 49, earned 1266, repairs 0
+                                    w1 build Cannon@11,6; w1 build PulseRifle@5,14; w3 build PulseRifle@11,2; w5 upgrade@11,2; w8 upgrade@11,2; w9 build Cannon@12,2; w11 build Cannon@21,18; w11 upgrade@11,6; w12 build Cannon@12,7; w12 build Cannon@12,6; w12 build Cannon@13,2; w12 upgrade@12,6
+  strategy1   Glass Meadows Easy    won w12/12; built 9, upgrades 9, left 293, earned 1460, repairs 0
+                                    w1 build Cannon@1,15; w1 build PulseRifle@1,13; w2 upgrade@1,13; w5 upgrade@1,13; w6 build PulseRifle@1,14; w7 upgrade@1,14; w9 upgrade@1,14; w9 build PulseRifle@4,15; w10 upgrade@4,15; w10 build PulseRifle@4,13; w11 upgrade@4,13; w11 build PulseRifle@4,14
+  strategy1   Shard Ridge Easy      won w16/16; built 9, upgrades 5, left 210, earned 1616, repairs 0
+                                    w1 build Cannon@12,11; w1 build PulseRifle@13,11; w1 upgrade@13,11; w5 gate gates@16,8; w9 build Rocket@33,10; w12 build Cannon@12,10; w13 sell@33,10; w13 build Rocket@37,7; w14 build Rocket@33,10; w15 drone RepairDrone@0,0; w15 build PulseRifle@13,10; w16 upgrade@13,10
+  strategy1   Fault Line Easy       won w16/16; built 8, upgrades 8, left 22, earned 1471, repairs 23
+                                    w1 build Cannon@29,6; w1 build PulseRifle@29,5; w1 upgrade@29,5; w8 build Rocket@34,9; w12 drone HarvestDrone@0,0; w12 gate gates@33,8; w14 build PulseRifle@28,6; w14 upgrade@28,6; w15 build PulseRifle@32,6; w15 upgrade@32,6; w15 build PulseRifle@32,5; w16 build Rocket@34,6
+  strategy1   Quartz Flats Easy     won w17/17; built 7, upgrades 8, left 224, earned 1793, repairs 0
+                                    w1 build Cannon@3,11; w1 build Rocket@34,3; w3 build PulseRifle@7,11; w5 build PulseRifle@7,13; w6 upgrade@7,11; w8 upgrade@34,3; w10 upgrade@7,11; w10 upgrade@7,13; w12 upgrade@7,13; w12 build Cannon@3,15; w14 build Cannon@3,16; w15 build Cannon@6,11
+  strategy1   Crysium Vein Easy     won w18/18; built 14, upgrades 9, left 28, earned 2003, repairs 0
+                                    w1 build Cannon@14,7; w1 gate gates@17,8; w1 build PulseRifle@21,11; w7 build Rocket@36,10; w11 drone HarvestDrone@0,0; w12 build PulseRifle@12,11; w13 build Cannon@12,10; w14 upgrade@12,11; w14 upgrade@21,11; w14 sell@36,10; w14 build Rocket@39,7; w15 build PulseRifle@13,11
+  strategy2   Landing Site Easy     won w12/12; built 8, upgrades 4, left 49, earned 1266, repairs 0
+                                    w1 build Cannon@11,2; w1 build PulseRifle@5,14; w3 build PulseRifle@9,6; w5 upgrade@9,6; w8 upgrade@9,6; w9 build Cannon@11,6; w11 build Cannon@21,18; w11 upgrade@11,6; w12 build Cannon@12,7; w12 build Cannon@12,2; w12 build Cannon@12,6; w12 upgrade@12,6
+  strategy2   Glass Meadows Easy    won w12/12; built 9, upgrades 9, left 293, earned 1460, repairs 0
+                                    w1 build Cannon@1,15; w1 build PulseRifle@1,13; w2 upgrade@1,13; w5 upgrade@1,13; w6 build PulseRifle@4,13; w7 upgrade@4,13; w9 upgrade@4,13; w9 build PulseRifle@4,15; w10 upgrade@4,15; w10 build PulseRifle@1,14; w11 upgrade@1,14; w11 build PulseRifle@4,14
+  strategy2   Shard Ridge Easy      won w16/16; built 9, upgrades 4, left 305, earned 1616, repairs 0
+                                    w1 build Cannon@12,11; w1 build PulseRifle@13,11; w1 upgrade@13,11; w5 gate gates@16,8; w9 build Rocket@33,10; w12 build Cannon@12,10; w13 sell@33,10; w13 build Rocket@37,7; w14 build Rocket@33,10; w15 drone RepairDrone@0,0; w15 build PulseRifle@11,11; w16 upgrade@11,11
+  strategy2   Fault Line Easy       won w16/16; built 7, upgrades 4, left 15, earned 1462, repairs 51
+                                    w1 build Cannon@29,6; w1 build Cannon@32,6; w8 build Rocket@34,9; w11 gate gates@33,8; w12 upgrade@34,9; w14 build PulseRifle@28,6; w15 build Rocket@33,9; w16 upgrade@33,9; w16 upgrade@34,9; w16 build Cannon@29,5; w16 build Rocket@34,10; w16 upgrade@34,10
+  strategy2   Quartz Flats Easy     won w17/17; built 8, upgrades 7, left 318, earned 1793, repairs 0
+                                    w1 build Cannon@3,11; w1 build Rocket@34,3; w3 build PulseRifle@3,15; w8 drone HarvestDrone@0,0; w8 build PulseRifle@7,11; w10 upgrade@7,11; w10 upgrade@7,11; w11 build Rocket@34,4; w11 upgrade@3,15; w12 upgrade@3,15; w13 build Cannon@3,16; w14 build Cannon@3,10
+  strategy2   Crysium Vein Easy     won w18/18; built 13, upgrades 12, left 28, earned 2003, repairs 0
+                                    w1 build Cannon@12,10; w1 build PulseRifle@13,10; w1 gate gates@17,8; w7 build Rocket@36,10; w11 drone HarvestDrone@0,0; w12 upgrade@13,10; w12 upgrade@13,10; w13 build PulseRifle@12,11; w14 upgrade@12,11; w14 sell@36,10; w14 build Rocket@39,7; w14 build PulseRifle@13,11
+  strategy3   Landing Site Easy     won w12/12; built 6, upgrades 5, left 74, earned 1266, repairs 0
+                                    w1 build Cannon@11,2; w1 build PulseRifle@9,3; w3 upgrade@9,3; w7 build Cannon@21,18; w9 build Cannon@11,6; w10 upgrade@11,6; w11 build Cannon@12,7; w12 build Cannon@12,2; w12 upgrade@12,7; w12 upgrade@12,2; w12 upgrade@11,2
+  strategy3   Glass Meadows Easy    won w12/12; built 8, upgrades 8, left 189, earned 1380, repairs 0
+                                    w1 build Cannon@1,15; w1 build PulseRifle@1,13; w2 upgrade@1,13; w5 upgrade@1,13; w6 build PulseRifle@4,15; w7 upgrade@4,15; w9 upgrade@4,15; w9 build PulseRifle@1,14; w10 upgrade@1,14; w10 build PulseRifle@4,14; w11 upgrade@4,14; w11 build PulseRifle@4,13
+  strategy3   Shard Ridge Easy      won w16/16; built 7, upgrades 5, left 266, earned 1611, repairs 0
+                                    w1 build Cannon@12,11; w1 build PulseRifle@13,11; w1 upgrade@13,11; w5 gate gates@16,8; w9 build Rocket@32,10; w12 build Cannon@13,10; w13 sell@32,10; w13 build Rocket@37,7; w14 build Rocket@32,10; w15 upgrade@13,10; w15 build PulseRifle@11,11; w16 upgrade@11,11
+  strategy3   Fault Line Easy       won w16/16; built 6, upgrades 4, left 135, earned 1462, repairs 0
+                                    w1 build Cannon@32,5; w1 build Cannon@29,5; w8 build Rocket@34,9; w12 drone HarvestDrone@0,0; w13 build Cannon@29,6; w15 build Rocket@33,9; w16 drone RepairDrone@0,0; w16 upgrade@34,9; w16 upgrade@33,9; w16 upgrade@34,9; w16 upgrade@33,9; w16 build Cannon@32,6
+  strategy3   Quartz Flats Easy     won w17/17; built 8, upgrades 6, left 143, earned 1793, repairs 0
+                                    w1 build Cannon@6,11; w1 build Rocket@34,3; w3 build PulseRifle@7,11; w8 drone HarvestDrone@0,0; w10 gate gates@4,8; w10 upgrade@7,11; w11 build Cannon@3,11; w12 build Rocket@34,4; w12 upgrade@7,11; w14 build Cannon@3,16; w15 drone AttackDrone@0,0; w16 build PulseRifle@7,13
+  strategy3   Crysium Vein Easy     won w18/18; built 13, upgrades 12, left 28, earned 2003, repairs 0
+                                    w1 build Cannon@12,10; w1 build PulseRifle@13,10; w1 gate gates@17,8; w7 build Rocket@36,10; w11 drone HarvestDrone@0,0; w12 upgrade@13,10; w12 upgrade@13,10; w13 build PulseRifle@12,11; w14 upgrade@12,11; w14 sell@36,10; w14 build Rocket@39,7; w14 build PulseRifle@14,7
+  strategy4   Landing Site Easy     won w12/12; built 8, upgrades 5, left 322, earned 1376, repairs 60
+                                    w1 build Cannon@31,14; w1 build PulseRifle@9,3; w3 upgrade@9,3; w7 build Cannon@21,18; w10 build PulseRifle@10,6; w11 upgrade@10,6; w12 build PulseRifle@9,6; w12 upgrade@9,6; w12 build PulseRifle@11,2; w12 upgrade@11,2; w12 build PulseRifle@12,7; w12 upgrade@12,7
+  strategy4   Glass Meadows Easy    won w12/12; built 9, upgrades 9, left 233, earned 1460, repairs 60
+                                    w1 build Cannon@1,15; w1 build PulseRifle@4,13; w2 upgrade@4,13; w5 upgrade@4,13; w6 build PulseRifle@1,14; w7 upgrade@1,14; w9 upgrade@1,14; w9 build PulseRifle@1,13; w10 upgrade@1,13; w10 build PulseRifle@7,6; w11 upgrade@7,6; w11 build PulseRifle@4,15
+  strategy4   Shard Ridge Easy      won w16/16; built 8, upgrades 4, left 321, earned 1611, repairs 0
+                                    w1 build Cannon@12,11; w1 build PulseRifle@13,11; w1 upgrade@13,11; w5 gate gates@16,8; w9 build Rocket@32,10; w12 build Cannon@12,10; w13 sell@32,10; w13 build Rocket@37,7; w14 build Rocket@32,10; w15 upgrade@12,10; w15 build PulseRifle@11,11; w16 upgrade@11,11
+  strategy4   Fault Line Easy       won w16/16; built 7, upgrades 5, left 16, earned 1462, repairs 0
+                                    w1 build Cannon@29,6; w1 build PulseRifle@29,5; w1 upgrade@29,5; w8 build Rocket@34,9; w11 build Cannon@32,6; w13 build Rocket@33,9; w15 drone RepairDrone@0,0; w16 upgrade@34,9; w16 upgrade@33,9; w16 upgrade@34,9; w16 build Cannon@32,5; w16 build Rocket@34,6
+  strategy4   Quartz Flats Easy     won w17/17; built 11, upgrades 6, left 248, earned 1793, repairs 0
+                                    w1 build Cannon@3,11; w1 build Rocket@33,4; w3 build PulseRifle@7,11; w8 drone HarvestDrone@0,0; w9 upgrade@7,11; w10 upgrade@7,11; w11 build Cannon@3,15; w11 build Rocket@34,4; w12 build Cannon@3,16; w14 build Cannon@6,11; w15 build Cannon@3,10; w15 build Cannon@20,6
+  strategy4   Crysium Vein Easy     won w18/18; built 14, upgrades 11, left 14, earned 2003, repairs 0
+                                    w1 build Cannon@12,10; w1 gate gates@17,8; w1 build PulseRifle@13,10; w7 build Rocket@36,7; w11 drone HarvestDrone@0,0; w12 upgrade@13,10; w12 build PulseRifle@12,11; w13 build PulseRifle@14,7; w13 upgrade@14,7; w14 upgrade@12,11; w14 build PulseRifle@13,11; w15 upgrade@13,11
+  strategy5   Landing Site Easy     won w12/12; built 6, upgrades 5, left 74, earned 1266, repairs 0
+                                    w1 build Cannon@11,2; w1 build PulseRifle@9,3; w3 upgrade@9,3; w7 build Cannon@21,18; w9 build Cannon@11,6; w10 build Cannon@12,7; w11 build Cannon@12,2; w12 upgrade@11,6; w12 upgrade@12,7; w12 upgrade@12,2; w12 upgrade@11,2
+  strategy5   Glass Meadows Easy    won w12/12; built 9, upgrades 9, left 289, earned 1455, repairs 0
+                                    w1 build Cannon@1,15; w1 build PulseRifle@1,13; w2 upgrade@1,13; w5 upgrade@1,13; w6 build PulseRifle@1,14; w7 upgrade@1,14; w9 upgrade@1,14; w9 build PulseRifle@4,15; w10 upgrade@4,15; w10 build PulseRifle@4,13; w11 upgrade@4,13; w11 build PulseRifle@4,14
+  strategy5   Shard Ridge Easy      won w16/16; built 10, upgrades 6, left 319, earned 1616, repairs 0
+                                    w1 build Cannon@12,11; w1 build PulseRifle@13,11; w1 upgrade@13,11; w5 build PulseRifle@11,11; w8 build Rocket@32,10; w11 build Rocket@33,10; w12 upgrade@11,11; w13 build PulseRifle@12,10; w14 drone HarvestDrone@0,0; w14 drone RepairDrone@0,0; w15 upgrade@12,10; w16 build PulseRifle@13,10
+  strategy5   Fault Line Easy       won w16/16; built 6, upgrades 4, left 20, earned 1462, repairs 35
+                                    w1 build Cannon@29,6; w1 build Cannon@32,6; w8 build Rocket@34,9; w12 drone HarvestDrone@0,0; w13 build Cannon@29,5; w15 build Rocket@33,9; w15 upgrade@34,9; w16 upgrade@33,9; w16 upgrade@34,9; w16 upgrade@33,9; w16 build Cannon@32,5; w16 drone AttackDrone@0,0
+  strategy5   Quartz Flats Easy     won w17/17; built 10, upgrades 7, left 253, earned 1793, repairs 0
+                                    w1 build Cannon@3,11; w1 build Rocket@34,3; w3 build PulseRifle@7,11; w8 drone HarvestDrone@0,0; w8 build PulseRifle@7,13; w10 upgrade@7,11; w10 upgrade@7,11; w11 build Rocket@34,4; w12 build Cannon@3,15; w13 build Cannon@3,16; w14 build Cannon@6,11; w15 build Cannon@3,10
+  strategy5   Crysium Vein Easy     won w18/18; built 13, upgrades 10, left 83, earned 2003, repairs 0
+                                    w1 build Cannon@12,10; w1 gate gates@17,8; w1 build PulseRifle@12,11; w7 build Rocket@36,10; w11 drone HarvestDrone@0,0; w11 build Cannon@13,10; w13 upgrade@12,11; w14 build PulseRifle@13,11; w14 upgrade@13,11; w14 sell@36,10; w14 build Rocket@39,7; w15 build PulseRifle@14,7
+  strategy6   Glass Meadows Easy    won w12/12; built 8, upgrades 6, left 274, earned 1380, repairs 0
+                                    w1 build Cannon@4,15; w1 build PulseRifle@1,15; w2 build PulseRifle@1,14; w4 upgrade@1,15; w7 build Cannon@1,13; w9 upgrade@1,15; w9 upgrade@1,14; w10 build PulseRifle@4,13; w10 upgrade@4,13; w10 build PulseRifle@4,14; w11 upgrade@4,14; w11 build PulseRifle@7,6
+  strategy6   Shard Ridge Easy      won w16/16; built 8, upgrades 7, left 296, earned 1616, repairs 0
+                                    w1 build Cannon@12,11; w1 build PulseRifle@13,11; w1 upgrade@13,11; w5 upgrade@13,11; w7 build PulseRifle@11,11; w10 build Rocket@32,10; w12 build Rocket@33,10; w14 drone RepairDrone@0,0; w14 upgrade@32,10; w15 upgrade@11,11; w15 build PulseRifle@12,10; w16 upgrade@12,10
+  strategy6   Fault Line Easy       won w16/16; built 8, upgrades 6, left 89, earned 1471, repairs 24
+                                    w1 build Cannon@32,5; w1 build PulseRifle@29,5; w1 upgrade@29,5; w8 build Rocket@34,9; w10 upgrade@29,5; w12 upgrade@34,9; w14 build PulseRifle@29,6; w14 upgrade@29,6; w14 build PulseRifle@28,6; w15 upgrade@28,6; w15 build PulseRifle@32,6; w16 build Rocket@34,10
+  strategy6   Quartz Flats Easy     won w17/17; built 8, upgrades 6, left 239, earned 1793, repairs 0
+                                    w1 build Cannon@3,11; w1 build Rocket@34,3; w3 build PulseRifle@7,13; w5 upgrade@7,13; w7 upgrade@7,13; w8 upgrade@34,3; w11 build Cannon@7,11; w12 build Cannon@3,15; w13 upgrade@7,11; w14 build Cannon@3,16; w15 build Cannon@34,0; w16 build Cannon@6,11
+  strategy6   Crysium Vein Easy     won w18/18; built 14, upgrades 8, left 40, earned 2003, repairs 0
+                                    w1 build Cannon@12,10; w1 build Cannon@13,10; w3 build PulseRifle@12,11; w8 build Rocket@36,7; w11 build Rocket@36,10; w11 mine Mine@5,15; w11 mine Mine@5,15; w13 build PulseRifle@13,11; w13 upgrade@13,11; w14 upgrade@12,11; w14 build PulseRifle@14,7; w15 upgrade@14,7
+
+Cost: 420 runs, 168 machine minutes of play (24 s a run), 0 reference runs for the typical scripts; 1 batches, 35 wall-clock minutes in all.
+  batch 1795148649: 108 units on 6 workers, 35.3 min
