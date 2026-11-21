@@ -9,7 +9,7 @@ namespace Game.Towers
     /// Finds a target in range and fires projectiles, can be damaged, repaired, upgraded and sold.
     /// Has no knowledge of how it looks.
     /// </summary>
-    public sealed class Tower : MonoBehaviour, IStructure, IGuardable, ISupportSource, IBridgeable
+    public sealed class Tower : MonoBehaviour, IStructure, ICrewRaisable, IGuardable, ISupportSource, IBridgeable
     {
         private const float MuzzleHeight = 1f;
         private const float MuzzleForward = 0.55f;
@@ -120,7 +120,7 @@ namespace Game.Towers
         public float BridgeHeight => BridgedHeight;
         public bool IsBase => false;
 
-        /// <summary>A wrecked blockade can be rebuilt; a wrecked tower is scrapped and built again instead.</summary>
+        /// <summary>A wrecked blockade can be rebuilt; a wrecked tower is scrapped and built again instead; a wrecked base defence waits for the repair crew (<see cref="AwaitsCrew"/>).</summary>
         public bool NeedsRepair => _definition.BlocksGroundEnemies ? IsWrecked || Health.Current < Health.Max : !IsWrecked && Health.Current < Health.Max;
 
         public int RepairCost
@@ -160,6 +160,7 @@ namespace Game.Towers
         public event Action<Tower> Wrecked;
 
         private bool _wasWrecked;
+        private float _raised;
         private float _upsetRemaining;
         private float _frozenRemaining;
         private float _overgrowthRate = 1f;
@@ -383,11 +384,31 @@ namespace Game.Towers
 
         public void RepairFully() => Health.Heal(Health.Max);
 
+        /// <summary>A wrecked base defence waits for a repair crew: it cannot be sold or bought again, so the crew raises it (round 88d).</summary>
+        public bool AwaitsCrew => IsWrecked && _definition.IsBaseDefence;
+
+        /// <summary>
+        /// The repair crew's work. A standing structure is patched up as the work comes in; a wreck that
+        /// <see cref="AwaitsCrew"/> stands again, whole, once the crew has put in work worth all of its health, so it
+        /// does not come back with a sliver of health under the same fire that wrecked it. Any other wreck is left alone.
+        /// </summary>
         public void Repair(float amount)
         {
             if (!IsWrecked)
             {
                 Health.Heal(amount);
+                return;
+            }
+
+            if (!AwaitsCrew)
+            {
+                return;
+            }
+
+            _raised += amount;
+            if (_raised >= Health.Max)
+            {
+                Health.Heal(Health.Max);
             }
         }
 
@@ -595,6 +616,7 @@ namespace Game.Towers
             if (IsWrecked && !_wasWrecked)
             {
                 _wasWrecked = true;
+                _raised = 0f;
                 Wrecked?.Invoke(this);
             }
             else if (!IsWrecked)

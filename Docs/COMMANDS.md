@@ -2210,3 +2210,30 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
     there than with Remco's save.
   - A foreground shell command is cut loose after three minutes; start anything longer in the background and poll.
 
+
+## Round 88d: start money for the air defence, the rebuild chip, the gate bar, the crew raises a base turret (added 2026-11-21)
+
+- **The design** is in Docs/WAVE_GRAMMAR.md ("Round 88d: the purse became start money") and Docs/STATUS.md ("Round 88d").
+  In code: `StartMoneyRule` (the one place a level's opening coins are summed), `BalanceRules.RaidStartGuns` /
+  `DifficultyProfile.RaidStartGuns` (the old `FirstRaidPurseGuns`), `LevelFacts.RaidStartMoney` (the model's copy),
+  `ICrewRaisable` / `Tower.AwaitsCrew` / `RepairDispatcher.NeedsWork` (a wrecked base turret is a repair job),
+  `GateRebuildBadges` (chip, full line under the cursor), `WorldBar.FaceCamera` (the gate's bar).
+- **Data of the round without the full generator:** `bash Tools/PlayTest/stage.sh run ApplyRound88c.cs ApplyRound88c.Run`
+  (it writes `_raidStartGuns` on the four difficulties; the old serialized name is read through `FormerlySerializedAs`),
+  then `bash Tools/PlayTest/r88b_restamp.sh <label>`: the level facts now carry the air-raid start money, so the
+  calibration's input hash moved. The stored waves do not change with it (the wave formula does not read money).
+- **Stills and play checks (stage, graphics on):** `OUT=Logs/r88d bash Tools/PlayTest/r88d_stills.sh <part> <tag>`,
+  parts `field` (Shard Ridge Hard: guns round the first gate, gates hurt, the gate wrecked, the cursor on the wreck),
+  `alert` (start money and the warning two waves before the first raid), `turret` (Landing Site Medium: base turrets
+  mounted by hand, one wrecked, a repair drone launched, played until the turret stands again).
+- **`r88d_scene.cs`** (`r88d_scene_arg.txt`, words): `towers:<TowerId>:<count>`, `wreckgate`, `hurtgates:<share>`,
+  `hurttowers:<share>`, `focusgate:<zoom>`, `cursorgate`, `cursoraway`, `turrets` (mounts the level's base turrets on
+  a save that has not bought them), `wreckturret`, `focusturret:<zoom>`, `state`.
+- **Tests of the round** (on a clone): `bash Tools/PlayTest/r34b_editmode_worker.sh 6 Round88dTests` (also
+  `Round88cTests`, `RepairDispatcherTests`, `TowerTests`, `CounterAffordabilityTests`).
+- **Pitfalls met this round:**
+  - A rebuild badge is now placed through the canvas's camera, so `r88b_shot.cs` shows it where the game does.
+  - Files deleted in the project while a round runs come back with `stage.sh back` (the stage still has them): before
+    copying back, delete from the stage what `stage.sh diff` lists that the round did not make.
+  - The same script line again: a heredoc in the Bash tool halves a doubled backslash. `r88d_stills.sh` takes its
+    Windows path from `cygpath -w`.

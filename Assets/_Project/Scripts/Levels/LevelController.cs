@@ -228,7 +228,7 @@ namespace Game.Levels
             WarnOfTheFirstRaid(index);
         }
 
-        // The level's first air raid is announced a few waves ahead, with the purse for the air defence (FirstRaidRule).
+        // The level's first air raid is announced a few waves ahead (FirstRaidRule); the coins for the air defence are in the start money (StartMoneyRule).
         private void WarnOfTheFirstRaid(int index)
         {
             if (index != _raidWarningWave)
@@ -236,13 +236,7 @@ namespace Game.Levels
                 return;
             }
 
-            int purse = FirstRaidRule.Purse(_context.AvailableTowers, _context.Difficulty);
-            if (purse > 0)
-            {
-                _context.Wallet.Add(purse);
-            }
-
-            _context.AirRaidWarned.Raise(new AirRaidWarning(_firstRaid - index, purse));
+            _context.AirRaidWarned.Raise(new AirRaidWarning(_firstRaid - index));
         }
 
         private static EnemyDefinition BossOf(WaveDefinition wave)

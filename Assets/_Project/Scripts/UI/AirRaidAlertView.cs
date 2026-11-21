@@ -7,8 +7,7 @@ namespace Game.UI
 {
     /// <summary>
     /// The warning of a level's first air raid (round 88c): a note under the top strip that says how many waves off the
-    /// raid is and, when a purse came with it, how many coins were wired for the air defence. Slides down, stays long
-    /// enough to read twice (real seconds, so it reads the same at any game speed), fades. It takes no input and is
+    /// raid is. Slides down, stays long enough to read twice (real seconds, so it reads the same at any game speed), fades. It takes no input and is
     /// registered with the HUD keep-out so no world label sits under it.
     /// </summary>
     public sealed class AirRaidAlertView : MonoBehaviour
@@ -62,7 +61,7 @@ namespace Game.UI
         private void OnWarned(AirRaidWarning warning)
         {
             string when = warning.WavesAhead <= 0 ? Loc.Get("hud.air_raid_now") : warning.WavesAhead == 1 ? Loc.Get("hud.air_raid_next") : Loc.Format("hud.air_raid_in", warning.WavesAhead);
-            _text.text = warning.Purse > 0 ? Loc.Format("hud.air_raid_purse", when, warning.Purse) : Loc.Format("hud.air_raid_plain", when);
+            _text.text = Loc.Format("hud.air_raid_plain", when);
             _left = ShowSeconds;
             _shown = 0f;
             _panel.gameObject.SetActive(true);

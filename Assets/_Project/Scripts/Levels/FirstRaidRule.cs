@@ -6,12 +6,11 @@ using Game.Towers;
 namespace Game.Levels
 {
     /// <summary>
-    /// The first air raid of a level is announced and paid for (round 88c; Docs/WAVE_GRAMMAR.md, "The first raid"). A
-    /// level's first raid may come late, after a whole level of ground waves and a purse spent on ground guns: the player is
-    /// warned a few waves ahead (<see cref="Balance.BalanceRules.FirstRaidWarningWaves"/>) and, on the difficulties that
-    /// do not hold the flyers back until the bounties have paid for the counter, receives the price of the level's sky
-    /// gun, times the difficulty's factor (<see cref="DifficultyProfile.FirstRaidPurseGuns"/>).
-    /// Pure arithmetic on the level's data: the level controller pays it, the HUD shows it, tests and labs read it.
+    /// The first air raid of a level is announced (round 88c; Docs/WAVE_GRAMMAR.md, "The first raid"). A level's first
+    /// raid may come late, after a whole level of ground waves and a purse spent on ground guns: the player is warned a
+    /// few waves ahead (<see cref="Balance.BalanceRules.FirstRaidWarningWaves"/>). The coins for the air defence are
+    /// part of the level's start money since round 88d (<see cref="StartMoneyRule"/>), which reads the sky gun's
+    /// price here. Pure arithmetic on the level's data: the level controller warns, the HUD shows it, tests and labs read it.
     /// </summary>
     public static class FirstRaidRule
     {
@@ -66,9 +65,5 @@ namespace Game.Levels
 
             return skyOnly > 0 ? skyOnly : any;
         }
-
-        /// <summary>The coins that come with the warning: the difficulty's number of sky guns at the level's cheapest price.</summary>
-        public static int Purse(IReadOnlyList<TowerDefinition> towers, DifficultyProfile difficulty) =>
-            difficulty == null ? 0 : (int)Math.Round(SkyGunPrice(towers) * difficulty.FirstRaidPurseGuns, MidpointRounding.AwayFromZero);
     }
 }

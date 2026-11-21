@@ -189,15 +189,17 @@ namespace Game.Towers
 
         private void OnStateChanged(Tower tower)
         {
-            // A gate always shows its bar: it is the line that holds the road. Towers only show it once hurt.
-            bool gate = tower.Definition.BlocksGroundEnemies;
-            bool damaged = gate ? !tower.IsWrecked : tower.Health.Fraction < 1f && !tower.IsWrecked;
+            // One rule for guns and gates (round 88d): the bar shows once the structure is hurt, and not on a wreck.
+            bool damaged = tower.Health.Fraction < 1f && !tower.IsWrecked;
             _bar.gameObject.SetActive(damaged);
             if (damaged)
             {
                 float fraction = tower.Health.Fraction;
                 if (_worldBar != null)
                 {
+                    // A gate is turned across its road after it is built: the bar is put square to the camera again,
+                    // or it would hang edge-on over the gate.
+                    _worldBar.FaceCamera();
                     _worldBar.Set(fraction, 0f, true);
                     _worldBar.SetColour(Color.Lerp(DamagedColor, HealthyColor, fraction));
                 }

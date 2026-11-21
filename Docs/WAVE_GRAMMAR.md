@@ -661,3 +661,18 @@ Not in the paper model: the ledger and the plan evaluator do not know the purse 
 ore). The bots do get it, so the closed loop measures it; the paper pressure of the waves after a first raid on Hard
 and Psycho reads a little too high.
 
+**Round 88d (2026-11-21): the purse became start money.** Remco, after playing it: a bonus in the middle of a level is
+illogical; he had meant more start money, and a player who spends it on other things early has chosen so. So the same
+coins moved to the first second of the level (`StartMoneyRule`, `BalanceRules.RaidStartGuns` 0 / 0 / 1 / 1,
+`DifficultyProfile.RaidStartGuns`): **a level whose waves on a difficulty hold an air raid starts with the level's
+starting money times the difficulty's multiplier, plus the price of the sky gun the level sells times the difficulty's
+factor.** Nothing is paid at the warning any more; the warning itself stays on all four difficulties ("ALERT! Air raid
+in 2 waves. Build air defence."). Why Hard and Psycho only, and not every difficulty through its start-money
+multiplier: the reason for the coins is unchanged (Easy and Medium already hold the flyers back until the bounties
+have paid for the gun, `FlyersAfterBounties`), the total a level pays stays exactly what Remco played and called
+"pretty good", and the multiplier (0.8 / 1 / 1 / 3) would have made Psycho's share three guns. The sky gun is read from
+the level's own tower list (not from what the save owns), so the sum is the same for every player and for the model.
+The paper model now knows the coins: `LevelFacts.RaidStartMoney` is filled by the same `StartMoneyRule`, so
+`LevelInput.StartingMoney` is the wallet's opening sum (test `Round88dTests.TheBalanceModel_StartsEveryLevelWithTheWalletsCoins`).
+The paragraph above ("not in the paper model") no longer holds.
+

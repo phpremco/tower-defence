@@ -33,7 +33,7 @@ public static class Round88cLab
     {
         var catalog = AssetDatabase.LoadAssetAtPath<CampaignCatalog>(CatalogPath);
         int ahead = BalanceRules.Default.FirstRaidWarningWaves;
-        var text = new StringBuilder("Round 88c: the first air raid per level and difficulty (FirstRaidRule). Purse = the level's sky gun x the difficulty's factor; all towers of the level offered.\n");
+        var text = new StringBuilder("Round 88c: the first air raid per level and difficulty (FirstRaidRule). Purse = the level's sky gun x the difficulty's factor; since round 88d it is part of the start money (StartMoneyRule), so the column of the level's coins holds it.\n");
         text.Append("| Level | Difficulty | First raid | Warning at wave | Boss in the raid wave / the wave before | Air health of that raid | Sky gun | Purse | Bounties of the waves from the warning to the raid | Level's coins (start + bounties) | Purse share |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n");
         foreach (MapNode node in catalog.Nodes)
         {
@@ -60,8 +60,8 @@ public static class Round88cLab
                     between += Bounty(waves[w], difficulty);
                 }
 
-                float all = Mathf.RoundToInt(node.Level.StartingMoney * difficulty.StartingMoneyMultiplier) + waves.Sum(w => Bounty(w, difficulty));
-                int purse = FirstRaidRule.Purse(node.Level.AvailableTowers, difficulty);
+                float all = StartMoneyRule.For(node.Level, difficulty) + waves.Sum(w => Bounty(w, difficulty));
+                int purse = StartMoneyRule.RaidAllowance(node.Level, difficulty);
                 text.Append($"| {node.Level.name.Replace("Level_", string.Empty)} | {difficulty.name} | w{raid + 1} | w{warning + 1} | {(bossIn ? "yes" : "no")} / {(bossBefore ? "yes" : "no")} | {F(CrowdHealth(waves[raid], difficulty, node.Level, true))} | {FirstRaidRule.SkyGunPrice(node.Level.AvailableTowers)} | {purse} | {F(between)} | {F(all)} | {(purse / all).ToString("0.0%", CultureInfo.InvariantCulture)} |\n");
             }
         }
@@ -95,7 +95,7 @@ public static class Round88cLab
                 }
 
                 crowd[k] = waves.Sum(w => CrowdHealth(w, difficulty, node.Level, false) + CrowdHealth(w, difficulty, node.Level, true));
-                coins[k] = Mathf.RoundToInt(node.Level.StartingMoney * difficulty.StartingMoneyMultiplier) + waves.Sum(w => Bounty(w, difficulty));
+                coins[k] = StartMoneyRule.For(node.Level, difficulty) + waves.Sum(w => Bounty(w, difficulty));
                 WaveDefinition last = waves[waves.Length - 1];
                 foreach (SpawnGroup group in last.Groups)
                 {

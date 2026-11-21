@@ -213,9 +213,9 @@ namespace Game.Drones
         private void UpdateRepair()
         {
             _retarget -= Time.deltaTime;
-            // Whole, wrecked, or no longer on the field: a tower sold under repair is still a live object to this reference, so
+            // Whole, a wreck no crew can raise, or no longer on the field: a tower sold under repair is still a live object to this reference, so
             // the registry decides, and the dispatcher is asked again at once instead of at the next retarget.
-            bool done = _repairTarget != null && (!_repairTarget.IsAlive || _repairTarget.HealthFraction >= 1f || !_world.Structures.Contains(_repairTarget));
+            bool done = _repairTarget != null && (!RepairDispatcher.NeedsWork(_repairTarget) || !_world.Structures.Contains(_repairTarget));
             if (_repairTarget == null || done || _retarget <= 0f)
             {
                 _retarget = RetargetSeconds;

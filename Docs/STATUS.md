@@ -15804,3 +15804,117 @@ before the fix; the final measurement after it.
    for the bounties). Enough for Shard Ridge Hard? The lever is `FirstRaidPurseGuns` per difficulty.
 5. **The boss now walks in eight seconds behind its crowd.** If the boss wave feels too drawn out, the gap is one
    number (`BossEntranceGap`).
+
+## Round 88d: Remco's playtest of round 88c - the rebuild chip, start money instead of the raid purse, the crew raises a base turret, the gate's bar (2026-11-21)
+
+Not committed. One agent on HEAD 0074c82e (round 88c), a small round: Remco playtests himself, so no bot measurements
+(no closed loop, picks, finale, three-seed final, grace gate). All code and data work in the stage, copied back with
+`stage.sh back` while the open editor (pid 35352 now) was stopped; it compiled clean. Remco's save was never written or
+copied (MD5 aba1c7fc... at the start and at the end). Balance "feels pretty good now" (Remco), so nothing was retuned.
+
+### What Remco said and what changed
+
+1. **"The Rebuild 60 label hides the tower."** The badge over a wrecked gate was 230 x 54 and hung 2.2 units over the
+   wreck, which on screen is over the build cells behind the road. Now (`GateRebuildBadges`): a chip of 92 x 34 with the
+   wrench and the price only ("60", white when affordable, red when not), 1 unit over the wreck, so it lies on the road
+   behind the wreck's middle. With the placement cursor on any cell of the gate (stick, keys or mouse: the one cursor)
+   it opens to "Rebuild 60" (176 x 34); the gate's own menu still shows the price on its button and hides the chip.
+   Nothing is hover-only. The badge is also placed through the canvas's camera now (stills show it where the game
+   does). Stills `Logs/r88d/badge_before.png`, `badge_after.png`, `badge_after_selected.png`, crops in
+   `sheet_gate_crops.png`.
+2. **"Replace the air-raid bonus with higher start money."** Rule (`StartMoneyRule`, Docs/WAVE_GRAMMAR.md "Round 88d"):
+   a level whose waves on a difficulty hold an air raid starts with its starting money times the difficulty's
+   multiplier **plus the price of the sky gun the level sells times `RaidStartGuns` (0 / 0 / 1 / 1)**. Nothing is paid
+   at the warning; the warning stays on every difficulty ("ALERT! Air raid in 2 waves. Build air defence.",
+   `Logs/r88d/alert_after_crop.png`). **Hard and Psycho only**, not "every difficulty through its start-money
+   multiplier": the reason for the coins is unchanged (Easy and Medium already hold the flyers back until the bounties
+   paid for the gun), a level pays exactly the coins Remco played and called good, and Psycho's multiplier of 3 would
+   have made it three guns. The sky gun is read from the level's tower list, not from the save, so the number is the
+   same for every player and for the model. `FirstRaidPurseGuns` is renamed `RaidStartGuns` (rules, difficulty assets
+   through `FormerlySerializedAs`, generator); `AirRaidWarning` lost its purse; the text `hud.air_raid_purse` is gone.
+   **Model and game read one sum:** the bootstrapper, `CounterAffordability`, the labs and `LevelFacts.RaidStartMoney`
+   (so `LevelInput.StartingMoney`, the ledger, the plan evaluator) all come from `StartMoneyRule`. The calibration's
+   input hash moved with it and was re-stamped (factors kept); the solve stored the same waves (no wave asset changed).
+3. **"A wrecked base turret must be fixable by the repair drone, no new mechanics."** (A correction to the brief and
+   to round 88c's note: the drone never raised a wrecked gate either; a gate is rebuilt at its price by the player, and
+   that stays.) New: a wrecked base defence is a job for the repair crew (`ICrewRaisable`, `Tower.AwaitsCrew`,
+   `RepairDispatcher.NeedsWork`): the dispatcher scores it as a structure at zero health, one drone claims it and stays,
+   and once the crew has put in work worth all of its health (220 at 8 a second: 27.5 s for one drone without
+   upgrades) the turret stands again, whole, at the level it had. It does not come back with a sliver of health under
+   the fire that wrecked it. No button, no price; a wrecked gun or gate is no job for the crew, as before. Played in
+   the stage on Landing Site (`r88d_stills.sh turret`): wrecked, drone "Repairing", standing again at 220 / 220, drone
+   idle; `Logs/r88d/sheet_turret.png`. What the player sees meanwhile is the drone's beam on the wreck; there is no
+   progress bar on a wreck (question 2).
+4. **"The gates' health bar is not clearly visible or logical; make it like the towers'."** It already was the towers'
+   bar (`TowerView.BuildBar`, `WorldBar`), with two differences that made it unreadable: the bar is turned to the
+   camera when it is made, and a gate is turned across its road right after, so the bar hung **edge-on** (a thin
+   upright sliver beside a pylon, `gatebar_before.png`); and a gate showed it always, at full health too. Now one rule
+   for guns and gates: the bar shows once the structure is hurt and not on a wreck, above the structure, square to
+   the camera (`WorldBar.FaceCamera`, called when the bar is shown). `Logs/r88d/gatebar_after.png`.
+
+### Start money, Shard Ridge (Level_C1_03; sky gun: Flak Turret, 120)
+
+| | Easy | Medium | Hard | Psycho |
+| --- | --- | --- | --- | --- |
+| Round 88c: start / paid at the warning (wave 9) | 192 / 0 | 240 / 0 | 240 / +120 | 720 / +120 |
+| Round 88d: start / paid at the warning | 192 / 0 | 240 / 0 | **360** / 0 | **840** / 0 |
+
+The other levels with raids on Hard and Psycho (C1_04, C1_05, C1_06) start with their own sky gun's price on top in
+the same way; levels 1 and 2 have no raids and start as before (`Tools/PlayTest/r88c_first_raid.txt`).
+
+**Paper check, Shard Ridge Hard only** (`Tools/PlayTest/r88b_economy.txt` re-run; plain sums, no ore):
+
+| Wave | Coins before the wave, 88c -> 88d | Crowd health per coin held (index), 88c -> 88d |
+| --- | --- | --- |
+| 1 | 240 -> 360 | 0.57 -> 0.38 |
+| 4 (heavy) | 321 -> 441 | 1.47 -> 1.07 |
+| 7 | 466 -> 586 | 1.84 -> 1.47 |
+| 8 | 529 -> 649 | 1.48 -> 1.20 |
+| 9 (the warning) | 603 + 120 -> 723 | 1.51 -> 1.51 |
+| 11 (first raid) | 971 -> 971 | 1.03 -> 1.03 |
+| 13 (the heavy peak) | 1200 -> 1200 | 2.70 -> 2.70 |
+
+From the warning on, the coins received are the same as in the round Remco won with two stars: the raids, the peak of
+wave 13 and the last boss are not softer on paper. What moves is the opening: waves 1 to 8 are 20 to 33 % lighter per
+coin held **if** the 120 is spent on ground guns at once, and then the raid of wave 11 finds no fresh purse (his own
+rule: "their own fault"). A player who keeps the 120 for the Flak plays exactly round 88c. Not measured by a bot.
+
+### Gates and tests
+
+- **Compiles** in the stage and in the open project: no errors; the one warning is round 87's (`BalanceProbeTests` CS0618).
+- **EditMode, whole suite on w6** (`Tools/PlayTest/r88d_suite.xml`): 1321 tests, **1269 passed, 1 failed, 1
+  inconclusive**, 50 skipped (round 88c: 1316 / 1264 / 1 / 1 / 50). The red is the same one as in 88c
+  (`CombatRulesTests.NoRowWithoutTheCounter_OutlastsItsWindow_AsPlayed`, round 87's grace gate on stale rows); the
+  inconclusive is the closed-loop acceptance.
+- New: `Round88dTests` (5): start money per level and difficulty, the model's start money equals the game's on every
+  cell, a wrecked base turret and the crew, a wrecked gun and a wrecked gate are still no job for it.
+- Changed to follow the rule: `Round88cTests` (the purse asserts became start-money asserts; the sky gun test kept).
+- Calibration: re-stamped, "stale False", inputs 6e95a0ad.
+
+### Not done / known
+
+- No bot measurement of anything (on Remco's word). The picks and the closed-loop records are as stale as in 88c.
+- No stored test covers the two views (the chip, the bar's facing): they were checked in stills only.
+- The beam on a wreck cannot be judged from a still; the chip's readability at 720p was not checked.
+- In the stage's stills the HUD is drawn through the tilt-shift pass and looks softer than in the game.
+- `badge_before.png` was taken while the wreck's blast was still on screen; the label itself is as it was.
+
+### Files
+
+- New code: `Levels/StartMoneyRule.cs`, `Combat/ICrewRaisable.cs`, `Tests/EditMode/Round88dTests.cs`.
+- Changed code: `Levels/FirstRaidRule`, `AirRaidWarning`, `LevelController`, `LevelContext`, `DifficultyProfile`,
+  `CounterAffordability`, `BalanceLedger`; `Boot/LevelBootstrapper`; `Balance/BalanceRules`, `CampaignModel`,
+  `InputHash`; `Towers/Tower`, `TowerView`; `Core/WorldBar`; `Drones/RepairDispatcher`, `Drone`;
+  `UI/GateRebuildBadges`, `AirRaidAlertView`; `Editor/ProjectGenerator`, `ProjectGenerator.Round88c`.
+- Changed data: the four difficulties (`_raidStartGuns`), `BalanceCalibration.asset` (stamp), `en.ui_level.txt`.
+- Tools: `r88d_stills.sh`, `r88d_scene.cs`, `Scripts/Round88cLab.cs`; reports `r88c_first_raid.txt`,
+  `r88b_economy.txt`, `calibration*.txt`, `r88d_suite.xml`. Docs: WAVE_GRAMMAR and COMMANDS ("Round 88d"), this
+  section. Stills: `Logs/r88d/`.
+
+### Questions for Remco
+
+1. **Shard Ridge Hard with 360 at the start:** still "seriously hard", or does the richer opening make the first half
+   too easy? The lever is `RaidStartGuns` per difficulty (one number each).
+2. **A wrecked base turret under repair shows only the drone's beam.** Enough, or should the wreck show how far the
+   crew is (that would be a new bar)?
+3. **The gate's bar is hidden at full health now, like a gun's.** Say so if you want the gate's always on.

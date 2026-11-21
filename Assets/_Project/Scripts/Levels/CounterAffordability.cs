@@ -147,9 +147,9 @@ namespace Game.Levels
             }
         }
 
-        /// <summary>The coins a level starts with on a difficulty, as the level bootstrapper rounds them.</summary>
+        /// <summary>The coins a level starts with on a difficulty, as the level bootstrapper counts them (<see cref="StartMoneyRule"/>).</summary>
         public static int StartingMoney(LevelDefinition level, DifficultyProfile difficulty) =>
-            (int)Math.Round(level.StartingMoney * difficulty.StartingMoneyMultiplier, MidpointRounding.ToEven);
+            StartMoneyRule.For(level, difficulty);
 
         /// <summary>The bounties of the first <paramref name="waveCount"/> waves through the income share, every creature killed.</summary>
         public static int KillCoins(WaveDefinition[] waves, DifficultyProfile difficulty, int waveCount)

@@ -107,7 +107,12 @@ namespace Game.Drones
             return _claims.TryGetValue(structure, out object owner) && owner != worker;
         }
 
-        private static bool NeedsWork(IStructure structure) => structure.IsAlive && structure.HealthFraction < 1f;
+        /// <summary>
+        /// True for a structure a repair crew has work on: a standing one that is damaged, or a wreck the crew can raise
+        /// (<see cref="ICrewRaisable"/>, a base turret). Any other wreck is the player's to rebuild or scrap.
+        /// </summary>
+        public static bool NeedsWork(IStructure structure) =>
+            structure.IsAlive ? structure.HealthFraction < 1f : structure is ICrewRaisable wreck && wreck.AwaitsCrew;
 
         private bool AnyTowerNeedsWork()
         {

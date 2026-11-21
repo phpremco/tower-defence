@@ -8,6 +8,9 @@ namespace Game.Balance
     {
         public string Key = string.Empty;
         public int StartingMoney;
+
+        /// <summary>Extra start money per difficulty on a level with an air raid (Levels.StartMoneyRule, round 88d): coins as the game adds them, not through the start-money multiplier.</summary>
+        public int[] RaidStartMoney = new int[0];
         public float HealthScale = 1f;
         public LevelShape Shape = new LevelShape();
         public int MineCount;
@@ -75,8 +78,8 @@ namespace Game.Balance
             var input = new LevelInput
             {
                 Key = facts.Key,
-                // Rounded as the game rounds it (Mathf.RoundToInt: to even), so the model's purse is the wallet's.
-                StartingMoney = (int)Math.Round(facts.StartingMoney * stats.StartMoney),
+                // Rounded as the game rounds it (to even) plus the air-raid start money, so the model's purse is the wallet's (Levels.StartMoneyRule).
+                StartingMoney = (int)Math.Round(facts.StartingMoney * stats.StartMoney) + (difficulty >= 0 && difficulty < facts.RaidStartMoney.Length ? facts.RaidStartMoney[difficulty] : 0),
                 Income = stats.Income,
                 HealthScale = facts.HealthScale,
                 Shape = facts.Shape,

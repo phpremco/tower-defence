@@ -49,8 +49,7 @@ namespace Game.Core
             root.SetParent(parent, false);
             root.localPosition = localPosition;
             root.localScale = new Vector3(width / MeshWidth, height / MeshHeight, 1f);
-            Camera camera = Camera.main;
-            root.rotation = camera != null ? camera.transform.rotation : Quaternion.identity;
+            Face(root);
             var bar = new WorldBar(root, art.Place(MarkerKind.BarPlate, root), art.Place(MarkerKind.BarFill, root), withArmour ? art.Place(MarkerKind.BarArmour, root) : null);
             MarkerArt.SetTint(bar._plate, bar._block, PlateTint);
             MarkerArt.SetTint(bar._fill, bar._block, fill);
@@ -61,6 +60,15 @@ namespace Game.Core
 
             bar.Show(false, false);
             return bar;
+        }
+
+        /// <summary>Turns the bar square to the fixed camera again, for an owner that was turned after the bar was made (a gate across its road).</summary>
+        public void FaceCamera() => Face(_root);
+
+        private static void Face(Transform root)
+        {
+            Camera camera = Camera.main;
+            root.rotation = camera != null ? camera.transform.rotation : Quaternion.identity;
         }
 
         /// <summary>Sets the lines (0..1) and whether the bar shows; a line at zero hides.</summary>

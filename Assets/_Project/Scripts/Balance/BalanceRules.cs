@@ -527,20 +527,21 @@ namespace Game.Balance
         public bool FlyersAfterBountiesFor(int difficulty) => FlyersAfterBounties.Length > 0 && FlyersAfterBounties[System.Math.Min(difficulty, FlyersAfterBounties.Length - 1)];
 
         /// <summary>
-        /// The first air raid of a level is announced and paid for (round 88c, Remco on Shard Ridge Hard: "suddenly tons
-        /// of air units, none all game ... when all money is already spent on guns"). <see cref="FirstRaidWarningWaves"/>
-        /// waves before the level's first raid wave the player is warned, and with the warning comes a purse worth this
-        /// many of the cheapest gun the level sells that can aim up. Easy and Medium get the warning only: there the
+        /// The first air raid of a level is announced (round 88c, Remco on Shard Ridge Hard: "suddenly tons of air units,
+        /// none all game ... when all money is already spent on guns"): <see cref="FirstRaidWarningWaves"/> waves before
+        /// the level's first raid wave the player is warned. And a level with an air raid starts with extra money worth
+        /// this many of the sky gun it sells (round 88d, Levels.StartMoneyRule; round 88c paid the same coins as a purse
+        /// with the warning, which Remco found illogical in the middle of a level). Easy and Medium get none: there the
         /// first-flyer rule above already holds the flyers back until the bounties have paid for the gun. On Hard and
-        /// Psycho nothing held them back ("expected to know the level"), which a first play cannot: the purse is that
-        /// knowledge in coins, once per level, and the late surprise itself stays.
+        /// Psycho nothing held them back ("expected to know the level"), which a first play cannot: the extra start
+        /// money is that knowledge in coins, and spending it on something else is the player's own choice.
         /// </summary>
-        public float[] FirstRaidPurseGuns = { 0f, 0f, 1f, 1f };
+        public float[] RaidStartGuns = { 0f, 0f, 1f, 1f };
 
-        /// <summary>How many waves before its first air raid a level warns the player (and pays the purse).</summary>
+        /// <summary>How many waves before its first air raid a level warns the player.</summary>
         public int FirstRaidWarningWaves = 2;
 
-        public float FirstRaidPurseGunsFor(int difficulty) => FirstRaidPurseGuns.Length > 0 ? FirstRaidPurseGuns[System.Math.Max(0, System.Math.Min(difficulty, FirstRaidPurseGuns.Length - 1))] : 0f;
+        public float RaidStartGunsFor(int difficulty) => RaidStartGuns.Length > 0 ? RaidStartGuns[System.Math.Max(0, System.Math.Min(difficulty, RaidStartGuns.Length - 1))] : 0f;
 
         /// <summary>
         /// The finale probe (round 22f) finds the boss health multiple the creative reference bot just beats on Medium; the data

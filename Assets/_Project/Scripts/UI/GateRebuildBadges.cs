@@ -8,24 +8,29 @@ using UnityEngine.UI;
 namespace Game.UI
 {
     /// <summary>
-    /// A wrecked gate says how to get it back: a small badge over the wreck with the repair icon and "Rebuild" with
-    /// its price, white when the player can pay and red when not, until the gate stands again. Rebuilding is instant
-    /// (the gate's menu, R or the repair icon: full health, its level kept), so the badge shows a price, not a
-    /// timer. Hidden while that gate's own menu is open, which shows the same price on its button. A wreck under a
-    /// HUD panel (the tower bar, say) keeps its badge just off that panel with a small arrow pointing back at it.
+    /// A wrecked gate says how to get it back, without hiding the wreck or the guns beside it (round 88d): a small chip
+    /// low over the road behind the wreck with the repair icon and the price, white when the player can pay and red when
+    /// not, until the gate stands again. With the placement cursor on the gate (stick, keys or mouse: the same cursor) the
+    /// chip opens to "Rebuild" with the price. Rebuilding is instant (the gate's menu, R or the repair icon: full health,
+    /// its level kept), so the chip shows a price, not a timer. Hidden while that gate's own menu is open, which shows
+    /// the same price on its button. A wreck under a HUD panel (the tower bar, say) keeps its chip just off that panel
+    /// with a small arrow pointing back at it.
     /// </summary>
     public sealed class GateRebuildBadges : MonoBehaviour
     {
-        private const float Lift = 2.2f;
-        private const float Width = 230f;
-        private const float Height = 54f;
-        private const float IconSize = 40f;
-        private const float Inset = 10f;
-        private const int TextSize = 26;
-        private const float TailSize = 30f;
+        // Low enough that the chip lies over the road behind the wreck, not over the build cells beyond the road.
+        private const float Lift = 1f;
+        private const float ChipWidth = 92f;
+        private const float FullWidth = 176f;
+        private const float Height = 34f;
+        private const float IconSize = 24f;
+        private const float Inset = 7f;
+        private const int TextSize = 22;
+        private const float LabelGap = 4f;
+        private const float TailSize = 22f;
         // Moves smaller than this are the badge nudged on screen, not pushed away from its wreck.
         private const float TailThreshold = 24f;
-        private static readonly Color Backdrop = new Color(0.05f, 0.09f, 0.18f, 0.9f);
+        private static readonly Color Backdrop = new Color(0.05f, 0.09f, 0.18f, 0.82f);
         private static readonly Color Affordable = new Color(0.9f, 0.95f, 1f);
         private static readonly Color TooExpensive = new Color(1f, 0.55f, 0.5f);
 
@@ -34,7 +39,9 @@ namespace Game.UI
             public RectTransform Rect;
             public Text Label;
             public RectTransform Tail;
+            public Vector2Int[] Cells;
             public int ShownPrice = -1;
+            public bool ShownFull;
         }
 
         private readonly Dictionary<Tower, Badge> _badges = new Dictionary<Tower, Badge>();
@@ -43,6 +50,7 @@ namespace Game.UI
         private RectTransform _root;
         private Camera _camera;
         private HudKeepOut _keepOut;
+        private Canvas _canvas;
 
         public void Initialize(LevelContext context, RectTransform root, Camera camera, HudKeepOut keepOut)
         {
@@ -50,6 +58,7 @@ namespace Game.UI
             _root = root;
             _camera = camera;
             _keepOut = keepOut;
+            _canvas = root.GetComponentInParent<Canvas>().rootCanvas;
             _context.TowerWrecked.Subscribe(OnWrecked);
         }
 
@@ -93,13 +102,16 @@ namespace Game.UI
         {
             bool menuOpen = _context.Mode == PlacementMode.TowerMenu && _context.SelectedPlacedTower == gate;
             Vector3 screen = _camera.WorldToScreenPoint(gate.Position + Vector3.up * Lift);
-            bool projected = RectTransformUtility.ScreenPointToLocalPointInRectangle(_root, screen, null, out Vector2 local);
+            Camera uiCamera = _canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : _canvas.worldCamera;
+            bool projected = RectTransformUtility.ScreenPointToLocalPointInRectangle(_root, screen, uiCamera, out Vector2 local);
             // A wreck out of view gets no badge; one in view but under a HUD panel gets its badge just off that panel.
             // The room asked for includes the tail's strip under the badge, so the arrow stays clear of the panel too.
             bool inView = projected && screen.z > 0f && _keepOut.Area.Contains(local);
+            bool full = System.Array.IndexOf(badge.Cells, _context.CursorCell) >= 0;
+            float width = full ? FullWidth : ChipWidth;
             Vector2 offset = Vector2.zero;
             bool visible = inView && !menuOpen && _context.Outcome == LevelOutcome.Running
-                && _keepOut.Place(new Rect(local.x - Width * 0.5f, local.y - TailSize, Width, Height + TailSize), out offset);
+                && _keepOut.Place(new Rect(local.x - width * 0.5f, local.y - TailSize, width, Height + TailSize), out offset);
             badge.Rect.gameObject.SetActive(visible);
             if (!visible)
             {
@@ -107,20 +119,22 @@ namespace Game.UI
             }
 
             badge.Rect.anchoredPosition = local + offset;
-            PointTail(badge, offset);
+            PointTail(badge, offset, width);
             int price = gate.RepairCost;
-            // Written only when the price changes, so a wreck on screen does not build a new string every frame.
-            if (price != badge.ShownPrice)
+            // Written only when the price or the form changes, so a wreck on screen does not build a new string every frame.
+            if (price != badge.ShownPrice || full != badge.ShownFull)
             {
                 badge.ShownPrice = price;
-                badge.Label.text = Loc.Format("hud.gate_rebuild", price);
+                badge.ShownFull = full;
+                badge.Rect.sizeDelta = new Vector2(width, Height);
+                badge.Label.text = full ? Loc.Format("hud.gate_rebuild", price) : Loc.Format("hud.gate_rebuild_price", price);
             }
 
             badge.Label.color = _context.Wallet.CanAfford(price) ? Affordable : TooExpensive;
         }
 
         // A badge pushed off a panel loses its place over the wreck, so a small arrow on its edge points back at it.
-        private static void PointTail(Badge badge, Vector2 offset)
+        private static void PointTail(Badge badge, Vector2 offset, float width)
         {
             bool moved = offset.sqrMagnitude > TailThreshold * TailThreshold;
             badge.Tail.gameObject.SetActive(moved);
@@ -131,7 +145,7 @@ namespace Game.UI
 
             Vector2 back = -offset.normalized;
             Vector2 centre = new Vector2(0f, Height * 0.5f);
-            Vector2 half = new Vector2(Width * 0.5f, Height * 0.5f);
+            Vector2 half = new Vector2(width * 0.5f, Height * 0.5f);
             float reach = Mathf.Min(half.x / Mathf.Max(0.001f, Mathf.Abs(back.x)), half.y / Mathf.Max(0.001f, Mathf.Abs(back.y)));
             badge.Tail.anchoredPosition = centre + back * (reach + TailSize * 0.5f);
             badge.Tail.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(back.y, back.x) * Mathf.Rad2Deg);
@@ -148,7 +162,7 @@ namespace Game.UI
             rect.SetParent(_root, false);
             rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
             rect.pivot = new Vector2(0.5f, 0f);
-            rect.sizeDelta = new Vector2(Width, Height);
+            rect.sizeDelta = new Vector2(ChipWidth, Height);
             UiKit.CreatePanel(rect, "Backdrop", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Backdrop);
 
             var icon = new GameObject("Icon", typeof(RectTransform)).AddComponent<Image>();
@@ -161,8 +175,14 @@ namespace Game.UI
             iconRect.sizeDelta = new Vector2(IconSize, IconSize);
             iconRect.anchoredPosition = new Vector2(Inset, 0f);
 
-            Text label = UiKit.CreateFixedText(rect, string.Empty, TextSize, TextAnchor.MiddleCenter, new Vector2(1f, 0.5f), new Vector2(-Inset, 0f), new Vector2(Width - IconSize - Inset * 3f, Height - Inset));
+            // The label fills what the icon leaves, so it follows the chip when it opens to the full line.
+            Text label = UiKit.CreateFixedText(rect, string.Empty, TextSize, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
             label.raycastTarget = false;
+            RectTransform labelRect = label.rectTransform;
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.offsetMin = new Vector2(Inset + IconSize + LabelGap, 0f);
+            labelRect.offsetMax = new Vector2(-Inset, 0f);
 
             var tail = new GameObject("Tail", typeof(RectTransform)).AddComponent<Image>();
             tail.transform.SetParent(rect, false);
@@ -174,7 +194,9 @@ namespace Game.UI
             tailRect.sizeDelta = new Vector2(TailSize, TailSize);
             tail.gameObject.SetActive(false);
 
-            badge = new Badge { Rect = rect, Label = label, Tail = tailRect };
+            // Every cell of the gate's rung selects the gate, so the cursor on any of them opens the chip.
+            Vector2Int[] cells = _context.Level.Road.Rung(_context.Level.Grid.WorldToCell(gate.Position));
+            badge = new Badge { Rect = rect, Label = label, Tail = tailRect, Cells = cells };
             _badges[gate] = badge;
 
             return badge;

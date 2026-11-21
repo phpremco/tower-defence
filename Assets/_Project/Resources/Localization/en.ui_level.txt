@@ -18,13 +18,13 @@ hud.hero_down = {0} down {1}:{2:00}
 hud.card_name_price = {0}\n{1}
 hud.damage_tag = {0:0} DMG
 hud.gate_rebuild = Rebuild  {0}
+hud.gate_rebuild_price = {0}
 hud.rear_nest_marker = BEHIND THE GATE
 hud.surprise_marker = ALERT!
 hud.air_raid_in = Air raid in {0} waves
 hud.air_raid_next = Air raid next wave
 hud.air_raid_now = Air raid incoming
 hud.air_raid_plain = ALERT!  {0}. Build air defence.
-hud.air_raid_purse = ALERT!  {0}. +{1} for air defence.
 
 # Tower menu (UI/TowerMenuView.cs)
 tower_menu.upgrade = Upgrade\n{0}

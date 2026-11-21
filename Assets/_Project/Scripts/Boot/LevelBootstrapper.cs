@@ -165,7 +165,7 @@ namespace Game.Boot
             IPlatformSettings platformSettings = Services.Get<IPlatformSettings>();
             var quality = new VfxQuality(platformSettings.ParticleScale, platformSettings.LowDetailModels, platformSettings.DistortionEnabled);
             var projectiles = new ProjectilePool(targets, root, vfx, quality, _camera);
-            int money = startingMoney >= 0 ? startingMoney : Mathf.RoundToInt(level.StartingMoney * difficulty.StartingMoneyMultiplier);
+            int money = startingMoney >= 0 ? startingMoney : StartMoneyRule.For(level, difficulty);
             var wallet = new Wallet(money, infiniteMoney, difficulty.IncomeMultiplier);
             var baseHealth = new Health(level.BaseHealth + global.BaseHealthBonus);
             var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, structures, projectiles, level.AvailableTowers, towers, towerModifiers, waves.Length, fastForward);

@@ -13,7 +13,7 @@ namespace Game.Tests
 {
     /// <summary>
     /// Round 88c, the rules that came out of Remco's playtest of round 88b: the ceiling on a late peak
-    /// (<see cref="BalanceRules.WaveCeiling"/>), the first air raid announced and paid for (<see cref="FirstRaidRule"/>),
+    /// (<see cref="BalanceRules.WaveCeiling"/>), the first air raid announced (<see cref="FirstRaidRule"/>; its coins are start money since round 88d, <see cref="StartMoneyRule"/>),
     /// a brood that runs ahead of its boss (<see cref="EscortDash"/>), and the win rule read as Remco asked it ("every
     /// enemy needs to be dead").
     /// </summary>
@@ -88,42 +88,29 @@ namespace Game.Tests
             return tower;
         }
 
-        private DifficultyProfile Difficulty(float purseGuns)
-        {
-            var difficulty = ScriptableObject.CreateInstance<DifficultyProfile>();
-            _made.Add(difficulty);
-            var so = new SerializedObject(difficulty);
-            so.FindProperty("_firstRaidPurseGuns").floatValue = purseGuns;
-            so.ApplyModifiedPropertiesWithoutUndo();
-            return difficulty;
-        }
-
         [Test]
-        public void ThePurse_IsTheLevelsSkyGun_TimesTheDifficultysFactor()
+        public void TheSkyGun_IsTheGunMadeForTheSky_OrTheCheapestThatAimsUp()
         {
             var towers = new[] { Tower(80, TargetLayers.Ground), Tower(60, TargetLayers.Ground | TargetLayers.Air), Tower(120, TargetLayers.Air), Tower(150, TargetLayers.Air), Tower(40, TargetLayers.Air, support: true) };
             Assert.AreEqual(120, FirstRaidRule.SkyGunPrice(towers), "the gun made for the sky, not the cheaper all-round one's price and not a support tower");
             Assert.AreEqual(50, FirstRaidRule.SkyGunPrice(new[] { Tower(50, TargetLayers.Ground | TargetLayers.Air), Tower(90, TargetLayers.Ground | TargetLayers.Air) }), "no sky gun on sale: the cheapest gun that can aim up");
-            Assert.AreEqual(120, FirstRaidRule.Purse(towers, Difficulty(1f)));
-            Assert.AreEqual(180, FirstRaidRule.Purse(towers, Difficulty(1.5f)));
-            Assert.AreEqual(0, FirstRaidRule.Purse(towers, Difficulty(0f)), "the warning only");
-            Assert.AreEqual(0, FirstRaidRule.Purse(new[] { Tower(80, TargetLayers.Ground) }, Difficulty(1f)), "a level that sells no sky gun pays none");
+            Assert.AreEqual(0, FirstRaidRule.SkyGunPrice(new[] { Tower(80, TargetLayers.Ground) }), "a level that sells no gun for the sky");
         }
 
         [Test]
-        public void TheStoredDifficulties_CarryTheRulesPurse_AndEveryRaidLevelCanWarnAndPay()
+        public void TheStoredDifficulties_CarryTheRulesRaidMoney_AndEveryRaidLevelStartsWithIt()
         {
             var catalog = AssetDatabase.LoadAssetAtPath<CampaignCatalog>(CatalogPath);
             Assert.IsNotNull(catalog, CatalogPath);
             BalanceRules rules = BalanceRules.Default;
             for (int d = 0; d < catalog.Difficulties.Count; d++)
             {
-                Assert.AreEqual(rules.FirstRaidPurseGunsFor(d), catalog.Difficulties[d].FirstRaidPurseGuns, 0.0001f, $"{catalog.Difficulties[d].name}: run ApplyRound88c");
+                Assert.AreEqual(rules.RaidStartGunsFor(d), catalog.Difficulties[d].RaidStartGuns, 0.0001f, $"{catalog.Difficulties[d].name}: run ApplyRound88c");
             }
 
-            Assert.AreEqual(0f, rules.FirstRaidPurseGunsFor(0), "Easy waits for the bounties already (FlyersAfterBounties)");
-            Assert.Greater(rules.FirstRaidPurseGunsFor(2), 0f, "Hard held nothing back: the purse is its answer");
-            Assert.GreaterOrEqual(rules.FirstRaidWarningWaves, 2, "one wave ahead is the preview; the warning must come before the purse is spent");
+            Assert.AreEqual(0f, rules.RaidStartGunsFor(0), "Easy waits for the bounties already (FlyersAfterBounties)");
+            Assert.Greater(rules.RaidStartGunsFor(2), 0f, "Hard held nothing back: the extra start money is its answer");
+            Assert.GreaterOrEqual(rules.FirstRaidWarningWaves, 2, "one wave ahead is the preview; the warning must come in time to save up");
 
             int raidCells = 0;
             foreach (MapNode node in catalog.Nodes)
@@ -143,10 +130,9 @@ namespace Game.Tests
 
                     raidCells++;
                     Assert.Greater(FirstRaidRule.SkyGunPrice(node.Level.AvailableTowers), 0, $"{node.Level.name}: an air raid on a level that sells no gun for it");
-                    if (difficulty.FirstRaidPurseGuns > 0f)
-                    {
-                        Assert.Greater(FirstRaidRule.Purse(node.Level.AvailableTowers, difficulty), 0, $"{node.Level.name} {difficulty.name}");
-                    }
+                    int extra = Mathf.RoundToInt(FirstRaidRule.SkyGunPrice(node.Level.AvailableTowers) * difficulty.RaidStartGuns);
+                    Assert.AreEqual(extra, StartMoneyRule.RaidAllowance(node.Level, difficulty), $"{node.Level.name} {difficulty.name}");
+                    Assert.AreEqual(StartMoneyRule.Base(node.Level, difficulty) + extra, StartMoneyRule.For(node.Level, difficulty), $"{node.Level.name} {difficulty.name}");
                 }
             }
 

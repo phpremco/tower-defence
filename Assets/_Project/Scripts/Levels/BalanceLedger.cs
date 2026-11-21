@@ -422,15 +422,21 @@ namespace Game.Levels
             {
                 if (node.Level != null)
                 {
-                    Add(model, node.Level, node.Region);
+                    Add(model, node.Level, node.Region, catalog.Difficulties);
                 }
             }
 
             return model;
         }
 
-        private static void Add(CampaignModel model, LevelDefinition level, int continent)
+        private static void Add(CampaignModel model, LevelDefinition level, int continent, IReadOnlyList<DifficultyProfile> difficulties)
         {
+            var raidStartMoney = new int[difficulties.Count];
+            for (int d = 0; d < raidStartMoney.Length; d++)
+            {
+                raidStartMoney[d] = StartMoneyRule.RaidAllowance(level, difficulties[d]);
+            }
+
             var campaign = new CampaignLevel
             {
                 Continent = continent,
@@ -454,6 +460,7 @@ namespace Game.Levels
             {
                 Key = campaign.Key,
                 StartingMoney = level.StartingMoney,
+                RaidStartMoney = raidStartMoney,
                 HealthScale = level.EnemyHealthScale,
                 Shape = Shape(level),
                 MineCount = level.MineCells.Length,

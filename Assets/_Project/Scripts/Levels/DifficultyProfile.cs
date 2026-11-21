@@ -1,5 +1,6 @@
 ﻿using Game.Core;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Levels
 {
@@ -24,13 +25,14 @@ namespace Game.Levels
         [SerializeField] [Range(0f, 1f)] private float _bossEscortShare = 1f;
         [Tooltip("Round 88b, level bosses: the health of the brood a level boss sends out of its body over an unhindered walk from spawn to the base, as a share of the boss's own bar (body plus armour) as spawned. The brood grows along the walk (BalanceRules.EscortStartWeight, EscortEndWeight). Zero sends none.")]
         [SerializeField] [Range(0f, 2f)] private float _escortWorth = 0.4f;
-        [Tooltip("Round 88c, the first air raid of a level: with the warning a few waves ahead comes a purse worth this many of the cheapest gun the level sells that can aim up (FirstRaidRule). Zero: the warning only (Easy and Medium, where the first-flyer rule already waits for the bounties).")]
-        [SerializeField] [Range(0f, 4f)] private float _firstRaidPurseGuns;
+        [Tooltip("Round 88d: a level whose waves on this difficulty hold an air raid starts with extra money worth this many of the sky gun the level sells (StartMoneyRule). Zero: no extra (Easy and Medium, where the first-flyer rule already waits for the bounties).")]
+        [FormerlySerializedAs("_firstRaidPurseGuns")]
+        [SerializeField] [Range(0f, 4f)] private float _raidStartGuns;
 
         public string DisplayName => Loc.Get(_displayName);
 
-        /// <summary>Sky guns' worth of coins that come with the warning of a level's first air raid (<see cref="FirstRaidRule"/>).</summary>
-        public float FirstRaidPurseGuns => _firstRaidPurseGuns;
+        /// <summary>Sky guns' worth of extra start money on a level with an air raid (<see cref="StartMoneyRule"/>).</summary>
+        public float RaidStartGuns => _raidStartGuns;
         public float HealthMultiplier => _healthMultiplier;
         public float CountMultiplier => _countMultiplier;
         public float SpawnIntervalMultiplier => _spawnIntervalMultiplier;
