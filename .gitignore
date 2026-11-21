@@ -68,3 +68,7 @@ ArtSource/Exports/_backup_r46/
 ArtSource/Exports/_backup_r49/
 ArtSource/Exports/_backup_r53/
 ArtSource/Exports/_backup_r56/
+
+# Balance run logs and plan backups (scratch from the bot runs; records and scripts stay tracked)
+Tools/PlayTest/*.log
+Tools/PlayTest/Plans_old_*/
