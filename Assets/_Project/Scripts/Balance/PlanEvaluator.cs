@@ -109,8 +109,13 @@ namespace Game.Balance
         /// <summary>A policy adds the steps it takes this wave, in order; an unaffordable one blocks the rest, as in a plan.</summary>
         public delegate void PlanPolicy(PolicyView view, List<PlanStep> steps);
 
-        /// <summary>Seconds a slow field lasts against the wave it is laid in, as a share of the wave's window it holds.</summary>
-        private const float FieldWaveShare = 1f;
+        /// <summary>
+        /// The share of a wave a slow field laid for it holds: the seconds it lasts (the gadget's data, 60 s since round 88a)
+        /// over the seconds the wave's ground stream keeps coming past a cell, at most all of it. Until round 88b this was a
+        /// flat one, which a 20 s field never earned on a long wave.
+        /// </summary>
+        public static float FieldWaveShare(GadgetStats field, WaveLoad load) =>
+            field.Lifetime <= 0f || load.Span <= field.Lifetime ? 1f : field.Lifetime / load.Span;
 
         private sealed class Standing
         {
@@ -290,8 +295,8 @@ namespace Game.Balance
                 {
                     // The attack drone fires everywhere: its kills count on the walk, at the share the group's armour lets its shots land.
                     float drone = attackDps * rules.Utilisation;
-                    float droneStream = Layer.Has(attackTargets, Layer.Ground) ? drone * load.Window * load.StreamArmour.Share(attackArmourFactor) : 0f;
-                    float droneSingle = Layer.Has(attackTargets, Layer.Ground) ? drone * load.BossSeconds(load.BossWindow + load.BossFight, rules) * load.BossArmour.Share(attackArmourFactor) : 0f;
+                    float droneStream = load.StreamShareFor(attackTargets) * drone * load.Window * load.StreamArmour.Share(attackArmourFactor);
+                    float droneSingle = load.BossShareFor(attackTargets) * drone * load.BossSeconds(load.BossWindow + load.BossFight, rules) * load.BossArmour.Share(attackArmourFactor);
                     float droneAir = Layer.Has(attackTargets, Layer.Air) ? drone * attackAirFactor * load.AirWindow * load.AirArmour.Share(attackArmourFactor) : 0f;
                     stream += droneStream;
                     single += droneSingle;
@@ -419,7 +424,7 @@ namespace Game.Balance
 
                 float pass = Math.Max(1f, CoverOf(level, spot, range).GroundPass);
                 float share = Math.Min(1f, 2f * gadget.Radius / level.Geometry.CellSize / pass);
-                gain += (1f / gadget.SlowFactor - 1f) * share * FieldWaveShare;
+                gain += (1f / gadget.SlowFactor - 1f) * share * FieldWaveShare(gadget, load);
             }
 
             return gain;

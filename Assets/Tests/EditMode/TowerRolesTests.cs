@@ -130,12 +130,13 @@ namespace Game.Tests
                     TowerLevelStats low = stats.Levels[level];
                     TowerLevelStats high = stats.Levels[level + 1];
                     float n = CostTo(gun, level + 1) / (float)Mathf.Max(1, CostTo(gun, level));
-                    float splash = Splash(stats, GroupDensity, rules);
+                    float splash = Splash(stats, level + 1, GroupDensity, rules);
+                    float lowSplash = Splash(stats, level, GroupDensity, rules);
                     bool rule = high.Dps >= n * low.Dps * rules.UpgradeMargin;
                     met += rule ? 1 : 0;
                     steps++;
                     report.Append(Invariant($"   {gun.name,-11} L{level}->L{level + 1} coins {CostTo(gun, level + 1),4} | upgrade: hit {high.Damage,6:0.#} single {high.Dps,6:0.#} armoured {Armoured(stats, high, 0.5f),6:0.#} multi {high.Dps * splash,6:0.#} targets {splash,3:0.#} rate {1f / high.Interval,4:0.##}/s risk 100%"));
-                    report.Append(Invariant($" | {n:0.00} x L{level}: hit {low.Damage,6:0.#} single {n * low.Dps,6:0.#} armoured {n * Armoured(stats, low, 0.5f),6:0.#} multi {n * low.Dps * splash,6:0.#} targets {n * splash,3:0.#} rate {n / low.Interval,4:0.##}/s risk {100f / n,3:0}%"));
+                    report.Append(Invariant($" | {n:0.00} x L{level}: hit {low.Damage,6:0.#} single {n * low.Dps,6:0.#} armoured {n * Armoured(stats, low, 0.5f),6:0.#} multi {n * low.Dps * lowSplash,6:0.#} targets {n * lowSplash,3:0.#} rate {n / low.Interval,4:0.##}/s risk {100f / n,3:0}%"));
                     report.Append(Invariant($" | single ratio {high.Dps / Mathf.Max(0.01f, n * low.Dps):0.00} rule {(rule ? "met" : UpgradeExceptions.TryGetValue(gun.name, out string why) ? "exception (" + why + ")" : "NOT met")}\n"));
                 }
             }
@@ -151,7 +152,7 @@ namespace Game.Tests
             report.Append(Invariant($"   swarm = {SwarmHealth} hp, {SwarmDensity}/cell (overkill + splash); group = {GroupHealth} hp, {GroupDensity}/cell; air = {AirHealth} hp, {AirDensity}/cell, at the gun's air share;\n"));
             report.Append("   armour: 'arm S' is a creature whose armour pool is S times its health; the gun works on the pool at its armour factor\n");
             report.Append("   (TowerDefinition.ArmourFactor) before the body, so light fire pays far more for the same creature than a shell;\n");
-            report.Append(Invariant($"   single = one high-health target (no overkill, no splash). splash cap per gun (TowerDefinition.SplashTargets, else {rules.MaxSplashTargets}).\n"));
+            report.Append(Invariant($"   single = one high-health target (no overkill, no splash). splash cap per gun and level (TowerDefinition.SplashTargetsAt, else {rules.MaxSplashTargets}).\n"));
             report.Append("   tower       lvl  coins   swarm   group     air  factor arm.25  arm.50   arm 1  single\n");
             foreach (TowerDefinition gun in guns)
             {
@@ -163,9 +164,9 @@ namespace Game.Tests
                     TowerLevelStats at = stats.Levels[level];
                     float per = CoinUnit / Mathf.Max(1, CostTo(gun, level));
                     report.Append(Invariant($"   {gun.name,-11} L{level} {CostTo(gun, level),6}"));
-                    report.Append(Cell(ground, at.Dps * Overkill(at.Damage, SwarmHealth) * Splash(stats, SwarmDensity, rules) * per));
-                    report.Append(Cell(ground, at.Dps * Overkill(at.Damage, GroupHealth) * Splash(stats, GroupDensity, rules) * per));
-                    report.Append(Cell(air, at.Dps * stats.AirFactor * Overkill(at.Damage * stats.AirFactor, AirHealth) * Splash(stats, AirDensity, rules) * per));
+                    report.Append(Cell(ground, at.Dps * Overkill(at.Damage, SwarmHealth) * Splash(stats, level, SwarmDensity, rules) * per));
+                    report.Append(Cell(ground, at.Dps * Overkill(at.Damage, GroupHealth) * Splash(stats, level, GroupDensity, rules) * per));
+                    report.Append(Cell(air, at.Dps * stats.AirFactor * Overkill(at.Damage * stats.AirFactor, AirHealth) * Splash(stats, level, AirDensity, rules) * per));
                     report.Append(Invariant($" {stats.ArmourFactor,7:0.00}"));
                     foreach (float share in ArmourShares)
                     {
@@ -436,7 +437,8 @@ namespace Game.Tests
 
         private static float Overkill(float damage, float health) => damage <= health ? 1f : health / damage;
 
-        private static float Splash(TowerStats tower, float density, BalanceRules rules) => Ledger.Splash(tower.Splash, density, Ledger.SplashCap(tower, rules));
+        // The blast at a level: its cap is per level (round 88b, TowerLevelStats.SplashTargets).
+        private static float Splash(TowerStats tower, int level, float density, BalanceRules rules) => Ledger.Splash(tower.Splash, density, Ledger.SplashCap(tower, level, rules));
 
         private static string Cell(bool applies, float value) => applies ? Invariant($" {value,7:0.0}") : "       -";
 

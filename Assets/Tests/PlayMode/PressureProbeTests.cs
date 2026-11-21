@@ -238,6 +238,9 @@ namespace Game.Tests
                 note = (note.Length > 0 ? note + "; " : string.Empty) + "base sky gun " + result.BaseSkyGuns;
             }
 
+            // Round 88b: what the creatures did to the guns (the record's layout is unchanged; the note carries it).
+            note = (note.Length > 0 ? note + "; " : string.Empty) + "wear guns " + F(result.TowerDamage) + " hurt " + I(result.TowersHurt) + " wrecked " + I(result.TowersWrecked) + " gates " + F(result.GateDamage);
+
             return string.Join("|", tag, level.name, I(difficulty), policy, I(seed), F(multiple), outcome,
                 I(result.Wave), I(result.WaveCount), F(result.BaseHealth), F(result.BaseMax), I(result.Stars), F(result.GameSeconds), F(wallSeconds),
                 I(result.TowersBuilt), I(result.Upgrades), I(result.CoinsUnspent), I(result.Earned), I(result.RepairSpent),

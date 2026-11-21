@@ -29,6 +29,12 @@ namespace Game.Core
         [Header("Named exceptions (the only place a weapon differs from its type)")]
         [SerializeField] private CombatException[] _exceptions = new CombatException[0];
 
+        [Header("Structures: how far an attack style reaches off the road (only the styles that reach past the body)")]
+        [SerializeField] private ReachRule[] _reach = new ReachRule[0];
+
+        [Tooltip("Cells every boss in a level's waves must be able to hurt a tower from: a tower between two roads is never safe from a boss.")]
+        [SerializeField] [Min(0f)] private float _bossReach = 4f;
+
         [Header("Creature traits from their numbers")]
         [Tooltip("Body plus armour at or under this is a swarm creature.")]
         [SerializeField] [Min(1f)] private float _swarmHealth = 40f;
@@ -116,6 +122,28 @@ namespace Game.Core
             }
 
             return 1f;
+        }
+
+        public ReachRule[] Reach => _reach;
+
+        /// <summary>Cells from which every boss of a level must be able to hurt a tower (round 88b).</summary>
+        public float BossReach => _bossReach;
+
+        /// <summary>
+        /// Cells an attack style reaches to a structure beside the road (round 88b), by the style's name; zero for a style
+        /// the table does not list: a melee style, which reaches as far as the creature's own attack range.
+        /// </summary>
+        public float StructureReach(string style)
+        {
+            for (int i = 0; i < _reach.Length; i++)
+            {
+                if (_reach[i].Style == style)
+                {
+                    return _reach[i].Cells;
+                }
+            }
+
+            return 0f;
         }
 
         /// <summary>What a weapon's hits are worth: its type's row and family entries, with the weapon's own exceptions over them.</summary>
@@ -263,6 +291,14 @@ namespace Game.Core
                 if (string.IsNullOrWhiteSpace(_families[i].Reason) || _families[i].Family == CreatureFamily.None)
                 {
                     Debug.LogWarning($"CombatRules '{name}': the family entry for {_families[i].Type} on {_families[i].Family} needs a reason and a family other than None.", this);
+                }
+            }
+
+            for (int i = 0; i < _reach.Length; i++)
+            {
+                if (string.IsNullOrWhiteSpace(_reach[i].Style) || string.IsNullOrWhiteSpace(_reach[i].Reason) || _reach[i].Cells <= 0f)
+                {
+                    Debug.LogWarning($"CombatRules '{name}': reach entry {i} needs an attack style, a reach above zero and a reason.", this);
                 }
             }
 

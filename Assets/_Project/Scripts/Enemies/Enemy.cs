@@ -633,7 +633,8 @@ namespace Game.Enemies
                 return;
             }
 
-            IStructure target = _structures.FindNearest(transform.position, _definition.AttackRange);
+            // The style's reach is for the guns beside the road; a gate, the base or the hero is met at the creature's own range.
+            IStructure target = _structures.FindNearest(transform.position, _definition.StructureReach, _definition.AttackRange);
             if (target != null)
             {
                 target.TakeDamage(_definition.AttackDamage * _structureDamageMultiplier);

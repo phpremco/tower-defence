@@ -1130,7 +1130,9 @@ namespace Game.Levels
                 // The tower in hand, its price and what it does against ground and sky (the cards only carry two badges).
                 string reach = TargetRead.Label(selected);
                 string ground = HighGroundNote(_cursor);
-                return Loc.Format("placement.in_hand", selected.DisplayName, selected.BuildCost) + (reach.Length > 0 ? "  -  " + reach : string.Empty) + (ground.Length > 0 ? "  -  " + ground : string.Empty);
+                // A capped blast says how many creatures it hurts as built (round 88b).
+                string blast = BlastRead.Label(selected, 0);
+                return Loc.Format("placement.in_hand", selected.DisplayName, selected.BuildCost) + (reach.Length > 0 ? "  -  " + reach : string.Empty) + (blast.Length > 0 ? "  -  " + blast : string.Empty) + (ground.Length > 0 ? "  -  " + ground : string.Empty);
             }
 
             if (_context.ClosedPads.Contains(_cursor))

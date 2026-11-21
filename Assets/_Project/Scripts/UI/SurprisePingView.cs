@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Core;
 using Game.Levels;
 using UnityEngine;
@@ -9,6 +10,8 @@ namespace Game.UI
     /// The ping on the screen when a surprise comes out (round 88a, Remco missed a group that slipped in while he was not
     /// watching the radar): for a few seconds a ring ripples out from the spawn point with the word over it while it is in
     /// view, and an arrow at the screen edge points at it while it is not. A few can show at once, one per spawn point.
+    /// Where they sit is <see cref="MarkerLayout"/>'s rule (round 88b): inside the safe area, off every HUD panel the
+    /// <see cref="HudKeepOut"/> knows, off Voss's rear-rift marker and off each other; this view only measures and applies.
     /// It needs no pointer and no button: it shows by itself and goes by itself. The radar pings the same place
     /// (<see cref="RadarView"/>).
     /// </summary>
@@ -16,14 +19,17 @@ namespace Game.UI
     {
         private const int Markers = 3;
         private const float ShowSeconds = 5f;
-        private const float EdgeMargin = 90f;
         private const float ArrowSize = 56f;
         private const float RingSize = 90f;
         private const float RingGrowth = 1.7f;
         private const float RingSeconds = 0.9f;
         private const float LabelWidth = 260f;
         private const float LabelHeight = 40f;
-        private const float LabelGap = 54f;
+        // From the middle of a ring to the middle of its word, over or under it.
+        private const float RingLabelOffset = 54f;
+        // Between an edge arrow and its word, and between two markers.
+        private const float ArrowLabelGap = 2f;
+        private const float MarkerSpacing = 8f;
         private const int LabelSize = 26;
         private const float MarkerLift = 0.5f;
         // The same spawn point pinged again while its marker still shows keeps that marker (points closer than this, in world units).
@@ -45,6 +51,11 @@ namespace Game.UI
         }
 
         private readonly Marker[] _markers = new Marker[Markers];
+        private readonly MarkerLayout _layout = new MarkerLayout();
+        private readonly List<Rect> _obstacles = new List<Rect>();
+        private Canvas _canvas;
+        private Vector2 _labelSize;
+        private float _arrowBox;
         private LevelContext _context;
         private Camera _camera;
         private RectTransform _area;
@@ -73,6 +84,9 @@ namespace Game.UI
             _camera = camera;
             _area = root;
             _keepOut = keepOut;
+            _canvas = root.GetComponentInParent<Canvas>().rootCanvas;
+            // The arrow turns: its box is the square that holds it at any angle.
+            _arrowBox = new Vector2(ArrowSize, ArrowSize).magnitude;
             for (int i = 0; i < Markers; i++)
             {
                 var marker = new Marker();
@@ -83,6 +97,8 @@ namespace Game.UI
                 text.color = Warning;
                 text.raycastTarget = false;
                 marker.Label = text.rectTransform;
+                // The word's own size, not its roomy box: the block that must stay clear is what is drawn.
+                _labelSize = new Vector2(Mathf.Min(LabelWidth, text.preferredWidth), LabelHeight);
                 _markers[i] = marker;
                 Show(marker, false, false);
             }
@@ -159,6 +175,7 @@ namespace Game.UI
         {
             float now = Time.unscaledTime;
             bool running = _context.Outcome == LevelOutcome.Running;
+            bool collected = false;
             foreach (Marker marker in _markers)
             {
                 if (now > marker.Until || !running)
@@ -168,52 +185,75 @@ namespace Game.UI
                     continue;
                 }
 
+                if (!collected)
+                {
+                    collected = true;
+                    _obstacles.Clear();
+                    _keepOut.CollectObstacles(_obstacles);
+                }
+
                 Place(marker, now);
             }
         }
 
+        // Markers are placed one after the other and each becomes an obstacle for the next, so they never share a spot.
         private void Place(Marker marker, float now)
         {
+            // A still or a console build may draw the HUD through a camera: the point is read the way the canvas is drawn.
+            Camera uiCamera = _canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : _canvas.worldCamera;
             Vector3 screen = _camera.WorldToScreenPoint(marker.Target + Vector3.up * MarkerLift);
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(_area, screen, null, out Vector2 local);
-            Rect inner = _area.rect;
-            inner.xMin += EdgeMargin;
-            inner.xMax -= EdgeMargin;
-            inner.yMin += EdgeMargin;
-            inner.yMax -= EdgeMargin;
-            bool inView = screen.z > 0f && inner.Contains(local);
-            if (inView)
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(_area, screen, uiCamera, out Vector2 local);
+            Rect area = _area.rect;
+            if (screen.z <= 0f)
             {
-                float phase = Mathf.Repeat((now - marker.Since) / RingSeconds, 1f);
-                marker.Ring.anchoredPosition = local;
-                marker.Ring.localScale = Vector3.one * Mathf.Lerp(1f, RingGrowth, phase);
-                Color colour = Warning;
-                colour.a = 1f - phase;
-                marker.RingImage.color = colour;
-                marker.Label.anchoredPosition = local + Vector2.up * LabelGap;
-                Show(marker, false, true);
+                // Behind the camera the projection is mirrored: the place lies the other way.
+                local = area.center * 2f - local;
+            }
+
+            // In view means the ring can be seen whole: on screen and under no panel.
+            var ring = new Rect(local - new Vector2(RingSize, RingSize) * 0.5f, new Vector2(RingSize, RingSize));
+            if (screen.z > 0f && MarkerLayout.IsFree(ring, area, _keepOut.Zones))
+            {
+                PlaceRing(marker, local, ring, area, now);
+            }
+            else if (_layout.PlaceEdge(local, _arrowBox, _labelSize, ArrowLabelGap, area, _obstacles, out EdgeMarkerPlacement placed))
+            {
+                marker.Arrow.anchoredPosition = placed.Arrow - area.center;
+                marker.Arrow.localRotation = Quaternion.Euler(0f, 0f, placed.Angle);
+                marker.Label.anchoredPosition = placed.Label - area.center;
+                _obstacles.Add(Spaced(placed.Block));
+                Show(marker, true, false);
             }
             else
             {
-                Vector2 direction = screen.z > 0f ? local - inner.center : inner.center - local;
-                if (direction.sqrMagnitude < 1f)
-                {
-                    direction = Vector2.up;
-                }
-
-                float reach = Mathf.Min(inner.width * 0.5f / Mathf.Max(0.001f, Mathf.Abs(direction.x)), inner.height * 0.5f / Mathf.Max(0.001f, Mathf.Abs(direction.y)));
-                Vector2 edge = inner.center + direction * reach;
-                marker.Arrow.anchoredPosition = edge;
-                marker.Arrow.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
-                marker.Label.anchoredPosition = edge - direction.normalized * LabelGap;
-                Show(marker, true, false);
-            }
-
-            // The HUD stays readable: a marker that would cover a panel moves off it, or waits while it cannot.
-            if (!_keepOut.PlaceTogether(inView ? marker.Ring : marker.Arrow, marker.Label))
-            {
                 Show(marker, false, false);
             }
+        }
+
+        private void PlaceRing(Marker marker, Vector2 local, Rect ring, Rect area, float now)
+        {
+            float phase = Mathf.Repeat((now - marker.Since) / RingSeconds, 1f);
+            marker.Ring.anchoredPosition = local - area.center;
+            marker.Ring.localScale = Vector3.one * Mathf.Lerp(1f, RingGrowth, phase);
+            Color colour = Warning;
+            colour.a = 1f - phase;
+            marker.RingImage.color = colour;
+            bool worded = _layout.PlaceRingLabel(local, RingLabelOffset, _labelSize, area, _obstacles, out Vector2 label);
+            if (worded)
+            {
+                marker.Label.anchoredPosition = label - area.center;
+                _obstacles.Add(Spaced(new Rect(label - _labelSize * 0.5f, _labelSize)));
+            }
+
+            _obstacles.Add(Spaced(ring));
+            SetActive(marker.Arrow, false);
+            SetActive(marker.Ring, true);
+            SetActive(marker.Label, worded);
+        }
+
+        private static Rect Spaced(Rect rect)
+        {
+            return Rect.MinMaxRect(rect.xMin - MarkerSpacing, rect.yMin - MarkerSpacing, rect.xMax + MarkerSpacing, rect.yMax + MarkerSpacing);
         }
 
         private static void Show(Marker marker, bool arrow, bool ring)

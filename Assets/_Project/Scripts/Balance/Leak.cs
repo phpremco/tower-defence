@@ -285,13 +285,13 @@ namespace Game.Balance
             float damage = stats.Damage * boost.Damage;
             float dps = stats.Interval > 0f ? damage * boost.Rate / stats.Interval : 0f;
             float field = dps * efficiency;
-            bool ground = Layer.Has(tower.Targets, Layer.Ground);
             bool sky = Layer.Has(tower.Targets, Layer.Air);
             float groundHit = damage * tower.GroundFactor;
             float airHit = damage * tower.AirFactor;
-            float splash = tower.Splash > 0f ? Ledger.SplashCap(tower, rules) : 1f;
-            stream = ground ? field * tower.GroundFactor * load.StreamArmour.Share(tower.ArmourFactor) * Ledger.Overkill(groundHit, load.MeanHealth) * splash : 0f;
-            single = ground ? field * tower.GroundFactor * load.BossArmour.Share(tower.ArmourFactor) : 0f;
+            float splash = tower.Splash > 0f ? Ledger.SplashCap(tower, towerLevel, rules) : 1f;
+            // A gun that only aims up still reaches the creatures of both layers in a queue (WaveLoad.StreamShareFor).
+            stream = load.StreamShareFor(tower.Targets) * field * tower.GroundFactor * load.StreamArmour.Share(tower.ArmourFactor) * Ledger.Overkill(groundHit, load.MeanHealth) * splash;
+            single = load.BossShareFor(tower.Targets) * field * tower.GroundFactor * load.BossArmour.Share(tower.ArmourFactor);
             air = sky ? field * tower.AirFactor * load.AirArmour.Share(tower.ArmourFactor) * Ledger.Overkill(airHit, load.MeanAirHealth) * splash : 0f;
         }
 

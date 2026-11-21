@@ -24,3 +24,4 @@ MonoBehaviour:
   _startingMoneyMultiplier: 1
   _bossHealthShare: 1
   _bossEscortShare: 1
+  _escortWorth: 0.5

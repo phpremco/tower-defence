@@ -135,7 +135,7 @@ namespace Game.Editor
                     Profile = rules.ProfileOf(tower.DamageType, tower.name),
                     Targets = tower.Targets,
                     SplashRadius = tower.SplashRadius,
-                    SplashTargets = tower.SplashTargets,
+                    SplashTargets = tower.SplashTargetsAt(at),
                     Homing = tower.Homing,
                     ProjectileSpeed = tower.ProjectileSpeed,
                     Range = stats.Range,

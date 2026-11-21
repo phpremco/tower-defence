@@ -1,0 +1,57 @@
+Round 88b: tower threat on paper, BEFORE (the data as it stood)
+Reference tower: a level-1 Cannon (220 hit points), 6 cells before the first gate of the main road, 1.5 / 3 / 4.5 cells off the road (the worse side).
+Every figure is a share of that tower's health over the whole level (100 % = one wreck if never repaired).
+alone    = the tower is the nearest structure all the time and nothing dies on the way (worst case)
+played   = ordinary creatures x0.5 (shot on the way), nearest-only bites x0.5 (two guns equally near), boss volleys and pulses in full
+boss     = one pass of the level's worst boss alone, as played, and what it costs per 10 s it is held within its powers' reach of the tower
+Assumptions: the first gate holds; nest and boss-entrance spawns walk the main road; flyers fly their stored route; speeds are averages (rolls included).
+
+Level_C1_01 (Landing Site)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |    2%    2%    2%    4% |    0%    0%    0%    0% |    0%    0%    0%    0% | 
+  Medium  x0.45 |    2%    2%    2%    4% |    0%    0%    0%    0% |    0%    0%    0%    0% | 
+  Hard    x1.00 |   11%   11%    5%    8% |    0%    0%    0%    0% |    0%    0%    0%    0% | 
+  Psycho  x1.40 |   22%   22%    7%   11% |    0%    0%    0%    0% |    0%    0%    0%    0% | 
+
+Level_C1_02 (Glass Meadows)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |    4%    4%    4%    4% |    1%    1%    1%    4% |    0%    0%    0%    0% | BroodMother 1%
+  Medium  x0.45 |    4%    4%    4%    4% |    1%    1%    1%    4% |    0%    0%    0%    0% | BroodMother 1%
+  Hard    x1.00 |   24%   24%   15%   19% |    9%    9%    6%   19% |    0%    0%    0%    0% | CoreWisp 6%, BroodMother 3%
+  Psycho  x1.40 |   46%   46%   21%   27% |   16%   16%    8%   27% |    0%    0%    0%    0% | BroodMother 8%, CoreWisp 8%
+
+Level_C1_03 (Shard Ridge)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |   26%    8%    2%    4% |    0%    0%    0%    0% |    0%    0%    0%    0% | 
+  Medium  x0.45 |   46%   13%    2%    4% |    0%    0%    0%    0% |    0%    0%    0%    0% | 
+  Hard    x1.00 |  227%   69%   11%   19% |    0%    0%    0%   19% |    0%    0%    0%    0% | 
+  Psycho  x1.40 |  437%  132%   16%   27% |    0%    0%    0%   27% |    0%    0%    0%    0% | 
+
+Level_C1_04 (Fault Line)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |   47%   18%   10%    4% |   10%    8%    8%    4% |   19%   12%   11%    4% | StormMatriarch 8%
+  Medium  x0.45 |   66%   22%   10%    4% |   12%    9%    8%    4% |   26%   14%   11%    4% | Shalebat 1%, StormMatriarch 8%
+  Hard    x1.00 |  348%  104%   22%    8% |   29%   20%   18%    8% |   71%   34%   24%    8% | Shalebat 2%, StormMatriarch 18%
+  Psycho  x1.40 |  578%  180%   31%   11% |   36%   27%   25%   11% |   78%   42%   34%   11% | Shalebat 2%, StormMatriarch 25%
+
+Level_C1_05 (Quartz Flats)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |   14%    7%    5%    9% |    8%    2%    0%    9% |   11%    3%    0%    0% | Shalebat 2%
+  Medium  x0.45 |   17%    8%    5%    9% |   10%    2%    0%    9% |   13%    3%    0%    0% | Shalebat 2%
+  Hard    x1.00 |   88%   51%   32%    8% |   68%   37%   31%    8% |   85%   43%   34%    8% | Shalebat 6%, StormMatriarch 31%
+  Psycho  x1.40 |  116%   76%   45%   11% |   83%   49%   43%   11% |  103%   56%   48%   11% | StormMatriarch 43%, Shalebat 6%
+
+Level_C1_06 (Crysium Vein)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |   38%   10%    2%    0% |    0%    0%    0%    0% |   12%    3%    0%    0% | 
+  Medium  x0.45 |   59%   16%    2%    0% |    0%    0%    0%    0% |   19%    5%    0%    0% | 
+  Hard    x1.00 |  165%   52%   11%   19% |    0%    0%    0%   19% |   38%   10%    0%    0% | 
+  Psycho  x1.40 |  405%  141%   40%   11% |   24%   23%   23%   11% |  128%   56%   36%   11% | StormMatriarch 23%
+
+Summary, played at 3 cells (level: Easy / Medium / Hard / Psycho), then the worst boss pass on Medium:
+  Level_C1_01: 0% / 0% / [Medium boss pass 0%] 0% / 0% / 
+  Level_C1_02: 1% / 1% / [Medium boss pass 1%] 9% / 16% / 
+  Level_C1_03: 0% / 0% / [Medium boss pass 0%] 0% / 0% / 
+  Level_C1_04: 8% / 9% / [Medium boss pass 8%] 20% / 27% / 
+  Level_C1_05: 2% / 2% / [Medium boss pass 0%] 37% / 49% / 
+  Level_C1_06: 0% / 0% / [Medium boss pass 0%] 0% / 23% / 

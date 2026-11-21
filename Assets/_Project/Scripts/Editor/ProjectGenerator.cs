@@ -183,6 +183,17 @@ namespace Game.Editor
             return levels;
         }
 
+        /// <summary>The levels with the most creatures one blast hurts at each (TowerLevel.SplashTargets), for a splash gun whose blast grows with its stars.</summary>
+        private static TowerLevel[] Blast(TowerLevel[] levels, int[] splashTargets)
+        {
+            for (int i = 0; i < levels.Length; i++)
+            {
+                levels[i].SplashTargets = splashTargets[Mathf.Min(i, splashTargets.Length - 1)];
+            }
+
+            return levels;
+        }
+
         private static void SetShape(TowerDefinition tower, TowerShape shape)
         {
             var so = new SerializedObject(tower);
@@ -255,6 +266,7 @@ namespace Game.Editor
                 element.FindPropertyRelative("SlowFactor").floatValue = levels[i].SlowFactor;
                 element.FindPropertyRelative("SlowSeconds").floatValue = levels[i].SlowSeconds;
                 element.FindPropertyRelative("SupportScale").floatValue = levels[i].SupportScale;
+                element.FindPropertyRelative("SplashTargets").intValue = levels[i].SplashTargets;
                 if (names)
                 {
                     element.FindPropertyRelative("StepName").stringValue = levels[i].StepName ?? string.Empty;
@@ -281,6 +293,7 @@ namespace Game.Editor
             so.FindProperty("_startingMoneyMultiplier").floatValue = sheet.StartMoney;
             so.FindProperty("_bossHealthShare").floatValue = sheet.BossHealth;
             so.FindProperty("_bossEscortShare").floatValue = sheet.BossEscort;
+            so.FindProperty("_escortWorth").floatValue = sheet.EscortWorth;
             so.ApplyModifiedPropertiesWithoutUndo();
             return profile;
         }

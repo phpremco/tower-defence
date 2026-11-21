@@ -205,18 +205,24 @@ namespace Game.Editor
                 },
                 new BlenderArtEntry("BroodMother", "BroodMother")
                 {
+                    // Round 88b: Venom Spit leaves from the head.
+                    BeamSockets = new[] { "Head" },
                     ExtraParts = FaceClaws,
                     Scale = BossFactor,
                     Clips = new[] { new BlenderClipSpec("Spawn", ModelClipRole.Power, 40, "Spawn", "Vent") },
                 },
                 new BlenderArtEntry("PackAlpha", "PackAlpha")
                 {
+                    // Round 88b: the Spine Volley leaves from the head.
+                    BeamSockets = new[] { "Head" },
                     ExtraParts = FaceClaws,
                     Scale = BossFactor,
                     Clips = new[] { new BlenderClipSpec("Howl", ModelClipRole.Power, 22, "Rally") },
                 },
                 new BlenderArtEntry("CoreWisp", "CoreWisp")
                 {
+                    // Round 88b: the Arc Discharge leaves from the core.
+                    BeamSockets = new[] { "Core" },
                     ExtraParts = new[] { "Eyes", "Barbs", "Claws" },
                     Scale = BossFactor,
                     Bleeds = false,

@@ -1,0 +1,105 @@
+Round 88b: raids and peaks per cell, from the scripts.
+Row: one letter per wave (P plain, R rush, H heavy, A air raid; b boss wave, s surprise, * peak).
+
+C1_01 Easy: P P R H* P R Ps H* R P H Pb 
+  raids  (0 of 12 = 0 %), two running from ; open ground waves 11; peaks: 4 Heavy (nearest place 1.4 waves off); 8 Heavy (nearest place 0.7 waves off)
+  the rule in code now: 4,8 (as round 87)
+
+C1_01 Medium: P P R H* P R Ps H* R Ps H Pb 
+  raids  (0 of 12 = 0 %), two running from ; open ground waves 11; peaks: 4 Heavy (nearest place 1.4 waves off); 8 Heavy (nearest place 0.7 waves off)
+  the rule in code now: 4,8 (as round 87)
+
+C1_01 Hard: P P R H* P R Ps Hb R Ps* H Pb 
+  raids  (0 of 12 = 0 %), two running from ; open ground waves 9; peaks: 4 Heavy (nearest place 1.4 waves off); 10 Plain (nearest place 1.3 waves off)
+  the rule in code now: 4,10 (as round 87)
+
+C1_01 Psycho: P P R H* Pb R Ps Hb R Ps* H Pb 
+  raids  (0 of 12 = 0 %), two running from ; open ground waves 7; peaks: 4 Heavy (nearest place 1.4 waves off); 10 Plain (nearest place 1.3 waves off)
+  the rule in code now: 4,10 (as round 87)
+
+C1_02 Easy: P R P H* R P H R P H* R Pb 
+  raids  (0 of 12 = 0 %), two running from ; open ground waves 11; peaks: 4 Heavy (nearest place 1.4 waves off); 10 Heavy (nearest place 1.3 waves off)
+  the rule in code now: 4,10 (as round 87)
+
+C1_02 Medium: P R P H* R P H R P H* R Pb 
+  raids  (0 of 12 = 0 %), two running from ; open ground waves 11; peaks: 4 Heavy (nearest place 1.4 waves off); 10 Heavy (nearest place 1.3 waves off)
+  the rule in code now: 4,10 (as round 87)
+
+C1_02 Hard: P R P H* R P H* R Pb H R Pb 
+  raids  (0 of 12 = 0 %), two running from ; open ground waves 9; peaks: 4 Heavy (nearest place 1.4 waves off); 7 Heavy (nearest place 1.6 waves off)
+  the rule in code now: 4,7 (as round 87)
+
+C1_02 Psycho: P R P H* Rb P H* R Pb H R Pb 
+  raids  (0 of 12 = 0 %), two running from ; open ground waves 7; peaks: 4 Heavy (nearest place 1.4 waves off); 7 Heavy (nearest place 1.6 waves off)
+  the rule in code now: 4,7 (as round 87)
+
+C1_03 Easy: P R P H P R Ps* P H* R Ps* A H R A Hb 
+  raids 12,15 (2 of 16 = 13 %), two running from ; open ground waves 13; peaks: 7 Plain (nearest place 0.0 waves off); 9 Heavy (nearest place 0.3 waves off); 11 Plain (nearest place 0.5 waves off)
+  the rule in code now: 7,9,11 (as round 87)
+
+C1_03 Medium: P R P H P R Ps* P H* R A A H* R A Hb 
+  raids 11,12,15 (3 of 16 = 19 %), two running from 11; open ground waves 12; peaks: 7 Plain (nearest place 0.0 waves off); 9 Heavy (nearest place 0.3 waves off); 13 Heavy (nearest place 1.5 waves off)
+  the rule in code now: 7,9,13 (as round 87)
+
+C1_03 Hard: P R P H P R P* Ps H* Rb A A H* A A Hb 
+  raids 11,12,14,15 (4 of 16 = 25 %), two running from 11,14; open ground waves 10; peaks: 7 Plain (nearest place 0.0 waves off); 9 Heavy (nearest place 0.3 waves off); 13 Heavy BETWEEN RAIDS (nearest place 1.5 waves off)
+  the rule in code now: 7,9,13 (as round 87)
+  candidates: no peak between two raids, placed anew 4,7,9 | no peak on a rush between two raids, placed anew 7,9,13 | a rush between two raids carries no peak (not placed anew) 7,9,13
+
+C1_03 Psycho: P R P H* P Rb Ps P H* Rb A A H* A A Hb 
+  raids 11,12,14,15 (4 of 16 = 25 %), two running from 11,14; open ground waves 8; peaks: 4 Heavy (nearest place 3.0 waves off); 9 Heavy (nearest place 0.3 waves off); 13 Heavy BETWEEN RAIDS (nearest place 1.5 waves off)
+  the rule in code now: 4,9,13 (as round 87)
+  candidates: no peak between two raids, placed anew 3,5,9 | no peak on a rush between two raids, placed anew 4,9,13 | a rush between two raids carries no peak (not placed anew) 4,9,13
+
+C1_04 Easy: P R P P H R P* P R* A P* P A Ps H Ab 
+  raids 10,13,16 (3 of 16 = 19 %), two running from ; open ground waves 13; peaks: 7 Plain (nearest place 0.0 waves off); 9 Rush (nearest place 0.3 waves off); 11 Plain (nearest place 0.5 waves off)
+  the rule in code now: 7,9,11 (as round 87)
+
+C1_04 Medium: P R P P H A P* P A H* Ps A R Ps* A Pb 
+  raids 6,9,12,15 (4 of 16 = 25 %), two running from ; open ground waves 11; peaks: 7 Plain (nearest place 0.0 waves off); 10 Heavy (nearest place 0.7 waves off); 14 Plain (nearest place 2.5 waves off)
+  the rule in code now: 7,10,14 (as round 87)
+
+C1_04 Hard: P R A P H* A P* A A Hb Ps A R Ps* A Pb 
+  raids 3,6,8,9,12,15 (6 of 16 = 38 %), two running from 8; open ground waves 7; peaks: 5 Heavy (nearest place 2.0 waves off); 7 Plain BETWEEN RAIDS (nearest place 0.0 waves off); 14 Plain (nearest place 2.5 waves off)
+  the rule in code now: 5,7,14 (as round 87)
+  candidates: no peak between two raids, placed anew 2,5,14 | no peak on a rush between two raids, placed anew 5,7,14 | a rush between two raids carries no peak (not placed anew) 5,7,14
+
+C1_04 Psycho: P R A P* Hb A P* A A Hb Ps A R* A A Pb 
+  raids 3,6,8,9,12,14,15 (7 of 16 = 44 %), two running from 8,14; open ground waves 5; peaks: 4 Plain (nearest place 3.0 waves off); 7 Plain BETWEEN RAIDS (nearest place 0.0 waves off); 13 Rush BETWEEN RAIDS (nearest place 1.5 waves off)
+  the rule in code now: 4,7 (round 87: 4,7,13)
+  candidates: no peak between two raids, placed anew 2,4 | no peak on a rush between two raids, placed anew 2,4,7 | a rush between two raids carries no peak (not placed anew) 4,7
+
+C1_05 Easy: P P R P H P R* P A P* R P* A H R P Hb 
+  raids 9,13 (2 of 17 = 12 %), two running from ; open ground waves 14; peaks: 7 Rush (nearest place 0.4 waves off); 10 Plain (nearest place 0.2 waves off); 12 Plain (nearest place 0.2 waves off)
+  the rule in code now: 7,10,12 (as round 87)
+
+C1_05 Medium: P P R P H A R* P H* A R Ps* P H A Ps Hb 
+  raids 6,10,15 (3 of 17 = 18 %), two running from ; open ground waves 13; peaks: 7 Rush (nearest place 0.4 waves off); 9 Heavy (nearest place 0.8 waves off); 12 Plain (nearest place 0.2 waves off)
+  the rule in code now: 7,9,12 (as round 87)
+
+C1_05 Hard: P P R A H A R* A H Ps* Rb Ps A H* R A Hb 
+  raids 4,6,8,13,16 (5 of 17 = 29 %), two running from ; open ground waves 9; peaks: 7 Rush BETWEEN RAIDS (nearest place 0.4 waves off); 10 Plain (nearest place 0.2 waves off); 14 Heavy (nearest place 1.8 waves off)
+  the rule in code now: 10,14 (round 87: 7,10,14)
+  candidates: no peak between two raids, placed anew 3,9,14 | no peak on a rush between two raids, placed anew 5,9,14 | a rush between two raids carries no peak (not placed anew) 10,14
+
+C1_05 Psycho: P P R A Hb A R* A H* A Rb Ps A H* R A Hb 
+  raids 4,6,8,10,13,16 (6 of 17 = 35 %), two running from ; open ground waves 7; peaks: 7 Rush BETWEEN RAIDS (nearest place 0.4 waves off); 9 Heavy BETWEEN RAIDS (nearest place 0.8 waves off); 14 Heavy (nearest place 1.8 waves off)
+  the rule in code now: 9,14 (round 87: 7,9,14)
+  candidates: no peak between two raids, placed anew 1,3,14 | no peak on a rush between two raids, placed anew 3,9,14 | a rush between two raids carries no peak (not placed anew) 9,14
+
+C1_06 Easy: R P P H R P P R H* A R Ps* A H* P A Ps Hb 
+  raids 10,13,16 (3 of 18 = 17 %), two running from ; open ground waves 14; peaks: 9 Heavy (nearest place 1.2 waves off); 12 Plain (nearest place 0.9 waves off); 14 Heavy (nearest place 1.1 waves off)
+  the rule in code now: 9,12,14 (as round 87)
+
+C1_06 Medium: R P P H R P P* A H* P A Ps* P A Ps R A Hb 
+  raids 8,11,14,17 (4 of 18 = 22 %), two running from ; open ground waves 13; peaks: 7 Plain (nearest place 0.8 waves off); 9 Heavy (nearest place 1.2 waves off); 12 Plain (nearest place 0.9 waves off)
+  the rule in code now: 7,9,12 (as round 87)
+
+C1_06 Hard: R P P H R P P* A H* P A Pb Ps A P* R A Hb 
+  raids 8,11,14,17 (4 of 18 = 22 %), two running from ; open ground waves 11; peaks: 7 Plain (nearest place 0.8 waves off); 9 Heavy (nearest place 1.2 waves off); 15 Plain (nearest place 2.1 waves off)
+  the rule in code now: 7,9,15 (as round 87)
+
+C1_06 Psycho: R P P H A P* Pb A H* P A Pb Ps A A R* A Hb 
+  raids 5,8,11,14,15,17 (6 of 18 = 33 %), two running from 14; open ground waves 8; peaks: 6 Plain (nearest place 1.8 waves off); 9 Heavy (nearest place 1.2 waves off); 16 Rush BETWEEN RAIDS (nearest place 3.1 waves off)
+  the rule in code now: 6,9 (round 87: 6,9,16)
+  candidates: no peak between two raids, placed anew 4,6,9 | no peak on a rush between two raids, placed anew 4,6,9 | a rush between two raids carries no peak (not placed anew) 6,9

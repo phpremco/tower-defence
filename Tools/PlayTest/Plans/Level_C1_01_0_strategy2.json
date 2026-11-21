@@ -8,22 +8,22 @@
             "Tower": "PulseRifle",
             "X": [
                 5,
-                9,
-                10,
-                9,
                 12,
+                9,
                 11,
+                10,
                 11,
+                9,
                 31
             ],
             "Y": [
                 14,
-                6,
-                6,
-                3,
                 7,
                 6,
                 2,
+                6,
+                6,
+                3,
                 14
             ]
         },
@@ -33,21 +33,21 @@
                 11,
                 11,
                 12,
-                12,
+                13,
                 12,
                 5,
-                31,
-                13
+                12,
+                31
             ],
             "Y": [
+                6,
                 2,
                 6,
+                2,
                 7,
+                14,
                 2,
-                6,
-                14,
-                14,
-                2
+                14
             ]
         }
     ],
@@ -55,18 +55,23 @@
         {
             "Threat": "swarm",
             "Tower": "Cannon",
-            "Weight": 1.9111686944961548
+            "Weight": 0.8228050470352173
+        },
+        {
+            "Threat": "plated",
+            "Tower": "Cannon",
+            "Weight": 0.8607684373855591
         }
     ],
-    "UpgradeBias": 1.25,
+    "UpgradeBias": 0.8100000023841858,
     "TowersBeforeUpgrades": 1,
     "MineCoverBelow": 1.0,
     "MineOnBoss": true,
     "FieldCoverBelow": 0.0,
-    "HarvesterCover": 1.2000000476837158,
-    "HarvesterShare": 0.6000000238418579,
-    "RepairDroneWear": 0.5,
-    "AttackDroneAfterTowers": 6,
-    "GateUpgradeBias": 0.0,
+    "HarvesterCover": 1.0,
+    "HarvesterShare": 0.4000000059604645,
+    "RepairDroneWear": 0.05000000074505806,
+    "AttackDroneAfterTowers": 12,
+    "GateUpgradeBias": 1.2000000476837158,
     "AllowSell": false
 }

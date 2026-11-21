@@ -1,0 +1,115 @@
+Round 88b: tower threat on paper, AFTER (round 88b reach rule and boss volleys)
+Reference tower: a level-1 Cannon (220 hit points), 6 cells before the first gate of the main road, 1.5 / 3 / 4.5 cells off the road (the worse side).
+Every figure is a share of that tower's health over the whole level (100 % = one wreck if never repaired).
+alone    = the tower is the nearest structure all the time and nothing dies on the way (worst case)
+played   = ordinary creatures x0.5 (shot on the way), nearest-only bites x0.5 (two guns equally near), boss volleys x0.5 (three bolts among six guns in reach), pulses in full
+boss     = one pass of the level's worst boss alone with the tower among its three nearest guns all the way (every bolt lands), and what that costs per 10 s the boss is held within its powers' reach
+Assumptions: the first gate holds; nest and boss-entrance spawns walk the main road; flyers fly their stored route; speeds are averages (rolls included).
+
+Level_C1_01 (Landing Site)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |  116%   41%   42%   27% |   63%   24%   34%   27% |   18%    9%   18%   27% | Cragback 7%, BroodMother 17%
+  Medium  x0.45 |  135%   45%   42%   27% |   71%   26%   34%   27% |   18%    9%   18%   27% | Cragback 9%, BroodMother 17%
+  Hard    x1.00 |  472%  170%   93%   59% |  263%  103%   75%   59% |   81%   41%   41%   59% | Cragback 28%, BroodMother 75%
+  Psycho  x1.40 |  881%  330%  131%   83% |  510%  206%  105%   83% |  171%   86%   57%   83% | BroodMother 157%, Cragback 49%
+
+Level_C1_02 (Glass Meadows)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |  133%   46%   42%   27% |  101%   35%   37%   27% |   16%    8%   16%   27% | Cragback 16%, BroodMother 19%
+  Medium  x0.45 |  145%   49%   42%   27% |  110%   37%   37%   27% |   16%    8%   16%   27% | Cragback 18%, BroodMother 19%
+  Hard    x1.00 |  609%  204%   94%   59% |  455%  152%   82%   59% |   58%   29%   36%   59% | Cragback 80%, CoreWisp 30%, BroodMother 42%
+  Psycho  x1.40 | 1125%  393%  131%   83% |  852%  297%  115%   83% |  132%   66%   50%   83% | BroodMother 119%, Cragback 137%, CoreWisp 42%
+
+Level_C1_03 (Shard Ridge)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |   85%   33%   42%   27% |   41%   19%   34%   27% |   18%    9%   18%   27% | Cragback 2%, BroodMother 17%
+  Medium  x0.45 |  118%   41%   42%   27% |   47%   20%   34%   27% |   18%    9%   18%   27% | Cragback 3%, BroodMother 17%
+  Hard    x1.00 |  469%  165%   93%   59% |  161%   70%   75%   59% |   66%   33%   41%   59% | Cragback 10%, CoreWisp 23%, BroodMother 37%
+  Psycho  x1.40 |  968%  345%  131%   83% |  358%  158%  105%   83% |  149%   74%   57%   83% | Cragback 21%, BroodMother 105%, CoreWisp 32%
+
+Level_C1_04 (Fault Line)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |   79%   26%   14%    4% |   57%   23%   20%    4% |   32%   14%   15%    4% | Cragback 2%, Shalebat 4%, StormMatriarch 17%
+  Medium  x0.45 |  104%   32%   14%    4% |   84%   29%   20%    4% |   48%   18%   15%    4% | Cragback 2%, Shalebat 11%, StormMatriarch 17%
+  Hard    x1.00 |  569%  181%   90%   59% |  324%  118%   75%   59% |  177%   67%   41%   59% | Cragback 7%, BroodMother 37%, Shalebat 37%, StormMatriarch 37%
+  Psycho  x1.40 |  892%  307%  126%   83% |  416%  172%  105%   83% |  232%   99%   57%   83% | CoreWisp 32%, Cragback 6%, BroodMother 52%, Shalebat 30%, StormMatriarch 51%
+
+Level_C1_05 (Quartz Flats)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |  129%   45%   39%   32% |   82%   28%   32%   32% |   29%   13%   22%   32% | Cragback 7%, Shalebat 6%, CoreWisp 16%
+  Medium  x0.45 |  158%   52%   39%   32% |   96%   32%   32%   32% |   30%   13%   22%   32% | Cragback 9%, Shalebat 7%, CoreWisp 16%
+  Hard    x1.00 |  509%  174%   70%   71% |  341%  121%   58%    8% |  164%   65%   45%    8% | Cragback 25%, Shalebat 24%, StormMatriarch 49%, CoreWisp 23%
+  Psycho  x1.40 |  848%  325%  179%   83% |  580%  236%  163%   83% |  241%  115%  112%   83% | Cragback 37%, BroodMother 82%, StormMatriarch 50%, Shalebat 18%, CoreWisp 50%
+
+Level_C1_06 (Crysium Vein)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |  107%   31%   15%   23% |   79%   22%   11%   23% |   42%   12%    6%   23% | Cragback 4%, Shalebat 13%, PackAlpha 5%
+  Medium  x0.45 |  124%   35%   15%   23% |  100%   28%   11%   23% |   60%   17%    6%   23% | Cragback 3%, Shalebat 20%, PackAlpha 5%
+  Hard    x1.00 |  359%  121%   65%   71% |  257%   82%   46%   71% |  151%   47%   25%   71% | Cragback 6%, Shalebat 41%, CoreWisp 23%, PackAlpha 12%
+  Psycho  x1.40 |  780%  259%   91%   99% |  592%  198%   64%   99% |  368%  125%   51%   11% | StormMatriarch 51%, Cragback 12%, Shalebat 86%, CoreWisp 32%, PackAlpha 17%
+
+Summary, played at 3 cells (level: Easy / Medium / Hard / Psycho), then the worst boss pass on Medium:
+  Level_C1_01: 24% / 26% / [Medium boss pass 34%] 103% / 206% / 
+  Level_C1_02: 35% / 37% / [Medium boss pass 37%] 152% / 297% / 
+  Level_C1_03: 19% / 20% / [Medium boss pass 34%] 70% / 158% / 
+  Level_C1_04: 23% / 29% / [Medium boss pass 20%] 118% / 172% / 
+  Level_C1_05: 28% / 32% / [Medium boss pass 32%] 121% / 236% / 
+  Level_C1_06: 22% / 28% / [Medium boss pass 11%] 82% / 198% / 
+==================== for comparison ====================
+Round 88b: tower threat on paper, BEFORE (the data as it stood)
+Reference tower: a level-1 Cannon (220 hit points), 6 cells before the first gate of the main road, 1.5 / 3 / 4.5 cells off the road (the worse side).
+Every figure is a share of that tower's health over the whole level (100 % = one wreck if never repaired).
+alone    = the tower is the nearest structure all the time and nothing dies on the way (worst case)
+played   = ordinary creatures x0.5 (shot on the way), nearest-only bites x0.5 (two guns equally near), boss volleys and pulses in full
+boss     = one pass of the level's worst boss alone, as played, and what it costs per 10 s it is held within its powers' reach of the tower
+Assumptions: the first gate holds; nest and boss-entrance spawns walk the main road; flyers fly their stored route; speeds are averages (rolls included).
+
+Level_C1_01 (Landing Site)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |    2%    2%    2%    4% |    0%    0%    0%    0% |    0%    0%    0%    0% | 
+  Medium  x0.45 |    2%    2%    2%    4% |    0%    0%    0%    0% |    0%    0%    0%    0% | 
+  Hard    x1.00 |   11%   11%    5%    8% |    0%    0%    0%    0% |    0%    0%    0%    0% | 
+  Psycho  x1.40 |   22%   22%    7%   11% |    0%    0%    0%    0% |    0%    0%    0%    0% | 
+
+Level_C1_02 (Glass Meadows)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |    4%    4%    4%    4% |    1%    1%    1%    4% |    0%    0%    0%    0% | BroodMother 1%
+  Medium  x0.45 |    4%    4%    4%    4% |    1%    1%    1%    4% |    0%    0%    0%    0% | BroodMother 1%
+  Hard    x1.00 |   24%   24%   15%   19% |    9%    9%    6%   19% |    0%    0%    0%    0% | CoreWisp 6%, BroodMother 3%
+  Psycho  x1.40 |   46%   46%   21%   27% |   16%   16%    8%   27% |    0%    0%    0%    0% | BroodMother 8%, CoreWisp 8%
+
+Level_C1_03 (Shard Ridge)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |   26%    8%    2%    4% |    0%    0%    0%    0% |    0%    0%    0%    0% | 
+  Medium  x0.45 |   46%   13%    2%    4% |    0%    0%    0%    0% |    0%    0%    0%    0% | 
+  Hard    x1.00 |  227%   69%   11%   19% |    0%    0%    0%   19% |    0%    0%    0%    0% | 
+  Psycho  x1.40 |  437%  132%   16%   27% |    0%    0%    0%   27% |    0%    0%    0%    0% | 
+
+Level_C1_04 (Fault Line)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |   47%   18%   10%    4% |   10%    8%    8%    4% |   19%   12%   11%    4% | StormMatriarch 8%
+  Medium  x0.45 |   66%   22%   10%    4% |   12%    9%    8%    4% |   26%   14%   11%    4% | Shalebat 1%, StormMatriarch 8%
+  Hard    x1.00 |  348%  104%   22%    8% |   29%   20%   18%    8% |   71%   34%   24%    8% | Shalebat 2%, StormMatriarch 18%
+  Psycho  x1.40 |  578%  180%   31%   11% |   36%   27%   25%   11% |   78%   42%   34%   11% | Shalebat 2%, StormMatriarch 25%
+
+Level_C1_05 (Quartz Flats)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |   14%    7%    5%    9% |    8%    2%    0%    9% |   11%    3%    0%    0% | Shalebat 2%
+  Medium  x0.45 |   17%    8%    5%    9% |   10%    2%    0%    9% |   13%    3%    0%    0% | Shalebat 2%
+  Hard    x1.00 |   88%   51%   32%    8% |   68%   37%   31%    8% |   85%   43%   34%    8% | Shalebat 6%, StormMatriarch 31%
+  Psycho  x1.40 |  116%   76%   45%   11% |   83%   49%   43%   11% |  103%   56%   48%   11% | StormMatriarch 43%, Shalebat 6%
+
+Level_C1_06 (Crysium Vein)
+  difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
+  Easy    x0.45 |   38%   10%    2%    0% |    0%    0%    0%    0% |   12%    3%    0%    0% | 
+  Medium  x0.45 |   59%   16%    2%    0% |    0%    0%    0%    0% |   19%    5%    0%    0% | 
+  Hard    x1.00 |  165%   52%   11%   19% |    0%    0%    0%   19% |   38%   10%    0%    0% | 
+  Psycho  x1.40 |  405%  141%   40%   11% |   24%   23%   23%   11% |  128%   56%   36%   11% | StormMatriarch 23%
+
+Summary, played at 3 cells (level: Easy / Medium / Hard / Psycho), then the worst boss pass on Medium:
+  Level_C1_01: 0% / 0% / [Medium boss pass 0%] 0% / 0% / 
+  Level_C1_02: 1% / 1% / [Medium boss pass 1%] 9% / 16% / 
+  Level_C1_03: 0% / 0% / [Medium boss pass 0%] 0% / 0% / 
+  Level_C1_04: 8% / 9% / [Medium boss pass 8%] 20% / 27% / 
+  Level_C1_05: 2% / 2% / [Medium boss pass 0%] 37% / 49% / 
+  Level_C1_06: 0% / 0% / [Medium boss pass 0%] 0% / 23% / 

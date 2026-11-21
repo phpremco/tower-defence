@@ -41,6 +41,10 @@ namespace Game.Levels
                 AddPowers(stats, enemy.Abilities);
                 stats.DifficultyHealth = DifficultyHealthOf(enemy.Boss);
             }
+            else if (enemy.IsBoss)
+            {
+                AddEscort(stats, enemy.Abilities);
+            }
 
             return stats;
         }
@@ -96,13 +100,36 @@ namespace Game.Levels
             }
         }
 
+        // Round 88b: a level boss's Spawn power runs under the escort rule. The ledger takes the creature it sends; how many
+        // come follows from the difficulty's escort worth and the boss's bar (WaveLoad), not from the power's count or interval.
+        private static void AddEscort(EnemyStats stats, BossAbilityDefinition[] abilities)
+        {
+            foreach (BossAbilityDefinition ability in abilities)
+            {
+                if (ability == null || ability.Kind != BossAbilityKind.Spawn || ability.Minion == null)
+                {
+                    continue;
+                }
+
+                EnemyDefinition minion = ability.Minion;
+                stats.RuledEscort = true;
+                stats.SummonHealth = minion.MaxHealth;
+                stats.SummonArmor = minion.Armor;
+                stats.SummonSpeed = minion.AverageSpeed;
+                stats.SummonBlockadeDamage = minion.BlockadeDamage;
+                stats.SummonAttackInterval = minion.AttackInterval;
+                return;
+            }
+        }
+
         public static TowerStats Stats(TowerDefinition tower)
         {
             var levels = new TowerLevelStats[tower.MaxLevelIndex + 1];
             for (int i = 0; i < levels.Length; i++)
             {
                 TowerLevel level = tower.GetLevel(i);
-                levels[i] = new TowerLevelStats(level.Cost, level.Damage, level.Range, level.FireInterval, level.SlowFactor, level.HealthBonus);
+                // The cap the game fires with at this level (Tower.Shoot reads the same accessor).
+                levels[i] = new TowerLevelStats(level.Cost, level.Damage, level.Range, level.FireInterval, level.SlowFactor, level.HealthBonus, tower.SplashTargetsAt(i));
             }
 
             return new TowerStats
@@ -112,7 +139,7 @@ namespace Game.Levels
                 Splash = tower.SplashRadius,
                 AirFactor = tower.Profile.Air,
                 ArmourFactor = tower.Profile.Armour,
-                SplashTargets = tower.SplashTargets,
+                SplashTargets = tower.SplashTargetsAt(0),
                 SellRefund = tower.SellRefundFraction,
                 IsSupport = tower.IsSupport,
                 BlocksGround = tower.BlocksGroundEnemies,
@@ -136,6 +163,7 @@ namespace Game.Levels
             StartMoney = difficulty.StartingMoneyMultiplier,
             BossHealth = difficulty.BossHealthShare,
             BossEscort = difficulty.BossEscortShare,
+            EscortWorth = difficulty.EscortWorth,
         };
 
         public static UpgradeStats Stats(UpgradeDefinition upgrade)
@@ -313,6 +341,7 @@ namespace Game.Levels
                     Damage = item.Damage,
                     Radius = item.Radius,
                     SlowFactor = item.SlowFactor,
+                    Lifetime = item.Lifetime,
                 });
             }
 

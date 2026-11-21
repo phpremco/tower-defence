@@ -30,5 +30,7 @@ namespace Game.Towers
         [Tooltip("The one thing that step improves; the tower's data is checked against it.")]
         public TowerStep Step;
 
+        [Tooltip("Splash guns only: most creatures one blast hurts at this level (the nearest to the impact); zero keeps the tower's own cap. Read it through TowerDefinition.SplashTargetsAt.")]
+        [Min(0)] public int SplashTargets;
     }
 }

@@ -32,7 +32,7 @@ Rules for building a level that plays fairly. A level is data (`LevelDefinition`
   - the road is simple (one road, at most two fronts), so the boss lane is the only extra.
 - A boss that regrows armour must stay beatable with the level's own roster: the ledger counts health plus armour
   once, so regrowth is tuned by hand and kept small (see the Crystal Warlord and Acid Empress history in STATUS).
-- Boss waves pay for the losses they cause: a boss pays three times the kill money of its threat (`BossRewardFactor`).
+- Boss waves pay for the losses they cause: a boss pays one and a half times the kill money of its threat (`BossRewardFactor`).
   Kill money is the same on every difficulty; the difficulty's reward multiplier pays research, not money.
 - Bosses are per difficulty (`BossSpec.MinDifficulty` in `WaveScripts`): every difficulty keeps the level's bosses,
   Hard adds one boss wave and Psycho another, by turning an ordinary wave into a boss wave. The way in is per boss

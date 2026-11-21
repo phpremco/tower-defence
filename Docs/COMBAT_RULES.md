@@ -90,6 +90,59 @@ The only place a weapon may differ from its damage type. Each has a reason; the 
 
 The Railgun is not an exception: piercing is its own damage type with its own row.
 
+## Structures: who can hurt a tower, and from how far (round 88b)
+
+Remco's playtest (2026-11-20): "My towers are never damaged because I place them between the roads." Before this round
+only a creature with an attack of its own bit a structure, at 1.6 to 3 cells, and most kinds had none: on Landing Site
+and Glass Meadows nothing ever hurt a tower, and elsewhere a tower three cells off the road was safe. Three rules, all in
+data, hold on every level.
+
+1. **Reach by attack style** (`CombatRules._reach`, one table, nothing per creature). A creature's attack in passing
+   reaches a structure beside the road as far as its style says, and never less than its own attack range:
+
+   | Style | Reach (cells) | Why |
+   | --- | --- | --- |
+   | Bite, Slash, Whip (no row) | the creature's own range, 1.6 to 2.5 | melee: the front row only |
+   | Slam | 3.2 | a slam shakes the ground: the second row |
+   | Sting | 4.0 | venom sprayed in an arc |
+   | Bolt | 4.5 | a spat bolt flies as far as a gun's shot |
+
+   The reach is for the guns (towers, base turrets, drones). Whatever bars the road (a gate, the base, the hero) is still
+   met at the creature's own attack range (`StructureRegistry.FindNearest(origin, range, blockerRange)`), so no gate takes
+   more than before. A creature still hits only the nearest structure in reach, so the front row shields the row behind it.
+2. **Who bites.** Swarm kinds (Skitter, Prowler, Roller) never hurt a tower. The Cragback, the heavy walker of the first
+   levels, slams what it passes for 1.5 (3 in the first pass, halved after the bots lost three to six guns a run; `ProjectGenerator.CragbackAttackDamage`), so a tower has something to fear before
+   the boss and the Cannon has one more reason to kill it early. The ranged kinds (Stinger, Shardback, the bats) keep
+   their damage and now reach a tower between two roads.
+3. **Every level boss hurts a tower from `CombatRules.BossReach` (4 cells) or further.** The Brood Mother (Venom Spit), the
+   Core Wisp (Arc Discharge) and the Pack Alpha (Spine Volley) carry the same volley: 14 a bolt (34 in the first pass) at each of the three nearest
+   guns within 5 cells every 3 s (`ProjectGenerator.BossVolley*`), flagged `SparesBlockers`: gates, the base and the hero
+   are left to the boss's own blows. The Storm Matriarch already had her Element Storm (7 cells) and her own bolts now
+   reach 4.5 cells by rule 1. The difficulty's structure damage in play (multiplier x factor: 0.45 / 0.45 / 1 / 1.4) scales
+   every bite, bolt and pulse once, as before.
+
+In code: `ReachRule`, `EnemyDefinition.StructureReach`, `Enemy.TryAttackStructure`, `BossAbilityDefinition.StructureReach`;
+generator `ProjectGenerator.Round88b.cs`; tests `Round88bThreatTests`. The balance model has no term for tower wear: the
+Cragback's attack only raises its threat by about 8 % (`Threat.Of`) and its kill money by one coin (15 -> 16).
+
+On paper (`Tools/PlayTest/r88b_threat.txt`, `Round88bThreatLab`; share of a level-1 Cannon's 220 hit points a tower three
+cells off the main road loses over a level, as played):
+
+| Level | Easy | Medium | Hard | Psycho | before (E / M / H / P) |
+| --- | --- | --- | --- | --- | --- |
+| Landing Site | 24 % | 26 % | 103 % | 206 % | 0 / 0 / 0 / 0 |
+| Glass Meadows | 35 % | 37 % | 152 % | 297 % | 1 / 1 / 9 / 16 |
+| Shard Ridge | 19 % | 20 % | 70 % | 158 % | 0 / 0 / 0 / 0 |
+| Fault Line | 23 % | 29 % | 118 % | 172 % | 8 / 9 / 20 / 27 |
+| Quartz Flats | 28 % | 32 % | 121 % | 236 % | 2 / 2 / 37 / 49 |
+| Crysium Vein | 22 % | 28 % | 82 % | 198 % | 0 / 0 / 0 / 23 |
+
+One pass of the slow Brood Mother with the tower among her three nearest guns all the way: 34 % on Easy and Medium, 75 %
+on Hard, 105 % on Psycho; held in reach (at a gate) she costs each of those three guns 27 / 27 / 59 / 83 % per 10 s.
+The lab's assumptions are in the report's head (first gate holds, ordinary creatures cover half their pass alive, a
+nearest-only bite is shared by two guns, a volley's three bolts by six). As played, the probe's records carry the wear
+since round 88b (Docs/COMMANDS.md, "Round 88b").
+
 ## 2. Creature traits
 
 A creature carries its numbers and nothing else. Its traits follow from them (thresholds in the rules asset):
@@ -118,8 +171,13 @@ into the creature data by the generator (`ProjectGenerator.ArmourOf`) and by `Ba
 finale stage keeps it when it moves a continent boss's health.
 
 **Round 87:** a level boss's size is a formula of level, difficulty and wave phase with three times the bar of the
-toughest walker met before it as a floor only, and its armour pool equals its body (`BossArmourShare` 1); see
+toughest walker met before it as a floor only, and its armour pool is half its body since round 88b (`BossArmourShare` 0.5, a third of the bar; 1 in round 87); see
 Docs/WAVE_GRAMMAR.md, "The solver (round 87: a formula)".
+
+**Round 88b:** a level boss's brood is sized by the escort rule (Docs/WAVE_GRAMMAR.md, "The solver", point 2b): a worth
+per difficulty times the boss's bar, growing along its road, a quarter plated where the level has shown a plated walker,
+no bounty. A level boss also hurts the guns near its road (the section "Structures" above), and its kill money is
+`BalanceRules.BossRewardFactor` 1.5 times that of its threat (was 3).
 
 **A boss reads its phases on its whole bar** (`Health.BarFraction`, body and armour together; round 86). On the body
 alone (`Health.Fraction`) a boss in armour kept its first phase until every plate was gone, a fifth of the fight under
@@ -127,7 +185,8 @@ shells and half of it under light fire. The Shattered's shards take their share 
 giant has left, and the giant that pulls back together has the survivors' body and armour.
 
 Armour and air have a **factor** (section 1). Swarm, mob, tough and fast have none: they are held by mechanics that already
-exist (a hit bigger than a creature is wasted; a blast takes at most three; a shell that is not guided misses a runner).
+exist (a hit bigger than a creature is wasted; a blast takes as many creatures as its gun's level allows (the Cannon two as
+built, three and four with its stars; the Flak four at every level; section 3); a shell that is not guided misses a runner).
 The role tests measure all six the same way.
 
 ## 3. Tower roles
@@ -150,6 +209,57 @@ The role tests measure all six the same way.
 Cannon = slow, clustered, armoured. Laser = fast, spread out, light. Gun Turret = a bit of everything.
 
 A hybrid has its parents' roles. Roles are data on the tower (`TowerDefinition.Roles`, `RoleLine`).
+
+### The blast cap per level (round 88b)
+
+Remco's playtest of 2026-11-20: the Cannon is needed, but a Cannon-heavy build was the best way to play every level. His
+rule: **the Cannon's shell hurts at most two creatures as built, three at level 2 and four at level 3** (it was three at
+every level). The cap is data per tower level (`TowerLevel.SplashTargets`; zero keeps the tower's own `_splashTargets`,
+and zero there is the whole radius), read through one accessor, `TowerDefinition.SplashTargetsAt(levelIndex)`, by
+everything: the game (`Tower.Shoot` fires with the cap of its current level, `Projectile.CapSplash` keeps the nearest to
+the impact), the balance model (`BalanceLedger.Stats` puts it on `TowerLevelStats.SplashTargets`;
+`Ledger.SplashCap(tower, level, rules)` is the one reader for the ledger, the leak model and the route walk), the labs
+(`RoleMatrix`, `StreamDuel`, `ArmourTtk.cs`), the calibration's input hash and the texts (`BlastRead`).
+`TowerDefinition.OnValidate` refuses a cap on a tower without a blast and a cap that shrinks with the level. Generator:
+`ProjectGenerator.Towers.cs` (`CannonSplashTargets = { 2, 3, 4 }`).
+
+| Tower | Level 1 | Level 2 | Level 3 |
+| --- | --- | --- | --- |
+| Cannon | 2 | 3 | 4 |
+| Flak Turret | 4 | 4 | 4 |
+| Artillery, Tesla, Storm Rifle | whole radius | whole radius | whole radius |
+
+The Artillery is built from a Cannon and a Flak and keeps its uncapped blast: it is a hybrid, a reward bought with two
+towers and a recipe, and its role line ("a big blast for groups") is that blast. Nothing about it changed.
+
+What the player sees: the placement line and the tower menu say "Blast hits up to 2"; the upgrade preview says "Next:
+Heavier shells: damage 25 > 56.9, blast hits up to 2 > 3"; the Codex recipe page names a cap that grows as a span.
+
+What it does on paper (`Tools/PlayTest/r88b_cannon_cap.txt`, bar taken off per second per 100 coins, played through the
+firing rules; Medium, the other difficulties read the same):
+
+| Cannon | Dense swarm | Spaced stream | Dense pack | Plated column | One plated walker | Boss |
+| --- | --- | --- | --- | --- | --- | --- |
+| L1, three (before) | 37.6 | 20.3 | 46.4 | 47.0 | 15.9 | 15.0 |
+| L1, two (after) | 25.1 | 20.2 | 31.3 | 31.4 | 15.9 | 15.0 |
+| L2, three (unchanged) | 19.3 | 10.4 | 52.7 | 53.0 | 18.6 | 17.4 |
+| L3, three (before) | 10.7 | 5.8 | 56.0 | 60.5 | 21.5 | 20.2 |
+| L3, four (after) | 14.2 | 5.8 | 59.2 | 76.0 | 21.5 | 20.2 |
+| Gun Turret L1 / L2 / L3 | 18.6 / 18.5 / 21.5 | 24.6 / 32.7 / 39.8 | 21.4 / 24.4 / 28.3 | 5.0 / 5.8 / 6.8 | 5.7 / 6.7 / 7.8 | 6.0 / 6.9 / 8.0 |
+| Laser L1 / L2 / L3 | 27.5 / 32.2 / 29.4 | 21.5 / 18.5 / 15.0 | 27.6 / 32.3 / 37.7 | 2.7 / 3.2 / 3.8 | 2.7 / 3.2 / 3.7 | 2.6 / 3.1 / 3.6 |
+
+So: a level-1 Cannon loses a third against anything bunched (x0.67), a level-2 Cannon is what it was, a level-3 Cannon
+gains a quarter to a third against bunched bodies it does not overkill (x1.25 to x1.33 on a plated column). Against one
+body (a plated walker, a boss) and against a stream a blast apart nothing changes: there the cap never bound.
+
+**The cap alone does not close the gap between a Cannon build and a Laser or Gun Turret build on the levels without
+flyers.** With no blast at all (one creature a shell) a coin of Cannon is worth x1.30 to x1.55 a coin of Gun Turret and
+x2.3 to x2.9 a coin of Laser on the stored ground waves of Landing Site and Glass Meadows, because 35 to 46 % of the
+ground bar there is armour (plated troops that grow wave after wave, and every boss with armour equal to its body) and a
+bullet works on armour at 0.2, a beam at 0.1, a shell at 1. On one plated walker or a boss the Cannon is x2.5 to x2.8 the
+Gun Turret and x5.7 to x5.9 the Laser per coin at every level, before and after. What drives the Cannon archetype is the
+armour share of the waves times the armour factors, not the size of the blast; the cap takes a third off the Cannon's
+crowd work at level 1 and gives it back, and more, at level 3.
 
 ## 4. The matrix: seconds for 100 coins of a tower to clear a trait's reference group
 
@@ -174,6 +284,11 @@ Round 87: the Gun Turret and Laser rows are those of `Tools/PlayTest/r67_role_ma
 matrix's reference fights do not play the retarget time (they count shots), so it understates the Laser's edge on the
 Swarm and Fast columns; `Tools/PlayTest/laser_role_r87.txt` plays it.
 
+Round 88b: the Cannon's row and the Armoured column above are from before the round (a blast of three at level 1,
+three Cragbacks at a gate). `Tools/PlayTest/r67_role_matrix.txt` is rewritten with the new cap and the new reference
+fight by `balance_pipeline.sh roles` and by the tests; until this table is copied from it again, read the Cannon's
+level-1 numbers in `Tools/PlayTest/r88b_cannon_roles.txt`.
+
 The reference groups (data, `CombatRules.Scenarios`), each played at four health scales and averaged so no role rests on
 one lucky number:
 
@@ -182,9 +297,17 @@ one lucky number:
 | Swarm | a stream of 12 Skitters, 1.5 cells apart, on the run | 1.15x |
 | Mob | 5 Oozers queued at a gate | 1.25x |
 | Tough | 1 Shard Crawler | 1.15x |
-| **Armoured** | 3 Cragbacks at a gate | **2x** |
+| **Armoured** | 2 Cragbacks at a gate (3 until round 88b) | **2x** |
 | **Airborne** | a wing of 4 Skyrays | **2x** |
 | Fast | 1 Roller at speed | 1.15x |
+
+**Why two Cragbacks (round 88b).** The fight was sized when a shell took three. A level-1 Cannon's blast now hurts two
+(the cap 2 / 3 / 4, section 3), and the role "shells break plates" is asserted on a fight its level-1 blast covers. On
+three Cragbacks a level-1 Cannon needs twice the shells and is only x1.29 the Tesla per coin (the Tesla's chain takes
+all three at a fifth on armour), where the rule asks x2; on two it is x2.59, as it was on three with a blast of three.
+At level 3 the role also holds on three. Numbers: `Tools/PlayTest/r88b_cannon_roles.txt`; the fight is rule data
+(`Scenario(EnemyTraits.Armoured, "Cragback", 2, ...)` in `ProjectGenerator.Damage.cs`, `_scenarios` in
+`CombatRules.asset`).
 
 **The rule the tests hold:** for every trait, the best tower made for it clears its reference group at least *margin* times
 faster per coin than **every** tower that is not made for it, at level 1, at level 3, and at level 3 with all ten tiers of
@@ -193,10 +316,13 @@ permanent upgrades against creatures six times as tough.
 What the matrix says at one glance:
 
 - **Air:** the Flak (9.5) against the best gun not made for it, the Storm Rifle (21.3): 2.2x. A Gun Turret needs 65.
-- **Armour:** the Cannon (17.0) against the best gun not made for it, the Tesla (44.1): 2.6x. The Gun Turret needs 100, the Laser 209 (a beam works on armour at a tenth since round 87).
+- **Armour:** the Cannon (17.0) against the best gun not made for it, the Tesla (44.1): 2.6x. The Gun Turret needs 100, the Laser 209 (a beam works on armour at a tenth since round 87). These seconds are the old fight's (three Cragbacks, a blast of three); on the new one (two Cragbacks, a blast of two) the ratio is the same, x2.59.
 - **The size traits are thin.** Light fire against a splash tower on a swarm: 1.5x. The Cannon against light fire on a
-  bunched mob: 1.3x at level 1 and about even at level 3. These are mechanics, not factors, and the margins are what the
-  mechanics give today (see "What the audit found").
+  bunched mob: 1.3x at level 1 and about even at level 3 until round 88b. With a blast of two the level-1 Cannon clears
+  the mob fight (five Oozers at a gate) at x0.91 the Gun Turret per coin and x0.95 the Laser (it was x1.37 and x1.42).
+  The mob role still holds because the Tesla is the best mob tower, but on a level without the Tesla the level-1 Cannon
+  is no longer the better buy against a soft queue: counter to plates as built, crowd-breaker by upgrading. These are
+  mechanics, not factors, and the margins are what the mechanics give today (see "What the audit found").
 
 ### Helpers
 
@@ -218,7 +344,7 @@ tower" stand. What changed: reach no longer grows with every star (it grew 0.3 a
 | --- | --- | --- | --- |
 | Gun Turret | 5 damage, 2.9 shots/s, range 4.0 | **Faster cycling**: shots/s 2.9 > 6.0 | **Heavier rounds**: damage 5 > 10 |
 | Laser | 4 damage, 9 shots/s, range 4.3 | **Overcharged emitter**: shots/s 9 > 15 | **Focused lens**: damage 4 > 7.2 |
-| Cannon | 25, 0.6/s, 4.0 | **Heavier shells**: damage 25 > 56.9 | **High-explosive filler**: damage 56.9 > 118.3 |
+| Cannon | 25, 0.6/s, 4.0, blast of 2 | **Heavier shells**: damage 25 > 56.9, blast of 3 | **High-explosive filler**: damage 56.9 > 118.3, blast of 4 |
 | Flak Turret | 14, 1.8/s, 5.5 | **Heavier bursts**: damage 14 > 27.5 | **Faster loaders**: shots/s 1.8 > 3.2 |
 | Tesla | 16, 2.0/s, 3.5 | **Higher voltage**: damage 16 > 28.9 | **Faster discharge**: shots/s 2.0 > 3.5 |
 | Railgun | 80, 0.45/s, 6.0 | **Heavier slug**: damage 80 > 132 | **Faster capacitors**: shots/s 0.45 > 0.76 |
@@ -231,6 +357,12 @@ tower" stand. What changed: reach no longer grows with every star (it grew 0.3 a
 Why these: a step strengthens the tower's own job and never its off-job. The Cannon's two steps are both its shell: a
 faster Cannon would be a better swarm gun, which is not its job. The Gun Turret's first step is its rate, because rate is
 what a swarm asks.
+
+The Cannon's two steps also raise its blast cap (2 > 3 > 4, round 88b; section 3). The cap is not a step of its own: it
+grows with the stars beside the step's named thing, the data check (`TowerDefinition.StepProblem`) does not count it,
+and the tower menu lists it after the named thing. The rule "an upgrade buys more single-target damage per coin than a
+second tower" (`BalanceRules.UpgradeMargin`) is about one target and is untouched: no damage, rate or price moved
+(`TowerRolesTests.EveryUpgradeStep_BeatsMoreTowersOfTheSameType` passes as it did).
 
 The Laser's steps swapped order in round 87: its pulse must stay under the Gun Turret's round at every level, 5 / 5 /
 10, so the rate comes first, as on the Gun Turret. Prices 130 / 55 / 100 are unchanged: the ratios between its levels
@@ -383,7 +515,9 @@ What the matrix shows that is **not** fixed, because it is a design choice:
   Numbers per difficulty: `Tools/PlayTest/laser_role_r87.txt`.
 - **The Cannon's splash is worth little against soft bodies**: 1.3x over light fire per coin on a bunched mob at level 1,
   about even at level 3. Its real edge is armour (6x). So a level without armour or without bunching never asks for it,
-  and a level with both (Landing Site) asks for nothing else.
+  and a level with both (Landing Site) asks for nothing else. Round 88b capped the blast per level (2 / 3 / 4,
+  section 3): at level 1 the Cannon is now under light fire on a soft queue (x0.91 the Gun Turret per coin), and the
+  armour edge is untouched.
 - **The Railgun is three times worse per coin than the Cannon against armoured troops** (45 against 17). It is single
   target and slow; it earns its price on reach (6 against 4) and on one big armoured body, which Crystal Plains 1 to 6 do
   not have.

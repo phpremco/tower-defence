@@ -1,0 +1,61 @@
+Round 88b: maps and scripts side by side.
+
+C1_01: main road 108 cells, defence gate at cell 14 (13 % of the road), ground routes 1, air routes 2; base 600, gate 500 each, start money 200, health scale 1
+  roads: path 0 107 cells (trunk share 1.00)
+  gates (progress along their road, cells from the spawn on the main road): path 0 at 0.13 trunk (14) path 0 at 0.87 trunk (93) path 0 at 0.93 trunk (100)
+  rifts (join the main road at cell, share of the road left): #1 at 17 (0.84 left) #2 at 10 (0.91 left)
+  build spots beside the roads 320; a Gun Turret (reach 4) on 57 of them reaches the road before the defence gate, on 51 of them its first 12 cells
+  Easy: guns PulseRifle,Cannon; crowd health 9701, kills 877; first flyers wave 0 (0 hp in the air, money earned by then 0, sky gun -1); raids ; first plated wave 7 (armour 54 % of the wave); bosses w12 BroodMother 1435
+  Medium: guns PulseRifle,Cannon; crowd health 19300, kills 1137; first flyers wave 0 (0 hp in the air, money earned by then 0, sky gun -1); raids ; first plated wave 7 (armour 54 % of the wave); bosses w12 BroodMother 2050
+  Hard: guns PulseRifle,Cannon,Laser; crowd health 23698, kills 2023; first flyers wave 0 (0 hp in the air, money earned by then 0, sky gun -1); raids ; first plated wave 7 (armour 58 % of the wave); bosses w8 BroodMother 1757; w12 BroodMother 2358
+  Psycho: guns PulseRifle,Cannon,Laser; crowd health 62125, kills 2666; first flyers wave 0 (0 hp in the air, money earned by then 0, sky gun -1); raids ; first plated wave 7 (armour 56 % of the wave); bosses w5 BroodMother 2046; w8 BroodMother 2752; w12 BroodMother 3688
+
+C1_02: main road 96 cells, defence gate at cell 11 (11 % of the road), ground routes 1, air routes 2; base 600, gate 500 each, start money 220, health scale 1
+  roads: path 0 95 cells (trunk share 1.00)
+  gates (progress along their road, cells from the spawn on the main road): path 0 at 0.12 trunk (11) path 0 at 0.47 trunk (45) path 0 at 0.85 trunk (81) path 0 at 0.94 trunk (89)
+  rifts (join the main road at cell, share of the road left): #1 at 35 (0.63 left)
+  build spots beside the roads 299; a Gun Turret (reach 4) on 50 of them reaches the road before the defence gate, on 50 of them its first 12 cells
+  Easy: guns PulseRifle,Cannon,Laser; crowd health 13628, kills 955; first flyers wave 0 (0 hp in the air, money earned by then 0, sky gun -1); raids ; first plated wave 6 (armour 28 % of the wave); bosses w12 BroodMother 1607
+  Medium: guns PulseRifle,Cannon,Laser; crowd health 24205, kills 1181; first flyers wave 0 (0 hp in the air, money earned by then 0, sky gun -1); raids ; first plated wave 6 (armour 28 % of the wave); bosses w12 BroodMother 2295
+  Hard: guns PulseRifle,Cannon,Laser,Rocket; crowd health 27752, kills 2052; first flyers wave 0 (0 hp in the air, money earned by then 0, sky gun 120); raids ; first plated wave 6 (armour 40 % of the wave); bosses w9 CoreWisp 2136; w12 BroodMother 2641
+  Psycho: guns PulseRifle,Cannon,Laser,Rocket; crowd health 73006, kills 2723; first flyers wave 0 (0 hp in the air, money earned by then 0, sky gun 120); raids ; first plated wave 6 (armour 37 % of the wave); bosses w5 BroodMother 2290; w9 CoreWisp 3801; w12 BroodMother 4131
+
+C1_03: main road 110 cells, defence gate at cell 86 (78 % of the road), ground routes 2, air routes 2; base 600, gate 500 each, start money 240, health scale 1
+  roads: path 0 109 cells (trunk share 0.27) path 3 46 cells (trunk share 0.63)
+  gates (progress along their road, cells from the spawn on the main road): path 0 at 0.14 (15) path 0 at 0.72 (78) path 0 at 0.79 trunk (86) path 0 at 0.95 trunk (104)
+  rifts (join the main road at cell, share of the road left): #1 at 35 (0.68 left)
+  build spots beside the roads 333; a Gun Turret (reach 4) on 264 of them reaches the road before the defence gate, on 54 of them its first 12 cells
+  Easy: guns PulseRifle,Cannon,Laser,Rocket; crowd health 12180, kills 1079; first flyers wave 12 (290 hp in the air, money earned by then 580, sky gun 120); raids 12,15; first plated wave 8 (armour 26 % of the wave); bosses w16 BroodMother 1779
+  Medium: guns PulseRifle,Cannon,Laser,Rocket; crowd health 21890, kills 1328; first flyers wave 11 (465 hp in the air, money earned by then 636, sky gun 120); raids 11,12,15; first plated wave 8 (armour 26 % of the wave); bosses w16 BroodMother 2542
+  Hard: guns PulseRifle,Cannon,Laser,Rocket; crowd health 24271, kills 2078; first flyers wave 11 (599 hp in the air, money earned by then 1012, sky gun 120); raids 11,12,14,15; first plated wave 4 (armour 54 % of the wave); bosses w10 CoreWisp 2105; w16 BroodMother 2923
+  Psycho: guns PulseRifle,Cannon,Laser,Rocket; crowd health 60339, kills 2716; first flyers wave 11 (1689 hp in the air, money earned by then 1948, sky gun 120); raids 11,12,14,15; first plated wave 4 (armour 50 % of the wave); bosses w6 BroodMother 2548; w10 CoreWisp 3295; w16 BroodMother 4575
+
+C1_04: main road 107 cells, defence gate at cell 100 (93 % of the road), ground routes 2, air routes 2; base 600, gate 500 each, start money 260, health scale 1
+  roads: path 0 106 cells (trunk share 0.08) path 3 45 cells (trunk share 0.20)
+  gates (progress along their road, cells from the spawn on the main road): path 0 at 0.10 (11) path 0 at 0.82 (87) path 0 at 0.89 (94) path 0 at 0.94 trunk (100)
+  rifts (join the main road at cell, share of the road left): #1 at 37 (0.65 left) #2 at 43 (0.59 left) #3 at 51 (0.52 left)
+  build spots beside the roads 392; a Gun Turret (reach 4) on 324 of them reaches the road before the defence gate, on 62 of them its first 12 cells
+  Easy: guns PulseRifle,Cannon,Laser,Rocket; crowd health 10417, kills 953; first flyers wave 10 (211 hp in the air, money earned by then 453, sky gun 120); raids 10,13,16; first plated wave 7 (armour 31 % of the wave); bosses w16 StormMatriarch 1171
+  Medium: guns PulseRifle,Cannon,Laser,Rocket; crowd health 16401, kills 1095; first flyers wave 6 (100 hp in the air, money earned by then 369, sky gun 120); raids 6,9,12,15; first plated wave 7 (armour 31 % of the wave); bosses w16 StormMatriarch 1691
+  Hard: guns PulseRifle,Cannon,Laser,Rocket; crowd health 23103, kills 2173; first flyers wave 3 (164 hp in the air, money earned by then 317, sky gun 120); raids 3,6,8,9,12,15; first plated wave 7 (armour 30 % of the wave); bosses w10 BroodMother 2309; w16 StormMatriarch 1924
+  Psycho: guns PulseRifle,Cannon,Laser,Rocket; crowd health 53360, kills 2554; first flyers wave 3 (360 hp in the air, money earned by then 852, sky gun 120); raids 3,6,8,9,12,14,15; first plated wave 7 (armour 28 % of the wave); bosses w5 CoreWisp 2441; w10 BroodMother 3613; w16 StormMatriarch 3012
+
+C1_05: main road 114 cells, defence gate at cell 15 (13 % of the road), ground routes 1, air routes 2; base 600, gate 500 each, start money 280, health scale 1
+  roads: path 0 113 cells (trunk share 1.00)
+  gates (progress along their road, cells from the spawn on the main road): path 0 at 0.13 trunk (15) path 0 at 0.49 trunk (55) path 0 at 0.88 trunk (100) path 0 at 0.95 trunk (107)
+  rifts (join the main road at cell, share of the road left): #1 at 12 (0.89 left) #2 at 56 (0.50 left)
+  build spots beside the roads 349; a Gun Turret (reach 4) on 84 of them reaches the road before the defence gate, on 66 of them its first 12 cells
+  Easy: guns PulseRifle,Cannon,Laser,Rocket; crowd health 18281, kills 1234; first flyers wave 9 (140 hp in the air, money earned by then 455, sky gun 120); raids 9,13; first plated wave 4 (armour 35 % of the wave); bosses w17 CoreWisp 2124
+  Medium: guns PulseRifle,Cannon,Laser,Rocket; crowd health 31873, kills 1503; first flyers wave 6 (105 hp in the air, money earned by then 409, sky gun 120); raids 6,10,15; first plated wave 4 (armour 35 % of the wave); bosses w17 CoreWisp 3034
+  Hard: guns PulseRifle,Cannon,Laser,Rocket; crowd health 39113, kills 2720; first flyers wave 4 (179 hp in the air, money earned by then 383, sky gun 120); raids 4,6,8,13,16; first plated wave 5 (armour 46 % of the wave); bosses w11 StormMatriarch 1545; w17 CoreWisp 3489
+  Psycho: guns PulseRifle,Cannon,Laser,Rocket; crowd health 98161, kills 3458; first flyers wave 4 (393 hp in the air, money earned by then 968, sky gun 120); raids 4,6,8,10,13,16; first plated wave 5 (armour 49 % of the wave); bosses w5 BroodMother 2595; w11 StormMatriarch 3350; w17 CoreWisp 5462
+
+C1_06: main road 117 cells, defence gate at cell 92 (79 % of the road), ground routes 2, air routes 2; base 600, gate 500 each, start money 300, health scale 1
+  roads: path 0 116 cells (trunk share 0.27) path 3 48 cells (trunk share 0.65)
+  gates (progress along their road, cells from the spawn on the main road): path 0 at 0.12 (14) path 0 at 0.42 (49) path 0 at 0.72 (83) path 0 at 0.79 trunk (92) path 0 at 0.95 trunk (110)
+  rifts (join the main road at cell, share of the road left): #1 at 40 (0.66 left)
+  build spots beside the roads 395; a Gun Turret (reach 4) on 303 of them reaches the road before the defence gate, on 44 of them its first 12 cells
+  Easy: guns PulseRifle,Cannon,Laser,Rocket; crowd health 20696, kills 1410; first flyers wave 10 (202 hp in the air, money earned by then 519, sky gun 120); raids 10,13,16; first plated wave 7 (armour 23 % of the wave); bosses w18 PackAlpha 2296
+  Medium: guns PulseRifle,Cannon,Laser,Rocket; crowd health 31229, kills 1628; first flyers wave 8 (210 hp in the air, money earned by then 507, sky gun 120); raids 8,11,14,17; first plated wave 7 (armour 23 % of the wave); bosses w18 PackAlpha 3281
+  Hard: guns PulseRifle,Cannon,Laser,Rocket; crowd health 41490, kills 2873; first flyers wave 8 (386 hp in the air, money earned by then 681, sky gun 120); raids 8,11,14,17; first plated wave 7 (armour 26 % of the wave); bosses w12 CoreWisp 2840; w18 PackAlpha 3772
+  Psycho: guns PulseRifle,Cannon,Laser,Rocket; crowd health 92731, kills 3484; first flyers wave 5 (382 hp in the air, money earned by then 1085, sky gun 120); raids 5,8,11,14,15,17; first plated wave 9 (armour 27 % of the wave); bosses w7 StormMatriarch 1938; w12 CoreWisp 4444; w18 PackAlpha 5903

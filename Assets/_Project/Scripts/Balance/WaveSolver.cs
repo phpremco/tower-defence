@@ -33,7 +33,9 @@ namespace Game.Balance
 
         /// <summary>
         /// The peak waves of a difficulty of a level: ground waves without a boss and not the breather after one, by
-        /// preference a wave that carries a surprise or is a heavy one (<see cref="WaveFormula.Peaks"/>).
+        /// preference a wave that carries a surprise or is a heavy one (<see cref="WaveFormula.Peaks"/>). A swarm that
+        /// comes between two air raids gives its peak up and no other wave takes it
+        /// (<see cref="BalanceRules.PeakOnARushBetweenRaids"/>, round 88b).
         /// </summary>
         public static List<int> PeaksOf(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, int difficulty, int secondRoad, BalanceRules rules)
         {
@@ -41,8 +43,25 @@ namespace Game.Balance
                 && WaveComposer.BossOn(script, difficulty, number) == null && WaveComposer.BossOn(script, difficulty, number - 1) == null;
             bool Marked(int number) => WaveComposer.KindOf(script, difficulty, number) == WaveComposer.Kind.Heavy
                 || WaveGrammar.SurpriseOn(script, enemies, difficulty, number, secondRoad, rules) != SurpriseKind.None;
-            return WaveFormula.Peaks(rules, script.Waves, Open, Marked);
+            List<int> peaks = WaveFormula.Peaks(rules, script.Waves, Open, Marked);
+            if (!rules.PeakOnARushBetweenRaids)
+            {
+                // Dropped after the placing, so every other peak stays on the wave it had: the rule softens one wave.
+                peaks.RemoveAll(number => IsRushBetweenRaids(script, difficulty, number));
+            }
+
+            return peaks;
         }
+
+        /// <summary>
+        /// True for a swarm whose two neighbours are both air raids: the purse of the wave before and of the wave after
+        /// belongs to the sky guns, and the swarm is the wave that asks for the most ground guns.
+        /// </summary>
+        public static bool IsRushBetweenRaids(WaveScriptSpec script, int difficulty, int number) =>
+            number > 1 && number < script.Waves
+            && WaveComposer.KindOf(script, difficulty, number) == WaveComposer.Kind.Rush
+            && WaveComposer.KindOf(script, difficulty, number - 1) == WaveComposer.Kind.Air
+            && WaveComposer.KindOf(script, difficulty, number + 1) == WaveComposer.Kind.Air;
 
         /// <summary>
         /// One difficulty of a level. <paramref name="levelScalar"/> is the level's own factor from the closed loop,
@@ -98,7 +117,10 @@ namespace Game.Balance
         {
             float book = BossYardstick.Bar(boss) * Math.Max(0.001f, spawnScale);
             float multiple = book > 0f ? WaveFormula.BossBar(rules, continentIndex, difficulty, phase, boss.Flies) / book : 1f;
-            return met.HasMet ? Math.Max(multiple, met.Multiple(boss, rules.BossOverRegularFor(difficulty))) : multiple;
+            // Round 88b: a flying boss takes the flying share of the floor too, as it does of the formula (few guns reach it).
+            // Without it the floor sized Fault Line's flying Medium boss above its Hard one (tougher Medium walkers).
+            float floorShare = boss.Flies ? rules.FlyingBossShare : 1f;
+            return met.HasMet ? Math.Max(multiple, met.Multiple(boss, rules.BossOverRegularFor(difficulty)) * floorShare) : multiple;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Balance;
 using Game.Combat;
 using Game.Core;
 using Game.Enemies;
@@ -55,6 +56,9 @@ namespace Game.Levels
         private readonly List<Enemy> _living = new List<Enemy>(128);
         private readonly List<int> _nestBuffer = new List<int>(8);
         private readonly SurpriseWatch _surprises;
+        private readonly EscortSettings _escort;
+        // The toughest plated walker sent so far in this level: the plated part of a level boss's brood (EscortRule).
+        private EnemyDefinition _toughestPlated;
         private HeroTarget _heroTarget;
         private readonly Dictionary<EnemyDefinition, ObjectPool<Enemy>> _pools = new Dictionary<EnemyDefinition, ObjectPool<Enemy>>();
 
@@ -89,6 +93,7 @@ namespace Game.Levels
             _kerb = road.HalfWidthCells * context.Level.CellSize - KerbMargin;
             _maxLateral = StrayCells(road.Width) * context.Level.CellSize;
             _surprises = SurpriseWatch.For(context.Level);
+            _escort = EscortRule.For(context.Difficulty, BalanceRules.Default);
         }
 
         public int Alive { get; private set; }
@@ -398,6 +403,33 @@ namespace Game.Levels
             Launch(definition, route, FlightHeight(definition), EnemyOrigin.Gate, boss.PathProgress);
         }
 
+        // A creature of a level boss's brood (round 88b): as tough as the ordinary creatures of the boss's own wave, whichever
+        // wave is under way by now, and paying the rule's share of its bounty.
+        private void SpawnEscort(EnemyDefinition definition, Enemy boss, float healthMultiplier, float bountyShare)
+        {
+            if (definition == null || boss == null)
+            {
+                return;
+            }
+
+            Vector3[] route = boss.RemainingRoute();
+            route[0] += new Vector3(Range(-MinionSpread, MinionSpread), 0f, Range(-MinionSpread, MinionSpread));
+            Launch(definition, route, FlightHeight(definition), EnemyOrigin.Gate, boss.PathProgress, healthMultiplier, bountyShare);
+        }
+
+        private static float LengthOf(Vector3[] route)
+        {
+            float length = 0f;
+            for (int i = 1; i < route.Length; i++)
+            {
+                float dx = route[i].x - route[i - 1].x;
+                float dz = route[i].z - route[i - 1].z;
+                length += Mathf.Sqrt(dx * dx + dz * dz);
+            }
+
+            return length;
+        }
+
         // A boss's call reaches everyone on the field but the boss itself.
         private void Rally(Enemy caller, float speedFactor, float seconds)
         {
@@ -410,15 +442,17 @@ namespace Game.Levels
             }
         }
 
-        private Enemy Launch(EnemyDefinition definition, Vector3[] route, float height, EnemyOrigin origin, float progress)
+        /// <param name="escortHealth">For a creature of a level boss's brood: the health multiplier it walks in with; below zero for every other spawn.</param>
+        private Enemy Launch(EnemyDefinition definition, Vector3[] route, float height, EnemyOrigin origin, float progress, float escortHealth = -1f, float bountyShare = 1f)
         {
             Enemy enemy = PoolFor(definition).Get();
             DifficultyProfile difficulty = _context.Difficulty;
+            float ordinary = difficulty.HealthMultiplier * _context.Level.EnemyHealthScale * WaveHealthScale;
             enemy.Initialize(
                 definition,
                 route,
-                difficulty.HealthMultiplier * _context.Level.EnemyHealthScale * WaveHealthScale * (definition.IsBoss && definition.Boss == null ? WaveBossHealthScale : 1f) * (definition.Boss != null ? difficulty.BossHealthShare * definition.Boss.HealthOn(difficulty.name) : 1f),
-                1f,
+                escortHealth >= 0f ? escortHealth : ordinary * (definition.IsBoss && definition.Boss == null ? WaveBossHealthScale : 1f) * (definition.Boss != null ? difficulty.BossHealthShare * definition.Boss.HealthOn(difficulty.name) : 1f),
+                bountyShare,
                 height,
                 _context.Targets,
                 _context.Structures,
@@ -434,9 +468,15 @@ namespace Game.Levels
 
             Alive++;
             _living.Add(enemy);
+            _toughestPlated = EscortRule.Tougher(_toughestPlated, definition);
             if (definition.IsBoss)
             {
                 _context.BossesAlive++;
+                // A level boss walks under the escort rule; a continent boss keeps its own staged calls.
+                if (EscortRule.Binds(definition) && enemy.TryGetComponent(out BossAbilities powers))
+                {
+                    powers.StageEscort(LengthOf(route), ordinary, definition.Flies ? null : _toughestPlated);
+                }
             }
 
             _context.EnemySpawned.Raise(enemy);
@@ -560,6 +600,7 @@ namespace Game.Levels
                 abilities.Initialize(_context.Structures, SpawnMinion, FindLaserTarget, Rally);
                 abilities.SetDamageMultiplier(_context.Difficulty.StructureDamageMultiplier);
                 abilities.SetEscortShare(_context.Difficulty.BossEscortShare);
+                abilities.SetEscortRule(_escort, SpawnEscort);
                 abilities.Pulsed += OnBossPulsed;
                 abilities.LaserChanged += on => _context.BossLaserChanged.Raise(on);
                 abilities.MinionsReleased += (centre, color) => _context.BossMinionsReleased.Raise(centre);

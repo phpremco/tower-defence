@@ -43,7 +43,10 @@ namespace Game.Editor
             /// <summary>Share of a continent boss's escort call released (round 30: Psycho carries Hard's boss, lighter escorts).</summary>
             public readonly float BossEscort;
 
-            public Difficulty(string id, string displayName, float health, float count, float interval, float research, float power, float structureDamage, float income, float startMoney, float bossHealth, float bossEscort = 1f, float structureFactor = 1f)
+            /// <summary>The brood of a level boss over a whole walk, as a share of the boss's bar (round 88b; BalanceRules.EscortStartWeight).</summary>
+            public readonly float EscortWorth;
+
+            public Difficulty(string id, string displayName, float health, float count, float interval, float research, float power, float structureDamage, float income, float startMoney, float bossHealth, float bossEscort = 1f, float structureFactor = 1f, float escortWorth = 0f)
             {
                 StructureFactor = structureFactor;
                 Id = id;
@@ -58,6 +61,7 @@ namespace Game.Editor
                 StartMoney = startMoney;
                 BossHealth = bossHealth;
                 BossEscort = bossEscort;
+                EscortWorth = escortWorth;
             }
         }
 
@@ -140,15 +144,29 @@ namespace Game.Editor
         // finale probe sets it; the boss itself stays Hard's).
         private const float PsychoBossEscort = 0.5f;
 
+        // Round 88b (Remco: "the boss wave feels pathetic ... it sends little ants that die before the last gate"): what the
+        // brood of a level boss is worth over an unhindered walk from spawn to the base, as a share of the boss's own bar.
+        // Until round 88a the brood mother's plain call already came to 45 to 56 % of her bar on Easy and Medium (25 to 31 %
+        // on Psycho, at half count) in paper ants spread evenly over the walk (Tools/PlayTest/r88b_escort.txt). So the rule
+        // starts at her whole bar on Medium and a little more above it; with the growth along the road the second half of a
+        // Medium walk then carries about two and a half times what it did. Easy stays under what it had in total and gets
+        // about the same in the second half. A walk realises 85 to 90 % of these (the last call falls before the base, a
+        // plated creature not yet paid for is not sent). Paper values; the curator tunes them on the bots. The continent
+        // bosses do not read them.
+        private const float EasyEscortWorth = 0.25f;
+        private const float MediumEscortWorth = 0.5f;
+        private const float HardEscortWorth = 0.65f;
+        private const float PsychoEscortWorth = 0.75f;
+
         // Research and power multipliers come from the rules (Easy pays a fifth of a continent's research budget, Psycho all
         // of it; power only from Medium on). Health, numbers and tempo shape each difficulty before the calibration trims its
         // waves to the human curve (CampaignModel.BuildWaves). The asset ids stay; only Psycho shows another name.
         public static Difficulty[] Difficulties => new[]
         {
-            new Difficulty("Easy", "Easy", 0.68f, 0.9f, 1.2f, Rules.ResearchMultipliers[0], Rules.PowerMultipliers[0], 0.6f, EasyIncome, EasyStartMoney, EasyBossHealth, structureFactor: EasyStructureFactor),
-            new Difficulty("Medium", "Medium", 1f, 1f, 1f, Rules.ResearchMultipliers[1], Rules.PowerMultipliers[1], 0.75f, MediumIncome, 1f, MediumBossHealth, structureFactor: MediumStructureFactor),
-            new Difficulty("Hard", "Hard", 1.15f, 1.3f, 0.85f, Rules.ResearchMultipliers[2], Rules.PowerMultipliers[2], 1f, HardIncome, 1f, HardBossHealth),
-            new Difficulty("Psycho", "Crazy", 1.65f, 1.65f, 0.7f, Rules.ResearchMultipliers[3], Rules.PowerMultipliers[3], 1.4f, PsychoIncome, PsychoStartMoney, PsychoBossHealth, PsychoBossEscort),
+            new Difficulty("Easy", "Easy", 0.68f, 0.9f, 1.2f, Rules.ResearchMultipliers[0], Rules.PowerMultipliers[0], 0.6f, EasyIncome, EasyStartMoney, EasyBossHealth, structureFactor: EasyStructureFactor, escortWorth: EasyEscortWorth),
+            new Difficulty("Medium", "Medium", 1f, 1f, 1f, Rules.ResearchMultipliers[1], Rules.PowerMultipliers[1], 0.75f, MediumIncome, 1f, MediumBossHealth, structureFactor: MediumStructureFactor, escortWorth: MediumEscortWorth),
+            new Difficulty("Hard", "Hard", 1.15f, 1.3f, 0.85f, Rules.ResearchMultipliers[2], Rules.PowerMultipliers[2], 1f, HardIncome, 1f, HardBossHealth, escortWorth: HardEscortWorth),
+            new Difficulty("Psycho", "Crazy", 1.65f, 1.65f, 0.7f, Rules.ResearchMultipliers[3], Rules.PowerMultipliers[3], 1.4f, PsychoIncome, PsychoStartMoney, PsychoBossHealth, PsychoBossEscort, escortWorth: PsychoEscortWorth),
         };
 
         /// <summary>

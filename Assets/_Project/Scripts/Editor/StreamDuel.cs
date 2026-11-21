@@ -130,7 +130,11 @@ namespace Game.Editor
         }
 
         /// <summary>Bar (body plus armour) taken off per second a creature was in reach.</summary>
-        public static float Dps(TowerDefinition tower, int levelIndex, Stream stream, float step)
+        public static float Dps(TowerDefinition tower, int levelIndex, Stream stream, float step) =>
+            Dps(tower, levelIndex, stream, step, tower.SplashTargetsAt(levelIndex));
+
+        /// <summary>As <see cref="Dps(TowerDefinition, int, Stream, float)"/> with another blast cap than the tower's data has at that level (a lab's what-if; zero is the whole radius).</summary>
+        public static float Dps(TowerDefinition tower, int levelIndex, Stream stream, float step, int splashTargets)
         {
             TowerLevel level = tower.GetLevel(levelIndex);
             DamageProfile profile = tower.Profile;
@@ -189,7 +193,7 @@ namespace Game.Editor
                 }
 
                 busy += any ? step : 0f;
-                useful += Fly(shots, walkers, caught, tower, landed, profile.Armour, step);
+                useful += Fly(shots, walkers, caught, tower, splashTargets, landed, profile.Armour, step);
                 if (held != null && (held.Gone || held.Health.IsDead || !InReach(held, rangeSqr)))
                 {
                     held = null;
@@ -265,7 +269,7 @@ namespace Game.Editor
         }
 
         // Moves every shot a frame on and lands the ones that arrive; returns the bar they took off.
-        private static float Fly(List<Shot> shots, List<Walker> walkers, List<Walker> caught, TowerDefinition tower, float landed, float armourFactor, float step)
+        private static float Fly(List<Shot> shots, List<Walker> walkers, List<Walker> caught, TowerDefinition tower, int splashTargets, float landed, float armourFactor, float step)
         {
             float useful = 0f;
             float reach = tower.ProjectileSpeed * step;
@@ -295,7 +299,7 @@ namespace Game.Editor
                     continue;
                 }
 
-                // A blast takes the creatures nearest its burst point, up to its cap (Projectile).
+                // A blast takes the creatures nearest its burst point, up to its cap at the tower's level (Projectile).
                 caught.Clear();
                 foreach (Walker walker in walkers)
                 {
@@ -308,7 +312,7 @@ namespace Game.Editor
                 }
 
                 caught.Sort((a, b) => Sqr(a, aimX, aimZ).CompareTo(Sqr(b, aimX, aimZ)));
-                int most = tower.SplashTargets > 0 ? Mathf.Min(tower.SplashTargets, caught.Count) : caught.Count;
+                int most = splashTargets > 0 ? Mathf.Min(splashTargets, caught.Count) : caught.Count;
                 for (int c = 0; c < most; c++)
                 {
                     useful += caught[c].Health.TakeDamage(landed, armourFactor);

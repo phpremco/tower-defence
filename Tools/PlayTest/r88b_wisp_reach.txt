@@ -1,0 +1,9 @@
+Round 88b: the share of the ground bar (body + armour, as spawned) that is on both layers, per level and difficulty; most = the wave with the largest share
+| Level | Sells an air-only gun | Easy | Medium | Hard | Psycho |
+| --- | --- | --- | --- | --- | --- |
+| Landing Site | Flak Turret | 0.0 % (most 0 %) | 0.0 % (most 0 %) | 0.0 % (most 0 %) | 0.0 % (most 0 %) |
+| Glass Meadows | Flak Turret | 6.0 % (most 15 %) | 4.9 % (most 13 %) | 8.7 % (most 54 %) | 6.3 % (most 43 %) |
+| Shard Ridge | Flak Turret | 9.8 % (most 24 %) | 8.9 % (most 21 %) | 15.1 % (most 73 %) | 12.9 % (most 60 %) |
+| Fault Line | Flak Turret | 14.0 % (most 21 %) | 13.0 % (most 25 %) | 9.2 % (most 32 %) | 12.6 % (most 81 %) |
+| Quartz Flats | Flak Turret | 21.5 % (most 67 %) | 20.3 % (most 64 %) | 17.4 % (most 57 %) | 14.1 % (most 47 %) |
+| Crysium Vein | Flak Turret | 0.0 % (most 0 %) | 0.0 % (most 0 %) | 6.8 % (most 73 %) | 5.3 % (most 63 %) |

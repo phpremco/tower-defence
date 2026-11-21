@@ -15,8 +15,8 @@ MonoBehaviour:
   _displayName: data.enemy.Rotbloom.displayName
   _layer: 1
   _flies: 0
-  _maxHealth: 5950
-  _armor: 5950
+  _maxHealth: 9900
+  _armor: 4950
   _speed: 0.3
   _reward: 770
   _baseDamage: 25
@@ -28,6 +28,7 @@ MonoBehaviour:
   _attackRange: 2.5
   _attackInterval: 1.4
   _gateStrikes: 0
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _turnRate: 60
   _bankDegrees: 28
   _walkSeconds: 0

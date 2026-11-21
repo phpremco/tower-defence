@@ -68,7 +68,7 @@ namespace Game.Combat
         // out of the blast by then while a queue or a pack is not (TowerDefinition.Homing, round 21a3).
         private bool _homing = true;
 
-        // Most creatures one blast hurts, the nearest to the impact first; zero hurts everything in the radius (TowerDefinition.SplashTargets).
+        // Most creatures one blast hurts, the nearest to the impact first; zero hurts everything in the radius (TowerDefinition.SplashTargetsAt, the cap at the firing tower's level).
         private int _splashTargets;
 
         public void Launch(

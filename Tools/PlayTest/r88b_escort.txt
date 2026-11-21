@@ -1,0 +1,53 @@
+Round 88b: the escort of every level boss as stored. Rule: worth per difficulty x boss bar over an unhindered walk; weights 0.4 (start) to 1.6 (end); plated share 0.25; cap x1.5 of the worth; bounty share 0.
+Health = body plus armour as walked in. 'gate' = the first gate on the boss's road. 'crowd' = the ordinary creatures of the boss's own wave.
+BEFORE = the plain Spawn power (fixed count every interval, health of the boss's wave, full bounty); AFTER = the escort rule.
+
+level | difficulty | wave | boss > creature (+ plated) | bar | walk s | gate at s (share) | calls | BEFORE: creatures | health | % of bar | % of crowd | behind gate | coins | AFTER: light + plated | health | % of bar | % of crowd | behind gate (share) | in 2nd half | coins
+C1_01 | Easy | 12 | BroodMother > Skitter | 1435 | 195 | 25 (0.13) | 19 | 95 | 687 | 48 % | 44 % | 615 | 76 | 76 + 0 | 550 | 38 % | 35 % | 528 (96 %) | 63 % | 0
+C1_01 | Medium | 12 | BroodMother > Skitter + Cragback | 2050 | 195 | 25 (0.13) | 19 | 95 | 1145 | 56 % | 44 % | 1025 | 90 | 122 + 2 | 1953 | 95 % | 75 % | 1905 (98 %) | 72 % | 0
+C1_01 | Hard | 8 | BroodMother > Skitter + Cragback | 1757 | 195 | 25 (0.13) | 19 | 95 | 982 | 56 % | 148 % | 878 | 105 | 134 + 2 | 1798 | 102 % | 272 % | 1747 (97 %) | 71 % | 0
+C1_01 | Hard | 12 | BroodMother > Skitter + Cragback | 2358 | 195 | 25 (0.13) | 19 | 95 | 1054 | 45 % | 33 % | 943 | 105 | 168 + 2 | 2308 | 98 % | 72 % | 2241 (97 %) | 61 % | 0
+C1_01 | Psycho | 5 | BroodMother > Skitter | 2046 | 195 | 25 (0.13) | 19 | 38 | 639 | 31 % | 127 % | 572 | 42 | 140 + 0 | 2356 | 115 % | 467 % | 2271 (96 %) | 63 % | 0
+C1_01 | Psycho | 8 | BroodMother > Skitter + Cragback | 2752 | 195 | 25 (0.13) | 19 | 38 | 861 | 31 % | 35 % | 771 | 42 | 104 + 1 | 2811 | 102 % | 113 % | 2720 (97 %) | 69 % | 0
+C1_01 | Psycho | 12 | BroodMother > Skitter + Cragback | 3688 | 195 | 25 (0.13) | 19 | 38 | 925 | 25 % | 11 % | 828 | 42 | 130 + 2 | 4138 | 112 % | 50 % | 4016 (97 %) | 72 % | 0
+C1_02 | Easy | 12 | BroodMother > Skitter | 1607 | 173 | 18 (0.11) | 17 | 85 | 738 | 46 % | 34 % | 651 | 68 | 71 + 0 | 617 | 38 % | 28 % | 591 (96 %) | 63 % | 0
+C1_02 | Medium | 12 | BroodMother > Skitter + Cragback | 2295 | 173 | 18 (0.11) | 17 | 85 | 1230 | 54 % | 34 % | 1086 | 81 | 115 + 1 | 1954 | 85 % | 53 % | 1882 (96 %) | 68 % | 0
+C1_02 | Hard | 9 | CoreWisp > Wisp + Cragback | 2136 | 106 | 11 (0.11) | 10 | 0 | 0 | 0 % | 0 % | 0 | 0 | 43 + 2 | 2053 | 96 % | 105 % | 2016 (98 %) | 75 % | 0
+C1_02 | Hard | 12 | BroodMother > Skitter + Cragback | 2641 | 173 | 18 (0.11) | 17 | 85 | 1131 | 43 % | 20 % | 998 | 94 | 159 + 2 | 2648 | 100 % | 47 % | 2555 (96 %) | 70 % | 0
+C1_02 | Psycho | 5 | BroodMother > Skitter | 2290 | 173 | 18 (0.11) | 17 | 34 | 755 | 33 % | 74 % | 666 | 37 | 120 + 0 | 2666 | 116 % | 261 % | 2555 (96 %) | 63 % | 0
+C1_02 | Psycho | 9 | CoreWisp > Wisp + Cragback | 3801 | 106 | 11 (0.11) | 10 | 0 | 0 | 0 % | 0 % | 0 | 0 | 38 + 2 | 4099 | 108 % | 75 % | 4017 (98 %) | 74 % | 0
+C1_02 | Psycho | 12 | BroodMother > Skitter + Cragback | 4131 | 173 | 18 (0.11) | 17 | 34 | 994 | 24 % | 7 % | 877 | 37 | 123 + 2 | 4763 | 115 % | 32 % | 4617 (97 %) | 72 % | 0
+C1_03 | Easy | 16 | BroodMother > Skitter + Cragback | 1779 | 198 | 27 (0.14) | 20 | 100 | 818 | 46 % | 78 % | 695 | 80 | 66 + 1 | 703 | 40 % | 67 % | 670 (95 %) | 74 % | 0
+C1_03 | Medium | 16 | BroodMother > Skitter + Cragback | 2542 | 198 | 27 (0.14) | 20 | 100 | 1363 | 54 % | 74 % | 1158 | 95 | 141 + 2 | 2467 | 97 % | 134 % | 2344 (95 %) | 73 % | 0
+C1_03 | Hard | 10 | CoreWisp > Wisp + Cragback | 2105 | 121 | 17 (0.14) | 12 | 0 | 0 | 0 % | 0 % | 0 | 0 | 54 + 2 | 2062 | 98 % | 261 % | 1968 (95 %) | 64 % | 0
+C1_03 | Hard | 16 | BroodMother > Skitter + Cragback | 2923 | 198 | 27 (0.14) | 20 | 100 | 1254 | 43 % | 42 % | 1066 | 110 | 194 + 3 | 3184 | 109 % | 107 % | 3034 (95 %) | 66 % | 0
+C1_03 | Psycho | 6 | BroodMother > Skitter + Cragback | 2548 | 198 | 27 (0.14) | 20 | 40 | 715 | 28 % | 78 % | 608 | 44 | 129 + 2 | 3021 | 119 % | 331 % | 2878 (95 %) | 74 % | 0
+C1_03 | Psycho | 10 | CoreWisp > Wisp + Cragback | 3295 | 121 | 17 (0.14) | 12 | 0 | 0 | 0 % | 0 % | 0 | 0 | 42 + 2 | 3704 | 112 % | 171 % | 3567 (96 %) | 74 % | 0
+C1_03 | Psycho | 16 | BroodMother > Skitter + Cragback | 4575 | 198 | 27 (0.14) | 20 | 40 | 1101 | 24 % | 13 % | 936 | 44 | 151 + 2 | 5255 | 115 % | 61 % | 5008 (95 %) | 73 % | 0
+C1_04 | Easy | 16 | StormMatriarch > Mossbat | 1171 | 96 | 10 (0.10) | 7 | 21 | 396 | 34 % | 89 % | 340 | 50 | 25 + 0 | 472 | 40 % | 106 % | 453 (96 %) | 76 % | 0
+C1_04 | Medium | 16 | StormMatriarch > Mossbat | 1691 | 96 | 10 (0.10) | 7 | 21 | 734 | 43 % | 65 % | 629 | 60 | 48 + 0 | 1678 | 99 % | 148 % | 1609 (96 %) | 75 % | 0
+C1_04 | Hard | 10 | BroodMother > Skitter + Cragback | 2309 | 193 | 20 (0.10) | 19 | 95 | 988 | 43 % | 147 % | 884 | 105 | 178 + 2 | 2267 | 98 % | 338 % | 2194 (97 %) | 61 % | 0
+C1_04 | Hard | 16 | StormMatriarch > Mossbat | 1924 | 96 | 10 (0.10) | 7 | 21 | 675 | 35 % | 33 % | 579 | 69 | 66 + 0 | 2122 | 110 % | 103 % | 2058 (97 %) | 74 % | 0
+C1_04 | Psycho | 5 | CoreWisp > Wisp | 2441 | 118 | 12 (0.10) | 12 | 0 | 0 | 0 % | 0 % | 0 | 0 | 48 + 0 | 2957 | 121 % | 507 % | 2895 (98 %) | 67 % | 0
+C1_04 | Psycho | 10 | BroodMother > Skitter + Cragback | 3613 | 193 | 20 (0.10) | 19 | 38 | 868 | 24 % | 55 % | 776 | 42 | 138 + 2 | 4064 | 112 % | 260 % | 3950 (97 %) | 71 % | 0
+C1_04 | Psycho | 16 | StormMatriarch > Mossbat | 3012 | 96 | 10 (0.10) | 7 | 14 | 988 | 33 % | 18 % | 847 | 46 | 51 + 0 | 3600 | 120 % | 64 % | 3459 (96 %) | 75 % | 0
+C1_05 | Easy | 17 | CoreWisp > Wisp + Cragback | 2124 | 126 | 16 (0.12) | 12 | 0 | 0 | 0 % | 0 % | 0 | 0 | 19 + 1 | 743 | 35 % | 51 % | 743 (100 %) | 76 % | 0
+C1_05 | Medium | 17 | CoreWisp > Wisp + Cragback | 3034 | 126 | 16 (0.12) | 12 | 0 | 0 | 0 % | 0 % | 0 | 0 | 42 + 2 | 2672 | 88 % | 104 % | 2623 (98 %) | 74 % | 0
+C1_05 | Hard | 11 | StormMatriarch > Mossbat | 1545 | 103 | 13 (0.12) | 7 | 21 | 631 | 41 % | 56 % | 541 | 69 | 51 + 0 | 1533 | 99 % | 136 % | 1473 (96 %) | 59 % | 0
+C1_05 | Hard | 17 | CoreWisp > Wisp + Cragback | 3489 | 126 | 16 (0.12) | 12 | 0 | 0 | 0 % | 0 % | 0 | 0 | 58 + 3 | 3460 | 99 % | 88 % | 3415 (99 %) | 66 % | 0
+C1_05 | Psycho | 5 | BroodMother > Skitter | 2595 | 205 | 25 (0.12) | 20 | 40 | 787 | 30 % | 68 % | 708 | 44 | 151 + 0 | 2971 | 114 % | 256 % | 2872 (97 %) | 66 % | 0
+C1_05 | Psycho | 11 | StormMatriarch > Mossbat | 3350 | 103 | 13 (0.12) | 7 | 14 | 923 | 28 % | 30 % | 791 | 46 | 55 + 0 | 3626 | 108 % | 117 % | 3494 (96 %) | 60 % | 0
+C1_05 | Psycho | 17 | CoreWisp > Wisp + Cragback | 5462 | 126 | 16 (0.12) | 12 | 0 | 0 | 0 % | 0 % | 0 | 0 | 45 + 2 | 5693 | 104 % | 52 % | 5594 (98 %) | 74 % | 0
+C1_06 | Easy | 18 | PackAlpha > Prowler + Cragback | 2296 | 67 | 8 (0.12) | 8 | 0 | 0 | 0 % | 0 % | 0 | 0 | 13 + 1 | 798 | 35 % | 48 % | 798 (100 %) | 76 % | 0
+C1_06 | Medium | 18 | PackAlpha > Prowler + Cragback | 3281 | 67 | 8 (0.12) | 8 | 0 | 0 | 0 % | 0 % | 0 | 0 | 28 + 2 | 2822 | 86 % | 99 % | 2742 (97 %) | 74 % | 0
+C1_06 | Hard | 12 | CoreWisp > Wisp + Cragback | 2840 | 129 | 16 (0.12) | 13 | 0 | 0 | 0 % | 0 % | 0 | 0 | 77 + 4 | 3087 | 109 % | 261 % | 3056 (99 %) | 71 % | 0
+C1_06 | Hard | 18 | PackAlpha > Prowler + Cragback | 3772 | 67 | 8 (0.12) | 8 | 0 | 0 | 0 % | 0 % | 0 | 0 | 38 + 3 | 3597 | 95 % | 85 % | 3523 (98 %) | 66 % | 0
+C1_06 | Psycho | 7 | StormMatriarch > Mossbat | 1938 | 105 | 13 (0.12) | 7 | 14 | 679 | 35 % | 71 % | 582 | 46 | 41 + 0 | 1988 | 103 % | 208 % | 1940 (98 %) | 59 % | 0
+C1_06 | Psycho | 12 | CoreWisp > Wisp + Cragback | 4444 | 129 | 16 (0.12) | 13 | 0 | 0 | 0 % | 0 % | 0 | 0 | 60 + 3 | 5230 | 118 % | 181 % | 5163 (99 %) | 69 % | 0
+C1_06 | Psycho | 18 | PackAlpha > Prowler + Cragback | 5903 | 67 | 8 (0.12) | 8 | 0 | 0 | 0 % | 0 % | 0 | 0 | 30 + 2 | 6023 | 102 % | 52 % | 5860 (97 %) | 73 % | 0
+
+Mean per difficulty over every stored level boss (BEFORE % of bar, AFTER % of bar, AFTER % of crowd, AFTER share behind the first gate, AFTER share in the second half of the walk, BEFORE coins per walk):
+Easy (6 bosses): before 29 % of bar, after 38 % of bar, 56 % of crowd, 97 % behind the first gate, 71 % in the second half; before 46 coins a walk, after 0
+Medium (6 bosses): before 34 % of bar, after 92 % of bar, 102 % of crowd, 97 % behind the first gate, 73 % in the second half; before 54 coins a walk, after 0
+Hard (12 bosses): before 25 % of bar, after 101 % of bar, 156 % of crowd, 97 % behind the first gate, 67 % in the second half; before 55 coins a walk, after 0
+Psycho (18 bosses): before 19 % of bar, after 112 % of bar, 181 % of crowd, 97 % behind the first gate, 69 % in the second half; before 28 coins a walk, after 0

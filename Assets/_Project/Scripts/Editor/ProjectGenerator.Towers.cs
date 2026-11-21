@@ -21,7 +21,10 @@ namespace Game.Editor
 
         // Round 22, the swarm role in the data: a shell hurts at most three creatures (a pack, a queue), a flak burst four packed
         // flyers, so against a dense ant swarm the rate-of-fire guns deal more per coin and the Cannon keeps the groups and plates.
-        private const int CannonSplashTargets = 3;
+        // Round 88b (Remco's playtest of 2026-11-20: the Cannon is needed but a Cannon-heavy build was the best way to play
+        // every level): the shell's cap is per level, two creatures as built, three and four with its stars, so the first
+        // Cannon is a counter to plates and pairs and the crowd-breaker is something the player upgrades towards.
+        private static readonly int[] CannonSplashTargets = { 2, 3, 4 };
         private const int FlakSplashTargets = 4;
         // Round 21a3: the shell is fired at the spot and flies 0.6 to 0.9 s (3 to 4.5 cells at 5 a second), so an ant at full run
         // (1.6 a second) is about at the blast's edge when it lands, a queue or a pack is not; it used to home in and never miss.
@@ -54,14 +57,14 @@ namespace Game.Editor
             // Round 67: every step improves one named thing, and the damage per second of each level is what it was (the Gun
             // Turret 14.3 / 30 / 60, the Cannon 15.6 / 35.6 / 73.9, the Flak 25.5 / 50 / 88.9), so the prices and the upgrade
             // rule stand. The reach no longer grows with the stars (it grew 0.3 a level): no gun's step is its reach. The Cannon's
-            // two steps are both its shell: a faster Cannon would be a better swarm gun, which is not its job (a shell takes three
-            // creatures at most, so a flood of small ones is the light guns' work at every level).
+            // two steps are both its shell: a faster Cannon would be a better swarm gun, which is not its job (a shell takes two
+            // creatures as built and one more per star, CannonSplashTargets, so a flood of small ones is the light guns' work).
             context.Pulse = CreateTower("PulseRifle", "Gun Turret", TargetLayers.Ground | TargetLayers.Air, BulletSpeed, 0f, new Color(0.3f, 0.7f, 1f),
                 Levels(Lvl(50, 5f, LightGunReach, 0.35f), Faster("Faster cycling", 9f / 0.3f), Harder("Heavier rounds", 15f / 0.25f)), 150f,
                 roleLine: "The all-rounder, cheap: soft bodies big and small, and a fifth in the air. Its turret has to swing to each new target, so a fast swarm outruns it. Only chips armour.", roles: new[] { TowerRole.LightFire });
             SetRetarget(context.Pulse, TurretRetargetSeconds);
             context.Cannon = CreateTower("Cannon", "Cannon", TargetLayers.Ground, CannonShellSpeed, CannonSplash, new Color(1f, 0.8f, 0.3f),
-                Levels(Lvl(100, 25f, 4f, 1.6f), Harder("Heavier shells", 48f / 1.35f), Harder("High-explosive filler", 85f / 1.15f)), 220f, homing: false, splashTargets: CannonSplashTargets,
+                Blast(Levels(Lvl(100, 25f, 4f, 1.6f), Harder("Heavier shells", 48f / 1.35f), Harder("High-explosive filler", 85f / 1.15f)), CannonSplashTargets), 220f, homing: false, splashTargets: CannonSplashTargets[0],
                 roleLine: "Blast: breaks bunched groups and strips armour. Cannot aim up, and its shell lands where a runner was.", roles: new[] { TowerRole.Splash, TowerRole.AntiArmour });
             // The Flak (the old Rocket, id unchanged): air only, fast proximity-fused shells that burst among packed flyers.
             context.Rocket = CreateTower("Rocket", "Flak Turret", TargetLayers.Air, FlakShellSpeed, FlakSplash, new Color(0.9f, 0.9f, 1f),

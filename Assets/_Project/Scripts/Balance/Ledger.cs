@@ -414,7 +414,11 @@ namespace Game.Balance
             // it was, so the defence bought for a plain wave does not move with the rule.
             float single = landed * (load.BossHealth > 0f ? rules.BossFire : rules.Utilisation) * tower.GroundFactor * load.BossArmour.Share(tower.ArmourFactor);
             float sky = field * tower.AirFactor * load.AirArmour.Share(tower.ArmourFactor);
-            float cap = SplashCap(tower, rules);
+            float cap = SplashCap(tower, towerLevel, rules);
+            // What of the ground the gun reaches at all: everything for a gun that aims at the ground, the creatures of both
+            // layers for one that only aims up (WaveLoad.StreamShareFor, the game's CanHit).
+            float streamShare = load.StreamShareFor(tower.Targets);
+            float bossShare = load.BossShareFor(tower.Targets);
             float pass = cover.GroundPass / Math.Max(0.01f, load.GroundSpeed);
             float queue = cover.Gate ? load.GateSeconds : 0f;
             float bossQueue = cover.Gate ? load.BossWindow : 0f;
@@ -424,8 +428,8 @@ namespace Game.Balance
                 Level = towerLevel,
                 Cost = stats.Cost,
                 AirOnly = air && !ground,
-                Stream = ground ? stream * load.StreamOverkill(groundHit) * ((load.Span + pass) * Splash(tower.Splash, load.GroundDensity, cap) + queue * (tower.Splash > 0f ? cap : 1f)) : 0f,
-                Single = ground ? single * load.BossSeconds(bossQueue + cover.GroundPass / Math.Max(0.01f, load.BossSpeed), rules) : 0f,
+                Stream = streamShare > 0f ? streamShare * stream * load.StreamOverkill(groundHit) * ((load.Span + pass) * Splash(tower.Splash, load.GroundDensity, cap) + queue * (tower.Splash > 0f ? cap : 1f)) : 0f,
+                Single = bossShare > 0f ? bossShare * single * load.BossSeconds(bossQueue + cover.GroundPass / Math.Max(0.01f, load.BossSpeed), rules) : 0f,
                 Air = air ? sky * Overkill(airHit, load.MeanAirHealth) * Splash(tower.Splash, load.AirDensity, cap) * (load.AirWindow + cover.AirPass / Math.Max(0.01f, load.AirSpeed)) : 0f,
             };
         }
@@ -458,8 +462,17 @@ namespace Game.Balance
             return options;
         }
 
-        /// <summary>Most creatures one of this tower's blasts hurts: its own cap, else the rules'.</summary>
-        public static float SplashCap(TowerStats tower, BalanceRules rules) => tower.SplashTargets > 0 ? tower.SplashTargets : rules.MaxSplashTargets;
+        /// <summary>Most creatures one of this tower's blasts hurts at a level: the level's cap, else the tower's, else the rules'.</summary>
+        public static float SplashCap(TowerStats tower, int towerLevel, BalanceRules rules)
+        {
+            int own = towerLevel >= 0 && towerLevel < tower.Levels.Length ? tower.Levels[towerLevel].SplashTargets : 0;
+            if (own > 0)
+            {
+                return own;
+            }
+
+            return tower.SplashTargets > 0 ? tower.SplashTargets : rules.MaxSplashTargets;
+        }
 
         // A hit bigger than the creature is partly wasted.
         public static float Overkill(float damage, float meanHealth) => meanHealth <= 0f || damage <= meanHealth ? 1f : meanHealth / damage;

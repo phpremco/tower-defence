@@ -29,6 +29,7 @@ namespace Game.UI
         private Camera _camera;
         private RectTransform _area;
         private HudKeepOut _keepOut;
+        private Canvas _canvas;
         private RectTransform _arrow;
         private RectTransform _ring;
         private Image _ringImage;
@@ -46,6 +47,7 @@ namespace Game.UI
             _camera = camera;
             _area = root;
             _keepOut = keepOut;
+            _canvas = root.GetComponentInParent<Canvas>().rootCanvas;
 
             _ringImage = CreateIcon(root, "RearNestRing", IconType.Ring, RingSize);
             _ring = _ringImage.rectTransform;
@@ -54,6 +56,10 @@ namespace Game.UI
             text.color = Warning;
             text.raycastTarget = false;
             _label = text.rectTransform;
+            // The surprise pings keep off this marker's arrow and word while it shows (round 88b); its ring marks a
+            // place on the field and ripples, so it is no obstacle.
+            keepOut.AddMarker(_arrow);
+            keepOut.AddMarker(_label);
             Show(false, false);
             context.RearNestWarned.Subscribe(OnWarned);
         }
@@ -109,7 +115,9 @@ namespace Game.UI
         private void Place()
         {
             Vector3 screen = _camera.WorldToScreenPoint(_target + Vector3.up * MarkerLift);
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(_area, screen, null, out Vector2 local);
+            // A still may draw the HUD through a camera: the point is read the way the canvas is drawn (round 88b).
+            Camera uiCamera = _canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : _canvas.worldCamera;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(_area, screen, uiCamera, out Vector2 local);
             Rect inner = _area.rect;
             inner.xMin += EdgeMargin;
             inner.xMax -= EdgeMargin;

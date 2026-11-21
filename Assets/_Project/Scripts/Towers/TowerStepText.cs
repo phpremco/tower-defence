@@ -10,6 +10,7 @@ namespace Game.Towers
     public static class TowerStepText
     {
         private const string RefitGap = "   ";
+        private const string BlastGap = ", ";
 
         /// <summary>The line for the step that leads from a level to the next; empty at the top level.</summary>
         public static string Next(TowerDefinition tower, int levelIndex)
@@ -21,7 +22,9 @@ namespace Game.Towers
 
             TowerLevel now = tower.GetLevel(levelIndex);
             TowerLevel next = tower.GetLevel(levelIndex + 1);
-            return $"{Loc.Get(next.StepName)}: {Change(tower, now, next)}";
+            // A blast that hurts more creatures at the next level says so beside the step's own thing (round 88b).
+            string blast = BlastRead.Step(tower, levelIndex);
+            return $"{Loc.Get(next.StepName)}: {Change(tower, now, next)}{(blast.Length > 0 ? BlastGap + blast : string.Empty)}";
         }
 
         private static string Change(TowerDefinition tower, TowerLevel now, TowerLevel next)

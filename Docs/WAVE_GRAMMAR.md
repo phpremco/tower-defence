@@ -297,6 +297,21 @@ boss; a boss's own powers no longer fall on the whole crowd at once. The wave's 
   replaced the solve by a formula that reads no purse and no defence, see "The solver").
 - **What the model does not see**: that a tank in front costs single-target guns time on the small ones behind it, and that
   a breather lets the base's guns clear besiegers. Both are measured by the pressure probe, not predicted.
+- **The brood of a level boss (round 88b).** `WaveLoad.Of` adds it to the boss wave as a stream of
+  `floor(EscortWorth[d] x boss bar / creature bar)` creatures of the boss's Spawn creature (`EnemyStats.RuledEscort`,
+  filled by `BalanceLedger.Stats` for a boss without boss data), joining its road at `BalanceRules.EscortStartShare`
+  (0.6 with the stored weights; a continent boss's call keeps `SummonStartShare` 0.5 and its rate). The brood of a
+  boss that FLIES (the Storm Matriarch's bats: 7 of the 42 stored boss walks) is not in the ledger: added to the air
+  health it moved the ledger's purchase and broke `Round83Tests.AWavesPressure_NeverFalls_AsItsCreaturesGrowTougher`
+  by a hair, and the air side has no stream that joins mid-road; the bots meet it, the paper does not. Also not
+  modelled: the plated share (the whole worth is counted in the light creature's body), the cap, and that a boss
+  killed early sends less (the ledger counts the whole walk: conservative). The brood pays no kill money in play and
+  none in the ledger. The wave formula and `BossYardstick` do not read the brood: a boss's bar and its wave's
+  multiplier are as the formula sets them. `FinaleModel` is untouched (continent bosses only). `boss_share.py` needs
+  no change (it counts lost runs per wave). The wave preview lists the wave's groups, as before; the brood's creature
+  is in the level's roster (`LevelRoster`), the plated one is a creature of the level's own waves. `InputHash` takes
+  the escort constants, the worth per difficulty and the brood creature per level boss, so the calibration stamp is
+  stale after a change to any of them until it is re-stamped (Docs/COMMANDS.md, "Round 88b").
 
 ## Validation
 
@@ -353,6 +368,17 @@ Each was reverted; the stored waves are the first half's (data stamp `c75b37f7`)
   and the swarm of wave 8 then takes the first gate. Round 80b booked that gun in the model's purse; round 83 took the
   booking out again (the cell's scalar is measured with the gun standing). The other way, not built: the map (a rift that joins within a gun's reach of the first gate, as on
   Landing Site; needs a relayout and a new plan search, so a bot batch of its own).
+- **Fault Line is a doorstep level (round 88b).** Its two roads (106 and 45 cells) share only the last nine cells
+  before the base (trunk share 0.08; Shard Ridge and Crysium Vein 0.27), and the one gate both roads pass stands at
+  cell 100 of 107; the gates at 11, 87 and 94 guard the long road alone. A defence that covers both roads stands at
+  the base: the bots' creatures die at 0.72 to 0.91 of the road on every difficulty, and on Psycho the outer gates
+  are gone by wave 5. With seven raids in sixteen waves (44 %; the other Psycho cells 0 to 35 %), three boss waves
+  and the smallest kill money of the long levels (2554 coins; Shard Ridge 2716, Quartz Flats 3458; counted in round
+  87, before the boss bounty rule moved), Psycho has six ground waves without a boss, and whatever leaks from the
+  late swarm is on the base at once (a full base lost in wave 13 alone). The rule "a swarm between two raids carries
+  no peak" ("The solver", point 1) takes the peak off that swarm; the map and the raid count are the level's own.
+  Left for a script decision: one raid fewer on Psycho (`AirWavesPerDifficulty` 7 -> 6) gives the late game a second
+  ground wave, which is more ground health, not less.
 
 ## The solver (round 87: a formula)
 
@@ -366,11 +392,16 @@ A wave's health is no longer solved against the paper ledger. `WaveSolver.Solve`
    - `DifficultyScale` (1.5 / 1.7 / 1.36 / 2.08): the multiplier of a level's middle wave per difficulty.
    - `LevelScalar`: one number per level in `Tools/PlayTest/wave_tuning.txt` (`C1_01 0.875`), set by the closed loop,
      held to 0.7 .. 1.4 (`LevelScalarLeast`, `LevelScalarMost`).
-   - `Ramp`: geometric in the wave's phase `(n-1)/(N-1)` from `RampStart` 0.75 to `RampEnd` 1.34. Fitted on the
-     plain ground waves round 86 stored (`Tools/PlayTest/r87_fit.py` on `r87_dump_r86.txt`, 244 waves of 24 cells):
-     geometric in phase leaves an rms residual of x1.373, geometric in wave number x1.382; a slope per difficulty
-     x1.343 (not kept: three more numbers for 3 %). The residual is large because round 86's waves jumped from
-     wave to wave (band, caps, purse); the fit only sets where the first measurement starts.
+   - `Ramp`: geometric in the wave's phase `(n-1)/(N-1)` from `RampStart` 0.6 to `RampEnd` 1.68 (round 88b; 0.75
+     and 1.34 in round 87). Round 87's pair was fitted on the plain ground waves round 86 stored
+     (`Tools/PlayTest/r87_fit.py` on `r87_dump_r86.txt`, 244 waves of 24 cells): geometric in phase leaves an rms
+     residual of x1.373, geometric in wave number x1.382; a slope per difficulty x1.343 (not kept: three more
+     numbers for 3 %). The residual is large because round 86's waves jumped from wave to wave (band, caps, purse);
+     the fit only set where the first measurement started. **Why steeper (round 88b):** with 0.75 to 1.34 a
+     creature's health rose x1.8 over a level against x3 to x4.7 for a gun upgraded to level 3, and on paper the
+     pressure per coin stood still from the middle to the last third of a level on Hard
+     (`Tools/PlayTest/r88b_economy.txt`). Remco: "the later in a level the easier it feels". 0.6 to 1.68 is x2.8
+     over a level; the middle wave stays near `DifficultyScale`.
    - `KindFactor`: rush 1.1, heavy 1.15, raid 0.9 (`RushFactor`, `HeavyFactor`, `AirFactor`), times
      `AfterBossFactor` 0.8 on the wave after a boss, times `BossCrowdFactor` 0.55 on the crowd of a boss wave.
    - `Peak`: `PeakFactor` 1.35 on two peak waves per level and difficulty, three on a level of `LongLevelWaves` (16)
@@ -379,6 +410,22 @@ A wave's health is no longer solved against the paper ledger. `WaveSolver.Solve`
      then a peak moves to a neighbour that carries a surprise or is a heavy wave when that keeps it clear of the
      other peaks (`WaveFormula.Peaks`, `WaveSolver.PeaksOf`). In two steps so that a surprise can draw a peak onto
      its own wave and never pushes one onto another wave. Remco: waves before the boss must be able to hurt.
+   - **A swarm between two air raids carries no peak (round 88b,** `BalanceRules.PeakOnARushBetweenRaids` **false).**
+     The peaks are placed as before (`WaveFormula.Peaks`); then a peak that fell on a rush wave whose two neighbours
+     are both raids is dropped, and it is not placed anew, so every other peak of the level stays on its wave
+     (`WaveSolver.PeaksOf`, `WaveSolver.IsRushBetweenRaids`). Between two raids the purse belongs to the sky guns, and
+     the swarm is the wave that asks for the most ground guns. In the first continent it takes the peak off four waves:
+     Fault Line Psycho wave 13, Quartz Flats Hard wave 7, Quartz Flats Psycho wave 7 and Crysium Vein Psycho wave 16,
+     each x1 / 1.35 of what it was (read on round 87's ramp: Fault Line x3.32 -> x2.46, 12 500 -> 9 300 health;
+     Quartz Flats x1.79 -> x1.33 and x2.74 -> x2.03; Crysium Vein x3.48 -> x2.58; the steeper ramp of this round
+     moves those multipliers, not the ratio). In round 87's records those waves ended 32 of 57, 0 of 22, 0 of 46 and
+     1 of 48 lost runs: only Fault Line's was a wall.
+     Tried on paper and not kept (`Tools/PlayTest/r88b_raids.txt`): "no peak between two raids, placed anew" moves
+     nine peaks in seven Hard and Psycho cells and puts peaks on waves 1 to 3 (Fault Line Psycho: peaks 2 and 4 only),
+     and "no peak on a rush between raids, placed anew" puts Fault Line Psycho's third peak on wave 2. Raids are the
+     script's (`AirWaves`, a difficulty takes the first few): "no raids in two waves running" would undo the double
+     raids Shard Ridge writes on purpose (waves 11-12 and 14-15) and leave Fault Line Psycho with Medium's raids.
+     Tests: `Round88bWaveTests`.
    - A raid keeps `RaidHealthFloor`; the flyer rules (the Easy purse rule, `FlyersAfterBounties`) are unchanged and
      still read the ledger's purse to decide WHEN flyers come. Nothing else reads the ledger for sizing.
    - A surprise wave gets the formula like any wave and makes no other wave tougher (it can draw a peak onto
@@ -388,17 +435,79 @@ A wave's health is no longer solved against the paper ledger. `WaveSolver.Solve`
 
        bossBar = BossBase x BossDifficulty[d] x (1 + BossLevelGrowth x L) x (BossEarlyShare + (1 - BossEarlyShare) x phase) x (flies ? FlyingBossShare : 1)
 
-   `BossBase` 2050, `BossDifficulty` 0.7 / 1 / 1.15 / 1.8 (never falling), `BossLevelGrowth` 0.12 per level of the
+   `BossBase` 1550 (round 88b; 2050 in round 87), `BossDifficulty` 0.7 / 1 / 1.15 / 1.8 (never falling), `BossLevelGrowth` 0.16 (0.12 in round 87) per level of the
    continent, `BossEarlyShare` 0.3, `FlyingBossShare` 0.6. It does not move with the level scalar or
    `DifficultyScale`. **Floor only:** never under `BossOverRegular` (3) times the bar (body plus armour) of the
    toughest ordinary walker met before it (`BossYardstick`; flyers are not met, a surprise wave creatures count as
    they walk in). On the round 87 data the floor binds on 4 of 42 bosses: three earlier Psycho bosses and the last
    boss of Fault Line Medium (by one per cent). Tougher walkers (a higher level scalar, `PeakFactor`, `DifficultyScale`)
    lift the floor; once it passes the formula on a last boss, that boss moves with the scalar and the two monotone
-   tests can fail, so the floor is what limits how small the boss can be made against the waves around it. `BossArmourShare` is 1: armour pool equal to the body (`ApplyRound85.cs`).
+   tests can fail, so the floor is what limits how small the boss can be made against the waves around it. `BossArmourShare` is 0.5 since round 88b (1 in round 87): the pool is half the body, a third of the bar (`ApplyRound85.cs` raises a pool, `ApplyRound88bArmour.cs` brought it down). Round 88b: a flying boss takes `FlyingBossShare` of the floor too.
    Gone: the light-fire row of the yardstick (`LightFireOnArmour`, `LightFireInTheAir`), the book floor
    (`BossBookShare`), the calm reading of a surprise wave, the separate rule for a flying boss, the boss held
    against its own wave.
+
+   **A level boss's kill money (round 88b):** `BalanceRules.BossRewardFactor` is 1.5 times the kill money of its
+   threat (was 3). Since armour doubled a boss's threat in round 87 a mid-level boss's bounty was a windfall (257 to
+   415 coins on Hard and Psycho; its wave added 34 to 82 % to the purse on Hard, with the x0.8 breather after it),
+   and the last boss's bounty cannot be spent at all. `ApplyRound88bEconomy.cs` puts every level boss's kill money
+   back on the rule; continent bosses keep their staged numbers.
+2b. **A level boss's brood (round 88b: the escort rule).** Remco's playtest of round 87: "the boss wave feels pathetic
+   ... once the boss passed the first defence it felt like 5 minutes until it reached the end; it sends little ants
+   that die before the last gate". Every level boss (a boss without boss data; `EscortRule.Binds`) sends a brood out
+   of its body along its walk, by one rule:
+
+       brood health over an unhindered walk, spawn to base = EscortWorth[d] x the boss's bar as spawned
+
+   - `EscortWorth` is a difficulty factor (`DifficultyProfile._escortWorth`, from `BalanceSheet.EasyEscortWorth`,
+     `MediumEscortWorth`, `HardEscortWorth`, `PsychoEscortWorth`): 0.25 / 0.5 / 0.65 / 0.75. These are the curator's
+     values of round 88b and may still move after measurement (the package first had 0.4 / 1 / 1.1 / 1.2). No number
+     per level or per boss: a longer road, a bigger boss or another creature all get the same share.
+   - **It grows along the road.** Every call (the boss's one Spawn power: its interval and first delay) grants the
+     budget of the seconds since the last call, weighted by how far down its road the boss is: from
+     `EscortStartWeight` 0.4 times the mean rate at the spawn to `EscortEndWeight` 1.6 at the base, a straight line
+     (`EscortBrood.Weight`). With these, 35 % of the brood comes in the first half of the walk and 65 % in the second;
+     a boss killed at a first gate at 13 % of its road has sent 6 %. The budget buys whole creatures; the rest
+     carries to the next call. A call that buys nothing makes no sound.
+   - **As tough as its own wave.** A brood creature walks in with the multiplier of the ordinary creatures of the
+     boss's own wave (difficulty health x level scale x the wave's walk-in multiplier), remembered at the boss's
+     spawn: a later wave starting while the boss lives does not change it. (Before: the multiplier of whichever
+     wave was under way.)
+   - **A plated share.** `EscortHeavyShare` 0.25 of the brood walks in as the toughest plated ordinary walker the
+     level has sent before the boss (`EscortRule.Tougher`; on Crystal Plains the Cragback), so the brood is not only
+     food for a blast. Only when that share of the whole walk pays for at least one, never for a boss that flies,
+     and never a creature the level has not shown.
+   - **A cap.** A boss held at a gate or slowed keeps calling at the rate of where it stands, up to
+     `EscortMostOfWorth` 1.5 times the whole walk's worth.
+   - **No bounty.** `EscortBountyShare` 0: a brood creature pays nothing (before: full bounty, 37 to 110 coins per
+     brood mother walk). It counts for the wave's end like any creature and bites gates and the base as its kind does.
+   - The creature per boss is data (its Spawn power's minion): Brood Mother and Hive Queen Skitters, Storm Matriarch
+     Mossbats, Slime Monarch Oozers (they had these), and new in round 88b Pack Alpha Prowlers (`PackCall`), Core Wisp
+     Wisps (`WispWake`), Acid Empress Stingers (`StingerGuard`), Crystal Warlord Shard Runners (`ShardGuard`), Sky
+     Sovereign Skyrays (`RayWing`), Roller King Rollers (`RollerPack`) (`ProjectGenerator.Escorts.cs`,
+     `ApplyRound88bEscort.cs`). The power's own count is not read under the rule.
+   - **Continent bosses are outside the rule**: their calls keep count, interval, creature, bounty and
+     `DifficultyProfile._bossEscortShare` (1 / 1 / 1 / 0.5) to the number (`EscortRuleTests.AContinentBoss_KeepsItsOwnCall`).
+     Side effect removed: until round 88a Psycho's 0.5 also halved the brood of a LEVEL boss (the field was meant
+     for the finale); level bosses no longer read it.
+
+   Before the rule (lab `Tools/PlayTest/r88b_escort.txt`): the brood mother's plain call (5 Skitters of 11 book
+   health every 10 s) came to 43 to 56 % of her bar on Easy to Hard and 24 to 33 % on Psycho, spread evenly over
+   the walk; the Storm Matriarch's bats 28 to 43 %; Core Wisp and Pack Alpha sent nothing on a timer. The first gate
+   stands at 10 to 14 % of the boss's road on all six levels, so 85 to 90 % of the old brood already came behind
+   it: the complaint is not how much health came but that it was paper, evenly thin, and the same at the end as at
+   the start. After, as a walk realises it (the last call falls before the base, and a plated creature not yet
+   paid for is not sent): 85 to 100 % of the difficulty's worth, 59 to 76 % of it in the second half of the walk
+   (means 67 to 73 % per difficulty). That was read at the package's first worths (Easy 35 to 40 % of the bar at
+   0.4, Medium 85 to 99 % at 1, Hard 95 to 110 % at 1.1, Psycho 102 to 121 % at 1.2); the lab has not been run
+   again at 0.25 / 0.5 / 0.65 / 0.75.
+
+   What to turn (curator, after the bots):
+   - `BalanceSheet.*EscortWorth` (then `ApplyRound88bEscort.Run`): how much brood a difficulty gets. The one knob
+     for "the boss wave is a wall" (down) or "still dull" (up).
+   - `BalanceRules.EscortStartWeight` / `EscortEndWeight`: how late it comes. 1 / 1 is even; 0.4 / 1.6 is the
+     stored slope; 0.2 / 1.8 puts 70 % in the second half. They change no total.
+   - `BalanceRules.EscortHeavyShare`: how much of it survives a blast (plated). 0 is ants only.
 3. **Play's correction** is the level's scalar and nothing else. `closed_loop.py` sets it from the geometric mean
    of the level's four cells; what the difficulties still disagree on goes to `DifficultyScale` (`--centre`).
 
@@ -458,28 +567,34 @@ measured, by one procedure that is the same for every level.
    base kept at the data). A fresh search is not always better than the strategy a cell had: keep the old pick as one
    more candidate. This is a bot batch: never together with a data change.
 4. Measure: `bash Tools/PlayTest/r87_measure.sh <name> "<node>"` (the rungs skilled, sensible, laser and cannon; Easy
-   on x1.25 / 1.4 / 1.57 / 1.76 / 1.97 / 2.21, Medium on x0.9 .. x1.57, Hard and Psycho on the standard ladder).
+   on x1.25 / 1.4 / 1.57 / 1.76 / 1.97 / 2.21, Medium on x0.9 .. x1.57, Hard and Psycho on the standard ladder with
+   one more rung below since round 88b: `PR_MULTIPLES="0.71,0.8,0.9,1,1.12,1.25"`, Docs/COMMANDS.md, "Round 88b").
 5. `python -I Tools/PlayTest/closed_loop.py <the three records files> --levels <node> [--centre] [--write]`: per cell
    the break-even of the reference rung (the geometric middle of the last multiple two of three seeds hold and the
    first they lose) is read against its target, and the new level scalar is the old one times the geometric mean, over
    the level's four cells, of measured over target. Targets and gates are frozen in
-   `Tools/PlayTest/closed_loop_thresholds.txt` (2026-11-20):
+   `Tools/PlayTest/closed_loop_thresholds.txt` (2026-11-20; Hard and Psycho moved on a dated line of the same day,
+   round 88b):
 
    | Difficulty | Target | Measured on |
    | --- | --- | --- |
    | Easy | the weaker rung breaks even at x1.66 (x1.55 in round 85); read on both sides like the others, no "over the ladder" | x1.25 / 1.4 / 1.57 / 1.76 / 1.97 / 2.21 |
    | Medium | the sensible rung breaks even at x1.32; the best of skilled / laser / cannon itself reads x1.06 | x0.9 .. x1.57 |
-   | Hard | the sensible rung breaks even at x0.95; the best of skilled / laser / cannon itself reads x1.06 | the standard ladder (x0.8 / 0.9 / 1 / 1.12 / 1.25) |
-   | Psycho | the skilled rung breaks even at x1.06 | the standard ladder |
+   | Hard | the sensible rung breaks even at x0.85 (x0.95 in round 87); the best of skilled / laser / cannon itself reads x1.06 | x0.71 / 0.8 / 0.9 / 1 / 1.12 / 1.25 (the standard ladder, x0.8 .. x1.25, with one more rung below) |
+   | Psycho | the skilled rung breaks even at x0.95 (x1.06 in round 87) | the same six rungs |
 
    A cell is accepted within one ladder step of its target on both sides. The other gates: laser and cannon within
    one step of each other, and at most 40 % of a level's lost runs in a boss wave (aim 35 %).
 
-   So Medium is never flat, Hard is a third tougher than Medium for the same player on every level, and Easy is
-   won by both rungs with room. Round 85 (Remco after playing level 1 on Easy, Medium and Hard: "Easy and Medium a
-   tad too hard, Hard feels right; not much less, but a bit"): the Easy and Medium targets moved one ladder step up,
-   Hard and Psycho stayed. The standard ladder does not reach them, which is why `r87_measure.sh` plays Easy and
-   Medium on their own ladders.
+   So Medium is never flat, Hard is half again as tough as Medium for the same player on every level (x1.32 against
+   x0.85), and Easy is won by both rungs with room. Round 85 (Remco after playing level 1 on Easy, Medium and Hard:
+   "Easy and Medium a tad too hard, Hard feels right; not much less, but a bit"): the Easy and Medium targets moved
+   one ladder step up, Hard and Psycho stayed. The standard ladder does not reach them, which is why
+   `r87_measure.sh` plays Easy and Medium on their own ladders. Round 88b (Remco after playing round 87: "too easy
+   on all difficulties", almost 1000 coins left on Hard, a giant row of Cannons on Psycho; Easy "fine", Medium "OK
+   for now"): the reference rung of Hard and Psycho breaks even one ladder step earlier, written as a dated line in
+   the thresholds file before any measurement of the round; Easy and Medium stay. The standard ladder's lowest rung
+   is then within a step of Hard's target, so both are measured with x0.71 below it.
 6. Solve again and measure again (step 4). A level whose cells read their targets is done; else `closed_loop.py` once
    more (the level scalar is a plain factor, so one pass lands within a ladder step unless the bot takes another
    build). A level that two passes read on opposite sides of its targets is bisected (round 84): the geometric middle

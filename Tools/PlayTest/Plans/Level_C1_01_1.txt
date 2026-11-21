@@ -1,4 +1,4 @@
-Landing Site (Level_C1_01) on Medium: strategy search, 1500 strategies sampled, 0 hold on paper, base 600, cap 1.20. calibration 2026-11-20 05:21 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs bea2482b (current)
+Landing Site (Level_C1_01) on Medium: strategy search, 1500 strategies sampled, 0 hold on paper, base 600, cap 1.20. calibration 2026-11-21 01:03 (factors of 2026-11-15 21:53 kept), seeds 1,2,3, step 0.2, inputs b5930e96 (current)
 A strategy is a way of playing, not a timeline: which spots each tower takes first, which tower answers which threat, when an upgrade beats a
 new gun, when mines, the slow field and the drones come in. The adaptive bot plays it wave by wave; on paper the same rules give the build
 order shown. The paper verdict is a pre-screen (the siege model); the replay over the seeds is the judge. Cells are (x,y) on the level grid.
@@ -8,38 +8,41 @@ Best spots per tower (first is best):
   Cannon         (11,2) cover 7.0/3.5 air gate; (11,6) cover 7.0 gate; (12,2) cover 7.0/3.5 air gate; (12,6) cover 7.0 gate; (12,7) cover 8.0 gate; (13,2) cover 7.0/4.0 air gate;
 
 Obvious plans on paper:
-  mono PulseRifle    falls w7, margin 0.12 (leaks from wave 7)
-  mono Cannon        falls w7, margin 0.34 (leaks from wave 8)
-  naive              falls w7, margin 0.29 (leaks from wave 8)
+  mono PulseRifle    falls w7, margin 0.15 (leaks from wave 7)
+  mono Cannon        falls w7, margin 0.48 (leaks from wave 8)
+  naive              falls w7, margin 0.44 (leaks from wave 8)
 
-The creative reference on paper: falls w7, margin 0.21
+The creative reference on paper: falls w7, margin 0.37
   from wave  1: build Cannon at (11,2); build Gun Turret at (9,3); upgrade the tower at (9,3)
   from wave  5: upgrade the tower at (9,3)
   from wave  7: build Gun Turret at (9,6); upgrade the tower at (9,6)
-  from wave  9: build Gun Turret at (10,6)
+  from wave  9: upgrade the tower at (9,6)
   from wave 10: upgrade the tower at (11,2)
-  from wave 11: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (10,6)
-  from wave 12: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (9,6)
+  from wave 11: repair the gates when they would fall or it is cheaper than a gun; build Gun Turret at (10,6)
+  from wave 12: repair the gates when they would fall or it is cheaper than a gun; build Cannon at (11,6)
 
-Distinct winning strategies (0; different spots, mixes or timing):
+Distinct winning strategies (1; different spots, mixes or timing):
 
-No strategy holds on paper. Best found: falls w12, margin 0.40, leaks from wave 8
-  Towers per threat: swarm: Cannon; pack: whatever the ledger rates best; plated: Gun Turret; air: Cannon; boss: whatever the ledger rates best.
-  Gun Turret spots, best first: (12,7) (9,6) (10,6).
-  Cannon spots, best first: (11,6) (11,2) (5,14).
-  Upgrades: 3 guns down first, then an upgrade is worth 0.71x its value per coin against a new gun.
-  Mines: before every boss wave, and before a crowd wave when the guns would not hold it (cover under 1.00).
-  Slow field: never.
-  Harvester: in the first 50 % of the level, once the guns hold the waves at hand with cover 1.00.
+Level_C1_01_1_strategy1: 3* base 600, margin 0.42, mean cover 1.69, coins left 6, gate repairs 4 (182 coins)
+  Towers per threat: swarm: whatever the ledger rates best; pack: whatever the ledger rates best; plated: Cannon; air: whatever the ledger rates best; boss: Gun Turret.
+  Gun Turret spots, best first: (9,3) (9,6) (10,6).
+  Cannon spots, best first: (5,14) (12,2) (11,2).
+  Upgrades: 4 guns down first, then an upgrade is worth 1.56x its value per coin against a new gun.
+  Mines: before every boss wave, and before a crowd wave when the guns would not hold it (cover under 1.30).
+  Slow field: when the guns would not hold the wave (cover under 1.20) or the slow pays by the damage rule.
+  Harvester: never.
   Repair drone: once a gun or gate has lost 10 % of its health.
   Attack drone: once 8 guns stand.
   Gate upgrades: never.
   Sky guns: saved for from the wave whose income covers one before a raid the standing sky guns cannot hold; a splash gun before the first crowd wave.
   Repairs: the gate when it would fall in the coming wave or a hit point is cheaper to restore than to stop with a gun; wrecks scrapped.
   Selling: never.
-  from wave  1: build Cannon at (11,6); build Cannon at (11,2)
-  from wave  6: build Cannon at (5,14)
-  from wave  9: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (5,14)
-  from wave 10: upgrade the tower at (5,14); build Gun Turret at (12,7)
-  from wave 11: repair the gates when they would fall or it is cheaper than a gun; build Cannon at (12,6)
-  from wave 12: repair the gates when they would fall or it is cheaper than a gun; build Cannon at (12,6)
+  The build order the paper took:
+  from wave  1: build Cannon at (5,14); build Gun Turret at (9,3); build Gun Turret at (9,6)
+  from wave  5: build Gun Turret at (10,6)
+  from wave  7: upgrade the tower at (5,14)
+  from wave  9: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (9,3); upgrade the tower at (9,6)
+  from wave 10: repair the gates when they would fall or it is cheaper than a gun; build Cannon at (12,2)
+  from wave 11: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (9,3)
+  from wave 12: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (9,3)
+  waves: w1 0.21  w2 0.27  w3 0.41  w4 0.69  w5 0.35  w6 0.67  w7 0.87  w8 1.42  w9 1.17  w10 1.49  w11 2.85  w12B 1.69  

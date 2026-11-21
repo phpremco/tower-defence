@@ -51,6 +51,9 @@ tower.step.range = range {0:0.0} > {1:0.0}
 tower.step.slow = slows to {0} > {1} speed
 tower.step.boost = boost x{0:0.#} > x{1:0.#}
 tower.step.health = +{0:0} HP
+tower.step.blast = blast hits up to {0} > {1}
+# Towers/BlastRead.cs: {0} most creatures one blast hurts at the tower's level
+tower.blast.up_to = Blast hits up to {0}
 
 # Terrain (shared by the tower menu and the placement status line)
 level.high_ground_range = High ground: {0} range

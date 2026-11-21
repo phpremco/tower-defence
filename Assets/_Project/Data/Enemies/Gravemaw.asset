@@ -15,8 +15,8 @@ MonoBehaviour:
   _displayName: data.enemy.Gravemaw.displayName
   _layer: 1
   _flies: 0
-  _maxHealth: 22300
-  _armor: 22300
+  _maxHealth: 31400
+  _armor: 15700
   _speed: 0.55
   _reward: 6965
   _baseDamage: 25
@@ -28,6 +28,7 @@ MonoBehaviour:
   _attackRange: 2.5
   _attackInterval: 1.4
   _gateStrikes: 0
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _turnRate: 60
   _bankDegrees: 28
   _walkSeconds: 0

@@ -1,0 +1,173 @@
+## Spare money at level end (runs won at the data)
+
+| Difficulty | Level | Rung | Break-even | Read at | Won | Coins unspent at the end | Earned (book) | Received | Repairs | Spare = received x (1 - 1/break-even) | Spare share |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Easy | Landing Site | skilled | x2.09 | x1.25 | 3 | 78 | 1271 | 1049 | 0 | 546 (at x1.25: 420) | 52% |
+| Easy | Landing Site | sensible | x2.09 | x1.25 | 3 | 33 | 1271 | 1049 | 0 | 546 (at x1.25: 420) | 52% |
+| Easy | Landing Site | laser | x2.09 | x1.25 | 3 | 33 | 1271 | 1049 | 0 | 546 (at x1.25: 420) | 52% |
+| Easy | Landing Site | cannon | x2.09 | x1.25 | 3 | 68 | 1271 | 1049 | 0 | 546 (at x1.25: 420) | 52% |
+| Easy | Glass Meadows | skilled | x1.32 | x1.25 | 2 | 230 | 1380 | 1139 | 96 | 278 (at x1.25: 63) | 24% |
+| Easy | Glass Meadows | sensible | x1.48 | x1.25 | 3 | 216 | 1388 | 1146 | 28 | 373 (at x1.25: 180) | 33% |
+| Easy | Glass Meadows | laser | x1.66 | x1.25 | 3 | 221 | 1380 | 1139 | 0 | 454 (at x1.25: 283) | 40% |
+| Easy | Glass Meadows | cannon | over x2.34 | x1.25 | 3 | 289 | 1380 | 1139 | 0 | >= 653 (at x1.25: 531) | >= 57% |
+| Easy | Shard Ridge | skilled | x1.86 | x1.25 | 3 | 309 | 1621 | 1335 | 0 | 618 (at x1.25: 439) | 46% |
+| Easy | Shard Ridge | sensible | x1.86 | x1.25 | 3 | 187 | 1619 | 1334 | 0 | 618 (at x1.25: 438) | 46% |
+| Easy | Shard Ridge | laser | x1.86 | x1.25 | 3 | 235 | 1621 | 1335 | 20 | 618 (at x1.25: 439) | 46% |
+| Easy | Shard Ridge | cannon | x1.86 | x1.25 | 3 | 315 | 1618 | 1333 | 0 | 617 (at x1.25: 438) | 46% |
+| Easy | Fault Line | skilled | x1.66 | x1.25 | 3 | 120 | 1468 | 1216 | 0 | 484 (at x1.25: 302) | 40% |
+| Easy | Fault Line | sensible | x2.09 | x1.25 | 3 | 44 | 1477 | 1223 | 8 | 637 (at x1.25: 490) | 52% |
+| Easy | Fault Line | laser | x1.66 | x1.25 | 3 | 84 | 1480 | 1226 | 76 | 488 (at x1.25: 304) | 40% |
+| Easy | Fault Line | cannon | x1.66 | x1.25 | 2 | 58 | 1480 | 1226 | 52 | 488 (at x1.25: 304) | 40% |
+| Easy | Quartz Flats | skilled | x1.86 | x1.25 | 3 | 172 | 1793 | 1479 | 0 | 685 (at x1.25: 486) | 46% |
+| Easy | Quartz Flats | sensible | x1.86 | x1.25 | 3 | 166 | 1793 | 1479 | 0 | 685 (at x1.25: 486) | 46% |
+| Easy | Quartz Flats | laser | x1.86 | x1.25 | 3 | 212 | 1793 | 1479 | 0 | 685 (at x1.25: 486) | 46% |
+| Easy | Quartz Flats | cannon | x2.09 | x1.25 | 3 | 266 | 1793 | 1479 | 0 | 770 (at x1.25: 593) | 52% |
+| Easy | Crysium Vein | skilled | x1.32 | x1.25 | 3 | 28 | 2003 | 1650 | 14 | 403 (at x1.25: 91) | 24% |
+| Easy | Crysium Vein | sensible | x1.48 | x1.25 | 3 | 21 | 2003 | 1650 | 0 | 537 (at x1.25: 259) | 33% |
+| Easy | Crysium Vein | laser | x1.86 | x1.25 | 3 | 33 | 2003 | 1650 | 0 | 764 (at x1.25: 542) | 46% |
+| Easy | Crysium Vein | cannon | x1.66 | x1.25 | 3 | 52 | 2003 | 1650 | 0 | 658 (at x1.25: 409) | 40% |
+| Medium | Landing Site | skilled | x1.18 | x1 | 3 | 137 | 1420 | 1359 | 50 | 210 | 15% |
+| Medium | Landing Site | sensible | x1.18 | x1 | 3 | 26 | 1414 | 1353 | 131 | 210 | 15% |
+| Medium | Landing Site | laser | x1.18 | x1 | 3 | 26 | 1414 | 1353 | 131 | 210 | 15% |
+| Medium | Landing Site | cannon | over x1.66 | x1 | 3 | 81 | 1412 | 1351 | 0 | >= 539 | >= 40% |
+| Medium | Glass Meadows | skilled | x1.48 | x1 | 3 | 128 | 1473 | 1410 | 0 | 459 | 33% |
+| Medium | Glass Meadows | sensible | x1.32 | x1 | 3 | 41 | 1473 | 1410 | 44 | 344 | 24% |
+| Medium | Glass Meadows | laser | x1.32 | x1 | 3 | 135 | 1473 | 1410 | 37 | 344 | 24% |
+| Medium | Glass Meadows | cannon | over x1.66 | x1 | 3 | 170 | 1473 | 1410 | 0 | >= 562 | >= 40% |
+| Medium | Shard Ridge | skilled | x1.06 | x1 | 2 | 210 | 1710 | 1637 | 30 | 90 | 6% |
+| Medium | Shard Ridge | sensible | x1.32 | x1 | 3 | 346 | 1713 | 1639 | 43 | 400 | 24% |
+| Medium | Shard Ridge | laser | x1.18 | x1 | 2 | 328 | 1710 | 1637 | 94 | 253 | 15% |
+| Medium | Shard Ridge | cannon | x1.06 | x1 | 2 | 336 | 1710 | 1637 | 0 | 90 | 6% |
+| Medium | Fault Line | skilled | x1.06 | x1 | 2 | 261 | 1498 | 1437 | 60 | 79 | 6% |
+| Medium | Fault Line | sensible | x1.18 | x1 | 3 | 15 | 1488 | 1427 | 29 | 221 | 15% |
+| Medium | Fault Line | laser | x1.48 | x1 | 3 | 60 | 1485 | 1424 | 18 | 463 | 33% |
+| Medium | Fault Line | cannon | x1.32 | x1 | 3 | 67 | 1491 | 1429 | 15 | 349 | 24% |
+| Medium | Quartz Flats | skilled | x1.32 | x1 | 3 | 269 | 1855 | 1776 | 92 | 434 | 24% |
+| Medium | Quartz Flats | sensible | x1.32 | x1 | 3 | 43 | 1889 | 1809 | 114 | 441 | 24% |
+| Medium | Quartz Flats | laser | x1.48 | x1 | 3 | 90 | 1889 | 1809 | 41 | 589 | 33% |
+| Medium | Quartz Flats | cannon | over x1.66 | x1 | 3 | 105 | 1889 | 1809 | 0 | >= 721 | >= 40% |
+| Medium | Crysium Vein | skilled | x1.18 | x1 | 3 | 39 | 2014 | 1928 | 56 | 299 | 15% |
+| Medium | Crysium Vein | sensible | x1.32 | x1 | 3 | 36 | 2014 | 1928 | 0 | 471 | 24% |
+| Medium | Crysium Vein | laser | x1.32 | x1 | 3 | 111 | 2014 | 1928 | 0 | 471 | 24% |
+| Medium | Crysium Vein | cannon | x1.48 | x1 | 3 | 28 | 2014 | 1928 | 0 | 628 | 33% |
+| Hard | Landing Site | skilled | x1.06 | x1 | 3 | 46 | 2156 | 2351 | 40 | 130 | 6% |
+| Hard | Landing Site | sensible | x0.95 | x1 | 0 | - | - | - | - | - | - |
+| Hard | Landing Site | laser | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+| Hard | Landing Site | cannon | over x1.32 | x1 | 3 | 64 | 2094 | 2283 | 190 | >= 554 | >= 24% |
+| Hard | Glass Meadows | skilled | x0.95 | x1 | 0 | - | - | - | - | - | - |
+| Hard | Glass Meadows | sensible | x1.06 | x1 | 3 | 32 | 2122 | 2312 | 206 | 127 | 6% |
+| Hard | Glass Meadows | laser | x0.95 | x1 | 0 | - | - | - | - | - | - |
+| Hard | Glass Meadows | cannon | over x1.32 | x1 | 3 | 189 | 2117 | 2307 | 0 | >= 560 | >= 24% |
+| Hard | Shard Ridge | skilled | x0.95 | x1 | 0 | - | - | - | - | - | - |
+| Hard | Shard Ridge | sensible | x0.95 | x1 | 0 | - | - | - | - | - | - |
+| Hard | Shard Ridge | laser | x0.85 | x1 | 0 | - | - | - | - | - | - |
+| Hard | Shard Ridge | cannon | x0.95 | x1 | 1 | 442 | 2221 | 2419 | 130 | 0 | 0% |
+| Hard | Fault Line | skilled | x1.06 | x1 | 2 | 74 | 2386 | 2598 | 532 | 143 | 6% |
+| Hard | Fault Line | sensible | x1.06 | x1 | 3 | 40 | 2399 | 2613 | 359 | 144 | 6% |
+| Hard | Fault Line | laser | x1.18 | x1 | 3 | 78 | 2403 | 2618 | 447 | 405 | 15% |
+| Hard | Fault Line | cannon | x1.06 | x1 | 3 | 71 | 2403 | 2617 | 215 | 144 | 6% |
+| Hard | Quartz Flats | skilled | x1.18 | x1 | 2 | 57 | 2856 | 3114 | 292 | 482 | 15% |
+| Hard | Quartz Flats | sensible | x0.85 | x1 | 0 | - | - | - | - | - | - |
+| Hard | Quartz Flats | laser | x0.95 | x1 | 1 | 16 | 2861 | 3119 | 327 | 0 | 0% |
+| Hard | Quartz Flats | cannon | over x1.32 | x1 | 3 | 58 | 2855 | 3113 | 276 | >= 756 | >= 24% |
+| Hard | Crysium Vein | skilled | x1.06 | x1 | 2 | 70 | 2939 | 3203 | 226 | 176 | 6% |
+| Hard | Crysium Vein | sensible | x1.06 | x1 | 2 | 26 | 2939 | 3203 | 528 | 176 | 6% |
+| Hard | Crysium Vein | laser | x0.95 | x1 | 0 | - | - | - | - | - | - |
+| Hard | Crysium Vein | cannon | over x1.32 | x1 | 3 | 70 | 2939 | 3203 | 120 | >= 777 | >= 24% |
+| Psycho | Landing Site | skilled | x0.95 | x1 | 1 | 62 | 3066 | 3313 | 120 | 0 | 0% |
+| Psycho | Landing Site | sensible | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+| Psycho | Landing Site | laser | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+| Psycho | Landing Site | cannon | over x1.32 | x1 | 3 | 159 | 3043 | 3288 | 297 | >= 798 | >= 24% |
+| Psycho | Glass Meadows | skilled | over x1.32 | x1 | 3 | 289 | 3168 | 3419 | 113 | >= 830 | >= 24% |
+| Psycho | Glass Meadows | sensible | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+| Psycho | Glass Meadows | laser | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+| Psycho | Glass Meadows | cannon | x1.18 | x1 | 3 | 313 | 3169 | 3420 | 48 | 530 | 15% |
+| Psycho | Shard Ridge | skilled | x1.06 | x1 | 3 | 232 | 3271 | 3526 | 278 | 194 | 6% |
+| Psycho | Shard Ridge | sensible | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+| Psycho | Shard Ridge | laser | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+| Psycho | Shard Ridge | cannon | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+| Psycho | Fault Line | skilled | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+| Psycho | Fault Line | sensible | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+| Psycho | Fault Line | laser | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+| Psycho | Fault Line | cannon | x0.85 | x1 | 0 | - | - | - | - | - | - |
+| Psycho | Quartz Flats | skilled | x1.06 | x1 | 3 | 82 | 4063 | 4385 | 332 | 242 | 6% |
+| Psycho | Quartz Flats | sensible | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+| Psycho | Quartz Flats | laser | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+| Psycho | Quartz Flats | cannon | under x0.75 | x1 | 1 | 28 | 4071 | 4394 | 331 | <= 0 | <= 0% |
+| Psycho | Crysium Vein | skilled | x1.18 | x1 | 3 | 84 | 4142 | 4466 | 123 | 692 | 15% |
+| Psycho | Crysium Vein | sensible | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+| Psycho | Crysium Vein | laser | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+| Psycho | Crysium Vein | cannon | under x0.75 | x1 | 0 | - | - | - | - | - | - |
+
+| Difficulty | Rung | Cells | Mean spare share | Mean spare coins | Mean coins unspent | Mean received |
+| --- | --- | --- | --- | --- | --- | --- |
+| Easy | skilled | 6 | 39% | 502 | 156 | 1311 |
+| Easy | sensible | 6 | 44% | 566 | 111 | 1314 |
+| Easy | laser | 6 | 45% | 593 | 136 | 1313 |
+| Easy | cannon | 6 | 48% | 622 | 175 | 1313 |
+| Medium | skilled | 6 | 16% | 262 | 174 | 1591 |
+| Medium | sensible | 6 | 21% | 348 | 85 | 1594 |
+| Medium | laser | 6 | 24% | 388 | 125 | 1593 |
+| Medium | cannon | 6 | 30% | 481 | 131 | 1594 |
+| Hard | skilled | 4 | 8% | 233 | 62 | 2817 |
+| Hard | sensible | 3 | 6% | 149 | 33 | 2709 |
+| Hard | laser | 2 | 8% | 203 | 47 | 2868 |
+| Hard | cannon | 6 | 17% | 465 | 149 | 2657 |
+| Psycho | skilled | 5 | 10% | 391 | 150 | 3822 |
+| Psycho | cannon | 3 | 13% | 443 | 167 | 3700 |
+
+## How far the waves get, by third of the level (won runs at the data, all rungs; boss waves aside)
+
+Mean reach = advanced / health of the wave (0 the spawn, 1 the base). Purse = coins in hand when the wave starts.
+
+| Difficulty | Level | Runs | Reach first third | Middle | Last third | Last over first | Gate health lost: first / middle / last third | Purse at wave start: first / middle / last third |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Easy | Landing Site | 12 | 0.08 | 0.16 | 0.13 | x1.58 | 0 / 0 / 19 | 26 / 29 / 32 |
+| Easy | Glass Meadows | 11 | 0.04 | 0.05 | 0.06 | x1.67 | 0 / 0 / 68 | 50 / 42 / 57 |
+| Easy | Shard Ridge | 12 | 0.53 | 0.55 | 0.58 | x1.10 | 207 / 27 / 30 | 82 / 126 / 64 |
+| Easy | Fault Line | 11 | 0.82 | 0.85 | 0.86 | x1.04 | 240 / 115 / 4 | 89 / 111 / 63 |
+| Easy | Quartz Flats | 12 | 0.09 | 0.13 | 0.17 | x1.85 | 0 / 4 / 18 | 115 / 76 / 47 |
+| Easy | Crysium Vein | 12 | 0.62 | 0.59 | 0.63 | x1.02 | 300 / 2 / 21 | 122 / 94 / 45 |
+| Medium | Landing Site | 12 | 0.08 | 0.17 | 0.16 | x1.91 | 0 / 0 / 37 | 22 / 35 / 38 |
+| Medium | Glass Meadows | 12 | 0.04 | 0.05 | 0.09 | x2.47 | 0 / 0 / 105 | 33 / 45 / 45 |
+| Medium | Shard Ridge | 9 | 0.53 | 0.52 | 0.63 | x1.18 | 162 / 123 / 57 | 130 / 123 / 45 |
+| Medium | Fault Line | 11 | 0.83 | 0.85 | 0.84 | x1.01 | 178 / 152 / 2 | 141 / 56 / 46 |
+| Medium | Quartz Flats | 12 | 0.13 | 0.14 | 0.24 | x1.81 | 0 / 24 / 264 | 130 / 61 / 50 |
+| Medium | Crysium Vein | 12 | 0.57 | 0.66 | 0.61 | x1.07 | 300 / 7 / 15 | 148 / 62 / 41 |
+| Hard | Landing Site | 6 | 0.09 | 0.19 | 0.30 | x3.42 | 0 / 0 / 456 | 27 / 40 / 34 |
+| Hard | Glass Meadows | 6 | 0.04 | 0.05 | 0.10 | x2.80 | 0 / 0 / 349 | 38 / 32 / 34 |
+| Hard | Shard Ridge | 1 | 0.50 | 0.57 | 0.66 | x1.32 | 240 / 0 / 153 | 165 / 156 / 73 |
+| Hard | Fault Line | 11 | 0.84 | 0.83 | 0.84 | x1.00 | 420 / 3 / 53 | 87 / 55 / 41 |
+| Hard | Quartz Flats | 6 | 0.21 | 0.24 | 0.32 | x1.56 | 3 / 48 / 499 | 100 / 64 / 67 |
+| Hard | Crysium Vein | 7 | 0.60 | 0.60 | 0.61 | x1.02 | 350 / 14 / 300 | 130 / 69 / 43 |
+| Psycho | Landing Site | 4 | 0.08 | 0.23 | 0.24 | x2.92 | 0 / 369 / 374 | 30 / 98 / 48 |
+| Psycho | Glass Meadows | 6 | 0.02 | 0.04 | 0.07 | x2.92 | 0 / 1 / 164 | 35 / 66 / 29 |
+| Psycho | Shard Ridge | 3 | 0.48 | 0.52 | 0.64 | x1.35 | 178 / 30 / 307 | 56 / 59 / 35 |
+| Psycho | Quartz Flats | 4 | 0.19 | 0.19 | 0.26 | x1.42 | 4 / 25 / 492 | 34 / 77 / 59 |
+| Psycho | Crysium Vein | 3 | 0.57 | 0.69 | 0.59 | x1.03 | 400 / 50 / 90 | 26 / 41 / 64 |
+
+## Mean reach wave by wave (B = boss wave)
+
+Easy Landing Site: 1:0.08 2:0.08 3:0.08 4:0.08 5:0.07 6:0.09 7:0.39 8:0.10 9:0.09 10:0.10 11:0.19 12B:0.10
+Easy Glass Meadows: 1:0.04 2:0.04 3:0.03 4:0.04 5:0.04 6:0.06 7:0.07 8:0.03 9:0.06 10:0.08 11:0.04 12B:0.08
+Easy Shard Ridge: 1:0.65 2:0.39 3:0.64 4:0.53 5:0.42 6:0.63 7:0.60 8:0.43 9:0.61 10:0.47 11:0.54 12:0.72 13:0.44 14:0.48 15:0.68 16B:0.62
+Easy Fault Line: 1:0.91 2:0.73 3:0.91 4:0.81 5:0.75 6:0.92 7:0.81 8:0.77 9:0.92 10:0.86 11:0.81 12:0.91 13:0.79 14:0.82 15:0.91 16B:0.93
+Easy Quartz Flats: 1:0.08 2:0.09 3:0.09 4:0.09 5:0.10 6:0.09 7:0.09 8:0.09 9:0.30 10:0.09 11:0.08 12:0.10 13:0.40 14:0.17 15:0.08 16:0.08 17B:0.10
+Easy Crysium Vein: 1:0.76 2:0.41 3:0.77 4:0.61 5:0.41 6:0.74 7:0.46 8:0.40 9:0.76 10:0.74 11:0.39 12:0.78 13:0.60 14:0.60 15:0.75 16:0.61 17:0.58 18B:0.70
+Medium Landing Site: 1:0.08 2:0.09 3:0.08 4:0.09 5:0.08 6:0.09 7:0.39 8:0.11 9:0.09 10:0.22 11:0.17 12B:0.14
+Medium Glass Meadows: 1:0.04 2:0.04 3:0.02 4:0.05 5:0.04 6:0.05 7:0.06 8:0.03 9:0.06 10:0.16 11:0.05 12B:0.06
+Medium Shard Ridge: 1:0.64 2:0.39 3:0.50 4:0.62 5:0.49 6:0.44 7:0.53 8:0.54 9:0.45 10:0.45 11:0.72 12:0.72 13:0.61 14:0.49 15:0.69 16B:0.61
+Medium Fault Line: 1:0.89 2:0.75 3:0.81 4:0.90 5:0.82 6:0.79 7:0.86 8:0.90 9:0.83 10:0.79 11:0.92 12:0.84 13:0.78 14:0.85 15:0.90 16B:0.92
+Medium Quartz Flats: 1:0.08 2:0.08 3:0.08 4:0.09 5:0.10 6:0.37 7:0.09 8:0.09 9:0.10 10:0.35 11:0.09 12:0.38 13:0.10 14:0.11 15:0.36 16:0.27 17B:0.16
+Medium Crysium Vein: 1:0.77 2:0.41 3:0.51 4:0.77 5:0.55 6:0.43 7:0.66 8:0.80 9:0.63 10:0.46 11:0.79 12:0.63 13:0.47 14:0.69 15:0.80 16:0.53 17:0.56 18B:0.68
+Hard Landing Site: 1:0.09 2:0.09 3:0.09 4:0.09 5:0.08 6:0.09 7:0.41 8B:0.45 9:0.19 10:0.35 11:0.37 12B:0.16
+Hard Glass Meadows: 1:0.04 2:0.04 3:0.03 4:0.04 5:0.04 6:0.05 7:0.07 8:0.04 9B:0.07 10:0.13 11:0.08 12B:0.06
+Hard Shard Ridge: 1:0.66 2:0.51 3:0.42 4:0.44 5:0.46 6:0.63 7:0.49 8:0.55 9:0.48 10B:0.70 11:0.70 12:0.70 13:0.53 14:0.73 15:0.67 16B:0.57
+Hard Fault Line: 1:0.91 2:0.82 3:0.79 4:0.82 5:0.85 6:0.85 7:0.82 8:0.77 9:0.81 10B:0.91 11:0.91 12:0.87 13:0.77 14:0.84 15:0.88 16B:0.89
+Hard Quartz Flats: 1:0.08 2:0.07 3:0.08 4:0.47 5:0.09 6:0.45 7:0.09 8:0.32 9:0.10 10:0.45 11B:0.61 12:0.39 13:0.45 14:0.26 15:0.13 16:0.38 17B:0.11
+Hard Crysium Vein: 1:0.76 2:0.66 3:0.39 4:0.51 5:0.54 6:0.74 7:0.46 8:0.65 9:0.53 10:0.59 11:0.77 12B:0.74 13:0.54 14:0.68 15:0.60 16:0.61 17:0.63 18B:0.63
+Psycho Landing Site: 1:0.08 2:0.08 3:0.09 4:0.09 5B:0.12 6:0.17 7:0.30 8B:0.19 9:0.17 10:0.30 11:0.26 12B:0.09
+Psycho Glass Meadows: 1:0.02 2:0.02 3:0.02 4:0.03 5B:0.06 6:0.05 7:0.06 8:0.02 9B:0.06 10:0.10 11:0.04 12B:0.04
+Psycho Shard Ridge: 1:0.55 2:0.45 3:0.49 4:0.53 5:0.36 6B:0.66 7:0.52 8:0.41 9:0.51 10B:0.64 11:0.65 12:0.66 13:0.51 14:0.66 15:0.74 16B:0.57
+Psycho Quartz Flats: 1:0.05 2:0.04 3:0.07 4:0.41 5B:0.09 6:0.37 7:0.07 8:0.28 9:0.07 10:0.33 11B:0.55 12:0.33 13:0.42 14:0.13 15:0.08 16:0.36 17B:0.14
+Psycho Crysium Vein: 1:0.71 2:0.62 3:0.49 4:0.48 5:0.56 6:0.58 7B:0.90 8:0.62 9:0.82 10:0.66 11:0.65 12B:0.68 13:0.55 14:0.60 15:0.64 16:0.46 17:0.70 18B:0.60

@@ -67,8 +67,6 @@ namespace Game.Balance
             public float Dps;
             public float GroundHit;
             public float AirHit;
-            public bool Ground;
-            public bool Air;
             public float SplashCap;
             public float Reach;
         }
@@ -191,7 +189,8 @@ namespace Game.Balance
         private static float PerCell(Gun gun, Walker walker, WaveLoad load, BalanceRules rules, List<Walker> walkers, LevelGeometry geometry, int from, int to, float speed, float bossShare, float[] perCell)
         {
             WaveGroup group = walker.Group;
-            if (group.Flies ? !gun.Air : !gun.Ground)
+            // The game's rule: a gun reaches whatever shares a layer with it, so the air-only Flak also fires at a Wisp on the road.
+            if (!Layer.CanHit(gun.Spec.Tower.Targets, group.Layer))
             {
                 return 0f;
             }
@@ -253,7 +252,8 @@ namespace Game.Balance
             float count = 0f;
             foreach (Walker other in walkers)
             {
-                if (other.Group.Flies != flying || other.Group.IsBoss)
+                // Only what the gun can shoot at shares its time: a walker an air-only gun cannot reach does not thin its fire on a Wisp.
+                if (other.Group.Flies != flying || other.Group.IsBoss || !Layer.CanHit(gun.Spec.Tower.Targets, other.Group.Layer))
                 {
                     continue;
                 }
@@ -361,9 +361,7 @@ namespace Game.Balance
                     Dps = stats.Interval > 0f ? damage * boost.Rate / stats.Interval : 0f,
                     GroundHit = damage * tower.GroundFactor,
                     AirHit = damage * tower.AirFactor,
-                    Ground = Layer.Has(tower.Targets, Layer.Ground),
-                    Air = Layer.Has(tower.Targets, Layer.Air),
-                    SplashCap = tower.Splash > 0f ? Ledger.SplashCap(tower, rules) : 1f,
+                    SplashCap = tower.Splash > 0f ? Ledger.SplashCap(tower, spec.Level, rules) : 1f,
                     Reach = stats.Range * boost.Range,
                 });
             }

@@ -223,8 +223,14 @@ namespace Game.Boot
             _voiceEnds = new float[VoiceCount];
             _voiceVolumes = new float[VoiceCount];
             _voiceStarts = new float[VoiceCount];
-            AudioSettings.GetDSPBufferSize(out int bufferLength, out int bufferCount);
-            _outputLatency = AudioSettings.outputSampleRate > 0 ? (float)bufferLength * bufferCount / AudioSettings.outputSampleRate : 0f;
+            // With the audio system off (the silent worker clones) the buffer queries log an error each; the configuration
+            // reads zero there without one, and no latency is needed for sound nobody hears.
+            int sampleRate = AudioSettings.GetConfiguration().sampleRate;
+            if (sampleRate > 0)
+            {
+                AudioSettings.GetDSPBufferSize(out int bufferLength, out int bufferCount);
+                _outputLatency = (float)bufferLength * bufferCount / sampleRate;
+            }
             // A filter works on everything on its object, so every voice gets an object of its own.
             for (int i = 0; i < VoiceCount; i++)
             {

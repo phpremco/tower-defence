@@ -31,7 +31,10 @@ namespace Game.Balance
         public float RewardExponent = 0.9f;
 
         /// <summary>A boss pays this many times the ordinary rule: the rebuild after its powers has to be affordable.</summary>
-        public float BossRewardFactor = 3f;
+        // Round 88b: 1.5 (3 until then). Armour equal to the body doubled every boss bounty in round 87 (Brood Mother 198 -> 337);
+        // a mid-level boss on Hard added 34 to 82 % to the purse in one go and the last boss paid a pile nobody can spend
+        // (Tools/PlayTest/r88b_economy.txt). Remco: "money piles up, the later the easier".
+        public float BossRewardFactor = 1.5f;
 
         // ---- How well the player's defence works -----------------------------------------------------------------
 
@@ -109,8 +112,12 @@ namespace Game.Balance
         /// the residual from x1.37 to x1.34 only). The two multiply to one, so <see cref="DifficultyScale"/> is the
         /// multiplier of a level's middle wave.
         /// </summary>
-        public float RampStart = 0.75f;
-        public float RampEnd = 1.34f;
+        // Round 88b: 0.6 to 1.68 (0.75 to 1.34 until then). A gun taken to level 3 gains x3 to x4.7 while a creature gained
+        // x1.79 over a level, so on paper the pressure per coin stood still from the middle to the last third on Hard
+        // (x1.00; Tools/PlayTest/r88b_economy.txt) and Remco felt levels get easier towards the end. At x2.8 it rises on
+        // every difficulty (Hard x1.17, the others x1.57 to x1.59).
+        public float RampStart = 0.6f;
+        public float RampEnd = 1.68f;
 
         /// <summary>Health factors per wave kind (a rush, a heavy wave, an air raid), so the rhythm of a level is felt.</summary>
         public float RushFactor = 1.1f;
@@ -133,6 +140,16 @@ namespace Game.Balance
         public int LongLevelWaves = 16;
         public float LongLevelPeakPhase = 0.55f;
         public float PeakFactor = 1.35f;
+
+        /// <summary>
+        /// Whether a swarm (rhythm R) that comes between two air raids may carry a peak (round 88b: no). Fault Line on
+        /// Psycho has seven raids in sixteen waves and its only late ground wave, the swarm of wave 13 between the raids
+        /// of 12 and 14, took the ramp, the rush factor and a peak at once (x3.3 on the fastest creatures, a full base
+        /// lost in that one wave in 32 of 57 lost bot runs). Between two raids the purse belongs to the sky guns, so the
+        /// swarm there is an ordinary wave; the peak is not placed anew, so no other wave moves
+        /// (<see cref="WaveSolver.PeaksOf"/>).
+        /// </summary>
+        public bool PeakOnARushBetweenRaids;
 
         /// <summary>Seconds before the first wave and between waves, as the generator writes them: the model's purse runs on the same clock.</summary>
         public float FirstWaveDelay = 10f;
@@ -244,7 +261,9 @@ namespace Game.Balance
         /// (<see cref="LevelScalarLeast"/> to <see cref="LevelScalarMost"/>).
         /// </summary>
         // Round 87: the fit of the formula on round 86's stored waves (Tools/PlayTest/r87_fit.py: 1.499 / 1.853 / 1.229 / 2.381).
-        public float[] DifficultyScale = { 1.5f, 1.7f, 1.36f, 2.08f };
+        // Round 88b: 1.175 / 1.44 / 1.14 / 1.53 after the steeper ramp, the tower threat, the escorts, the blast cap and the
+        // harder Hard and Psycho targets (two one-seed passes; the scalars had run onto their lower bound).
+        public float[] DifficultyScale = { 1.23f, 1.46f, 1.2f, 1.38f };
 
         public float DifficultyScaleFor(int difficulty) => DifficultyScale.Length == 0 ? 1f : DifficultyScale[System.Math.Min(difficulty, DifficultyScale.Length - 1)];
 
@@ -346,7 +365,10 @@ namespace Game.Balance
         /// write it (<see cref="BossArmourFor"/>). Round 87: an armour pool as large as the body (0.25 until then), so
         /// that stripping a boss's plates is a job the player sees a Cannon do.
         /// </summary>
-        public float BossArmourShare = 1f;
+        // Round 88b: 0.5 (1 in round 87). With armour equal to the body the last boss of the two levels without flyers ended
+        // 66 to 88 % of all lost runs and only a Cannon-first build got through (laser and cannon archetypes three to six
+        // ladder steps apart); a third of the bar as armour still asks for shells (x2.5 per coin) without being a wall.
+        public float BossArmourShare = 0.5f;
 
         /// <summary>The armour pool a boss of this body carries: its own, or the rule's share of its body when that is more.</summary>
         public float BossArmourFor(float body, float armour) => System.Math.Max(armour, (float)System.Math.Round(body * BossArmourShare));
@@ -361,9 +383,12 @@ namespace Game.Balance
         /// nothing else, and the closed loop cannot trade crowd for boss. Rounds 85 and 86 sized it from the creatures
         /// around it, which made Hard bosses smaller than Medium ones on five of six levels.
         /// </summary>
-        public float BossBase = 2050f;
+        // Round 88b: 1750 (2050 until then): the boss now brings a brood worth 0.3 to 0.9 of its bar and fires at the guns.
+        public float BossBase = 1550f;
         public float[] BossDifficulty = { 0.7f, 1f, 1.15f, 1.8f };
-        public float BossLevelGrowth = 0.12f;
+        // Round 88b: 0.16 with BossBase 1550 (0.12 with 2050): the first two levels send no flyers and nothing there ended a run
+        // but the last boss (67 and 84 % of the lost runs), so the first bosses come down and the sixth level's stays.
+        public float BossLevelGrowth = 0.16f;
         public float BossEarlyShare = 0.3f;
         public float FlyingBossShare = 0.6f;
 
@@ -387,6 +412,35 @@ namespace Game.Balance
         /// that crowd is, is <see cref="BossCrowdFactor"/>.
         /// </summary>
         public float BossWaveShare = 0.6f;
+
+        /// <summary>
+        /// The escort rule of a level boss (round 88b, Remco: "the boss wave feels pathetic ... once the boss passed the
+        /// first defence it felt like 5 minutes until it reached the end"). Every level boss sends a brood out of its body
+        /// along its walk. Over an unhindered walk from spawn to the base the brood is worth the difficulty's escort worth
+        /// (DifficultyProfile, <see cref="DifficultyStats.EscortWorth"/>) times the boss's bar as spawned, in creatures as
+        /// tough as the ordinary creatures of the boss's own wave. It grows along the road: at the start of the walk it
+        /// comes at <see cref="EscortStartWeight"/> times its mean rate, at the end at <see cref="EscortEndWeight"/> (a
+        /// straight line between; the two average to one, so the worth holds whatever they are). A boss killed at the
+        /// first defence has sent little; the long stretch behind it gets the most.
+        /// </summary>
+        public float EscortStartWeight = 0.4f;
+        public float EscortEndWeight = 1.6f;
+
+        /// <summary>
+        /// Share of the brood's health that walks in as the toughest plated walker the level sent before the boss, so the
+        /// escort is not only food for a blast. Only when that share of the whole walk pays for at least one of them, and
+        /// never for a boss that flies.
+        /// </summary>
+        public float EscortHeavyShare = 0.25f;
+
+        /// <summary>The most a boss ever sends, as a multiple of the whole walk's worth: a boss held at a gate or slowed for long keeps sending, but not without end.</summary>
+        public float EscortMostOfWorth = 1.5f;
+
+        /// <summary>Share of its bounty an escort creature pays. Zero: a brood that grows with the walk must not pay for letting the boss walk.</summary>
+        public float EscortBountyShare;
+
+        /// <summary>Where the brood of a level boss joins its road on average, as a share of the road: the weights put its middle past halfway.</summary>
+        public float EscortStartShare => EscortStartWeight + EscortEndWeight <= 0f ? 0.5f : (EscortStartWeight * 0.5f + (EscortEndWeight - EscortStartWeight) / 3f) / ((EscortStartWeight + EscortEndWeight) * 0.5f);
 
         /// <summary>
         /// The growth layer of the combat rules (Docs/COMBAT_RULES.md, section 6), Easy to Psycho: the factor the plated

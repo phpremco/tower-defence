@@ -226,7 +226,7 @@ namespace Game.Editor
             b.Cragback = CreateEnemy(new Creature
             {
                 Id = "Cragback", BodyHalfWidth = 0.65f, Description = "Stone crawler. A walking boulder: slow, heavy and very tough, it slams the gates in its way. Heavy shells crack it best.", Layer = TargetLayers.Ground, Health = BalanceSheet.BodyOf(CragbackToughness), Armor = BalanceSheet.ArmourOf(CragbackToughness), Speed = 0.6f, BaseDamage = 4,
-                Attack = AttackStyle.Slam, BlockadeDamage = 16f, AttackRange = 2.4f, AttackInterval = 1.8f, Element = Element.Stone,
+                Attack = AttackStyle.Slam, AttackDamage = CragbackAttackDamage, BlockadeDamage = 16f, AttackRange = 2.4f, AttackInterval = 1.8f, Element = Element.Stone,
                 Color = new Color(0.4f, 0.36f, 0.32f), Eyes = new Color(1f, 0.75f, 0.3f), Accent = new Color(0.85f, 0.42f, 0.14f), Blood = new Color(0.9f, 0.55f, 0.25f),
                 Scale = 0.85f, Shape = EnemyShape.Cragback, Death = DeathStyle.Shatter,
             });
@@ -272,6 +272,7 @@ namespace Game.Editor
         {
             BossAbilityDefinition brood = CreateAbility("Brood", BossAbilityKind.Spawn, 10f, 6f, 0f, 1f, 1f, 1f, b.Skitter, 5, new Color(1f, 0.7f, 0.2f));
             BossAbilityDefinition venomBurst = CreateAbility("VenomBurst", BossAbilityKind.Pulse, 7f, 4f, 12f, 2.4f, 1f, 1f, null, 1, new Color(0.75f, 1f, 0.25f));
+            BossAbilityDefinition venomSpit = BossVolley("VenomSpit");
             BossAbilityDefinition acidRain = CreateAbility("AcidRain", BossAbilityKind.Volley, 9f, 5f, 12f, 1f, 1f, 6f, null, 1, new Color(1f, 0.35f, 0.9f), targets: 4);
             BossAbilityDefinition plateRegrowth = CreateAbility("PlateRegrowth", BossAbilityKind.Regrow, 16f, 10f, 50f, 1f, 1f, 1f, null, 1, new Color(1f, 0.5f, 1f));
             BossAbilityDefinition elementStorm = CreateAbility("ElementStorm", BossAbilityKind.Volley, 7f, 4f, 12f, 1f, 1f, 7f, null, 1, new Color(0.6f, 1f, 0.4f), targets: 5);
@@ -279,7 +280,9 @@ namespace Game.Editor
             BossAbilityDefinition swordSweep = CreateAbility("SwordSweep", BossAbilityKind.Pulse, 8f, 5f, 40f, 2.8f, 1f, 1f, null, 1, new Color(0.5f, 1f, 1f));
             BossAbilityDefinition crystalRegrowth = CreateAbility("CrystalRegrowth", BossAbilityKind.Regrow, 14f, 8f, 60f, 1f, 1f, 1f, null, 1, new Color(0.5f, 1f, 1f));
             BossAbilityDefinition howl = CreateAbility("Howl", BossAbilityKind.Rally, 12f, 5f, 0f, 1f, 5f, 1f, null, 1, new Color(1f, 0.5f, 0.15f), speedFactor: 1.6f);
+            BossAbilityDefinition spineVolley = BossVolley("SpineVolley");
             BossAbilityDefinition corePulse = CreateAbility("CorePulse", BossAbilityKind.Pulse, 7f, 4f, 30f, 3f, 1f, 1f, null, 1, new Color(0.85f, 0.9f, 1f));
+            BossAbilityDefinition arcDischarge = BossVolley("ArcDischarge");
             BossAbilityDefinition fission = CreateAbility("Fission", BossAbilityKind.Split, 1f, 0f, 0f, 1f, 1f, 1f, b.Wisp, 3, new Color(0.85f, 0.9f, 1f), trigger: 0.25f);
             BossAbilityDefinition tailLaser = CreateAbility("TailLaser", BossAbilityKind.Laser, 10f, 5f, 16f, 1f, 3.5f, 6f, null, 1, new Color(0.5f, 1f, 1f));
             BossAbilityDefinition slimeFlood = CreateAbility("SlimeFlood", BossAbilityKind.Pulse, 9f, 5f, 15f, 3.5f, 1f, 1f, null, 1, new Color(0.6f, 1f, 0.2f));
@@ -293,7 +296,7 @@ namespace Game.Editor
                 Id = "BroodMother", BodyHalfWidth = 1.3f, Description = "Queen of the ants: an endless brood and a burst of venom.", Layer = TargetLayers.Ground, Health = 900f, Speed = 0.55f, BaseDamage = 10, Boss = true,
                 Attack = AttackStyle.Bite, BlockadeDamage = 45f, AttackRange = 2.5f, AttackInterval = 1.3f,
                 Color = new Color(0.95f, 0.45f, 0.08f), Eyes = new Color(1f, 0.95f, 0.5f), Accent = new Color(0.9f, 1f, 0.3f), Blood = VenomGreen,
-                Scale = 1.3f, Shape = EnemyShape.BroodMother, Death = DeathStyle.Shatter, Abilities = new[] { brood, venomBurst },
+                Scale = 1.3f, Shape = EnemyShape.BroodMother, Death = DeathStyle.Shatter, Abilities = new[] { brood, venomBurst, venomSpit },
             });
             b.AcidEmpress = CreateEnemy(new Creature
             {
@@ -322,14 +325,14 @@ namespace Game.Editor
                 Attack = AttackStyle.Bite, AttackDamage = 12f, BlockadeDamage = 40f, AttackRange = 2f, AttackInterval = 0.9f,
                 WalkSeconds = 4f, RollSeconds = 1.5f, RollSpeed = 2.2f, RageSeconds = 4f, RageSpeed = 1.7f, RageRadius = 5f,
                 Color = new Color(0.6f, 0.15f, 0.1f), Eyes = new Color(1f, 0.3f, 0.15f), Accent = new Color(1f, 0.5f, 0.15f), Blood = RedBlood,
-                Scale = 1.3f, Shape = EnemyShape.PackAlpha, Death = DeathStyle.Shatter, Abilities = new[] { howl },
+                Scale = 1.3f, Shape = EnemyShape.PackAlpha, Death = DeathStyle.Shatter, Abilities = new[] { howl, spineVolley },
             });
             b.CoreWisp = CreateEnemy(new Creature
             {
                 Id = "CoreWisp", Description = "A core of raw energy: pulses of damage, and it splits into wisps as it dies. Beams overload it for extra damage.", Layer = TargetLayers.Ground | TargetLayers.Air, Health = 600f, Speed = 0.9f, BaseDamage = 10, Boss = true,
                 Attack = AttackStyle.Slam, BlockadeDamage = 40f, AttackRange = 2.5f, AttackInterval = 1.2f,
                 Color = new Color(0.8f, 0.75f, 1f), Eyes = Color.white, Accent = new Color(0.85f, 0.8f, 1f), Blood = new Color(0.85f, 0.8f, 1f),
-                Scale = 1.3f, Shape = EnemyShape.CoreWisp, Death = DeathStyle.Burst, Abilities = new[] { corePulse, fission },
+                Scale = 1.3f, Shape = EnemyShape.CoreWisp, Death = DeathStyle.Burst, Abilities = new[] { corePulse, fission, arcDischarge },
             });
             b.SkySovereign = CreateEnemy(new Creature
             {
@@ -361,6 +364,8 @@ namespace Game.Editor
                 Color = new Color(0.6f, 0.05f, 0.1f), Eyes = new Color(1f, 0.4f, 0.4f), Accent = new Color(1f, 0.3f, 0.4f), Blood = new Color(0.7f, 0.1f, 0.2f),
                 Scale = 2.7f, Shape = EnemyShape.Queen, Death = DeathStyle.Shatter, Abilities = new[] { queenBrood, queenPulse },
             });
+            // Round 88b: every level boss sends a brood; the ones without a Spawn power of their own get one here.
+            ApplyEscortAbilities();
         }
 
         private static EnemyStats StatsOf(Creature c) => new EnemyStats
@@ -403,6 +408,7 @@ namespace Game.Editor
             so.FindProperty("_attackRange").floatValue = c.AttackRange;
             so.FindProperty("_attackInterval").floatValue = c.AttackInterval;
             so.FindProperty("_gateStrikes").intValue = c.GateStrikes;
+            so.FindProperty("_rules").objectReferenceValue = RulesAsset();
             so.FindProperty("_walkSeconds").floatValue = c.WalkSeconds;
             so.FindProperty("_rollSeconds").floatValue = c.RollSeconds;
             so.FindProperty("_rollSpeedMultiplier").floatValue = c.RollSpeed > 0f ? c.RollSpeed : 2.5f;

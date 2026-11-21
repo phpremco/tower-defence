@@ -312,6 +312,10 @@ namespace Game.Tests
             /// <summary>Health the gates and the guns lost in the whole run, and the health each had at the last look.</summary>
             public float GateDamage;
             public float TowerDamage;
+
+            /// <summary>Round 88b: the guns that lost health at all in the run, and the ones that were wrecked at some moment.</summary>
+            public readonly HashSet<Tower> TowersHurt = new HashSet<Tower>();
+            public readonly HashSet<Tower> TowersWrecked = new HashSet<Tower>();
             public readonly Dictionary<Tower, float> LastHealth = new Dictionary<Tower, float>();
 
             /// <summary>Health each structure lost in the wave being fought and in the one before: what the next wave may cost it.</summary>
@@ -402,6 +406,12 @@ namespace Game.Tests
             /// <summary>Coins spent on repairs in the run, and everything the run earned (start money and kills), for the share.</summary>
             public int RepairSpent;
             public int Earned;
+
+            /// <summary>Round 88b: health the guns and the gates lost in the run, and how many guns were hurt and wrecked.</summary>
+            public float TowerDamage;
+            public float GateDamage;
+            public int TowersHurt;
+            public int TowersWrecked;
 
             /// <summary>Per tower type and role, damage dealt; per tower type, coin-seconds (see <see cref="BotRun.RoleDamage"/>).</summary>
             public Dictionary<(string Tower, string Role), float> RoleDamage = new Dictionary<(string, string), float>();
@@ -677,6 +687,10 @@ namespace Game.Tests
                     Fire = run.Fire,
                     FlyersSpawned = trace.FlyersSpawned,
                     RepairSpent = watch.RepairSpent,
+                    TowerDamage = watch.TowerDamage,
+                    GateDamage = watch.GateDamage,
+                    TowersHurt = watch.TowersHurt.Count,
+                    TowersWrecked = watch.TowersWrecked.Count,
                     Moves = run.Moves,
                     RoleDamage = run.RoleDamage,
                     CoinSeconds = run.CoinSeconds,
@@ -1605,7 +1619,17 @@ namespace Game.Tests
 
             foreach (Tower tower in towers)
             {
-                watch.TowerDamage += Lost(watch, tower);
+                float lost = Lost(watch, tower);
+                watch.TowerDamage += lost;
+                if (lost > 0f)
+                {
+                    watch.TowersHurt.Add(tower);
+                }
+
+                if (tower.IsWrecked)
+                {
+                    watch.TowersWrecked.Add(tower);
+                }
             }
         }
 

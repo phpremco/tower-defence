@@ -1,0 +1,77 @@
+Round 88b: the player the balance model expects per level and difficulty (the bots play as this player), against a real save.
+Research multipliers per difficulty 1 / 2 / 3 / 5; paths: Easy = earlier levels on Easy; Medium = on Medium; Hard = on Medium and Hard (+ this level on Medium); Psycho = on all four (+ this level on the three below).
+Per level: research reward (x1), reward tower.
+  C1_01: research 6, reward tower Laser, perk , sells PulseRifle,Cannon,Laser,Rocket,Tesla,Railgun
+  C1_02: research 6, reward tower Rocket, perk , sells PulseRifle,Cannon,Laser,Rocket,Tesla,Railgun
+  C1_03: research 6, reward tower , perk , sells PulseRifle,Cannon,Laser,Rocket,Tesla,Railgun
+  C1_04: research 6, reward tower , perk Perk_QuickReload, sells PulseRifle,Cannon,Laser,Rocket,Tesla,Railgun
+  C1_05: research 6, reward tower , perk , sells PulseRifle,Cannon,Laser,Rocket,Tesla,Railgun
+  C1_06: research 7, reward tower , perk , sells PulseRifle,Cannon,Laser,Rocket,Tesla,Railgun
+
+Permanent upgrades (research): id | kind | per level | costs
+  PulseRifle_Damage | TowerDamage | 0.1 | 5 10 15 22 30 40 52 66 82 100
+  PulseRifle_Range | TowerRange | 0.05 | 5 10 15 22 30 40 52 66 82 100
+  PulseRifle_FireRate | TowerFireRate | 0.1 | 6 12 18 26 36 48 62 79 98 120
+  Cannon_Damage | TowerDamage | 0.1 | 5 10 15 22 30 40 52 66 82 100
+  Cannon_Range | TowerRange | 0.05 | 5 10 15 22 30 40 52 66 82 100
+  Cannon_FireRate | TowerFireRate | 0.1 | 6 12 18 26 36 48 62 79 98 120
+  Laser_Damage | TowerDamage | 0.1 | 5 10 15 22 30 40 52 66 82 100
+  Laser_Range | TowerRange | 0.05 | 5 10 15 22 30 40 52 66 82 100
+  Laser_FireRate | TowerFireRate | 0.1 | 6 12 18 26 36 48 62 79 98 120
+  Rocket_Damage | TowerDamage | 0.1 | 5 10 15 22 30 40 52 66 82 100
+  Rocket_Range | TowerRange | 0.05 | 5 10 15 22 30 40 52 66 82 100
+  Rocket_FireRate | TowerFireRate | 0.1 | 6 12 18 26 36 48 62 79 98 120
+  Tesla_Damage | TowerDamage | 0.1 | 5 10 15 22 30 40 52 66 82 100
+  Tesla_Range | TowerRange | 0.05 | 5 10 15 22 30 40 52 66 82 100
+  Tesla_FireRate | TowerFireRate | 0.1 | 6 12 18 26 36 48 62 79 98 120
+  Railgun_Damage | TowerDamage | 0.1 | 5 10 15 22 30 40 52 66 82 100
+  Railgun_Range | TowerRange | 0.05 | 5 10 15 22 30 40 52 66 82 100
+  Railgun_FireRate | TowerFireRate | 0.1 | 6 12 18 26 36 48 62 79 98 120
+  BaseHealth | BaseHealth | 100 | 4 8 12 18 24 32 42 53 66 80
+  Base_Weapon | BaseWeapon | 1 | 12 20 32
+  BlockadeHealth | GateHealth | 0.2 | 4 8 12 18 24 32 42 53 66 80
+  Hero_Damage | HeroDamage | 0.15 | 5 10 15 22 30 40 52 66 82 100
+  Hero_Health | Other | 0.2 | 5 10 15 22 30 40 52 66 82 100
+  Hero_RepairDrone | HeroGear | 0.25 | 5 10 15 22 30 40 52 66 82 100
+  Hero_Armour | HeroGear | 0.05 | 5 10 15 22 30 40 52 66 82 100
+
+cell | research earned | spent | upgrade levels | guns owned on the level's bar (damage x rate, range) | mean gun factor | gates x | hero x | base + | base weapon | perks
+C1_01 Easy | 0 | 0 |  | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00 | x1.00 | x1.00 | x1.00 | +0 | 0 | 0
+C1_01 Medium | 0 | 0 |  | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00 | x1.00 | x1.00 | x1.00 | +0 | 0 | 0
+C1_01 Hard | 12 | 8 | BaseHealth 1, BlockadeHealth 1 | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00, Laser x1.00 r1.00 | x1.00 | x1.20 | x1.00 | +100 | 0 | 0
+C1_01 Psycho | 36 | 33 | BaseHealth 1, BlockadeHealth 1, Cannon_Damage 1, Cannon_Range 1, Laser_Damage 1, PulseRifle_Damage 1, PulseRifle_Range 1 | PulseRifle x1.10 r1.05, Cannon x1.10 r1.05, Laser x1.10 r1.00 | x1.10 | x1.20 | x1.00 | +100 | 0 | 0
+C1_01 Easy, half the research spent | 0 | 0 |  | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00 | x1.00 | x1.00 | x1.00 | +0 | 0 | 0
+C1_01 Easy, fresh save | 0 | 0 |  | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00 | x1.00 | x1.00 | x1.00 | +0 | 0 | 0
+C1_02 Easy | 6 | 4 | BaseHealth 1 | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00, Laser x1.00 r1.00 | x1.00 | x1.00 | x1.00 | +100 | 0 | 0
+C1_02 Medium | 12 | 8 | BaseHealth 1, BlockadeHealth 1 | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00, Laser x1.00 r1.00 | x1.00 | x1.20 | x1.00 | +100 | 0 | 0
+C1_02 Hard | 42 | 38 | BaseHealth 1, BlockadeHealth 1, Cannon_Damage 1, Cannon_Range 1, Laser_Damage 1, Laser_Range 1, PulseRifle_Damage 1, PulseRifle_Range 1 | PulseRifle x1.10 r1.05, Cannon x1.10 r1.05, Laser x1.10 r1.05, Rocket x1.00 r1.00 | x1.08 | x1.20 | x1.00 | +100 | 0 | 0
+C1_02 Psycho | 102 | 98 | BaseHealth 2, BlockadeHealth 2, Cannon_Damage 1, Cannon_FireRate 1, Cannon_Range 1, Hero_Damage 1, Hero_Health 1, Laser_Damage 1, Laser_FireRate 1, Laser_Range 1, PulseRifle_Damage 1, PulseRifle_FireRate 1, PulseRifle_Range 1, Rocket_Damage 1, Rocket_FireRate 1, Rocket_Range 1 | PulseRifle x1.21 r1.05, Cannon x1.21 r1.05, Laser x1.21 r1.05, Rocket x1.21 r1.05 | x1.21 | x1.40 | x1.15 | +200 | 0 | 0
+C1_02 Easy, half the research spent | 3 | 0 |  | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00, Laser x1.00 r1.00 | x1.00 | x1.00 | x1.00 | +0 | 0 | 0
+C1_02 Easy, fresh save | 0 | 0 |  | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00, Laser x1.00 r1.00 | x1.00 | x1.00 | x1.00 | +0 | 0 | 0
+C1_03 Easy | 12 | 8 | BaseHealth 1, BlockadeHealth 1 | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00, Laser x1.00 r1.00, Rocket x1.00 r1.00 | x1.00 | x1.20 | x1.00 | +100 | 0 | 0
+C1_03 Medium | 24 | 23 | BaseHealth 1, BlockadeHealth 1, Cannon_Damage 1, PulseRifle_Damage 1, PulseRifle_Range 1 | PulseRifle x1.10 r1.05, Cannon x1.10 r1.00, Laser x1.00 r1.00, Rocket x1.00 r1.00 | x1.05 | x1.20 | x1.00 | +100 | 0 | 0
+C1_03 Hard | 72 | 70 | BaseHealth 1, BlockadeHealth 1, Cannon_Damage 1, Cannon_FireRate 1, Cannon_Range 1, Hero_Damage 1, Hero_Health 1, Laser_Damage 1, Laser_Range 1, PulseRifle_Damage 1, PulseRifle_FireRate 1, PulseRifle_Range 1, Rocket_Damage 1, Rocket_Range 1 | PulseRifle x1.21 r1.05, Cannon x1.21 r1.05, Laser x1.10 r1.05, Rocket x1.10 r1.05 | x1.16 | x1.20 | x1.15 | +100 | 0 | 0
+C1_03 Psycho | 168 | 168 | BaseHealth 2, BlockadeHealth 2, Cannon_Damage 2, Cannon_FireRate 1, Cannon_Range 2, Hero_Damage 1, Hero_Health 1, Laser_Damage 2, Laser_FireRate 1, Laser_Range 2, PulseRifle_Damage 2, PulseRifle_FireRate 1, PulseRifle_Range 2, Rocket_Damage 2, Rocket_FireRate 1, Rocket_Range 1 | PulseRifle x1.32 r1.10, Cannon x1.32 r1.10, Laser x1.32 r1.10, Rocket x1.32 r1.05 | x1.32 | x1.40 | x1.15 | +200 | 0 | 0
+C1_03 Easy, half the research spent | 6 | 4 | BaseHealth 1 | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00, Laser x1.00 r1.00, Rocket x1.00 r1.00 | x1.00 | x1.00 | x1.00 | +100 | 0 | 0
+C1_03 Easy, fresh save | 0 | 0 |  | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00, Laser x1.00 r1.00, Rocket x1.00 r1.00 | x1.00 | x1.00 | x1.00 | +0 | 0 | 0
+C1_04 Easy | 18 | 18 | BaseHealth 1, BlockadeHealth 1, PulseRifle_Damage 1, PulseRifle_Range 1 | PulseRifle x1.10 r1.05, Cannon x1.00 r1.00, Laser x1.00 r1.00, Rocket x1.00 r1.00 | x1.03 | x1.20 | x1.00 | +100 | 0 | 0
+C1_04 Medium | 36 | 33 | BaseHealth 1, BlockadeHealth 1, Cannon_Damage 1, Cannon_Range 1, Laser_Damage 1, PulseRifle_Damage 1, PulseRifle_Range 1 | PulseRifle x1.10 r1.05, Cannon x1.10 r1.05, Laser x1.10 r1.00, Rocket x1.00 r1.00 | x1.08 | x1.20 | x1.00 | +100 | 0 | 0
+C1_04 Hard | 102 | 98 | BaseHealth 2, BlockadeHealth 2, Cannon_Damage 1, Cannon_FireRate 1, Cannon_Range 1, Hero_Damage 1, Hero_Health 1, Laser_Damage 1, Laser_FireRate 1, Laser_Range 1, PulseRifle_Damage 1, PulseRifle_FireRate 1, PulseRifle_Range 1, Rocket_Damage 1, Rocket_FireRate 1, Rocket_Range 1 | PulseRifle x1.21 r1.05, Cannon x1.21 r1.05, Laser x1.21 r1.05, Rocket x1.21 r1.05 | x1.21 | x1.40 | x1.15 | +200 | 0 | 1
+C1_04 Psycho | 234 | 234 | BaseHealth 2, BlockadeHealth 2, Cannon_Damage 2, Cannon_FireRate 2, Cannon_Range 2, Hero_Damage 2, Hero_Health 2, Laser_Damage 2, Laser_FireRate 2, Laser_Range 2, PulseRifle_Damage 2, PulseRifle_FireRate 2, PulseRifle_Range 2, Rocket_Damage 2, Rocket_FireRate 1, Rocket_Range 2 | PulseRifle x1.44 r1.10, Cannon x1.44 r1.10, Laser x1.44 r1.10, Rocket x1.32 r1.10 | x1.41 | x1.40 | x1.30 | +200 | 0 | 1
+C1_04 Easy, half the research spent | 9 | 8 | BaseHealth 1, BlockadeHealth 1 | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00, Laser x1.00 r1.00, Rocket x1.00 r1.00 | x1.00 | x1.20 | x1.00 | +100 | 0 | 0
+C1_04 Easy, fresh save | 0 | 0 |  | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00, Laser x1.00 r1.00, Rocket x1.00 r1.00 | x1.00 | x1.00 | x1.00 | +0 | 0 | 0
+C1_05 Easy | 24 | 23 | BaseHealth 1, BlockadeHealth 1, Cannon_Damage 1, PulseRifle_Damage 1, PulseRifle_Range 1 | PulseRifle x1.10 r1.05, Cannon x1.10 r1.00, Laser x1.00 r1.00, Rocket x1.00 r1.00 | x1.05 | x1.20 | x1.00 | +100 | 0 | 1
+C1_05 Medium | 48 | 48 | BaseHealth 1, BlockadeHealth 1, Cannon_Damage 1, Cannon_Range 1, Laser_Damage 1, Laser_Range 1, PulseRifle_Damage 1, PulseRifle_Range 1, Rocket_Damage 1, Rocket_Range 1 | PulseRifle x1.10 r1.05, Cannon x1.10 r1.05, Laser x1.10 r1.05, Rocket x1.10 r1.05 | x1.10 | x1.20 | x1.00 | +100 | 0 | 1
+C1_05 Hard | 132 | 128 | BaseHealth 2, BlockadeHealth 2, Cannon_Damage 2, Cannon_FireRate 1, Cannon_Range 1, Hero_Damage 1, Hero_Health 1, Laser_Damage 1, Laser_FireRate 1, Laser_Range 1, PulseRifle_Damage 2, PulseRifle_FireRate 1, PulseRifle_Range 2, Rocket_Damage 1, Rocket_FireRate 1, Rocket_Range 1 | PulseRifle x1.32 r1.10, Cannon x1.32 r1.05, Laser x1.21 r1.05, Rocket x1.21 r1.05 | x1.27 | x1.40 | x1.15 | +200 | 0 | 1
+C1_05 Psycho | 300 | 297 | BaseHealth 3, Base_Weapon 1, BlockadeHealth 3, Cannon_Damage 2, Cannon_FireRate 2, Cannon_Range 2, Hero_Damage 2, Hero_Health 2, Laser_Damage 2, Laser_FireRate 2, Laser_Range 2, PulseRifle_Damage 3, PulseRifle_FireRate 2, PulseRifle_Range 2, Rocket_Damage 2, Rocket_FireRate 2, Rocket_Range 2 | PulseRifle x1.56 r1.10, Cannon x1.44 r1.10, Laser x1.44 r1.10, Rocket x1.44 r1.10 | x1.47 | x1.60 | x1.30 | +300 | 1 | 1
+C1_05 Easy, half the research spent | 12 | 8 | BaseHealth 1, BlockadeHealth 1 | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00, Laser x1.00 r1.00, Rocket x1.00 r1.00 | x1.00 | x1.20 | x1.00 | +100 | 0 | 1
+C1_05 Easy, fresh save | 0 | 0 |  | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00, Laser x1.00 r1.00, Rocket x1.00 r1.00 | x1.00 | x1.00 | x1.00 | +0 | 0 | 0
+C1_06 Easy | 30 | 28 | BaseHealth 1, BlockadeHealth 1, Cannon_Damage 1, Cannon_Range 1, PulseRifle_Damage 1, PulseRifle_Range 1 | PulseRifle x1.10 r1.05, Cannon x1.10 r1.05, Laser x1.00 r1.00, Rocket x1.00 r1.00 | x1.05 | x1.20 | x1.00 | +100 | 0 | 1
+C1_06 Medium | 60 | 58 | BaseHealth 1, BlockadeHealth 1, Cannon_Damage 1, Cannon_Range 1, Hero_Damage 1, Hero_Health 1, Laser_Damage 1, Laser_Range 1, PulseRifle_Damage 1, PulseRifle_Range 1, Rocket_Damage 1, Rocket_Range 1 | PulseRifle x1.10 r1.05, Cannon x1.10 r1.05, Laser x1.10 r1.05, Rocket x1.10 r1.05 | x1.10 | x1.20 | x1.15 | +100 | 0 | 1
+C1_06 Hard | 164 | 158 | BaseHealth 2, BlockadeHealth 2, Cannon_Damage 2, Cannon_FireRate 1, Cannon_Range 2, Hero_Damage 1, Hero_Health 1, Laser_Damage 2, Laser_FireRate 1, Laser_Range 2, PulseRifle_Damage 2, PulseRifle_FireRate 1, PulseRifle_Range 2, Rocket_Damage 1, Rocket_FireRate 1, Rocket_Range 1 | PulseRifle x1.32 r1.10, Cannon x1.32 r1.10, Laser x1.32 r1.10, Rocket x1.21 r1.05 | x1.29 | x1.40 | x1.15 | +200 | 0 | 1
+C1_06 Psycho | 372 | 372 | BaseHealth 3, Base_Weapon 1, BlockadeHealth 3, Cannon_Damage 3, Cannon_FireRate 2, Cannon_Range 3, Hero_Damage 2, Hero_Health 2, Laser_Damage 3, Laser_FireRate 2, Laser_Range 3, PulseRifle_Damage 3, PulseRifle_FireRate 2, PulseRifle_Range 3, Rocket_Damage 2, Rocket_FireRate 2, Rocket_Range 2 | PulseRifle x1.56 r1.15, Cannon x1.56 r1.15, Laser x1.56 r1.15, Rocket x1.44 r1.10 | x1.53 | x1.60 | x1.30 | +300 | 1 | 1
+C1_06 Easy, half the research spent | 15 | 13 | BaseHealth 1, BlockadeHealth 1, PulseRifle_Damage 1 | PulseRifle x1.10 r1.00, Cannon x1.00 r1.00, Laser x1.00 r1.00, Rocket x1.00 r1.00 | x1.03 | x1.20 | x1.00 | +100 | 0 | 1
+C1_06 Easy, fresh save | 0 | 0 |  | PulseRifle x1.00 r1.00, Cannon x1.00 r1.00, Laser x1.00 r1.00, Rocket x1.00 r1.00 | x1.00 | x1.00 | x1.00 | +0 | 0 | 0
+
+Remco's save after clearing level 6 on Easy: Base_Weapon 1, BlockadeHealth 2, PulseRifle_Damage 2; 112 research unspent; towers PulseRifle, Cannon, Laser, Rocket.
+  worth: research spent 39, Gun Turret damage x1.20 (Cannon, Laser, Flak x1.00), gates x1.40, hero x1.00, base +0, base weapon 1; earned at least 151.

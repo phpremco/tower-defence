@@ -84,7 +84,7 @@ public static class ArmourTtk
                 sources.Add(new Source
                 {
                     Name = $"{tower.DisplayName} L{l + 1}", Asset = id, Type = tower.DamageType.ToString(), Damage = level.Damage * tower.GroundDamageFactor, Interval = level.FireInterval,
-                    Factor = tower.ArmourFactor, Cost = spent, Note = ground ? (tower.SplashRadius > 0f ? $"splash, up to {(tower.SplashTargets > 0 ? tower.SplashTargets.ToString() : "all")} in the blast" : string.Empty) : "air only (no armoured flyer exists)",
+                    Factor = tower.ArmourFactor, Cost = spent, Note = ground ? (tower.SplashRadius > 0f ? $"splash, up to {(tower.SplashTargetsAt(l) > 0 ? tower.SplashTargetsAt(l).ToString() : "all")} in the blast" : string.Empty) : "air only (no armoured flyer exists)",
                 });
             }
         }

@@ -2090,3 +2090,97 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
     leftovers of round 87 (`*_r87_final2*`) were copied to `TowerDefenseWorkers/r87_stage_leftover` first.
   - Unscaled time barely moves while frames are stepped in one eval call: a marker that lasts five real seconds is still
     up after 200 stepped frames.
+
+## Round 88b: blast caps, tower threat, the escort rule, the economy labs, the re-stamp, stills at their own size (added 2026-11-21)
+
+- **The design** is in Docs/COMBAT_RULES.md ("Structures: who can hurt a tower, and from how far", "The blast cap per
+  level", the armoured reference fight of two Cragbacks in section 4) and Docs/WAVE_GRAMMAR.md ("The solver": the ramp
+  0.6 to 1.68, the swarm between two raids, `BossRewardFactor` 1.5, point 2b the escort rule; "How to balance a new
+  level": the targets of Hard and Psycho).
+- **Data of the round without the full generator** (each safe to run again; each moves the calibration's input hash,
+  so re-stamp after it):
+
+      bash Tools/PlayTest/stage.sh run ApplyRound88bTowers.cs ApplyRound88bTowers.Run      # the Cannon's blast caps 2 / 3 / 4
+      bash Tools/PlayTest/stage.sh run ApplyRound88bThreat.cs ApplyRound88bThreat.Run      # reach table, rules on 40 creatures, Cragback slam, three boss volleys
+      bash Tools/PlayTest/stage.sh run ApplyRound88bEscort.cs ApplyRound88bEscort.Run      # escort worth per difficulty, six new brood powers
+      bash Tools/PlayTest/stage.sh run ApplyRound88bEconomy.cs ApplyRound88bEconomy.Run    # level bosses' kill money back on the rule
+
+  `ApplyRound88bEconomy` is for a change of `BalanceRules.BossRewardFactor` (3 -> 1.5 this round): it puts every level
+  boss's kill money back on the rule; continent bosses keep their staged numbers. `ApplyRound88bEscort` is the step
+  after a change of `BalanceSheet.*EscortWorth` (0.25 / 0.5 / 0.65 / 0.75).
+- **Re-stamp the calibration:** `bash Tools/PlayTest/r88b_restamp.sh <label>` (from the stage). It runs the fit on clone
+  w6 without the plan records (the round 86 recipe), copies the two calibration files to the stage, takes the stamp
+  only (`ApplyCalibration.Keep`), solves (`ApplyRound68.Run`), rewrites the wave and boss reports (`Round87Lab.Run`)
+  and ends with the stale check. Log: `Tools/PlayTest/r88b_<label>.log`, last line `RESTAMPED`.
+- **Labs on the assets (no Play Mode):**
+
+      bash Tools/PlayTest/stage.sh run CannonCapLab.cs CannonCapLab.Run                 # -> Tools/PlayTest/r88b_cannon_cap.txt
+      bash Tools/PlayTest/stage.sh run CannonCapLab.cs CannonCapLab.Roles               # -> r88b_cannon_roles.txt (the reference fights at level 1)
+      bash Tools/PlayTest/stage.sh run WispReachLab.cs WispReachLab.Run                 # -> r88b_wisp_reach.txt (what of the ground an air-only gun reaches)
+      bash Tools/PlayTest/stage.sh run Round88bThreatLab.cs Round88bThreatLab.After     # -> r88b_threat.txt (Before writes r88b_threat_before.txt)
+      bash Tools/PlayTest/stage.sh run Round88bEscortLab.cs Round88bEscortLab.Run       # -> r88b_escort.txt
+      bash Tools/PlayTest/stage.sh run Round88bEconomyLab.cs Round88bEconomyLab.Run     # -> r88b_economy.txt
+      bash Tools/PlayTest/stage.sh run Round88bEconomyLab.cs Round88bEconomyLab.Players # -> r88b_players.txt
+      bash Tools/PlayTest/stage.sh run Round88bEconomyLab.cs Round88bEconomyLab.Maps    # -> r88b_maps.txt
+      bash Tools/PlayTest/stage.sh run Round88bEconomyLab.cs Round88bEconomyLab.Raids   # -> r88b_raids.txt
+
+  - `r88b_economy.txt`: per level and difficulty every stored wave as spawned and as paid (creatures, walk-in health of
+    crowd and boss, bounties after the income multiplier, money before the wave as a plain sum, with the model's mines,
+    and by `KillPurse`), the pressure index (health over money held), the ledger's window, the rate index (health per
+    second per 100 coins held) and the ledger's pressure, their trend over the level, the money totals (last quarter,
+    last wave, bosses, bosses before the last wave), and a table of "what if" scenarios (ramp, breather, peak phases,
+    boss bounties, income, Psycho's start money).
+  - `r88b_players.txt`: the permanent upgrades the model's player owns per level and difficulty, half of them, none of
+    them, and Remco's save of 2026-11-20 beside them. `r88b_maps.txt`: roads, gates, rifts, build spots, first flyers
+    and the purse by then, raids, first plated wave, bosses. `r88b_raids.txt`: raids, their share, raids in two waves
+    running, every peak with its distance from its phase, and what candidate peak rules move.
+  - `StreamDuel.Dps(tower, level, stream, step, splashTargets)` plays a tower with another blast cap than its data has
+    (a lab's what-if).
+- **Tests of the round** (on a clone): `bash Tools/PlayTest/r34b_editmode_worker.sh <N> Round88bTowersTests`,
+  `Round88bThreatTests`, `EscortRuleTests`, `Round88bWaveTests`, `MarkerLayoutTests`.
+- **Measuring Hard and Psycho: one more rung below.** The frozen targets of Hard and Psycho moved one step harder on a
+  dated line of `Tools/PlayTest/closed_loop_thresholds.txt` (Hard x0.95 -> x0.85, Psycho x1.06 -> x0.95; Easy and
+  Medium unchanged), so both are measured on a ladder that starts at x0.71:
+
+      PR_MULTIPLES="0.71,0.8,0.9,1,1.12,1.25" PR_SEEDS=1 PR_WORKERS=6 bash Tools/PlayTest/r87_measure.sh <name>
+
+  The Easy and Medium ladders are set inside the script.
+- **Money left over, from the records:** `python -I Tools/PlayTest/r88b_spare.py <records> [...] [--rungs skilled,sensible] [--waves]`:
+  per difficulty, level and rung, on the runs won at the data: coins unspent, earned (book), received (through the
+  income multiplier), repairs, and the spare `received x (1 - 1 / break-even)`; then how far the waves get, the gate
+  health lost and the purse at wave start by third of the level. `Tools/PlayTest/r88b_spare_before.txt` is round 87's
+  final measurement. Note: field 17 of a record ("earned") is the start money plus BOOK bounties, before the income
+  multiplier.
+- **Tower wear in the records:** since round 88b the probe's records carry in their note field
+  `wear guns <health lost> hurt <n> wrecked <n> gates <health lost>`, for the tower-damage table.
+- **Stills with world labels in the right place:** `r88_shot.cs` (and `r65_shot.cs`) draws the HUD at the still's
+  size while markers and badges were placed for the batch editor's own 640x480 screen: world labels land on panels
+  they never touch in the game. `Tools/PlayTest/r88b_shot.cs` gives the camera its target first, steps two frames so
+  every view lays itself out for that size, then takes the picture; it prints the safe area and every showing world
+  label, with "ON PANEL" / "OUTSIDE" for one that touches a keep-out zone or leaves the safe area.
+  `Tools/PlayTest/r88b_shot_arg.txt`: `<width> <height> <png path relative to the stage>`. In `r88_shots.sh`:
+  `"arg:r88b_shot_arg.txt=1920 1080 Logs/r88b/x.png" "eval:r88b_shot.cs"`.
+  Only views that read the canvas's camera are right in it (`SurprisePingView`, `RearNestMarkerView`); the boss
+  marker, the base alert and the rebuild badges still pass `null` and are NOT placed right in such a still.
+- **Pings where a still needs them:** `Tools/PlayTest/r88b_ping.cs`, `r88b_ping_arg.txt` one line of words:
+  `vp:<x>:<y>` a surprise ping at the ground point under that viewport point (outside 0..1 = off screen that way),
+  `rear:<x>:<y>` Voss's rear-rift warning there, `margin:<percent>` the title-safe margin for the session (in memory),
+  `dump` screen, canvas, safe area, zones and showing labels. The layout rule itself is `Game.UI.MarkerLayout`
+  (obstacles from `HudKeepOut`).
+- **Pitfalls met this round:**
+  - The stage's batch editor screen is 640x480 (4:3). Anything that is laid out in screen space is laid out for that,
+    whatever size a still is drawn at.
+  - Round 88a's `SfxPlayer` asked the audio system for its buffer size, which logs an error in the silent worker
+    clones and failed every probe run ("2 probe errors, 0 runs"). It now reads
+    `AudioSettings.GetConfiguration().sampleRate` first. A probe batch that ends in a minute with "0 runs": read the
+    `[Probe] error` lines in the clone's `Logs/unity.log`.
+  - A baseline of the OLD data is measured from a second copy (`TowerDefenseWorkers\stageB`, mirrored from the project
+    plus the probe files), because `pressure.sh` syncs the clones from the folder it is started in.
+  - The role matrix in Docs/COMBAT_RULES.md section 4 is a copy of `Tools/PlayTest/r67_role_matrix.txt`; after a change
+    of a blast cap or a reference fight, rewrite the file (`balance_pipeline.sh roles`) and copy the table again.
+- **More scripts of the curator (round 88b):** `ApplyRound88bArmour.cs` (`ApplyRound88bArmour.Run`: every boss whose
+  armour stood on the old share gets `BalanceRules.BossArmourShare` of its body; then `ApplyRound88bEconomy`, re-stamp,
+  the finale stage), `ApplyRound88bSockets.cs` (the beam socket of the three level bosses with a volley),
+  `Round88bBones.cs` (lists a boss rig's bones). **Order of a final:** rule passes, picks, finale stage, THEN the
+  three-seed measurement (round 88b measured first; the finale stage then moved two boss assets and the acceptance
+  test reads the records as another data state).

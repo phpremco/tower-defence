@@ -77,7 +77,7 @@ public static class Round87Lab
                         float phase = WaveFormula.Phase(number, script.Waves);
                         float formula = WaveFormula.BossBar(rules, level, d, phase, stats.Flies);
                         float bar = BossYardstick.Bar(stats) * multiple * spawn;
-                        float floor = BossYardstick.Bar(stats) * met.Multiple(stats, rules.BossOverRegularFor(d)) * spawn;
+                        float floor = BossYardstick.Bar(stats) * met.Multiple(stats, rules.BossOverRegularFor(d)) * spawn * (stats.Flies ? rules.FlyingBossShare : 1f);
                         bool binds = met.HasMet && bar > formula * 1.01f;
                         bosses.Append(Line($"{key} | {DifficultyNames[d]} | {number} | {stats.Id}{(stats.Flies ? " (flies)" : string.Empty)} | {bar:0} | {stats.Health * multiple * spawn:0} | {stats.Armor * multiple * spawn:0} | {formula:0} | x{met.Over(stats, multiple):0.0} | {floor:0} | {(binds ? "YES" : "no")}\n"));
                     }

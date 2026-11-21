@@ -16,9 +16,9 @@ MonoBehaviour:
   _layer: 2
   _flies: 1
   _maxHealth: 700
-  _armor: 700
+  _armor: 350
   _speed: 1.1
-  _reward: 377
+  _reward: 141
   _baseDamage: 10
   _element: 3
   _family: 0
@@ -28,6 +28,7 @@ MonoBehaviour:
   _attackRange: 3
   _attackInterval: 0.8
   _gateStrikes: 6
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _turnRate: 60
   _bankDegrees: 28
   _walkSeconds: 0

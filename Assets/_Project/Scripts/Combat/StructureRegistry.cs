@@ -139,15 +139,18 @@ namespace Game.Combat
             return hits;
         }
 
-        /// <summary>Fills results with the nearest living structures within range, closest first, at most count of them.</summary>
-        public void FindNearest(Vector3 origin, float range, int count, List<IStructure> results)
+        /// <summary>
+        /// Fills results with the nearest living structures within range, closest first, at most count of them. With
+        /// <paramref name="openOnly"/> the ones that bar the road (gates, the base, the hero) are left out: a volley at the guns.
+        /// </summary>
+        public void FindNearest(Vector3 origin, float range, int count, List<IStructure> results, bool openOnly = false)
         {
             results.Clear();
             float rangeSqr = range * range;
             for (int i = 0; i < _structures.Count; i++)
             {
                 IStructure candidate = _structures[i];
-                if (!candidate.IsAlive)
+                if (!candidate.IsAlive || (openOnly && candidate.BlocksGround))
                 {
                     continue;
                 }
@@ -183,10 +186,18 @@ namespace Game.Combat
         }
 
         /// <summary>Returns the nearest living structure within range, or null.</summary>
-        public IStructure FindNearest(Vector3 origin, float range)
+        public IStructure FindNearest(Vector3 origin, float range) => FindNearest(origin, range, range);
+
+        /// <summary>
+        /// Returns the nearest living structure within range, or null; one that bars the road (a gate, the base, the hero)
+        /// counts only within <paramref name="blockerRange"/>. An attack that carries far to the guns beside the road
+        /// (round 88b) so never reaches a gate from further than the creature's own range.
+        /// </summary>
+        public IStructure FindNearest(Vector3 origin, float range, float blockerRange)
         {
             IStructure best = null;
             float bestSqr = range * range;
+            float blockerSqr = blockerRange * blockerRange;
 
             for (int i = 0; i < _structures.Count; i++)
             {
@@ -199,6 +210,11 @@ namespace Game.Combat
                 float dx = candidate.Position.x - origin.x;
                 float dz = candidate.Position.z - origin.z;
                 float sqr = dx * dx + dz * dz;
+                if (candidate.BlocksGround && sqr > blockerSqr)
+                {
+                    continue;
+                }
+
                 if (sqr <= bestSqr)
                 {
                     best = candidate;

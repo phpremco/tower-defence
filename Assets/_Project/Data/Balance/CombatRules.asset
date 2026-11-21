@@ -55,6 +55,17 @@ MonoBehaviour:
     Trait: 1
     Factor: 0.5
     Reason: 'The Flak''s airburst is fragments, not a shell: it is the air specialist and no anti-armour gun (Remco 2026-11-15). No armoured flyer exists today.'
+  _reach:
+  - Style: Slam
+    Cells: 3.2
+    Reason: 'A slam shakes the ground: the blow carries a cell past the body, to the second row beside the road.'
+  - Style: Sting
+    Cells: 4
+    Reason: A sting sprays its venom in an arc, as far as a short gun shoots.
+  - Style: Bolt
+    Cells: 4.5
+    Reason: 'A spat bolt flies as far as a gun''s shot: a tower between two roads is in reach of both.'
+  _bossReach: 4
   _swarmHealth: 40
   _toughHealth: 250
   _fastSpeed: 1.3
@@ -82,11 +93,11 @@ MonoBehaviour:
     Reason: 'One Shard Crawler: a big soft body asks for light fire held on one target.'
   - Trait: 1
     Enemy: Cragback
-    Count: 3
+    Count: 2
     Spacing: 0.6
     Moving: 0
     Margin: 2
-    Reason: 'Three Cragbacks at a gate: light fire chips the plates, shells and slugs break them.'
+    Reason: 'Two Cragbacks at a gate: light fire chips the plates, shells and slugs break them.'
   - Trait: 2
     Enemy: Skyray
     Count: 4

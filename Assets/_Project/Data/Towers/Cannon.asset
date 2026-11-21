@@ -25,6 +25,7 @@ MonoBehaviour:
     SupportScale: 0
     StepName: 
     Step: 0
+    SplashTargets: 2
   - Cost: 95
     Damage: 56.888885
     Range: 4
@@ -35,6 +36,7 @@ MonoBehaviour:
     SupportScale: 0
     StepName: data.tower.Cannon.levels.1.stepName
     Step: 1
+    SplashTargets: 3
   - Cost: 155
     Damage: 118.26088
     Range: 4
@@ -45,9 +47,10 @@ MonoBehaviour:
     SupportScale: 0
     StepName: data.tower.Cannon.levels.2.stepName
     Step: 1
+    SplashTargets: 4
   _projectileSpeed: 5
   _splashRadius: 1.2
-  _splashTargets: 3
+  _splashTargets: 2
   _damageType: 0
   _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _roles: 0200000003000000i
@@ -72,5 +75,6 @@ MonoBehaviour:
   _projectileStyle: 1
   _beamLockSeconds: 0.35
   _beamSweepSeconds: 0
+  _retargetSeconds: 0
   _art: {fileID: 11400000, guid: 67eadd0f2b534644594839c14c177588, type: 2}
   _gateArt: {fileID: 0}

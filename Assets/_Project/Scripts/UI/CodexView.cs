@@ -584,9 +584,11 @@ namespace Game.UI
             if (r.SplashRadius > 0f)
             {
                 _builder.Append(Loc.Format("codex.recipe_splash", r.SplashRadius.ToString("0.0")));
-                if (r.SplashTargets > 0)
+                int first = BlastRead.Cap(r, 0);
+                int last = BlastRead.Cap(r, r.MaxLevelIndex);
+                if (first > 0)
                 {
-                    _builder.Append(Loc.Format("codex.recipe_splash_targets", r.SplashTargets));
+                    _builder.Append(last > first ? Loc.Format("codex.recipe_splash_targets_grow", first, last) : Loc.Format("codex.recipe_splash_targets", first));
                 }
             }
 
@@ -702,6 +704,20 @@ namespace Game.UI
             _builder.Append('\n').Append(Loc.Format("codex.boss_counter", boss.CounterText));
         }
 
+        // A boss without a bite of its own may still reach the guns with a power (a pulse, a volley, a laser).
+        private static bool HurtsWithPowers(EnemyDefinition enemy)
+        {
+            for (int i = 0; i < enemy.Abilities.Length; i++)
+            {
+                if (enemy.Abilities[i] != null && enemy.Abilities[i].StructureReach > 0f)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private string DescribeEnemy(EnemyDefinition enemy)
         {
             _builder.Clear();
@@ -717,7 +733,7 @@ namespace Game.UI
             _builder.Append('\n').Append(Loc.Format("codex.enemy_stats", enemy.Speed.ToString("0.0"), enemy.Reward, enemy.BaseDamage)).Append('\n');
 
             // A continent boss's own mechanic decides what it does to towers; the signature below says it.
-            string towers = enemy.AttackDamage > 0f ? Loc.Format("codex.towers_damaged", enemy.AttackDamage) : enemy.Boss != null && enemy.Boss.Signature != BossSignature.None ? Loc.Get("codex.towers_see_signature") : Loc.Get("codex.towers_left_alone");
+            string towers = enemy.AttackDamage > 0f ? Loc.Format("codex.towers_damaged", enemy.AttackDamage) : enemy.Boss != null && enemy.Boss.Signature != BossSignature.None ? Loc.Get("codex.towers_see_signature") : HurtsWithPowers(enemy) ? Loc.Get("codex.towers_by_powers") : Loc.Get("codex.towers_left_alone");
             _builder.Append(Loc.Format("codex.enemy_towers", towers));
             string gates = enemy.BlockadeDamage > 0f ? Loc.Format("codex.gates_per_hit", enemy.BlockadeDamage) : Loc.Get("codex.gates_no");
             _builder.Append(Loc.Format("codex.enemy_gates", HeroNaming.Of(_context), gates));

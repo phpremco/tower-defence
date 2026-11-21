@@ -33,6 +33,13 @@ namespace Game.Enemies
         [SerializeField] [Min(0.1f)] private float _attackInterval = 1.2f;
         [SerializeField] [Min(0)] private int _gateStrikes;
 
+        [Tooltip("The one rule table (Data/Balance/CombatRules): how far the attack style reaches to a tower beside the road comes from there, nothing is typed here (round 88b).")]
+        [SerializeField] private CombatRules _rules;
+
+        // The rules version the reach was read at, plus one: zero is "not read yet" (as ProfileCache does for weapons).
+        [System.NonSerialized] private int _reachStamp;
+        [System.NonSerialized] private float _structureReach;
+
         [Header("Flight")]
         [Tooltip("How fast a flyer can change its heading, in degrees per second: it rounds every corner of its route on the arc its speed and this rate allow (speed 1.5 at 60 degrees a second turns on 1.4 cells). Zero turns on the spot.")]
         [SerializeField] [Min(0f)] private float _turnRate = 60f;
@@ -112,6 +119,26 @@ namespace Game.Enemies
         /// <summary>Damage per attack to a blockade that holds this enemy up. Only ground enemies meet blockades.</summary>
         public float BlockadeDamage => _blockadeDamage;
         public float AttackRange => _attackRange;
+
+        /// <summary>
+        /// How far its attack in passing reaches to a structure that does not bar the road (a tower, a turret, a drone):
+        /// its style's reach from the rule table, and never less than its own range. Gates, the base and the hero are met
+        /// at <see cref="AttackRange"/> as before. A creature without rules (a fixture built in memory) keeps its own range.
+        /// </summary>
+        public float StructureReach
+        {
+            get
+            {
+                if (_reachStamp != CombatRules.Version + 1)
+                {
+                    float styled = _rules != null ? _rules.StructureReach(_attackStyle.ToString()) : 0f;
+                    _structureReach = Mathf.Max(_attackRange, styled);
+                    _reachStamp = CombatRules.Version + 1;
+                }
+
+                return _structureReach;
+            }
+        }
         public float AttackInterval => _attackInterval;
 
         /// <summary>How many times a flyer stops to hit a gate it passes. Zero means it flies straight on.</summary>
@@ -205,6 +232,7 @@ namespace Game.Enemies
 
         private void OnValidate()
         {
+            _reachStamp = 0;
             if (_layer == 0)
             {
                 Debug.LogWarning($"EnemyDefinition '{name}' can be hit by nothing: set Ground, Air or both.", this);

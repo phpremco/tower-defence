@@ -15283,3 +15283,324 @@ round (88b) follows: see "For round 88b" below.
    the price has to come down, not the time up (that is a balance call for round 88b).
 4. **Ping wording.** The marker says "SURPRISE". It also pings for a nest that opens behind the gate every time (Voss
    warns only once per save).
+
+## Round 88b: the balance round after Remco's playtest of round 87 (2026-11-20/21)
+
+Not committed. One curator on HEAD 8d9ffd5d (round 88a) with six sub-agents (towers, threat, boss escort, waves and
+economy, HUD, docs). All code and data work in the stage (`C:\Users\remco\TowerDefenseWorkers\stage`), copied back with
+`stage.sh back` at the end; a second copy (`stageB`, the project as it was plus the probe's new note) measured the
+"before" numbers. Remco's save had MD5 c713b83e2aba398d76d35983107d1eb1 at the start and at the end; it was read once
+(its upgrades, for goal 6) and never written. **Read the verdict first: the round built everything Remco asked for, but
+the fit against the frozen gates is worse than round 87's (13 of 24 cells within a step, was 19), because five rule
+changes and harder targets were tuned in four one-seed passes. The tables below say where.**
+
+### What Remco said, what was found, what changed
+
+1. **"Too easy on all difficulties, the later in a level the easier, money piles up."** Found
+   (`Tools/PlayTest/r88b_economy.txt`, `r88b_spare_before.txt`):
+   - The last wave alone pays 17 to 46 % of a level's kill money (Hard 528 to 730 coins, Psycho 604 to 804) and nobody
+     can spend it: that is most of "almost 1000 left". Bosses paid 15 to 42 % of all kill money; armour equal to the body
+     had doubled every boss bounty in round 87 (Brood Mother 198 -> 337), and a mid-level boss on Hard added 34 to 82 %
+     to the purse in one go, followed by the breather wave.
+   - A creature got x1.79 tougher over a level (ramp 0.75 to 1.34) while a gun taken to level 3 gains x3 to x4.7: on
+     paper the pressure per coin stood still from the middle to the last third on Hard (x1.00) and fell in 8 of 24
+     cells. Only the head count grew, and a blast or a level 3 gun eats head count.
+   - The bots were at their edge on Hard (6 % spare) where Remco had half his money left: "too easy" is the targets and
+     the gap between a human and the bots; the shape explains "later is easier".
+   Changed, all rules: **ramp 0.6 to 1.68** (`RampStart` / `RampEnd`, x2.8 over a level); **`BossRewardFactor` 3 -> 1.5**
+   (and with the lower armour share a Brood Mother now pays 126, a Core Wisp 87, a Pack Alpha 133, a Storm Matriarch
+   well under half of 377); **the frozen targets of Hard and Psycho one ladder step harder** on a dated line of
+   `closed_loop_thresholds.txt` (Hard x0.95 -> x0.85, Psycho x1.06 -> x0.95; written before the round's first
+   measurement; Easy and Medium unchanged because Remco called them fine). Income multipliers and Psycho's starting
+   money x3 stay (the lab: the start money makes Psycho's opening equal to Hard's, it is not what makes the end easy).
+2. **The Cannon's blast: 2 creatures at level 1, 3 at level 2, 4 at level 3** (`TowerLevel.SplashTargets`,
+   `TowerDefinition.SplashTargetsAt`, was 3 on every level; Flak stays 4). Game, balance model, labs, hash, Codex and
+   the tower menu ("Blast hits up to 2", the upgrade line shows 2 > 3) read the same number per level. Paper
+   (`r88b_cannon_cap.txt`, Medium, per 100 coins): level 1 on a dense pack 46.4 -> 31.3 (x0.67), level 2 unchanged,
+   level 3 on a plated column 60.5 -> 76.0 (x1.25); single targets do not move. **The cap alone does not close the
+   "Cannon-first" gap** on the two levels without flyers: with no blast at all a coin of Cannon is still worth x1.3 to
+   x1.55 a coin of Gun Turret and x2.3 to x2.9 a coin of Laser there, because 35 to 46 % of the ground bar is armour.
+   The armoured reference fight of the role rules is now two Cragbacks at a gate (was three): the fight a level 1
+   blast covers.
+3. **Towers are threatened.** Before, most creatures (and the Brood Mother and Core Wisp) could not hurt a tower at
+   all, and the rest reached 1.6 to 3 cells. Now three data rules (Docs/COMBAT_RULES.md, "Structures"): reach by attack
+   style in `CombatRules` (Slam 3.2, Sting 4, Bolt 4.5 cells; gates, base and hero are still met at the creature's own
+   range), the Cragback bites structures (1.5 a hit), and every level boss fires a volley at the three nearest guns
+   within 5 cells every 3 s (14 a bolt; Venom Spit, Arc Discharge, Spine Volley; they spare gates, base and hero).
+   The first numbers (34 a bolt, Cragback 3) wrecked 3 to 6 of 9 guns in the bots' Hard and Psycho runs and were cut
+   after the first measurement.
+4. **The boss wave is alive.** New escort rule for every level boss (`EscortRule`, `EscortBrood`,
+   `DifficultyProfile._escortWorth` 0.25 / 0.5 / 0.65 / 0.75; Easy was measured at 0.3 and set to 0.25 afterwards, see "Gates"): over an unhindered walk the brood is worth that share of
+   the boss's bar, it grows along the walk (35 % in the first half, 65 % in the second; a boss killed at the first
+   gate has sent 6 %), walks in as tough as the boss's own wave, a quarter of it is the level's plated walker, and it
+   pays no bounty (before: thin book-health ants, evenly, 28 to 55 coins a walk; Core Wisp and Pack Alpha sent
+   nothing). Six new Spawn powers (Pack Call, Wisp Wake and four for later bosses). Continent bosses are untouched.
+   `BossBase` 2050 -> 1550 with `BossLevelGrowth` 0.12 -> 0.16 pays for the brood and the volley on the early levels.
+5. **Fault Line on Psycho.** Cause: level design plus the formula. Its two roads share only the last nine cells and the
+   one gate both pass stands at cell 100 of 107, so the defence stands on the doorstep; seven of sixteen waves are air
+   raids, which keeps 3 to 5 of 14 to 17 towers on the sky, and it pays the least kill money of the long levels. The
+   formula then put ramp, rush factor and a peak on the only late ground wave (13, between the raids of 12 and 14):
+   x3.32 on 208 runners; 32 of 57 lost bot runs ended there. Rule (`BalanceRules.PeakOnARushBetweenRaids` false,
+   `WaveSolver.IsRushBetweenRaids`): a swarm whose two neighbours are both raids carries no peak (the peak is not
+   placed elsewhere). It moves four waves in the campaign (Fault Line Psycho 13, Quartz Flats Hard 7 and Psycho 7,
+   Crysium Vein Psycho 16). Wave 13 now walks in at x2.16 and is still where 16 of 34 lost Psycho runs end.
+6. **Crysium Vein on Easy.** Not the upgrades: the model's Easy player at level 6 has 28 research spent (guns x1.05 on
+   average), Remco's save 39 spent and 112 unspent (Gun Turret x1.20, Cannon x1.00). It is the boss wave and the map:
+   every Easy level is decided in its boss wave, the level's scalar does not move the boss, and the boss formula
+   ignores pace (Pack Alpha walks at 1.3 and rages; bar x speed per coin held: Landing Site 1.25, Crysium Vein 2.39);
+   the level is a fork whose gates guard the long road only. Nothing was changed for this cell alone; the lower boss
+   base and the lighter armour apply to it as to all. It reads x1.48 (one step under target, accepted). A pace term
+   in the boss formula is proposed, not built (question 5).
+7. **Round 87 and 88a leftovers.** The calibration is re-stamped (five times through the round, `r88b_restamp.sh`;
+   current). The balance model follows the game on "who can hit what" (`Layer.CanHit`, a test holds it equal to the
+   game's rule): an air-only gun now reaches 5 to 21 % of the ground bar on the Wisp levels. The Chrono Field's credit
+   is its lifetime over the wave's span (`PlanEvaluator.FieldWaveShare`, lifetime from the asset). **The surprise edge
+   arrows** are laid out by `MarkerLayout` against the HUD's real rects (`HudKeepOut`): arrow and word as one block,
+   inside the safe area, clear of every panel, of Voss's rear-rift marker and of each other; stills
+   `Logs/r88b/ping_edge_before.png`, `ping_edge_after.png`, `ping_edge_after2.png` (720p with a safe margin),
+   `ping_inview_after.png`, `ping_rear_after.png`. Half of round 88a's overlap was the still itself (the batch editor
+   laid the markers out for 640x480 and drew at 1920x1080; `r88b_shot.cs` lays the HUD out for the still's own size).
+   Round 88a's `SfxPlayer` logged an audio error in every silent worker clone, which failed every probe run; fixed.
+8. **One more rule, found on the way:** boss armour is half the body (`BossArmourShare` 1 -> 0.5, a third of the bar).
+   With armour equal to the body the last boss of Landing Site and Glass Meadows ended 66 to 88 % of all lost runs in
+   the third pass and only the Cannon archetype got through. Remco approved "toward 1.0" on 2026-11-20, so this is a
+   step back that he must confirm (question 1). And a flying boss takes the flying share of the floor as well as of
+   the formula (the floor had sized Fault Line's flying Medium boss above its Hard one).
+
+### The numbers as they stand
+
+- `DifficultyScale` 1.23 / 1.46 / 1.2 / 1.38 (round 87: 1.5 / 1.7 / 1.36 / 2.08), ramp 0.6 to 1.68, `PeakFactor` 1.35.
+- Boss: `BossBase` 1550, `BossDifficulty` 0.7 / 1 / 1.15 / 1.8, `BossLevelGrowth` 0.16, `BossArmourShare` 0.5,
+  `BossRewardFactor` 1.5, escort worth 0.25 / 0.5 / 0.65 / 0.75, volley 14 x 3 guns every 3 s within 5 cells.
+- Level scalars: Landing Site 0.76, Glass Meadows 0.88, Shard Ridge 0.76, Fault Line 1.04, Quartz Flats 0.9, Crysium
+  Vein 0.79 (round 87: 0.875 / 1.05 / 0.86 / 0.9 / 0.95 / 0.9).
+- Passes: m1 (everything in at the first numbers: most cells lost their whole ladder, 3 to 6 guns wrecked a run),
+  m2 (volley 34 -> 14, Cragback 3 -> 1.5, scalars), new skilled picks (`r86_picks.sh r88b`, 1260 runs), m3 (scales
+  folded, `BossBase` 1750), m4 (armour share 0.5, escorts lighter), final on three seeds (1728 runs,
+  `pressure_r88b_final_*`), then the finale stage. Reports `closed_loop_r88b_m1..m4.txt`, `closed_loop_r88b_final.txt`.
+
+### Per cell: the reference rung against its frozen target (three seeds)
+
+Ladders: Easy x1.25 to 2.21, Medium x0.9 to 1.57, Hard and Psycho x0.71 / 0.8 / 0.9 / 1 / 1.12 / 1.25.
+
+| Cell | Reference rung: seeds won, break-even (target) | Off, steps | Verdict | Laser against cannon |
+| --- | --- | --- | --- | --- |
+| Landing Site Easy | sensible `3 3 3 3 3 1` x2.09 (x1.66) | +1.9 | off | x2.09 / over x2.34: 1.0 |
+| Landing Site Medium | sensible `3 3 1 0 0 0` x1.06 (x1.32) | -1.9 | off | x1.06 / over x1.66: 3.8 apart |
+| Landing Site Hard | sensible `3 0 0 0 0 0` x0.75 (x0.85) | -1.0 | accepted | under x0.67 / x0.95: 3.0 apart |
+| Landing Site Psycho | skilled `3 3 1 0 0 0` x0.85 (x0.95) | -1.0 | accepted | under x0.67 / x1.06: 3.9 apart |
+| Glass Meadows Easy | skilled `0 0 0 0 0 0` under x1.18 (x1.66) | -2.9 | no reading | x1.86 / over x2.34: 1.9 apart |
+| Glass Meadows Medium | sensible `3 3 3 3 1 0` x1.32 (x1.32) | 0 | accepted | x1.32 / over x1.66: 1.9 apart |
+| Glass Meadows Hard | sensible `3 3 3 3 1 0` x1.06 (x0.85) | +1.9 | off | x0.95 / over x1.32: 2.8 apart |
+| Glass Meadows Psycho | skilled `3 1 0 0 0 0` x0.75 (x0.95) | -2.0 | off | under x0.67 / over x1.32: 5.8 apart |
+| Shard Ridge Easy | skilled `3 3 1 1 0 0` x1.48 (x1.66) | -1.0 | accepted | x2.09 / x2.09: 0 |
+| Shard Ridge Medium | sensible `3 3 3 3 3 0` x1.48 (x1.32) | +1.0 | accepted | both under x0.85: 0 |
+| Shard Ridge Hard | sensible `3 2 0 0 0 0` x0.85 (x0.85) | 0 | accepted | x0.85 / x0.75: 1.0 |
+| Shard Ridge Psycho | skilled `3 3 3 2 1 0` x1.06 (x0.95) | +0.9 | accepted | both under x0.67: 0 |
+| Fault Line Easy | skilled `3 3 3 0 0 0` x1.66 (x1.66) | 0 | accepted | x1.48 / x1.32: 1.0 |
+| Fault Line Medium | sensible `2 1 1 1 0 0` x0.95 (x1.32) | -2.8 | off | x1.06 / x1.18: 0.9 |
+| Fault Line Hard | sensible `3 3 1 0 0 0` x0.85 (x0.85) | 0 | accepted | x0.95 / x0.95: 0 |
+| Fault Line Psycho | skilled `3 3 3 3 2 2` over x1.32 (x0.95) | +2.8 | holds its ladder: no reading | x0.75 / x1.06: 2.9 apart |
+| Quartz Flats Easy | skilled `3 3 3 3 2 1` x2.09 (x1.66) | +1.9 | off | x2.09 / x2.09: 0 |
+| Quartz Flats Medium | sensible `3 3 3 0 2 0` x1.18 (x1.32) | -0.9 | accepted | x1.48 / x1.48: 0 |
+| Quartz Flats Hard | sensible `3 2 2 1 1 0` x0.95 (x0.85) | +0.9 | accepted | x0.95 / x1.18: 1.9 apart |
+| Quartz Flats Psycho | skilled `0 0 0 0 0 0` under x0.67 (x0.95) | -3.0 | no reading | under x0.67 / x0.95: 3.0 apart |
+| Crysium Vein Easy | sensible `3 2 1 0 0 0` x1.48 (x1.66) | -1.0 | accepted | x1.86 / x2.09: 1.0 |
+| Crysium Vein Medium | sensible `3 3 3 3 3 2` over x1.66 (x1.32) | +2.0 | holds its ladder: no reading | x1.48 / over x1.66: 1.0 |
+| Crysium Vein Hard | sensible `3 3 0 0 0 0` x0.85 (x0.85) | 0 | accepted | x0.95 / over x1.32: 2.8 apart |
+| Crysium Vein Psycho | skilled `3 3 3 3 3 3` over x1.32 (x0.95) | +2.8 | holds its ladder: no reading | x0.75 / x1.18: 3.8 apart |
+
+**13 of 24 cells accepted** (the loop's own count; Hard 5 of 6, Easy 3, Medium 3, Psycho 2). Round 87: 19 of 24 on
+softer Hard and Psycho targets. The loop's next step would be scalars Landing Site 0.718, Glass Meadows 0.806, Shard
+Ridge 0.781, Fault Line 1.04, Quartz Flats 0.873, Crysium Vein 0.883 and `DifficultyScale` 1.215 / 1.394 / 1.249 /
+1.405; they were NOT applied (the data is the state that was measured). What the scalar cannot close: Landing Site
+(Easy two steps soft, Medium two steps tough), the three Psycho cells whose new skilled pick holds or loses the whole
+ladder (the picks were searched on pass-3 data, two passes before the final), Glass Meadows Easy (skilled pick weak).
+**Fault Line Psycho went from "no bot wins" to "the skilled pick holds x1.25": it is no longer the hardest Psycho for
+that rung; the laser and cannon archetypes still read x0.75 and x1.06 there.** Needs a look next round.
+
+### Spare money at level end (runs won at the data; Easy read at x1.25, its lowest multiple)
+
+Spare = coins received x (1 - 1 / break-even of the rung): what a player of that rung could have left unspent.
+
+| Difficulty, rung | Before: unspent / received / spare | After: unspent / received / spare |
+| --- | --- | --- |
+| Easy, sensible | 111 / 1314 / 566 (44 %) | 56 / 1110 / 493 (44 %) |
+| Easy, cannon | 175 / 1313 / 622 (48 %) | 102 / 1110 / 549 (49 %) |
+| Medium, sensible | 84 / 1594 / 348 (21 %) | 70 / 1353 / 286 (20 %) |
+| Medium, cannon | 131 / 1594 / 482 (30 %) | 91 / 1354 / 460 (34 %) |
+| Hard, sensible | 33 / 2709 / 149 (6 %), 3 cells won | 22 / 2223 / 50 (3 %), 2 cells won |
+| Hard, cannon | 149 / 2657 / 465 (17 %) | 74 / 2223 / 305 (13 %), 5 cells |
+| Psycho, cannon | 236 / 3354 / 664 (20 %), 2 cells won | 70 / 3072 / 304 (10 %), 5 cells |
+
+Money received fell 15 % on Easy and Medium, 16 to 18 % on Hard, 8 % on Psycho; the Cannon player's spare on Hard and
+Psycho fell by a third to a half. Easy and Medium are unchanged in share, as intended. The last wave's bounty is
+still in "received" (full tables: `r88b_spare_before.txt`, `r88b_spare_after.txt`).
+
+### Towers damaged in the bots' runs (mean per run at the data, all rungs; before: one seed, three rungs)
+
+| Difficulty | Before: guns hurt / wrecked / health lost | After: built / hurt / wrecked / health lost / repair coins |
+| --- | --- | --- |
+| Easy | 4.8 / 0.0 / 101 | 7.3 / 6.1 / 0.0 / 276 / 24 |
+| Medium | 6.1 / 0.0 / 176 | 8.5 / 6.9 / 0.0 / 317 / 45 |
+| Hard | 8.4 / 0.1 / 702 | 9.8 / 8.5 / 1.5 / 1224 / 252 |
+| Psycho | 8.6 / 1.2 / 912 | 12.3 / 11.1 / 3.4 / 2036 / 380 |
+
+The bots stand their guns beside the road, so "before" is not zero for them as it was for Remco between the roads; on
+Landing Site Easy and Medium it was 20 and 40 health a run and is 186 and 324 now. Easy and Medium: every gun
+scratched, none lost. Hard: one or two wrecks a run. **Psycho: three to five wrecks of twelve guns is probably too
+much** (many of these runs are lost runs, where everything is overrun); the lever is `BossVolleyDamage` or a tower
+threat factor of its own per difficulty (question 3). Paper table per level and distance: `r88b_threat.txt` (written
+at the first numbers; not re-run at 14 / 1.5).
+
+### The boss wave (won runs at the data)
+
+| Difficulty | Before: a gate lost health / mean gate health lost / base bitten | After |
+| --- | --- | --- |
+| Easy | 99 % / 54 / 23 % | 84 % / 26 / 15 % |
+| Medium | 100 % / 251 / 35 % | 89 % / 245 / 29 % |
+| Hard | 70 % / 213 / 30 % | 81 % / 160 / 31 % |
+| Psycho | 55 % / 95 / 12 % | 58 % / 198 / 22 % |
+
+For the bots the boss already reached a gate in most runs (they do not stack Cannons at the first gate as Remco did),
+so this table moves little; whether the boss wave is alive for a Cannon player is a question for Remco's hands.
+Share of a level's lost runs that end in a boss wave (gate 40 %, aim 35 %):
+
+| Level | Round 87 | Round 88b | Where the other losses fall |
+| --- | --- | --- | --- |
+| Landing Site | 65 % | 68 % | wave 11 (Hard 20, Psycho 28) |
+| Glass Meadows | 75 % | 90 % | waves 10, 11 |
+| Shard Ridge | 21 % | 23 % | peak 13 (71 runs), wave 15 |
+| Fault Line | 37 % | 24 % | waves 13, 14 |
+| Quartz Flats | 29 % | 20 % | peak 14, wave 15 |
+| Crysium Vein | 53 % | 48 % | waves 16, 17 |
+
+**Three levels meet the gate, three do not, as in round 87; Glass Meadows is worse.** On the two levels without flyers
+nothing but the last boss ends a run on Easy and Medium (100 %): the wave before it is survivable for every rung and
+the boss with its brood and volley is not, for a defence without Cannons. This is the open design problem of the
+round (question 2).
+
+### Bosses per level and difficulty (bar as spawned, armour in brackets; F = on the floor)
+
+| Level | Easy | Medium | Hard | Psycho |
+| --- | --- | --- | --- | --- |
+| Landing Site | w12 Brood Mother 1085 (362) | w12 1550 (517) | w8 1329 (443); w12 1783 (594) | w5 1547 (516); w8 2080 (693); w12 2791 (930) |
+| Glass Meadows | w12 Brood Mother 1259 (420) | w12 1835 (612) F | w9 Core Wisp 1673 (558); w12 2068 (689) | w5 1795 (598); w9 2619 (873); w12 3237 (1079) |
+| Shard Ridge | w16 Brood Mother 1432 (477) | w16 2045 (682) | w10 Core Wisp 1694 (565); w16 2353 (784) | w6 1964 (655); w10 2651 (884); w16 3682 (1227) |
+| Fault Line | w16 Storm Matriarch 963 (321) | w16 1376 (459) | w10 Brood Mother 1899 (633); w16 1583 (528) | w5 Core Wisp 2009 (670); w10 2972 (991); w16 2476 (825) |
+| Quartz Flats | w17 Core Wisp 1779 (593) | w17 2542 (847) | w11 Storm Matriarch 1294 (431); w17 2923 (974) | w5 2174 (725); w11 2025 (675); w17 4575 (1525) |
+| Crysium Vein | w18 Pack Alpha 1953 (651) | w18 2789 (930) | w12 Core Wisp 2416 (805); w18 3209 (1070) | w7 1648 (549); w12 3782 (1261); w18 5021 (1674) |
+
+Round 87's last bosses for comparison, Landing Site: 1435 (717) / 2050 (1025) / 2358 (1179) / 3688 (1844).
+
+### The archetypes
+
+Laser-first and Cannon-first are more than a step apart in 12 of 24 cells (round 87: 10), always with the Cannon on
+top. The blast cap took a third off the level 1 Cannon on crowds and did not move this: the gap is armour (armour
+growth on the two levels without flyers, plated escorts, bosses), on which a bullet works at 0.2 and a beam at 0.1.
+Remco said needing the Cannon is fine; the gate "within one step" then asks for something he does not ask for
+(question 2). "A better rung reads x1.06" on Medium and Hard is missed in three Hard cells (best x0.95): with Hard's
+target a step harder, that gate now asks the better rungs to stand two steps above the reference.
+
+### Continent bosses (finale stage, armour half the body)
+
+Gravemaw 31400 (15700) (was 22300 (22300)), Rotbloom 9900 (4950) (was 5950 (5950)); the Cinder Matriarch 10900,
+Frost Warden 4400, The Shattered 9050 and The Sealed One 18650 keep their bodies inside the settled band, with armour
+half of it. Three probes, two applies (`finale_probe_r88b_f1..f3.txt`); the last: **24 of 24 won at the data**
+(tightest: Rotbloom Hard x1.09). Their bounties were not touched. Nobody has watched these fights.
+
+### Gates
+
+- **Closed-loop acceptance (frozen thresholds, two targets moved harder on a dated line): fails.** 29 findings: 11
+  cells not accepted, the archetype spread in 12 cells, three Hard cells without a better rung at x1.06, the boss-wave
+  share on Landing Site, Glass Meadows and Crysium Vein. Round 87 had 5 + 10 + 1 + 3. The records were measured before
+  the finale stage moved two continent bosses, so their data stamp is not the project's; the test reads them as
+  another state (see "Tests"). The campaign levels do not contain those two assets.
+- **Grace gate: not measured again.** `grace_windows.txt` is round 87's (35 late rows, zero allowances) and is stale
+  against this data; the gate stays red. No allowance was added.
+- **Finale probe: 24 of 24.**
+- **EditMode, whole suite on w6 (`Tools/PlayTest/r88b_suite.xml`), then the classes touched after it again:** 1303
+  tests, 1250 passed, **2 failed**, 1 inconclusive, 50 skipped (round 88a: 1239 / 1185 / 2 / 1 / 51). The reds:
+  the grace gate (`CombatRulesTests.NoRowWithoutTheCounter_OutlastsItsWindow_AsPlayed`, round 87's, on stale rows),
+  and **new: `WaveGrammarTests.NoStoredGroundWave_IsFarTougherThanItsLevel`** (Shard Ridge Psycho wave 13: x2.23
+  against a level median of x0.79, bound x1.985): the steeper ramp times the peak factor breaks round 82's rule on
+  that wave, and 56 of that cell's 60 lost bot runs end there. Not papered over: lower `PeakFactor` for late peaks or
+  cap a peak at the rule next round. The inconclusive is the acceptance (stamp, above). Round 87's swing test is green.
+  The first run of the suite had three more reds, repaired without touching a threshold: the three new boss volleys
+  named no bone to fire from (`BeamSocketTests`: Head, Head, Core added to the art rows and `BlenderArtCatalog`); the
+  escort test asks Easy's worth to be at most half of Medium's (Easy 0.3 -> 0.25, data changed after the measurement,
+  Easy only, softer); `WaveFormulaTests` asserted three times the walker for a flying boss (now the flying share of it,
+  with the rule).
+
+### Tests changed, and why
+
+- New: `Round88bTowersTests` (17), `Round88bThreatTests` (13), `EscortRuleTests` (21), `Round88bWaveTests` (4),
+  `MarkerLayoutTests` (11).
+- `CombatRules` reference fight "Armoured": two Cragbacks (was three), by Remco's blast cap (item 2).
+  `WaveFormulaTests`: the floor of a flying boss takes the flying share (item 8). `TowerRolesTests`: a helper takes
+  the tower level. No threshold of any test was widened.
+
+### Slips of this round
+
+- The first baseline batch failed on round 88a's audio error and cost twenty minutes; the second ran from `stageB`.
+- The first threat numbers went into a full measurement unchecked against the bots (the paper lab assumed guns three
+  cells off the road; the bots stand beside it).
+- The skilled picks were searched before the last two rule passes (armour share, boss base), so three Psycho cells
+  and Glass Meadows Easy read on a pick that fits the data badly. A picks batch after the last pass was not affordable.
+- The final measurement ran before the finale stage; the order should be the other way round (COMMANDS, round 87).
+
+### Files
+
+- New code: `Towers/BlastRead.cs`; `Core/ReachRule.cs`; `Enemies/EscortBrood.cs`, `EscortSettings.cs`;
+  `Levels/EscortRule.cs`; `UI/MarkerLayout.cs`, `EdgeMarkerPlacement.cs`; `Editor/ProjectGenerator.Round88b.cs`,
+  `ProjectGenerator.Round88bTowers.cs`, `ProjectGenerator.Escorts.cs`; the five test classes above.
+- New data: `Data/Enemies/Abilities/` VenomSpit, ArcDischarge, SpineVolley, PackCall, WispWake, StingerGuard,
+  ShardGuard, RayWing, RollerPack.
+- Changed code (see `git status`): the balance model (`BalanceRules`, `WaveSolver`, `WaveLoad`, `Ledger`, `Leak`,
+  `RouteKill`, `PlanEvaluator`, `InputHash`, `BalanceStats`), towers (`TowerLevel`, `TowerDefinition`, `Tower`,
+  `TowerStepText`), enemies (`EnemyDefinition`, `Enemy`, `BossAbilities`, `BossAbilityDefinition`), `CombatRules`,
+  `StructureRegistry`, `EnemySpawner`, `DifficultyProfile`, `BalanceLedger`, `PlacementController`, UI
+  (`SurprisePingView`, `HudKeepOut`, `RearNestMarkerView`, `TowerMenuView`, `CodexView`), `SfxPlayer`, the generator,
+  the probe (`BalanceProbeTests`, `PressureProbeTests`: the wear note; bot stamp moved).
+- Changed data: every enemy asset (`_rules`), the bosses (armour, bounty, powers), `Cannon.asset`, the four
+  difficulties, `CombatRules.asset`, `BalanceCalibration.asset`, the wave and level assets, the string tables.
+- Tools: `Tools/PlayTest/Scripts/` ApplyRound88bTowers, ApplyRound88bThreat, ApplyRound88bEscort,
+  ApplyRound88bEconomy, ApplyRound88bArmour, Round88bEconomyLab, Round88bThreatLab, Round88bEscortLab, CannonCapLab,
+  WispReachLab; `r88b_restamp.sh`, `r88b_spare.py`, `r88b_ping.cs`, `r88b_shot.cs`; reports `r88b_*.txt`; records
+  `pressure_r88b_*`, `skilled_picks_r88b_*`, `Plans_old_r88b/`.
+- Docs: COMBAT_RULES, WAVE_GRAMMAR, GAME_DESIGN, COMMANDS ("Round 88b"), LEVEL_GUIDE (boss bounty), this section,
+  `Docs/PLAYTEST_2026-11-21.md`.
+- `C:\Users\remco\TowerDefenseWorkers\stageB` can go.
+
+### Not done
+
+- The role matrix table in COMBAT_RULES section 4 is still round 87's (`r67_role_matrix.txt` not re-run).
+- Stale texts: dialogue `Dlg_Scan_Prowler` ("The Cannon's splash hits the whole pack at once"), the mob fight's reason
+  "one blast takes three".
+- A wrecked base turret stays wrecked for the level (old gap; boss volleys now reach base turrets).
+- The wave preview does not say that a boss brings a brood; five of the six new Spawn powers have no sound of their own.
+- The paper labs (`r88b_threat.txt`, `r88b_escort.txt`, `r88b_economy.txt`) were written at the first numbers.
+- The ledger has no term for tower wear and counts a flying boss's brood for nothing.
+
+### Questions for Remco
+
+1. **Boss armour at half the body** (a third of the bar) instead of equal to it. You approved "toward 1.0" a day ago;
+   at 1.0 the last boss of the first two levels was a wall for everyone without Cannons. Recommendation: keep 0.5 and
+   judge by feel whether the boss still asks for the Cannon.
+2. **The boss is still the only thing that beats a bot on Landing Site and Glass Meadows (68 and 90 % of lost runs),
+   and Cannon-first is still far the best there.** You said needing the Cannon is fine. Recommendation: say whether
+   the gate "laser and cannon within one step" should go on the levels that teach armour (a dated decision of yours,
+   not ours), and next round give those two levels a real threat before the boss (flyers or a second peak) instead of
+   a smaller boss.
+3. **Tower damage:** on Psycho the bots lose three to five guns a run. Is "my towers get wrecked" what you want on
+   Psycho, or should Psycho's tower threat be nearer Hard's (one or two)? Recommendation: play Hard first; if the
+   volley feels fair there, add a tower-threat factor per difficulty and set Psycho to about Hard's.
+4. **The blast cap 2 / 3 / 4:** the level 3 Cannon is stronger on crowds than before (4 where it had 3). If the late
+   game is still Cannon rows, 2 / 3 / 3 is one number.
+5. **A boss's pace in its size** (a fast boss smaller, a slow one bigger: Crysium Vein's Pack Alpha -17 %, the Brood
+   Mothers +28 %). Evidence is thin; recommendation: not yet, first see Crysium Vein Easy with the new boss rules.
+6. **Fault Line Psycho** is now winnable for the skilled bot at every multiple measured, so it may have gone from "a
+   tad too hard" to too soft for a good player. Recommendation: play it; if it is soft, the level scalar (1.04) is the
+   lever, not the peak rule.
+7. **Hard and Psycho targets one step harder**: is the opening of Hard still fair? The steeper ramp made first waves
+   softer (x0.6 of the middle) and last waves tougher (x1.68).

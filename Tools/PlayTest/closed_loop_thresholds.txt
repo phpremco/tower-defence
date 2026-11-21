@@ -25,3 +25,9 @@ boss_wave_share_target 0.35
 # A level's scalar stays in this range (BalanceRules.LevelScalarLeast / LevelScalarMost).
 scalar_least 0.7
 scalar_most 1.4
+# 2026-11-20 (round 88b), a design decision, harder targets only: Remco played round 87 and found Hard and Psycho too
+# easy ("too easy on all difficulties", almost 1000 coins left on Hard, a giant row of Cannons on Psycho; Easy "fine",
+# Medium "OK for now"). The reference rung of Hard and Psycho breaks even one ladder step earlier than before
+# (Hard x0.95 -> x0.85, Psycho x1.06 -> x0.95); Easy and Medium stay. Written before any measurement of round 88b.
+target_hard 0.85
+target_psycho 0.95

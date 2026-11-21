@@ -21,12 +21,14 @@ MonoBehaviour:
   _reward: 7
   _baseDamage: 3
   _element: 0
+  _family: 0
   _attackStyle: 3
   _attackDamage: 8
   _blockadeDamage: 8
   _attackRange: 2.2
   _attackInterval: 1.4
   _gateStrikes: 3
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _turnRate: 60
   _bankDegrees: 28
   _walkSeconds: 0

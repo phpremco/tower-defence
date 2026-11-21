@@ -84,7 +84,7 @@ Acht standaardtorens. Je begint met het pulsgeweer; de andere wapens krijg je al
 
 **Combineren.** Twee naastgelegen torens voeg je samen tot een hybride volgens een vaste receptenlijst, bijvoorbeeld Laser + Cryo = Cryostraal, Tesla + Support = Stroomnet, Kanon + Raket = Artillerie. Vaste recepten zijn makkelijker te balanceren dan vrije combinaties. Een hybride is een nieuwe toren met de rollen van zijn twee ouders en met eigen upgradestappen.
 
-**Kapot gaan.** Vijanden vallen ook torens aan. Een beschadigde toren kun je laten repareren (door jou met geld, of door drones). Een volledig kapotte toren blijft als wrak staan: klik erop voor geld uit de scrap, daarna bouw je een nieuwe op die plek.
+**Kapot gaan.** Vijanden vallen ook torens aan. Dat gaat volgens een vaste regel (ronde 88b): vijanden met een slag- of bijtaanval raken alleen de voorste rij, een dreun reikt tot de tweede rij, steken en bolts bereiken een toren tussen twee wegen, en elke levelbaas vuurt een salvo af op de drie dichtstbijzijnde kanonnen binnen vijf cellen (Docs/COMBAT_RULES.md, "Structures"). Een beschadigde toren kun je laten repareren (door jou met geld, of door drones). Een volledig kapotte toren blijft als wrak staan: klik erop voor geld uit de scrap, daarna bouw je een nieuwe op die plek.
 
 ## Hero
 

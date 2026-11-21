@@ -16,9 +16,9 @@ MonoBehaviour:
   _layer: 1
   _flies: 0
   _maxHealth: 900
-  _armor: 900
+  _armor: 450
   _speed: 0.55
-  _reward: 337
+  _reward: 126
   _baseDamage: 10
   _element: 0
   _family: 0
@@ -28,6 +28,7 @@ MonoBehaviour:
   _attackRange: 2.5
   _attackInterval: 1.3
   _gateStrikes: 0
+  _rules: {fileID: 11400000, guid: 5e7e1bfb4e392464eb9cbf1500dd74de, type: 2}
   _turnRate: 60
   _bankDegrees: 28
   _walkSeconds: 0
@@ -45,6 +46,7 @@ MonoBehaviour:
   _abilities:
   - {fileID: 11400000, guid: e921ad020d9f0ee4d8f8d11eeca775e6, type: 2}
   - {fileID: 11400000, guid: 97c13dc9df40bc54ca7f90f0cfd1a7a3, type: 2}
+  - {fileID: 11400000, guid: a7ed534ba3d01574299bc30c5e78a33a, type: 2}
   _boss: {fileID: 0}
   _color: {r: 0.95, g: 0.45, b: 0.08, a: 1}
   _eyeColor: {r: 1, g: 0.95, b: 0.5, a: 1}

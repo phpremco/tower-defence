@@ -1,12 +1,12 @@
-Finale apply 2026-11-20 10:57 from Tools/PlayTest/finale_probe.txt (24 cells); hold share 0.85.
-  Gravemaw         health 22300 -> 22300 (probe: holds x1.18 on Medium)
-  CinderMatriarch  health 11900 -> 10900 (probe: holds x1.29 on Medium, beaten on every difficulty: stays)
-  FrostWarden      health 4400 -> 4400 (probe: holds x1.18 on Medium, beaten on every difficulty: stays)
-  Rotbloom         health 6250 -> 5950 (probe: holds x1.23 on Medium, beaten on every difficulty: stays)
-  Shattered        health 8700 -> 9050 (probe: holds x1.13 on Medium, beaten on every difficulty: stays)
-  SealedOne        health 18650 -> 18650 (probe: holds x1.23 on Medium, beaten on every difficulty: stays)
-  Easy    boss health share 0.80 -> 1.10 (derived 1.091), reported only (Medium is the reference, Easy stays forgiving)
+Finale apply 2026-11-21 07:06 from Tools/PlayTest/finale_probe.txt (24 cells); hold share 0.85.
+  Gravemaw         health 37150 -> 31400 (probe: holds x1.18 on Medium)
+  CinderMatriarch  health 10900 -> 10900 (probe: holds x1.40 on Medium, beaten on every difficulty: stays)
+  FrostWarden      health 4400 -> 4400 (probe: holds x1.40 on Medium, beaten on every difficulty: stays)
+  Rotbloom         health 9900 -> 9900 (probe: holds x1.18 on Medium, beaten on every difficulty: stays)
+  Shattered        health 9050 -> 9050 (probe: holds x1.18 on Medium, beaten on every difficulty: stays)
+  SealedOne        health 18650 -> 18650 (probe: holds x1.52 on Medium, beaten on every difficulty: stays)
+  Easy    boss health share 0.80 -> 1.15 (derived 1.171), reported only (Medium is the reference, Easy stays forgiving)
   Medium  boss health share 1.00 -> 1.00 (derived 1.000), reported only (Medium is the reference, Easy stays forgiving)
-  Hard    boss health share 1.25 -> 1.25 (derived 1.427), the designer's share 1.25 stands (the probe would write 1.20)
-  Psycho  boss health share 1.25 -> 1.25 (derived 1.562), the designer's share 1.25 stands (the probe would write 1.20)
+  Hard    boss health share 1.25 -> 1.25 (derived 1.484), the designer's share 1.25 stands (the probe would write 1.15)
+  Psycho  boss health share 1.25 -> 1.25 (derived 1.604), the designer's share 1.25 stands (the probe would write 1.15)
   the calibration's inputs changed: run measure, fit and apply before the next solve.

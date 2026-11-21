@@ -9,6 +9,14 @@ namespace Game.Balance
         public const int Air = 2;
 
         public static bool Has(int mask, int layer) => (mask & layer) != 0;
+
+        /// <summary>
+        /// True when a weapon aimed at <paramref name="mask"/> can hit a creature on <paramref name="layer"/>: they share a
+        /// layer. The game's own rule (Game.Core.TargetLayersExtensions.CanHit; this assembly cannot reference it, a test
+        /// holds the two to each other): a creature on both layers (the Wisp) is a target of every gun, the air-only Flak
+        /// included (round 88a). Every place of the model that asks "does this gun reach that creature" asks here.
+        /// </summary>
+        public static bool CanHit(int mask, int layer) => (mask & layer) != 0;
     }
 
     /// <summary>The numbers of one creature that matter for balance.</summary>
@@ -64,6 +72,12 @@ namespace Game.Balance
         public float SummonBlockadeDamage;
         public float SummonAttackInterval = 1f;
 
+        /// <summary>
+        /// Round 88b: true for a level boss whose Spawn power runs under the escort rule. Its Summon numbers describe the
+        /// escort creature; how many come follows from the difficulty's escort worth and the boss's bar, not from a rate.
+        /// </summary>
+        public bool RuledEscort;
+
         /// <summary>Health plus armour: what a heavy weapon (armour factor one) must deal to kill it; light fire pays more for the armour (<see cref="ArmourMix"/>).</summary>
         public float EffectiveHealth => Health + Armor;
     }
@@ -80,7 +94,13 @@ namespace Game.Balance
         /// <summary>Health the level adds to the structure (a gate's upgrade, TowerLevel.HealthBonus); zero for a gun.</summary>
         public float HealthBonus;
 
-        public TowerLevelStats(int cost, float damage, float range, float interval, float slow = 0f, float healthBonus = 0f)
+        /// <summary>
+        /// Most creatures one blast hurts at this level (TowerDefinition.SplashTargetsAt, already resolved against the tower's
+        /// own cap); zero takes the tower's cap, then the rules' (Ledger.SplashCap).
+        /// </summary>
+        public int SplashTargets;
+
+        public TowerLevelStats(int cost, float damage, float range, float interval, float slow = 0f, float healthBonus = 0f, int splashTargets = 0)
         {
             Cost = cost;
             Damage = damage;
@@ -88,6 +108,7 @@ namespace Game.Balance
             Interval = interval;
             Slow = slow;
             HealthBonus = healthBonus;
+            SplashTargets = splashTargets;
         }
 
         public float Dps => Interval > 0f ? Damage / Interval : 0f;
@@ -113,7 +134,10 @@ namespace Game.Balance
         /// </summary>
         public float Efficiency = 1f;
 
-        /// <summary>Most creatures one blast of a splash gun hurts (TowerDefinition.SplashTargets); zero takes the rules' cap.</summary>
+        /// <summary>
+        /// Most creatures one blast of a splash gun hurts at a level that names no cap of its own (TowerLevelStats.SplashTargets);
+        /// zero takes the rules' cap. Read both through Ledger.SplashCap.
+        /// </summary>
         public int SplashTargets;
 
         /// <summary>Share of everything spent on the tower a sale gives back (TowerDefinition.SellRefundFraction).</summary>
@@ -217,6 +241,12 @@ namespace Game.Balance
 
         /// <summary>Share of a continent boss's escort call released on this difficulty (round 30).</summary>
         public float BossEscort = 1f;
+
+        /// <summary>
+        /// Round 88b: the brood a level boss sends over an unhindered walk from spawn to the base, as a share of the boss's
+        /// bar as spawned (<see cref="BalanceRules.EscortStartWeight"/>). Zero: level bosses send no ruled escort.
+        /// </summary>
+        public float EscortWorth;
 
         /// <summary>The health factor of one creature beyond <see cref="Health"/>: the boss share times its own factor here for a continent boss, else one.</summary>
         public float ShareFor(EnemyStats enemy) => enemy.IsContinentBoss ? BossHealth * enemy.HealthOn(Id) : 1f;
@@ -347,6 +377,9 @@ namespace Game.Balance
 
         /// <summary>Speed share creatures in a slow field are held to (1 = no slow).</summary>
         public float SlowFactor = 1f;
+
+        /// <summary>Seconds it stays on the road once laid (PathObjectDefinition.Lifetime); zero stays until it is used up.</summary>
+        public float Lifetime;
     }
 
     /// <summary>What a drone does, as far as the plan model is concerned.</summary>

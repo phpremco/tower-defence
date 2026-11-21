@@ -38,6 +38,14 @@ namespace Game.Enemies
         private float[] _splitAt = new float[0];
         private float _damageMultiplier = 1f;
         private float _escortShare = 1f;
+        private readonly EscortBrood _brood = new EscortBrood();
+        private Action<EnemyDefinition, Enemy, float, float> _spawnEscort;
+        private EscortSettings _escort;
+        private EnemyDefinition _escortHeavy;
+        private float _escortHealthScale = 1f;
+        private float _escortRoad;
+        private float _escortFrom;
+        private int _escortCalls;
         private int _laserIndex = -1;
         private float _laserElapsed;
         private int _wardIndex = -1;
@@ -150,6 +158,58 @@ namespace Game.Enemies
         /// <summary>Round 30: the difficulty's share of every escort call (the Spawn power); a split brood keeps its count.</summary>
         public void SetEscortShare(float share) => _escortShare = Mathf.Clamp01(share);
 
+        /// <summary>
+        /// Round 88b: the escort rule of a level boss and the way its brood reaches the field (creature, boss, health
+        /// multiplier, bounty share). Without a staged walk (<see cref="StageEscort"/>) a Spawn power keeps its plain count.
+        /// </summary>
+        public void SetEscortRule(EscortSettings settings, Action<EnemyDefinition, Enemy, float, float> spawnEscort)
+        {
+            _escort = settings;
+            _spawnEscort = spawnEscort;
+        }
+
+        /// <summary>
+        /// Puts the Spawn power of the boss just sent out under the escort rule: a brood worth a share of its bar over the
+        /// walk ahead, growing as it nears the base. Called after the boss is initialised, once per walk.
+        /// </summary>
+        /// <param name="roadLength">Length of the route ahead of it, spawn to base.</param>
+        /// <param name="healthScale">The multiplier the ordinary creatures of its own wave walk in with; its escort gets the same.</param>
+        /// <param name="heavy">The plated walker a share of the brood comes as, or null for none.</param>
+        public void StageEscort(float roadLength, float healthScale, EnemyDefinition heavy)
+        {
+            EnemyDefinition minion = EscortCreature();
+            float speed = _enemy.Definition.AverageSpeed;
+            if (minion == null || _spawnEscort == null || roadLength <= 0f || speed <= 0f)
+            {
+                return;
+            }
+
+            _escortHeavy = heavy;
+            _escortHealthScale = healthScale;
+            _escortRoad = roadLength;
+            _escortFrom = _enemy.PathProgress;
+            _escortCalls = 0;
+            float bar = _enemy.Health.Max + _enemy.Health.ArmorMax;
+            float heavyCost = heavy != null ? (heavy.MaxHealth + heavy.Armor) * healthScale : 0f;
+            _brood.Begin(_escort, bar, roadLength / speed, (minion.MaxHealth + minion.Armor) * healthScale, heavyCost);
+        }
+
+        /// <summary>The brood of the walk under way; the lab and the tests read what it sent.</summary>
+        public EscortBrood Brood => _brood;
+
+        private EnemyDefinition EscortCreature()
+        {
+            for (int i = 0; i < _abilities.Length; i++)
+            {
+                if (_abilities[i].Kind == BossAbilityKind.Spawn && _abilities[i].Minion != null)
+                {
+                    return _abilities[i].Minion;
+                }
+            }
+
+            return null;
+        }
+
         private void OnDestroy()
         {
             if (_enemy != null)
@@ -181,6 +241,8 @@ namespace Game.Enemies
             }
 
             _pendingLaserTarget = null;
+            // A pooled boss sent out again has no staged walk until the spawner stages the new one.
+            _brood.Stop();
             StopLaser();
         }
 
@@ -255,7 +317,7 @@ namespace Game.Enemies
                     LaserChanged?.Invoke(true);
                     break;
                 case BossAbilityKind.Volley:
-                    _structures.FindNearest(_enemy.Position, ability.Range, ability.TargetCount, _volleyTargets);
+                    _structures.FindNearest(_enemy.Position, ability.Range, ability.TargetCount, _volleyTargets, ability.SparesBlockers);
                     if (_volleyTargets.Count == 0)
                     {
                         _timers[index] = RetrySeconds;
@@ -346,6 +408,12 @@ namespace Game.Enemies
 
         private void ReleaseMinions(BossAbilityDefinition ability)
         {
+            if (ability.Kind == BossAbilityKind.Spawn && _brood.Active)
+            {
+                ReleaseEscort(ability);
+                return;
+            }
+
             int count = ability.Kind == BossAbilityKind.Spawn ? Mathf.Max(1, Mathf.RoundToInt(ability.MinionCount * _escortShare)) : ability.MinionCount;
             for (int i = 0; i < count; i++)
             {
@@ -353,6 +421,29 @@ namespace Game.Enemies
             }
 
             MinionsReleased?.Invoke(_enemy.Position, ability.Color);
+        }
+
+        // A level boss under the escort rule: the call buys what the brood's budget pays for at this point of the walk.
+        private void ReleaseEscort(BossAbilityDefinition ability)
+        {
+            float seconds = _escortCalls == 0 ? ability.FirstDelay : ability.Interval;
+            _escortCalls++;
+            _brood.Cast(seconds, (_enemy.PathProgress - _escortFrom) / _escortRoad, out int light, out int heavy);
+            for (int i = 0; i < heavy; i++)
+            {
+                _spawnEscort(_escortHeavy, _enemy, _escortHealthScale, _escort.BountyShare);
+            }
+
+            for (int i = 0; i < light; i++)
+            {
+                _spawnEscort(ability.Minion, _enemy, _escortHealthScale, _escort.BountyShare);
+            }
+
+            // A call that buys nothing (a small brood early in the walk) makes no sound and no flash.
+            if (light + heavy > 0)
+            {
+                MinionsReleased?.Invoke(_enemy.Position, ability.Color);
+            }
         }
 
         // The beam follows its target and burns it for the beam's duration, or until the target falls or walks out of reach.

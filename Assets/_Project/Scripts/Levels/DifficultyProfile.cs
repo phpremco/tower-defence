@@ -22,6 +22,8 @@ namespace Game.Levels
         [SerializeField] [Min(0.1f)] private float _bossHealthShare = 1f;
         [Tooltip("Share of a continent boss's escort call that comes out on this difficulty (round 30: Psycho carries Hard's boss health share, so its escorts are lighter instead of the boss).")]
         [SerializeField] [Range(0f, 1f)] private float _bossEscortShare = 1f;
+        [Tooltip("Round 88b, level bosses: the health of the brood a level boss sends out of its body over an unhindered walk from spawn to the base, as a share of the boss's own bar (body plus armour) as spawned. The brood grows along the walk (BalanceRules.EscortStartWeight, EscortEndWeight). Zero sends none.")]
+        [SerializeField] [Range(0f, 2f)] private float _escortWorth = 0.4f;
 
         public string DisplayName => Loc.Get(_displayName);
         public float HealthMultiplier => _healthMultiplier;
@@ -66,6 +68,12 @@ namespace Game.Levels
 
         /// <summary>Share of a continent boss's escort call (its Spawn power) released on this difficulty; splits are untouched.</summary>
         public float BossEscortShare => _bossEscortShare;
+
+        /// <summary>
+        /// The brood of a level boss (one without boss data) over a whole unhindered walk, as a share of the boss's bar as
+        /// spawned (round 88b). A continent boss's call does not read it; it keeps <see cref="BossEscortShare"/>.
+        /// </summary>
+        public float EscortWorth => _escortWorth;
 
         // Past this a single bite reads as a different game: the siege model and the grace windows were measured well inside it.
         private const float MaxStructureDamage = 2f;

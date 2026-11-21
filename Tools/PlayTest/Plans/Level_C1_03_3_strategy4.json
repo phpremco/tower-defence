@@ -35,18 +35,18 @@
                 13,
                 13,
                 11,
-                11,
                 33,
+                11,
                 34
             ],
             "Y": [
-                10,
                 11,
                 10,
                 11,
                 10,
                 11,
                 11,
+                10,
                 11
             ]
         },
@@ -86,8 +86,8 @@
             "Y": [
                 10,
                 10,
-                7,
                 10,
+                7,
                 7,
                 11
             ]
@@ -95,20 +95,20 @@
     ],
     "Weights": [
         {
-            "Threat": "swarm",
+            "Threat": "boss",
             "Tower": "Laser",
-            "Weight": 1.149705410003662
+            "Weight": 0.5106421709060669
         }
     ],
-    "UpgradeBias": 1.690000057220459,
-    "TowersBeforeUpgrades": 2,
+    "UpgradeBias": 1.7100000381469727,
+    "TowersBeforeUpgrades": 4,
     "MineCoverBelow": 0.0,
-    "MineOnBoss": false,
-    "FieldCoverBelow": 1.0,
-    "HarvesterCover": 1.2000000476837158,
-    "HarvesterShare": 0.6000000238418579,
-    "RepairDroneWear": 0.05000000074505806,
-    "AttackDroneAfterTowers": 12,
+    "MineOnBoss": true,
+    "FieldCoverBelow": 1.2000000476837158,
+    "HarvesterCover": 1.5,
+    "HarvesterShare": 0.30000001192092896,
+    "RepairDroneWear": 9.0,
+    "AttackDroneAfterTowers": 0,
     "GateUpgradeBias": 1.2000000476837158,
     "AllowSell": true
 }

@@ -18,6 +18,8 @@ namespace Game.Enemies
         [SerializeField] private EnemyDefinition _minion;
         [SerializeField] [Min(1)] private int _minionCount = 3;
         [SerializeField] [Min(1)] private int _targetCount = 3;
+        [Tooltip("A volley with this set flies at the guns only (towers, turrets, drones): gates, the base and the hero are left to the boss's own blows (round 88b).")]
+        [SerializeField] private bool _sparesBlockers;
         [SerializeField] [Min(1f)] private float _speedFactor = 1.5f;
         [SerializeField] [Range(0.05f, 1f)] private float _triggerFraction = 0.25f;
         [SerializeField] private Color _color = new Color(1f, 0.4f, 0.3f);
@@ -56,6 +58,16 @@ namespace Game.Enemies
 
         /// <summary>How many structures one volley hits at most.</summary>
         public int TargetCount => _targetCount;
+
+        /// <summary>True for a volley that leaves everything that bars the road (gates, the base, the hero) alone.</summary>
+        public bool SparesBlockers => _sparesBlockers;
+
+        /// <summary>
+        /// Cells from which this power hurts a structure beside the road: a pulse's radius, a volley's or a laser's range;
+        /// zero for the powers that hurt none.
+        /// </summary>
+        public float StructureReach =>
+            _damage <= 0f ? 0f : _kind == BossAbilityKind.Pulse ? _radius : _kind == BossAbilityKind.Volley || _kind == BossAbilityKind.Laser ? _range : 0f;
 
         /// <summary>Speed factor a rally gives.</summary>
         public float SpeedFactor => _speedFactor;

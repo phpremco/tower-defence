@@ -19,7 +19,9 @@ MonoBehaviour:
   _rewardMultiplier: 5
   _powerCurrencyMultiplier: 2.2
   _structureDamageMultiplier: 1.4
+  _structureDamageFactor: 1
   _incomeMultiplier: 1.1
   _startingMoneyMultiplier: 3
   _bossHealthShare: 1.25
   _bossEscortShare: 0.5
+  _escortWorth: 0.75

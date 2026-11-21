@@ -23,6 +23,12 @@ namespace Game.Balance
         public bool IsBoss;
         public bool Flies;
 
+        /// <summary>
+        /// The layers the creature is on (<see cref="Balance.Layer"/>): what decides which guns reach it (<see cref="Balance.Layer.CanHit"/>).
+        /// <see cref="Flies"/> only says which route it takes: a Wisp walks the road and is on both layers.
+        /// </summary>
+        public int Layer = Balance.Layer.Ground;
+
         /// <summary>Share of the route already behind the group where it joins (a boss's escorts come out mid-road); zero for a normal spawn.</summary>
         public float StartShare;
 
@@ -55,6 +61,36 @@ namespace Game.Balance
         public float CarriedHealth;
         public float BossHealth;
         public float AirHealth;
+
+        /// <summary>
+        /// The part of <see cref="StreamHealth"/> and of <see cref="BossHealth"/> whose creatures are on the air layer too
+        /// (the Wisp, the Core Wisp): all of the ground a gun that only aims up can reach (round 88a's rule in the game,
+        /// round 88b in the model).
+        /// </summary>
+        public float StreamSkyHealth;
+        public float BossSkyHealth;
+
+        /// <summary>
+        /// The share of the ground stream a gun with these target layers reaches: all of it for a gun that aims at the
+        /// ground, the creatures of both layers for one that only aims up (<see cref="Layer.CanHit"/>), nothing otherwise.
+        /// Read on the wave's own creatures: what earlier waves left on the road (<see cref="CarriedHealth"/>) counts as the
+        /// same mix, so the share does not move with the wave's health multiplier and a tougher wave can never read as
+        /// lighter (Round83Tests).
+        /// </summary>
+        public float StreamShareFor(int targets) => ShareFor(targets, StreamSkyHealth, StreamHealth - CarriedHealth);
+
+        /// <summary>As <see cref="StreamShareFor"/> for the bosses on the ground.</summary>
+        public float BossShareFor(int targets) => ShareFor(targets, BossSkyHealth, BossHealth);
+
+        private static float ShareFor(int targets, float sky, float all)
+        {
+            if (Layer.CanHit(targets, Layer.Ground))
+            {
+                return 1f;
+            }
+
+            return Layer.CanHit(targets, Layer.Air) && all > 0f ? Math.Min(1f, sky / all) : 0f;
+        }
 
         /// <summary>Share of the ground defence the stream and the bosses meet (1 = all of it).</summary>
         public float StreamReach = 1f;
@@ -234,6 +270,7 @@ namespace Game.Balance
                     Nest = group.Nest,
                     IsBoss = enemy.IsBoss,
                     Flies = !Layer.Has(enemy.Layer, Layer.Ground),
+                    Layer = enemy.Layer,
                 });
 
                 if (!Layer.Has(enemy.Layer, Layer.Ground))
@@ -245,6 +282,10 @@ namespace Game.Balance
                     air += count;
                     airBaseDamage += enemy.BaseDamage * count;
                     airStrikeSum += strike * count;
+                    // Round 88b: the brood of a level boss that flies (flyers out of its body) is NOT in the load. Added to the
+                    // air health it moved the ledger's purchase and with it the ground pressure of the same wave by a hair as
+                    // the creatures grew tougher (Round83Tests.AWavesPressure_NeverFalls_AsItsCreaturesGrowTougher), and the
+                    // air side has no stream that joins mid-road. The bots meet that brood; the paper does not.
                     continue;
                 }
 
@@ -252,6 +293,7 @@ namespace Game.Balance
                 if (enemy.IsBoss)
                 {
                     load.BossHealth += health;
+                    load.BossSkyHealth += Layer.Has(enemy.Layer, Layer.Air) ? health : 0f;
                     load.BossArmour.Add(health - armour, armour);
                     bossReachWeighted += reach * health;
                     bossSpeed += enemy.InRangeSpeed * count;
@@ -261,11 +303,16 @@ namespace Game.Balance
                     // Its walk down the main road is the fight its timed powers run over (the gate hold is not known yet; conservative).
                     float walk = level.Shape.MainLength / Math.Max(0.01f, enemy.InRangeSpeed);
                     load.BossMechanicLoss += (enemy.MechanicLossSeconds + enemy.WardShare * walk) * count;
-                    int summons = (int)Math.Ceiling(enemy.SummonsPerSecond * difficulty.BossEscort * walk) * count;
+                    float eachSummon = (enemy.SummonHealth + enemy.SummonArmor) * scale;
+                    // A continent boss calls at a rate; a level boss (round 88b) sends a brood worth the difficulty's share
+                    // of its bar over the walk, whatever the creature, and most of it late (BalanceRules.EscortStartShare).
+                    int summons = enemy.RuledEscort
+                        ? (eachSummon > 0f ? (int)Math.Floor(difficulty.EscortWorth * health / eachSummon) : 0)
+                        : (int)Math.Ceiling(enemy.SummonsPerSecond * difficulty.BossEscort * walk) * count;
+                    float joins = enemy.RuledEscort ? rules.EscortStartShare : SummonStartShare;
                     if (summons > 0)
                     {
                         // Escorts out of its body: a stream that joins mid-road and keeps coming for the whole walk.
-                        float eachSummon = (enemy.SummonHealth + enemy.SummonArmor) * scale;
                         float summonArmour = enemy.SummonArmor * scale * summons;
                         float summonStrike = enemy.SummonAttackInterval > 0f ? enemy.SummonBlockadeDamage / enemy.SummonAttackInterval * difficulty.StructureDamage : 0f;
                         load.Groups.Add(new WaveGroup
@@ -276,11 +323,11 @@ namespace Game.Balance
                             Speed = enemy.SummonSpeed,
                             Path = group.Path,
                             Source = group.Source,
-                            StartShare = SummonStartShare,
+                            StartShare = joins,
                         });
                         load.StreamHealth += eachSummon * summons;
                         load.StreamArmour.Add(eachSummon * summons - summonArmour, summonArmour);
-                        reachWeighted += reach * SummonStartShare * eachSummon * summons;
+                        reachWeighted += reach * joins * eachSummon * summons;
                         stretches.Add((start, end + walk));
                         speed += enemy.SummonSpeed * summons;
                         ground += summons;
@@ -292,6 +339,7 @@ namespace Game.Balance
                 }
 
                 load.StreamHealth += health;
+                load.StreamSkyHealth += Layer.Has(enemy.Layer, Layer.Air) ? health : 0f;
                 load.StreamArmour.Add(health - armour, armour);
                 reachWeighted += reach * health;
                 stretches.Add((start, end));

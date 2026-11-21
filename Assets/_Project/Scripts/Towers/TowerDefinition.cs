@@ -107,7 +107,21 @@ namespace Game.Towers
         public TargetLayers Targets => _targets;
         public float ProjectileSpeed => _projectileSpeed;
         public float SplashRadius => _splashRadius;
-        public int SplashTargets => _splashTargets;
+
+        /// <summary>
+        /// Most creatures one blast hurts at a level (zero-based): the level's own cap, else the tower's; zero hurts everything
+        /// in the radius. The one reader for the game (Tower), the balance model (BalanceLedger.Stats) and the texts, so they
+        /// cannot disagree (round 88b, Remco: the Cannon's shell hurts two creatures and more with every star).
+        /// </summary>
+        public int SplashTargetsAt(int levelIndex)
+        {
+            int own = _levels != null && levelIndex >= 0 && levelIndex < _levels.Length ? _levels[levelIndex].SplashTargets : 0;
+            return own > 0 ? own : _splashTargets;
+        }
+
+        /// <summary>True when the blast's cap is not the same at every level: an upgrade then also widens what one blast hurts.</summary>
+        public bool SplashTargetsGrow => _splashRadius > 0f && SplashTargetsAt(0) != SplashTargetsAt(MaxLevelIndex);
+
         /// <summary>What the damage is made of: the combat rules turn it into what a hit is worth against armour and in the air.</summary>
         public DamageType DamageType => _damageType;
 
@@ -200,6 +214,12 @@ namespace Game.Towers
                 Debug.LogWarning($"TowerDefinition '{name}' aims at the sky with {_damageType} damage, which never reaches it: drop the layer from its targets.", this);
             }
 
+            string blast = SplashTargetsProblem();
+            if (blast != null)
+            {
+                Debug.LogWarning($"TowerDefinition '{name}': {blast}", this);
+            }
+
             string step = StepProblem();
             if (step != null)
             {
@@ -208,7 +228,33 @@ namespace Game.Towers
         }
 
         /// <summary>
+        /// Null when the blast caps per level make sense, otherwise what is wrong: only a splash gun has a cap, and an upgrade
+        /// never makes a blast hurt fewer creatures (zero, the whole radius, counts as the most).
+        /// </summary>
+        public string SplashTargetsProblem()
+        {
+            for (int i = 0; _levels != null && i < _levels.Length; i++)
+            {
+                if (_levels[i].SplashTargets > 0 && _splashRadius <= 0f)
+                {
+                    return $"level {i + 1} caps a blast at {_levels[i].SplashTargets} creatures, but the tower has no splash radius.";
+                }
+
+                int before = i > 0 ? SplashTargetsAt(i - 1) : 0;
+                int now = SplashTargetsAt(i);
+                if (i > 0 && now > 0 && (before == 0 || now < before))
+                {
+                    return $"the blast hurts fewer creatures at level {i + 1} ({now}) than at level {i} ({(before == 0 ? "all" : before.ToString())}).";
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Null when every upgrade step has a name and changes the one thing it says (round 67), otherwise what is wrong.
+        /// The blast's cap per level (SplashTargets) is not a step of its own: it grows with the stars beside the named thing
+        /// and the tower menu lists it next to it (TowerStepText).
         /// A refit (gates, the base's turret) may change several things.
         /// </summary>
         public string StepProblem()

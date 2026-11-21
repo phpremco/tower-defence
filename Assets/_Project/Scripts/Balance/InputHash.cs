@@ -25,6 +25,11 @@ namespace Game.Balance
                 foreach (TowerLevelStats level in t.Levels)
                 {
                     text.Append(level.Cost).Append(F(level.Damage)).Append(F(level.Range)).Append(F(level.Interval)).Append(F(level.Slow));
+                    // Only a level that names a cap enters the text, so the hash of every tower without one stands (round 88b).
+                    if (level.SplashTargets > 0)
+                    {
+                        text.Append("b").Append(level.SplashTargets);
+                    }
                 }
             }
 
@@ -69,7 +74,7 @@ namespace Game.Balance
 
                 foreach (GadgetStats g in facts.Gadgets)
                 {
-                    text.Append(g.Id).Append(g.Kind).Append(g.Cost).Append(F(g.Damage)).Append(F(g.Radius)).Append(F(g.SlowFactor));
+                    text.Append(g.Id).Append(g.Kind).Append(g.Cost).Append(F(g.Damage)).Append(F(g.Radius)).Append(F(g.SlowFactor)).Append(F(g.Lifetime));
                 }
 
                 foreach (DroneStats d in facts.Drones)
@@ -97,8 +102,22 @@ namespace Game.Balance
             }
 
             text.Append(F(r.BossWaveShare));
+            // Round 88b: the escort rule of a level boss.
+            text.Append("escort").Append(F(r.EscortStartWeight)).Append(F(r.EscortEndWeight)).Append(F(r.EscortHeavyShare)).Append(F(r.EscortMostOfWorth)).Append(F(r.EscortBountyShare));
+            foreach (DifficultyStats d in model.Difficulties)
+            {
+                text.Append(F(d.EscortWorth));
+            }
+
+            foreach (KeyValuePair<string, EnemyStats> pair in Sorted(model.Enemies))
+            {
+                if (pair.Value.RuledEscort)
+                {
+                    text.Append(pair.Key).Append(F(pair.Value.SummonHealth)).Append(F(pair.Value.SummonArmor)).Append(F(pair.Value.SummonSpeed));
+                }
+            }
             // Round 87: the health formula and the boss formula (the waves follow from them at every solve).
-            text.Append(F(r.RampStart)).Append(F(r.RampEnd)).Append(F(r.RushFactor)).Append(F(r.HeavyFactor)).Append(F(r.AirFactor)).Append(F(r.AfterBossFactor)).Append(F(r.BossCrowdFactor)).Append(F(r.PeakFactor)).Append(r.LongLevelWaves).Append(F(r.LongLevelPeakPhase));
+            text.Append(F(r.RampStart)).Append(F(r.RampEnd)).Append(F(r.RushFactor)).Append(F(r.HeavyFactor)).Append(F(r.AirFactor)).Append(F(r.AfterBossFactor)).Append(F(r.BossCrowdFactor)).Append(F(r.PeakFactor)).Append(r.LongLevelWaves).Append(F(r.LongLevelPeakPhase)).Append(r.PeakOnARushBetweenRaids ? 1 : 0);
             text.Append(F(r.BossBase)).Append(F(r.BossLevelGrowth)).Append(F(r.BossEarlyShare)).Append(F(r.FlyingBossShare));
             foreach (float[] values in new[] { r.PeakPhases, r.BossDifficulty })
             {

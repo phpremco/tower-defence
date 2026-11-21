@@ -240,7 +240,9 @@ namespace Game.UI
             TerrainRules rules = _context.Level.TerrainRules;
             string ground = rules != null && tower.GroundRange > 1f ? "  -  " + Loc.Format("level.high_ground_range", rules.HighGroundLabel) : string.Empty;
             string level = tower.CanUpgrade ? Loc.Format("tower_menu.level", tower.LevelIndex + 1) : Loc.Get("tower_menu.level_max");
-            string notes = (reach.Length > 0 ? "  -  " + reach : string.Empty) + ground;
+            // A capped blast says how many creatures it hurts at this level (round 88b): the Cannon's grows with its stars.
+            string blast = BlastRead.Label(tower.Definition, tower.LevelIndex);
+            string notes = (reach.Length > 0 ? "  -  " + reach : string.Empty) + (blast.Length > 0 ? "  -  " + blast : string.Empty) + ground;
             _info.text = Loc.Format("tower_menu.info", tower.Definition.DisplayName, level, state, notes) + UpgradePreview(tower);
 
             if (!_wasOpen)

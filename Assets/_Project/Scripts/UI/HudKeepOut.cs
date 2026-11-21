@@ -23,6 +23,7 @@ namespace Game.UI
         private readonly List<Rect> _zones = new List<Rect>();
         private readonly List<RectTransform> _priority = new List<RectTransform>();
         private readonly List<Rect> _hudZones = new List<Rect>();
+        private readonly List<RectTransform> _markers = new List<RectTransform>();
         private readonly Vector3[] _corners = new Vector3[4];
         private int _measuredFrame = -1;
 
@@ -53,6 +54,40 @@ namespace Game.UI
             if (label != null && !_priority.Contains(label))
             {
                 _priority.Add(label);
+            }
+        }
+
+        /// <summary>
+        /// A part of a warning marker that later markers must not cover while it shows (the arrow and the word
+        /// of Voss's rear-rift marker): the surprise pings ask for these through <see cref="CollectObstacles"/>.
+        /// </summary>
+        public void AddMarker(RectTransform part)
+        {
+            if (part != null && !_markers.Contains(part))
+            {
+                _markers.Add(part);
+            }
+        }
+
+        /// <summary>
+        /// Everything a new marker must stay off, added to <paramref name="into"/> in the area's space: the showing HUD
+        /// panels and priority labels, and the showing parts of the registered markers as they are drawn (turned, grown).
+        /// </summary>
+        public void CollectObstacles(List<Rect> into)
+        {
+            Measure();
+            for (int i = 0; i < _zones.Count; i++)
+            {
+                into.Add(_zones[i]);
+            }
+
+            for (int i = 0; i < _markers.Count; i++)
+            {
+                RectTransform part = _markers[i];
+                if (part != null && part.gameObject.activeInHierarchy)
+                {
+                    into.Add(Expand(Bounds(part)));
+                }
             }
         }
 
@@ -172,6 +207,22 @@ namespace Game.UI
             Vector3 min = _area.InverseTransformPoint(_corners[0]);
             Vector3 max = _area.InverseTransformPoint(_corners[2]);
             return Rect.MinMaxRect(Mathf.Min(min.x, max.x), Mathf.Min(min.y, max.y), Mathf.Max(min.x, max.x), Mathf.Max(min.y, max.y));
+        }
+
+        // As ToArea for a rect that may be turned (an arrow): the box around all four corners.
+        private Rect Bounds(RectTransform rect)
+        {
+            rect.GetWorldCorners(_corners);
+            Vector2 min = _area.InverseTransformPoint(_corners[0]);
+            Vector2 max = min;
+            for (int i = 1; i < _corners.Length; i++)
+            {
+                Vector2 corner = _area.InverseTransformPoint(_corners[i]);
+                min = Vector2.Min(min, corner);
+                max = Vector2.Max(max, corner);
+            }
+
+            return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
         }
 
         // The text's own width at its alignment inside its box; the box's local scale carries over.

@@ -209,7 +209,8 @@ namespace Game.Tests
                 foreach (Boss boss in cell.Bosses())
                 {
                     bosses++;
-                    float over = cell.Rules.BossOverRegularFor(cell.Difficulty);
+                    // Round 88b: a flying boss takes the flying share of the floor, as of the formula (WaveSolver.BossMultiple).
+                    float over = cell.Rules.BossOverRegularFor(cell.Difficulty) * (boss.Stats.Flies ? cell.Rules.FlyingBossShare : 1f);
                     if (boss.Met && boss.Over < over * (1f - Slack))
                     {
                         failures.Add(Line($"{cell.Name} wave {boss.Wave} {boss.Stats.Id}: x{boss.Over:0.00} the bar of the toughest walker before it, under x{over:0.##}"));
@@ -397,7 +398,7 @@ namespace Game.Tests
                             Stats = stats,
                             Bar = book * multiple,
                             Formula = WaveFormula.BossBar(Rules, Model.ContinentIndexOf(Index), Difficulty, WaveFormula.Phase(i + 1, Script.Waves), stats.Flies),
-                            Floor = met.HasMet ? book * met.Multiple(stats, Rules.BossOverRegularFor(Difficulty)) : 0f,
+                            Floor = met.HasMet ? book * met.Multiple(stats, Rules.BossOverRegularFor(Difficulty)) * (stats.Flies ? Rules.FlyingBossShare : 1f) : 0f,
                             Met = met.HasMet,
                             Over = met.Over(stats, multiple),
                         };

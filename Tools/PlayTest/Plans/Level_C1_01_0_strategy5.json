@@ -61,14 +61,9 @@
             "Threat": "boss",
             "Tower": "Cannon",
             "Weight": 1.3594191074371338
-        },
-        {
-            "Threat": "swarm",
-            "Tower": "Cannon",
-            "Weight": 2.370370864868164
         }
     ],
-    "UpgradeBias": 1.0800000429153442,
+    "UpgradeBias": 0.8799999952316284,
     "TowersBeforeUpgrades": 1,
     "MineCoverBelow": 1.2999999523162842,
     "MineOnBoss": false,
