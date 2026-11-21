@@ -511,6 +511,8 @@ namespace Game.Tests
             so.FindProperty("_minion").objectReferenceValue = minion;
             so.FindProperty("_minionCount").intValue = minions;
             so.FindProperty("_triggerFraction").floatValue = trigger;
+            // Round 88c gave a volley a flight time; these tests read what a volley does, not when: it lands at once here.
+            so.FindProperty("_flightSeconds").floatValue = 0f;
             so.ApplyModifiedPropertiesWithoutUndo();
             return ability;
         }

@@ -12,7 +12,7 @@ namespace Game.Tests.EditMode
     public sealed class WavePreviewTests
     {
         private const string CatalogPath = "Assets/_Project/Data/Levels/CampaignCatalog.asset";
-        private const int HudPlaces = 6;
+        private const int HudPlaces = WavePreview.Places;
         private readonly List<Object> _made = new List<Object>();
         private readonly List<WavePreviewEntry> _entries = new List<WavePreviewEntry>();
 
@@ -127,13 +127,14 @@ namespace Game.Tests.EditMode
         }
 
         [Test]
-        public void Collect_LeavesOutABossesMinions()
+        public void Collect_ListsALevelBossesBrood_OnceAndWithoutANumber()
         {
             EnemyDefinition hatchling = Enemy("Hatchling");
             EnemyDefinition queen = Enemy("Queen", boss: true);
             var ability = ScriptableObject.CreateInstance<BossAbilityDefinition>();
             _made.Add(ability);
             var abilityData = new SerializedObject(ability);
+            abilityData.FindProperty("_kind").enumValueIndex = (int)BossAbilityKind.Spawn;
             abilityData.FindProperty("_minion").objectReferenceValue = hatchling;
             abilityData.ApplyModifiedPropertiesWithoutUndo();
             var data = new SerializedObject(queen);
@@ -142,9 +143,22 @@ namespace Game.Tests.EditMode
             abilities.GetArrayElementAtIndex(0).objectReferenceValue = ability;
             data.ApplyModifiedPropertiesWithoutUndo();
 
+            // Round 88c: the brood is a rule of every boss wave, so the preview names the creature (not how many: that
+            // depends on how far the boss walks). A wave that does not send that creature itself lists it after the boss.
             WavePreview.Collect(new WaveDefinition(new[] { Group(queen, 1) }), Difficulty(), _entries);
+            Assert.AreEqual(2, _entries.Count);
+            Assert.IsTrue(_entries[0].Boss, "the boss first");
+            Assert.IsTrue(_entries[1].BroodOnly, "its brood right after it");
+            Assert.AreSame(hatchling, _entries[1].Enemy);
+            Assert.AreEqual(0, _entries[1].Count, "a brood has no number");
 
-            Assert.AreEqual(1, _entries.Count, "what a boss calls in during the fight stays a surprise");
+            // A wave that sends the creature anyway marks it on that entry: no second place in the strip.
+            WavePreview.Collect(new WaveDefinition(new[] { Group(hatchling, 4), Group(queen, 1) }), Difficulty(), _entries);
+            Assert.AreEqual(2, _entries.Count);
+            Assert.IsTrue(_entries[1].Brood);
+            Assert.IsFalse(_entries[1].BroodOnly);
+            Assert.AreEqual(4, _entries[1].Count, "the wave's own hatchlings keep their count");
+            Assert.AreEqual(0, WavePreview.Flyers(_entries) + WavePreview.Plated(_entries), "a brood adds nothing to what a reader counts");
         }
 
         [Test]
@@ -221,7 +235,7 @@ namespace Game.Tests.EditMode
                         bool plainSeen = false;
                         foreach (WavePreviewEntry entry in _entries)
                         {
-                            bool marked = entry.Boss || entry.Flies || entry.Armoured;
+                            bool marked = entry.Boss || entry.BroodOnly || entry.Flies || entry.Armoured;
                             Assert.IsFalse(marked && plainSeen, $"{level.name} {difficulty.name} wave {w + 1}: a marked creature after a plain one");
                             plainSeen |= !marked;
                         }

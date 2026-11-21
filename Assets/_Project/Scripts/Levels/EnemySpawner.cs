@@ -25,6 +25,8 @@ namespace Game.Levels
         private const float BossBurstRadius = 1.5f;
         private const float SpeedVariation = 0.12f;
         private const float MinionSpread = 0.4f;
+        private const float VolleyBurstRadius = 0.9f;
+        private const float VolleyBurstHeight = 0.5f;
         private const float SlimeRadiusCells = 0.55f;
 
         // How far from the centre line a walker may be: up to the inner face of the edge stones, less a small gap and the
@@ -54,6 +56,7 @@ namespace Game.Levels
         private readonly LiquidPools _liquids;
         private readonly Vector3[] _gates;
         private readonly List<Enemy> _living = new List<Enemy>(128);
+        private int _escortSlot;
         private readonly List<int> _nestBuffer = new List<int>(8);
         private readonly SurpriseWatch _surprises;
         private readonly EscortSettings _escort;
@@ -96,7 +99,11 @@ namespace Game.Levels
             _escort = EscortRule.For(context.Difficulty, BalanceRules.Default);
         }
 
-        public int Alive { get; private set; }
+        /// <summary>
+        /// Every creature on the field, whatever sent it: a wave, a nest, a boss's brood, a split. Counted off the list
+        /// itself (round 88c), so the level can never read "cleared" while one of them still lives.
+        /// </summary>
+        public int Alive => _living.Count;
 
         /// <summary>Every enemy on the field right now, in spawn order.</summary>
         public IReadOnlyList<Enemy> Living => _living;
@@ -412,9 +419,35 @@ namespace Game.Levels
                 return;
             }
 
+            // Out of the boss's front, not from under its feet, and then at a run to a place of its own ahead of it
+            // (round 88c): a creature as slow as its boss would otherwise walk on top of it for the whole road.
+            BalanceRules rules = BalanceRules.Default;
+            float cell = _context.Level.CellSize;
+            float bossHalf = BodyHalf(boss.Definition);
+            float ownHalf = BodyHalf(definition);
+            int slot = _escortSlot;
+            _escortSlot = (_escortSlot + 1) % Mathf.Max(1, rules.EscortSlots);
+            float lead = ownHalf + (rules.EscortLeadCells + slot * rules.EscortSpacingCells) * cell;
+            Vector3 heading = new Vector3(boss.Heading.x, 0f, boss.Heading.z);
+            Vector3 scatter = new Vector3(Range(-MinionSpread, MinionSpread), 0f, Range(-MinionSpread, MinionSpread));
             Vector3[] route = boss.RemainingRoute();
-            route[0] += new Vector3(Range(-MinionSpread, MinionSpread), 0f, Range(-MinionSpread, MinionSpread));
-            Launch(definition, route, FlightHeight(definition), EnemyOrigin.Gate, boss.PathProgress, healthMultiplier, bountyShare);
+            // A creature too slow to take a place ahead of this boss (a plated walker behind a fast boss) comes out
+            // behind it instead: the boss walks away from it, and neither covers the other. Judged at the creature's
+            // slowest pace, so one kind always comes out the same way.
+            float slowest = definition.Speed * (1f - SpeedVariation);
+            if (!EscortDash.Reaches(lead, slowest, boss.GroundSpeed, rules.EscortDashFactor))
+            {
+                float back = bossHalf + ownHalf;
+                var behind = new Vector3[route.Length + 1];
+                behind[0] = route[0] - heading * back + scatter;
+                System.Array.Copy(route, 0, behind, 1, route.Length);
+                Launch(definition, behind, FlightHeight(definition), EnemyOrigin.Gate, boss.PathProgress - back, healthMultiplier, bountyShare);
+                return;
+            }
+
+            route[0] += heading * bossHalf + scatter;
+            Enemy escort = Launch(definition, route, FlightHeight(definition), EnemyOrigin.Gate, boss.PathProgress + bossHalf, healthMultiplier, bountyShare);
+            escort.ApplyHaste(rules.EscortDashFactor, EscortDash.Seconds(lead, escort.GroundSpeed, boss.GroundSpeed, rules.EscortDashFactor));
         }
 
         private static float LengthOf(Vector3[] route)
@@ -466,7 +499,6 @@ namespace Game.Levels
                 enemy.FitBody(half > _kerb ? Mathf.Max(MinBodyFit, _kerb / half) : 1f);
             }
 
-            Alive++;
             _living.Add(enemy);
             _toughestPlated = EscortRule.Tougher(_toughestPlated, definition);
             if (definition.IsBoss)
@@ -604,7 +636,8 @@ namespace Game.Levels
                 abilities.Pulsed += OnBossPulsed;
                 abilities.LaserChanged += on => _context.BossLaserChanged.Raise(on);
                 abilities.MinionsReleased += (centre, color) => _context.BossMinionsReleased.Raise(centre);
-                abilities.Volleyed += (origin, points, color) => _context.BossVolleyed.Raise(origin);
+                abilities.Volleyed += (origin, points, color, flight) => _context.BossVolleyed.Raise(origin);
+                abilities.VolleyLanded += OnVolleyLanded;
                 abilities.Rallied += (centre, color) => _context.BossRallied.Raise(centre);
                 go.AddComponent<BossAbilityView>();
             }
@@ -624,6 +657,13 @@ namespace Game.Levels
         }
 
         private void OnAttacked(Vector3 position) => _context.StructureHit.Raise(position);
+
+        // A boss's bolt lands on a gun: a flash in the bolt's colour on the gun itself, so the player sees which gun was hit.
+        private void OnVolleyLanded(Vector3 position, Color color)
+        {
+            _context.Projectiles.PlayBurst(position + Vector3.up * VolleyBurstHeight, VolleyBurstRadius, _context.Projectiles.Vfx.Default, color);
+            _context.StructureHit.Raise(position);
+        }
 
         private void OnKilled(Enemy enemy)
         {
@@ -676,10 +716,14 @@ namespace Game.Levels
 
         private void Release(Enemy enemy)
         {
+            // Only once: a creature killed in the step it reaches the base must not count off twice.
+            if (!_living.Remove(enemy))
+            {
+                return;
+            }
+
             enemy.Deactivate();
             _pools[enemy.Definition].Release(enemy);
-            _living.Remove(enemy);
-            Alive--;
             if (enemy.Definition.IsBoss)
             {
                 _context.BossesAlive = Mathf.Max(0, _context.BossesAlive - 1);

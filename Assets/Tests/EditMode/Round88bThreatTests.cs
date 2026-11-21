@@ -125,7 +125,9 @@ namespace Game.Tests
             return definition;
         }
 
-        private BossAbilityDefinition Volley(float damage, float range, int targets, bool sparesBlockers)
+        // flightSeconds: zero lands the bolts in the step they are fired (the rule of round 88b, which these tests read);
+        // round 88c gave the data a flight time, held by the test of its own below.
+        private BossAbilityDefinition Volley(float damage, float range, int targets, bool sparesBlockers, float flightSeconds = 0f)
         {
             var ability = ScriptableObject.CreateInstance<BossAbilityDefinition>();
             _made.Add(ability);
@@ -137,6 +139,7 @@ namespace Game.Tests
             so.FindProperty("_range").floatValue = range;
             so.FindProperty("_targetCount").intValue = targets;
             so.FindProperty("_sparesBlockers").boolValue = sparesBlockers;
+            so.FindProperty("_flightSeconds").floatValue = flightSeconds;
             so.ApplyModifiedPropertiesWithoutUndo();
             return ability;
         }
@@ -383,6 +386,58 @@ namespace Game.Tests
             structures.Add(gate);
             Play(Creature(AttackStyle.Bite, 0f, 2.5f, 1f, null, new[] { volley }), structures, 0.2f);
             Assert.AreEqual(10f, gate.Damage, 0.0001f);
+        }
+
+        // ---- round 88c: the bolts fly, and the damage lands when they do --------------------------------------------
+
+        [Test]
+        public void AVolleysDamage_LandsWhenItsBoltsDo_NotWhenTheyLeave()
+        {
+            var gun = new Target(new Vector3(3f, 0f, 0f), false);
+            var structures = new StructureRegistry();
+            structures.Add(gun);
+            Play(Creature(AttackStyle.Bite, 0f, 2.5f, 1f, null, new[] { Volley(10f, 5f, 3, true, 1f) }), structures, 0.6f);
+            Assert.AreEqual(0f, gun.Damage, "the bolt is still in the air");
+
+            gun = new Target(new Vector3(3f, 0f, 0f), false);
+            structures = new StructureRegistry();
+            structures.Add(gun);
+            Play(Creature(AttackStyle.Bite, 0f, 2.5f, 1f, null, new[] { Volley(10f, 5f, 3, true, 1f) }), structures, 1.5f);
+            Assert.AreEqual(10f, gun.Damage, 0.0001f, "one bolt, landed once");
+        }
+
+        [Test]
+        public void ABoltInTheAir_TakesNothingFromAGunThatWasSoldMeanwhile()
+        {
+            // Found in the bots' runs of round 88c: a gun sold while a bolt flew at it was gone from the scene when the
+            // bolt landed. The bolt asks the registry first and touches nothing that left it.
+            var gun = new Target(new Vector3(3f, 0f, 0f), false);
+            var structures = new StructureRegistry();
+            structures.Add(gun);
+            var go = new GameObject("Boss");
+            _made.Add(go);
+            var enemy = go.AddComponent<Enemy>();
+            var abilities = go.AddComponent<BossAbilities>();
+            abilities.Initialize(structures, (minion, boss) => { }, (origin, range) => null);
+            enemy.Initialize(Creature(AttackStyle.Bite, 0f, 2.5f, 1f, null, new[] { Volley(10f, 5f, 3, true, 1f) }), new[] { Vector3.zero, new Vector3(0f, 0f, 0.5f) }, 1f, 1f, 0f, new TargetRegistry(), structures);
+            abilities.Step(0.1f);
+            structures.Remove(gun);
+            int landed = 0;
+            abilities.VolleyLanded += (point, colour) => landed++;
+            Assert.DoesNotThrow(() => abilities.Step(1.5f));
+            Assert.AreEqual(0f, gun.Damage);
+            Assert.AreEqual(0, landed);
+        }
+
+        [Test]
+        public void TheLevelBossVolleys_FlyLongEnoughToBeSeen()
+        {
+            foreach (string id in new[] { "VenomSpit", "ArcDischarge", "SpineVolley" })
+            {
+                var volley = AssetDatabase.LoadAssetAtPath<BossAbilityDefinition>($"{EnemyFolder}/Abilities/{id}.asset");
+                Assert.IsNotNull(volley, id);
+                Assert.That(volley.FlightSeconds, Is.InRange(0.6f, volley.Interval * 0.5f), $"{id}: the bolt is in the air long enough to follow and lands well before the next volley");
+            }
         }
 
         // ---- the difficulty's structure damage reaches both ----------------------------------------------------------

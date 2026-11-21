@@ -1,2 +1,2 @@
-keep 1 hud  
-Logs/r88b/ping_edge_before.png
+keep 1 clean 1920 1080
+Logs/r88c/volley_5_after.png

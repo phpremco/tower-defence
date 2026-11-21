@@ -1,0 +1,413 @@
+Stored waves, round 87: walk-in multiplier = DifficultyScale x level scalar x ramp x kind x peak. DifficultyScale 1.23 / 1.46 / 1.2 / 1.38; ramp 0.6 to 1.68; rush 1.1, heavy 1.15, raid 0.9, after a boss 0.8, boss crowd 0.55, peak 1.35.
+
+C1_01 Easy (level scalar 0.76, peaks 4, 8)
+  wave  1: x0.561  Plain
+  wave  2: x0.616  Plain
+  wave  3: x0.744  Rush
+  wave  4: x1.153  Heavy, PEAK
+  wave  5: x0.816  Plain
+  wave  6: x0.985  Rush
+  wave  7: x0.983  Plain
+  wave  8: x1.677  Heavy, PEAK
+  wave  9: x1.305  Rush
+  wave 10: x1.302  Plain
+  wave 11: x1.645  Heavy
+  wave 12: x0.864  Plain, boss BroodMother
+
+C1_01 Medium (level scalar 0.76, peaks 4, 8)
+  wave  1: x0.666  Plain
+  wave  2: x0.731  Plain
+  wave  3: x0.883  Rush
+  wave  4: x1.369  Heavy, PEAK
+  wave  5: x0.968  Plain
+  wave  6: x1.169  Rush
+  wave  7: x1.167  Plain
+  wave  8: x1.990  Heavy, PEAK
+  wave  9: x1.549  Rush
+  wave 10: x1.546  Plain
+  wave 11: x1.952  Heavy
+  wave 12: x1.025  Plain, boss BroodMother
+
+C1_01 Hard (level scalar 0.76, peaks 4, 10)
+  wave  1: x0.547  Plain
+  wave  2: x0.601  Plain
+  wave  3: x0.726  Rush
+  wave  4: x1.125  Heavy, PEAK
+  wave  5: x0.796  Plain
+  wave  6: x0.961  Rush
+  wave  7: x0.960  Plain
+  wave  8: x0.666  Heavy, boss BroodMother
+  wave  9: x1.018  Rush, after boss
+  wave 10: x1.715  Plain, PEAK
+  wave 11: x1.605  Heavy
+  wave 12: x0.843  Plain, boss BroodMother
+
+C1_01 Psycho (level scalar 0.76, peaks 4, 10)
+  wave  1: x0.629  Plain
+  wave  2: x0.691  Plain
+  wave  3: x0.835  Rush
+  wave  4: x1.294  Heavy, PEAK
+  wave  5: x0.503  Plain, boss BroodMother
+  wave  6: x0.884  Rush, after boss
+  wave  7: x1.103  Plain
+  wave  8: x0.766  Heavy, boss BroodMother
+  wave  9: x1.171  Rush, after boss
+  wave 10: x1.973  Plain, PEAK
+  wave 11: x1.845  Heavy
+  wave 12: x0.969  Plain, boss BroodMother
+
+C1_02 Easy (level scalar 0.88, peaks 4, 10)
+  wave  1: x0.649  Plain
+  wave  2: x0.784  Rush
+  wave  3: x0.783  Plain
+  wave  4: x1.335  Heavy, PEAK
+  wave  5: x1.039  Rush
+  wave  6: x1.037  Plain
+  wave  7: x1.310  Heavy
+  wave  8: x1.375  Rush
+  wave  9: x1.373  Plain
+  wave 10: x2.341  Heavy, PEAK
+  wave 11: x1.821  Rush
+  wave 12: x1.000  Plain, boss BroodMother
+
+C1_02 Medium (level scalar 0.88, peaks 4, 10)
+  wave  1: x0.771  Plain
+  wave  2: x0.931  Rush
+  wave  3: x0.930  Plain
+  wave  4: x1.585  Heavy, PEAK
+  wave  5: x1.233  Rush
+  wave  6: x1.231  Plain
+  wave  7: x1.554  Heavy
+  wave  8: x1.633  Rush
+  wave  9: x1.630  Plain
+  wave 10: x2.779  Heavy, PEAK
+  wave 11: x2.162  Rush
+  wave 12: x1.187  Plain, boss BroodMother
+
+C1_02 Hard (level scalar 0.88, peaks 4, 7)
+  wave  1: x0.634  Plain
+  wave  2: x0.765  Rush
+  wave  3: x0.764  Plain
+  wave  4: x1.303  Heavy, PEAK
+  wave  5: x1.013  Rush
+  wave  6: x1.012  Plain
+  wave  7: x1.725  Heavy, PEAK
+  wave  8: x1.342  Rush
+  wave  9: x0.737  Plain, boss CoreWisp
+  wave 10: x1.354  Heavy, after boss
+  wave 11: x1.778  Rush
+  wave 12: x0.976  Plain, boss BroodMother
+
+C1_02 Psycho (level scalar 0.88, peaks 4, 7)
+  wave  1: x0.729  Plain
+  wave  2: x0.880  Rush
+  wave  3: x0.879  Plain
+  wave  4: x1.498  Heavy, PEAK
+  wave  5: x0.641  Rush, boss BroodMother
+  wave  6: x0.931  Plain, after boss
+  wave  7: x1.984  Heavy, PEAK
+  wave  8: x1.544  Rush
+  wave  9: x0.847  Plain, boss CoreWisp
+  wave 10: x1.557  Heavy, after boss
+  wave 11: x2.043  Rush
+  wave 12: x1.122  Plain, boss BroodMother
+
+C1_03 Easy (level scalar 0.76, peaks 7, 9, 11)
+  wave  1: x0.561  Plain
+  wave  2: x0.661  Rush
+  wave  3: x0.643  Plain
+  wave  4: x0.793  Heavy
+  wave  5: x0.738  Plain
+  wave  6: x0.870  Rush
+  wave  7: x1.143  Plain, PEAK
+  wave  8: x0.907  Plain
+  wave  9: x1.508  Heavy, PEAK
+  wave 10: x1.144  Rush
+  wave 11: x1.504  Plain, PEAK
+  wave 12: x1.074  Air, raid
+  wave 13: x1.470  Heavy
+  wave 14: x1.507  Rush
+  wave 15: x1.320  Air, raid
+  wave 16: x0.993  Heavy, boss BroodMother
+
+C1_03 Medium (level scalar 0.76, peaks 7, 9, 13)
+  wave  1: x0.666  Plain
+  wave  2: x0.784  Rush
+  wave  3: x0.764  Plain
+  wave  4: x0.941  Heavy
+  wave  5: x0.876  Plain
+  wave  6: x1.032  Rush
+  wave  7: x1.357  Plain, PEAK
+  wave  8: x1.076  Plain
+  wave  9: x1.790  Heavy, PEAK
+  wave 10: x1.358  Rush
+  wave 11: x1.190  Air, raid
+  wave 12: x1.275  Air, raid
+  wave 13: x2.355  Heavy, PEAK
+  wave 14: x1.788  Rush
+  wave 15: x1.566  Air, raid
+  wave 16: x1.179  Heavy, boss BroodMother
+
+C1_03 Hard (level scalar 0.76, peaks 7, 9, 13)
+  wave  1: x0.547  Plain
+  wave  2: x0.645  Rush
+  wave  3: x0.628  Plain
+  wave  4: x0.773  Heavy
+  wave  5: x0.720  Plain
+  wave  6: x0.848  Rush
+  wave  7: x1.115  Plain, PEAK
+  wave  8: x0.885  Plain
+  wave  9: x1.471  Heavy, PEAK
+  wave 10: x0.614  Rush, boss CoreWisp
+  wave 11: x0.783  Air, after boss, raid
+  wave 12: x1.048  Air, raid
+  wave 13: x1.936  Heavy, PEAK
+  wave 14: x1.202  Air, raid
+  wave 15: x1.287  Air, raid
+  wave 16: x0.969  Heavy, boss BroodMother
+
+C1_03 Psycho (level scalar 0.76, peaks 4, 9, 13)
+  wave  1: x0.629  Plain
+  wave  2: x0.741  Rush
+  wave  3: x0.722  Plain
+  wave  4: x1.200  Heavy, PEAK
+  wave  5: x0.828  Plain
+  wave  6: x0.537  Rush, boss BroodMother
+  wave  7: x0.760  Plain, after boss
+  wave  8: x1.017  Plain
+  wave  9: x1.692  Heavy, PEAK
+  wave 10: x0.706  Rush, boss CoreWisp
+  wave 11: x0.900  Air, after boss, raid
+  wave 12: x1.205  Air, raid
+  wave 13: x2.226  Heavy, PEAK
+  wave 14: x1.382  Air, raid
+  wave 15: x1.481  Air, raid
+  wave 16: x1.114  Heavy, boss BroodMother
+
+C1_04 Easy (level scalar 1.04, peaks 7, 9, 11)
+  wave  1: x0.768  Plain
+  wave  2: x0.904  Rush
+  wave  3: x0.880  Plain
+  wave  4: x0.943  Plain
+  wave  5: x1.162  Heavy
+  wave  6: x1.190  Rush
+  wave  7: x1.564  Plain, PEAK
+  wave  8: x1.241  Plain
+  wave  9: x1.974  Rush, PEAK
+  wave 10: x1.281  Air, raid
+  wave 11: x2.058  Plain, PEAK
+  wave 12: x1.633  Plain
+  wave 13: x1.574  Air, raid
+  wave 14: x1.873  Plain
+  wave 15: x2.307  Heavy
+  wave 16: x1.064  Air, boss StormMatriarch, raid
+
+C1_04 Medium (level scalar 1.04, peaks 7, 10, 14)
+  wave  1: x0.911  Plain
+  wave  2: x1.073  Rush
+  wave  3: x1.045  Plain
+  wave  4: x1.119  Plain
+  wave  5: x1.379  Heavy
+  wave  6: x1.156  Air, raid
+  wave  7: x1.857  Plain, PEAK
+  wave  8: x1.473  Plain
+  wave  9: x1.420  Air, raid
+  wave 10: x2.623  Heavy, PEAK
+  wave 11: x1.810  Plain
+  wave 12: x1.745  Air, raid
+  wave 13: x2.284  Rush
+  wave 14: x3.002  Plain, PEAK
+  wave 15: x2.144  Air, raid
+  wave 16: x1.403  Plain, boss StormMatriarch
+
+C1_04 Hard (level scalar 1.04, peaks 5, 7, 14)
+  wave  1: x0.749  Plain
+  wave  2: x0.882  Rush
+  wave  3: x0.773  Air, raid
+  wave  4: x0.920  Plain
+  wave  5: x1.530  Heavy, PEAK
+  wave  6: x0.950  Air, raid
+  wave  7: x1.526  Plain, PEAK
+  wave  8: x1.090  Air, raid
+  wave  9: x1.167  Air, raid
+  wave 10: x0.878  Heavy, boss BroodMother
+  wave 11: x1.190  Plain, after boss
+  wave 12: x1.434  Air, raid
+  wave 13: x1.877  Rush
+  wave 14: x2.467  Plain, PEAK
+  wave 15: x1.762  Air, raid
+  wave 16: x1.153  Plain, boss StormMatriarch
+
+C1_04 Psycho (level scalar 1.04, peaks 4, 7)
+  wave  1: x0.861  Plain
+  wave  2: x1.015  Rush
+  wave  3: x0.889  Air, raid
+  wave  4: x1.428  Plain, PEAK
+  wave  5: x0.717  Heavy, boss CoreWisp
+  wave  6: x0.874  Air, after boss, raid
+  wave  7: x1.755  Plain, PEAK
+  wave  8: x1.253  Air, raid
+  wave  9: x1.342  Air, raid
+  wave 10: x1.010  Heavy, boss BroodMother
+  wave 11: x1.369  Plain, after boss
+  wave 12: x1.649  Air, raid
+  wave 13: x2.159  Rush
+  wave 14: x1.892  Air, raid
+  wave 15: x2.026  Air, raid
+  wave 16: x1.326  Plain, boss StormMatriarch
+
+C1_05 Easy (level scalar 0.9, peaks 7, 10, 12)
+  wave  1: x0.664  Plain
+  wave  2: x0.708  Plain
+  wave  3: x0.831  Rush
+  wave  4: x0.806  Plain
+  wave  5: x0.988  Heavy
+  wave  6: x0.916  Plain
+  wave  7: x1.451  Rush, PEAK
+  wave  8: x1.042  Plain
+  wave  9: x1.000  Air, raid
+  wave 10: x1.600  Plain, PEAK
+  wave 11: x1.390  Rush
+  wave 12: x1.820  Plain, PEAK
+  wave 13: x1.294  Air, raid
+  wave 14: x1.763  Heavy
+  wave 15: x1.798  Rush
+  wave 16: x1.744  Plain
+  wave 17: x1.176  Heavy, boss CoreWisp
+
+C1_05 Medium (level scalar 0.9, peaks 7, 9, 12)
+  wave  1: x0.788  Plain
+  wave  2: x0.841  Plain
+  wave  3: x0.986  Rush
+  wave  4: x0.956  Plain
+  wave  5: x1.173  Heavy
+  wave  6: x0.979  Air, raid
+  wave  7: x1.722  Rush, PEAK
+  wave  8: x1.237  Plain
+  wave  9: x2.048  Heavy, PEAK
+  wave 10: x1.266  Air, raid
+  wave 11: x1.651  Rush
+  wave 12: x2.160  Plain, PEAK
+  wave 13: x1.707  Plain
+  wave 14: x2.093  Heavy
+  wave 15: x1.747  Air, raid
+  wave 16: x2.070  Plain
+  wave 17: x1.396  Heavy, boss CoreWisp
+
+C1_05 Hard (level scalar 0.9, peaks 10, 14)
+  wave  1: x0.648  Plain
+  wave  2: x0.691  Plain
+  wave  3: x0.811  Rush
+  wave  4: x0.707  Air, raid
+  wave  5: x0.964  Heavy
+  wave  6: x0.805  Air, raid
+  wave  7: x1.049  Rush
+  wave  8: x0.915  Air, raid
+  wave  9: x1.247  Heavy
+  wave 10: x1.561  Plain, PEAK
+  wave 11: x0.746  Rush, boss StormMatriarch
+  wave 12: x1.052  Plain, after boss
+  wave 13: x1.262  Air, raid
+  wave 14: x2.322  Heavy, PEAK
+  wave 15: x1.755  Rush
+  wave 16: x1.531  Air, raid
+  wave 17: x1.148  Heavy, boss CoreWisp
+
+C1_05 Psycho (level scalar 0.9, peaks 9, 14)
+  wave  1: x0.745  Plain
+  wave  2: x0.795  Plain
+  wave  3: x0.932  Rush
+  wave  4: x0.813  Air, raid
+  wave  5: x0.610  Heavy, boss BroodMother
+  wave  6: x0.740  Air, after boss, raid
+  wave  7: x1.206  Rush
+  wave  8: x1.052  Air, raid
+  wave  9: x1.936  Heavy, PEAK
+  wave 10: x1.197  Air, raid
+  wave 11: x0.858  Rush, boss StormMatriarch
+  wave 12: x1.210  Plain, after boss
+  wave 13: x1.452  Air, raid
+  wave 14: x2.671  Heavy, PEAK
+  wave 15: x2.018  Rush
+  wave 16: x1.761  Air, raid
+  wave 17: x1.320  Heavy, boss CoreWisp
+
+C1_06 Easy (level scalar 0.79, peaks 9, 12, 14)
+  wave  1: x0.641  Rush
+  wave  2: x0.619  Plain
+  wave  3: x0.658  Plain
+  wave  4: x0.804  Heavy
+  wave  5: x0.817  Rush
+  wave  6: x0.789  Plain
+  wave  7: x0.839  Plain
+  wave  8: x0.980  Rush
+  wave  9: x1.469  Heavy, PEAK
+  wave 10: x0.905  Air, raid
+  wave 11: x1.175  Rush
+  wave 12: x1.532  Plain, PEAK
+  wave 13: x1.085  Air, raid
+  wave 14: x1.989  Heavy, PEAK
+  wave 15: x1.361  Plain
+  wave 16: x1.302  Air, raid
+  wave 17: x1.537  Plain
+  wave 18: x1.033  Heavy, boss PackAlpha
+
+C1_06 Medium (level scalar 0.79, peaks 7, 9, 12)
+  wave  1: x0.761  Rush
+  wave  2: x0.735  Plain
+  wave  3: x0.781  Plain
+  wave  4: x0.954  Heavy
+  wave  5: x0.970  Rush
+  wave  6: x0.937  Plain
+  wave  7: x1.344  Plain, PEAK
+  wave  8: x0.952  Air, raid
+  wave  9: x1.744  Heavy, PEAK
+  wave 10: x1.194  Plain
+  wave 11: x1.141  Air, raid
+  wave 12: x1.819  Plain, PEAK
+  wave 13: x1.431  Plain
+  wave 14: x1.369  Air, raid
+  wave 15: x1.616  Plain
+  wave 16: x1.888  Rush
+  wave 17: x1.641  Air, raid
+  wave 18: x1.226  Heavy, boss PackAlpha
+
+C1_06 Hard (level scalar 0.79, peaks 7, 9, 15)
+  wave  1: x0.626  Rush
+  wave  2: x0.604  Plain
+  wave  3: x0.642  Plain
+  wave  4: x0.784  Heavy
+  wave  5: x0.797  Rush
+  wave  6: x0.770  Plain
+  wave  7: x1.104  Plain, PEAK
+  wave  8: x0.782  Air, raid
+  wave  9: x1.434  Heavy, PEAK
+  wave 10: x0.981  Plain
+  wave 11: x0.938  Air, raid
+  wave 12: x0.609  Plain, boss CoreWisp
+  wave 13: x0.941  Plain, after boss
+  wave 14: x1.125  Air, raid
+  wave 15: x1.793  Plain, PEAK
+  wave 16: x1.551  Rush
+  wave 17: x1.349  Air, raid
+  wave 18: x1.007  Heavy, boss PackAlpha
+
+C1_06 Psycho (level scalar 0.79, peaks 6, 9)
+  wave  1: x0.720  Rush
+  wave  2: x0.695  Plain
+  wave  3: x0.738  Plain
+  wave  4: x0.902  Heavy
+  wave  5: x0.750  Air, raid
+  wave  6: x1.195  Plain, PEAK
+  wave  7: x0.517  Plain, boss StormMatriarch
+  wave  8: x0.720  Air, after boss, raid
+  wave  9: x1.649  Heavy, PEAK
+  wave 10: x1.128  Plain
+  wave 11: x1.079  Air, raid
+  wave 12: x0.700  Plain, boss CoreWisp
+  wave 13: x1.082  Plain, after boss
+  wave 14: x1.294  Air, raid
+  wave 15: x1.375  Air, raid
+  wave 16: x1.786  Rush
+  wave 17: x1.552  Air, raid
+  wave 18: x1.158  Heavy, boss PackAlpha

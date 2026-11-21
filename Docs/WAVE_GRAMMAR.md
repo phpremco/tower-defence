@@ -35,7 +35,7 @@ may carry **one surprise** (`SurpriseKind`).
 | Surprise: rift | The level's rift troops surface mid-wave, behind the gate where the level has such a rift | See "Surprises" | `SurpriseShare` 0.12 / 0.18 / 0.22 / 0.26, `SurpriseAt` 0.5, `SurpriseMinDelay` 12 s, `MinSurpriseGroup` 3 |
 | Surprise: flank | A share of the wave comes down the second road alone, mid-wave | A level without rift troops but with a second road | the same, `FlankFrom` 0.35 |
 | Surprise: authored | What the level writes for that wave: any creatures, any number, out of any of its surprise points at once | The level's own schedule (`WaveScriptSpec.Surprises`), see "Writing a level's surprises" | the entry's |
-| Boss entrance / finale | The crowd in clusters with long breathers; the boss walks in with the last cluster | Every boss wave; the last wave takes three clusters | `BossBeats` 2, `FinaleBeats` 3, `BossBreather` 9 / 8 / 7 / 6 s, `MinBossBeatSeconds` 3 |
+| Boss entrance / finale | The crowd in clusters with long breathers; the boss walks in behind the last cluster (round 88c: `BossEntranceGap` 8 s after its last creature, see "Round 88c") | Every boss wave; the last wave takes three clusters | `BossBeats` 2, `FinaleBeats` 3, `BossBreather` 9 / 8 / 7 / 6 s, `MinBossBeatSeconds` 3 |
 
 Notes on what is emergent and what is not:
 
@@ -613,3 +613,51 @@ measured, by one procedure that is the same for every level.
 
 What the procedure does not do: it does not choose which wave is the hard one (the script and the solver do), and it
 does not judge fun. A level that reads its targets and plays badly is a script or map question.
+
+## Round 88c: the wave ceiling, the boss behind its crowd, the first raid (2026-11-21)
+
+Three rules from Remco's playtest of round 88b. None names a level.
+
+**1. The ceiling on a wave (`BalanceRules.WaveCeiling` 1.8, `WaveFormula.Shape`).** The formula is now
+`walk-in = DifficultyScale x level scalar x min(ramp x kind x peak, WaveCeiling) x boss relief` (boss crowd and
+after-boss factors are applied after the ceiling). Round 88b's ramp (x1.68 at the end) times a late peak times a heavy
+wave reached x2.6 of the level's middle: Shard Ridge wave 13 on Hard and Psycho, the wave between its raids, where 56 of
+60 lost Psycho runs ended and `WaveGrammarTests.NoStoredGroundWave_IsFarTougherThanItsLevel` went red. A peak in the
+first three fifths of a level keeps its whole factor (the latest that stays under the ceiling: a heavy peak at 0.64 of
+the level); a later one is cut to the ceiling. The ramp alone never meets it (1.68 < 1.8). It binds the third peak of
+the levels of sixteen waves and more; Landing Site and Glass Meadows (twelve waves, peaks at 4 and 8) do not move.
+The bound of the test was not touched.
+
+**2. A boss walks in behind its last cluster (`WaveGrammarRules.BossEntranceGap` 8 s, `BossTailStretch` 1.2,
+`WaveComposer`).** Until now the boss came out at the moment its last cluster started. On a heavy boss wave that cluster
+opens with the plated walkers, which walk at the boss's own pace (Cragback 0.6, Brood Mother 0.55): they covered the
+boss from the entrance to the base ("those Cragbacks were on top of the boss at the same speed"). Now the boss comes
+out `BossEntranceGap` seconds after the last creature of that cluster (the cluster's length is stretched by 1.2, the
+most a difficulty's head count times its tempo adds in play). The crowd is cells down the road, the boss closes the
+wave in plain view. Its own brood no longer comes out under its feet either: every creature of a brood breaks out of
+the boss's front and runs (`EscortDashFactor` 2.6 times its pace, six seconds at most) to a place of its own ahead of
+it, the first `EscortLeadCells` 1.2 clear of the two bodies, each next one `EscortSpacingCells` 0.7 further, four
+places (`EscortSlots`) before the first is used again (`EnemySpawner.SpawnEscort`, `EscortDash`). Tests:
+`Round88cTests.NoStoredLevelBoss_ComesOutWhileItsOwnRoadsCrowdStillDoes`, `EveryLevelBossesBrood_ReachesItsPlaceAheadOfTheBoss_WithinTheDash`.
+
+**3. The first air raid is announced and paid for (`FirstRaidRule`, `BalanceRules.FirstRaidWarningWaves` 2,
+`FirstRaidPurseGuns` 0 / 0 / 1 / 1, `DifficultyProfile.FirstRaidPurseGuns`).** Remco on Shard Ridge Hard: "suddenly
+tons of air units, none all game, and it comes together with a boss, when all money is already spent on guns". The
+rules said until now: Easy and Medium hold the flyers back until the bounties have paid for a sky gun; Hard and Psycho
+"are expected to know the level". A first play cannot. Now, on every level and difficulty, two waves before the
+level's first raid wave the HUD warns ("ALERT! Air raid in 2 waves."), and on Hard and Psycho the warning comes with a
+purse: the price of the level's sky gun (the cheapest gun the player is offered that aims up only; without one, the
+cheapest that can aim up) times the difficulty's factor. Once per level, paid into the wallet as it is (no income
+multiplier). The late surprise stays; what changes is that it can be answered. The options that were weighed:
+
+| Option | What it does for the complaint | Cost | Verdict |
+| --- | --- | --- | --- |
+| More starting money | Nothing unless the player knows to keep it: it is spent on ground guns in wave 1, ten waves before the raid. Softens every opening (start money is 10 % of a Hard level's coins) | Moves the openings Remco called right | Not taken |
+| A purse with the warning, two waves ahead | The coins arrive when the player is told what they are for and cannot have been spent before. One sky gun (120) is about 5 % of a Hard level's coins (Shard Ridge Hard: 2318) and 3.5 % of a Psycho level's | Flyer levels on Hard and Psycho get softer by that much; the closed loop re-centres | **Taken** (Hard and Psycho) |
+| The first raid never shares or follows a boss wave | Takes the squeeze out of Shard Ridge (boss in 10, raids in 11 and 12) but moves the raid scripts, and with them cells that sit on their target, and weakens the late surprise Remco likes | A regeneration of the raid scripts and a new measurement of the cells it moves | Not taken; the ceiling (rule 1) takes the peak between the raids down 15 % instead |
+| The preview warns ahead | The next-wave preview already shows the flyers one wave ahead; one wave is too late when the purse is spent | None | **Taken as the two-wave warning**, on all four difficulties |
+
+Not in the paper model: the ledger and the plan evaluator do not know the purse (they read start money, bounties and
+ore). The bots do get it, so the closed loop measures it; the paper pressure of the waves after a first raid on Hard
+and Psycho reads a little too high.
+

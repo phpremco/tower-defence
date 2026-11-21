@@ -25,3 +25,4 @@ MonoBehaviour:
   _bossHealthShare: 0.8
   _bossEscortShare: 1
   _escortWorth: 0.25
+  _firstRaidPurseGuns: 0

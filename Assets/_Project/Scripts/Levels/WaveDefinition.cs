@@ -32,8 +32,9 @@ namespace Game.Levels
         }
 
         /// <summary>A wave built in code, for tests and tools; the generator writes waves through serialized properties.</summary>
-        public WaveDefinition(IEnumerable<SpawnGroup> groups, float spawnJitter = DefaultSpawnJitter, float startDelay = DefaultStartDelay, float healthMultiplier = 1f, float bossHealthScale = 1f)
+        public WaveDefinition(IEnumerable<SpawnGroup> groups, float spawnJitter = DefaultSpawnJitter, float startDelay = DefaultStartDelay, float healthMultiplier = 1f, float bossHealthScale = 1f, bool airRaid = false)
         {
+            _airRaid = airRaid;
             _healthMultiplier = healthMultiplier;
             _bossHealthScale = bossHealthScale;
             _groups.AddRange(groups);

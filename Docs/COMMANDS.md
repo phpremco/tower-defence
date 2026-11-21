@@ -2184,3 +2184,29 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
   `Round88bBones.cs` (lists a boss rig's bones). **Order of a final:** rule passes, picks, finale stage, THEN the
   three-seed measurement (round 88b measured first; the finale stage then moved two boss assets and the acceptance
   test reads the records as another data state).
+
+## Round 88c: the first raid, the boss entrance, stills of a boss fight, the wave timeline by hand (added 2026-11-21)
+
+- **The design** is in Docs/WAVE_GRAMMAR.md and Docs/COMBAT_RULES.md, "Round 88c". In code: `FirstRaidRule`,
+  `AirRaidAlertView`, `BalanceRules.WaveCeiling` / `FirstRaidPurseGuns` / `FirstRaidWarningWaves` / `Escort*Cells` /
+  `EscortDashFactor`, `WaveGrammarRules.BossEntranceGap` / `BossTailStretch`, `EscortDash`,
+  `BossAbilityDefinition.FlightSeconds`.
+- **Data of the round without the full generator:** `bash Tools/PlayTest/stage.sh run ApplyRound88c.cs ApplyRound88c.Run`
+  (the purse on the four difficulties, five brood call sounds, the combat rules asset). Then re-stamp
+  (`r88b_restamp.sh <label>`): the rules are in the calibration's hash.
+- **Labs:** `stage.sh run Round88cLab.cs Round88cLab.FirstRaid` (`r88c_first_raid.txt`: per cell the first raid, the
+  warning wave, a boss beside it, the purse and its share of the level's coins) and `Round88cLab.Ladder`
+  (`r88c_ladder.txt`: Medium against Hard, crowd health, last boss, health per coin).
+- **Stills (stage, graphics on):** `OUT=Logs/r88c bash Tools/PlayTest/r88c_stills.sh menu alert bosswave volley win`.
+  `win` is the win rule in play (the last boss killed with creatures alive: still running; all killed: won).
+- **`r88c_field_probe.cs`** (`r88c_field_arg.txt`, words): `state`, `diag`, `bolts`, `purse`, `killboss`, `killall`,
+  `nogates`, `healbase`, `wavescale:<n>` (creatures spawned by hand as tough as wave n), `gotowave:<n>` (the wave
+  clock jumps: wave n starts on the next frame as stored; `skip_wave.cs` does nothing in the stage, the fast-forward
+  is developer-only).
+- **Pitfalls met this round:**
+  - `PR_SEEDS` is a list of seeds ("1,2,3", the default), not a count: `PR_SEEDS=3` plays seed 3 only.
+  - A stepped frame in the stage is 0.02 s unless `r17_fixed_step.cs` ran; time a still by a probe, not by frames.
+  - A fresh stage save owns only the first guns: a rule that reads the towers on offer (the purse) shows other numbers
+    there than with Remco's save.
+  - A foreground shell command is cut loose after three minutes; start anything longer in the background and poll.
+

@@ -83,7 +83,7 @@ MonoBehaviour:
     Spacing: 0.5
     Moving: 0
     Margin: 1.25
-    Reason: 'Five Oozers queued at a gate: one blast takes three.'
+    Reason: 'Five Oozers queued at a gate: a level 1 blast takes two of them, an upgraded one more.'
   - Trait: 16
     Enemy: ShardCrawler
     Count: 1

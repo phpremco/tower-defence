@@ -151,6 +151,17 @@ namespace Game.Balance
         /// </summary>
         public bool PeakOnARushBetweenRaids;
 
+        /// <summary>
+        /// The ceiling on what a wave's place, kind and peak together may do to its creatures (round 88c): ramp x kind x
+        /// peak never exceeds this multiple of the level's middle. The ramp of round 88b (x1.68 at the end) times a late
+        /// peak times a heavy wave reached x2.6 (Shard Ridge wave 13 on Hard and Psycho, the wave between its raids, where
+        /// 56 of 60 lost Psycho runs ended and the rule "no ground wave far tougher than its level" broke). A peak early or
+        /// in the middle of a level is untouched (the latest that stays under it: a heavy peak at 0.64 of the level); a
+        /// late peak is cut to the ceiling, so the last third of a level is carried by the ramp and the boss, not by one
+        /// wave. The boss-crowd and after-boss factors are applied after it.
+        /// </summary>
+        public float WaveCeiling = 1.8f;
+
         /// <summary>Seconds before the first wave and between waves, as the generator writes them: the model's purse runs on the same clock.</summary>
         public float FirstWaveDelay = 10f;
         public float WaveDelay = 8f;
@@ -263,7 +274,7 @@ namespace Game.Balance
         // Round 87: the fit of the formula on round 86's stored waves (Tools/PlayTest/r87_fit.py: 1.499 / 1.853 / 1.229 / 2.381).
         // Round 88b: 1.175 / 1.44 / 1.14 / 1.53 after the steeper ramp, the tower threat, the escorts, the blast cap and the
         // harder Hard and Psycho targets (two one-seed passes; the scalars had run onto their lower bound).
-        public float[] DifficultyScale = { 1.23f, 1.46f, 1.2f, 1.38f };
+        public float[] DifficultyScale = { 1.23f, 1.634f, 1.074f, 1.38f };
 
         public float DifficultyScaleFor(int difficulty) => DifficultyScale.Length == 0 ? 1f : DifficultyScale[System.Math.Min(difficulty, DifficultyScale.Length - 1)];
 
@@ -385,7 +396,7 @@ namespace Game.Balance
         /// </summary>
         // Round 88b: 1750 (2050 until then): the boss now brings a brood worth 0.3 to 0.9 of its bar and fires at the guns.
         public float BossBase = 1550f;
-        public float[] BossDifficulty = { 0.7f, 1f, 1.15f, 1.8f };
+        public float[] BossDifficulty = { 0.7f, 1f, 1.09f, 1.8f };
         // Round 88b: 0.16 with BossBase 1550 (0.12 with 2050): the first two levels send no flyers and nothing there ended a run
         // but the last boss (67 and 84 % of the lost runs), so the first bosses come down and the sixth level's stays.
         public float BossLevelGrowth = 0.16f;
@@ -438,6 +449,20 @@ namespace Game.Balance
 
         /// <summary>Share of its bounty an escort creature pays. Zero: a brood that grows with the walk must not pay for letting the boss walk.</summary>
         public float EscortBountyShare;
+
+        /// <summary>
+        /// Where a creature of the brood goes when it comes out of the boss (round 88c, Remco: "those Cragbacks were on top
+        /// of the boss at the same speed"). A Cragback walks at 0.6, a Brood Mother at 0.55: sent out at the boss's feet it
+        /// stays there and hides it for the whole walk. So every creature of a brood breaks out of the boss's front and
+        /// runs to a place of its own ahead of it: the first <see cref="EscortLeadCells"/> clear of the two bodies, each
+        /// next one <see cref="EscortSpacingCells"/> further, <see cref="EscortSlots"/> places before the first is used
+        /// again. It runs there at <see cref="EscortDashFactor"/> times its own pace and walks on at its own pace from
+        /// there, so the boss stays in view and the brood reaches the guns first, as an escort should.
+        /// </summary>
+        public float EscortLeadCells = 1.2f;
+        public float EscortSpacingCells = 0.7f;
+        public int EscortSlots = 4;
+        public float EscortDashFactor = 2.6f;
 
         /// <summary>Where the brood of a level boss joins its road on average, as a share of the road: the weights put its middle past halfway.</summary>
         public float EscortStartShare => EscortStartWeight + EscortEndWeight <= 0f ? 0.5f : (EscortStartWeight * 0.5f + (EscortEndWeight - EscortStartWeight) / 3f) / ((EscortStartWeight + EscortEndWeight) * 0.5f);
@@ -500,6 +525,22 @@ namespace Game.Balance
         public bool[] FlyersAfterBounties = { true, true, false, false };
 
         public bool FlyersAfterBountiesFor(int difficulty) => FlyersAfterBounties.Length > 0 && FlyersAfterBounties[System.Math.Min(difficulty, FlyersAfterBounties.Length - 1)];
+
+        /// <summary>
+        /// The first air raid of a level is announced and paid for (round 88c, Remco on Shard Ridge Hard: "suddenly tons
+        /// of air units, none all game ... when all money is already spent on guns"). <see cref="FirstRaidWarningWaves"/>
+        /// waves before the level's first raid wave the player is warned, and with the warning comes a purse worth this
+        /// many of the cheapest gun the level sells that can aim up. Easy and Medium get the warning only: there the
+        /// first-flyer rule above already holds the flyers back until the bounties have paid for the gun. On Hard and
+        /// Psycho nothing held them back ("expected to know the level"), which a first play cannot: the purse is that
+        /// knowledge in coins, once per level, and the late surprise itself stays.
+        /// </summary>
+        public float[] FirstRaidPurseGuns = { 0f, 0f, 1f, 1f };
+
+        /// <summary>How many waves before its first air raid a level warns the player (and pays the purse).</summary>
+        public int FirstRaidWarningWaves = 2;
+
+        public float FirstRaidPurseGunsFor(int difficulty) => FirstRaidPurseGuns.Length > 0 ? FirstRaidPurseGuns[System.Math.Max(0, System.Math.Min(difficulty, FirstRaidPurseGuns.Length - 1))] : 0f;
 
         /// <summary>
         /// The finale probe (round 22f) finds the boss health multiple the creative reference bot just beats on Medium; the data

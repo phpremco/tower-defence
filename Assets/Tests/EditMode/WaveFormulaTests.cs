@@ -40,6 +40,8 @@ namespace Game.Tests
                 AfterBossFactor = 0.8f,
                 BossCrowdFactor = 0.7f,
                 PeakFactor = 1.5f,
+                // Round 88c: the ceiling is a rule of its own (Round88cTests); these are the plain products.
+                WaveCeiling = 0f,
             };
             // The middle of a geometric ramp from 0.5 to 2 is one.
             Assert.AreEqual(3f * 1.25f, WaveFormula.WalkIn(rules, 1, 1.25f, 0.5f, WaveComposer.Kind.Plain, false, false, false), 0.0001f, "difficulty x level scalar");

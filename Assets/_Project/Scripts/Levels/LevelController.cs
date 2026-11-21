@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Game.Balance;
 using Game.Core;
 using Game.Enemies;
 using Game.Economy;
@@ -27,6 +28,8 @@ namespace Game.Levels
         private WaveCaller _caller;
         private bool _fastForwardAllowed;
         private ProgressService _progress;
+        private int _firstRaid = FirstRaidRule.None;
+        private int _raidWarningWave = FirstRaidRule.None;
 
         public void Initialize(LevelContext context, WaveDefinition[] waves, EnemySpawner spawner, IInputProvider input, ProgressService progress, WaveCallDefinition callRules, bool fastForwardAllowed, System.Random random = null)
         {
@@ -37,6 +40,8 @@ namespace Game.Levels
             _input = input;
             _fastForwardAllowed = fastForwardAllowed;
             _clock = new WaveClock(StartDelays(waves));
+            _firstRaid = FirstRaidRule.FirstRaid(waves);
+            _raidWarningWave = FirstRaidRule.WarningWave(_firstRaid, BalanceRules.Default.FirstRaidWarningWaves);
             _caller = new WaveCaller(callRules);
             _progress = progress;
 
@@ -219,6 +224,25 @@ namespace Game.Levels
             {
                 _context.BossWaveStarted.Raise();
             }
+
+            WarnOfTheFirstRaid(index);
+        }
+
+        // The level's first air raid is announced a few waves ahead, with the purse for the air defence (FirstRaidRule).
+        private void WarnOfTheFirstRaid(int index)
+        {
+            if (index != _raidWarningWave)
+            {
+                return;
+            }
+
+            int purse = FirstRaidRule.Purse(_context.AvailableTowers, _context.Difficulty);
+            if (purse > 0)
+            {
+                _context.Wallet.Add(purse);
+            }
+
+            _context.AirRaidWarned.Raise(new AirRaidWarning(_firstRaid - index, purse));
         }
 
         private static EnemyDefinition BossOf(WaveDefinition wave)

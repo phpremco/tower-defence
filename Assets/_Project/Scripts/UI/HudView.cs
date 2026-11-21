@@ -23,6 +23,8 @@ namespace Game.UI
         private const float LineHeight = 44f;
         private const float TopBarHeight = 72f;
         private const float RadarGap = 12f;
+        // Under the boss bar and the Codex note (CodexToast hangs at 196 and is 56 high), so the three never share a place.
+        private const float AirAlertTop = 260f;
         private const float TopTextY = -16f;
         private const float HeroTextGap = 40f;
         private const float BottomBarHeight = 166f;
@@ -132,6 +134,9 @@ namespace Game.UI
             gameObject.AddComponent<BossMarkerView>().Initialize(context, worldLabels, camera, keepOut);
             gameObject.AddComponent<RearNestMarkerView>().Initialize(context, worldLabels, camera, keepOut);
             gameObject.AddComponent<SurprisePingView>().Initialize(context, worldLabels, camera, keepOut);
+            var airAlert = gameObject.AddComponent<AirRaidAlertView>();
+            airAlert.Initialize(context, safe, AirAlertTop);
+            keepOut.Add(airAlert.Panel);
             var bossBar = gameObject.AddComponent<BossHealthView>();
             bossBar.Initialize(context, safe);
             keepOut.Add(bossBar.Panel);

@@ -6,7 +6,8 @@ namespace Game.Towers
 {
     /// <summary>
     /// Shows what a boss does to a structure without moving the structure itself: a tower flung up that lands tilted and
-    /// rights itself when its upset time runs out, and a gate that sags under the weight of a boss standing on it. The
+    /// rights itself when its upset time runs out, a gate that sags under the weight of a boss standing on it, and (round
+    /// 88c) a structure that shudders when a real blow lands on it (a boss's bolt), so the player sees which gun was hit. The
     /// whole look (model, stars, bar, smoke) is lifted onto a pivot only while it is displaced and handed back after, so
     /// the tower's logic position and everything that rebuilds its look stay untouched.
     /// </summary>
@@ -23,6 +24,13 @@ namespace Game.Towers
         private const float SagDrop = 0.12f;
         private const float SagWobbleDegrees = 1.6f;
         private const float SagWobbleSpeed = 5f;
+        // A blow is a hit that takes at least this share of the structure's full health at once: a boss's bolt, not a
+        // nibble or a beam's tick (those would keep it shaking all the time).
+        private const float BlowShare = 0.03f;
+        private const float StruckSeconds = 0.4f;
+        private const float StruckDegrees = 7f;
+        private const float StruckSpeed = 42f;
+        private const float StruckSquash = 0.08f;
         private const int LandDust = 26;
         private static readonly Color DustColour = new Color(0.42f, 0.36f, 0.3f, 0.7f);
 
@@ -33,18 +41,35 @@ namespace Game.Towers
         private Vector3 _axis = Vector3.right;
         private float _tossAge = float.PositiveInfinity;
         private bool _landed;
+        private float _lastHealth;
+        private float _struck;
 
         private void Awake()
         {
             _tower = GetComponent<Tower>();
             _tower.Tossed += OnTossed;
             _tower.BurdenChanged += OnBurdenChanged;
+            _tower.StateChanged += OnStateChanged;
         }
 
         private void OnDestroy()
         {
             _tower.Tossed -= OnTossed;
             _tower.BurdenChanged -= OnBurdenChanged;
+            _tower.StateChanged -= OnStateChanged;
+        }
+
+        // A blow lands: the structure rocks on its footing for a moment.
+        private void OnStateChanged(Tower tower)
+        {
+            float health = tower.Health.Current;
+            if (!tower.IsWrecked && _lastHealth - health >= tower.Health.Max * BlowShare)
+            {
+                _struck = StruckSeconds;
+                Lift();
+            }
+
+            _lastHealth = health;
         }
 
         private void OnTossed(Tower tower, Vector3 away, float seconds)
@@ -93,10 +118,19 @@ namespace Game.Towers
                 turn *= Quaternion.AngleAxis(wobble, Vector3.forward);
             }
 
+            if (_struck > 0f)
+            {
+                _struck -= dt;
+                float left = Mathf.Clamp01(_struck / StruckSeconds);
+                float phase = Time.time * StruckSpeed;
+                turn *= Quaternion.AngleAxis(Mathf.Sin(phase) * StruckDegrees * left, Vector3.forward) * Quaternion.AngleAxis(Mathf.Cos(phase * 0.8f) * StruckDegrees * left, Vector3.right);
+                squash *= 1f - StruckSquash * left;
+            }
+
             _pivot.localPosition = offset;
             _pivot.localRotation = turn;
             _pivot.localScale = new Vector3(1f, squash, 1f);
-            if (!Tossing && burden <= 0f)
+            if (!Tossing && burden <= 0f && _struck <= 0f)
             {
                 Lower();
             }

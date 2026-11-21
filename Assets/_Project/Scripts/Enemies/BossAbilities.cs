@@ -24,6 +24,7 @@ namespace Game.Enemies
 
         private readonly List<IStructure> _volleyTargets = new List<IStructure>(8);
         private readonly List<Vector3> _volleyPoints = new List<Vector3>(8);
+        private readonly List<VolleyBolt> _boltsInFlight = new List<VolleyBolt>(8);
 
         private Enemy _enemy;
         private StructureRegistry _structures;
@@ -69,8 +70,21 @@ namespace Game.Enemies
         /// <summary>Raised when the laser switches on (true) or off (false).</summary>
         public event Action<bool> LaserChanged;
 
-        /// <summary>Raised with the launch point, the points hit and the colour whenever a volley flies.</summary>
-        public event Action<Vector3, IReadOnlyList<Vector3>, Color> Volleyed;
+        /// <summary>Raised with the launch point, the points aimed at, the colour and the seconds of flight whenever a volley is launched.</summary>
+        public event Action<Vector3, IReadOnlyList<Vector3>, Color, float> Volleyed;
+
+        /// <summary>Raised with the point and the colour when one bolt of a volley lands and its damage is dealt.</summary>
+        public event Action<Vector3, Color> VolleyLanded;
+
+        // One bolt of a volley on its way: the damage is dealt when it lands (round 88c), not when it leaves.
+        private struct VolleyBolt
+        {
+            public IStructure Target;
+            public Vector3 Point;
+            public float Damage;
+            public float Left;
+            public Color Color;
+        }
 
         /// <summary>Raised with the boss position and colour whenever it rallies the field.</summary>
         public event Action<Vector3, Color> Rallied;
@@ -222,6 +236,8 @@ namespace Game.Enemies
         private void OnDisable()
         {
             StopLaser();
+            // Its bolts in the air go out with it (the view takes them out of the sky too).
+            _boltsInFlight.Clear();
         }
 
         // A pooled boss starts its clocks afresh each time it is sent out.
@@ -241,6 +257,7 @@ namespace Game.Enemies
             }
 
             _pendingLaserTarget = null;
+            _boltsInFlight.Clear();
             // A pooled boss sent out again has no staged walk until the spawner stages the new one.
             _brood.Stop();
             StopLaser();
@@ -262,6 +279,8 @@ namespace Game.Enemies
             {
                 BurnTarget(dt);
             }
+
+            LandBolts(dt);
 
             if (_wardIndex >= 0)
             {
@@ -327,11 +346,13 @@ namespace Game.Enemies
                     _volleyPoints.Clear();
                     for (int i = 0; i < _volleyTargets.Count; i++)
                     {
-                        _volleyTargets[i].TakeDamage(ability.Damage * _damageMultiplier);
                         _volleyPoints.Add(_volleyTargets[i].Position);
+                        _boltsInFlight.Add(new VolleyBolt { Target = _volleyTargets[i], Point = _volleyTargets[i].Position, Damage = ability.Damage * _damageMultiplier, Left = ability.FlightSeconds, Color = ability.Color });
                     }
 
-                    Volleyed?.Invoke(_enemy.Position + Vector3.up * BeamHeight, _volleyPoints, ability.Color);
+                    Volleyed?.Invoke(_enemy.Position + Vector3.up * BeamHeight, _volleyPoints, ability.Color, ability.FlightSeconds);
+                    // A volley without a flight time lands in the step it is fired.
+                    LandBolts(0f);
                     break;
                 case BossAbilityKind.Rally:
                     _rally?.Invoke(_enemy, ability.SpeedFactor, ability.SweepSeconds);
@@ -392,6 +413,29 @@ namespace Game.Enemies
             }
 
             return due;
+        }
+
+        // The bolts of a volley land after their flight: a gun wrecked, sold or scrapped in the meantime takes nothing (a
+        // sold gun is gone from the registry and from the scene: it must not be touched, only asked for by the registry).
+        private void LandBolts(float dt)
+        {
+            for (int i = _boltsInFlight.Count - 1; i >= 0; i--)
+            {
+                VolleyBolt bolt = _boltsInFlight[i];
+                bolt.Left -= dt;
+                if (bolt.Left > 0f)
+                {
+                    _boltsInFlight[i] = bolt;
+                    continue;
+                }
+
+                _boltsInFlight.RemoveAt(i);
+                if (_structures.Contains(bolt.Target) && bolt.Target.IsAlive)
+                {
+                    bolt.Target.TakeDamage(bolt.Damage);
+                    VolleyLanded?.Invoke(bolt.Point, bolt.Color);
+                }
+            }
         }
 
         // Each time the health falls past the next share, a brood of minions breaks off.

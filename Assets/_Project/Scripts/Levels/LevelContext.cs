@@ -276,6 +276,9 @@ namespace Game.Levels
         /// <summary>Raised with the place of a rift behind the defence gate when Voss warns about it (the HUD points at it).</summary>
         public GameEvent<Vector3> RearNestWarned { get; } = new GameEvent<Vector3>();
 
+        /// <summary>Raised once per level, a few waves before its first air raid, with how far off the raid is and the purse paid for the air defence (<see cref="FirstRaidRule"/>, round 88c).</summary>
+        public GameEvent<AirRaidWarning> AirRaidWarned { get; } = new GameEvent<AirRaidWarning>();
+
         /// <summary>Raised where a surprise comes out: the first creature out of a surprise spawn point or a nest behind the gate after a silence (the radar and the HUD ping it, <see cref="SurpriseWatch"/>).</summary>
         public GameEvent<Vector3> SurpriseSpotted { get; } = new GameEvent<Vector3>();
 

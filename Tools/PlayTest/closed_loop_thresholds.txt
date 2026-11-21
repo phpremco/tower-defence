@@ -31,3 +31,11 @@ scalar_most 1.4
 # (Hard x0.95 -> x0.85, Psycho x1.06 -> x0.95); Easy and Medium stay. Written before any measurement of round 88b.
 target_hard 0.85
 target_psycho 0.95
+# 2026-11-21 (round 88c), a design decision by Remco after playing round 88b, written before any measurement of round
+# 88c: "the gap between Medium and Hard on Landing Site feels too large (Hard about three times harder than Medium)",
+# and earlier "Medium is not much harder than Easy". The ladder is smoothed, the two meet in the middle: the sensible
+# rung of Medium breaks even one ladder step earlier (HARDER, x1.32 -> x1.18) and that of Hard one step later (SOFTER,
+# x0.85 -> x0.95, the value frozen on 2026-11-20 before round 88b moved it). Easy and Psycho stay ("Psycho hard but
+# doable"). Note: the Hard line LOOSENS a target; it is Remco's own decision, not a reaction to a reading.
+target_medium 1.18
+target_hard 0.95

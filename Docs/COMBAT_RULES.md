@@ -521,3 +521,21 @@ What the matrix shows that is **not** fixed, because it is a design choice:
 - **The Railgun is three times worse per coin than the Cannon against armoured troops** (45 against 17). It is single
   target and slow; it earns its price on reach (6 against 4) and on one big armoured body, which Crystal Plains 1 to 6 do
   not have.
+
+## Round 88c: a volley flies, a struck gun shudders, the brood runs ahead (2026-11-21)
+
+- **A boss's volley has a flight time** (`BossAbilityDefinition.FlightSeconds`, 1.1 s on the three level-boss volleys;
+  zero lands at once). The damage is dealt when the bolt lands, not when it leaves (`BossAbilities.LandBolts`,
+  `VolleyLanded`): the player sees the bolt arrive, then the bar drop. A gun wrecked or sold in the meantime takes
+  nothing; a boss that dies takes its bolts in the air with it. Numbers unchanged (14 a bolt, three guns, every 3 s,
+  within 5 cells).
+- **What the player sees** (views only): a flare of sparks at the boss's head, three large bolts with a wake that are
+  lobbed to their guns (`EnemyBoltView.Lob`), a shell of the bolt's colour that bursts over each gun, the hit sound,
+  and the gun rocking on its footing (`TowerDisplacementView`: any single blow of 3 % of a structure's health or more).
+- **The boss's ground mark is quiet** (`BossAuraView`): a faint shadow, one thin dull-red ring, two small chevrons. No
+  white core, no glow band, no ripple. A creature shown outside a fight (the menu backdrop) wears none.
+- **The brood runs ahead of its boss**: see Docs/WAVE_GRAMMAR.md, "Round 88c", rule 2.
+- **Win rule, checked** (`WaveClock.IsCleared`, `EnemySpawner.Alive`): a level is won when every wave has started, the
+  last one has sent its last creature (held nest spawns included) and nothing lives, whatever sent it (a wave, a nest,
+  a brood, a split). `Alive` is now the length of the living list itself and a creature is released once only.
+

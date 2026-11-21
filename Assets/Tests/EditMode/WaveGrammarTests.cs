@@ -592,7 +592,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ABossWave_ComesInClusters_AndTheBossWalksInWithTheLast()
+        public void ABossWave_ComesInClusters_AndTheBossWalksInBehindTheLast()
         {
             Dictionary<string, EnemyStats> enemies = Enemies();
             WaveScriptSpec script = Script();
@@ -603,11 +603,13 @@ namespace Game.Tests
                     WaveSpec wave = WaveComposer.Compose(script, enemies, d, number, 1f, -1, Rules);
                     Assert.AreEqual(number == script.Waves ? Rules.Grammar.FinaleBeats : Rules.Grammar.BossBeats, wave.Beats, $"difficulty {d} wave {number}");
                     GroupSpec boss = wave.Groups.First(g => g.Enemy.IsBoss);
-                    List<float> crowd = Times(wave.Groups.Where(g => !g.Enemy.IsBoss));
-                    float lastCluster = crowd.Where(t => t >= boss.Delay - 1e-3f).DefaultIfEmpty(-1f).Min();
-                    Assert.AreEqual(boss.Delay, lastCluster, 1.5f, "the boss comes with the first creatures of the last cluster");
-                    float before = crowd.Where(t => t < boss.Delay - 1e-3f).Max();
-                    Assert.GreaterOrEqual(boss.Delay - before, Rules.Grammar.BossBreatherFor(d) - 1e-3f, "a breather before the boss");
+                    // The crowd on the ground: the flyers that escort a last boss come out after it by design.
+                    List<float> crowd = Times(wave.Groups.Where(g => !g.Enemy.IsBoss && !g.Enemy.Flies));
+                    // Round 88c: the boss closes its wave, out behind the last creature of its last cluster (it used to come
+                    // out with the first of them, and walked under its own plated crowd).
+                    float tail = crowd.Max();
+                    Assert.GreaterOrEqual(boss.Delay - tail, Rules.Grammar.BossEntranceGap - 1e-3f, "the boss comes out a gap after the last creature of its crowd");
+                    Assert.LessOrEqual(boss.Delay - tail, Rules.Grammar.BossEntranceGap + (tail * (Rules.Grammar.BossTailStretch - 1f)) + 1e-3f, "and no later than the stretched cluster asks");
                     Assert.AreEqual(SurpriseKind.None, wave.Surprise, "a boss wave carries no surprise");
                 }
             }

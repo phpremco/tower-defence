@@ -34,7 +34,6 @@ namespace Game.Boot
         private const float GrowlVolume = 0.8f;
         private const float PowerVolume = 3f;
         private const float VolleyVolume = 0.5f;
-        private const float VolleyFlightSeconds = 1.1f;
         private const float RegrowVolume = 0.7f;
         private const float SpawnVolume = 2f;
         private const float LaserStartVolume = 0.7f;
@@ -240,11 +239,11 @@ namespace Game.Boot
                     _player.Play(VoicingFor(enemy).LaserStart, LaserStartVolume, SfxKind.Priority);
                 }
             };
-            abilities.Volleyed += (origin, points, color) =>
+            abilities.Volleyed += (origin, points, color, flight) =>
             {
                 Voicing voicing = VoicingFor(enemy);
                 _player.Play(voicing.VolleyLaunch, VolleyVolume, SfxKind.Priority);
-                _player.Schedule(voicing.VolleyImpact, VolleyVolume, SfxKind.Priority, VolleyFlightSeconds);
+                _player.Schedule(voicing.VolleyImpact, VolleyVolume, SfxKind.Priority, flight);
             };
         }
 

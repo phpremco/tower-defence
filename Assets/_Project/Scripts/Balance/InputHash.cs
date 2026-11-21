@@ -118,6 +118,13 @@ namespace Game.Balance
             }
             // Round 87: the health formula and the boss formula (the waves follow from them at every solve).
             text.Append(F(r.RampStart)).Append(F(r.RampEnd)).Append(F(r.RushFactor)).Append(F(r.HeavyFactor)).Append(F(r.AirFactor)).Append(F(r.AfterBossFactor)).Append(F(r.BossCrowdFactor)).Append(F(r.PeakFactor)).Append(r.LongLevelWaves).Append(F(r.LongLevelPeakPhase)).Append(r.PeakOnARushBetweenRaids ? 1 : 0);
+            // Round 88c: the wave ceiling, the first-raid purse and warning, where a brood comes out.
+            text.Append("r88c").Append(F(r.WaveCeiling)).Append(r.FirstRaidWarningWaves).Append(F(r.EscortLeadCells)).Append(F(r.EscortSpacingCells)).Append(r.EscortSlots).Append(F(r.EscortDashFactor));
+            foreach (float guns in r.FirstRaidPurseGuns)
+            {
+                text.Append(F(guns));
+            }
+
             text.Append(F(r.BossBase)).Append(F(r.BossLevelGrowth)).Append(F(r.BossEarlyShare)).Append(F(r.FlyingBossShare));
             foreach (float[] values in new[] { r.PeakPhases, r.BossDifficulty })
             {

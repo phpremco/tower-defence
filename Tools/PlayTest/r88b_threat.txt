@@ -8,53 +8,53 @@ Assumptions: the first gate holds; nest and boss-entrance spawns walk the main r
 
 Level_C1_01 (Landing Site)
   difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
-  Easy    x0.45 |  116%   41%   42%   27% |   63%   24%   34%   27% |   18%    9%   18%   27% | Cragback 7%, BroodMother 17%
-  Medium  x0.45 |  135%   45%   42%   27% |   71%   26%   34%   27% |   18%    9%   18%   27% | Cragback 9%, BroodMother 17%
-  Hard    x1.00 |  472%  170%   93%   59% |  263%  103%   75%   59% |   81%   41%   41%   59% | Cragback 28%, BroodMother 75%
-  Psycho  x1.40 |  881%  330%  131%   83% |  510%  206%  105%   83% |  171%   86%   57%   83% | BroodMother 157%, Cragback 49%
+  Easy    x0.45 |   56%   20%   19%   13% |   29%   11%   14%   13% |    8%    4%    8%   13% | Cragback 4%, BroodMother 7%
+  Medium  x0.45 |   64%   22%   19%   13% |   32%   11%   14%   13% |    8%    4%    8%   13% | Cragback 4%, BroodMother 7%
+  Hard    x1.00 |  226%   83%   42%   29% |  119%   45%   31%   29% |   34%   17%   17%   29% | Cragback 14%, BroodMother 31%
+  Psycho  x1.40 |  419%  160%   58%   41% |  227%   89%   43%   41% |   70%   35%   23%   41% | BroodMother 65%, Cragback 24%
 
 Level_C1_02 (Glass Meadows)
   difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
-  Easy    x0.45 |  133%   46%   42%   27% |  101%   35%   37%   27% |   16%    8%   16%   27% | Cragback 16%, BroodMother 19%
-  Medium  x0.45 |  145%   49%   42%   27% |  110%   37%   37%   27% |   16%    8%   16%   27% | Cragback 18%, BroodMother 19%
-  Hard    x1.00 |  609%  204%   94%   59% |  455%  152%   82%   59% |   58%   29%   36%   59% | Cragback 80%, CoreWisp 30%, BroodMother 42%
-  Psycho  x1.40 | 1125%  393%  131%   83% |  852%  297%  115%   83% |  132%   66%   50%   83% | BroodMother 119%, Cragback 137%, CoreWisp 42%
+  Easy    x0.45 |   63%   23%   20%   13% |   47%   16%   16%   13% |    7%    3%    7%   13% | Cragback 8%, BroodMother 9%
+  Medium  x0.45 |   67%   24%   20%   13% |   50%   17%   16%   13% |    7%    3%    7%   13% | Cragback 8%, BroodMother 9%
+  Hard    x1.00 |  286%  104%   44%   29% |  208%   72%   35%   29% |   24%   12%   15%   29% | Cragback 37%, CoreWisp 16%, BroodMother 19%
+  Psycho  x1.40 |  526%  198%   61%   41% |  386%  138%   49%   41% |   54%   27%   21%   41% | BroodMother 53%, Cragback 63%, CoreWisp 22%
 
 Level_C1_03 (Shard Ridge)
   difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
-  Easy    x0.45 |   85%   33%   42%   27% |   41%   19%   34%   27% |   18%    9%   18%   27% | Cragback 2%, BroodMother 17%
-  Medium  x0.45 |  118%   41%   42%   27% |   47%   20%   34%   27% |   18%    9%   18%   27% | Cragback 3%, BroodMother 17%
-  Hard    x1.00 |  469%  165%   93%   59% |  161%   70%   75%   59% |   66%   33%   41%   59% | Cragback 10%, CoreWisp 23%, BroodMother 37%
-  Psycho  x1.40 |  968%  345%  131%   83% |  358%  158%  105%   83% |  149%   74%   57%   83% | Cragback 21%, BroodMother 105%, CoreWisp 32%
+  Easy    x0.45 |   52%   19%   19%   13% |   18%    8%   14%   13% |    8%    4%    8%   13% | Cragback 1%, BroodMother 7%
+  Medium  x0.45 |   77%   25%   19%   13% |   20%    8%   14%   13% |    8%    4%    8%   13% | Cragback 1%, BroodMother 7%
+  Hard    x1.00 |  336%  111%   42%   29% |   70%   30%   31%   29% |   27%   14%   17%   29% | Cragback 5%, CoreWisp 10%, BroodMother 15%
+  Psycho  x1.40 |  674%  225%   58%   41% |  155%   67%   43%   41% |   61%   31%   23%   41% | Cragback 10%, BroodMother 43%, CoreWisp 13%
 
 Level_C1_04 (Fault Line)
   difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
-  Easy    x0.45 |   79%   26%   14%    4% |   57%   23%   20%    4% |   32%   14%   15%    4% | Cragback 2%, Shalebat 4%, StormMatriarch 17%
-  Medium  x0.45 |  104%   32%   14%    4% |   84%   29%   20%    4% |   48%   18%   15%    4% | Cragback 2%, Shalebat 11%, StormMatriarch 17%
-  Hard    x1.00 |  569%  181%   90%   59% |  324%  118%   75%   59% |  177%   67%   41%   59% | Cragback 7%, BroodMother 37%, Shalebat 37%, StormMatriarch 37%
-  Psycho  x1.40 |  892%  307%  126%   83% |  416%  172%  105%   83% |  232%   99%   57%   83% | CoreWisp 32%, Cragback 6%, BroodMother 52%, Shalebat 30%, StormMatriarch 51%
+  Easy    x0.45 |   69%   23%   14%    4% |   53%   22%   20%    4% |   32%   14%   15%    4% | Cragback 1%, Shalebat 4%, StormMatriarch 17%
+  Medium  x0.45 |   96%   30%   14%    4% |   80%   28%   20%    4% |   48%   18%   15%    4% | Cragback 1%, Shalebat 11%, StormMatriarch 17%
+  Hard    x1.00 |  484%  147%   40%   29% |  266%   93%   44%    8% |  153%   55%   33%    8% | Cragback 4%, BroodMother 15%, Shalebat 37%, StormMatriarch 37%
+  Psycho  x1.40 |  750%  243%   56%   41% |  305%  119%   62%   11% |  178%   71%   46%   11% | CoreWisp 13%, Cragback 3%, BroodMother 22%, Shalebat 30%, StormMatriarch 51%
 
 Level_C1_05 (Quartz Flats)
   difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
-  Easy    x0.45 |  129%   45%   39%   32% |   82%   28%   32%   32% |   29%   13%   22%   32% | Cragback 7%, Shalebat 6%, CoreWisp 16%
-  Medium  x0.45 |  158%   52%   39%   32% |   96%   32%   32%   32% |   30%   13%   22%   32% | Cragback 9%, Shalebat 7%, CoreWisp 16%
-  Hard    x1.00 |  509%  174%   70%   71% |  341%  121%   58%    8% |  164%   65%   45%    8% | Cragback 25%, Shalebat 24%, StormMatriarch 49%, CoreWisp 23%
-  Psycho  x1.40 |  848%  325%  179%   83% |  580%  236%  163%   83% |  241%  115%  112%   83% | Cragback 37%, BroodMother 82%, StormMatriarch 50%, Shalebat 18%, CoreWisp 50%
+  Easy    x0.45 |   74%   26%   19%   18% |   49%   16%   13%   18% |   25%    7%    5%   18% | Cragback 3%, Shalebat 6%, CoreWisp 7%
+  Medium  x0.45 |   95%   30%   16%   18% |   59%   18%   13%   18% |   30%    9%    5%   18% | Cragback 4%, Shalebat 7%, CoreWisp 7%
+  Hard    x1.00 |  350%  126%   57%    8% |  264%   95%   58%    8% |  149%   58%   45%    8% | Cragback 12%, Shalebat 24%, StormMatriarch 49%, CoreWisp 10%
+  Psycho  x1.40 |  518%  202%   80%   11% |  371%  145%   81%   11% |  201%   85%   64%   11% | Cragback 18%, BroodMother 22%, StormMatriarch 68%, Shalebat 23%, CoreWisp 14%
 
 Level_C1_06 (Crysium Vein)
   difficulty  x      | 1.5 cells: alone played boss-pass /10s held | 3 cells: alone played boss-pass /10s held | 4.5 cells: alone played boss-pass /10s held | who hurts it at 3 cells (played)
-  Easy    x0.45 |  107%   31%   15%   23% |   79%   22%   11%   23% |   42%   12%    6%   23% | Cragback 4%, Shalebat 13%, PackAlpha 5%
-  Medium  x0.45 |  124%   35%   15%   23% |  100%   28%   11%   23% |   60%   17%    6%   23% | Cragback 3%, Shalebat 20%, PackAlpha 5%
-  Hard    x1.00 |  359%  121%   65%   71% |  257%   82%   46%   71% |  151%   47%   25%   71% | Cragback 6%, Shalebat 41%, CoreWisp 23%, PackAlpha 12%
-  Psycho  x1.40 |  780%  259%   91%   99% |  592%  198%   64%   99% |  368%  125%   51%   11% | StormMatriarch 51%, Cragback 12%, Shalebat 86%, CoreWisp 32%, PackAlpha 17%
+  Easy    x0.45 |   77%   22%    7%   10% |   64%   17%    4%   10% |   39%   10%    2%   10% | Cragback 2%, Shalebat 13%, PackAlpha 2%
+  Medium  x0.45 |  103%   28%    7%   10% |   89%   23%    4%   10% |   57%   15%    2%   10% | Cragback 1%, Shalebat 20%, PackAlpha 2%
+  Hard    x1.00 |  283%   90%   33%   41% |  204%   58%   19%   41% |  129%   36%   10%   41% | Cragback 3%, Shalebat 41%, CoreWisp 10%, PackAlpha 5%
+  Psycho  x1.40 |  653%  211%   52%   11% |  511%  163%   63%   11% |  337%  109%   51%   11% | StormMatriarch 51%, Cragback 6%, Shalebat 86%, CoreWisp 13%, PackAlpha 7%
 
 Summary, played at 3 cells (level: Easy / Medium / Hard / Psycho), then the worst boss pass on Medium:
-  Level_C1_01: 24% / 26% / [Medium boss pass 34%] 103% / 206% / 
-  Level_C1_02: 35% / 37% / [Medium boss pass 37%] 152% / 297% / 
-  Level_C1_03: 19% / 20% / [Medium boss pass 34%] 70% / 158% / 
-  Level_C1_04: 23% / 29% / [Medium boss pass 20%] 118% / 172% / 
-  Level_C1_05: 28% / 32% / [Medium boss pass 32%] 121% / 236% / 
-  Level_C1_06: 22% / 28% / [Medium boss pass 11%] 82% / 198% / 
+  Level_C1_01: 11% / 11% / [Medium boss pass 14%] 45% / 89% / 
+  Level_C1_02: 16% / 17% / [Medium boss pass 16%] 72% / 138% / 
+  Level_C1_03: 8% / 8% / [Medium boss pass 14%] 30% / 67% / 
+  Level_C1_04: 22% / 28% / [Medium boss pass 20%] 93% / 119% / 
+  Level_C1_05: 16% / 18% / [Medium boss pass 13%] 95% / 145% / 
+  Level_C1_06: 17% / 23% / [Medium boss pass 4%] 58% / 163% / 
 ==================== for comparison ====================
 Round 88b: tower threat on paper, BEFORE (the data as it stood)
 Reference tower: a level-1 Cannon (220 hit points), 6 cells before the first gate of the main road, 1.5 / 3 / 4.5 cells off the road (the worse side).

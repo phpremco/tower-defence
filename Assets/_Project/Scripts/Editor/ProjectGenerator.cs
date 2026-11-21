@@ -294,6 +294,7 @@ namespace Game.Editor
             so.FindProperty("_bossHealthShare").floatValue = sheet.BossHealth;
             so.FindProperty("_bossEscortShare").floatValue = sheet.BossEscort;
             so.FindProperty("_escortWorth").floatValue = sheet.EscortWorth;
+            so.FindProperty("_firstRaidPurseGuns").floatValue = FirstRaidPurseGunsOf(sheet.Id);
             so.ApplyModifiedPropertiesWithoutUndo();
             return profile;
         }

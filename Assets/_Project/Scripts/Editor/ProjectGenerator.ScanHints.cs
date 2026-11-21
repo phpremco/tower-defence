@@ -73,7 +73,7 @@ namespace Game.Editor
                     Say(voss, "The Laser Turret's beam is instant, so it keeps up. Better still: slow it down before it rolls past.")),
                 Scan("Prowler", "Dlg_Scan_Prowler",
                     Say(voss, "Pack hunters. When one falls, the rest go into a rage and run."),
-                    Say(voss, "So don't pick them off one by one. The Cannon's splash hits the whole pack at once.")),
+                    Say(voss, "So don't pick them off one by one. The Cannon's blast hurts several at once, and more with every upgrade.")),
             };
 
             var story = AssetDatabase.LoadAssetAtPath<StoryDefinition>(StoryAssetPath);
@@ -148,7 +148,7 @@ namespace Game.Editor
             ("Dlg_Scan_Shalebat", "Shalebats spit at the turrets they fly past. A Flak Turret beside the stone nests takes them first."),
             ("Dlg_Scan_Mossbat", "Mossbats are shed in flight by the big flyers. Keep a Flak Turret in reach of wherever those go."),
             ("Dlg_Scan_Roller", "Rollers curl up and roll three times faster than anything else. The Laser Turret's beam keeps up with them."),
-            ("Dlg_Scan_Prowler", "When one Prowler falls, the rest of its pack rages and runs. Hit them together with the Cannon's splash."),
+            ("Dlg_Scan_Prowler", "When one Prowler falls, the rest of its pack rages and runs. Hit several at once with the Cannon's blast; every upgrade widens it."),
             (GateUpgradeTipId, "A gate under attack can be upgraded during the level: it gets tougher and grows a turret of its own."),
             (MoveHeroTipId, "When another gate is being hammered, send Spencer there: {action:HeroPost} for the next post, or select that gate."),
             (RearNestWarningId, "A rift can open behind the gates. Keep a turret in reach of it, or near the base."),

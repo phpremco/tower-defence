@@ -541,10 +541,16 @@ namespace Game.Enemies
         /// <summary>Which cycle the creature travels in (a boss's hunting stride, its enraged walk); Move is its own.</summary>
         public void UseMoveCycle(ModelClipRole role) => _clips?.UseMove(role);
 
-        /// <summary>Keeps the health bar out of sight, for creatures shown outside a fight.</summary>
+        /// <summary>Keeps the health bar and a boss's ground mark out of sight, for creatures shown outside a fight (the menu, a cutscene).</summary>
         public void HideHealthBar()
         {
             _barHidden = true;
+            if (_aura != null)
+            {
+                Destroy(_aura);
+                _aura = null;
+            }
+
             _worldBar?.Show(false, false);
             if (_bar != null)
             {
@@ -950,10 +956,11 @@ namespace Game.Enemies
         }
 
         // A level boss wears a mark on the ground that no palette and no hit effect hides (BossAuraView, round 88a). A
-        // continent boss is staged by its own arena and mechanic and keeps its own look.
+        // continent boss is staged by its own arena and mechanic and keeps its own look, and a creature shown outside a
+        // fight (the menu backdrop, round 88c) wears none.
         private void AddBossAura(EnemyDefinition definition, float bodyHalf)
         {
-            if (definition.Boss != null)
+            if (definition.Boss != null || _barHidden)
             {
                 return;
             }

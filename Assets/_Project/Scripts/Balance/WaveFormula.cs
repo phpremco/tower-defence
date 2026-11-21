@@ -5,7 +5,7 @@ namespace Game.Balance
 {
     /// <summary>
     /// How tough the creatures of a wave are, as a formula (round 87; until then a solve against the paper ledger):
-    /// <c>walkIn = DifficultyScale[d] x levelScalar x Ramp(phase) x KindFactor x Peak</c>, and a level's boss as a bar of
+    /// <c>walkIn = DifficultyScale[d] x levelScalar x min(Ramp(phase) x Kind x Peak, WaveCeiling) x boss relief</c>, and a level's boss as a bar of
     /// its own, <c>BossBase x BossDifficulty[d] x (1 + BossLevelGrowth x level) x (BossEarlyShare + (1 - BossEarlyShare) x
     /// phase) x (flies ? FlyingBossShare : 1)</c>. Nothing here reads a purse, a defence or another wave, so a wave is
     /// what its place in the level says and the closed loop's one scalar per level moves every wave alike (and no boss).
@@ -21,15 +21,30 @@ namespace Game.Balance
             (float)(Math.Pow(rules.RampStart, 1f - phase) * Math.Pow(rules.RampEnd, phase));
 
         /// <summary>What a wave's kind, a boss in it and a boss just before it do to its creatures.</summary>
-        public static float KindFactor(BalanceRules rules, WaveComposer.Kind kind, bool bossWave, bool afterBoss)
+        public static float KindFactor(BalanceRules rules, WaveComposer.Kind kind, bool bossWave, bool afterBoss) =>
+            KindOnly(rules, kind) * Relief(rules, bossWave, afterBoss);
+
+        /// <summary>The factor of the wave's kind alone: a swarm, a heavy wave, a raid.</summary>
+        public static float KindOnly(BalanceRules rules, WaveComposer.Kind kind) =>
+            kind == WaveComposer.Kind.Rush ? rules.RushFactor : kind == WaveComposer.Kind.Heavy ? rules.HeavyFactor : kind == WaveComposer.Kind.Air ? rules.AirFactor : 1f;
+
+        /// <summary>What a boss in the wave and a boss just before it take off its creatures.</summary>
+        public static float Relief(BalanceRules rules, bool bossWave, bool afterBoss) =>
+            (bossWave ? rules.BossCrowdFactor : 1f) * (afterBoss ? rules.AfterBossFactor : 1f);
+
+        /// <summary>
+        /// Place, kind and peak together, under the ceiling (<see cref="BalanceRules.WaveCeiling"/>, round 88c): a late
+        /// peak on a heavy wave is cut to it, everything below it is the plain product.
+        /// </summary>
+        public static float Shape(BalanceRules rules, float phase, WaveComposer.Kind kind, bool peak)
         {
-            float factor = kind == WaveComposer.Kind.Rush ? rules.RushFactor : kind == WaveComposer.Kind.Heavy ? rules.HeavyFactor : kind == WaveComposer.Kind.Air ? rules.AirFactor : 1f;
-            return factor * (bossWave ? rules.BossCrowdFactor : 1f) * (afterBoss ? rules.AfterBossFactor : 1f);
+            float shape = Ramp(rules, phase) * KindOnly(rules, kind) * (peak ? rules.PeakFactor : 1f);
+            return rules.WaveCeiling > 0f ? Math.Min(shape, rules.WaveCeiling) : shape;
         }
 
         /// <summary>The multiplier the creatures of a wave walk in with.</summary>
         public static float WalkIn(BalanceRules rules, int difficulty, float levelScalar, float phase, WaveComposer.Kind kind, bool bossWave, bool afterBoss, bool peak) =>
-            rules.DifficultyScaleFor(difficulty) * levelScalar * Ramp(rules, phase) * KindFactor(rules, kind, bossWave, afterBoss) * (peak ? rules.PeakFactor : 1f);
+            rules.DifficultyScaleFor(difficulty) * levelScalar * Shape(rules, phase, kind, peak) * Relief(rules, bossWave, afterBoss);
 
         /// <summary>
         /// The bar (body plus armour, as spawned) of a level's boss: by the level's index on its continent, the

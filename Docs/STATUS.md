@@ -15604,3 +15604,203 @@ half of it. Three probes, two applies (`finale_probe_r88b_f1..f3.txt`); the last
    lever, not the peak rule.
 7. **Hard and Psycho targets one step harder**: is the opening of Hard still fair? The steeper ramp made first waves
    softer (x0.6 of the middle) and last waves tougher (x1.68).
+
+## Round 88c: Remco's playtest of round 88b - the boss in plain view, a volley you can see, the first raid announced and paid, Medium and Hard meet in the middle (2026-11-21)
+
+Not committed. One agent on HEAD 647cace1 (round 88b). All code and data work in the stage
+(`C:\Users\remco\TowerDefenseWorkers\stage`), copied back with `stage.sh back` at the end. Remco played in the open
+editor for the first hour (two processes at BelowNormal then; six clones only while his Play Mode was stopped, checked
+before every batch). His save was never written or copied (MD5 c713b83e... at the hand-over of the task,
+aba1c7fc... when the work started: he had played in between). The open editor is pid 42080 now (he restarted it).
+
+### What Remco said, what was found, what changed
+
+1. **The red ring round the boss in the main menu.** The menu backdrop uses the real `Enemy` and `EnemyView`
+   (`MenuCreature`), and its Hive Queen is a level boss, so round 88a's ground mark came with it. A creature shown
+   outside a fight (`EnemyView.HideHealthBar`: the menu, the cutscene swarm) now gets no mark. Probe in the menu: 0
+   `BossAuraView` components, 0 `BossAura` objects. Still `Logs/r88c/menu_no_ring.png` (and `_crop`).
+2. **"SURPRISE" -> "ALERT!"** (`hud.surprise_marker`; the only text of that kind in the tables). Still
+   `Logs/r88c/alert_label.png`.
+3. **"Is the game over when you kill the boss? Every enemy needs to be dead."** The rule in code was already that
+   (`WaveClock.IsCleared`: every wave started, the last one spawned with its held nest spawns, nothing alive;
+   `LevelController` has no other way to win). Checked in play on Landing Site (`r88c_stills.sh win`): last wave out,
+   boss killed with 12 creatures alive (4 of its brood) -> still running; the last one killed -> won. What was fragile:
+   `EnemySpawner.Alive` was a counter beside the list of the living, counted up in `Launch` and down in `Release`,
+   and `Release` had no guard against being called twice for one creature (killed in the step it reaches the base).
+   One double release would have ended a level with one creature alive. `Alive` is now `_living.Count` and `Release`
+   returns when the creature is no longer in the list. We could not reproduce an early win, so if Remco saw one it is
+   either this or something we did not find (question 1). Tests: `Round88cTests.TheLevel_IsWonOnlyWhen...` (the clock),
+   the in-play check above (not a stored PlayMode test).
+4. **"The rings are too much. My main issue was those Cragbacks on top of the boss at the same speed."**
+   - The mark (`BossAuraView`): the white-hot ring, the red glow band and the ripple are gone; left are a faint
+     shadow (alpha 0.62 -> 0.3), one thin dull-red ring (emission 4.5 -> 0.9, thinner, 55 % opaque) and two small
+     chevrons (0.42 -> 0.3, emission 4 -> 1).
+   - **The cause was not the brood but the wave**: `WaveComposer` sent the boss out at the moment its last cluster
+     started, and on a heavy boss wave that cluster opens with the plated walkers. A Cragback walks at 0.6 (0.53 to
+     0.67 with the spawner's pace variation), a Brood Mother at 0.55. New grammar rule: the boss comes out
+     `BossEntranceGap` 8 s after the last creature of its last cluster (`WaveGrammarRules.BossEntrance`, the
+     cluster's length stretched by 1.2). On Landing Site Hard wave 12 the boss now leaves the entrance with its
+     nearest Cragback 12 cells ahead.
+   - The brood (round 88b) did come out under the boss's feet (`route[0]` = the boss's position). Now every creature
+     of a brood comes out of the boss's front and runs (x2.6, six seconds at most) to one of four places 1.2 to 3.3
+     cells ahead; a creature that cannot gain that lead in time (a Cragback behind a Core Wisp or a Pack Alpha) comes
+     out behind the boss, which walks away from it (`EnemySpawner.SpawnEscort`, `EscortDash`).
+   - Stills `Logs/r88c/bosswave_1..3.png`: the stored wave 12 of Landing Site Hard, the Brood Mother alone on the
+     road with its thin ring and chevrons, one Skitter of its brood running ahead, the Cragbacks at the gate ahead.
+5. **"I can't see how the ant boss damages the towers."** Before: three bolts 0.17 across that flew 0.3 to 0.7 s
+   while the damage had already landed, and nothing on the gun. Now the volley is a projectile in the logic too
+   (`BossAbilityDefinition.FlightSeconds` 1.1 s; the damage is dealt on landing, a gun sold or wrecked meanwhile takes
+   nothing; the sound's impact was already scheduled at 1.1 s) and the views show: sparks at the boss's head, three
+   bolts 2.6 times the old size with a tapered wake (`EnemyBoltView.Lob`), a burst shell of the bolt's colour over
+   each gun, the "Hit" impact effect and the structure-hit sound, and the gun rocking on its footing for 0.4 s
+   (`TowerDisplacementView`, any blow of 3 % of a structure's health or more). Stills
+   `Logs/r88c/volley_1_launch.png` .. `volley_5_after.png`, sheet `volley_sheet.png`. The rocking cannot be judged
+   from a still.
+6. **Anchors.** Landing Site Psycho and Quartz Flats Medium: no level scalar and no Easy or Psycho factor was
+   changed. Quartz Flats Medium moves with item 8 (Medium one step tougher, Remco's later note).
+7. **Shard Ridge Hard, the late air raids.** The data: first raid in wave 11 right after the boss of wave 10, raids in
+   11, 12, 14 and 15, the level's toughest ground wave (a heavy peak) between them in 13, the last boss in 16. Two
+   rules (Docs/WAVE_GRAMMAR.md, "Round 88c", with the table of the options weighed):
+   - **the first raid is warned of two waves ahead on every difficulty, and on Hard and Psycho the warning brings a
+     purse of one sky gun** (`FirstRaidRule`, `DifficultyProfile.FirstRaidPurseGuns` 0 / 0 / 1 / 1,
+     `AirRaidAlertView`). Chosen over more start money (spent in wave 1 by a player who does not know yet) and over
+     "never a raid beside a boss" (moves raid scripts and weakens the surprise he likes). The purse is 3.3 to 6.2 % of
+     a level's coins (`Tools/PlayTest/r88c_first_raid.txt`).
+   - **the wave ceiling** (`BalanceRules.WaveCeiling` 1.8): ramp x kind x peak is capped, so a late peak no longer
+     stacks on the ramp. Shard Ridge wave 13: Hard x1.94 -> x1.47 (ceiling and item 8 together), Psycho
+     x2.23 -> x1.89, Medium x2.36 -> x2.24. This is the cause of round 88b's red test
+     `WaveGrammarTests.NoStoredGroundWave_IsFarTougherThanItsLevel`; its bound was not touched and it is green.
+8. **Added by Remco on the 21st: Medium and Hard too far apart ("Hard about three times harder than Medium"; earlier
+   "Medium not much harder than Easy").** Done with the difficulty factors, no level named: `DifficultyScale` Medium
+   x1.119 (one ladder step tougher), Hard x0.895 (one step softer), `BossDifficulty` Hard 1.15 -> 1.09 (Medium is the
+   boss formula's base and stays 1). **Targets, a dated line of `closed_loop_thresholds.txt` written before any
+   measurement of the round: Medium x1.32 -> x1.18 (harder), Hard x0.85 -> x0.95 (SOFTER: it loosens the Hard target
+   that round 88b tightened; Remco's decision).** Easy and Psycho untouched.
+
+### Paper checks (no bot ladder: Remco stopped the measurements and playtests himself)
+
+**Shard Ridge Hard, wave 13** (`r88b_economy.txt` re-run on the final data, plain sums without ore):
+
+| | Round 88b | Round 88c |
+| --- | --- | --- |
+| Wave 13 walk-in multiplier | x1.94 | x1.47 (-24 %) |
+| Wave 13 crowd health (47 creatures) | 4277 | 3245 |
+| Coins received before wave 13 (start + bounties) | 1080 | 1200 (the purse of 120 at wave 9) |
+| Health per coin held at wave 13 | 3.96 | 2.70 (-32 %) |
+| Raids 11 / 12 / 14 / 15, health of the whole wave | 1113 / 1613 / 2454 / 2827 | 996 / 1444 / 2196 / 2530 (451 of wave 11 flies) |
+| Warning | none (the preview one wave ahead) | wave 9: "ALERT! Air raid in 2 waves. +120 for air defence." |
+
+The 88b column is the same lab at 88b's Hard factor (x1.2 against x1.074 now) without ceiling and purse. One Flak
+Turret (120, 14 a blast at 0.55 s, four targets) is what the purse buys; whether one more gun is enough for four raids
+is for Remco's hands.
+
+**Medium against Hard** (`r88c_ladder.txt`; crowd = every creature of every wave as it walks in, boss = the last boss's
+bar; the 88b column is the same data at 88b's factors):
+
+| Level | Hard over Medium, crowd health: 88b -> 88c | last boss: 88b -> 88c | health per coin: 88b -> 88c |
+| --- | --- | --- | --- |
+| Landing Site | x1.29 -> x1.03 | x1.15 -> x1.09 | x0.82 -> x0.66 |
+| Shard Ridge | x1.18 -> x0.94 | x1.15 -> x1.09 | x0.84 -> x0.67 |
+| Quartz Flats | x1.21 -> x0.97 | x1.15 -> x1.09 | x0.78 -> x0.62 |
+
+Factors: `DifficultyScale` 1.23 / 1.46 / 1.2 / 1.38 -> **1.23 / 1.634 / 1.074 / 1.38**, `BossDifficulty` Hard 1.15 ->
+1.09. On paper Hard already had less health per coin than Medium in round 88b (Hard pays 57 % more coins) and still
+felt three times harder: what makes Hard hard is not in this table (30 % more bodies at a tighter tempo, the plated
+share, a boss in the middle of the level, harder bites on the structures). **So the paper cannot say whether one step
+each is enough or too much; that Hard is now too soft is a real possibility.** The lever is `DifficultyScale`
+(Medium and Hard), one number each.
+
+### Skipped on Remco's word (2026-11-21, evening)
+
+- **No closed loop, no three-seed final, no grace gate, no finale probe on the final data.** A tuning pass with the
+  loop's next scalars was applied, measured for nothing and taken out again: the level scalars are round 88b's
+  (0.76 / 0.88 / 0.76 / 1.04 / 0.9 / 0.79). `closed_loop_records.txt` is round 88b's and names records of other
+  data: the acceptance test reads "inconclusive", as in 88b.
+- A finale probe was run on the intermediate state (24 of 24 without touching a continent boss,
+  `finale_probe_r88c_f1.txt`); the final data has Hard's crowds 4 % softer and Medium's 5 % tougher than that state,
+  so Medium's finales are **not** confirmed.
+- The skilled picks WERE searched again (on the intermediate state, `skilled_picks_r88c_report.txt`) and
+  `Tools/PlayTest/Plans` and `skilled_picks.txt` are that batch's (the old ones: `Plans_old_r88c/`,
+  `skilled_picks_before_r88c.txt`). They are bot data only; they are stale against the final factors by one ladder
+  step on Medium and Hard.
+- The role matrix of COMBAT_RULES section 4 was not re-run. The other paper labs were (`r88b_*.txt`, on the
+  intermediate state, `r88b_economy.txt` on the final one).
+
+### From round 88b's open list
+
+- **Paper labs re-run at the current numbers**: `r88b_threat.txt`, `r88b_escort.txt`, `r88b_economy.txt`,
+  `r88b_raids.txt`, `r88b_maps.txt`, `r88b_cannon_cap.txt`, `r88b_cannon_roles.txt`; new `r88c_first_raid.txt`,
+  `r88c_ladder.txt` (`Round88cLab.cs`).
+- **Sounds for the five silent brood calls** (existing approved recordings, `ProjectGenerator.Audio` voice rows, written
+  by `ApplyRound88c`): Pack Alpha its howl, Acid Empress its screech, Crystal Warlord the power pulse, Sky Sovereign
+  its tail whip, Roller King its heavy step.
+- **A boss's brood in the wave preview** (`WavePreview`): a plus on the creature's number when the wave sends it
+  anyway ("x12+"), else a "+brood" chip after the boss, while the strip has a place (`WavePreview.Places` 6).
+- **Stale texts**: the Prowler scan line and loading tip (the Cannon's blast "hurts several at once, and more with
+  every upgrade"), the mob fight's reason ("a level 1 blast takes two of them").
+- **A wrecked base turret** still stays wrecked: a base defence cannot be sold (so not scrapped) and a wrecked tower
+  cannot be repaired (`Tower.NeedsRepair` is for gates only). Boss volleys reach it at the doorstep. It breaks no
+  written rule, so it was not changed (question 3).
+- Kept: boss armour share 0.5, Cannon 2 / 3 / 4.
+
+### A bug of this round, found by the bots and fixed
+
+The first version of the flying volley touched a gun that had been sold while the bolt was in the air
+(`MissingReferenceException` in `BossAbilities.LandBolts`, twice in the picks batch on one clone; the boss lost one
+frame of its powers each time). The bolt now asks the structure registry first and keeps its landing point from the
+launch. Test `Round88bThreatTests.ABoltInTheAir_TakesNothingFromAGunThatWasSoldMeanwhile`. The picks were played
+before the fix; the final measurement after it.
+
+### Gates and tests
+
+- **Compiles** in the stage and in the open project (after `stage.sh back`): no errors; the one warning is round
+  87's (`BalanceProbeTests` CS0618).
+- **EditMode, whole suite on w6, final data** (`Tools/PlayTest/r88c_suite3.xml`): 1316 tests, **1264 passed, 1 failed,
+  1 inconclusive**, 50 skipped (round 88b: 1303 / 1250 / 2 / 1 / 50). The red is round 87's grace gate on stale rows
+  (not measured, see "Skipped"); the inconclusive is the closed-loop acceptance (records of other data). Round 88b's
+  second red (`NoStoredGroundWave_IsFarTougherThanItsLevel`) is green by the wave ceiling.
+- New: `Round88cTests` (11), two in `Round88bThreatTests` (the bolt's flight, a gun sold under a bolt).
+- **Tests changed to follow a rule change (no bound widened):** `WaveGrammarTests.ABossWave_...` (the boss behind its
+  last cluster instead of with it), `WavePreviewTests` (a brood is listed; "marked first" counts a brood chip as
+  marked), `WaveFormulaTests.AWave_WalksInOnItsFactors` (its hand-made rules switch the ceiling off; the ceiling has
+  its own test), the `Volley` / `Ability` helpers of `Round88bThreatTests` and `EnemyBehaviourTests` (flight time zero:
+  they read what a volley does, not when).
+- **Thresholds:** one dated line in `closed_loop_thresholds.txt` (item 8): Medium harder, **Hard softer**.
+
+### Slips of this round
+
+- The first purse rule took the cheapest gun that can aim up at all, which is the Gun Turret (50); seen in the still,
+  corrected to the level's sky gun.
+- The flying volley's first version touched a sold gun (above); the bots found it, not a test.
+- The final measurement was started with `PR_SEEDS=3` (seed 3 only, not three seeds) and ran 20 minutes before it
+  was noticed; restarted, then stopped on Remco's word.
+- Two hours went into a picks batch that the change of plan made worthless for this round.
+
+### Files
+
+- New code: `Levels/FirstRaidRule.cs`, `AirRaidWarning.cs`, `EscortDash.cs`; `UI/AirRaidAlertView.cs`;
+  `Enemies/BoltBurst.cs`; `Editor/ProjectGenerator.Round88c.cs`; `Tests/EditMode/Round88cTests.cs`.
+- Changed code: see `git status` (balance: `BalanceRules`, `WaveFormula`, `WaveComposer`, `WaveGrammarRules`,
+  `InputHash`; enemies: `BossAbilities`, `BossAbilityDefinition`, `BossAbilityView`, `BossAuraView`, `EnemyBoltView`,
+  `EnemyView`; levels: `EnemySpawner`, `LevelController`, `LevelContext`, `DifficultyProfile`, `WaveDefinition`,
+  `WavePreview`, `WavePreviewEntry`; `TowerDisplacementView`; UI: `HudView`, `WavePreviewView`; `CreatureChorus`;
+  generator: `ProjectGenerator` (difficulty), `.Audio`, `.Damage`, `.ScanHints`).
+- Changed data: the four difficulties (purse), five boss voices, `CombatRules.asset` (a reason text), the six wave
+  assets (boss entrance, ceiling, Medium and Hard factors), `BalanceCalibration.asset` (stamp), the two string tables.
+- Tools: `Scripts/ApplyRound88c.cs`, `Scripts/Round88cLab.cs`, `r88c_stills.sh`, `r88c_field_probe.cs`,
+  `r88c_menu_probe.cs`, `r88c_cam_shot.cs`, `r88c_bolt_probe.cs`, `r88c_towers_near_boss.cs`; reports
+  `r88c_first_raid.txt`, `r88c_ladder.txt`, `skilled_picks_r88c_*`, `finale_probe_r88c_f1.txt`, `r88c_suite3.xml`.
+- Docs: WAVE_GRAMMAR and COMBAT_RULES ("Round 88c"), COMMANDS ("Round 88c"), this section,
+  `Docs/PLAYTEST_2026-11-22.md`. Stills: `Logs/r88c/`.
+
+### Questions for Remco
+
+1. **Did you see a level end with creatures still alive?** We could not make it happen; the rule and the counter are
+   now provably "nothing lives". If it happens again: which level, wave and what was left.
+2. **Medium and Hard after one step each:** right, or did Hard get too soft? One number each to move.
+3. **A wrecked base turret** cannot be repaired or rebuilt for the rest of the level. Recommendation: let it be
+   rebuilt like a gate, at a price (it is a permanent upgrade you paid research for); say yes and it is an hour.
+4. **The air raid purse is one sky gun on Hard and Psycho, none on Easy and Medium** (there the flyers already wait
+   for the bounties). Enough for Shard Ridge Hard? The lever is `FirstRaidPurseGuns` per difficulty.
+5. **The boss now walks in eight seconds behind its crowd.** If the boss wave feels too drawn out, the gap is one
+   number (`BossEntranceGap`).

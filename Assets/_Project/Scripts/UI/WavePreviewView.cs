@@ -226,7 +226,8 @@ namespace Game.UI
         private static void Show(Chip chip, WavePreviewEntry entry, float width, ref float x)
         {
             Place(chip, width, ref x);
-            chip.Wash.enabled = entry.Boss;
+            // A boss's brood wears the boss chip's red wash: it belongs to the boss, not to the wave's own head count.
+            chip.Wash.enabled = entry.Boss || entry.BroodOnly;
             chip.Boss.enabled = entry.Boss && width >= BossMarkerMinWidth;
             GameObject flyer = chip.Flyer.transform.parent.gameObject;
             var plate = (RectTransform)chip.Plate.transform.parent;
@@ -235,8 +236,10 @@ namespace Game.UI
             // Both marks on one creature sit side by side, the wing outermost.
             plate.anchoredPosition = new Vector2(-BadgeEdge - (entry.Flies ? BadgeSize + BadgeBackGrow : 0f), -BadgeEdge);
             // One boss needs no number: the word says more.
-            chip.Count.text = entry.Boss && entry.Count == 1 ? Loc.Get("hud.preview_boss") : Loc.Format("hud.preview_count", entry.Count);
-            chip.Count.color = entry.Boss ? BossText : CountColour;
+            chip.Count.text = entry.BroodOnly ? Loc.Get("hud.preview_brood")
+                : entry.Brood ? Loc.Format("hud.preview_count_brood", entry.Count)
+                : entry.Boss && entry.Count == 1 ? Loc.Get("hud.preview_boss") : Loc.Format("hud.preview_count", entry.Count);
+            chip.Count.color = entry.Boss || entry.BroodOnly ? BossText : CountColour;
             chip.Count.alignment = TextAnchor.LowerRight;
 
             if (chip.Enemy == entry.Enemy)

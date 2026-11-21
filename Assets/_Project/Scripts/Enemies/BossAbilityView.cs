@@ -46,7 +46,15 @@ namespace Game.Enemies
         private const int PulseSparks = 60;
         private const int SporeBurst = 30;
         private const int VolleyBolts = 6;
-        private const float VolleyBoltSize = 1.4f;
+        // A volley must read from the play camera: bolts twice the size of a creature's spit, lobbed high, with a flare
+        // of sparks where they leave the boss (round 88c, Remco could not see what hurt his towers).
+        private const float VolleyBoltSize = 2.6f;
+        // The bolt rises this share of the way it has to go, within these bounds: a lob that still reads as "from the boss to that gun".
+        private const float VolleyArcShare = 0.2f;
+        private const float VolleyArcLeast = 0.4f;
+        private const float VolleyArcMost = 1f;
+        private const float VolleyTargetHeight = 0.5f;
+        private const int VolleyLaunchSparks = 24;
         private const int RegrowSparks = 40;
         private const float WardRingRadius = 2.6f;
 
@@ -224,7 +232,7 @@ namespace Game.Enemies
         }
 
         // Every bolt of a volley flies from the boss to its own target; the bolts are made on the first volley.
-        private void OnVolleyed(Vector3 origin, IReadOnlyList<Vector3> targets, Color color)
+        private void OnVolleyed(Vector3 origin, IReadOnlyList<Vector3> targets, Color color, float flightSeconds)
         {
             if (_bolts == null)
             {
@@ -236,11 +244,18 @@ namespace Game.Enemies
             }
 
             Vector3 from = BeamOrigin(origin);
+            _sparks.transform.position = from;
+            ParticleSystem.MainModule main = _sparks.main;
+            Color glow = color * 2f;
+            glow.a = 1f;
+            main.startColor = glow;
+            _sparks.Emit(VolleyLaunchSparks);
             for (int i = 0; i < targets.Count; i++)
             {
                 EnemyBoltView bolt = _bolts[_nextBolt];
                 _nextBolt = (_nextBolt + 1) % _bolts.Length;
-                bolt.Fire(from, targets[i] + Vector3.up * 0.4f, VolleyBoltSize);
+                Vector3 to = targets[i] + Vector3.up * VolleyTargetHeight;
+                bolt.Lob(from, to, VolleyBoltSize, flightSeconds, Mathf.Clamp(Vector3.Distance(from, to) * VolleyArcShare, VolleyArcLeast, VolleyArcMost));
             }
         }
 

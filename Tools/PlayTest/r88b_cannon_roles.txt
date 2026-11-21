@@ -21,17 +21,17 @@ Railgun (off-role, blast cap 0, 220 coins) 0.0603: the Cannon is x2.23 of it wit
 Storm Rifle (on-role, blast cap 0, 310 coins) 0.1780: the Cannon is x0.76 of it with three, x0.76 with two
 Cryo Beam (off-role, blast cap 0, 360 coins) 0.0611: the Cannon is x2.20 of it with three, x2.20 with two
 Artillery (on-role, blast cap 0, 370 coins) 0.0669: the Cannon is x2.01 of it with three, x2.01 with two
-## Armoured: 3 x Cragback, 0.6 cells apart, margin x2
-Cannon, blast of three 0.0587; blast of two 0.0293
-Gun Turret (off-role, blast cap 0, 50 coins) 0.0095: the Cannon is x6.15 of it with three, x3.08 with two
-Cryo (off-role, blast cap 0, 90 coins) 0.0008: the Cannon is x76.39 of it with three, x38.19 with two
+## Armoured: 2 x Cragback, 0.6 cells apart, margin x2
+Cannon, blast of three 0.0587; blast of two 0.0587
+Gun Turret (off-role, blast cap 0, 50 coins) 0.0143: the Cannon is x4.10 of it with three, x4.10 with two
+Cryo (off-role, blast cap 0, 90 coins) 0.0012: the Cannon is x50.93 of it with three, x50.93 with two
 Flak Turret (off-role, blast cap 4, 120 coins) 0.0000: the Cannon is x0.00 of it with three, x0.00 with two
-Laser Turret (off-role, blast cap 0, 130 coins) 0.0048: the Cannon is x12.27 of it with three, x6.14 with two
-Tesla (off-role, blast cap 0, 140 coins) 0.0227: the Cannon is x2.59 of it with three, x1.29 with two
-Railgun (on-role, blast cap 0, 220 coins) 0.0221: the Cannon is x2.65 of it with three, x1.33 with two
-Storm Rifle (off-role, blast cap 0, 310 coins) 0.0112: the Cannon is x5.26 of it with three, x2.63 with two
-Cryo Beam (off-role, blast cap 0, 360 coins) 0.0026: the Cannon is x22.95 of it with three, x11.47 with two
-Artillery (on-role, blast cap 0, 370 coins) 0.0384: the Cannon is x1.53 of it with three, x0.76 with two
+Laser Turret (off-role, blast cap 0, 130 coins) 0.0072: the Cannon is x8.18 of it with three, x8.18 with two
+Tesla (off-role, blast cap 0, 140 coins) 0.0227: the Cannon is x2.59 of it with three, x2.59 with two
+Railgun (on-role, blast cap 0, 220 coins) 0.0331: the Cannon is x1.77 of it with three, x1.77 with two
+Storm Rifle (off-role, blast cap 0, 310 coins) 0.0223: the Cannon is x2.63 of it with three, x2.63 with two
+Cryo Beam (off-role, blast cap 0, 360 coins) 0.0038: the Cannon is x15.30 of it with three, x15.30 with two
+Artillery (on-role, blast cap 0, 370 coins) 0.0384: the Cannon is x1.53 of it with three, x1.53 with two
 ## Armoured: 2 x Cragback, 0.6 cells apart, margin x2
 Cannon, blast of three 0.0587; blast of two 0.0587
 Gun Turret (off-role, blast cap 0, 50 coins) 0.0143: the Cannon is x4.10 of it with three, x4.10 with two

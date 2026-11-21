@@ -11,19 +11,19 @@
                 12,
                 13,
                 13,
+                14,
+                14,
                 21,
-                14,
-                14,
                 36
             ],
             "Y": [
-                11,
-                10,
                 10,
                 11,
-                11,
+                10,
                 11,
                 7,
+                11,
+                11,
                 11
             ]
         },
@@ -54,23 +54,23 @@
             "Tower": "Laser",
             "X": [
                 13,
-                12,
                 11,
                 12,
-                22,
-                35,
                 13,
-                14
+                12,
+                14,
+                22,
+                35
             ],
             "Y": [
                 10,
                 10,
                 10,
                 11,
-                10,
-                10,
                 11,
-                6
+                6,
+                10,
+                10
             ]
         },
         {
@@ -78,16 +78,16 @@
             "X": [
                 36,
                 36,
+                34,
                 36,
                 35,
-                34,
                 35
             ],
             "Y": [
                 10,
                 7,
-                11,
                 10,
+                11,
                 10,
                 11
             ]
@@ -95,21 +95,16 @@
     ],
     "Weights": [
         {
-            "Threat": "pack",
-            "Tower": "Cannon",
-            "Weight": 2.488588333129883
-        },
-        {
-            "Threat": "air",
+            "Threat": "swarm",
             "Tower": "PulseRifle",
-            "Weight": 0.7101900577545166
+            "Weight": 0.6476362347602844
         }
     ],
-    "UpgradeBias": 1.059999942779541,
+    "UpgradeBias": 1.7899999618530273,
     "TowersBeforeUpgrades": 3,
     "MineCoverBelow": 0.0,
     "MineOnBoss": false,
-    "FieldCoverBelow": 1.0,
+    "FieldCoverBelow": 1.2000000476837158,
     "HarvesterCover": 1.2000000476837158,
     "HarvesterShare": 0.5,
     "RepairDroneWear": 0.25,

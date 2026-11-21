@@ -257,6 +257,8 @@ namespace Game.Balance
             float span = WaveTimeline.Span(front);
             int beats = boss != null ? BossBeats(script, number, span, grammar) : WaveTimeline.Beats(span, grammar.BeatSecondsFor(pattern), grammar.MinBeatShare, grammar.MaxBeats);
             float[] starts = WaveTimeline.Spread(front, beats, boss != null ? grammar.BossBreatherFor(difficulty) : grammar.BreatherFor(difficulty));
+            // The boss closes its wave: out behind the last creature of the last cluster (WaveGrammarRules.BossEntranceGap).
+            float bossEntrance = Math.Max(BossDelaySeconds, grammar.BossEntrance(beats > 1 ? starts[beats - 1] : 0f, WaveTimeline.Span(front)));
             result.AddRange(front);
             wave.Pattern = pattern == WavePattern.SpreadClusters && beats == 1 ? WavePattern.Stream : pattern;
             wave.Beats = beats;
@@ -291,7 +293,7 @@ namespace Game.Balance
 
             if (boss != null)
             {
-                AddBoss(result, script, boss, Get(enemies, boss.Enemy), flyer, difficulty, secondRoad, beats > 1 ? starts[beats - 1] : BossDelaySeconds);
+                AddBoss(result, script, boss, Get(enemies, boss.Enemy), flyer, difficulty, secondRoad, bossEntrance);
             }
 
             AddTeasers(result, script, number, enemies);

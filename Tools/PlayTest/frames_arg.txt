@@ -1,1 +1,1 @@
-60 hold
+3 hold

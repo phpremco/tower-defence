@@ -82,10 +82,12 @@ MonoBehaviour:
     _pitch: 1
     _impact: 0
   _spawn:
-    _clips: []
-    _gain: 1
+    _clips:
+    - {fileID: 8300000, guid: c8a9834459be6d84d949faa0278170f3, type: 3}
+    - {fileID: 8300000, guid: 8042e95f9969f86478af521a5bada88f, type: 3}
+    _gain: 0.26305187
     _pitch: 1
-    _impact: 0
+    _impact: 0.19
   _laserStart:
     _clips:
     - {fileID: 8300000, guid: 4b165fe0d1a78854fa19affd683c6ded, type: 3}

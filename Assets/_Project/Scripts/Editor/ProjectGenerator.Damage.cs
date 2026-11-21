@@ -104,7 +104,7 @@ namespace Game.Editor
         private static readonly RoleScenario[] RoleScenarios =
         {
             Scenario(EnemyTraits.Swarm, "Skitter", 12, 1.5f, true, 1.15f, "A stream of a dozen Skitters, a blast apart: every hit bigger than one of them is wasted, so light fire wins."),
-            Scenario(EnemyTraits.Mob, "Oozer", 5, 0.5f, false, 1.25f, "Five Oozers queued at a gate: one blast takes three."),
+            Scenario(EnemyTraits.Mob, "Oozer", 5, 0.5f, false, 1.25f, "Five Oozers queued at a gate: a level 1 blast takes two of them, an upgraded one more."),
             Scenario(EnemyTraits.Tough, "ShardCrawler", 1, 1f, false, 1.15f, "One Shard Crawler: a big soft body asks for light fire held on one target."),
             Scenario(EnemyTraits.Armoured, "Cragback", 2, 0.6f, false, 2f, "Two Cragbacks at a gate: light fire chips the plates, shells and slugs break them."),
             Scenario(EnemyTraits.Airborne, "Skyray", 4, 0.8f, true, 2f, "A wing of four Skyrays: only the sky guns land in full."),

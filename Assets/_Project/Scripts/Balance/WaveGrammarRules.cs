@@ -96,6 +96,25 @@ namespace Game.Balance
         /// <summary>The shortest cluster a boss wave is cut into, in seconds; a thinner crowd is cut into fewer.</summary>
         public float MinBossBeatSeconds = 3f;
 
+        /// <summary>
+        /// A boss walks in behind its last cluster, not inside it (round 88c, Remco: "those Cragbacks were on top of the
+        /// boss at the same speed"). Until then it came out at the moment the last cluster started; on a heavy boss wave
+        /// that cluster opens with the plated walkers, which walk at the boss's own pace (Cragback 0.6, Brood Mother 0.55),
+        /// so they covered it from the entrance to the base. Now the boss comes out this many seconds after the last
+        /// creature of that cluster: the crowd is some five cells down the road, the boss closes the wave in plain view,
+        /// and its own brood runs into the space between (BalanceRules.EscortLeadCells).
+        /// </summary>
+        public float BossEntranceGap = 8f;
+
+        /// <summary>
+        /// The last cluster's length is read on the script's clock; in play it runs up to this much longer (the
+        /// difficulty's head count times its spawn tempo: 1.16 at most on the four difficulties), so the gap holds on all.
+        /// </summary>
+        public float BossTailStretch = 1.2f;
+
+        /// <summary>When the boss of a wave comes out: after the tail of the cluster that starts at <paramref name="clusterStart"/> and ends at <paramref name="tail"/> on the script's clock.</summary>
+        public float BossEntrance(float clusterStart, float tail) => clusterStart + System.Math.Max(0f, tail - clusterStart) * BossTailStretch + BossEntranceGap;
+
         public float BreatherFor(int difficulty) => At(Breather, difficulty);
 
         public float BossBreatherFor(int difficulty) => At(BossBreather, difficulty);

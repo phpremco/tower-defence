@@ -1,44 +1,44 @@
-Level bosses as spawned, round 87: bar = BossBase 1550 x BossDifficulty 0.7 / 1 / 1.15 / 1.8 x (1 + 0.16 x level) x (0.3 + 0.7 x phase) x (flies ? 0.6 : 1); floor 3 / 3 / 3 / 3 times the bar of the toughest ordinary walker before it.
+Level bosses as spawned, round 87: bar = BossBase 1550 x BossDifficulty 0.7 / 1 / 1.09 / 1.8 x (1 + 0.16 x level) x (0.3 + 0.7 x phase) x (flies ? 0.6 : 1); floor 3 / 3 / 3 / 3 times the bar of the toughest ordinary walker before it.
 level | difficulty | wave | boss | bar | body | armour | formula bar | x toughest walker's bar | floor's bar | floor binds
 C1_01 | Easy | 12 | BroodMother | 1085 | 723 | 362 | 1085 | x4.3 | 753 | no
-C1_01 | Medium | 12 | BroodMother | 1550 | 1033 | 517 | 1550 | x3.5 | 1313 | no
-C1_01 | Hard | 8 | BroodMother | 1329 | 886 | 443 | 1329 | x5.5 | 729 | no
-C1_01 | Hard | 12 | BroodMother | 1783 | 1188 | 594 | 1783 | x4.1 | 1302 | no
+C1_01 | Medium | 12 | BroodMother | 1550 | 1033 | 517 | 1550 | x3.2 | 1470 | no
+C1_01 | Hard | 8 | BroodMother | 1259 | 840 | 420 | 1259 | x5.8 | 652 | no
+C1_01 | Hard | 12 | BroodMother | 1689 | 1126 | 563 | 1690 | x4.5 | 1115 | no
 C1_01 | Psycho | 5 | BroodMother | 1547 | 1032 | 516 | 1547 | x65.9 | 70 | no
 C1_01 | Psycho | 8 | BroodMother | 2080 | 1387 | 693 | 2080 | x5.2 | 1201 | no
-C1_01 | Psycho | 12 | BroodMother | 2791 | 1861 | 930 | 2790 | x3.9 | 2149 | no
-C1_02 | Easy | 12 | BroodMother | 1259 | 839 | 420 | 1259 | x3.6 | 1051 | no
-C1_02 | Medium | 12 | BroodMother | 1835 | 1223 | 612 | 1798 | x3.0 | 1834 | YES
-C1_02 | Hard | 9 | CoreWisp | 1673 | 1115 | 558 | 1673 | x3.8 | 1309 | no
-C1_02 | Hard | 12 | BroodMother | 2068 | 1379 | 689 | 2068 | x4.7 | 1309 | no
+C1_01 | Psycho | 12 | BroodMother | 2791 | 1861 | 930 | 2790 | x4.1 | 2056 | no
+C1_02 | Easy | 12 | BroodMother | 1259 | 839 | 420 | 1259 | x4.3 | 874 | no
+C1_02 | Medium | 12 | BroodMother | 1798 | 1198 | 599 | 1798 | x3.2 | 1708 | no
+C1_02 | Hard | 9 | CoreWisp | 1586 | 1057 | 529 | 1586 | x4.1 | 1172 | no
+C1_02 | Hard | 12 | BroodMother | 1960 | 1307 | 653 | 1960 | x5.0 | 1172 | no
 C1_02 | Psycho | 5 | BroodMother | 1795 | 1197 | 598 | 1795 | x66.0 | 82 | no
 C1_02 | Psycho | 9 | CoreWisp | 2619 | 1746 | 873 | 2619 | x3.6 | 2161 | no
 C1_02 | Psycho | 12 | BroodMother | 3237 | 2158 | 1079 | 3236 | x4.5 | 2161 | no
-C1_03 | Easy | 16 | BroodMother | 1432 | 955 | 477 | 1432 | x6.3 | 677 | no
-C1_03 | Medium | 16 | BroodMother | 2045 | 1364 | 682 | 2046 | x3.9 | 1554 | no
-C1_03 | Hard | 10 | CoreWisp | 1694 | 1129 | 565 | 1694 | x4.6 | 1116 | no
-C1_03 | Hard | 16 | BroodMother | 2353 | 1569 | 784 | 2353 | x4.8 | 1469 | no
+C1_03 | Easy | 16 | BroodMother | 1433 | 955 | 478 | 1432 | x6.3 | 677 | no
+C1_03 | Medium | 16 | BroodMother | 2046 | 1364 | 682 | 2046 | x4.2 | 1475 | no
+C1_03 | Hard | 10 | CoreWisp | 1606 | 1071 | 535 | 1606 | x4.8 | 1000 | no
+C1_03 | Hard | 16 | BroodMother | 2230 | 1487 | 743 | 2230 | x6.0 | 1115 | no
 C1_03 | Psycho | 6 | BroodMother | 1964 | 1309 | 655 | 1964 | x4.5 | 1307 | no
 C1_03 | Psycho | 10 | CoreWisp | 2651 | 1768 | 884 | 2652 | x4.3 | 1843 | no
-C1_03 | Psycho | 16 | BroodMother | 3682 | 2455 | 1227 | 3683 | x4.6 | 2424 | no
-C1_04 | Easy | 16 | StormMatriarch (flies) | 963 | 642 | 321 | 963 | x2.8 | 621 | no
-C1_04 | Medium | 16 | StormMatriarch (flies) | 1376 | 917 | 459 | 1376 | x2.1 | 1189 | no
-C1_04 | Hard | 10 | BroodMother | 1899 | 1266 | 633 | 1899 | x4.9 | 1158 | no
-C1_04 | Hard | 16 | StormMatriarch (flies) | 1583 | 1055 | 528 | 1583 | x2.5 | 1123 | no
+C1_03 | Psycho | 16 | BroodMother | 3683 | 2455 | 1228 | 3683 | x5.4 | 2056 | no
+C1_04 | Easy | 16 | StormMatriarch (flies) | 963 | 642 | 321 | 963 | x2.8 | 620 | no
+C1_04 | Medium | 16 | StormMatriarch (flies) | 1376 | 918 | 459 | 1376 | x2.0 | 1211 | no
+C1_04 | Hard | 10 | BroodMother | 1800 | 1200 | 600 | 1800 | x5.2 | 1037 | no
+C1_04 | Hard | 16 | StormMatriarch (flies) | 1500 | 1000 | 500 | 1500 | x2.9 | 916 | no
 C1_04 | Psycho | 5 | CoreWisp | 2009 | 1339 | 670 | 2010 | x77.5 | 78 | no
 C1_04 | Psycho | 10 | BroodMother | 2972 | 1981 | 991 | 2973 | x4.7 | 1911 | no
 C1_04 | Psycho | 16 | StormMatriarch (flies) | 2476 | 1651 | 825 | 2478 | x3.9 | 1147 | no
-C1_05 | Easy | 17 | CoreWisp | 1779 | 1186 | 593 | 1779 | x6.5 | 817 | no
-C1_05 | Medium | 17 | CoreWisp | 2542 | 1694 | 847 | 2542 | x5.3 | 1426 | no
-C1_05 | Hard | 11 | StormMatriarch (flies) | 1294 | 862 | 431 | 1294 | x3.3 | 711 | no
-C1_05 | Hard | 17 | CoreWisp | 2923 | 1949 | 974 | 2923 | x5.0 | 1762 | no
+C1_05 | Easy | 17 | CoreWisp | 1780 | 1186 | 593 | 1779 | x6.5 | 817 | no
+C1_05 | Medium | 17 | CoreWisp | 2542 | 1695 | 847 | 2542 | x4.8 | 1596 | no
+C1_05 | Hard | 11 | StormMatriarch (flies) | 1226 | 817 | 409 | 1226 | x3.5 | 636 | no
+C1_05 | Hard | 17 | CoreWisp | 2770 | 1847 | 923 | 2771 | x6.3 | 1321 | no
 C1_05 | Psycho | 5 | BroodMother | 2174 | 1449 | 725 | 2173 | x128.5 | 51 | no
 C1_05 | Psycho | 11 | StormMatriarch (flies) | 2025 | 1350 | 675 | 2025 | x2.9 | 1265 | no
-C1_05 | Psycho | 17 | CoreWisp | 4575 | 3050 | 1525 | 4576 | x4.7 | 2909 | no
-C1_06 | Easy | 18 | PackAlpha | 1953 | 1302 | 651 | 1953 | x6.6 | 893 | no
-C1_06 | Medium | 18 | PackAlpha | 2789 | 1860 | 930 | 2790 | x7.0 | 1201 | no
-C1_06 | Hard | 12 | CoreWisp | 2416 | 1611 | 805 | 2416 | x6.7 | 1088 | no
-C1_06 | Hard | 18 | PackAlpha | 3209 | 2139 | 1070 | 3209 | x7.1 | 1361 | no
+C1_05 | Psycho | 17 | CoreWisp | 4576 | 3050 | 1525 | 4576 | x5.6 | 2435 | no
+C1_06 | Easy | 18 | PackAlpha | 1953 | 1302 | 651 | 1953 | x7.5 | 785 | no
+C1_06 | Medium | 18 | PackAlpha | 2790 | 1860 | 930 | 2790 | x6.2 | 1344 | no
+C1_06 | Hard | 12 | CoreWisp | 2290 | 1526 | 763 | 2290 | x7.1 | 974 | no
+C1_06 | Hard | 18 | PackAlpha | 3041 | 2027 | 1014 | 3041 | x7.9 | 1159 | no
 C1_06 | Psycho | 7 | StormMatriarch (flies) | 1648 | 1099 | 549 | 1648 | x7.6 | 390 | no
 C1_06 | Psycho | 12 | CoreWisp | 3782 | 2521 | 1261 | 3781 | x6.3 | 1796 | no
-C1_06 | Psycho | 18 | PackAlpha | 5021 | 3348 | 1674 | 5022 | x8.4 | 1796 | no
+C1_06 | Psycho | 18 | PackAlpha | 5023 | 3348 | 1674 | 5022 | x8.4 | 1796 | no
