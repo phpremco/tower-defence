@@ -170,5 +170,97 @@ namespace Game.Tests
 
             Assert.AreSame(job, dispatcher.Assign(_droneB, Vector3.zero, Speed, null));
         }
+
+        /// <summary>A wreck the crew can raise (a base turret): not alive, and work is counted until it stands again.</summary>
+        private sealed class FakeWreck : IStructure, ICrewRaisable
+        {
+            private const float Max = 100f;
+            private float _raised;
+
+            public FakeWreck(Vector3 position)
+            {
+                Position = position;
+            }
+
+            public Vector3 Position { get; }
+            public bool IsAlive => _raised >= Max;
+            public bool BlocksGround => false;
+            public bool IsBase => false;
+            public float HealthFraction => IsAlive ? 1f : 0f;
+            public bool AwaitsCrew => !IsAlive;
+            public float Raised => _raised;
+            public void TakeDamage(float amount) => _raised = 0f;
+            public void Repair(float amount) => _raised += amount;
+        }
+
+        [Test]
+        public void AWreckToRaise_IsTheLastJob_BehindEveryDamagedTowerGateAndTheBase()
+        {
+            var registry = new StructureRegistry();
+            var wreck = new FakeWreck(Vector3.zero);
+            var tower = new FakeStructure(new Vector3(40f, 0f, 0f), 0.95f);
+            var baseStructure = new FakeStructure(new Vector3(30f, 0f, 0f), 0.9f, true, true);
+            registry.Add(wreck);
+            registry.Add(tower);
+            registry.Add(baseStructure);
+            var dispatcher = new RepairDispatcher(registry);
+
+            IStructure job = dispatcher.Assign(_droneA, Vector3.zero, Speed, null);
+            Assert.AreSame(tower, job, "a scratched tower far away goes before the wreck the drone hovers over");
+
+            tower.Repair(100f);
+            job = dispatcher.Assign(_droneA, Vector3.zero, Speed, job);
+            Assert.AreSame(baseStructure, job, "then the base");
+
+            baseStructure.Repair(100f);
+            job = dispatcher.Assign(_droneA, Vector3.zero, Speed, job);
+            Assert.AreSame(wreck, job, "the wreck is raised once nothing else needs repair");
+        }
+
+        [Test]
+        public void ADroneRaisingAWreck_LeavesItForADamagedTowerOrGate_AndComesBackToTheWorkDone()
+        {
+            var registry = new StructureRegistry();
+            var wreck = new FakeWreck(Vector3.zero);
+            var tower = new FakeStructure(new Vector3(40f, 0f, 0f), 1f);
+            var gate = new FakeStructure(new Vector3(-40f, 0f, 0f), 1f, true);
+            registry.Add(wreck);
+            registry.Add(tower);
+            registry.Add(gate);
+            var dispatcher = new RepairDispatcher(registry);
+
+            IStructure job = dispatcher.Assign(_droneA, Vector3.zero, Speed, null);
+            Assert.AreSame(wreck, job, "nothing else to do: the wreck");
+            wreck.Repair(60f);
+
+            tower.TakeDamage(5f);
+            job = dispatcher.Assign(_droneA, Vector3.zero, Speed, job);
+            Assert.AreSame(tower, job, "a tower with a scratch takes the drone off the wreck at once");
+            Assert.IsFalse(dispatcher.IsClaimed(wreck), "the wreck is given back");
+
+            gate.TakeDamage(5f);
+            tower.Repair(100f);
+            job = dispatcher.Assign(_droneA, tower.Position, Speed, job);
+            Assert.AreSame(gate, job, "and a damaged gate still goes before the wreck");
+
+            gate.Repair(100f);
+            job = dispatcher.Assign(_droneA, gate.Position, Speed, job);
+            Assert.AreSame(wreck, job, "all whole: back to the wreck");
+            Assert.AreEqual(60f, wreck.Raised, 0.001f, "the work put in before is still there");
+        }
+
+        [Test]
+        public void ASecondDrone_DoesNotRaiseAWreck_WhileATowerIsStillDamaged()
+        {
+            var registry = new StructureRegistry();
+            var wreck = new FakeWreck(Vector3.zero);
+            var tower = new FakeStructure(new Vector3(10f, 0f, 0f), 0.5f);
+            registry.Add(wreck);
+            registry.Add(tower);
+            var dispatcher = new RepairDispatcher(registry);
+
+            Assert.AreSame(tower, dispatcher.Assign(_droneA, Vector3.zero, Speed, null));
+            Assert.IsNull(dispatcher.Assign(_droneB, Vector3.zero, Speed, null), "the same rule as for the base: the wreck waits while any tower is damaged");
+        }
     }
 }

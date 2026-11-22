@@ -434,7 +434,7 @@ namespace Game.Levels
             var raidStartMoney = new int[difficulties.Count];
             for (int d = 0; d < raidStartMoney.Length; d++)
             {
-                raidStartMoney[d] = StartMoneyRule.RaidAllowance(level, difficulties[d]);
+                raidStartMoney[d] = StartMoneyRule.BeyondBase(level, difficulties[d]);
             }
 
             var campaign = new CampaignLevel

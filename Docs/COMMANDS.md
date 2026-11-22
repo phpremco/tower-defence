@@ -2237,3 +2237,19 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
     copying back, delete from the stage what `stage.sh diff` lists that the round did not make.
   - The same script line again: a heredoc in the Bash tool halves a doubled backslash. `r88d_stills.sh` takes its
     Windows path from `cygpath -w`.
+
+## Round 88e: a level's own start money, the crew's work order (added 2026-11-22)
+
+- **The design** is in Docs/STATUS.md ("Round 88e"). In code: `LevelDefinition._startMoney` (`LevelStartMoney` entries,
+  one per difficulty the level sets itself; `TryGetStartMoney`), `StartMoneyRule.For` (the level's own sum wins, else
+  `Shared`: multiplier plus air-raid money as in round 88d), `StartMoneyRule.BeyondBase` (what the model's level facts
+  carry), `RepairDispatcher.Rank` (towers and gates, then the base, then a wreck to raise).
+- **Set a level's start money without the generator:** write lines `LevelKey DifficultyName Money` in
+  `Tools/PlayTest/r88e_start_money_arg.txt` (`C1_03 Hard 400`; money `-1` removes the entry), then
+  `bash Tools/PlayTest/stage.sh run Round88eStartMoney.cs Round88eStartMoney.Set`, then re-stamp
+  (`bash Tools/PlayTest/r88b_restamp.sh <label>`: the start money is in the calibration's input hash). The list can also
+  be edited on the level asset in the Inspector. The generator neither writes nor clears it.
+- **The table of every level x difficulty:** `stage.sh run Round88eStartMoney.cs Round88eStartMoney.Table` writes
+  `Tools/PlayTest/r88e_start_money.txt` (an asterisk marks a level's own sum, the shared rule's sum in brackets).
+- **Tests of the round** (on a clone): `bash Tools/PlayTest/r34b_editmode_worker.sh 6 Round88dTests` (start money, model =
+  game), `RepairDispatcherTests` (the work order), `Round88cTests`, `CounterAffordabilityTests`.

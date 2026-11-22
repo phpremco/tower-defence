@@ -316,6 +316,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cbdd54e31020e61479d683dd6a20d387, type: 2}
   - {fileID: 11400000, guid: 82a00c164693f9942b9a5e3166c50eef, type: 2}
   _startingMoney: 240
+  _startMoney:
+  - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
+    Money: 400
+  - Difficulty: {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
+    Money: 1000
   _baseHealth: 600
   _waves: {fileID: 11400000, guid: fe64dda98f2fbcd4a8af34ae00c25263, type: 2}
   _reward:

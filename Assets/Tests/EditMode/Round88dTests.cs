@@ -18,6 +18,7 @@ namespace Game.Tests
     /// </summary>
     public sealed class Round88dTests
     {
+        private const string ShardRidgePath = "Assets/_Project/Data/Levels/Level_C1_03.asset";
         private const string CatalogPath = "Assets/_Project/Data/Levels/CampaignCatalog.asset";
         private const string UpgradesPath = "Assets/_Project/Data/Upgrades/UpgradeCatalog.asset";
         private const string UnlocksPath = "Assets/_Project/Data/Unlocks/UnlockTable.asset";
@@ -59,7 +60,10 @@ namespace Game.Tests
                     bool raid = waves != null && FirstRaidRule.FirstRaid(waves) != FirstRaidRule.None;
                     int plain = Mathf.RoundToInt(node.Level.StartingMoney * difficulty.StartingMoneyMultiplier);
                     int extra = raid ? Mathf.RoundToInt(FirstRaidRule.SkyGunPrice(node.Level.AvailableTowers) * difficulty.RaidStartGuns) : 0;
-                    Assert.AreEqual(plain + extra, StartMoneyRule.For(node.Level, difficulty), $"{node.Level.name} {difficulty.name}");
+                    // Round 88e: a level's own sum for the difficulty wins; every other cell starts on the shared rule.
+                    int expected = node.Level.TryGetStartMoney(difficulty, out int own) ? own : plain + extra;
+                    Assert.AreEqual(plain + extra, StartMoneyRule.Shared(node.Level, difficulty), $"{node.Level.name} {difficulty.name}");
+                    Assert.AreEqual(expected, StartMoneyRule.For(node.Level, difficulty), $"{node.Level.name} {difficulty.name}");
                     paid += extra > 0 ? 1 : 0;
                     unpaid += extra == 0 ? 1 : 0;
                 }
@@ -98,6 +102,27 @@ namespace Game.Tests
             }
 
             Assert.Greater(cells, 0);
+        }
+
+        [Test]
+        public void ShardRidge_StartsHardOnFourHundred_AndPsychoOnAWholeSkyGunMore()
+        {
+            // Round 88e, Remco: "make Hard 400 money, and Psycho needs more too", through the level's own start money
+            // (LevelDefinition.TryGetStartMoney), not the shared ratios. Shard Ridge is the level he named: its sums are pinned.
+            var level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(ShardRidgePath);
+            var catalog = AssetDatabase.LoadAssetAtPath<CampaignCatalog>(CatalogPath);
+            Assert.IsNotNull(level, ShardRidgePath);
+            DifficultyProfile hard = catalog.Difficulties[2];
+            DifficultyProfile psycho = catalog.Difficulties[3];
+            int gun = FirstRaidRule.SkyGunPrice(level.AvailableTowers);
+
+            Assert.AreEqual(400, StartMoneyRule.For(level, hard));
+            Assert.AreEqual(1000, StartMoneyRule.For(level, psycho));
+            Assert.GreaterOrEqual(StartMoneyRule.For(level, psycho) - StartMoneyRule.Shared(level, psycho), gun, "Psycho got a sky gun's worth or more on top of round 88d");
+            Assert.IsTrue(level.TryGetStartMoney(hard, out int own) && own == 400, "the sum is the level's own entry");
+            Assert.IsFalse(level.TryGetStartMoney(catalog.Difficulties[0], out _), "Easy and Medium stay on the shared rule");
+            Assert.AreEqual(StartMoneyRule.Shared(level, catalog.Difficulties[1]), StartMoneyRule.For(level, catalog.Difficulties[1]));
+            Assert.AreEqual(1f, BalanceRules.Default.RaidStartGunsFor(2), "the shared ratio is as round 88d left it");
         }
 
         // ---- a wrecked base turret and the repair crew ------------------------------------------------------------------

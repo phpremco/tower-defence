@@ -15918,3 +15918,53 @@ rule: "their own fault"). A player who keeps the 120 for the Flak plays exactly 
 2. **A wrecked base turret under repair shows only the drone's beam.** Enough, or should the wreck show how far the
    crew is (that would be a new bar)?
 3. **The gate's bar is hidden at full health now, like a gun's.** Say so if you want the gate's always on.
+
+## Round 88e: a level's own start money (Shard Ridge Hard 400, Psycho 1000), the repair crew's work order (2026-11-22)
+
+Tiny round on Remco's word; uncommitted. No bot measurement of anything.
+
+1. **"Make Hard 400, and Psycho needs more too, it's really not doable now", then: "make the start money different per
+   level, then we can tune difficulty with it without touching the shared ratios."** A `LevelDefinition` can now carry
+   its own start money per difficulty (`_startMoney`, entries of `LevelStartMoney`: a difficulty and a sum; editable on
+   the asset). `StartMoneyRule.For` returns that sum when the level has an entry for the difficulty, else the shared
+   rule of round 88d (`StartMoneyRule.Shared`: starting money x multiplier + sky gun x `RaidStartGuns`, still
+   0 / 0 / 1 / 1; no shared number changed). **Chosen data model:** only what is tuned by hand is written; Shard Ridge
+   has two entries (Hard 400, Psycho 1000), every other cell has none and follows the rule, so a change of the shared
+   rule still reaches them. The generator neither writes nor clears the list (it loads the existing asset); a level
+   asset deleted and generated anew would lose its entries: `Tools/PlayTest/r88e_start_money_arg.txt` holds them and
+   `Round88eStartMoney.Set` writes them back (Docs/COMMANDS.md, "Round 88e").
+   **Model = game:** the level facts carry `StartMoneyRule.BeyondBase` (the wallet minus the multiplied sum) where they
+   carried the air-raid money, so `LevelInput.StartingMoney` is the wallet for an own sum as well
+   (`Round88dTests.TheBalanceModel_StartsEveryLevelWithTheWalletsCoins`). The calibration's input hash moved and was
+   re-stamped (factors kept, not stale); no wave asset changed.
+
+   | Level | Easy | Medium | Hard | Psycho |
+   | --- | --- | --- | --- | --- |
+   | C1_01 Landing Site | 160 | 200 | 200 | 600 |
+   | C1_02 Glass Meadows | 176 | 220 | 220 | 660 |
+   | C1_03 Shard Ridge | 192 | 240 | **400** (rule 360) | **1000** (rule 840) |
+   | C1_04 Fault Line | 208 | 260 | 380 | 900 |
+   | C1_05 Quartz Flats | 224 | 280 | 400 | 960 |
+   | C1_06 Crysium Vein | 240 | 300 | 420 | 1020 |
+
+   Note: Shard Ridge now opens richer than Fault Line on Hard and Psycho, and as rich as Quartz Flats on Hard.
+2. **"Make sure the repair drone gives the towers etc. priority."** In round 88d a wrecked base turret scored as a
+   structure at zero health, so it could win over a damaged gun. Now `RepairDispatcher` works in an order
+   (`Rank`): standing towers and gates, then the base, then a wreck to raise. A job of a later rank is taken, and kept,
+   only while nothing of an earlier rank needs repair: a drone raising a turret leaves it the moment a tower or gate is
+   damaged, and the work already put into the wreck stays (`Tower._raised`), so it goes on where it stopped. Within a
+   rank nothing changed (need over flight time, one claim per structure, finish before switching). The base rule is
+   the same rule as before, now one step of the order. Tests: three new in `RepairDispatcherTests`.
+
+- **Tests** (clone w6, EditMode): `Round88dTests`, `Round88cTests`, `RepairDispatcherTests`, `CounterAffordabilityTests`,
+  `TowerTests` 35 / 35; `BalanceModelTests`, `LeakModelTests`, `Round88bTowersTests` 40 / 40. The full suite was not
+  run; the reds of round 88d (grace gate, `NoRowWithoutTheCounter_OutlastsItsWindow_AsPlayed`) were not looked at.
+- **Files.** New: `Levels/LevelStartMoney.cs`, `Tools/PlayTest/Scripts/Round88eStartMoney.cs`,
+  `r88e_start_money_arg.txt`, `r88e_start_money.txt`. Changed: `Levels/LevelDefinition`, `StartMoneyRule`,
+  `BalanceLedger`; `Balance/CampaignModel` (comments); `Drones/RepairDispatcher`; tests `RepairDispatcherTests`,
+  `Round88cTests`, `Round88dTests`; data `Level_C1_03.asset`, `BalanceCalibration.asset` (stamp), `calibration.txt`.
+- **Known:** with two repair drones the second idles rather than raise a wreck while the first works on the only
+  damaged tower (the base always waited in the same way). Under constant chip damage a wrecked base turret can wait a
+  long time; that is the asked priority.
+- **For Remco to play:** Shard Ridge on Hard (400 at the start) and on Psycho (1000). On any level with base turrets and
+  a repair drone: let a base turret get wrecked while guns are damaged; the drone should patch the guns and gates first.

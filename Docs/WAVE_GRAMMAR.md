@@ -676,3 +676,9 @@ The paper model now knows the coins: `LevelFacts.RaidStartMoney` is filled by th
 `LevelInput.StartingMoney` is the wallet's opening sum (test `Round88dTests.TheBalanceModel_StartsEveryLevelWithTheWalletsCoins`).
 The paragraph above ("not in the paper model") no longer holds.
 
+
+**Round 88e (2026-11-22): a level may set its own start money.** Remco: "make the start money different per level,
+then we can tune difficulty with it without touching the shared ratios." A `LevelDefinition` can carry a sum per
+difficulty (`_startMoney`); that number is the wallet at the start and wins over the rule above, which stays the
+fallback for every level and difficulty without an entry. Shard Ridge sets Hard 400 and Psycho 1000 (the rule gave 360
+and 840); nothing else is set. The model reads the same sum (`StartMoneyRule.BeyondBase` in the level facts).

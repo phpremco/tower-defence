@@ -132,7 +132,7 @@ namespace Game.Tests
                     Assert.Greater(FirstRaidRule.SkyGunPrice(node.Level.AvailableTowers), 0, $"{node.Level.name}: an air raid on a level that sells no gun for it");
                     int extra = Mathf.RoundToInt(FirstRaidRule.SkyGunPrice(node.Level.AvailableTowers) * difficulty.RaidStartGuns);
                     Assert.AreEqual(extra, StartMoneyRule.RaidAllowance(node.Level, difficulty), $"{node.Level.name} {difficulty.name}");
-                    Assert.AreEqual(StartMoneyRule.Base(node.Level, difficulty) + extra, StartMoneyRule.For(node.Level, difficulty), $"{node.Level.name} {difficulty.name}");
+                    Assert.AreEqual(StartMoneyRule.Base(node.Level, difficulty) + extra, StartMoneyRule.Shared(node.Level, difficulty), $"{node.Level.name} {difficulty.name}");
                 }
             }
 

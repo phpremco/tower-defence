@@ -79,6 +79,13 @@ namespace Game.Levels
         [SerializeField] private PathObjectDefinition[] _pathObjects = new PathObjectDefinition[0];
         [SerializeField] private TowerDefinition[] _availableTowers = new TowerDefinition[0];
         [SerializeField] [Min(0)] private int _startingMoney = 150;
+
+        /// <summary>
+        /// The level's own start money per difficulty (round 88e, Remco: "make the start money different per level, then
+        /// we can tune difficulty with it without touching the shared ratios"). An entry wins over the shared rule
+        /// (<see cref="StartMoneyRule"/>); a difficulty without one starts on the rule. The generator leaves this list alone.
+        /// </summary>
+        [SerializeField] private LevelStartMoney[] _startMoney = new LevelStartMoney[0];
         [SerializeField] [Min(1)] private int _baseHealth = 20;
         [SerializeField] private LevelWaves _waves;
         [SerializeField] private LevelReward _reward;
@@ -207,6 +214,22 @@ namespace Game.Levels
         public PathObjectDefinition[] PathObjects => _pathObjects;
         public TowerDefinition[] AvailableTowers => _availableTowers;
         public int StartingMoney => _startingMoney;
+
+        /// <summary>True, with the sum, when this level sets its own start money for the difficulty.</summary>
+        public bool TryGetStartMoney(DifficultyProfile difficulty, out int money)
+        {
+            for (int i = 0; _startMoney != null && i < _startMoney.Length; i++)
+            {
+                if (difficulty != null && _startMoney[i].Difficulty == difficulty)
+                {
+                    money = _startMoney[i].Money;
+                    return true;
+                }
+            }
+
+            money = 0;
+            return false;
+        }
         public int BaseHealth => _baseHealth;
         /// <summary>The asset that holds every wave of this level, or null for a level without waves.</summary>
         public LevelWaves Waves => _waves;
