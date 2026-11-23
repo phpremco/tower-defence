@@ -59,6 +59,17 @@ one; every other damage type on every other family lands as its row above says.
 - A new pairing is one line in `ProjectGenerator.FamilyRules`; a new family is an enum value
   (`Game.Core.CreatureFamily`) and a line per creature in `ProjectGenerator.CreatureFamilies`.
 
+### Which creature a gun takes (round 88f)
+
+Every gun, base turret, armed gate, attack drone and Spencer take the creature in reach with **the least road left to
+its goal**: the threat nearest the base, whichever road or air route it came by (`ITargetable.DistanceToGoal`, one rule
+in `TargetRegistry.FindBest`; nothing per tower). Until round 88f the rule was "the furthest travelled", and every level
+has a main road of 95 to 116 cells beside side roads and air routes of 35 to 48: a creature biting the last gate off a
+side road had travelled 40 cells and lost to one 50 cells down the main road, so the guns shot past it (Remco saw a
+Cannon do it). A blast lands on that creature and takes what stands near it; no gun scores clusters. A beam still holds
+the creature it burns until it dies or leaves its reach. Tests: `Round88fTests` (every tower asset opens fire on the
+creature nearest its goal).
+
 ### Retarget time (round 87)
 
 A turret has to swing to a new target: its first shot at a creature other than the one it shot last comes its
@@ -115,11 +126,19 @@ data, hold on every level.
    the boss and the Cannon has one more reason to kill it early. The ranged kinds (Stinger, Shardback, the bats) keep
    their damage and now reach a tower between two roads.
 3. **Every level boss hurts a tower from `CombatRules.BossReach` (4 cells) or further.** The Brood Mother (Venom Spit), the
-   Core Wisp (Arc Discharge) and the Pack Alpha (Spine Volley) carry the same volley: 14 a bolt (34 in the first pass) at each of the three nearest
+   Core Wisp (Arc Discharge) and the Pack Alpha (Spine Volley) carry the same volley: 8 a bolt (34 in the first pass, 14 until round 88f) at each of the three nearest
    guns within 5 cells every 3 s (`ProjectGenerator.BossVolley*`), flagged `SparesBlockers`: gates, the base and the hero
    are left to the boss's own blows. The Storm Matriarch already had her Element Storm (7 cells) and her own bolts now
    reach 4.5 cells by rule 1. The difficulty's structure damage in play (multiplier x factor: 0.45 / 0.45 / 1 / 1.4) scales
    every bite, bolt and pulse once, as before.
+   **Round 88f:** three bolts of 8 every 3 s are what one repair drone mends (8 a second), so a boss held at a gate is
+   answered by a crew or a repair; at 14 the volleys were two thirds of all tower wear in the bots' Shard Ridge runs and
+   wrecked the three guns beside a held boss in 34 s on Psycho (47 s on Hard).
+4. **A gun takes the difficulty's share of a blow (round 88f).** `DifficultyProfile.TowerDamageFactor` (Easy, Medium,
+   Hard 1; Psycho 0.7) scales what lands on a tower or a base turret, in one place (`Tower.TakeDamage` reads
+   `StructureRegistry.GunDamageShare`, set by the level). Gates, the base and the hero take the bite in full. On Psycho a
+   gun is so bitten as on Hard (1.4 x 0.7 = 0.98): Psycho wears guns down more because there are more creatures and its
+   bosses live longer, not because each blow is heavier.
 
 In code: `ReachRule`, `EnemyDefinition.StructureReach`, `Enemy.TryAttackStructure`, `BossAbilityDefinition.StructureReach`;
 generator `ProjectGenerator.Round88b.cs`; tests `Round88bThreatTests`. The balance model has no term for tower wear: the

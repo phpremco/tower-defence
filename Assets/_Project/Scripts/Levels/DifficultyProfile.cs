@@ -17,6 +17,8 @@ namespace Game.Levels
         [SerializeField] [Min(0.1f)] private float _structureDamageMultiplier = 1f;
         [Tooltip("The structure damage factor: creatures bite the base, gates, towers and the hero at this share of the structure damage multiplier. A lever of its own: the wave solver keeps sizing creatures against the multiplier alone, so softer bites are not answered with tougher creatures.")]
         [SerializeField] [Range(0.1f, 1f)] private float _structureDamageFactor = 1f;
+        [Tooltip("Round 88f, the tower damage factor: a gun beside the road (tower, base turret) takes this share of the structure damage in play; gates, the base and the hero take it in full. Below one on Psycho: its creatures are more and live longer, so at the full bite the boss volleys wrecked upgraded guns faster than a repair crew or a purse could answer.")]
+        [SerializeField] [Range(0.1f, 1f)] private float _towerDamageFactor = 1f;
         [SerializeField] [Min(0.1f)] private float _incomeMultiplier = 1f;
         [SerializeField] [Min(0.1f)] private float _startingMoneyMultiplier = 1f;
         [Tooltip("Extra health of a continent boss on this difficulty, on top of the health multiplier every creature gets: the boss carries its share of the finale threat (Docs/BALANCE.md). Level bosses in campaign waves are sized by the wave solver instead.")]
@@ -60,6 +62,12 @@ namespace Game.Levels
         /// bites softer, so one unshot creature costs health instead of the level.
         /// </summary>
         public float StructureDamageFactor => _structureDamageFactor;
+
+        /// <summary>
+        /// The share of the structure damage in play that lands on a gun (<see cref="Game.Combat.StructureRegistry.GunDamageShare"/>):
+        /// a damaged tower is something to answer with a repair, not a sudden loss.
+        /// </summary>
+        public float TowerDamageFactor => _towerDamageFactor;
 
         /// <summary>
         /// Scales the money earned inside a level (bounties and harvested ore). Below one on Easy: the waves stay soft, but a

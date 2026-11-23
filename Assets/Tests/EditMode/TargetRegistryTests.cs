@@ -12,7 +12,7 @@ namespace Game.Tests
         {
             public Vector3 Position { get; set; }
             public TargetLayers Layer { get; set; } = TargetLayers.Ground;
-            public float PathProgress { get; set; }
+            public float DistanceToGoal { get; set; }
             public bool IsAlive { get; set; } = true;
             public void TakeDamage(float amount) { }
 
@@ -20,11 +20,11 @@ namespace Game.Tests
         }
 
         [Test]
-        public void FindBest_PrefersTargetFurthestAlongPath()
+        public void FindBest_PrefersTargetNearestItsGoal()
         {
             var registry = new TargetRegistry();
-            var behind = new FakeTarget { Position = new Vector3(1f, 0f, 0f), PathProgress = 2f };
-            var ahead = new FakeTarget { Position = new Vector3(2f, 0f, 0f), PathProgress = 9f };
+            var behind = new FakeTarget { Position = new Vector3(1f, 0f, 0f), DistanceToGoal = 9f };
+            var ahead = new FakeTarget { Position = new Vector3(2f, 0f, 0f), DistanceToGoal = 2f };
             registry.Add(behind);
             registry.Add(ahead);
 
@@ -35,9 +35,9 @@ namespace Game.Tests
         public void FindBest_IgnoresOutOfRangeDeadAndWrongLayer()
         {
             var registry = new TargetRegistry();
-            registry.Add(new FakeTarget { Position = new Vector3(10f, 0f, 0f), PathProgress = 1f });
-            registry.Add(new FakeTarget { Position = new Vector3(1f, 0f, 0f), PathProgress = 2f, IsAlive = false });
-            registry.Add(new FakeTarget { Position = new Vector3(1f, 0f, 0f), PathProgress = 3f, Layer = TargetLayers.Air });
+            registry.Add(new FakeTarget { Position = new Vector3(10f, 0f, 0f), DistanceToGoal = 1f });
+            registry.Add(new FakeTarget { Position = new Vector3(1f, 0f, 0f), DistanceToGoal = 2f, IsAlive = false });
+            registry.Add(new FakeTarget { Position = new Vector3(1f, 0f, 0f), DistanceToGoal = 3f, Layer = TargetLayers.Air });
 
             Assert.IsNull(registry.FindBest(Vector3.zero, 5f, TargetLayers.Ground));
         }

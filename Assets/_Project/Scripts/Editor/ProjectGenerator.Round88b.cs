@@ -57,7 +57,10 @@ namespace Game.Editor
         public const int BossVolleyTargets = 3;
         public const float BossVolleyInterval = 3f;
         public const float BossVolleyFirstDelay = 3f;
-        public const float BossVolleyDamage = 14f;
+        // Round 88f: 14 -> 8. Three bolts every three seconds is then what one repair drone mends a second (8), so a boss
+        // held at a gate is answered by a crew or a repair instead of wrecking the three guns beside it in under a minute
+        // (the volleys were two thirds of all tower wear in the bots' Shard Ridge runs).
+        public const float BossVolleyDamage = 8f;
 
         /// <summary>The level bosses that got the volley this round, with its asset name and colour.</summary>
         private static readonly (string Boss, string Ability, Color Color)[] BossVolleys =

@@ -11,8 +11,11 @@ namespace Game.Combat
         /// <summary>Exactly one of Ground or Air.</summary>
         TargetLayers Layer { get; }
 
-        /// <summary>Distance travelled along the path. Towers prefer the target that is furthest along.</summary>
-        float PathProgress { get; }
+        /// <summary>
+        /// Road still ahead of it to the end of its own route. Guns prefer the smallest: the threat nearest the base,
+        /// whichever road or air route it came by.
+        /// </summary>
+        float DistanceToGoal { get; }
 
         bool IsAlive { get; }
 

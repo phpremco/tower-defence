@@ -160,7 +160,7 @@ namespace Game.Boot
 
             var root = new GameObject("Gameplay").transform;
             var targets = new TargetRegistry();
-            var structures = new StructureRegistry();
+            var structures = new StructureRegistry { GunDamageShare = difficulty.TowerDamageFactor };
             Services.TryGet(out VfxLibrary vfx);
             IPlatformSettings platformSettings = Services.Get<IPlatformSettings>();
             var quality = new VfxQuality(platformSettings.ParticleScale, platformSettings.LowDetailModels, platformSettings.DistortionEnabled);

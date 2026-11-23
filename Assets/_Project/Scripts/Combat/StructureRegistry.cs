@@ -18,6 +18,12 @@ namespace Game.Combat
 
         public bool Contains(IStructure structure) => _structures.Contains(structure);
 
+        /// <summary>
+        /// The share of every blow a gun beside the road takes (towers and base turrets; a gate, the base and the hero take
+        /// the blow in full). The level sets it from its difficulty (DifficultyProfile.TowerDamageFactor).
+        /// </summary>
+        public float GunDamageShare { get; set; } = 1f;
+
         /// <summary>Returns the living structure with the lowest health share below full, or null when all are healthy.</summary>
         public IStructure FindMostDamaged()
         {

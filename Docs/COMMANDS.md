@@ -2253,3 +2253,19 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
   `Tools/PlayTest/r88e_start_money.txt` (an asterisk marks a level's own sum, the shared rule's sum in brackets).
 - **Tests of the round** (on a clone): `bash Tools/PlayTest/r34b_editmode_worker.sh 6 Round88dTests` (start money, model =
   game), `RepairDispatcherTests` (the work order), `Round88cTests`, `CounterAffordabilityTests`.
+
+## Round 88f: a small before/after on one level (added 2026-11-23)
+
+- **Tower wear of one level, a few seeds, about 3 minutes a batch** (from the stage; the baseline of the old state from
+  `TowerDefenseWorkers\stageB`, made with `TD_STAGE=...\stageB stage.sh make`):
+
+      PR_RECORDS=Tools/PlayTest/pressure_<name>_records.txt PR_MULTIPLES="1" PR_SEEDS="1,2" PR_POLICIES="skilled,sensible" PR_WORKERS=3 bash Tools/PlayTest/pressure.sh "2" "3,2"
+      grep "^prun" Tools/PlayTest/pressure_<name>_records.txt | grep -o "Level_[^|]*|[0-9]|[a-z]*|[0-9]\|wear guns[^|]*"
+
+- **Which source wears the guns:** the same batch with `PR_OVERLAY=<folder>` holding a copy of the asset with one
+  source set to zero (the three volley abilities' `_damage`, the Cragback's `_attackDamage`); the difference is that
+  source's share.
+- **The levers:** `BalanceSheet.PsychoTowerFactor` / `DifficultyProfile._towerDamageFactor` (a gun's share of a blow per
+  difficulty) and `ProjectGenerator.BossVolleyDamage` (the three ability assets carry the same number). Neither is in the
+  calibration's input hash.
+- **Tests of the round** (on a clone): `bash Tools/PlayTest/r34b_editmode_worker.sh 4 "Round88fTests;TargetRegistryTests;EnemyBehaviourTests"`.

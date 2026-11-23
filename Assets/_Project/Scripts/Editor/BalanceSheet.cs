@@ -31,6 +31,12 @@ namespace Game.Editor
             /// </summary>
             public readonly float StructureFactor;
 
+            /// <summary>
+            /// The tower damage factor (round 88f): the share of the structure damage in play that lands on a gun beside the
+            /// road (tower, base turret). Gates, the base and the hero take the bite in full.
+            /// </summary>
+            public readonly float TowerFactor;
+
             /// <summary>In-level income (bounties, harvested ore) as a share of what creatures and mines pay.</summary>
             public readonly float Income;
 
@@ -46,8 +52,9 @@ namespace Game.Editor
             /// <summary>The brood of a level boss over a whole walk, as a share of the boss's bar (round 88b; BalanceRules.EscortStartWeight).</summary>
             public readonly float EscortWorth;
 
-            public Difficulty(string id, string displayName, float health, float count, float interval, float research, float power, float structureDamage, float income, float startMoney, float bossHealth, float bossEscort = 1f, float structureFactor = 1f, float escortWorth = 0f)
+            public Difficulty(string id, string displayName, float health, float count, float interval, float research, float power, float structureDamage, float income, float startMoney, float bossHealth, float bossEscort = 1f, float structureFactor = 1f, float escortWorth = 0f, float towerFactor = 1f)
             {
+                TowerFactor = towerFactor;
                 StructureFactor = structureFactor;
                 Id = id;
                 DisplayName = displayName;
@@ -139,6 +146,13 @@ namespace Game.Editor
         private const float EasyStructureFactor = 0.75f;
         private const float MediumStructureFactor = 0.6f;
 
+        // Round 88f (Remco on Shard Ridge Psycho: "suddenly your upgraded towers are broken and you can't pay for anything
+        // anymore"): the bots' guns lost 2750 health a run there against 1400 on Hard, two thirds of it to the boss
+        // volleys (x1.4 a bolt, and a Psycho boss lives longer under the guns). A gun on Psycho takes this share of the
+        // bite, so it is bitten as on Hard (1.4 x 0.7); with the volley at 8 a bolt the wear came to 1640 a run against
+        // 1290 on Hard. Gates, the base and the hero keep Psycho's x1.4.
+        private const float PsychoTowerFactor = 0.7f;
+
         // Round 30 (Remco): money may go to x3 at most; the Psycho finale player still lost to Gravemaw, the Matriarch and the
         // Sealed One at Hard's boss share (holds x0.85-1.0), so Psycho's escort calls release this share of their count (the
         // finale probe sets it; the boss itself stays Hard's).
@@ -166,7 +180,7 @@ namespace Game.Editor
             new Difficulty("Easy", "Easy", 0.68f, 0.9f, 1.2f, Rules.ResearchMultipliers[0], Rules.PowerMultipliers[0], 0.6f, EasyIncome, EasyStartMoney, EasyBossHealth, structureFactor: EasyStructureFactor, escortWorth: EasyEscortWorth),
             new Difficulty("Medium", "Medium", 1f, 1f, 1f, Rules.ResearchMultipliers[1], Rules.PowerMultipliers[1], 0.75f, MediumIncome, 1f, MediumBossHealth, structureFactor: MediumStructureFactor, escortWorth: MediumEscortWorth),
             new Difficulty("Hard", "Hard", 1.15f, 1.3f, 0.85f, Rules.ResearchMultipliers[2], Rules.PowerMultipliers[2], 1f, HardIncome, 1f, HardBossHealth, escortWorth: HardEscortWorth),
-            new Difficulty("Psycho", "Crazy", 1.65f, 1.65f, 0.7f, Rules.ResearchMultipliers[3], Rules.PowerMultipliers[3], 1.4f, PsychoIncome, PsychoStartMoney, PsychoBossHealth, PsychoBossEscort, escortWorth: PsychoEscortWorth),
+            new Difficulty("Psycho", "Crazy", 1.65f, 1.65f, 0.7f, Rules.ResearchMultipliers[3], Rules.PowerMultipliers[3], 1.4f, PsychoIncome, PsychoStartMoney, PsychoBossHealth, PsychoBossEscort, escortWorth: PsychoEscortWorth, towerFactor: PsychoTowerFactor),
         };
 
         /// <summary>

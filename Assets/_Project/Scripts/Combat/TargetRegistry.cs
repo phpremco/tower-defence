@@ -39,7 +39,7 @@ namespace Game.Combat
 
         public bool IsConcealed(ITargetable target) => _concealed.Contains(target);
 
-        /// <summary>Returns the target in range that is furthest along its path, or null.</summary>
+        /// <summary>Returns the target in range with the least road left to its goal (the threat nearest the base), or null.</summary>
         public ITargetable FindBest(Vector3 origin, float range, TargetLayers mask) => FindBest(origin, range, mask, null, 0);
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Game.Combat
         public ITargetable FindBest(Vector3 origin, float range, TargetLayers mask, ITargetable[] except, int exceptCount)
         {
             ITargetable best = null;
-            float bestProgress = float.NegativeInfinity;
+            float bestLeft = float.PositiveInfinity;
             float rangeSqr = range * range;
 
             for (int i = 0; i < _targets.Count; i++)
@@ -60,13 +60,13 @@ namespace Game.Combat
                     continue;
                 }
 
-                if (FlatDistanceSqr(origin, candidate.Position) > rangeSqr || candidate.PathProgress <= bestProgress || Excepted(candidate, except, exceptCount))
+                if (FlatDistanceSqr(origin, candidate.Position) > rangeSqr || candidate.DistanceToGoal >= bestLeft || Excepted(candidate, except, exceptCount))
                 {
                     continue;
                 }
 
                 best = candidate;
-                bestProgress = candidate.PathProgress;
+                bestLeft = candidate.DistanceToGoal;
             }
 
             return best;

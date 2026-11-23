@@ -365,6 +365,12 @@ namespace Game.Towers
                 return;
             }
 
+            // A gun takes the difficulty's share of a blow; whatever bars the road takes it in full (round 88f).
+            if (!_definition.BlocksGroundEnemies && _structures != null)
+            {
+                amount *= _structures.GunDamageShare;
+            }
+
             Health.TakeDamage(Guard != null ? Guard.Absorb(amount) : amount);
         }
 

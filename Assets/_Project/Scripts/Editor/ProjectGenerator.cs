@@ -289,6 +289,7 @@ namespace Game.Editor
             so.FindProperty("_powerCurrencyMultiplier").floatValue = sheet.Power;
             so.FindProperty("_structureDamageMultiplier").floatValue = sheet.StructureDamage;
             so.FindProperty("_structureDamageFactor").floatValue = sheet.StructureFactor;
+            so.FindProperty("_towerDamageFactor").floatValue = sheet.TowerFactor;
             so.FindProperty("_incomeMultiplier").floatValue = sheet.Income;
             so.FindProperty("_startingMoneyMultiplier").floatValue = sheet.StartMoney;
             so.FindProperty("_bossHealthShare").floatValue = sheet.BossHealth;

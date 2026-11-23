@@ -466,7 +466,7 @@ namespace Game.Tests
             public Vector3 Position => Vector3.zero;
             public TargetLayers Layer { get; }
             public CreatureFamily Family { get; }
-            public float PathProgress => 0f;
+            public float DistanceToGoal => 0f;
             public bool IsAlive => true;
             public float Taken { get; private set; }
             public float ArmourFactor { get; private set; }
@@ -488,7 +488,7 @@ namespace Game.Tests
         {
             public Vector3 Position => Vector3.zero;
             public TargetLayers Layer => TargetLayers.Ground;
-            public float PathProgress => 0f;
+            public float DistanceToGoal => 0f;
             public bool IsAlive => true;
             public float Taken { get; private set; }
 

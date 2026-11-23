@@ -13,7 +13,7 @@ namespace Game.Tests
         {
             public Vector3 Position { get; set; }
             public TargetLayers Layer { get; set; }
-            public float PathProgress => 0f;
+            public float DistanceToGoal => 0f;
             public bool IsAlive => true;
 
             public void TakeDamage(float amount)

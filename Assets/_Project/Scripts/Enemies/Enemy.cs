@@ -29,6 +29,7 @@ namespace Game.Enemies
         private Vector3[] _waypoints;
         private int _nextWaypoint;
         private float _travelled;
+        private float _toGoal;
         private float _heightOffset;
         private TargetRegistry _registry;
         private StructureRegistry _structures;
@@ -87,6 +88,13 @@ namespace Game.Enemies
 
         /// <summary>Distance covered along the road, counted from the road's start even for enemies that joined it halfway.</summary>
         public float PathProgress => _travelled;
+
+        /// <summary>
+        /// The road still ahead of it, to the end of its own route. Guns rank by this and not by <see cref="PathProgress"/>:
+        /// a side road or an air route is far shorter than the main road, so a creature at the last gate had "travelled"
+        /// less than one halfway down the main road and the guns shot past it (Remco, 2026-11-23).
+        /// </summary>
+        public float DistanceToGoal => _toGoal;
 
         public bool IsAlive => _active && Health != null && !Health.IsDead;
 
@@ -179,6 +187,7 @@ namespace Game.Enemies
 
             _nextWaypoint = 1;
             _travelled = progressOffset;
+            _toGoal = RouteLength(waypoints);
             _heightOffset = heightOffset;
             _registry = registry;
             _structures = structures;
@@ -312,6 +321,7 @@ namespace Game.Enemies
             _nextWaypoint = route.Length > 1 ? 1 : route.Length;
             _travelled = progress;
             _directed = false;
+            _toGoal = RouteLength(route);
             if (route.Length > 1)
             {
                 Heading = Flat(route[1] - route[0]);
@@ -387,6 +397,17 @@ namespace Game.Enemies
             return route;
         }
 
+        private static float RouteLength(Vector3[] route)
+        {
+            float length = 0f;
+            for (int i = 1; i < route.Length; i++)
+            {
+                length += Vector3.Distance(route[i - 1], route[i]);
+            }
+
+            return length;
+        }
+
         private void Update() => Step(Time.deltaTime);
 
         /// <summary>Advances the enemy by a time step. Update calls it with the frame time; tests call it directly.</summary>
@@ -438,6 +459,7 @@ namespace Game.Enemies
                     remaining -= distance;
                     stepped += distance;
                     _travelled += distance;
+                    _toGoal -= distance;
                     _nextWaypoint++;
                     continue;
                 }
@@ -445,6 +467,7 @@ namespace Game.Enemies
                 Heading = Flat(toTarget);
                 transform.position += toTarget / distance * remaining;
                 _travelled += remaining;
+                _toGoal -= remaining;
                 stepped += remaining;
                 remaining = 0f;
             }

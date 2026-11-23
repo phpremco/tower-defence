@@ -15968,3 +15968,57 @@ Tiny round on Remco's word; uncommitted. No bot measurement of anything.
   long time; that is the asked priority.
 - **For Remco to play:** Shard Ridge on Hard (400 at the start) and on Psycho (1000). On any level with base turrets and
   a repair drone: let a base turret get wrecked while guns are damaged; the drone should patch the guns and gates first.
+
+## Round 88f: guns take the threat nearest the base, tower wear on Psycho (2026-11-23)
+
+Not committed. Small round after Remco's playtest of 2026-11-23; no bot chain, only Shard Ridge Hard and Psycho
+(skilled and sensible, seeds 1 and 2, at the data).
+
+1. **Which creature a gun takes.** Cause: one shared rule, `TargetRegistry.FindBest`, ranked by the distance
+   *travelled*. Every level has a main road of 95 to 116 cells beside side roads and air routes of 35 to 48 (Shard Ridge:
+   109 against 46, 42 and 38), so a creature biting the last gate off the second road (40 travelled) lost to one halfway
+   down the main road (50 travelled). Not a Cannon fault and no cluster scoring: every tower, base turret, armed gate,
+   attack drone and Spencer use that one call. Fix: `ITargetable.DistanceToGoal` (the road left to the end of the
+   creature's own route; `Enemy` counts it down as it walks and again on `Reroute`), and `FindBest` takes the smallest.
+   `PathProgress` stays on `Enemy` for the spawner, the brood and the chorus. Left as it was: a beam holds the creature
+   it burns until it dies or leaves its reach; a missile whose target died turns to the nearest creature. There is no
+   per-tower aim setting in the game yet, so nothing to keep working.
+2. **Shard Ridge Psycho: what wrecked the guns.** Measured by taking one source out at a time (skilled bot, mean of two
+   seeds, health lost by all guns in a run): 2755 at HEAD, 880 without the boss volleys, 2316 without the Cragback's
+   slam. So the level bosses' volley was 68 % of all tower wear, the Cragback 16 %, flyers and the rest 16 %. A bolt was
+   14 x 1.4 = 19.6 on each of the three nearest guns every 3 s: 6.5 health a second on a gun of 220 (upgrades add no
+   health), a wreck in 34 s beside a boss held at a gate, and the three bosses of the level lived 80 to 145 s. One repair
+   drone mends 8 a second on one gun against 19.6 a second coming in; repairing it all by hand was about 830 coins of
+   the 2300 a run earns. Hard: 1410 a run, the same shape at x1.
+   Two rules (Docs/COMBAT_RULES.md, "Structures", points 3 and 4):
+   - `BossVolleyDamage` 14 -> 8 (every difficulty): three bolts every 3 s are what one repair drone mends.
+   - `DifficultyProfile.TowerDamageFactor` (new; Easy, Medium, Hard 1, Psycho 0.7): the share of a blow a gun takes
+     (towers and base turrets; `StructureRegistry.GunDamageShare`, read in `Tower.TakeDamage`). Gates, the base and the
+     hero keep Psycho's x1.4. Not in the calibration's input hash (the model has no term for tower wear): no re-stamp.
+
+   | Shard Ridge, guns' health lost a run (wrecks) | HEAD | aiming fix + factor 0.6, volley 14 | final (volley 8, factor 0.7) |
+   | --- | --- | --- | --- |
+   | Psycho skilled (won, 16 waves) | 2694, 2816 (1, 0) | 1877, 1952 (0, 0) | 1659, 1625 (0, 0) |
+   | Hard skilled (won) | 1511, 1310 (0, 0) | 1668, 1500 (0, 0) | 1372, 1206 (0, 0) |
+   | Psycho sensible | 1332, 1222, lost at wave 13 (1, 2) | 2537, 926 (6, 1) | 1837, 1798, lost at 16 and 15 (4, 4) |
+   | Hard sensible | 629, 513, lost at wave 13 (1, 2) | 2187 won, 1989 (4, 7) | 1734, 1908, both won (2, 3) |
+
+   Psycho skilled: -40 % wear (about 490 coins of repairs instead of 830), Psycho now 1.27 x Hard. The sensible rows
+   do not compare: with the new aim that bot gets three waves further (Hard: two losses became two wins), so its guns
+   stand under the last boss as well. What is left on Psycho (1640): volleys 46 %, Cragback 17 %, flyers and the rest
+   37 %. The aiming fix alone raised the wear from the other sources (880 x 0.7 = 616 expected, 889 measured).
+- **Not done / known:** no closed loop, picks, finale or grace gate; the aiming change moves every cell (the bots do
+  better), so the calibration is staler than it was. `r88b_threat.txt` is at volley 14 and knows no tower factor.
+  `CombatRulesTests.NoRowWithoutTheCounter_OutlastsItsWindow_AsPlayed` is still red (the stale grace gate).
+- **Idea, not built:** a tower's health grows with its stars (`TowerLevel.HealthBonus` exists and is zero for guns), so an
+  upgraded gun is harder to wreck than a new one. It is in the calibration's hash; ask Remco first.
+- **Tests:** `Round88fTests` (6: side road against main road, the road left while walking and after a reroute, every
+  tower asset opens fire on the creature nearest its goal, a gun takes the share and a gate the whole blow, the
+  factors, sheet = assets). On a clone 152 run, 151 passed (the grace gate above); second run of the round's classes
+  79 of 79.
+- **Files:** `Combat/ITargetable.cs`, `TargetRegistry.cs`, `StructureRegistry.cs`; `Enemies/Enemy.cs`;
+  `Towers/Tower.cs`; `Levels/DifficultyProfile.cs`; `Boot/LevelBootstrapper.cs`; `Editor/BalanceSheet.cs`,
+  `ProjectGenerator.cs`, `ProjectGenerator.Round88b.cs`; data `Difficulty/*.asset`, `Enemies/Abilities/VenomSpit`,
+  `ArcDischarge`, `SpineVolley`; ten test fakes (`PathProgress` -> `DistanceToGoal`).
+- **For Remco to play:** Shard Ridge on Psycho, with a repair drone: the guns beside a boss at a gate should lose
+  health slowly enough to answer, and no gun should shoot past a creature at a gate. Then the same on Hard.

@@ -215,8 +215,8 @@ namespace Game.Tests
         public void TheRegistry_HandsTheWispToAnAirOnlyGun_AndItsBurstSplashesIt()
         {
             var registry = new TargetRegistry();
-            var walker = new StubTarget { Layer = TargetLayers.Ground, PathProgress = 0.9f };
-            var wisp = new StubTarget { Layer = TargetLayers.Ground | TargetLayers.Air, PathProgress = 0.5f };
+            var walker = new StubTarget { Layer = TargetLayers.Ground, DistanceToGoal = 1f };
+            var wisp = new StubTarget { Layer = TargetLayers.Ground | TargetLayers.Air, DistanceToGoal = 5f };
             registry.Add(walker);
             registry.Add(wisp);
             Assert.AreSame(wisp, registry.FindBest(Vector3.zero, 5f, TargetLayers.Air), "the air-only gun passes the walker over and takes the wisp");
@@ -228,7 +228,7 @@ namespace Game.Tests
         private sealed class StubTarget : ITargetable
         {
             public TargetLayers Layer { get; set; }
-            public float PathProgress { get; set; }
+            public float DistanceToGoal { get; set; }
             public Vector3 Position => Vector3.zero;
             public bool IsAlive => true;
 

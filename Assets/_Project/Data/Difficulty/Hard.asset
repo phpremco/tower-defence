@@ -20,6 +20,7 @@ MonoBehaviour:
   _powerCurrencyMultiplier: 1.5
   _structureDamageMultiplier: 1
   _structureDamageFactor: 1
+  _towerDamageFactor: 1
   _incomeMultiplier: 1.1
   _startingMoneyMultiplier: 1
   _bossHealthShare: 1.25

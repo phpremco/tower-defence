@@ -28,7 +28,7 @@ namespace Game.Tests
             public Vector3 Position { get; set; }
             public bool IsAlive => true;
             public TargetLayers Layer => TargetLayers.Ground;
-            public float PathProgress => 0f;
+            public float DistanceToGoal => 0f;
             public float Taken { get; private set; }
 
             public void TakeDamage(float amount) => Taken += amount;

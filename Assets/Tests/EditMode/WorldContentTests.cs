@@ -36,7 +36,7 @@ namespace Game.Tests
 
             public TargetLayers Layer { get; set; } = TargetLayers.Ground;
 
-            public float PathProgress => 0f;
+            public float DistanceToGoal => 0f;
 
             public bool IsAlive => true;
 
