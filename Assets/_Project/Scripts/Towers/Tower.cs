@@ -9,7 +9,7 @@ namespace Game.Towers
     /// Finds a target in range and fires projectiles, can be damaged, repaired, upgraded and sold.
     /// Has no knowledge of how it looks.
     /// </summary>
-    public sealed class Tower : MonoBehaviour, IStructure, ICrewRaisable, IGuardable, ISupportSource, IBridgeable
+    public sealed class Tower : MonoBehaviour, IStructure, ICrewRaisable, IRepairFocus, IGuardable, ISupportSource, IBridgeable
     {
         private const float MuzzleHeight = 1f;
         private const float MuzzleForward = 0.55f;
@@ -394,6 +394,32 @@ namespace Game.Towers
         public bool AwaitsCrew => IsWrecked && _definition.IsBaseDefence;
 
         /// <summary>
+        /// True while the player wants the repair crew here first (round 88g, the toggle on the tower menu). It stays through
+        /// an upgrade, a repair and, on a gate or a base turret, through a wreck and its rebuild; a gun that is wrecked loses
+        /// it, because its wreck is scrapped and whatever is built on the cell is another gun.
+        /// </summary>
+        public bool RepairFocus { get; private set; }
+
+        /// <summary>False for the wreck of a gun: the crew has no work on it, so there is nothing to put first.</summary>
+        public bool CanFocusRepair => !IsWrecked || !CanBeSold;
+
+        /// <summary>Raised when the player marks the structure for the repair crew or takes the mark off.</summary>
+        public event Action<Tower> RepairFocusChanged;
+
+        /// <summary>Marks the structure for the repair crew, or takes the mark off.</summary>
+        public void SetRepairFocus(bool focus)
+        {
+            focus &= CanFocusRepair;
+            if (focus == RepairFocus)
+            {
+                return;
+            }
+
+            RepairFocus = focus;
+            RepairFocusChanged?.Invoke(this);
+        }
+
+        /// <summary>
         /// The repair crew's work. A standing structure is patched up as the work comes in; a wreck that
         /// <see cref="AwaitsCrew"/> stands again, whole, once the crew has put in work worth all of its health, so it
         /// does not come back with a sliver of health under the same fire that wrecked it. Any other wreck is left alone.
@@ -624,6 +650,8 @@ namespace Game.Towers
                 _wasWrecked = true;
                 _raised = 0f;
                 Wrecked?.Invoke(this);
+                // The wreck of a gun is no work for the crew, so its mark goes (the setter refuses a mark it cannot hold).
+                SetRepairFocus(RepairFocus);
             }
             else if (!IsWrecked)
             {

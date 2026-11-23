@@ -141,7 +141,9 @@ namespace Game.Tests
 
             float hardBite = hard.StructureDamageMultiplier * hard.TowerDamageFactor;
             float psychoBite = psycho.StructureDamageMultiplier * psycho.TowerDamageFactor;
-            Assert.LessOrEqual(psychoBite, hardBite + 0.0001f, "a Psycho creature bites a gun no harder than a Hard one; there are more of them and they live longer");
+            // Round 88g (Remco: "towers take a very little more damage"): the bite on a gun is a little over Hard's, far under the 1.4 the gates take.
+            Assert.Greater(psychoBite, hardBite, "a Psycho creature bites a gun a little harder than a Hard one");
+            Assert.LessOrEqual(psychoBite, hardBite * 1.15f, "but only a little: there are more of them and they live longer");
             Assert.Greater(psycho.StructureDamageMultiplier, hard.StructureDamageMultiplier, "gates, the base and the hero keep Psycho's bite");
         }
 

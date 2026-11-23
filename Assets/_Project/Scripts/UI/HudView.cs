@@ -144,6 +144,7 @@ namespace Game.UI
             var baseMenu = gameObject.AddComponent<BaseMenuView>();
             baseMenu.Initialize(context, safe, camera, _font);
             keepOut.Add(baseMenu.Panel);
+            keepOut.Add(baseMenu.StatusPanel);
             var heroMenu = gameObject.AddComponent<HeroPanelView>();
             heroMenu.Initialize(context, safe, camera, _font);
             keepOut.Add(heroMenu.Panel);
@@ -155,6 +156,7 @@ namespace Game.UI
             keepOut.Add(towerMenu.Panel);
             gameObject.AddComponent<BaseAlertView>().Initialize(context, worldLabels, camera, keepOut);
             gameObject.AddComponent<GateRebuildBadges>().Initialize(context, worldLabels, camera, keepOut);
+            gameObject.AddComponent<RepairFocusBadges>().Initialize(context, worldLabels, camera, keepOut);
             gameObject.AddComponent<ResultView>().Initialize(context, safe);
             // Over the HUD and the result screen, under the pause menu, which may open on top of a conversation.
             BuildDialogue(safe, keepOut);

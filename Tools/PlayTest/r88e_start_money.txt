@@ -4,7 +4,7 @@ Round 88e: start money per level and difficulty (StartMoneyRule.For). * = the le
 | --- | --- | --- | --- | --- |
 | C1_01 Landing Site | 160 | 200 | 200 | 600 |
 | C1_02 Glass Meadows | 176 | 220 | 220 | 660 |
-| C1_03 Shard Ridge | 192 | 240 | 400* (360) | 1000* (840) |
+| C1_03 Shard Ridge | 192 | 240 | 400* (360) | 920* (840) |
 | C1_04 Fault Line | 208 | 260 | 380 | 900 |
 | C1_05 Quartz Flats | 224 | 280 | 400 | 960 |
 | C1_06 Crysium Vein | 240 | 300 | 420 | 1020 |

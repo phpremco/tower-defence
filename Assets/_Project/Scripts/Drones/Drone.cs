@@ -89,6 +89,16 @@ namespace Game.Drones
         /// <summary>What the drone is doing this frame.</summary>
         public DroneActivity Activity { get; private set; }
 
+        /// <summary>
+        /// The drone's battery for the HUD, 0 to 1 (round 88g): what its hull has left while it works (a flyer's hits drain
+        /// it), and while it is down at home how far its charge has come back.
+        /// </summary>
+        public float Battery =>
+            _recharging ? 1f - Mathf.Clamp01((_rechargeUntil - Time.time) / Mathf.Max(0.01f, _definition.RechargeSeconds)) : Health != null ? Health.Fraction : 0f;
+
+        /// <summary>What the drone is busy with in the four words the HUD shows.</summary>
+        public DroneState State => DroneStates.Of(Activity);
+
         /// <summary>How fast the drone moved last frame, as a share of its top speed, so the view can tilt it.</summary>
         public float Pace { get; private set; }
 

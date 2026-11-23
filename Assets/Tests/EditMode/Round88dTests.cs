@@ -105,7 +105,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ShardRidge_StartsHardOnFourHundred_AndPsychoOnAWholeSkyGunMore()
+        public void ShardRidge_StartsHardOnFourHundred_AndPsychoAboveTheSharedRule()
         {
             // Round 88e, Remco: "make Hard 400 money, and Psycho needs more too", through the level's own start money
             // (LevelDefinition.TryGetStartMoney), not the shared ratios. Shard Ridge is the level he named: its sums are pinned.
@@ -117,8 +117,10 @@ namespace Game.Tests
             int gun = FirstRaidRule.SkyGunPrice(level.AvailableTowers);
 
             Assert.AreEqual(400, StartMoneyRule.For(level, hard));
-            Assert.AreEqual(1000, StartMoneyRule.For(level, psycho));
-            Assert.GreaterOrEqual(StartMoneyRule.For(level, psycho) - StartMoneyRule.Shared(level, psycho), gun, "Psycho got a sky gun's worth or more on top of round 88d");
+            // Round 88g, Remco after winning it "quite easily": "a very little less start money", 1000 -> 920.
+            Assert.AreEqual(920, StartMoneyRule.For(level, psycho));
+            Assert.Greater(StartMoneyRule.For(level, psycho), StartMoneyRule.Shared(level, psycho), "Psycho still starts above the shared rule of round 88d");
+            Assert.Greater(gun, 0, "the level sells a sky gun");
             Assert.IsTrue(level.TryGetStartMoney(hard, out int own) && own == 400, "the sum is the level's own entry");
             Assert.IsFalse(level.TryGetStartMoney(catalog.Difficulties[0], out _), "Easy and Medium stay on the shared rule");
             Assert.AreEqual(StartMoneyRule.Shared(level, catalog.Difficulties[1]), StartMoneyRule.For(level, catalog.Difficulties[1]));

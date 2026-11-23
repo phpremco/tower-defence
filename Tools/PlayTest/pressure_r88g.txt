@@ -1,0 +1,74 @@
+Measured with: bot 4:d15542b0; data eca2fa32; game code f5f51791
+
+Pressure P = A + D per run (0-2): A = mean over the waves of the health-weighted share of the road the wave's creatures
+covered (a wave that never came = 1), D = base health lost / base maximum (a lost level = 1). See the header of
+Tools/PlayTest/pressure_report.py. Median over the seeds, range in brackets.
+
+STOP RULE (a): P is monotone non-decreasing in the health multiple (tolerance 0.02 per step) for at least 95% of the unit/seed curves
+  all rungs: 0 of 0 curves monotone = 0.0%  ->  FAIL
+  the same check on other scores (all rungs): P 0 of 0; A 0 of 0; R+D (furthest creature) 0 of 0; D 0 of 0; won/lost 0 of 0
+  curves that are not monotone (P per multiple, the drops marked):
+
+STOP RULE (b): spread over the seeds, (max - min) / median, of P at the data (x1) at most 10% for the 'skilled' rung in every cell
+  skilled: 2 of 2 cells within the limit  ->  PASS
+  cell                  skilled                   sensible                  
+  Shard Ridge Hard      0.1% (abs 0.001, n=2)     6.9% (abs 0.073, n=2)
+  Shard Ridge Psycho    0.3% (abs 0.002, n=2)     3.5% (abs 0.053, n=2)
+  the same spread at every multiple (relative; absolute in brackets), fixed-build-order rungs:
+
+THE TABLE: P at the data (x1), median over the seeds (range); wins out of the seeds played
+  cell                  skilled                           sensible                          
+  Shard Ridge Hard      0.521 (0.521-0.521) 2/2           1.057 (1.020-1.093) 2/2
+  Shard Ridge Psycho    0.519 (0.519-0.520) 2/2           1.521 (1.495-1.548) 0/2
+
+P per multiple: median over the seeds (min-max), wins/seeds
+  skilled
+    Shard Ridge Hard      x1 0.52 (0.52-0.52) 2/2
+    Shard Ridge Psycho    x1 0.52 (0.52-0.52) 2/2
+  sensible
+    Shard Ridge Hard      x1 1.06 (1.02-1.09) 2/2
+    Shard Ridge Psycho    x1 1.52 (1.49-1.55) 0/2
+
+The parts at the data (x1), median over the seeds: A (advance), D (base damage), share of the spawned health that reached the base
+  skilled     Shard Ridge Hard      A 0.521 (0.521-0.521)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  skilled     Shard Ridge Psycho    A 0.519 (0.519-0.520)  D 0.00 (0.00-0.00)  leaked 0.000 (0.000-0.000)
+  sensible    Shard Ridge Hard      A 0.520 (0.518-0.522)  D 0.54 (0.50-0.57)  leaked 0.021 (0.018-0.024)
+  sensible    Shard Ridge Psycho    A 0.521 (0.495-0.548)  D 1.00 (1.00-1.00)  leaked 0.062 (0.056-0.069)
+
+DERIVED EDGE H*: the multiple at which the base loses 50% of its health (D crosses 0.5), interpolated on the log of the
+multiple between the grid points; '<1' / '>1' = outside the grid. Per seed, then the median; 'pooled' = the crossing
+of the median-over-seeds D curve. Spread = max / min - 1 over the seeds inside the grid.
+  skilled
+    Shard Ridge Hard      median >1     pooled <1     per seed: >1 >1                                spread -
+    Shard Ridge Psycho    median >1     pooled <1     per seed: >1 >1                                spread -
+  sensible
+    Shard Ridge Hard      median <1     pooled <1     per seed: <1 <1                                spread -
+    Shard Ridge Psycho    median <1     pooled <1     per seed: <1 <1                                spread -
+
+WIN RATE: seeds won per multiple, and H50 = the multiple at which half the seeds are lost (interpolated on the log of
+the multiple). Not a stop rule; it is what the table supports when P turns out two-valued.
+                                    x1     H50
+
+ADVANCE PER WAVE at the data (x1): a_w in percent, median over the seeds (. = the wave never came in most seeds);
+below it the waves in which the base was hit, with the number of seeds.
+  skilled     Shard Ridge Hard       59  47  34  39  40  55  41  49  40  68  62  64  54  68  63  49
+                                    base hit: never
+  skilled     Shard Ridge Psycho     48  41  41  49  33  68  48  36  49  66  66  60  49  64  65  48
+                                    base hit: never
+  sensible    Shard Ridge Hard       56  45  33  40  35  47  41  41  42  67  67  70  53  71  67  56
+                                    base hit: w13 2/2, w15 2/2, w16 2/2
+  sensible    Shard Ridge Psycho     45  38  34  49  33  60  42  38  46  56  67  66  30   .   .   .
+                                    base hit: w12 1/2, w13 2/2, w15 1/2, w16 1/2
+
+WHAT WAS BUILT at the data (x1), seed 1: towers built, upgrades, coins left, coins earned, repairs paid; the first twelve moves
+  skilled     Shard Ridge Hard      won w16/16; built 14, upgrades 16, left 196, earned 1957, repairs 175
+                                    w1 build Cannon@12,10; w1 build PulseRifle@11,11; w1 build PulseRifle@13,11; w1 drone HarvestDrone@0,0; w1 upgrade@13,11; w2 upgrade@11,11; w3 upgrade@13,11; w5 build PulseRifle@14,11; w5 upgrade@14,11; w5 build PulseRifle@12,11; w7 upgrade@12,10; w8 build Rocket@33,10
+  skilled     Shard Ridge Psycho    won w16/16; built 22, upgrades 12, left 168, earned 2845, repairs 75
+                                    w1 build Cannon@11,10; w1 build Cannon@12,10; w1 build Cannon@13,10; w1 drone HarvestDrone@0,0; w1 build Cannon@13,11; w1 build Cannon@33,11; w1 build Cannon@12,11; w1 build Cannon@11,11; w1 build PulseRifle@14,11; w3 drone RepairDrone@0,0; w3 upgrade@14,11; w5 upgrade@14,11
+  sensible    Shard Ridge Hard      won w16/16; built 17, upgrades 11, left 97, earned 1957, repairs 230
+                                    w1 build Cannon@13,10; w1 build Laser@12,10; w1 build PulseRifle@13,11; w3 upgrade@13,11; w5 build PulseRifle@31,10; w5 upgrade@31,10; w7 build PulseRifle@14,10; w7 upgrade@14,10; w8 build Cannon@32,12; w10 build Rocket@34,10; w10 upgrade@13,11; w10 upgrade@12,10
+  sensible    Shard Ridge Psycho    lost w13/16; built 14, upgrades 6, left 87, earned 1769, repairs 106
+                                    w1 build Cannon@13,10; w1 build Laser@12,10; w1 build Laser@13,11; w1 build Laser@30,10; w1 build Laser@11,10; w1 build Laser@12,11; w1 build PulseRifle@31,10; w3 upgrade@31,10; w4 build PulseRifle@14,10; w5 upgrade@14,10; w6 build Cannon@32,12; w8 upgrade@31,10
+
+Cost: 8 runs, 3 machine minutes of play (21 s a run), 0 reference runs for the typical scripts; 1 batches, 2 wall-clock minutes in all.
+  batch 1795475804: 8 units on 3 workers, 2.2 min

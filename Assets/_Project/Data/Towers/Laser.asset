@@ -25,26 +25,29 @@ MonoBehaviour:
     SupportScale: 0
     StepName: 
     Step: 0
+    SplashTargets: 0
   - Cost: 55
     Damage: 4
     Range: 4.3
     FireInterval: 0.06666667
-    HealthBonus: 0
+    HealthBonus: 32
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
     StepName: data.tower.Laser.levels.1.stepName
     Step: 2
+    SplashTargets: 0
   - Cost: 100
     Damage: 7.2
     Range: 4.3
     FireInterval: 0.06666667
-    HealthBonus: 0
+    HealthBonus: 32
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
     StepName: data.tower.Laser.levels.2.stepName
     Step: 1
+    SplashTargets: 0
   _projectileSpeed: 400
   _splashRadius: 0
   _splashTargets: 0

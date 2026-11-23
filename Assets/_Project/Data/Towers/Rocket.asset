@@ -25,26 +25,29 @@ MonoBehaviour:
     SupportScale: 0
     StepName: 
     Step: 0
+    SplashTargets: 0
   - Cost: 80
     Damage: 27.5
     Range: 5.5
     FireInterval: 0.55
-    HealthBonus: 0
+    HealthBonus: 26
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
     StepName: data.tower.Rocket.levels.1.stepName
     Step: 1
+    SplashTargets: 0
   - Cost: 105
     Damage: 27.5
     Range: 5.5
     FireInterval: 0.309375
-    HealthBonus: 0
+    HealthBonus: 26
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
     StepName: data.tower.Rocket.levels.2.stepName
     Step: 2
+    SplashTargets: 0
   _projectileSpeed: 14
   _splashRadius: 1.1
   _splashTargets: 4
@@ -72,5 +75,6 @@ MonoBehaviour:
   _projectileStyle: 8
   _beamLockSeconds: 0.35
   _beamSweepSeconds: 0
+  _retargetSeconds: 0
   _art: {fileID: 11400000, guid: ff231d475f651ba4fa63c04134f972ce, type: 2}
   _gateArt: {fileID: 0}

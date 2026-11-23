@@ -170,6 +170,12 @@ namespace Game.Levels
         public GameEvent UpgradeRequested { get; } = new GameEvent();
         public GameEvent RepairRequested { get; } = new GameEvent();
         public GameEvent SellRequested { get; } = new GameEvent();
+
+        /// <summary>Raised by the tower menu: put the repair crew on the selected structure first, or stop doing so (round 88g).</summary>
+        public GameEvent RepairFocusRequested { get; } = new GameEvent();
+
+        /// <summary>Raised with the structure whose mark for the repair crew was set or cleared, by the player or by its wreck.</summary>
+        public GameEvent<Tower> RepairFocusChanged { get; } = new GameEvent<Tower>();
         /// <summary>The player asks to call the next wave in now, on top of the creatures on the field (any player; the rules decide).</summary>
         public GameEvent CallWaveRequested { get; } = new GameEvent();
 

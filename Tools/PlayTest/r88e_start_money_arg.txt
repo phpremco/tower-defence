@@ -1,3 +1,4 @@
 # Round 88e, Remco 2026-11-22: Shard Ridge Hard 400, Psycho about 1000.
+# Round 88g, Remco 2026-11-23: Psycho "a very little less start money": 1000 -> 920.
 C1_03 Hard 400
-C1_03 Psycho 1000
+C1_03 Psycho 920

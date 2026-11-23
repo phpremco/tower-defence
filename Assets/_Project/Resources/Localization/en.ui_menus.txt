@@ -169,6 +169,11 @@ base.new_tag = NEW
 base.drone_description = <b><color=#{0}>{1}</color></b>\n{2}
 base.drone_count = {0}   {1}/{2}
 base.drone_count_full = max {0}/{1}
+# The state of a drone on the strip over the Drones panel (round 88g); at most 8 letters, the width of a card
+drone.state.idle = Idle
+drone.state.flying = Flying
+drone.state.working = Working
+drone.state.charging = Charging
 
 # Story viewer (developer)
 story.page_cutscenes = Cutscenes

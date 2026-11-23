@@ -130,6 +130,7 @@ namespace Game.Levels
             _context.UpgradeRequested.Subscribe(OnUpgrade);
             _context.RepairRequested.Subscribe(OnRepair);
             _context.SellRequested.Subscribe(OnSell);
+            _context.RepairFocusRequested.Subscribe(OnRepairFocus);
             _context.CombineRequested.Subscribe(OnCombine);
             _context.SelectionChanged.Subscribe(Refresh);
             Refresh();
@@ -153,6 +154,7 @@ namespace Game.Levels
                 _context.UpgradeRequested.Unsubscribe(OnUpgrade);
                 _context.RepairRequested.Unsubscribe(OnRepair);
                 _context.SellRequested.Unsubscribe(OnSell);
+                _context.RepairFocusRequested.Unsubscribe(OnRepairFocus);
                 _context.CombineRequested.Unsubscribe(OnCombine);
             _context.SelectionChanged.Unsubscribe(Refresh);
             }
@@ -713,6 +715,7 @@ namespace Game.Levels
             {
                 tower.Register(_context.Structures);
                 tower.Wrecked += OnWrecked;
+                tower.RepairFocusChanged += _context.RepairFocusChanged.Raise;
             }
 
             return tower;
@@ -757,6 +760,19 @@ namespace Game.Levels
                 _context.TowerRepaired.Raise();
                 Refresh();
             }
+        }
+
+        // Free and at once: the mark only tells the repair crew where to go first.
+        private void OnRepairFocus()
+        {
+            Tower tower = _context.SelectedPlacedTower;
+            if (_context.InputBlocked || _context.Mode != PlacementMode.TowerMenu || tower == null || !tower.CanFocusRepair)
+            {
+                return;
+            }
+
+            tower.SetRepairFocus(!tower.RepairFocus);
+            Refresh();
         }
 
         private void OnSell()
@@ -1080,6 +1096,8 @@ namespace Game.Levels
             // The hybrid keeps the lower of the two levels: the stronger partner lifts the result no further.
             hybrid.SetLevel(Mathf.Min(selected.LevelIndex, partner.LevelIndex));
             hybrid.InheritedValue = inherited;
+            // The crew keeps coming to the cell first when either half was marked for it.
+            hybrid.SetRepairFocus(selected.RepairFocus || partner.RepairFocus);
             _towers[cell] = hybrid;
             InvalidatePickColumns();
             _context.TowerUpgraded.Raise();

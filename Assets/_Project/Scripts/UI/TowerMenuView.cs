@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace Game.UI
 {
     /// <summary>
-    /// A small strip of icons (upgrade, repair, sell, each with its price) next to the selected tower.
+    /// A small strip of icons (upgrade, repair, sell, each with its price, and the repair-focus toggle) next to the selected tower.
     /// It sits beside the tower instead of covering the screen, and only reads the level context.
     /// </summary>
     public sealed class TowerMenuView : MonoBehaviour
@@ -33,11 +33,17 @@ namespace Game.UI
         private static readonly Color RepairTint = new Color(0.35f, 0.65f, 1f);
         private static readonly Color SellTint = new Color(1f, 0.78f, 0.25f);
         private static readonly Color CombineTint = new Color(0.8f, 0.5f, 1f);
+        private static readonly Color FocusTint = new Color(0.3f, 0.9f, 1f);
+        // The toggle reads on or off at a glance: the lit button and its ring, against a dim wrench alone.
+        private const float FocusOffTint = 0.4f;
+        private const float FocusRingInset = 4f;
+        private const float FocusWrenchInset = 26f;
 
         private LevelContext _context;
         private RectTransform _root;
         private Camera _camera;
         private Font _font;
+        private Canvas _canvas;
         private RectTransform _panel;
 
         /// <summary>The open tower menu, for the HUD keep-out.</summary>
@@ -57,6 +63,11 @@ namespace Game.UI
         private Image _thirdIcon;
         private Button _combine;
         private Text _combinePrice;
+        private Button _focus;
+        private Text _focusLabel;
+        private Image _focusRing;
+        private readonly Button[] _strip = new Button[5];
+        private readonly Text[] _stripLabels = new Text[5];
         private bool _wasOpen;
         private float _nextRefresh;
         private int _openedFrame;
@@ -68,6 +79,7 @@ namespace Game.UI
             _root = root;
             _camera = camera;
             _font = font;
+            _canvas = root.GetComponentInParent<Canvas>().rootCanvas;
             Build();
             _context.Changed.Subscribe(Refresh);
             _context.Wallet.Changed += OnMoneyChanged;
@@ -119,7 +131,9 @@ namespace Game.UI
             _repair = CreateIcon(IconType.Repair, 1, RepairTint, () => _context.RepairRequested.Raise(), out _repairPrice);
             _sell = CreateIcon(IconType.Sell, 2, SellTint, OnThirdAction, out _sellPrice);
             _thirdIcon = _sell.transform.Find("Icon").GetComponent<Image>();
-            _combine = CreateIcon(IconType.Combine, 3, CombineTint, () => _context.CombineRequested.Raise(), out _combinePrice);
+            _focus = CreateIcon(IconType.Repair, 3, FocusTint, () => _context.RepairFocusRequested.Raise(), out _focusLabel);
+            _focusRing = AddRing(_focus);
+            _combine = CreateIcon(IconType.Combine, 4, CombineTint, () => _context.CombineRequested.Raise(), out _combinePrice);
             _panel.gameObject.SetActive(false);
         }
 
@@ -143,13 +157,12 @@ namespace Game.UI
 
         private Button CreateIcon(IconType type, int index, Color tint, UnityEngine.Events.UnityAction action, out Text price)
         {
-            float x = (index - 1) * (IconSize + Spacing);
             Button button = UiKit.CreateIconButton(_panel, IconFactory.Get(type), IconSize, action);
             RectTransform rect = button.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(0.5f, 0f);
             rect.anchorMax = new Vector2(0.5f, 0f);
             rect.pivot = new Vector2(0.5f, 0f);
-            rect.anchoredPosition = new Vector2(x, LabelHeight + LabelGap);
+            rect.anchoredPosition = new Vector2(0f, LabelHeight + LabelGap);
             Destroy(button.GetComponent<LayoutElement>());
 
             UiKit.UseTint(button);
@@ -161,8 +174,55 @@ namespace Game.UI
             colors.disabledColor = new Color(0.12f, 0.12f, 0.14f);
             button.colors = colors;
 
-            price = CreateLabel(new Vector2(0.5f, 0f), new Vector2(x, LabelHeight * 0.5f), TextAnchor.MiddleCenter, new Vector2(IconSize + Spacing - 10f, LabelHeight));
+            price = CreateLabel(new Vector2(0.5f, 0f), new Vector2(0f, LabelHeight * 0.5f), TextAnchor.MiddleCenter, new Vector2(IconSize + Spacing - 10f, LabelHeight));
+            _strip[index] = button;
+            _stripLabels[index] = price;
             return button;
+        }
+
+        // The ring round the wrench that says the repair crew comes here first; shown only while the mark is on.
+        private static Image AddRing(Button button)
+        {
+            var ring = new GameObject("Ring", typeof(RectTransform)).AddComponent<Image>();
+            ring.transform.SetParent(button.transform, false);
+            ring.sprite = IconFactory.Get(IconType.Ring);
+            ring.color = FocusTint;
+            ring.raycastTarget = false;
+            RectTransform rect = ring.rectTransform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = new Vector2(FocusRingInset, FocusRingInset);
+            rect.offsetMax = new Vector2(-FocusRingInset, -FocusRingInset);
+            var wrench = (RectTransform)button.transform.Find("Icon");
+            wrench.offsetMin = new Vector2(FocusWrenchInset, FocusWrenchInset);
+            wrench.offsetMax = new Vector2(-FocusWrenchInset, -FocusWrenchInset);
+            return ring;
+        }
+
+        // The icons that show stand centred under the info line, in their fixed order, each with its label under it.
+        private void Arrange()
+        {
+            int shown = 0;
+            for (int i = 0; i < _strip.Length; i++)
+            {
+                shown += _strip[i].gameObject.activeSelf ? 1 : 0;
+            }
+
+            float step = IconSize + Spacing;
+            float x = -(shown - 1) * 0.5f * step;
+            for (int i = 0; i < _strip.Length; i++)
+            {
+                if (!_strip[i].gameObject.activeSelf)
+                {
+                    continue;
+                }
+
+                var rect = (RectTransform)_strip[i].transform;
+                rect.anchoredPosition = new Vector2(x, rect.anchoredPosition.y);
+                RectTransform label = _stripLabels[i].rectTransform;
+                label.anchoredPosition = new Vector2(x, label.anchoredPosition.y);
+                x += step;
+            }
         }
 
         private Text CreateLabel(Vector2 anchor, Vector2 position, TextAnchor alignment, Vector2 size)
@@ -227,6 +287,9 @@ namespace Game.UI
                 _combinePrice.text = Loc.Format("tower_menu.combine", offer.Result.DisplayName, offer.Cost);
                 _combinePrice.color = canCombine ? TextColor : TooExpensive;
             }
+            ShowFocus(tower);
+            Arrange();
+
             // Grey when there is nothing to buy, red when there is but the player cannot pay yet.
             _upgradePrice.color = canUpgrade ? TextColor : tower.CanUpgrade ? TooExpensive : Unavailable;
             _repairPrice.color = canRepair ? TextColor : tower.NeedsRepair ? TooExpensive : Unavailable;
@@ -252,6 +315,26 @@ namespace Game.UI
                 _openedFrame = Time.frameCount;
                 _lastIcon = null;
             }
+        }
+
+        // The repair-focus toggle: only on a level that has a repair drone to send, and not on a wreck the crew cannot raise.
+        private void ShowFocus(Tower tower)
+        {
+            bool offered = _context.Level.RepairDrone != null && tower.CanFocusRepair;
+            _focus.gameObject.SetActive(offered);
+            _focusLabel.gameObject.SetActive(offered);
+            if (!offered)
+            {
+                return;
+            }
+
+            bool on = tower.RepairFocus;
+            _focusRing.enabled = on;
+            _focusLabel.text = on ? Loc.Get("tower_menu.focus_on") : Loc.Get("tower_menu.focus_off");
+            _focusLabel.color = on ? FocusTint : TextColor;
+            ColorBlock colors = _focus.colors;
+            colors.normalColor = FocusTint * (on ? 1f : FocusOffTint);
+            _focus.colors = colors;
         }
 
         // Shows the next upgrade step by name with the one thing it changes (round 67), so the player can judge it before paying.
@@ -284,7 +367,7 @@ namespace Game.UI
         private bool IsIcon(GameObject candidate)
         {
             return candidate != null && candidate.activeInHierarchy &&
-                (candidate == _upgrade.gameObject || candidate == _repair.gameObject || candidate == _sell.gameObject || candidate == _combine.gameObject);
+                (candidate == _upgrade.gameObject || candidate == _repair.gameObject || candidate == _sell.gameObject || candidate == _focus.gameObject || candidate == _combine.gameObject);
         }
 
         private Button FirstAvailable() => _upgrade.interactable ? _upgrade : _repair.interactable ? _repair : _sell;
@@ -313,8 +396,10 @@ namespace Game.UI
 
         private bool ToLocal(Vector3 world, out Vector2 local)
         {
+            // Through the canvas's own camera when it has one, so the menu stands on its tower however the canvas is drawn.
             Vector3 screen = _camera.WorldToScreenPoint(world);
-            return RectTransformUtility.ScreenPointToLocalPointInRectangle(_root, screen, null, out local);
+            Camera uiCamera = _canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : _canvas.worldCamera;
+            return RectTransformUtility.ScreenPointToLocalPointInRectangle(_root, screen, uiCamera, out local);
         }
 
         // The top of the tower's visible model above its foot, measured once per tower and level (a model swaps on an

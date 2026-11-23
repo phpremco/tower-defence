@@ -255,6 +255,7 @@ namespace Game.Towers
         /// Null when every upgrade step has a name and changes the one thing it says (round 67), otherwise what is wrong.
         /// The blast's cap per level (SplashTargets) is not a step of its own: it grows with the stars beside the named thing
         /// and the tower menu lists it next to it (TowerStepText).
+        /// Neither is the health a star adds (HealthBonus, round 88g: every gun grows tougher with every star).
         /// A refit (gates, the base's turret) may change several things.
         /// </summary>
         public string StepProblem()
@@ -278,7 +279,7 @@ namespace Game.Towers
                 bool range = !Mathf.Approximately(from.Range, to.Range);
                 bool slow = !Mathf.Approximately(from.SlowFactor, to.SlowFactor) || !Mathf.Approximately(from.SlowSeconds, to.SlowSeconds);
                 bool support = !Mathf.Approximately(from.SupportScale, to.SupportScale);
-                int changed = (damage ? 1 : 0) + (rate ? 1 : 0) + (range ? 1 : 0) + (slow ? 1 : 0) + (support ? 1 : 0) + (to.HealthBonus > 0f ? 1 : 0);
+                int changed = (damage ? 1 : 0) + (rate ? 1 : 0) + (range ? 1 : 0) + (slow ? 1 : 0) + (support ? 1 : 0);
                 bool named = (to.Step == TowerStep.Damage && damage) || (to.Step == TowerStep.FireRate && rate) || (to.Step == TowerStep.Range && range)
                     || (to.Step == TowerStep.Slow && slow) || (to.Step == TowerStep.Support && support);
                 if (changed != 1 || !named)

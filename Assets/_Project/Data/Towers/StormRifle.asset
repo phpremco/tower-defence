@@ -25,26 +25,29 @@ MonoBehaviour:
     SupportScale: 0
     StepName: 
     Step: 0
+    SplashTargets: 0
   - Cost: 200
     Damage: 14
     Range: 4.1
     FireInterval: 0.126
-    HealthBonus: 0
+    HealthBonus: 38
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
     StepName: data.tower.StormRifle.levels.1.stepName
     Step: 2
+    SplashTargets: 0
   - Cost: 300
     Damage: 23.519999
     Range: 4.1
     FireInterval: 0.126
-    HealthBonus: 0
+    HealthBonus: 38
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
     StepName: data.tower.StormRifle.levels.2.stepName
     Step: 1
+    SplashTargets: 0
   _projectileSpeed: 20
   _splashRadius: 0.8
   _splashTargets: 0

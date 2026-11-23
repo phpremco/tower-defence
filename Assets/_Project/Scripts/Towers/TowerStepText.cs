@@ -24,7 +24,9 @@ namespace Game.Towers
             TowerLevel next = tower.GetLevel(levelIndex + 1);
             // A blast that hurts more creatures at the next level says so beside the step's own thing (round 88b).
             string blast = BlastRead.Step(tower, levelIndex);
-            return $"{Loc.Get(next.StepName)}: {Change(tower, now, next)}{(blast.Length > 0 ? BlastGap + blast : string.Empty)}";
+            // So does the health a star adds to a gun (round 88g); a refit lists its health itself.
+            string health = next.Step != TowerStep.Refit && next.HealthBonus > 0f ? BlastGap + Loc.Format("tower.step.health", next.HealthBonus) : string.Empty;
+            return $"{Loc.Get(next.StepName)}: {Change(tower, now, next)}{(blast.Length > 0 ? BlastGap + blast : string.Empty)}{health}";
         }
 
         private static string Change(TowerDefinition tower, TowerLevel now, TowerLevel next)

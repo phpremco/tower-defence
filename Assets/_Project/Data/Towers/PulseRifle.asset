@@ -25,26 +25,29 @@ MonoBehaviour:
     SupportScale: 0
     StepName: 
     Step: 0
+    SplashTargets: 0
   - Cost: 40
     Damage: 5
     Range: 4
     FireInterval: 0.16666667
-    HealthBonus: 0
+    HealthBonus: 30
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
     StepName: data.tower.PulseRifle.levels.1.stepName
     Step: 2
+    SplashTargets: 0
   - Cost: 65
     Damage: 10
     Range: 4
     FireInterval: 0.16666667
-    HealthBonus: 0
+    HealthBonus: 30
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
     StepName: data.tower.PulseRifle.levels.2.stepName
     Step: 1
+    SplashTargets: 0
   _projectileSpeed: 30
   _splashRadius: 0
   _splashTargets: 0

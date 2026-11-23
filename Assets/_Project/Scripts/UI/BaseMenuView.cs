@@ -16,6 +16,7 @@ namespace Game.UI
     /// B leaves), which is what <see cref="LevelContext.BaseMenuOpen"/> means. Only reads LevelContext.
     /// A level that offers no drones yet shows no panel. While a dialogue that introduces a drone kind plays (and for a
     /// while after, until that kind is bought) its card is framed in a pulsing light with a "NEW" tag across its top.
+    /// On top of the panel stands the strip that says what each drone out is doing (<see cref="DroneStatusView"/>, round 88g).
     /// </summary>
     public sealed class BaseMenuView : MonoBehaviour
     {
@@ -72,6 +73,11 @@ namespace Game.UI
         private bool _tending;
         private int _openedFrame;
         private GameObject _lastCard;
+        private DroneStatusView _status;
+        private float _descriptionLift;
+
+        /// <summary>The strip over the panel that shows what every drone out is doing, for the HUD keep-out.</summary>
+        public RectTransform StatusPanel => _status != null ? _status.Panel : null;
 
         private struct DroneButton
         {
@@ -151,6 +157,23 @@ namespace Game.UI
                     selectOnRight = i + 1 < _buttons.Length ? _buttons[i + 1].Button : null,
                 };
             }
+
+            BuildStatus(drones);
+        }
+
+        // One chip per drone out, over the card of its kind (round 88g).
+        private void BuildStatus(DroneDefinition[] drones)
+        {
+            var cards = new Button[drones.Length];
+            var columns = new float[drones.Length];
+            for (int i = 0; i < drones.Length; i++)
+            {
+                cards[i] = _buttons[i].Button;
+                columns[i] = Padding + i * (CardWidth + CardGap);
+            }
+
+            _status = gameObject.AddComponent<DroneStatusView>();
+            _status.Initialize(_context, _panel, drones, cards, columns, CardWidth);
         }
 
         private DroneButton CreateDroneButton(DroneDefinition drone, float x)
@@ -243,6 +266,13 @@ namespace Game.UI
 
             // A lit card's NEW tag stands in the header band over it, so the title steps aside while one shows.
             _header.enabled = !anyLit;
+            // The description stands over the status strip, however many rows that has right now.
+            if (!Mathf.Approximately(_descriptionLift, _status.Height))
+            {
+                _descriptionLift = _status.Height;
+                _description.anchoredPosition = new Vector2(0f, DescriptionGap + _descriptionLift);
+            }
+
             Describe(DescribedCard());
         }
 
@@ -476,6 +506,12 @@ namespace Game.UI
                 return false;
             }
 
+            // A chip of the status strip is part of the panel: the stick may rest on it.
+            if (_status.IsChip(candidate))
+            {
+                return true;
+            }
+
             for (int i = 0; i < _buttons.Length; i++)
             {
                 if (candidate == _buttons[i].Button.gameObject)
@@ -507,6 +543,12 @@ namespace Game.UI
         private void ReleaseFocus()
         {
             GameObject selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+            if (_status.IsChip(selected))
+            {
+                EventSystem.current.SetSelectedGameObject(null);
+                return;
+            }
+
             for (int i = 0; i < _buttons.Length; i++)
             {
                 if (selected == _buttons[i].Button.gameObject)

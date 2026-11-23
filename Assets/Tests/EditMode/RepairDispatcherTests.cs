@@ -250,7 +250,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ASecondDrone_DoesNotRaiseAWreck_WhileATowerIsStillDamaged()
+        public void ASecondDrone_RaisesTheWreck_WhileTheFirstHoldsTheOnlyDamagedTower_AndLeavesItForAFreeTower()
         {
             var registry = new StructureRegistry();
             var wreck = new FakeWreck(Vector3.zero);
@@ -260,7 +260,15 @@ namespace Game.Tests
             var dispatcher = new RepairDispatcher(registry);
 
             Assert.AreSame(tower, dispatcher.Assign(_droneA, Vector3.zero, Speed, null));
-            Assert.IsNull(dispatcher.Assign(_droneB, Vector3.zero, Speed, null), "the same rule as for the base: the wreck waits while any tower is damaged");
+            // Round 88g: a job another drone holds is not left for this one, so it takes the next thing in the order instead
+            // of waiting beside the base (round 88e let it idle). The wreck is still dropped for a tower that is free.
+            IStructure second = dispatcher.Assign(_droneB, Vector3.zero, Speed, null);
+            Assert.AreSame(wreck, second, "the only damaged tower has its drone: the second one raises the wreck");
+
+            var another = new FakeStructure(new Vector3(4f, 0f, 0f), 0.8f);
+            registry.Add(another);
+            Assert.AreSame(another, dispatcher.Assign(_droneB, Vector3.zero, Speed, second), "a damaged tower without a drone still goes before the wreck");
+            Assert.IsFalse(dispatcher.IsClaimed(wreck));
         }
     }
 }

@@ -238,6 +238,15 @@ namespace Game.Editor
             return tower;
         }
 
+        /// <summary>
+        /// The health every star adds to a gun (round 88g, BalanceSheet.GunHealthPerStar of the health it is built with, in
+        /// whole points); zero for a gate and the base's turret, whose refits carry their own.
+        /// </summary>
+        private static float GunStarHealth(SerializedObject tower) =>
+            tower.FindProperty("_blocksGroundEnemies").boolValue || tower.FindProperty("_isBaseDefence").boolValue
+                ? 0f
+                : Mathf.Round(tower.FindProperty("_maxHealth").floatValue * BalanceSheet.GunHealthPerStar);
+
         /// <param name="names">
         /// False leaves the step names as the asset has them: a targeted step runs without the "Localisation" step after
         /// it, so the keys that stand in the asset must stay (the English text is the table's).
@@ -255,6 +264,7 @@ namespace Game.Editor
             }
 
             int[] prices = BalanceSheet.Prices(id, dps);
+            float starHealth = GunStarHealth(so);
             for (int i = 0; i < levels.Length; i++)
             {
                 SerializedProperty element = array.GetArrayElementAtIndex(i);
@@ -262,7 +272,7 @@ namespace Game.Editor
                 element.FindPropertyRelative("Damage").floatValue = levels[i].Damage;
                 element.FindPropertyRelative("Range").floatValue = levels[i].Range;
                 element.FindPropertyRelative("FireInterval").floatValue = levels[i].FireInterval;
-                element.FindPropertyRelative("HealthBonus").floatValue = levels[i].HealthBonus;
+                element.FindPropertyRelative("HealthBonus").floatValue = starHealth > 0f ? (i > 0 ? starHealth : 0f) : levels[i].HealthBonus;
                 element.FindPropertyRelative("SlowFactor").floatValue = levels[i].SlowFactor;
                 element.FindPropertyRelative("SlowSeconds").floatValue = levels[i].SlowSeconds;
                 element.FindPropertyRelative("SupportScale").floatValue = levels[i].SupportScale;

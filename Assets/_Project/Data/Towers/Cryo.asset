@@ -25,26 +25,29 @@ MonoBehaviour:
     SupportScale: 0
     StepName: 
     Step: 0
+    SplashTargets: 0
   - Cost: 110
     Damage: 2
     Range: 3.7
     FireInterval: 0.5
-    HealthBonus: 0
+    HealthBonus: 28
     SlowFactor: 0.35
     SlowSeconds: 2
     SupportScale: 0
     StepName: data.tower.Cryo.levels.1.stepName
     Step: 4
+    SplashTargets: 0
   - Cost: 160
     Damage: 2
     Range: 4.6
     FireInterval: 0.5
-    HealthBonus: 0
+    HealthBonus: 28
     SlowFactor: 0.35
     SlowSeconds: 2
     SupportScale: 0
     StepName: data.tower.Cryo.levels.2.stepName
     Step: 3
+    SplashTargets: 0
   _projectileSpeed: 12
   _splashRadius: 0
   _splashTargets: 0
@@ -72,5 +75,6 @@ MonoBehaviour:
   _projectileStyle: 4
   _beamLockSeconds: 0.35
   _beamSweepSeconds: 0
+  _retargetSeconds: 0
   _art: {fileID: 11400000, guid: 5c0dcec3f7ea23244ba47090e72c20af, type: 2}
   _gateArt: {fileID: 0}

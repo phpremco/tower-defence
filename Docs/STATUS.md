@@ -16022,3 +16022,145 @@ Not committed. Small round after Remco's playtest of 2026-11-23; no bot chain, o
   `ArcDischarge`, `SpineVolley`; ten test fakes (`PathProgress` -> `DistanceToGoal`).
 - **For Remco to play:** Shard Ridge on Psycho, with a repair drone: the guns beside a boss at a gate should lose
   health slowly enough to answer, and no gun should shoot past a creature at a gate. Then the same on Hard.
+
+## Round 88g: the drones on the HUD, repair focus on a tower, health with the stars, Psycho's small nudge (2026-11-24)
+
+Not committed. Medium-small round after Remco's playtest of 2026-11-23, on HEAD 80d6e8ca. All code and data work in the
+stage, copied back with `stage.sh back` while the open editor (pid 34236) was stopped; it compiled clean there (the one
+warning is round 87's `BalanceProbeTests` CS0618). Remco's save was never touched (MD5 45c4efb5... at the start and the
+end). No bot chain; one small batch on Shard Ridge Hard and Psycho.
+
+1. **Shard Ridge Psycho "quite easily doable": a very little more tower damage, a very little less start money.**
+   `DifficultyProfile.TowerDamageFactor` on Psycho 0.7 -> **0.8** (the rule, every level; `BalanceSheet.PsychoTowerFactor`):
+   a Psycho bite on a gun is 1.12 of Hard's (was 0.98). Shard Ridge Psycho's own start money 1000 -> **920** (the level's
+   entry of round 88e; the shared rule would give 840; Hard stays 400).
+2. **The drones on the HUD with their battery** (`DroneStatusView`). A strip on top of the Drones panel (bottom right):
+   one chip per drone out, in the column over the card of its kind, so the card names the type. A chip is the battery
+   as a bar in the colour of the state, with the state as a word: **Working** (green: repairing, mining, shooting),
+   **Flying** (blue: on its way, or hauling a load home), **Charging** (amber, breathing), **Idle** (grey). The strip is
+   as tall as the largest crew (50 px of a 1080p screen for one row, three rows at most with the present limits) and
+   gone while no drone is out; the description box of a focused card moves up over it; world labels keep off it
+   (`HudKeepOut`). Choosing a chip (a click; or up from a card with the stick, then confirm) glides the camera to
+   that drone.
+   **What "battery" is:** the game had no battery. A drone has a hull that flyers shoot at; at zero it goes home and
+   charges for `RechargeSeconds`. The bar shows the hull while it flies (`Drone.Battery`), and while it is down how far
+   the charge has come back. Nothing drains by working; no new mechanic was added.
+3. **Repair focus** (`Tower.RepairFocus`, `IRepairFocus`, `RepairDispatcher.Rank`, `LevelContext.RepairFocusRequested`).
+   A fourth icon on the tower menu (a wrench; lit in cyan with a ring when on; "Repair focus ON / off"; free; reachable
+   with the stick like the other icons; shown on levels that offer a repair drone, on guns, gates and base turrets).
+   The menu's icons are now centred whatever number shows. A marked structure carries a small cyan wrench-in-a-ring
+   badge at its health bar (`RepairFocusBadges`; hidden under a HUD panel and under its own open menu).
+   The crew's order is now: **marked, then standing guns and gates, then the base, then a base turret to raise.**
+   Choices for the edge cases:
+   - **A marked gun is wrecked: the mark clears.** Its wreck is scrapped with one click and whatever is built on the
+     cell is another gun; the crew has no work on a gun's wreck. A **gate** keeps its mark through wreck and rebuild
+     (same structure, same cell; the crew still does not raise a gate). A **base turret** keeps it too, and a marked
+     turret wreck is raised *before* damaged guns (the player said so; unmarked, round 88e's order holds).
+   - **Sold:** it leaves the field, mark and badge with it; the drone takes the next job at once. **Upgraded:** the
+     mark stays (the refit mends it, the drone moves on). **Combined:** the hybrid is marked when either half was.
+   - **Several marked:** among them the usual score (need over flight time), finish before switching.
+   - **Two drones:** one claim per structure stays; the second drone takes the next marked structure, else ordinary
+     work. For that, **a job another drone holds no longer counts in the order for the next drone.** This also closes
+     round 88e's known gap for every rank (the second drone idled beside the base while the first mended the only
+     damaged gun; it now mends the base or raises the turret, and drops that for any gun that is free).
+     `RepairDispatcherTests.ASecondDrone_DoesNotRaiseAWreck...` asserted the idling and was rewritten: say so if the
+     waiting was wanted.
+   - **A drone shot down on a marked job** gives its claim back; the other drone leaves ordinary work for it (played).
+     A drone low on battery keeps working; nothing sends it home before it is down.
+   - **The mark taken off mid-repair:** the job is ordinary work from then on and is finished, unless another marked
+     structure waits. **Put on while the drones work elsewhere:** one drone comes over within half a second.
+   - A whole marked structure holds no drone.
+4. **A gun's health grows with its stars.** Rule: every in-level upgrade adds **20 % of the health the gun is built
+   with** (`BalanceSheet.GunHealthPerStar`, whole points, in `TowerLevel.HealthBonus` of every gun asset by the
+   generator's `WriteLevels` and `ApplyRound88g`): x1 / x1.2 / x1.4. There are three levels and no level-3 paths in the
+   game, so the rule has nothing more to cover. Gates and the base's turret keep their own refit health.
+
+   | Gun | 1 star | 2 stars | 3 stars |
+   | --- | --- | --- | --- |
+   | Gun Turret | 150 | 180 | 210 |
+   | Cannon | 220 | 264 | 308 |
+   | Flak (Rocket) | 130 | 156 | 182 |
+   | Laser, Tesla | 160 | 192 | 224 |
+   | Cryo, Support | 140 | 168 | 196 |
+   | Railgun, Cryo Beam | 180 | 216 | 252 |
+   | Storm Rifle | 190 | 228 | 266 |
+   | Artillery | 240 | 288 | 336 |
+
+   What follows: repair is priced per health missing, so the same blow costs the same coins on any star and a bar
+   emptied to its last point costs more on a larger bar (in proportion); the repair drone needs proportionally longer;
+   sell and scrap values are shares of the coins spent and do not move; an upgrade still mends in full; a base turret
+   wreck is raised after work worth its (unchanged) bar. The tower menu shows it in the next step's line ("Faster
+   cycling: shots/s 2.9 > 6.0, +30 HP"). The health of a star is no upgrade step of its own
+   (`TowerDefinition.StepProblem`). **Calibration:** tower levels and start money are in the input hash; re-stamped
+   with the factors kept (inputs 5334c068, "stale False" by the stamp, no wave asset changed), but nothing was measured
+   again: with round 88f's aiming change the calibration is stale in fact.
+
+### The small bot check (Shard Ridge, x1, seeds 1 and 2; guns' health lost a run, wrecks in brackets)
+
+| | Round 88f | Round 88g |
+| --- | --- | --- |
+| Psycho skilled | 1659, 1625 (0, 0), won both | 1497, 1847 (0, 0), **won both** |
+| Hard skilled | 1372, 1206 (0, 0), won both | 1281, 1170 (0, 0), won both |
+| Psycho sensible | lost at 16 and 15 (4, 4) | lost at 13 and 16 (1, 7) |
+| Hard sensible | won both (2, 3) | won both (2, 3) |
+
+The skilled bot still wins Psycho from 920 without a wreck and its wear is about where it was. Two seeds: a sanity
+check, not a measurement. `Tools/PlayTest/pressure_r88g_records.txt`.
+
+### Checks
+
+- **EditMode on a clone (w4), 18 classes, 212 tests: 211 passed, 1 failed** (the known stale grace gate,
+  `CombatRulesTests.NoRowWithoutTheCounter_OutlastsItsWindow_AsPlayed`). New: `Round88gTests` (the crew's order with a
+  mark in twelve cases, the mark on a real gun, gate and base turret, health per star on every gun asset, the larger
+  bar and its repair, the step line, Psycho's factor, the four states, the words fit a card). Changed to follow the
+  rules: `Round88dTests` (920), `Round88fTests` (the Psycho bite is a little over Hard's), `RepairDispatcherTests` (the
+  second drone). The full suite was not run.
+- **Played in the stage** (`r88g_stills.sh play`, Shard Ridge Hard, no console errors or warnings): guns hurt and gun 3
+  marked -> one drone to gun 3, the other to another gun; mark moved to gun 1 -> one drone comes over, the other stays;
+  that drone shot down -> the other takes gun 1 over and the chip reads Charging with a filling bar; upgrade -> 180 / 180,
+  still marked, drone moves on; hurt again and sold under repair -> drone on the next gun, badge gone; marked gun
+  wrecked -> mark and badge gone; gate marked and hurt -> the drone on that gate while seven other gates are hurt too.
+- **Stills** in `Logs/r88g/` (looked at zoomed in): `sheet_strip.png` (idle, flying, working with a 25 % battery,
+  charging, three kinds with seven drones), `sheet_menu.png` (toggle on and off), `sheet_badge.png` (gun and gate),
+  the full frames, and 720p frames of the strip and the menu.
+
+### Not done / known
+
+- The clicks were made through the buttons' own handlers and the stick's path was read from the navigation links
+  (card up to chip, chip down to card); no real pointer or pad pressed them. No stored PlayMode test: the play check is
+  the stage script and its printed states.
+- In the stage's stills the drone cards have no picture (the batch editor does not render the icons) and the HUD is
+  softer than in the game. The badge sits at the right end of the health bar in the stills and overlaps its last
+  pixels on a gate; judge the place in the game.
+- The strip shows the state, not the job ("Working" does not say on which gun); the beam and the camera glide do.
+- With more drones of one kind (permanent upgrades) the strip grows one row of 38 px a drone.
+- `Docs/GAME_DESIGN.md` was not touched.
+
+### Files
+
+- New code: `Combat/IRepairFocus.cs`; `Drones/DroneState.cs`, `DroneStates.cs`; `UI/DroneStatusView.cs`,
+  `RepairFocusBadges.cs`; `Editor/ProjectGenerator.Round88g.cs`; `Tests/EditMode/Round88gTests.cs`.
+- Changed code: `Drones/Drone` (battery, state), `RepairDispatcher`; `Towers/Tower`, `TowerDefinition` (step rule),
+  `TowerStepText`; `Levels/LevelContext`, `PlacementController`; `UI/TowerMenuView`, `BaseMenuView`, `HudView`;
+  `Editor/BalanceSheet`, `ProjectGenerator` (`WriteLevels`); tests `RepairDispatcherTests`, `Round88dTests`, `Round88fTests`.
+- Changed data: `Difficulty/Psycho.asset`, `Levels/Level_C1_03.asset`, the eleven gun assets (`HealthBonus`),
+  `BalanceCalibration.asset` (stamp), `en.ui_level.txt`, `en.ui_menus.txt`.
+- Tools: `r88g_stills.sh`, `r88g_scene.cs`, `Scripts/ApplyRound88g.cs`, `r88e_start_money_arg.txt`; reports
+  `r88e_start_money.txt`, `calibration*.txt`, `r87_*.txt`, `pressure_r88g*.txt`. Docs: COMBAT_RULES ("Structures", 4 to 6),
+  COMMANDS ("Round 88g"), this section.
+
+### For Remco to play
+
+- **Shard Ridge on Psycho** (920 at the start): is it "ok" now? The two levers are one number each
+  (`PsychoTowerFactor`, the level's start money).
+- On it, buy two repair drones: read the strip over the Drones panel while they work; let a flyer shoot one down.
+- Open a gun's menu, switch **Repair focus** on, let several guns get hurt: a drone should go to the marked one first
+  and the badge should stay on it. Try it on a gate too.
+- Upgrade a gun and watch its HP in the menu (150 -> 180 -> 210 on a Gun Turret).
+
+### Questions for Remco
+
+1. **+20 % health a star**: enough to feel, or should it be more (one number)?
+2. **The second repair drone no longer idles** while the first holds the only damaged gun; it goes to the base or a
+   wrecked base turret. Good, or should it wait near the guns?
+3. **The strip says Working / Flying / Charging / Idle.** Should "Working" name the job (the gun it is on)?

@@ -42,6 +42,9 @@ tower_menu.wrecked_gate = wrecked - rebuild restores it at once, full health, sa
 tower_menu.health = HP {0}/{1}
 tower_menu.level = Lv {0}
 tower_menu.level_max = MAX
+# The repair-focus toggle (round 88g): the repair drones come to this structure first while it is on
+tower_menu.focus_on = Repair\nfocus ON
+tower_menu.focus_off = Repair\nfocus off
 # {0} name, {1} level, {2} health or wreck state, {3} the ground/sky and high-ground notes
 tower_menu.info = {0}  {1}  {2}{3}
 tower_menu.next_step = \nNext: {0}

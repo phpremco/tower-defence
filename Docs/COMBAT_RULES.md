@@ -139,6 +139,21 @@ data, hold on every level.
    `StructureRegistry.GunDamageShare`, set by the level). Gates, the base and the hero take the bite in full. On Psycho a
    gun is so bitten as on Hard (1.4 x 0.7 = 0.98): Psycho wears guns down more because there are more creatures and its
    bosses live longer, not because each blow is heavier.
+   **Round 88g:** Psycho 0.7 -> 0.8 (Remco, after winning Shard Ridge Psycho "quite easily": "towers take a very little
+   more damage"): a Psycho bite on a gun is 1.4 x 0.8 = 1.12 of Hard's.
+5. **A gun's health grows with its stars (round 88g).** Every in-level upgrade of a gun the player builds adds
+   `BalanceSheet.GunHealthPerStar` (0.2) of the health it is built with, in whole points, written into
+   `TowerLevel.HealthBonus` of every gun asset: x1 / x1.2 / x1.4 at one, two and three stars (Gun Turret 150 / 180 / 210,
+   Cannon 220 / 264 / 308, Flak 130 / 156 / 182, Laser 160 / 192 / 224; hybrids and the support mast by the same rule).
+   Gates and the base's turret keep the health their own refits give. The upgrade still mends the gun in full. Repair
+   is priced per health missing (`RepairCostPerHealth`), so the same blow costs the same coins on any star and a bar
+   emptied to the last point costs more on a larger bar; the repair drone works at its own rate, so a larger bar takes
+   it longer; sell and scrap values are shares of the coins spent and do not move. The health of a star is not an
+   upgrade step of its own (`TowerDefinition.StepProblem`); the tower menu lists it beside the step ("+30 HP").
+6. **The repair crew's order (rounds 88e, 88g).** What the player marked with "Repair focus" on a structure's menu
+   (`Tower.RepairFocus`, `IRepairFocus`), then standing guns and gates, then the base, then a base turret to raise
+   (`RepairDispatcher.Rank`). Within a rank: need over flight time, one claim per structure, finish before switching.
+   A job another drone holds does not count in the order for the next drone, so it takes the next thing down the list.
 
 In code: `ReachRule`, `EnemyDefinition.StructureReach`, `Enemy.TryAttackStructure`, `BossAbilityDefinition.StructureReach`;
 generator `ProjectGenerator.Round88b.cs`; tests `Round88bThreatTests`. The balance model has no term for tower wear: the

@@ -1,1 +1,1 @@
-alertin
+towers:PulseRifle:4 focusgate:1.5

@@ -30,7 +30,7 @@ MonoBehaviour:
     Damage: 56.888885
     Range: 4
     FireInterval: 1.6
-    HealthBonus: 0
+    HealthBonus: 44
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0
@@ -41,7 +41,7 @@ MonoBehaviour:
     Damage: 118.26088
     Range: 4
     FireInterval: 1.6
-    HealthBonus: 0
+    HealthBonus: 44
     SlowFactor: 0
     SlowSeconds: 0
     SupportScale: 0

@@ -2269,3 +2269,29 @@ damage, and the build order taken. Test and tool code only; `headroom.sh` is unt
   difficulty) and `ProjectGenerator.BossVolleyDamage` (the three ability assets carry the same number). Neither is in the
   calibration's input hash.
 - **Tests of the round** (on a clone): `bash Tools/PlayTest/r34b_editmode_worker.sh 4 "Round88fTests;TargetRegistryTests;EnemyBehaviourTests"`.
+
+## Round 88g: the drone strip, repair focus, health with the stars (added 2026-11-24)
+
+- **The design** is in Docs/STATUS.md ("Round 88g") and Docs/COMBAT_RULES.md ("Structures", points 4 to 6). In code:
+  `DroneStatusView` (the strip over the Drones panel; `Drone.Battery`, `Drone.State`, `DroneStates`), `Tower.RepairFocus` /
+  `IRepairFocus` / `RepairDispatcher.Rank` (the mark and the crew's order), `LevelContext.RepairFocusRequested` (the tower
+  menu's toggle; `PlacementController.OnRepairFocus`), `RepairFocusBadges` (the badge over a marked structure),
+  `BalanceSheet.GunHealthPerStar` and `BalanceSheet.PsychoTowerFactor`.
+- **Data of the round without the full generator:** `bash Tools/PlayTest/stage.sh run ApplyRound88g.cs ApplyRound88g.Run`
+  (the four difficulties' `_towerDamageFactor`, and `HealthBonus` on the levels of every gun asset; safe to run again),
+  Shard Ridge's start money through `r88e_start_money_arg.txt` and `Round88eStartMoney.Set` (round 88e), then
+  `bash Tools/PlayTest/r88b_restamp.sh r88g`: the tower levels and the start money are in the calibration's input hash.
+- **Stills and the play check (stage, graphics on):** `OUT=Logs/r88g bash Tools/PlayTest/r88g_stills.sh play` (Shard Ridge
+  Hard: two repair drones and a harvest drone, the strip idle / flying / working / charging, the toggle on and off, the
+  badge, and the mark played through two drones, a drone shot down, an upgrade, a sale, a wreck and the gate; every step
+  prints the guns, the drones with their jobs and the chips) and `... r88g_stills.sh three` (Fault Line: three kinds).
+  `r88g_scene.cs` (`r88g_scene_arg.txt`) holds the words; `wait_s <seconds>` in the script is game time at x4.
+- **Tests of the round** (on a clone): `bash Tools/PlayTest/r34b_editmode_worker.sh 4 "Round88gTests;RepairDispatcherTests;Round88dTests;Round88fTests"`.
+- **Pitfalls met this round:**
+  - A `perl -pi` substitution with `|` as its delimiter reads an escaped `\|\|` in the pattern as an alternation with
+    an empty branch: it matches at the start of the file. Use another delimiter when the C# line holds `||`.
+  - A newline escape typed into a perl or heredoc replacement lands in a localisation table as a real line break;
+    write table lines with the Write or Edit tool.
+  - The tower menu is placed through the canvas's own camera now (as the rebuild chip since round 88d), so
+    `r88b_shot.cs` shows it on its tower.
+  - 30 stepped frames are one second of game time: use `wait_s` to let a drone reach its job before a still.

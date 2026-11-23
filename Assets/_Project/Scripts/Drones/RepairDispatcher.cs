@@ -8,8 +8,10 @@ namespace Game.Drones
     /// Hands repair jobs to repair drones so they work like a crew instead of a swarm. Every damaged structure is
     /// scored by how badly it needs help against how long the drone would fly to reach it, each structure is
     /// claimed by one drone at a time, and a drone keeps its job until the structure is whole unless something
-    /// far more urgent appears. The work has an order: standing towers and gates, then the base, and last a wreck the
-    /// crew can raise (a base turret), which is left the moment anything else is damaged; the work put into it stays.
+    /// far more urgent appears. The work has an order: what the player marked (<see cref="IRepairFocus"/>, round 88g), then
+    /// standing towers and gates, then the base, and last a wreck the crew can raise (a base turret), which is left the
+    /// moment anything else is damaged; the work put into it stays. A job another drone holds does not count in that
+    /// order: the second drone takes the next thing down the list instead of waiting.
     /// One dispatcher per level, shared by every repair drone. Pure logic.
     /// </summary>
     public sealed class RepairDispatcher
@@ -24,9 +26,10 @@ namespace Game.Drones
         private const float BlockerWeight = 1.6f;
         private const float TravelWeight = 1f;
 
-        private const int FieldRank = 0;
-        private const int BaseRank = 1;
-        private const int WreckRank = 2;
+        private const int FocusRank = 0;
+        private const int FieldRank = 1;
+        private const int BaseRank = 2;
+        private const int WreckRank = 3;
 
         private readonly StructureRegistry _structures;
         private readonly Dictionary<IStructure, object> _claims = new Dictionary<IStructure, object>();
@@ -50,9 +53,10 @@ namespace Game.Drones
                 current = null;
             }
 
-            // Standing towers and gates first, then the base, and a wreck to raise last (round 88e): a job of a later
-            // rank is taken, and kept, only while nothing of an earlier rank needs a hand.
-            int urgent = MostUrgentRank();
+            // What the player marked first (round 88g), then standing towers and gates, then the base, and a wreck to raise
+            // last (round 88e): a job of a later rank is taken, and kept, only while nothing of an earlier rank is left
+            // for this worker. What another drone already holds is not left: one claim per structure stays.
+            int urgent = MostUrgentRank(worker);
             if (current != null && Rank(current) > urgent)
             {
                 Release(worker, current);
@@ -121,16 +125,18 @@ namespace Game.Drones
         public static bool NeedsWork(IStructure structure) =>
             structure.IsAlive ? structure.HealthFraction < 1f : structure is ICrewRaisable wreck && wreck.AwaitsCrew;
 
-        // The order the crew works in: what stands in the field and still fights or blocks, then the base, then a wreck
-        // it can raise (a base turret: half a minute of work that must not cost a damaged gun or gate its repair).
-        private static int Rank(IStructure structure) => !structure.IsAlive ? WreckRank : structure.IsBase ? BaseRank : FieldRank;
+        // The order the crew works in: what the player marked (whatever it is: a gun, a gate, a base turret to raise), then
+        // what stands in the field and still fights or blocks, then the base, then a wreck it can raise (a base turret:
+        // half a minute of work that must not cost a damaged gun or gate its repair unless the player says so).
+        private static int Rank(IStructure structure) =>
+            structure is IRepairFocus marked && marked.RepairFocus ? FocusRank : !structure.IsAlive ? WreckRank : structure.IsBase ? BaseRank : FieldRank;
 
-        private int MostUrgentRank()
+        private int MostUrgentRank(object worker)
         {
             int urgent = int.MaxValue;
             for (int i = 0; i < _structures.Count; i++)
             {
-                if (NeedsWork(_structures[i]))
+                if (NeedsWork(_structures[i]) && !IsClaimedByOther(_structures[i], worker))
                 {
                     urgent = Mathf.Min(urgent, Rank(_structures[i]));
                 }

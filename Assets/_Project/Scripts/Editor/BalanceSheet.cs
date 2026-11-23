@@ -151,7 +151,18 @@ namespace Game.Editor
         // volleys (x1.4 a bolt, and a Psycho boss lives longer under the guns). A gun on Psycho takes this share of the
         // bite, so it is bitten as on Hard (1.4 x 0.7); with the volley at 8 a bolt the wear came to 1640 a run against
         // 1290 on Hard. Gates, the base and the hero keep Psycho's x1.4.
-        private const float PsychoTowerFactor = 0.7f;
+        // Round 88g (Remco, after winning Shard Ridge Psycho "quite easily"): "towers take a very little more damage":
+        // 0.7 -> 0.8, a bite of 1.12 against Hard's 1.
+        private const float PsychoTowerFactor = 0.8f;
+
+        /// <summary>
+        /// Round 88g (Remco: "a tower's health grows with its stars, I thought that was standard"): every in-level upgrade of
+        /// a gun adds this share of the health it is built with, so a gun with three stars has 1.4 times the health of a
+        /// new one and an upgrade is worth more against the bites than a second gun. One rule for every gun the player
+        /// builds (hybrids too); gates and the base's turret keep the health their own refits give. The generator writes
+        /// it into TowerLevel.HealthBonus; repair cost (per health missing) and the crew's time follow the larger bar.
+        /// </summary>
+        public const float GunHealthPerStar = 0.2f;
 
         // Round 30 (Remco): money may go to x3 at most; the Psycho finale player still lost to Gravemaw, the Matriarch and the
         // Sealed One at Hard's boss share (holds x0.85-1.0), so Psycho's escort calls release this share of their count (the
